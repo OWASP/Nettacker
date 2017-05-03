@@ -6,3 +6,6 @@
 
 #tmp files
 *.py~
+tmp/ranges
+tmp/subs_temp
+tmp/tmp_targets

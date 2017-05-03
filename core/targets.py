@@ -1,99 +1,179 @@
 #!/usr/bin/env python
 
-from core.ip import IPRange
-from core.get_range import getIPRange
-from core.attack import start_attack
-import os
 import sys
 import socket
+import os
+from core.attack import start_attack
+from core.alert import *
+from core.ip import *
+try:
+    import netaddr.ip
+except:
+    sys.exit(error('pip install -r requirements.txt'))
 
-def log_it(target):
-    f = open('tmp_target', 'a')
-    f.write(target + '\n')
-    f.close()
-
-def scan_check(target):
-    scan_flag = True
-    targets = open('tmp_target')
-    for t in targets:
-        if target == t.rsplit()[0]:
-            scan_flag = False
-    targets.close()
-    return scan_flag
-
-def attack_ip(IP):
-    IPs = IPRange(getIPRange(IP))
-    if len(IPs) is 1:
-        for IP in IPs:
-            scan_flag = scan_check(IP)
-            if scan_flag is True:
-                log_it(IP)
-                start_attack(IP, False)
-    else:
-        for IPR in IPs:
-            for IP in IPR:
-                scan_flag = scan_check(IP)
-                if scan_flag is True:
-                    log_it(IP)
-                    start_attack(IP, False)
-
-def attack(target,range_flag,isDomain=False):
-    if range_flag is False:
-        scan_flag = scan_check(target)
-        log_it(target)
-        if scan_flag is True:
-            if isDomain is True:
-                getip_flag = True
-                try:
-                    IP = socket.gethostbyname(target)
-                except:
-                    getip_flag = False
-                    pass
-                if getip_flag is True:
-                    pass
-                    start_attack(target,isDomain)
-            else:
-                start_attack(target, isDomain)
-    else:
-        if isDomain is True:
-            scan_flag = scan_check(target)
-            if scan_flag is True:
-                log_it(target)
-            try:
-                IP = socket.gethostbyname(target)
-                start_attack(target, isDomain)
-                attack_ip(IP)
-            except:
-                pass
+def target_type(target):
+    if isIP(target) is True:
+        return 'SINGLE_IPv4'
+    elif len(target.rsplit('.')) is 7 and '-' in target and '/' not in target:
+        start_ip, stop_ip = target.rsplit('-')
+        if isIP(start_ip) is True and isIP(stop_ip) is True:
+            return 'RANGE_IPv4'
         else:
-            attack_ip(target)
+            return 'DOMAIN'
+    elif len(target.rsplit('.')) is 4 and '-' not in target and '/' in target:
+        IP, CIDR = target.rsplit('/')
+        if isIP(IP) is True and (int(CIDR) >= 0 and int(CIDR) <= 32):
+            return 'CIDR_IPv4'
+        else:
+            return 'UNKNOW'
+    elif '.' in target and '/' not in target:
+        return 'DOMAIN'
+    else:
+        return 'UNKNOW'
 
-def analysis(targets):
-    range_flag = True if (sys.argv[2] == '--range' or sys.argv[2] == '-r') else False
-    tmp = open('tmp_target', 'w')
+
+
+def analysis(targets,check_ranges,check_subdomains):
+
+    tmp = open('tmp/tmp_targets', 'w')
     tmp.write('')
     tmp.close()
+    tmp = open('tmp/ranges', 'w')
+    tmp.write('')
+    tmp.close()
+    tmp = open('tmp/subs_temp', 'w')
+    tmp.write('')
+    tmp.close()
+    tmp = open('tmp/tmp_targets', 'a')
+    target_counter = 0
+
+
     for target in targets:
-        if targets[target] == 'SINGLE_IPv4':
-            attack(target,range_flag)
-        elif targets[target] == 'RANGE_IPv4' or targets[target] == 'CIDR_IPv4':
-            IPs = IPRange(target)
-            if len(IPs) is 1:
-                for IP in IPs:
-                    attack(IP, range_flag)
+        if target_type(target) == 'SINGLE_IPv4':
+            if check_ranges is True:
+                info('checking %s range ...'%(target))
+                IPs = IPRange(getIPRange(target))
+                if type(IPs) == netaddr.ip.IPNetwork:
+                    for IPm in IPs:
+                        tmp.write(str(IPm) + '\n')
+                        target_counter += 1
+                elif type(IPs) == list:
+                    for IPm in IPs:
+                        for IP in IPm:
+                            tmp.write(str(IP) + '\n')
+                            target_counter += 1
             else:
-                for IPR in IPs:
-                    for IP in IPR:
-                        attack(IP, range_flag)
-        elif targets[target] == 'DOMAIN':
-            print 'finding subdomains ...'
-            tmp = open('tmp', 'w')
-            tmp.write('')
-            tmp.close()
-            tmp = os.popen('lib\\sublist3r\\sublist3r.py -d ' + target + ' -o tmp').read()
-            subs = open('tmp').read().rsplit()
-            for sub in subs:
-                attack(sub, range_flag,True)
-        else:
-            pass
-    return 0
+                info('checking %s ...' % (target))
+                tmp.write(str(target) + '\n')
+                target_counter += 1
+
+        elif target_type(target) == 'RANGE_IPv4' or target_type(target) == 'CIDR_IPv4':
+            IPs = IPRange(target)
+            info('checking %s ...' % (target))
+            if type(IPs) == netaddr.ip.IPNetwork:
+                for IPm in IPs:
+                    tmp.write(str(IPm) + '\n')
+                    target_counter += 1
+            elif type(IPs) == list:
+                for IPm in IPs:
+                    for IP in IPm:
+                        tmp.write(str(IP) + '\n')
+                        target_counter += 1
+
+        elif target_type(target) == 'DOMAIN':
+            if check_subdomains is True:
+                if check_ranges is True:
+                    info('checking %s ...' % (target))
+                    tmp_exec = os.popen('lib/sublist3r/sublist3r.py -d ' + target + ' -o tmp/subs_temp').read()
+                    tmp_exec = list(set(open('tmp/subs_temp','r').read().rsplit()))
+                    sub_domains = []
+                    for sub in tmp_exec:
+                        if 'this.data.stolen.from.PTRarchive.com.' not in sub and '.internal.nsa.gov.' not in sub:
+                            sub_domains.append(sub)
+                    if target not in sub_domains:
+                        sub_domains.append(target)
+                    for target in sub_domains:
+                        info('checking %s ...' % (target))
+                        tmp.write(str(target) + '\n')
+                        target_counter += 1
+                        n = 0
+                        err = 0
+                        IPs = []
+                        while True:
+                            try:
+                                IPs.append(socket.gethostbyname(target))
+                                err = 0
+                                n += 1
+                                if n is 12:
+                                    break
+                            except:
+                                err += 1
+                                if err is 3 or n is 12:
+                                    break
+                        IPz = list(set(IPs))
+                        for IP in IPz:
+                            info('checking %s range ...' % (IP))
+                            IPs = IPRange(getIPRange(IP))
+                            if type(IPs) == netaddr.ip.IPNetwork:
+                                for IPm in IPs:
+                                    tmp.write(str(IPm) + '\n')
+                                    target_counter += 1
+                            elif type(IPs) == list:
+                                for IPm in IPs:
+                                    for IPn in IPm:
+                                        tmp.write(str(IPn) + '\n')
+                                        target_counter += 1
+                else:
+                    info('checking %s ...' % (target))
+                    tmp_exec = os.popen('lib/sublist3r/sublist3r.py -d ' + target + ' -o tmp/subs_temp').read()
+                    tmp_exec = list(set(open('tmp/subs_temp', 'r').read().rsplit()))
+                    sub_domains = []
+                    for sub in tmp_exec:
+                        if 'this.data.stolen.from.PTRarchive.com.' not in sub and '.internal.nsa.gov.' not in sub:
+                            sub_domains.append(sub)
+                    if target not in sub_domains:
+                        sub_domains.append(target)
+                    for target in sub_domains:
+                        info('checking %s ...' % (target))
+                        tmp.write(str(target) + '\n')
+                        target_counter += 1
+            else:
+                if check_ranges is True:
+                    info('checking %s ...' % (target))
+                    tmp.write(str(target) + '\n')
+                    target_counter += 1
+                    n = 0
+                    err = 0
+                    IPs = []
+                    while True:
+                        try:
+                            IPs.append(socket.gethostbyname(target))
+                            err = 0
+                            n += 1
+                            if n is 12:
+                                break
+                        except:
+                            err += 1
+                            if err is 3 or n is 12:
+                                break
+                    IPz = list(set(IPs))
+                    for IP in IPz:
+                        info('checking %s range ...' % (IP))
+                        IPs = IPRange(getIPRange(IP))
+                        if type(IPs) == netaddr.ip.IPNetwork:
+                            for IPm in IPs:
+                                tmp.write(str(IPm) + '\n')
+                                target_counter += 1
+                        elif type(IPs) == list:
+                            for IPm in IPs:
+                                for IPn in IPm:
+                                    tmp.write(str(IPn) + '\n')
+                                    target_counter += 1
+                else:
+                    info('checking %s ...' % (target))
+                    tmp.write(str(target) + '\n')
+                    target_counter += 1
+
+    tmp.close()
+    info(str(target_counter) + ' Targets listed! Starting Attack...')
+    return target_counter

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-import sys
-from core.start import engine
+from core.parse import load
 
 if __name__ == "__main__":
-    engine(sys.argv)
+    load()

@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 
-import socket
-import time
-import urllib2
-import threading
+from core.alert import *
 
-def start_attack(target,isDomain=False):
-    #attack start here!
-    pass
+def start_attack(target,num,total,scan_method):
+    info(str('start attacking ' + str(target) + ' %s of %s '%(str(num),str(total))))

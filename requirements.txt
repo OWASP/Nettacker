@@ -1,4 +1,3 @@
 netaddr
-argparse
 dnspython
 requests
