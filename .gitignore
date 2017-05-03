@@ -9,3 +9,6 @@
 tmp/ranges
 tmp/subs_temp
 tmp/tmp_targets
+results.txt
+user.txt
+pass.txt
