@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import threading
+import time
 from optparse import OptionGroup
 from optparse import OptionParser
 from core.targets import analysis
@@ -20,8 +22,10 @@ def load():
                       help='scan all IPs in range')
     parser.add_option('-s', '--sub-domains', action='store_true', default=False, dest='check_subdomains',
                       help='find and scan subdomains')
-    parser.add_option('-t', '--threads', action='store', default=5, type='int', dest='thread_number',
-                      help='thread numbers')
+    parser.add_option('-t', '--thread-connection', action='store', default=10, type='int', dest='thread_number',
+                      help='thread numbers for connections to a host')
+    parser.add_option('-M', '--thread-hostscan', action='store', default=10, type='int', dest='thread_number_host',
+                      help='thread numbers for scan hosts')
     parser.add_option('-L', '--logs', action='store_true', default=False,  dest='log_in_file',
                       help='save all logs in file (logs.txt)')
 
@@ -70,6 +74,7 @@ def load():
     targets = options.targets
     targets_list = options.targets_list
     thread_number = options.thread_number
+    thread_number_host = options.thread_number_host
     auto_scan = options.auto_scan
     scan_method = options.scan_method
     users = options.users
@@ -134,9 +139,26 @@ def load():
     total_targets = analysis(targets, check_ranges, check_subdomains)
     targets = open('tmp/tmp_targets')
     n = 0
+    threads = []
+    max = thread_number_host
+    trying = 0
     for target in targets:
-        n+=1
-        start_attack(target.rsplit()[0],n,total_targets,scan_method,users,passwds,timeout_sec,thread_number,ports)
+        trying += 1
+        t = threading.Thread(target=start_attack, args=(
+        target.rsplit()[0], n, total_targets, scan_method, users, passwds, timeout_sec, thread_number, ports))
+        threads.append(t)
+        t.start()
+        while 1:
+            n = 0
+            for thread in threads:
+                if thread.isAlive() is True:
+                    n += 1
+                else:
+                    threads.remove(thread)
+            if n >= max:
+                time.sleep(0.1)
+            else:
+                break
     write('\n')
     info('done!')
     write('\n\n')
