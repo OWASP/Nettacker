@@ -1,3 +1,5 @@
 netaddr
 dnspython
 requests
+ftplib
+paramiko

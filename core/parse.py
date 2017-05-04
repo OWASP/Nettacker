@@ -7,11 +7,11 @@ from core.attack import start_attack
 from core.alert import *
 
 def load():
-
+    write('\n\n')
     info('Nettacker engine started ...')
 
     # module_names = ['smtp_brute', 'ftp_brute', 'rdp_brute', 'ssh_brute', 'http_brute', 'mysql_brute', 'mssql_brute']
-    module_names = ['smtp_brute','port_scan']
+    module_names = ['smtp_brute','port_scan','ftp_brute','ssh_brute']
 
     parser = OptionParser(usage='python nettacker.py [options]', description='Nettacker Help Menu',
                           epilog='Please read license and agreements https://github.com/Nettacker/Nettacker')
@@ -22,6 +22,8 @@ def load():
                       help='find and scan subdomains')
     parser.add_option('-t', '--threads', action='store', default=5, type='int', dest='thread_number',
                       help='thread numbers')
+    parser.add_option('-L', '--logs', action='store_true', default=False,  dest='log_in_file',
+                      help='save all logs in file (logs.txt)')
 
     # Target Options
     target = OptionGroup(parser, "Target", "Target input options")
@@ -137,3 +139,4 @@ def load():
         start_attack(target.rsplit()[0],n,total_targets,scan_method,users,passwds,timeout_sec,thread_number,ports)
     write('\n')
     info('done!')
+    write('\n\n')

@@ -1,37 +1,37 @@
 #!/usr/bin/env python
 import threading
 import time
-import smtplib
+import ftplib
 from core.alert import *
+from ftplib import FTP
 
 def login(user, passwd,target,port,timeout_sec):
     exit = 0
     while 1:
         try:
-            server = smtplib.SMTP(target, int(port),timeout=timeout_sec)
-            server.starttls()
+            my_ftp = FTP(timeout=timeout_sec)
+            my_ftp.connect(target, port)
             exit = 0
             break
         except:
             exit += 1
             if exit is 10:
-                warn('smtp connection to %s:%s timeout, skipping %s:%s'%(target,port,user,passwd))
+                warn('ftp connection to %s:%s timeout, skipping %s:%s'%(target,port,user,passwd))
                 return 1
             time.sleep(0.1)
     flag = 1
     try:
-        server.login(user, passwd)
+        my_ftp.login(user, passwd)
         flag = 0
-    except smtplib.SMTPException, err:
+    except:
         pass
     if flag is 0:
         info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found!')
         save = open('results.txt', 'a')
-        save.write('smtp ---> ' + user + ':' + passwd + ' ---> ' + target + ':' + str(port) + '\n')
+        save.write('ftp ---> ' + user + ':' + passwd + ' ---> ' + target + ':' + str(port) + '\n')
         save.close()
     else:
         pass
-    server.quit()
     return flag
 
 def start(target,users,passwds,ports,timeout_sec,thread_number,num,total): # Main function
@@ -39,22 +39,21 @@ def start(target,users,passwds,ports,timeout_sec,thread_number,num,total): # Mai
     max = thread_number
     total_req = len(users) * len(passwds)
     for port in ports:
-        # test smtp
+        # test ftp
         trying = 0
         portflag = True
         exit = 0
         while 1:
             try:
-                server = smtplib.SMTP(target, int(port), timeout=timeout_sec)
-                server.starttls()
-                server.quit()
+                my_ftp = FTP(timeout=timeout_sec)
+                my_ftp.connect(target, port)
                 exit = 0
                 break
             except:
                 exit += 1
                 if exit is 3:
                     error(
-                        'smtp connection to %s:%s failed, skipping whole step [process %s of %s]! going to next step' % (
+                        'ftp connection to %s:%s failed, skipping whole step [process %s of %s]! going to next step' % (
                         target, port, str(num), str(total)))
                     portflag = False
                     break

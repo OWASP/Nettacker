@@ -10,9 +10,10 @@ def connect(host, port,timeout_sec):
         s.settimeout(timeout_sec)
         s.connect((host, port))
         s.close()
-        info('server:' + host + 'port:' + str(port) + ' found!')
+        info('server:' + host + ' port:' + str(port) + ' found!')
         f = open('results.txt','a')
-        f.write(host + ':' + str(port) + '\n')
+        f.write('open port ---> ' + host + ':' + str(port) + '\n')
+        f.close()
         return True
     except socket.error:
         return False
