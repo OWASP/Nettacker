@@ -13,7 +13,7 @@ def load():
     info('Nettacker engine started ...')
 
     # module_names = ['smtp_brute', 'ftp_brute', 'rdp_brute', 'ssh_brute', 'http_brute', 'mysql_brute', 'mssql_brute']
-    module_names = ['smtp_brute','port_scan','ftp_brute','ssh_brute']
+    module_names = ['smtp_brute','port_scan','ftp_brute','ssh_brute','scada_scan']
 
     parser = OptionParser(usage='python nettacker.py [options]', description='Nettacker Help Menu',
                           epilog='Please read license and agreements https://github.com/Nettacker/Nettacker')
@@ -138,14 +138,15 @@ def load():
                 sys.exit(error('Cannot specify the password(s), unable to open file: %s' % (targets_list)))
     total_targets = analysis(targets, check_ranges, check_subdomains)
     targets = open('tmp/tmp_targets')
-    n = 0
+    m = 0
     threads = []
     max = thread_number_host
     trying = 0
     for target in targets:
+        m += 1
         trying += 1
         t = threading.Thread(target=start_attack, args=(
-        target.rsplit()[0], n, total_targets, scan_method, users, passwds, timeout_sec, thread_number, ports))
+        target.rsplit()[0], m, total_targets, scan_method, users, passwds, timeout_sec, thread_number, ports))
         threads.append(t)
         t.start()
         while 1:
