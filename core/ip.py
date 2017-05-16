@@ -15,9 +15,12 @@ def getIPRange(IP):
     while 1:
         try:
             data = urllib2.urlopen(
-                'https://whois.arin.net/rest/nets;q=%s?showDetails=true&showARIN=false&showNonArinTopLevelNet=false&ext=netref2' % IP).read()
-            data = data.rsplit('<startAddress>')[1].rsplit('</startAddress>')[0] + '-' + data.rsplit('<endAddress>')[1].rsplit('</endAddress>')[0]
-            break
+                'http://rest.db.ripe.net/search.json?query-string=%s&flags=no-filtering' % IP).read()
+            for line in data.rsplit('\n'):
+                line = line.rsplit('"')
+                for R in line:
+                    if R.count('.') is 6 and R.count('-') is 1 and R.count(' ') is 2:
+                        return R.replace(' ','')
         except:
             n += 1
             if n is 3:
