@@ -26,7 +26,11 @@ def login(user, passwd,target,port,timeout_sec):
     except:
         pass
     if flag is 0:
-        info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found!')
+        try:
+            my_ftp.retrlines('LIST')
+            info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found!')
+        except:
+            info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found! (NO PERMISSION FOR LIST)')
         save = open('results.txt', 'a')
         save.write('ftp ---> ' + user + ':' + passwd + ' ---> ' + target + ':' + str(port) + '\n')
         save.close()

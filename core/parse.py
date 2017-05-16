@@ -160,6 +160,14 @@ def load():
                 time.sleep(0.1)
             else:
                 break
+    while 1:
+        n = True
+        for thread in threads:
+            if thread.isAlive() is True:
+                n = False
+        time.sleep(0.1)
+        if n is True:
+            break
     write('\n')
     info('done!')
     write('\n\n')

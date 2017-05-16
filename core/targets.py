@@ -84,7 +84,7 @@ def analysis(targets,check_ranges,check_subdomains):
             if check_subdomains is True:
                 if check_ranges is True:
                     info('checking %s ...' % (target))
-                    tmp_exec = os.popen('lib/sublist3r/sublist3r.py -d ' + target + ' -o tmp/subs_temp').read()
+                    tmp_exec = os.popen('python lib/sublist3r/sublist3r.py -d ' + target + ' -o tmp/subs_temp').read()
                     tmp_exec = list(set(open('tmp/subs_temp','r').read().rsplit()))
                     sub_domains = []
                     for sub in tmp_exec:
@@ -125,7 +125,7 @@ def analysis(targets,check_ranges,check_subdomains):
                                         target_counter += 1
                 else:
                     info('checking %s ...' % (target))
-                    tmp_exec = os.popen('lib/sublist3r/sublist3r.py -d ' + target + ' -o tmp/subs_temp').read()
+                    tmp_exec = os.popen('python lib/sublist3r/sublist3r.py -d ' + target + ' -o tmp/subs_temp').read()
                     tmp_exec = list(set(open('tmp/subs_temp', 'r').read().rsplit()))
                     sub_domains = []
                     for sub in tmp_exec:
