@@ -12,4 +12,6 @@ results.txt
 user.txt
 pass.txt
 logs.txt
+
+#scada
 lib/scan/scada/*
