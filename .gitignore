@@ -6,8 +6,8 @@
 
 #tmp files
 *.py~
-tmp/ranges
-tmp/subs_temp
+tmp/ranges_*
+tmp/subs_temp_*
 results.txt
 user.txt
 pass.txt

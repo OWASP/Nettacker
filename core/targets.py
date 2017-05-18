@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 
-import sys
 import socket
 import os
-from core.attack import start_attack
-from core.alert import *
 from core.ip import *
 try:
     import netaddr.ip
@@ -32,13 +29,12 @@ def target_type(target):
         return 'UNKNOW'
 
 
+def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp):
 
-def analysis(targets,check_ranges,check_subdomains):
-
-    tmp = open('tmp/ranges', 'w')
+    tmp = open(range_temp, 'w')
     tmp.write('')
     tmp.close()
-    tmp = open('tmp/subs_temp', 'w')
+    tmp = open(subs_temp, 'w')
     tmp.write('')
     tmp.close()
 
@@ -46,7 +42,7 @@ def analysis(targets,check_ranges,check_subdomains):
         if target_type(target) == 'SINGLE_IPv4':
             if check_ranges is True:
                 info('checking %s range ...'%(target))
-                IPs = IPRange(getIPRange(target))
+                IPs = IPRange(getIPRange(target),range_temp)
                 if type(IPs) == netaddr.ip.IPNetwork:
                     for IPm in IPs:
                         yield IPm
@@ -59,7 +55,7 @@ def analysis(targets,check_ranges,check_subdomains):
                 yield target
 
         elif target_type(target) == 'RANGE_IPv4' or target_type(target) == 'CIDR_IPv4':
-            IPs = IPRange(target)
+            IPs = IPRange(target,range_temp)
             info('checking %s ...' % (target))
             if type(IPs) == netaddr.ip.IPNetwork:
                 for IPm in IPs:
@@ -73,8 +69,8 @@ def analysis(targets,check_ranges,check_subdomains):
             if check_subdomains is True:
                 if check_ranges is True:
                     info('checking %s ...' % (target))
-                    tmp_exec = os.popen('python lib/sublist3r/sublist3r.py -d ' + target + ' -o tmp/subs_temp').read()
-                    tmp_exec = list(set(open('tmp/subs_temp','r').read().rsplit()))
+                    tmp_exec = os.popen('python lib/sublist3r/sublist3r.py -d ' + target + ' -o %s'%(subs_temp)).read()
+                    tmp_exec = list(set(open(subs_temp,'r').read().rsplit()))
                     sub_domains = []
                     for sub in tmp_exec:
                         if 'this.data.stolen.from.PTRarchive.com.' not in sub and '.internal.nsa.gov.' not in sub:
@@ -101,7 +97,7 @@ def analysis(targets,check_ranges,check_subdomains):
                         IPz = list(set(IPs))
                         for IP in IPz:
                             info('checking %s range ...' % (IP))
-                            IPs = IPRange(getIPRange(IP))
+                            IPs = IPRange(getIPRange(IP),range_temp)
                             if type(IPs) == netaddr.ip.IPNetwork:
                                 for IPm in IPs:
                                     yield IPm
@@ -143,7 +139,7 @@ def analysis(targets,check_ranges,check_subdomains):
                     IPz = list(set(IPs))
                     for IP in IPz:
                         info('checking %s range ...' % (IP))
-                        IPs = IPRange(getIPRange(IP))
+                        IPs = IPRange(getIPRange(IP),range_temp)
                         if type(IPs) == netaddr.ip.IPNetwork:
                             for IPm in IPs:
                                 yield IPm

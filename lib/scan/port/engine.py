@@ -7,7 +7,8 @@ from core.alert import *
 def connect(host, port,timeout_sec):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(timeout_sec)
+        if timeout_sec is not None:
+            s.settimeout(timeout_sec)
         s.connect((host, port))
         s.close()
         info('server:' + host + ' port:' + str(port) + ' found!')

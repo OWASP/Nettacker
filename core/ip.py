@@ -47,10 +47,10 @@ def isIP(IP):
     return False
 
 
-def IPRange(Range):
-    myranges_now = open('tmp/ranges').read().rsplit()
+def IPRange(Range,range_temp):
+    myranges_now = open(range_temp).read().rsplit()
     if Range not in myranges_now:
-        r_f = open('tmp/ranges','a')
+        r_f = open(range_temp,'a')
         r_f.write(Range+'\n')
         r_f.close()
         if len(Range.rsplit('.')) is 7 and '-' in Range and '/' not in Range:

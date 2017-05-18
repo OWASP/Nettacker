@@ -8,7 +8,10 @@ def login(user, passwd,target,port,timeout_sec):
     exit = 0
     while 1:
         try:
-            my_ftp = FTP(timeout=timeout_sec)
+            if timeout_sec is not None:
+                my_ftp = FTP(timeout=timeout_sec)
+            else:
+                my_ftp = FTP()
             my_ftp.connect(target, port)
             exit = 0
             break
@@ -52,7 +55,10 @@ def start(target,users,passwds,ports,timeout_sec,thread_number,num,total): # Mai
         exit = 0
         while 1:
             try:
-                my_ftp = FTP(timeout=timeout_sec)
+                if timeout_sec is not None:
+                    my_ftp = FTP(timeout=timeout_sec)
+                else:
+                    my_ftp = FTP()
                 my_ftp.connect(target, port)
                 exit = 0
                 break

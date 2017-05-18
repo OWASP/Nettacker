@@ -12,7 +12,10 @@ def login(user, passwd,target,port,timeout_sec):
         try:
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(target, username=user, password=passwd, timeout=timeout_sec)
+            if timeout_sec is not None:
+                ssh.connect(target, username=user, password=passwd, timeout=timeout_sec)
+            else:
+                ssh.connect(target, username=user, password=passwd)
             flag = 0
             exit = 0
             break
@@ -45,7 +48,10 @@ def start(target,users,passwds,ports,timeout_sec,thread_number,num,total): # Mai
             try:
                 ssh = paramiko.SSHClient()
                 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                ssh.connect(target, username='',password='',timeout=timeout_sec)
+                if timeout_sec is not None:
+                    ssh.connect(target, username='',password='',timeout=timeout_sec)
+                else:
+                    ssh.connect(target, username='', password='')
                 exit = 0
                 break
             except paramiko.ssh_exception.AuthenticationException, ssherr:

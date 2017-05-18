@@ -8,7 +8,10 @@ def login(user, passwd,target,port,timeout_sec):
     exit = 0
     while 1:
         try:
-            server = smtplib.SMTP(target, int(port),timeout=timeout_sec)
+            if timeout_sec is not None:
+                server = smtplib.SMTP(target, int(port),timeout=timeout_sec)
+            else:
+                server = smtplib.SMTP(target, int(port))
             server.starttls()
             exit = 0
             break
@@ -45,7 +48,10 @@ def start(target,users,passwds,ports,timeout_sec,thread_number,num,total): # Mai
         exit = 0
         while 1:
             try:
-                server = smtplib.SMTP(target, int(port), timeout=timeout_sec)
+                if timeout_sec is not None:
+                    server = smtplib.SMTP(target, int(port), timeout=timeout_sec)
+                else:
+                    server = smtplib.SMTP(target, int(port))
                 server.starttls()
                 server.quit()
                 exit = 0

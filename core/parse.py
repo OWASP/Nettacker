@@ -2,6 +2,10 @@
 
 import threading
 import time
+import os
+import datetime
+import random
+import string
 from optparse import OptionGroup
 from optparse import OptionParser
 from core.targets import analysis
@@ -60,7 +64,7 @@ def load():
                       dest='ports', default=None,
                       help='port(s) list, separate with ","')
     method.add_option('-T', '--timeout', action='store',
-                      dest='timeout_sec', default=0.5, type='float',
+                      dest='timeout_sec', default=None, type='float',
                       help='read passwords(s) from file')
 
     parser.add_option_group(method)
@@ -98,7 +102,7 @@ def load():
 
     if thread_number > 100:
         warn('it\'s better to use thread number lower than 100, BTW we are continuing...')
-    if timeout_sec >= 15:
+    if timeout_sec is not None and timeout_sec >= 15:
         warn('set timeout to %s seconds, it is too big, isn\'t it ? by the way we are continuing...')
     if auto_scan is True and scan_method is not None:
         sys.exit(error('please use specify method or automatic option, you can\'t using both!'))
@@ -136,11 +140,15 @@ def load():
                 passwds = list(set(open(passwds_list).read().rsplit('\n'))) # fix later
             except:
                 sys.exit(error('Cannot specify the password(s), unable to open file: %s' % (targets_list)))
+    suff = str(datetime.datetime.now()).replace(' ', '_').replace(':', '-') + '_' + ''.join(
+        random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+    subs_temp = 'tmp/subs_temp_%s' % (suff)
+    range_temp = 'tmp/ranges_%s' % (suff)
     total_targets = -1
-    for total_targets,_ in enumerate(analysis(targets, check_ranges, check_subdomains)):
+    for total_targets,_ in enumerate(analysis(targets, check_ranges, check_subdomains,subs_temp,range_temp)):
         pass
     total_targets += 1
-    targets = analysis(targets, check_ranges, check_subdomains)
+    targets = analysis(targets, check_ranges, check_subdomains,subs_temp,range_temp)
     m = 0
     threads = []
     trying = 0
@@ -171,6 +179,8 @@ def load():
         time.sleep(0.1)
         if n is True:
             break
+    os.remove(subs_temp)
+    os.remove(range_temp)
     write('\n')
     info('done!')
     write('\n\n')
