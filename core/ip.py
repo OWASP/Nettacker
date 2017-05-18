@@ -32,6 +32,7 @@ def getIPRange(IP):
 
 
 def isIP(IP):
+    IP = str(IP)
     if len(IP.rsplit('.')) is 4 and '-' not in IP and '/' not in IP:
         ip_flag = True
         for num in IP.rsplit('.'):
