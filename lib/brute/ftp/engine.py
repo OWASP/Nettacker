@@ -28,6 +28,8 @@ def login(user, passwd,target,port,timeout_sec):
     if flag is 0:
         try:
             my_ftp.retrlines('LIST')
+            tmpl = []
+            tmp = my_ftp.retrlines('LIST', tmpl.append)
             info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found!')
             save = open('results.txt', 'a')
             save.write('ftp ---> ' + user + ':' + passwd + ' ---> ' + target + ':' + str(port) + '\n')
