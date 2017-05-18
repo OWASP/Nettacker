@@ -35,18 +35,12 @@ def target_type(target):
 
 def analysis(targets,check_ranges,check_subdomains):
 
-    tmp = open('tmp/tmp_targets', 'w')
-    tmp.write('')
-    tmp.close()
     tmp = open('tmp/ranges', 'w')
     tmp.write('')
     tmp.close()
     tmp = open('tmp/subs_temp', 'w')
     tmp.write('')
     tmp.close()
-    tmp = open('tmp/tmp_targets', 'a')
-    target_counter = 0
-
 
     for target in targets:
         if target_type(target) == 'SINGLE_IPv4':
@@ -55,30 +49,25 @@ def analysis(targets,check_ranges,check_subdomains):
                 IPs = IPRange(getIPRange(target))
                 if type(IPs) == netaddr.ip.IPNetwork:
                     for IPm in IPs:
-                        tmp.write(str(IPm) + '\n')
-                        target_counter += 1
+                        yield IPm
                 elif type(IPs) == list:
                     for IPm in IPs:
                         for IP in IPm:
-                            tmp.write(str(IP) + '\n')
-                            target_counter += 1
+                            yield IP
             else:
                 info('checking %s ...' % (target))
-                tmp.write(str(target) + '\n')
-                target_counter += 1
+                yield target
 
         elif target_type(target) == 'RANGE_IPv4' or target_type(target) == 'CIDR_IPv4':
             IPs = IPRange(target)
             info('checking %s ...' % (target))
             if type(IPs) == netaddr.ip.IPNetwork:
                 for IPm in IPs:
-                    tmp.write(str(IPm) + '\n')
-                    target_counter += 1
+                    yield IPm
             elif type(IPs) == list:
                 for IPm in IPs:
                     for IP in IPm:
-                        tmp.write(str(IP) + '\n')
-                        target_counter += 1
+                        yield IP
 
         elif target_type(target) == 'DOMAIN':
             if check_subdomains is True:
@@ -94,8 +83,7 @@ def analysis(targets,check_ranges,check_subdomains):
                         sub_domains.append(target)
                     for target in sub_domains:
                         info('checking %s ...' % (target))
-                        tmp.write(str(target) + '\n')
-                        target_counter += 1
+                        yield target
                         n = 0
                         err = 0
                         IPs = []
@@ -116,13 +104,11 @@ def analysis(targets,check_ranges,check_subdomains):
                             IPs = IPRange(getIPRange(IP))
                             if type(IPs) == netaddr.ip.IPNetwork:
                                 for IPm in IPs:
-                                    tmp.write(str(IPm) + '\n')
-                                    target_counter += 1
+                                    yield IPm
                             elif type(IPs) == list:
                                 for IPm in IPs:
                                     for IPn in IPm:
-                                        tmp.write(str(IPn) + '\n')
-                                        target_counter += 1
+                                        yield IPn
                 else:
                     info('checking %s ...' % (target))
                     tmp_exec = os.popen('python lib/sublist3r/sublist3r.py -d ' + target + ' -o tmp/subs_temp').read()
@@ -135,13 +121,11 @@ def analysis(targets,check_ranges,check_subdomains):
                         sub_domains.append(target)
                     for target in sub_domains:
                         info('checking %s ...' % (target))
-                        tmp.write(str(target) + '\n')
-                        target_counter += 1
+                        yield target
             else:
                 if check_ranges is True:
                     info('checking %s ...' % (target))
-                    tmp.write(str(target) + '\n')
-                    target_counter += 1
+                    yield target
                     n = 0
                     err = 0
                     IPs = []
@@ -162,18 +146,11 @@ def analysis(targets,check_ranges,check_subdomains):
                         IPs = IPRange(getIPRange(IP))
                         if type(IPs) == netaddr.ip.IPNetwork:
                             for IPm in IPs:
-                                tmp.write(str(IPm) + '\n')
-                                target_counter += 1
+                                yield IPm
                         elif type(IPs) == list:
                             for IPm in IPs:
                                 for IPn in IPm:
-                                    tmp.write(str(IPn) + '\n')
-                                    target_counter += 1
+                                    yield IPn
                 else:
                     info('checking %s ...' % (target))
-                    tmp.write(str(target) + '\n')
-                    target_counter += 1
-
-    tmp.close()
-    info(str(target_counter) + ' Targets listed! Starting Attack...')
-    return target_counter
+                    yield target

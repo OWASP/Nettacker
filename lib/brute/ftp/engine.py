@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import threading
 import time
-import ftplib
 from core.alert import *
 from ftplib import FTP
 
@@ -27,7 +26,6 @@ def login(user, passwd,target,port,timeout_sec):
         pass
     if flag is 0:
         try:
-            my_ftp.retrlines('LIST')
             tmpl = []
             tmp = my_ftp.retrlines('LIST', tmpl.append)
             info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found!')
