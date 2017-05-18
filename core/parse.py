@@ -30,7 +30,7 @@ def load():
                       help='thread numbers for connections to a host')
     parser.add_option('-M', '--thread-hostscan', action='store', default=10, type='int', dest='thread_number_host',
                       help='thread numbers for scan hosts')
-    parser.add_option('-L', '--logs', action='store_true', default=False,  dest='log_in_file',
+    parser.add_option('-o', '--output', action='store', default='results.txt',  dest='log_in_file',
                       help='save all logs in file (logs.txt)')
 
     # Target Options
@@ -61,7 +61,7 @@ def load():
                       dest='passwds_list', default=None,
                       help='read passwords(s) from file')
     method.add_option('-g', '--ports', action='store',
-                      dest='ports', default=None,
+                      dest='ports', default=[21,22,23,25,80,110,143,443,445,465,587,989,990,993,995,1080,1433,3306,3389,5900,5901],
                       help='port(s) list, separate with ","')
     method.add_option('-T', '--timeout', action='store',
                       dest='timeout_sec', default=None, type='float',
@@ -79,6 +79,7 @@ def load():
     targets_list = options.targets_list
     thread_number = options.thread_number
     thread_number_host = options.thread_number_host
+    log_in_file = options.log_in_file
     auto_scan = options.auto_scan
     scan_method = options.scan_method
     users = options.users
@@ -115,10 +116,10 @@ def load():
     if ports is None and scan_method is not None and (scan_method[-6:] == '_brute' or scan_method[-5:] == '_scan'):
         sys.exit(error('this module required port(s) (list) to bruteforce/scan!'))
     else:
-        if '-' in ports:
+        if type(ports) is not list and '-' in ports:
             ports = ports.rsplit('-')
             ports = range(int(ports[0]), int(ports[1]) + 1)
-        else:
+        elif type(ports) is not list and ',' in ports:
             ports = ports.rsplit(',')
     if users is None and users_list is None and scan_method is not None and scan_method[-6:] == '_brute':
         sys.exit(error('this module required username(s) (list) to bruteforce!'))
@@ -145,10 +146,10 @@ def load():
     subs_temp = 'tmp/subs_temp_%s' % (suff)
     range_temp = 'tmp/ranges_%s' % (suff)
     total_targets = -1
-    for total_targets,_ in enumerate(analysis(targets, check_ranges, check_subdomains,subs_temp,range_temp)):
+    for total_targets,_ in enumerate(analysis(targets, check_ranges, check_subdomains,subs_temp,range_temp,log_in_file)):
         pass
     total_targets += 1
-    targets = analysis(targets, check_ranges, check_subdomains,subs_temp,range_temp)
+    targets = analysis(targets, check_ranges, check_subdomains,subs_temp,range_temp,log_in_file)
     m = 0
     threads = []
     trying = 0
@@ -157,7 +158,7 @@ def load():
         m += 1
         trying += 1
         t = threading.Thread(target=start_attack, args=(
-        target.rsplit()[0], m, total_targets, scan_method, users, passwds, timeout_sec, thread_number, ports))
+        target.rsplit()[0], m, total_targets, scan_method, users, passwds, timeout_sec, thread_number, ports,log_in_file))
         threads.append(t)
         t.start()
         while 1:

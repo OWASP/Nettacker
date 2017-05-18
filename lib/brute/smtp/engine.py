@@ -4,7 +4,7 @@ import time
 import smtplib
 from core.alert import *
 
-def login(user, passwd,target,port,timeout_sec):
+def login(user, passwd,target,port,timeout_sec,log_in_file):
     exit = 0
     while 1:
         try:
@@ -29,7 +29,7 @@ def login(user, passwd,target,port,timeout_sec):
         pass
     if flag is 0:
         info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found!')
-        save = open('results.txt', 'a')
+        save = open(log_in_file, 'a')
         save.write('smtp ---> ' + user + ':' + passwd + ' ---> ' + target + ':' + str(port) + '\n')
         save.close()
     else:
@@ -37,7 +37,7 @@ def login(user, passwd,target,port,timeout_sec):
     server.quit()
     return flag
 
-def start(target,users,passwds,ports,timeout_sec,thread_number,num,total): # Main function
+def start(target,users,passwds,ports,timeout_sec,thread_number,num,total,log_in_file): # Main function
     threads = []
     max = thread_number
     total_req = len(users) * len(passwds)
@@ -69,7 +69,7 @@ def start(target,users,passwds,ports,timeout_sec,thread_number,num,total): # Mai
         if portflag is True:
             for user in users:
                 for passwd in passwds:
-                    t = threading.Thread(target=login, args=(user, passwd,target,port,timeout_sec))
+                    t = threading.Thread(target=login, args=(user, passwd,target,port,timeout_sec,log_in_file))
                     threads.append(t)
                     t.start()
                     trying += 1

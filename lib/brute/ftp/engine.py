@@ -4,7 +4,7 @@ import time
 from core.alert import *
 from ftplib import FTP
 
-def login(user, passwd,target,port,timeout_sec):
+def login(user, passwd,target,port,timeout_sec,log_in_file):
     exit = 0
     while 1:
         try:
@@ -32,19 +32,19 @@ def login(user, passwd,target,port,timeout_sec):
             tmpl = []
             tmp = my_ftp.retrlines('LIST', tmpl.append)
             info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found!')
-            save = open('results.txt', 'a')
+            save = open(log_in_file, 'a')
             save.write('ftp ---> ' + user + ':' + passwd + ' ---> ' + target + ':' + str(port) + '\n')
             save.close()
         except:
             info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found! (NO PERMISSION FOR LIST)')
-            save = open('results.txt', 'a')
+            save = open(log_in_file, 'a')
             save.write('ftp ---> ' + user + ':' + passwd + ' ---> ' + target + ':' + str(port) + ' ---> found! (NO PERMISSION FOR LIST)\n')
             save.close()
     else:
         pass
     return flag
 
-def start(target,users,passwds,ports,timeout_sec,thread_number,num,total): # Main function
+def start(target,users,passwds,ports,timeout_sec,thread_number,num,total,log_in_file): # Main function
     threads = []
     max = thread_number
     total_req = len(users) * len(passwds)
@@ -75,7 +75,7 @@ def start(target,users,passwds,ports,timeout_sec,thread_number,num,total): # Mai
         if portflag is True:
             for user in users:
                 for passwd in passwds:
-                    t = threading.Thread(target=login, args=(user, passwd,target,port,timeout_sec))
+                    t = threading.Thread(target=login, args=(user, passwd,target,port,timeout_sec,log_in_file))
                     threads.append(t)
                     t.start()
                     trying += 1

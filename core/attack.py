@@ -4,7 +4,7 @@ from core.alert import *
 import sys
 
 
-def start_attack(target,num,total,scan_method,users,passwds,timeout_sec,thread_number,ports):
+def start_attack(target,num,total,scan_method,users,passwds,timeout_sec,thread_number,ports,log_in_file):
     info(str('start attacking ' + str(target) + ', %s of %s ' % (str(num), str(total))))
     if scan_method[-6:] == '_brute':
         try:
@@ -14,7 +14,7 @@ def start_attack(target,num,total,scan_method,users,passwds,timeout_sec,thread_n
                 'start')
         except:
             sys.exit(error('this module is not available'))
-        start(target,users,passwds,ports,timeout_sec,thread_number,num,total)
+        start(target,users,passwds,ports,timeout_sec,thread_number,num,total,log_in_file)
     if scan_method[-5:] == '_scan':
         try:
             start = getattr(
@@ -23,4 +23,4 @@ def start_attack(target,num,total,scan_method,users,passwds,timeout_sec,thread_n
                 'start')
         except:
             sys.exit(error('this module is not available'))
-        start(target, ports, timeout_sec, thread_number, num, total)
+        start(target, ports, timeout_sec, thread_number, num, total,log_in_file)
