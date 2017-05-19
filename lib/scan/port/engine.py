@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import socket
 import time
+import json
 import threading
 from core.alert import *
 
@@ -12,9 +13,10 @@ def connect(host, port,timeout_sec,log_in_file):
         s.connect((host, port))
         s.close()
         info('server:' + host + ' port:' + str(port) + ' found!')
-        f = open(log_in_file,'a')
-        f.write('open port ---> ' + host + ':' + str(port) + '\n')
-        f.close()
+        save = open(log_in_file,'a')
+        save.write(json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
+                               'DESCRIPTION': 'OPEN PORT'}) + '\n')
+        save.close()
         return True
     except socket.error:
         return False

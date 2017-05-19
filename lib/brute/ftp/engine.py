@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import threading
 import time
+import json
 from core.alert import *
 from ftplib import FTP
 
@@ -33,12 +34,14 @@ def login(user, passwd,target,port,timeout_sec,log_in_file):
             tmp = my_ftp.retrlines('LIST', tmpl.append)
             info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found!')
             save = open(log_in_file, 'a')
-            save.write('ftp ---> ' + user + ':' + passwd + ' ---> ' + target + ':' + str(port) + '\n')
+            save.write(json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ftp_brute',
+                                   'DESCRIPTION': 'LOGGED IN SUCCESSFULLY!'}) + '\n')
             save.close()
         except:
             info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found! (NO PERMISSION FOR LIST)')
             save = open(log_in_file, 'a')
-            save.write('ftp ---> ' + user + ':' + passwd + ' ---> ' + target + ':' + str(port) + ' ---> found! (NO PERMISSION FOR LIST)\n')
+            save.write(json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'FTP',
+                                   'DESCRIPTION': 'LOGGED IN SUCCESSFULLY PERMISSION DENIED FOR LIST COMMAND!'}) + '\n')
             save.close()
     else:
         pass

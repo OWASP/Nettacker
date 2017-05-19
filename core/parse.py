@@ -6,6 +6,8 @@ import os
 import datetime
 import random
 import string
+import json
+import texttable
 from optparse import OptionGroup
 from optparse import OptionParser
 from core.targets import analysis
@@ -46,6 +48,9 @@ def load():
     method.add_option('-m', '--method', action='store',
                       dest='scan_method', default=None,
                       help='choose scan method %s' % (module_names))
+    method.add_option('-x', '--exclude', action='store',
+                      dest='exclude_method', default=None,
+                      help='choose scan method to exclude %s' % (module_names))
     method.add_option('-u', '--usernames', action='store',
                       dest='users', default=None,
                       help='username(s) list, separate with ","')
@@ -79,6 +84,7 @@ def load():
     thread_number_host = options.thread_number_host
     log_in_file = options.log_in_file
     scan_method = options.scan_method
+    exclude_method = options.exclude_method
     users = options.users
     users_list = options.users_list
     passwds = options.passwds
@@ -103,7 +109,8 @@ def load():
     if timeout_sec is not None and timeout_sec >= 15:
         warn('set timeout to %s seconds, it is too big, isn\'t it ? by the way we are continuing...')
     if scan_method is not None and scan_method == 'all':
-        scan_method = module_names.remove('all')
+        scan_method = module_names
+        scan_method.remove('all')
     elif scan_method is not None and scan_method not in module_names:
         if ',' in scan_method:
             scan_method = scan_method.rsplit(',')
@@ -111,7 +118,8 @@ def load():
                 if sm not in module_names:
                     sys.exit(error('this scan module [%s] not found!' % (sm)))
                 if sm == 'all':
-                    scan_method = module_names.remove('all')
+                    scan_method = module_names
+                    scan_method.remove('all')
                     break
         else:
             sys.exit(error('this scan module [%s] not found!' % (scan_method)))
@@ -119,6 +127,18 @@ def load():
         sys.exit(error('please choose your scan method!'))
     else:
         scan_method = scan_method.rsplit()
+    if exclude_method is not None:
+        exclude_method = exclude_method.rsplit(',')
+        for exm in exclude_method:
+            if exm in scan_method:
+                if 'all' == exm:
+                    sys.exit('you cannot exclude all scan methods')
+                else:
+                    scan_method.remove(exm)
+                    if len(scan_method) is 0:
+                        sys.exit('you cannot exclude all scan methods')
+            else:
+                sys.exit('the %s module you selected to exclude not found!'%(exm))
     if type(ports) is not list and '-' in ports:
         ports = ports.rsplit('-')
         ports = range(int(ports[0]), int(ports[1]) + 1)
@@ -183,8 +203,30 @@ def load():
         time.sleep(0.1)
         if n is True:
             break
+    info('removing temp files!')
     os.remove(subs_temp)
     os.remove(range_temp)
+    info('sorting results!')
+    o = open(log_in_file)
+    data = ''
+    for value in o:
+        if value[0] == '{':
+            data += value + ','
+    data = json.loads('[' + data[:-1] + ']')
+    _table = texttable.Texttable()
+    _table.add_rows([['HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE', 'DESCRIPTION']])
+    for value in data:
+        _table.add_rows([['HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE', 'DESCRIPTION'],
+                         [value['HOST'], value['USERNAME'], value['PASSWORD'], value['PORT'], value['TYPE'],
+                          value['DESCRIPTION']]])
+    save_old = open(log_in_file)
+    old = ''
+    for value in save_old:
+        if value[0] != '{':
+            old += value
+    save = open(log_in_file,'w')
+    save.write(old + _table.draw() + '\n\n')
+    save.close()
     write('\n')
     info('done!')
     write('\n\n')

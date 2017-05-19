@@ -1,36 +1,42 @@
 #!/usr/bin/env python
 import threading
 import time
+import json
 import paramiko
 from core.alert import *
 
 
-def login(user, passwd,target,port,timeout_sec,log_in_file):
+def login(user, passwd, target, port, timeout_sec, log_in_file):
     exit = 0
     flag = 1
     while 1:
         try:
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            if timeout_sec is not None:
-                ssh.connect(target, username=user, password=passwd, timeout=timeout_sec)
-            else:
-                ssh.connect(target, username=user, password=passwd)
+            paramiko.Transport((target, int(port)))
             flag = 0
             exit = 0
             break
         except:
             exit += 1
             if exit is 10:
-                warn('ssh connection to %s:%s timeout, skipping %s:%s'%(target,port,user,passwd))
+                warn('ssh connection to %s:%s timeout, skipping %s:%s'%(target,str(port),user,passwd))
                 return 1
             time.sleep(0.1)
-
     if flag is 0:
-        info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found!')
-        save = open(log_in_file, 'a')
-        save.write('ssh ---> ' + user + ':' + passwd + ' ---> ' + target + ':' + str(port) + '\n')
-        save.close()
+        try:
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            if timeout_sec is not None:
+                ssh.connect(hostname=target, username=user, password=passwd, port=int(port), timeout=timeout_sec)
+            else:
+                ssh.connect(hostname=target, username=user, password=passwd, port=int(port))
+            info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found!')
+            save = open(log_in_file, 'a')
+            save.write(
+                json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ssh_brute',
+                            'DESCRIPTION': 'LOGGED IN SUCCESSFULLY!'}) + '\n')
+            save.close()
+        except:
+            pass
     else:
         pass
     return flag

@@ -2,6 +2,7 @@
 import threading
 import time
 import smtplib
+import json
 from core.alert import *
 
 def login(user, passwd,target,port,timeout_sec,log_in_file):
@@ -30,7 +31,8 @@ def login(user, passwd,target,port,timeout_sec,log_in_file):
     if flag is 0:
         info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found!')
         save = open(log_in_file, 'a')
-        save.write('smtp ---> ' + user + ':' + passwd + ' ---> ' + target + ':' + str(port) + '\n')
+        save.write(json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'smtp_brute',
+                               'DESCRIPTION': 'LOGGED IN SUCCESSFULLY!'}) + '\n')
         save.close()
     else:
         pass
