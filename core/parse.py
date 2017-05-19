@@ -17,7 +17,7 @@ def load():
     info('Nettacker engine started ...')
 
     # module_names = ['smtp_brute', 'ftp_brute', 'rdp_brute', 'ssh_brute', 'http_brute', 'mysql_brute', 'mssql_brute']
-    module_names = ['smtp_brute','port_scan','ftp_brute','ssh_brute','scada_scan']
+    module_names = ['all','smtp_brute','port_scan','ftp_brute','ssh_brute','scada_scan']
 
     parser = OptionParser(usage='python nettacker.py [options]', description='Nettacker Help Menu',
                           epilog='Please read license and agreements https://github.com/Nettacker/Nettacker')
@@ -43,8 +43,6 @@ def load():
 
     # Methods Options
     method = OptionGroup(parser, "Method", "Scan method options")
-    method.add_option('-a', '--automatic', action='store_true', default=False, dest='auto_scan',
-                      help='automatically scan every services')
     method.add_option('-m', '--method', action='store',
                       dest='scan_method', default=None,
                       help='choose scan method %s' % (module_names))
@@ -80,7 +78,6 @@ def load():
     thread_number = options.thread_number
     thread_number_host = options.thread_number_host
     log_in_file = options.log_in_file
-    auto_scan = options.auto_scan
     scan_method = options.scan_method
     users = options.users
     users_list = options.users_list
@@ -105,22 +102,28 @@ def load():
         warn('it\'s better to use thread number lower than 100, BTW we are continuing...')
     if timeout_sec is not None and timeout_sec >= 15:
         warn('set timeout to %s seconds, it is too big, isn\'t it ? by the way we are continuing...')
-    if auto_scan is True and scan_method is not None:
-        sys.exit(error('please use specify method or automatic option, you can\'t using both!'))
-    if scan_method is not None and scan_method not in module_names:
-        sys.exit(error('this scan module [%s] not found!'%(scan_method)))
-    if scan_method is None:
+    if scan_method is not None and scan_method == 'all':
+        scan_method = module_names.remove('all')
+    elif scan_method is not None and scan_method not in module_names:
+        if ',' in scan_method:
+            scan_method = scan_method.rsplit(',')
+            for sm in scan_method:
+                if sm not in module_names:
+                    sys.exit(error('this scan module [%s] not found!' % (sm)))
+                if sm == 'all':
+                    scan_method = module_names.remove('all')
+                    break
+        else:
+            sys.exit(error('this scan module [%s] not found!' % (scan_method)))
+    elif scan_method is None:
         sys.exit(error('please choose your scan method!'))
-    if auto_scan is True:
-        sys.exit(error('this module is not ready to use in this version, please choose your scan method'))
-    if ports is None and scan_method is not None and (scan_method[-6:] == '_brute' or scan_method[-5:] == '_scan'):
-        sys.exit(error('this module required port(s) (list) to bruteforce/scan!'))
     else:
-        if type(ports) is not list and '-' in ports:
-            ports = ports.rsplit('-')
-            ports = range(int(ports[0]), int(ports[1]) + 1)
-        elif type(ports) is not list and ',' in ports:
-            ports = ports.rsplit(',')
+        scan_method = scan_method.rsplit()
+    if type(ports) is not list and '-' in ports:
+        ports = ports.rsplit('-')
+        ports = range(int(ports[0]), int(ports[1]) + 1)
+    elif type(ports) is not list:
+        ports = ports.rsplit(',')
     if users is None and users_list is None and scan_method is not None and scan_method[-6:] == '_brute':
         sys.exit(error('this module required username(s) (list) to bruteforce!'))
     else:
@@ -149,29 +152,29 @@ def load():
     for total_targets,_ in enumerate(analysis(targets, check_ranges, check_subdomains,subs_temp,range_temp,log_in_file)):
         pass
     total_targets += 1
+    total_targets = total_targets * len(scan_method)
     targets = analysis(targets, check_ranges, check_subdomains,subs_temp,range_temp,log_in_file)
-    m = 0
     threads = []
     trying = 0
     for target in targets:
-        target = str(target)
-        m += 1
-        trying += 1
-        t = threading.Thread(target=start_attack, args=(
-        target.rsplit()[0], m, total_targets, scan_method, users, passwds, timeout_sec, thread_number, ports,log_in_file))
-        threads.append(t)
-        t.start()
-        while 1:
-            n = 0
-            for thread in threads:
-                if thread.isAlive() is True:
-                    n += 1
+        for sm in scan_method:
+            trying += 1
+            t = threading.Thread(target=start_attack, args=(
+                str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
+                ports, log_in_file))
+            threads.append(t)
+            t.start()
+            while 1:
+                n = 0
+                for thread in threads:
+                    if thread.isAlive() is True:
+                        n += 1
+                    else:
+                        threads.remove(thread)
+                if n >= thread_number_host:
+                    time.sleep(0.1)
                 else:
-                    threads.remove(thread)
-            if n >= thread_number_host:
-                time.sleep(0.1)
-            else:
-                break
+                    break
     while 1:
         n = True
         for thread in threads:
