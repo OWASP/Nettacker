@@ -6,14 +6,12 @@ import os
 import datetime
 import random
 import string
-import json
-import texttable
 from optparse import OptionGroup
 from optparse import OptionParser
 from core.targets import analysis
 from core.attack import start_attack
 from core.alert import *
-
+from core.log import sort_logs
 def load():
     write('\n\n')
     info('Nettacker engine started ...')
@@ -33,7 +31,7 @@ def load():
     parser.add_option('-M', '--thread-hostscan', action='store', default=10, type='int', dest='thread_number_host',
                       help='thread numbers for scan hosts')
     parser.add_option('-o', '--output', action='store', default='results.txt',  dest='log_in_file',
-                      help='save all logs in file (logs.txt)')
+                      help='save all logs in file (results.txt, results.html)')
 
     # Target Options
     target = OptionGroup(parser, "Target", "Target input options")
@@ -207,26 +205,7 @@ def load():
     os.remove(subs_temp)
     os.remove(range_temp)
     info('sorting results!')
-    o = open(log_in_file)
-    data = ''
-    for value in o:
-        if value[0] == '{':
-            data += value + ','
-    data = json.loads('[' + data[:-1] + ']')
-    _table = texttable.Texttable()
-    _table.add_rows([['HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE', 'DESCRIPTION']])
-    for value in data:
-        _table.add_rows([['HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE', 'DESCRIPTION'],
-                         [value['HOST'], value['USERNAME'], value['PASSWORD'], value['PORT'], value['TYPE'],
-                          value['DESCRIPTION']]])
-    save_old = open(log_in_file)
-    old = ''
-    for value in save_old:
-        if value[0] != '{':
-            old += value
-    save = open(log_in_file,'w')
-    save.write(old + _table.draw() + '\n\n')
-    save.close()
+    sort_logs(log_in_file)
     write('\n')
     info('done!')
     write('\n\n')

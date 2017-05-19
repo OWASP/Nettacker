@@ -8,7 +8,7 @@
 *.py~
 tmp/ranges_*
 tmp/subs_temp_*
-results.txt
+results.*
 user.txt
 pass.txt
 logs.txt
