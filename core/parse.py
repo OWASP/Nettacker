@@ -12,6 +12,8 @@ from core.targets import analysis
 from core.attack import start_attack
 from core.alert import *
 from core.log import sort_logs
+
+
 def load():
     write('\n\n')
     info('Nettacker engine started ...')
