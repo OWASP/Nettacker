@@ -21,10 +21,10 @@ def target_type(target):
         IP, CIDR = target.rsplit('/')
         if isIP(IP) is True and (int(CIDR) >= 0 and int(CIDR) <= 32):
             return 'CIDR_IPv4'
-        else:
-            return 'UNKNOW'
     elif '.' in target and '/' not in target:
         return 'DOMAIN'
+    elif 'http://' in target.lower() or 'https://' in target.lower():
+        return 'HTTP'
     else:
         return 'UNKNOW'
 
@@ -150,3 +150,39 @@ def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp,log_in_f
                 else:
                     info('checking %s ...' % (target))
                     yield target
+
+        elif target_type(target) == 'HTTP':
+            info('checking %s ...' % (target))
+            yield target
+            if 'http://' == target[:7].lower():
+                target = target[7:].rsplit('/')[0]
+            if 'https://' == target[:8].lower():
+                target = target[8:].rsplit('/')[0]
+            yield target
+            if check_ranges is True:
+                IPs = []
+                while True:
+                    try:
+                        IPs.append(socket.gethostbyname(target))
+                        err = 0
+                        n += 1
+                        if n is 12:
+                            break
+                    except:
+                        err += 1
+                        if err is 3 or n is 12:
+                            break
+                IPz = list(set(IPs))
+                for IP in IPz:
+                    info('checking %s range ...' % (IP))
+                    IPs = IPRange(getIPRange(IP), range_temp)
+                    if type(IPs) == netaddr.ip.IPNetwork:
+                        for IPm in IPs:
+                            yield IPm
+                    elif type(IPs) == list:
+                        for IPm in IPs:
+                            for IPn in IPm:
+                                yield IPn
+
+        else:
+            sys.exit(error('unknown type of target [%s]'%str(target)))
