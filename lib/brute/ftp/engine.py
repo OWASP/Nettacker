@@ -50,7 +50,7 @@ def login(user, passwd,target,port,timeout_sec,log_in_file):
     return flag
 
 
-def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file): # Main function
+def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep): # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN':
         threads = []
         max = thread_number
