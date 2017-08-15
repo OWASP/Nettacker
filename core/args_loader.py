@@ -26,7 +26,7 @@ def load_all_args(module_names):
     else:
         language = sys.argv[index]
         if language not in language_list:
-            sys.exit(error("Please select one of these languages %s"%(language_list)))
+            sys.exit(error("Please select one of these languages {0}".format(language_list)))
 
     # Start Parser
     parser = OptionParser(usage=messages(language,1), description=messages(language,2),
@@ -35,7 +35,7 @@ def load_all_args(module_names):
     engineOpt = OptionGroup(parser, messages(language,4), messages(language,5))
     engineOpt.add_option("-L", "--language", action="store",
                          dest="language", default="en",
-                         help=messages(language,6) + " %s " % (language_list))
+                         help=messages(language,6).format(language_list))
     # IO Options
     parser.add_option("-r", "--range", action="store_true", default=False, dest="check_ranges",
                       help=messages(language,7))
@@ -61,31 +61,31 @@ def load_all_args(module_names):
     method = OptionGroup(parser, "Method", messages(language,16))
     method.add_option("-m", "--method", action="store",
                       dest="scan_method", default=None,
-                      help=messages(language,17) + " %s" % (module_names))
+                      help=messages(language,17).format(module_names))
     method.add_option("-x", "--exclude", action="store",
                       dest="exclude_method", default=None,
-                      help="choose scan method to exclude %s" % (module_names))
+                      help=messages(language,18).format(module_names))
     method.add_option("-u", "--usernames", action="store",
                       dest="users", default=None,
-                      help="username(s) list, separate with \",\"")
+                      help=messages(language,19))
     method.add_option("-U", "--users-list", action="store",
                       dest="users_list", default=None,
-                      help="read username(s) from file")
+                      help=messages(language,20))
     method.add_option("-p", "--passwords", action="store",
                       dest="passwds", default=None,
-                      help="password(s) list, separate with \",\"")
+                      help=messages(language,21))
     method.add_option("-P", "--passwords-list", action="store",
                       dest="passwds_list", default=None,
-                      help="read passwords(s) from file")
+                      help=messages(language,22))
     method.add_option("-g", "--ports", action="store",
                       dest="ports", default=None,
-                      help="port(s) list, separate with \",\"")
+                      help=messages(language,23))
     method.add_option("-T", "--timeout", action="store",
                       dest="timeout_sec", default=None, type="float",
-                      help="read passwords(s) from file")
+                      help=messages(language,24))
     method.add_option("-w", "--time-sleep", action="store",
                       dest="time_sleep", default=None, type="float",
-                      help="time to sleep between each request")
+                      help=messages(language,25))
     # Build Options
     parser.add_option_group(method)
 
@@ -98,13 +98,13 @@ def load_all_args(module_names):
 
 def check_all_required(targets, targets_list, thread_number, thread_number_host, log_in_file, scan_method,
                        exclude_method, users, users_list, passwds, passwds_list, timeout_sec, ports, parser,
-                       module_names):
+                       module_names,language):
     # Checking Requirements
     # Check the target(s)
     if targets is None and targets_list is None:
         parser.print_help()
         write("\n")
-        sys.exit(error("Cannot specify the target(s)"))
+        sys.exit(error(messages(language,26)))
     else:
         if targets is not None:
             targets = list(set(targets.rsplit(",")))
@@ -112,13 +112,13 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
           try:
               targets = list(set(open(targets_list,"rb").read().rsplit()))
           except:
-              sys.exit(error("Cannot specify the target(s), unable to open file: %s"%(targets_list)))
+              sys.exit(error(messages(language,27).format(targets_list)))
     # Check thread number
     if thread_number > 100 or thread_number_host > 100:
-        warn("it\"s better to use thread number lower than 100, BTW we are continuing...")
+        warn(messages(language,28))
     # Check timeout number
     if timeout_sec is not None and timeout_sec >= 15:
-        warn("set timeout to %s seconds, it is too big, isn\"t it ? by the way we are continuing...")
+        warn(messages(language,29).format(timeout_sec))
     # Check scanning method
     if scan_method is not None and scan_method == "all":
         scan_method = module_names
@@ -128,15 +128,15 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             scan_method = scan_method.rsplit(",")
             for sm in scan_method:
                 if sm not in module_names:
-                    sys.exit(error("this scan module [%s] not found!" % (sm)))
+                    sys.exit(error(messages(language,30).format(sm)))
                 if sm == "all":
                     scan_method = module_names
                     scan_method.remove("all")
                     break
         else:
-            sys.exit(error("this scan module [%s] not found!" % (scan_method)))
+            sys.exit(error(messages(language,31).format(scan_method)))
     elif scan_method is None:
-        sys.exit(error("please choose your scan method!"))
+        sys.exit(error(messages(language,41)))
     else:
         scan_method = scan_method.rsplit()
     if exclude_method is not None:
@@ -144,16 +144,16 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         for exm in exclude_method:
             if exm in scan_method:
                 if "all" == exm:
-                    sys.exit("you cannot exclude all scan methods")
+                    sys.exit(messages(language,32))
                 else:
                     scan_method.remove(exm)
                     if len(scan_method) is 0:
-                        sys.exit("you cannot exclude all scan methods")
+                        sys.exit(messages(language,33))
             else:
-                sys.exit("the %s module you selected to exclude not found!"%(exm))
+                sys.exit(messages(language,34).format(exm))
     # Check port(s)
     if ports is None:
-        sys.exit(error("please enter one port at least!"))
+        sys.exit(error(messages(language,35)))
     if type(ports) is not list and "-" in ports:
         ports = ports.rsplit("-")
         ports = range(int(ports[0]), int(ports[1]) + 1)
@@ -163,7 +163,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     if users is None and users_list is None and scan_method is not None:
         for imethod in scan_method:
             if "_brute" in imethod:
-                sys.exit(error("this module required username(s) (list) to bruteforce!"))
+                sys.exit(error(messages(language,36)))
     else:
         if users is not None:
             users = list(set(users.rsplit(",")))
@@ -171,12 +171,12 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             try:
                 users = list(set(open(users_list).read().rsplit("\n"))) # fix later
             except:
-                sys.exit(error("Cannot specify the username(s), unable to open file: %s" % (targets_list)))
+                sys.exit(error(messages(language,37).format(targets_list)))
     # Check password list
     if passwds is None and passwds_list is None and scan_method is not None:
             for imethod in scan_method:
                 if "_brute" in imethod:
-                    sys.exit(error("this module required password(s) (list) to bruteforce!"))
+                    sys.exit(error(messages(language,38)))
     else:
         if passwds is not None:
             passwds = list(set(passwds.rsplit(",")))
@@ -184,12 +184,12 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             try:
                 passwds = list(set(open(passwds_list).read().rsplit("\n"))) # fix later
             except:
-                sys.exit(error("Cannot specify the password(s), unable to open file: %s" % (targets_list)))
+                sys.exit(error(messages(language,39).format(targets_list)))
     # Check output file
     try:
         tmpfile = open(log_in_file,"a")
     except:
-        sys.exit(error("file \"%s\" is not writable!"%(log_in_file)))
+        sys.exit(error(messages(language,40).format(log_in_file)))
 
     # Return the values
     return [targets, targets_list, thread_number, thread_number_host, log_in_file, scan_method,

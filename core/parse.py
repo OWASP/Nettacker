@@ -46,18 +46,18 @@ def load():
     timeout_sec = options.timeout_sec
     ports = options.ports
     time_sleep = options.time_sleep
-    selected_language = options.language
+    language = options.language
 
     info(messages("en", 0))
     # Checking Requirements
     (targets, targets_list, thread_number, thread_number_host,
      log_in_file, scan_method, exclude_method, users, users_list,
-    passwds, passwds_list, timeout_sec, ports, parser, module_names) = \
+    passwds, passwds_list, timeout_sec, ports, parser, module_names, language) = \
         check_all_required(
     targets, targets_list, thread_number, thread_number_host,
     log_in_file, scan_method, exclude_method, users, users_list,
     passwds, passwds_list, timeout_sec,
-    ports, parser, module_names
+    ports, parser, module_names, language
         )
 
     suff = str(datetime.datetime.now()).replace(' ', '_').replace(':', '-') + '_' + ''.join(
@@ -66,11 +66,11 @@ def load():
     range_temp = 'tmp/ranges_%s' % (suff)
     total_targets = -1
     for total_targets, _ in enumerate(
-            analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep)):
+            analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep, language)):
         pass
     total_targets += 1
     total_targets = total_targets * len(scan_method)
-    targets = analysis(targets, check_ranges, check_subdomains,subs_temp,range_temp,log_in_file,time_sleep)
+    targets = analysis(targets, check_ranges, check_subdomains,subs_temp,range_temp,log_in_file,time_sleep,language)
     threads = []
     trying = 0
     for target in targets:
@@ -78,7 +78,7 @@ def load():
             trying += 1
             t = threading.Thread(target=start_attack, args=(
                 str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
-                ports, log_in_file, time_sleep))
+                ports, log_in_file, time_sleep,language))
             threads.append(t)
             t.start()
             while 1:
@@ -100,11 +100,11 @@ def load():
         time.sleep(0.1)
         if n is True:
             break
-    info('removing temp files!')
+    info(messages(language,42))
     os.remove(subs_temp)
     os.remove(range_temp)
-    info('sorting results!')
+    info(messages(language,43))
     sort_logs(log_in_file)
     write('\n')
-    info('done!')
+    info(messages(language,44))
     write('\n\n')

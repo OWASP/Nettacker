@@ -8,7 +8,7 @@ from core.alert import *
 from core.targets import target_type
 
 
-def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep): # Main function
+def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,language): # Main function
     if target_type(target) == 'HTTP':
         threads = []
         max = thread_number

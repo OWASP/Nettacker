@@ -5,6 +5,7 @@ import sys
 from core import color
 from core.languages import all_messages
 
+
 def messages(language,msg_id):
     # Importing messages
     msgs = all_messages()

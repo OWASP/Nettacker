@@ -30,7 +30,7 @@ def target_type(target):
         return 'UNKNOW'
 
 
-def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp,log_in_file,time_sleep):
+def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp,log_in_file,time_sleep,language):
 
     tmp = open(range_temp, 'w')
     tmp.write('')
