@@ -1,8 +1,23 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import sys
 from core import color
+from core.languages import all_messages
 
+def messages(language,msg_id):
+    # Importing messages
+    msgs = all_messages()
+
+    # Returning selected langauge
+    if language is -1:
+        return msgs["0"]
+
+    # Returning message
+    try:
+        return msgs[str(msg_id)][language].decode('utf8')
+    except:
+        return msgs[str(msg_id)]['en']
 
 def info(content):
     if '-L' in sys.argv or '--logs' in sys.argv:

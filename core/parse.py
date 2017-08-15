@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import threading
 import time
@@ -8,7 +9,11 @@ import random
 import string
 from core.targets import analysis
 from core.attack import start_attack
-from core.alert import *
+from core.alert import info
+from core.alert import warn
+from core.alert import error
+from core.alert import write
+from core.alert import messages
 from core.log import sort_logs
 from core.load_modules import load_all_modules
 from core.args_loader import load_all_args
@@ -17,7 +22,7 @@ from core.args_loader import check_all_required
 
 def load():
     write('\n\n')
-    info('Nettacker engine started ...')
+
     #load all modules in lib/brute and lib/scan
     module_names = load_all_modules()
 
@@ -41,7 +46,9 @@ def load():
     timeout_sec = options.timeout_sec
     ports = options.ports
     time_sleep = options.time_sleep
+    selected_language = options.language
 
+    info(messages("en", 0))
     # Checking Requirements
     (targets, targets_list, thread_number, thread_number_host,
      log_in_file, scan_method, exclude_method, users, users_list,
