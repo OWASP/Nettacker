@@ -6,7 +6,7 @@ def all_messages():
     return \
     {
         "0": {
-            "en": "Nettacker engine started ..."
+            "en": "Nettacker engine started ...\n\n"
         },
         "1": {
             "en": "python nettacker.py [options]"
@@ -181,7 +181,23 @@ def all_messages():
         },
         "58": {
             "en": "DESCRIPTION"
+        },
+        "59": {
+            "en": "verbose mode level (0-5) (default 0)"
+        },
+        "60": {
+            "en": "show software version"
+        },
+        "61": {
+            "en": "check for update"
+        },
+        "62": {
+            "en": "proxy(s) list, separate with \",\" (out going connections)"
+        },
+        "63": {
+            "en": "read proxies from file (out going connections)"
+        },
+        "64": {
+            "en": "Retries when the connection timeouts (default 3)"
         }
-
-
     }

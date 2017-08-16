@@ -10,6 +10,15 @@ Nettacker project was created to automated for information gathering, vulnerabil
 python nettacker.py -h
 
 
+
+  _   _      _   _             _
+ | \ | |    | | | |           | |
+ |  \| | ___| |_| |_ __ _  ___| | _____ _ __
+ | . ` |/ _ \ __| __/ _` |/ __| |/ / _ \ '__|
+ | |\  |  __/ |_| || (_| | (__|   <  __/ |
+ |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|
+
+
 Usage: python nettacker.py [options]
 
 Nettacker Help Menu
@@ -56,6 +65,12 @@ Options:
                         read passwords(s) from file
     -w TIME_SLEEP, --time-sleep=TIME_SLEEP
                         time to sleep between each request
+    -R PROXIES, --proxy=PROXIES
+                        proxy(s) list, separate with "," (out going
+                        connections)
+    --proxy-list=PROXIES
+                        read proxies from file (out going connections)
+    --retries=RETRIES   Retries when the connection timeouts (default 3)
 
   Method:
     Scan method options
@@ -80,6 +95,12 @@ Options:
                         read passwords(s) from file
     -w TIME_SLEEP, --time-sleep=TIME_SLEEP
                         time to sleep between each request
+    -R PROXIES, --proxy=PROXIES
+                        proxy(s) list, separate with "," (out going
+                        connections)
+    --proxy-list=PROXIES
+                        read proxies from file (out going connections)
+    --retries=RETRIES   Retries when the connection timeouts (default 3)
 
 Please read license and agreements https://github.com/Nettacker/Nettacker
 ```

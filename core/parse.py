@@ -47,17 +47,23 @@ def load():
     ports = options.ports
     time_sleep = options.time_sleep
     language = options.language
+    verbose_level = options.verbose_level
+    show_version = options.show_version
+    check_update = options.check_update
+    proxies = options.proxies
+    retries = options.retries
 
     info(messages("en", 0))
     # Checking Requirements
     (targets, targets_list, thread_number, thread_number_host,
      log_in_file, scan_method, exclude_method, users, users_list,
-    passwds, passwds_list, timeout_sec, ports, parser, module_names, language) = \
+     passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
+     check_update,proxies,retries) = \
         check_all_required(
-    targets, targets_list, thread_number, thread_number_host,
-    log_in_file, scan_method, exclude_method, users, users_list,
-    passwds, passwds_list, timeout_sec,
-    ports, parser, module_names, language
+            targets, targets_list, thread_number, thread_number_host,
+            log_in_file, scan_method, exclude_method, users, users_list,
+            passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
+            check_update, proxies, retries
         )
 
     suff = str(datetime.datetime.now()).replace(' ', '_').replace(':', '-') + '_' + ''.join(

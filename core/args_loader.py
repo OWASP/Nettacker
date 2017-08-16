@@ -39,7 +39,15 @@ def load_all_args(module_names):
     engineOpt = OptionGroup(parser, messages(language,4), messages(language,5))
     engineOpt.add_option("-L", "--language", action="store",
                          dest="language", default="en",
-                         help=messages(language,6).format(language_list))
+                         help=messages(language, 6).format(language_list))
+    engineOpt.add_option("-v", "--verbose", action="store",
+                         dest="verbose_level", default=0,
+                         help=messages(language, 59))
+    engineOpt.add_option("-V", "--version", action="store_true", default=False, dest="show_version",
+                         help=messages(language, 60))
+    engineOpt.add_option("-c", "--update", action="store_true", default=False, dest="check_update",
+                         help=messages(language, 61))
+
     # IO Options
     parser.add_option("-r", "--range", action="store_true", default=False, dest="check_ranges",
                       help=messages(language,7))
@@ -65,7 +73,7 @@ def load_all_args(module_names):
     method = OptionGroup(parser, "Method", messages(language,16))
     method.add_option("-m", "--method", action="store",
                       dest="scan_method", default=None,
-                      help=messages(language,17).format(module_names))
+                      help=messages(language, 17).format(module_names))
     method.add_option("-x", "--exclude", action="store",
                       dest="exclude_method", default=None,
                       help=messages(language,18).format(module_names))
@@ -90,6 +98,15 @@ def load_all_args(module_names):
     method.add_option("-w", "--time-sleep", action="store",
                       dest="time_sleep", default=None, type="float",
                       help=messages(language,25))
+    method.add_option("-R", "--proxy", action="store",
+                         dest="proxies", default=None,
+                         help=messages(language, 62))
+    method.add_option("--proxy-list", action="store",
+                         dest="proxies", default=None,
+                         help=messages(language, 63))
+    method.add_option("--retries", action="store",
+                      dest="retries", default=3,
+                      help=messages(language, 64))
     # Build Options
     parser.add_option_group(method)
 
@@ -100,9 +117,10 @@ def load_all_args(module_names):
     return [parser,parser.parse_args()]
 
 
-def check_all_required(targets, targets_list, thread_number, thread_number_host, log_in_file, scan_method,
-                       exclude_method, users, users_list, passwds, passwds_list, timeout_sec, ports, parser,
-                       module_names,language):
+def check_all_required(targets, targets_list, thread_number, thread_number_host,
+     log_in_file, scan_method, exclude_method, users, users_list,
+     passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
+     check_update,proxies,retries):
     # Checking Requirements
     # Check the target(s)
     if targets is None and targets_list is None:
@@ -196,6 +214,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         sys.exit(error(messages(language,40).format(log_in_file)))
 
     # Return the values
-    return [targets, targets_list, thread_number, thread_number_host, log_in_file, scan_method,
-    exclude_method, users, users_list, passwds, passwds_list, timeout_sec, ports, parser,
-    module_names]
+    return [targets, targets_list, thread_number, thread_number_host,
+     log_in_file, scan_method, exclude_method, users, users_list,
+     passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
+     check_update,proxies,retries]
