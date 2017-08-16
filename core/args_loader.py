@@ -8,6 +8,7 @@ from core.alert import error
 from core.alert import write
 from core.alert import warn
 from core.alert import messages
+from core.compatible import check
 
 
 def load_all_args(module_names):
@@ -27,6 +28,9 @@ def load_all_args(module_names):
         language = sys.argv[index]
         if language not in language_list:
             sys.exit(error("Please select one of these languages {0}".format(language_list)))
+
+    # Check if compatible
+    check(language)
 
     # Start Parser
     parser = OptionParser(usage=messages(language,1), description=messages(language,2),

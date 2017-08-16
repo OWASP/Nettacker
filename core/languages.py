@@ -139,5 +139,49 @@ def all_messages():
         },
         "44": {
             "en": "done!"
+        },
+        "45": {
+            "en": "start attacking {0}, {1} of {2}"
+        },
+        "46": {
+            "en": "this module \"{0}\" is not available"
+        },
+        "47": {
+            "en": "Sorry, This version of software just could be run on linux/osx/windows."
+        },
+        "48": {
+            "en": "Your python version is not supported!"
+        },
+        "49": {
+            "en": "skip duplicate target (some subdomains/domains may have same IP and Ranges)"
+        },
+        "50": {
+            "en": "unknown type of target [{0}]"
+        },
+        "51": {
+            "en": "checking {0} range ..."
+        },
+        "52": {
+            "en": "checking {0} ..."
+        },
+        "53": {
+            "en": "HOST"
+        },
+        "54": {
+            "en": "USERNAME"
+        },
+        "55": {
+            "en": "PASSWORD"
+        },
+        "56": {
+            "en": "PORT"
+        },
+        "57": {
+            "en": "TYPE"
+        },
+        "58": {
+            "en": "DESCRIPTION"
         }
+
+
     }

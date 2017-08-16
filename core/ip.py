@@ -49,7 +49,7 @@ def isIP(IP):
     return False
 
 
-def IPRange(Range,range_temp):
+def IPRange(Range,range_temp,language):
     myranges_now = open(range_temp).read().rsplit()
     if Range not in myranges_now:
         r_f = open(range_temp,'a')
@@ -69,5 +69,5 @@ def IPRange(Range,range_temp):
         else:
             return []
     else:
-        warn('skip duplicate target (some subdomains/domains may have same IP and Ranges)')
+        warn(messages(language,49))
         return []

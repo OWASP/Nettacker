@@ -4,6 +4,8 @@
 import socket
 import os
 from core.ip import *
+from core.alert import *
+
 try:
     import netaddr.ip
 except:
@@ -42,8 +44,8 @@ def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp,log_in_f
     for target in targets:
         if target_type(target) == 'SINGLE_IPv4':
             if check_ranges is True:
-                info('checking %s range ...'%(target))
-                IPs = IPRange(getIPRange(target),range_temp)
+                info(messages(language,51).format(target))
+                IPs = IPRange(getIPRange(target),range_temp,language)
                 if type(IPs) == netaddr.ip.IPNetwork:
                     for IPm in IPs:
                         yield IPm
@@ -52,12 +54,12 @@ def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp,log_in_f
                         for IP in IPm:
                             yield IP
             else:
-                info('checking %s ...' % (target))
+                info(messages (language,52).format(target))
                 yield target
 
         elif target_type(target) == 'RANGE_IPv4' or target_type(target) == 'CIDR_IPv4':
-            IPs = IPRange(target,range_temp)
-            info('checking %s ...' % (target))
+            IPs = IPRange(target,range_temp,language)
+            info(messages (language,52).format(target))
             if type(IPs) == netaddr.ip.IPNetwork:
                 for IPm in IPs:
                     yield IPm
@@ -69,7 +71,7 @@ def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp,log_in_f
         elif target_type(target) == 'DOMAIN':
             if check_subdomains is True:
                 if check_ranges is True:
-                    info('checking %s ...' % (target))
+                    info(messages (language,52).format(target))
                     tmp_exec = os.popen('python lib/sublist3r/sublist3r.py -d ' + target + ' -o %s'%(subs_temp)).read()
                     tmp_exec = list(set(open(subs_temp,'r').read().rsplit()))
                     sub_domains = []
@@ -79,7 +81,7 @@ def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp,log_in_f
                     if target not in sub_domains:
                         sub_domains.append(target)
                     for target in sub_domains:
-                        info('checking %s ...' % (target))
+                        info(messages (language,52).format(target))
                         yield target
                         n = 0
                         err = 0
@@ -97,8 +99,8 @@ def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp,log_in_f
                                     break
                         IPz = list(set(IPs))
                         for IP in IPz:
-                            info('checking %s range ...' % (IP))
-                            IPs = IPRange(getIPRange(IP),range_temp)
+                            info(messages(language,51).format(IP))
+                            IPs = IPRange(getIPRange(IP),range_temp,language)
                             if type(IPs) == netaddr.ip.IPNetwork:
                                 for IPm in IPs:
                                     yield IPm
@@ -107,7 +109,7 @@ def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp,log_in_f
                                     for IPn in IPm:
                                         yield IPn
                 else:
-                    info('checking %s ...' % (target))
+                    info(messages (language,52).format(target))
                     tmp_exec = os.popen('python lib/sublist3r/sublist3r.py -d ' + target + ' -o tmp/subs_temp').read()
                     tmp_exec = list(set(open('tmp/subs_temp', 'r').read().rsplit()))
                     sub_domains = []
@@ -117,11 +119,11 @@ def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp,log_in_f
                     if target not in sub_domains:
                         sub_domains.append(target)
                     for target in sub_domains:
-                        info('checking %s ...' % (target))
+                        info(messages (language,52).format(target))
                         yield target
             else:
                 if check_ranges is True:
-                    info('checking %s ...' % (target))
+                    info(messages (language,52).format(target))
                     yield target
                     n = 0
                     err = 0
@@ -139,8 +141,8 @@ def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp,log_in_f
                                 break
                     IPz = list(set(IPs))
                     for IP in IPz:
-                        info('checking %s range ...' % (IP))
-                        IPs = IPRange(getIPRange(IP),range_temp)
+                        info(messages(language,51).format(IP))
+                        IPs = IPRange(getIPRange(IP),range_temp,language)
                         if type(IPs) == netaddr.ip.IPNetwork:
                             for IPm in IPs:
                                 yield IPm
@@ -149,11 +151,11 @@ def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp,log_in_f
                                 for IPn in IPm:
                                     yield IPn
                 else:
-                    info('checking %s ...' % (target))
+                    info(messages (language,52).format(target))
                     yield target
 
         elif target_type(target) == 'HTTP':
-            info('checking %s ...' % (target))
+            info(messages (language,52).format(target))
             yield target
             if 'http://' == target[:7].lower():
                 target = target[7:].rsplit('/')[0]
@@ -175,8 +177,8 @@ def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp,log_in_f
                             break
                 IPz = list(set(IPs))
                 for IP in IPz:
-                    info('checking %s range ...' % (IP))
-                    IPs = IPRange(getIPRange(IP), range_temp)
+                    info(messages(language,51).format(IP))
+                    IPs = IPRange(getIPRange(IP), range_temp,language)
                     if type(IPs) == netaddr.ip.IPNetwork:
                         for IPm in IPs:
                             yield IPm
@@ -186,4 +188,4 @@ def analysis(targets,check_ranges,check_subdomains,subs_temp,range_temp,log_in_f
                                 yield IPn
 
         else:
-            sys.exit(error('unknown type of target [%s]'%str(target)))
+            sys.exit(error(messages(language,50).format(target)))

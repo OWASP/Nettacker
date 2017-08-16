@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from core.alert import *
 import sys
+from core.alert import info
+from core.alert import error
+from core.alert import messages
 
 
 def start_attack(target,num,total,scan_method,users,passwds,timeout_sec,thread_number,ports,log_in_file,time_sleep,language):
-    info(str('start attacking ' + str(target) + ', %s of %s ' % (str(num), str(total))))
+    info(str(messages(language,45).format(str(target), str(num), str(total))))
 
     # Calling Engines
     # BruteForce Engines
@@ -17,7 +19,7 @@ def start_attack(target,num,total,scan_method,users,passwds,timeout_sec,thread_n
                            fromlist=['start']),
                 'start')
         except:
-            sys.exit(error('this module is not available'))
+            sys.exit(error(messages(language,46).format(scan_method)))
         start(target,users,passwds,ports,timeout_sec,thread_number,num,total,log_in_file,time_sleep,language)
     # Scanners Engines
     if scan_method[-5:] == '_scan':
@@ -27,5 +29,5 @@ def start_attack(target,num,total,scan_method,users,passwds,timeout_sec,thread_n
                            fromlist=['start']),
                 'start')
         except:
-            sys.exit(error('this module is not available'))
+            sys.exit(error(messages(language,46).format(scan_method)))
         start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,language)

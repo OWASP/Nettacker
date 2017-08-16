@@ -3,9 +3,17 @@
 
 import json
 import texttable
+from core.alert import messages
 
 
-def sort_logs(log_in_file):
+def sort_logs(log_in_file,language):
+    _HOST = messages(language,53)
+    _USERNAME = messages(language,54)
+    _PASSWORD = messages(language,55)
+    _PORT = messages(language,56)
+    _TYPE = messages(language,57)
+    _DESCRIPTION = messages(language,58)
+
     if (len(log_in_file)>= 5 and log_in_file[-5:] == '.html') or (len(log_in_file)>= 4 and log_in_file[-4:] == '.htm'):
         o = open(log_in_file)
         data = ''
@@ -13,11 +21,12 @@ def sort_logs(log_in_file):
             if value[0] == '{':
                 data += value + ','
         data = json.loads('[' + data[:-1] + ']')
-        _table = '<table border="1">\n<tr><th>HOST</th><th>USERNAME</th><th>PASSWORD</th><th>PORT</th><th>TYPE</th><th>DESCRIPTION</th></tr>\n'
+        _table = '<table border="1">\n<tr><th>{0}</th><th>{1}</th><th>{2}</th><th>{3}</th><th>{4}</th><th>{5}</th></tr>\n'.format(
+            _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION)
         for value in data:
-            _table += '<th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>\n' % (
-            value['HOST'], value['USERNAME'], value['PASSWORD'], str(value['PORT']), value['TYPE'],
-            value['DESCRIPTION'])
+            _table += '<th>{0}</th><th>{1}</th><th>{2}</th><th>{3}</th><th>{4}</th><th>{5}</th></tr>\n'.format(
+                value['HOST'], value['USERNAME'], value['PASSWORD'], str(value['PORT']), value['TYPE'],
+                value['DESCRIPTION'])
         _table += '</table><br><br>'
         save_old = open(log_in_file)
         old = ''
@@ -35,9 +44,9 @@ def sort_logs(log_in_file):
                 data += value + ','
         data = json.loads('[' + data[:-1] + ']')
         _table = texttable.Texttable()
-        _table.add_rows([['HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE', 'DESCRIPTION']])
+        _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION]])
         for value in data:
-            _table.add_rows([['HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE', 'DESCRIPTION'],
+            _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION],
                              [value['HOST'], value['USERNAME'], value['PASSWORD'], value['PORT'], value['TYPE'],
                               value['DESCRIPTION']]])
         save_old = open(log_in_file)
