@@ -9,8 +9,8 @@ from core.targets import target_type
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
-          language):  # Main function
-    if target_type(target) == 'HTTP':
+          language, verbose_level, show_version, check_update, proxies, retries):  # Main function
+    if target_type(target) == 'HTTP':  # update later
         threads = []
         max = thread_number
         total_req = len(users) * len(passwds)
@@ -43,4 +43,4 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             if n is True:
                 break
     else:
-        warn('input target for http_brute module must be HTTP, skipping %s' % str(target))
+        warn(messages(language, 75).format('http_brute', target))

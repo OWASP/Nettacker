@@ -9,7 +9,13 @@ from core.alert import *
 from core.targets import target_type
 
 
-def login(user, passwd, target, port, timeout_sec, log_in_file):
+def login(user, passwd, target, port, timeout_sec, log_in_file, language):
+    _HOST = messages(language, 53)
+    _USERNAME = messages(language, 54)
+    _PASSWORD = messages(language, 55)
+    _PORT = messages(language, 56)
+    _TYPE = messages(language, 57)
+    _DESCRIPTION = messages(language, 58)
     exit = 0
     flag = 1
     while 1:
@@ -21,7 +27,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file):
         except:
             exit += 1
             if exit is 10:
-                warn('ssh connection to %s:%s timeout, skipping %s:%s' % (target, str(port), user, passwd))
+                warn(messages(language, 76).format(target, str(port), user, passwd))
                 return 1
             time.sleep(0.1)
     if flag is 0:
@@ -32,11 +38,11 @@ def login(user, passwd, target, port, timeout_sec, log_in_file):
                 ssh.connect(hostname=target, username=user, password=passwd, port=int(port), timeout=timeout_sec)
             else:
                 ssh.connect(hostname=target, username=user, password=passwd, port=int(port))
-            info('user:' + user + ' pass:' + passwd + ' server:' + target + ' port:' + str(port) + ' found!')
+            info(messages(language, 70).format(user, passwd, target, port))
             save = open(log_in_file, 'a')
             save.write(
-                json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ssh_brute',
-                            'DESCRIPTION': 'LOGGED IN SUCCESSFULLY!'}) + '\n')
+                json.dumps({_HOST: target, _USERNAME: user, _PASSWORD: passwd, _PORT: port, _TYPE: 'ssh_brute',
+                            _DESCRIPTION: messages(language, 66)}) + '\n')
             save.close()
         except:
             pass
@@ -46,7 +52,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file):
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
-          language):  # Main function
+          language, verbose_level, show_version, check_update, proxies, retries):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN':
         threads = []
         max = thread_number
@@ -72,18 +78,14 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     else:
                         exit += 1
                         if exit is 3:
-                            error(
-                                'ssh connection to %s:%s failed, skipping whole step [process %s of %s]! going to next step' % (
-                                    target, port, str(num), str(total)))
+                            error(messages(language, 77).format(target, port, str(num), str(total)))
                             portflag = False
                             break
                         time.sleep(0.1)
                 except:
                     exit += 1
                     if exit is 3:
-                        error(
-                            'ssh connection to %s:%s failed, skipping whole step [process %s of %s]! going to next step' % (
-                                target, port, str(num), str(total)))
+                        error(messages(language, 77).format(target, port, str(num), str(total)))
                         portflag = False
                         break
                     time.sleep(0.1)
@@ -91,13 +93,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             if portflag is True:
                 for user in users:
                     for passwd in passwds:
-                        t = threading.Thread(target=login, args=(user, passwd, target, port, timeout_sec, log_in_file))
+                        t = threading.Thread(target=login,
+                                             args=(user, passwd, target, port, timeout_sec, log_in_file, language))
                         threads.append(t)
                         t.start()
                         trying += 1
-                        info('trying ' + str(trying) + ' of ' + str(total_req) + ' in process ' + str(
-                            num) + ' of ' + str(
-                            total) + ' ' + target + ':' + str(port))
+                        info(messages(language, 72).format(trying, total_req, num, total, target, port))
                         while 1:
                             n = 0
                             for thread in threads:
@@ -119,4 +120,4 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             if n is True:
                 break
     else:
-        warn('input target for ssh_brute module must be DOMAIN or SINGLE_IPv4, skipping %s' % str(target))
+        warn(messages(language, 69).format('ssh_brute', target))

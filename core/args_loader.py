@@ -116,11 +116,9 @@ def load_all_args(module_names):
     return [parser, parser.parse_args()]
 
 
-def check_all_required(targets, targets_list, thread_number, thread_number_host,
-                       log_in_file, scan_method, exclude_method, users, users_list,
-                       passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level,
-                       show_version,
-                       check_update, proxies, retries):
+def check_all_required(targets, targets_list, thread_number, thread_number_host, log_in_file, scan_method,
+                       exclude_method, users, users_list, passwds, passwds_list, timeout_sec, ports, parser,
+                       module_names, language, verbose_level, show_version, check_update, proxies, retries):
     # Checking Requirements
     # Check the target(s)
     if targets is None and targets_list is None:

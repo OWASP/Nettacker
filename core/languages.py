@@ -199,5 +199,53 @@ def all_messages():
             },
             "64": {
                 "en": "Retries when the connection timeouts (default 3)"
+            },
+            "65": {
+                "en": "ftp connection to {0}:{1} timeout, skipping {2}:{3}"
+            },
+            "66": {
+                "en": "LOGGED IN SUCCESSFULLY!"
+            },
+            "67": {
+                "en": "LOGGED IN SUCCESSFULLY PERMISSION DENIED FOR LIST COMMAND!"
+            },
+            "68": {
+                "en": "ftp connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step"
+            },
+            "69": {
+                "en": "input target for {0} module must be DOMAIN or SINGLE_IPv4, skipping {1}"
+            },
+            "70": {
+                "en": "user: {0} pass:{1} host:{2} port:{3} found!"
+            },
+            "71": {
+                "en": "(NO PERMISSION FOR LIST FILES)"
+            },
+            "72": {
+                "en": "trying {0} of {1} in process {2} of {3} {4}:{5}"
+            },
+            "73": {
+                "en": "smtp connection to {0}:{1} timeout, skipping {2}:{3}"
+            },
+            "74": {
+                "en": 'smtp connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step'
+            },
+            "75": {
+                "en": "input target for {0} module must be HTTP, skipping {1}"
+            },
+            "76": {
+                "en": "ssh connection to {0}:{1} timeout, skipping {2}:{3}"
+            },
+            "77": {
+                "en": "ssh connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step"
+            },
+            "78": {
+                "en" "ssh connection to %s:%s failed, skipping whole step [process %s of %s]! going to next step"
+            },
+            "79": {
+                "en": "OPEN PORT"
+            },
+            "80": {
+                "en": "host: {0} port: {1} found!"
             }
         }

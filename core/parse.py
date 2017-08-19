@@ -73,12 +73,12 @@ def load():
     total_targets = -1
     for total_targets, _ in enumerate(
             analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-                     language)):
+                     language, verbose_level, show_version, check_update, proxies, retries)):
         pass
     total_targets += 1
     total_targets = total_targets * len(scan_method)
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-                       language)
+                       language, verbose_level, show_version, check_update, proxies, retries)
     threads = []
     trying = 0
     for target in targets:
@@ -86,7 +86,7 @@ def load():
             trying += 1
             t = threading.Thread(target=start_attack, args=(
                 str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
-                ports, log_in_file, time_sleep, language))
+                ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, proxies, retries))
             threads.append(t)
             t.start()
             while 1:
