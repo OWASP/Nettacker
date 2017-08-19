@@ -21,7 +21,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file):
         except:
             exit += 1
             if exit is 10:
-                warn('ssh connection to %s:%s timeout, skipping %s:%s'%(target,str(port),user,passwd))
+                warn('ssh connection to %s:%s timeout, skipping %s:%s' % (target, str(port), user, passwd))
                 return 1
             time.sleep(0.1)
     if flag is 0:
@@ -45,7 +45,8 @@ def login(user, passwd, target, port, timeout_sec, log_in_file):
     return flag
 
 
-def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file,time_sleep,language): # Main function
+def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
+          language):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN':
         threads = []
         max = thread_number
@@ -60,7 +61,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     ssh = paramiko.SSHClient()
                     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                     if timeout_sec is not None:
-                        ssh.connect(target, username='',password='',timeout=timeout_sec)
+                        ssh.connect(target, username='', password='', timeout=timeout_sec)
                     else:
                         ssh.connect(target, username='', password='')
                     exit = 0
@@ -73,7 +74,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         if exit is 3:
                             error(
                                 'ssh connection to %s:%s failed, skipping whole step [process %s of %s]! going to next step' % (
-                                target, port, str(num), str(total)))
+                                    target, port, str(num), str(total)))
                             portflag = False
                             break
                         time.sleep(0.1)
@@ -90,11 +91,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             if portflag is True:
                 for user in users:
                     for passwd in passwds:
-                        t = threading.Thread(target=login, args=(user, passwd,target,port,timeout_sec,log_in_file))
+                        t = threading.Thread(target=login, args=(user, passwd, target, port, timeout_sec, log_in_file))
                         threads.append(t)
                         t.start()
                         trying += 1
-                        info('trying ' + str(trying) + ' of ' + str(total_req) + ' in process ' + str(num) + ' of ' + str(
+                        info('trying ' + str(trying) + ' of ' + str(total_req) + ' in process ' + str(
+                            num) + ' of ' + str(
                             total) + ' ' + target + ':' + str(port))
                         while 1:
                             n = 0

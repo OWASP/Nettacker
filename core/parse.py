@@ -23,11 +23,11 @@ from core.args_loader import check_all_required
 def load():
     write('\n\n')
 
-    #load all modules in lib/brute and lib/scan
+    # load all modules in lib/brute and lib/scan
     module_names = load_all_modules()
 
     # Parse ARGVs
-    parser,(options, args) = load_all_args(module_names)
+    parser, (options, args) = load_all_args(module_names)
 
     # Filling Options
     check_ranges = options.check_ranges
@@ -58,7 +58,7 @@ def load():
     (targets, targets_list, thread_number, thread_number_host,
      log_in_file, scan_method, exclude_method, users, users_list,
      passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-     check_update,proxies,retries) = \
+     check_update, proxies, retries) = \
         check_all_required(
             targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
@@ -72,11 +72,13 @@ def load():
     range_temp = 'tmp/ranges_%s' % (suff)
     total_targets = -1
     for total_targets, _ in enumerate(
-            analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep, language)):
+            analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
+                     language)):
         pass
     total_targets += 1
     total_targets = total_targets * len(scan_method)
-    targets = analysis(targets, check_ranges, check_subdomains,subs_temp,range_temp,log_in_file,time_sleep,language)
+    targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
+                       language)
     threads = []
     trying = 0
     for target in targets:
@@ -84,7 +86,7 @@ def load():
             trying += 1
             t = threading.Thread(target=start_attack, args=(
                 str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
-                ports, log_in_file, time_sleep,language))
+                ports, log_in_file, time_sleep, language))
             threads.append(t)
             t.start()
             while 1:
@@ -106,11 +108,11 @@ def load():
         time.sleep(0.1)
         if n is True:
             break
-    info(messages(language,42))
+    info(messages(language, 42))
     os.remove(subs_temp)
     os.remove(range_temp)
-    info(messages(language,43))
+    info(messages(language, 43))
     sort_logs(log_in_file)
     write('\n')
-    info(messages(language,44))
+    info(messages(language, 44))
     write('\n\n')

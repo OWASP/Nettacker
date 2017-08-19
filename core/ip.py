@@ -5,6 +5,7 @@ import urllib2
 import time
 import sys
 from core.alert import *
+
 try:
     from netaddr import iprange_to_cidrs
     from netaddr import IPNetwork
@@ -22,7 +23,7 @@ def getIPRange(IP):
                 line = line.rsplit('"')
                 for R in line:
                     if R.count('.') is 6 and R.count('-') is 1 and R.count(' ') is 2:
-                        return R.replace(' ','')
+                        return R.replace(' ', '')
         except:
             n += 1
             if n is 3:
@@ -30,7 +31,6 @@ def getIPRange(IP):
                 break
             time.sleep(0.1)
     return data
-
 
 
 def isIP(IP):
@@ -49,15 +49,15 @@ def isIP(IP):
     return False
 
 
-def IPRange(Range,range_temp,language):
+def IPRange(Range, range_temp, language):
     myranges_now = open(range_temp).read().rsplit()
     if Range not in myranges_now:
-        r_f = open(range_temp,'a')
-        r_f.write(Range+'\n')
+        r_f = open(range_temp, 'a')
+        r_f.write(Range + '\n')
         r_f.close()
         if len(Range.rsplit('.')) is 7 and '-' in Range and '/' not in Range:
             if len(Range.rsplit('-')) is 2:
-                start_ip,stop_ip = Range.rsplit('-')
+                start_ip, stop_ip = Range.rsplit('-')
                 if isIP(start_ip) is True and isIP(stop_ip) is True:
                     return iprange_to_cidrs(start_ip, stop_ip)
                 else:
@@ -69,5 +69,5 @@ def IPRange(Range,range_temp,language):
         else:
             return []
     else:
-        warn(messages(language,49))
+        warn(messages(language, 49))
         return []

@@ -17,6 +17,7 @@ def logo():
  |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|   
     \n\n''')
 
+
 def version():
     return int(sys.version_info.major)
 
@@ -29,11 +30,11 @@ def check(language):
         pass
         # os.system('cls')
     else:
-        sys.exit(error(messages(language,47)))
+        sys.exit(error(messages(language, 47)))
     if version() is 2 or version() is 3:
         pass
     else:
-        sys.exit(error(messages(language,48)))
+        sys.exit(error(messages(language, 48)))
     logo()
     return
 

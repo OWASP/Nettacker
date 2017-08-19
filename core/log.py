@@ -6,15 +6,16 @@ import texttable
 from core.alert import messages
 
 
-def sort_logs(log_in_file,language):
-    _HOST = messages(language,53)
-    _USERNAME = messages(language,54)
-    _PASSWORD = messages(language,55)
-    _PORT = messages(language,56)
-    _TYPE = messages(language,57)
-    _DESCRIPTION = messages(language,58)
+def sort_logs(log_in_file, language):
+    _HOST = messages(language, 53)
+    _USERNAME = messages(language, 54)
+    _PASSWORD = messages(language, 55)
+    _PORT = messages(language, 56)
+    _TYPE = messages(language, 57)
+    _DESCRIPTION = messages(language, 58)
 
-    if (len(log_in_file)>= 5 and log_in_file[-5:] == '.html') or (len(log_in_file)>= 4 and log_in_file[-4:] == '.htm'):
+    if (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
+            len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
         o = open(log_in_file)
         data = ''
         for value in o:
