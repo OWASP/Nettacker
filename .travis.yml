@@ -13,7 +13,7 @@ os:
 
 # Before install
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rvm get stable --auto-dotfiles          ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rvm use ruby-2.0.0-p648          ; fi
 
 # Install requirements
 install:
