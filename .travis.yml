@@ -13,7 +13,7 @@ os:
 
 # Before install
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rvm get stable          ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rvm get stable --auto-dotfiles          ; fi
 
 # Install requirements
 install:
