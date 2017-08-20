@@ -228,7 +228,7 @@ def all_messages():
                 "en": "smtp connection to {0}:{1} timeout, skipping {2}:{3}"
             },
             "74": {
-                "en": 'smtp connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step'
+                "en": "smtp connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step"
             },
             "75": {
                 "en": "input target for {0} module must be HTTP, skipping {1}"
@@ -240,7 +240,7 @@ def all_messages():
                 "en": "ssh connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step"
             },
             "78": {
-                "en" "ssh connection to %s:%s failed, skipping whole step [process %s of %s]! going to next step"
+                "en": "ssh connection to %s:%s failed, skipping whole step [process %s of %s]! going to next step"
             },
             "79": {
                 "en": "OPEN PORT"
