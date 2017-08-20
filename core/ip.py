@@ -1,10 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import urllib2
 import time
 import sys
 from core.alert import *
+from core.compatible import version
+
+if version() is 2:
+    from urllib2 import urlopen
+elif version is 3:
+    from urllib.request import urlopen
 
 try:
     from netaddr import iprange_to_cidrs
@@ -17,8 +22,7 @@ def getIPRange(IP):
     n = 0
     while 1:
         try:
-            data = urllib2.urlopen(
-                'http://rest.db.ripe.net/search.json?query-string=%s&flags=no-filtering' % IP).read()
+            data = urlopen('http://rest.db.ripe.net/search.json?query-string={0}&flags=no-filtering'.format(IP)).read()
             for line in data.rsplit('\n'):
                 line = line.rsplit('"')
                 for R in line:
