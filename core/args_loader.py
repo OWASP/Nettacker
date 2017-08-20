@@ -32,7 +32,8 @@ def load_all_args(module_names):
     check(language)
 
     # Start Parser
-    parser = OptionParser(usage=messages(language, 1), description=messages(language, 2),
+    parser = OptionParser(usage=messages(language, 1),
+                          description=messages(language, 2),
                           epilog=messages(language, 3))
     # Engine Options
     engineOpt = OptionGroup(parser, messages(language, 4), messages(language, 5))
@@ -42,22 +43,18 @@ def load_all_args(module_names):
     engineOpt.add_option("-v", "--verbose", action="store",
                          dest="verbose_level", default=0,
                          help=messages(language, 59))
-    engineOpt.add_option("-V", "--version", action="store_true", default=False, dest="show_version",
+    engineOpt.add_option("-V", "--version", action="store_true",
+                         default=False, dest="show_version",
                          help=messages(language, 60))
-    engineOpt.add_option("-c", "--update", action="store_true", default=False, dest="check_update",
+    engineOpt.add_option("-c", "--update", action="store_true",
+                         default=False, dest="check_update",
                          help=messages(language, 61))
+    engineOpt.add_option("-o", "--output", action="store",
+                         default="results.txt", dest="log_in_file",
+                         help=messages(language, 11))
 
-    # IO Options
-    parser.add_option("-r", "--range", action="store_true", default=False, dest="check_ranges",
-                      help=messages(language, 7))
-    parser.add_option("-s", "--sub-domains", action="store_true", default=False, dest="check_subdomains",
-                      help=messages(language, 8))
-    parser.add_option("-t", "--thread-connection", action="store", default=10, type="int", dest="thread_number",
-                      help=messages(language, 9))
-    parser.add_option("-M", "--thread-hostscan", action="store", default=10, type="int", dest="thread_number_host",
-                      help=messages(language, 10))
-    parser.add_option("-o", "--output", action="store", default="results.txt", dest="log_in_file",
-                      help=messages(language, 11))
+    # Build Engine Options
+    parser.add_option_group(engineOpt)
 
     # Target Options
     target = OptionGroup(parser, messages(language, 12), messages(language, 13))
@@ -97,6 +94,18 @@ def load_all_args(module_names):
     method.add_option("-w", "--time-sleep", action="store",
                       dest="time_sleep", default=None, type="float",
                       help=messages(language, 25))
+    method.add_option("-r", "--range", action="store_true",
+                      default=False, dest="check_ranges",
+                      help=messages(language, 7))
+    method.add_option("-s", "--sub-domains", action="store_true",
+                      default=False, dest="check_subdomains",
+                      help=messages(language, 8))
+    method.add_option("-t", "--thread-connection", action="store",
+                      default=10, type="int", dest="thread_number",
+                      help=messages(language, 9))
+    method.add_option("-M", "--thread-hostscan", action="store",
+                      default=10, type="int", dest="thread_number_host",
+                      help=messages(language, 10))
     method.add_option("-R", "--proxy", action="store",
                       dest="proxies", default=None,
                       help=messages(language, 62))
@@ -106,9 +115,6 @@ def load_all_args(module_names):
     method.add_option("--retries", action="store",
                       dest="retries", default=3,
                       help=messages(language, 64))
-    # Build Options
-    parser.add_option_group(method)
-
     # Build Options
     parser.add_option_group(method)
 
