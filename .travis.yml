@@ -21,4 +21,4 @@ install:
 
 # Run
 script:
-- "python nettacker.py"
+- "python nettacker.py --help"
