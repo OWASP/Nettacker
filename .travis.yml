@@ -13,7 +13,7 @@ os:
 
 # Before install
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then curl -sSL https://get.rvm.io | bash && /usr/local/rvm/bin/rvm get stable   ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && curl -sSL https://get.rvm.io | bash && /usr/local/rvm/bin/rvm get stable   ; fi
 
 # Install requirements
 install:
