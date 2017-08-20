@@ -5,15 +5,16 @@ language: python
 python:
  - "2.6"
  - "2.7"
+ - "3.2"
+ - "3.3"
+ - "3.4"
+ - "3.5"
+ - "3.6"
+ - "3.7"
 
 # Select OS
 os:
  - "linux"
- - "osx"
-
-# Before install
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && curl -sSL https://get.rvm.io | bash && /usr/local/rvm/bin/rvm get stable   ; fi
 
 # Install requirements
 install:
