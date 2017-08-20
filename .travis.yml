@@ -11,6 +11,10 @@ os:
  - "linux"
  - "osx"
 
+# Before install
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; rvm get stable          ; fi
+
 # Install requirements
 install:
  - "pip install -r requirements.txt"
