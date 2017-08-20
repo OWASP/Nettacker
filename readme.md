@@ -7,16 +7,21 @@ Nettacker
 Nettacker project was created to automated for information gathering, vulnerability scanning and eventually generating report for networks, including services, bugs, vulnerabilities, misconfigurations and information. This software is able to use SYN, ACK, TCP, ICMP and many other protocols to detect and bypass the Firewalls/IDS/IPS and devices. By using a unique solution in Nettacker to find protected services such as SCADA We could make a point to be one of the bests of scanners, and be a good competitor of Nmap scanner but I also preparing a .nse module for make users able to use Nmap instead of Nettacker python version.  
 
 ```
-python nettacker.py -h
 
 
+   ______          __      _____ _____
+  / __ \ \        / /\    / ____|  __ \
+ | |  | \ \  /\  / /  \  | (___ | |__) |
+ | |  | |\ \/  \/ / /\ \  \___ \|  ___/
+ | |__| | \  /\  / ____ \ ____) | |
+  \____/   \/  \/_/    \_\_____/|_|
+                          _   _      _   _             _
+                         | \ | |    | | | |           | |
+  github.com/viraintel   |  \| | ___| |_| |_ __ _  ___| | _____ _ __
+  owasp.org              | . ` |/ _ \ __| __/ _` |/ __| |/ / _ \ '__|
+                         | |\  |  __/ |_| || (_| | (__|   <  __/ |
+                         |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|
 
-  _   _      _   _             _
- | \ | |    | | | |           | |
- |  \| | ___| |_| |_ __ _  ___| | _____ _ __
- | . ` |/ _ \ __| __/ _` |/ __| |/ / _ \ '__|
- | |\  |  __/ |_| || (_| | (__|   <  __/ |
- |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|
 
 
 Usage: python nettacker.py [options]
@@ -25,13 +30,17 @@ Nettacker Help Menu
 
 Options:
   -h, --help            show this help message and exit
-  -r, --range           scan all IPs in range
-  -s, --sub-domains     find and scan subdomains
-  -t THREAD_NUMBER, --thread-connection=THREAD_NUMBER
-                        thread numbers for connections to a host
-  -M THREAD_NUMBER_HOST, --thread-hostscan=THREAD_NUMBER_HOST
-                        thread numbers for scan hosts
-  -o LOG_IN_FILE, --output=LOG_IN_FILE
+
+  Engine:
+    Engine input options
+
+    -L LANGUAGE, --language=LANGUAGE
+                        select a language ['en']
+    -v VERBOSE_LEVEL, --verbose=VERBOSE_LEVEL
+                        verbose mode level (0-5) (default 0)
+    -V, --version       show software version
+    -c, --update        check for update
+    -o LOG_IN_FILE, --output=LOG_IN_FILE
                         save all logs in file (results.txt, results.html)
 
   Target:
@@ -65,36 +74,12 @@ Options:
                         read passwords(s) from file
     -w TIME_SLEEP, --time-sleep=TIME_SLEEP
                         time to sleep between each request
-    -R PROXIES, --proxy=PROXIES
-                        proxy(s) list, separate with "," (out going
-                        connections)
-    --proxy-list=PROXIES
-                        read proxies from file (out going connections)
-    --retries=RETRIES   Retries when the connection timeouts (default 3)
-
-  Method:
-    Scan method options
-
-    -m SCAN_METHOD, --method=SCAN_METHOD
-                        choose scan method ['ftp_brute', 'http_brute',
-                        'smtp_brute', 'ssh_brute', 'port_scan']
-    -x EXCLUDE_METHOD, --exclude=EXCLUDE_METHOD
-                        choose scan method to exclude ['ftp_brute',
-                        'http_brute', 'smtp_brute', 'ssh_brute', 'port_scan']
-    -u USERS, --usernames=USERS
-                        username(s) list, separate with ","
-    -U USERS_LIST, --users-list=USERS_LIST
-                        read username(s) from file
-    -p PASSWDS, --passwords=PASSWDS
-                        password(s) list, separate with ","
-    -P PASSWDS_LIST, --passwords-list=PASSWDS_LIST
-                        read passwords(s) from file
-    -g PORTS, --ports=PORTS
-                        port(s) list, separate with ","
-    -T TIMEOUT_SEC, --timeout=TIMEOUT_SEC
-                        read passwords(s) from file
-    -w TIME_SLEEP, --time-sleep=TIME_SLEEP
-                        time to sleep between each request
+    -r, --range         scan all IPs in range
+    -s, --sub-domains   find and scan subdomains
+    -t THREAD_NUMBER, --thread-connection=THREAD_NUMBER
+                        thread numbers for connections to a host
+    -M THREAD_NUMBER_HOST, --thread-hostscan=THREAD_NUMBER_HOST
+                        thread numbers for scan hosts
     -R PROXIES, --proxy=PROXIES
                         proxy(s) list, separate with "," (out going
                         connections)
