@@ -9,7 +9,7 @@ from ftplib import FTP
 from core.targets import target_type
 
 
-def login(user, passwd, target, port, timeout_sec, log_in_file, language):
+def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
     _PASSWORD = messages(language, 55)
@@ -28,10 +28,10 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language):
             break
         except:
             exit += 1
-            if exit is 10:
+            if exit is retries:
                 warn(messages(language, 65).format(target, port, user, passwd))
                 return 1
-            time.sleep(0.1)
+        time.sleep(time_sleep)
     flag = 1
     try:
         my_ftp.login(user, passwd)
@@ -49,7 +49,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language):
                             _DESCRIPTION: messages(language, 66)}) + '\n')
             save.close()
         except:
-            info(messages(language, 70).format(user, passwd, target, port) + ' ' + messages(language,71))
+            info(messages(language, 70).format(user, passwd, target, port) + ' ' + messages(language, 71))
             save = open(log_in_file, 'a')
             save.write(json.dumps({_HOST: target, _USERNAME: user, _PASSWORD: passwd, _PORT: port, _TYPE: 'FTP',
                                    _DESCRIPTION: messages(language, 67)}) + '\n')
@@ -81,17 +81,19 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     break
                 except:
                     exit += 1
-                    if exit is 3:
+                    if exit is retries:
                         error(messages(language, 68).format(target, port, str(num), str(total)))
                         portflag = False
                         break
-                    time.sleep(0.1)
+                time.sleep(time_sleep)
 
             if portflag is True:
                 for user in users:
                     for passwd in passwds:
                         t = threading.Thread(target=login,
-                                             args=(user, passwd, target, port, timeout_sec, log_in_file, language))
+                                             args=(
+                                                 user, passwd, target, port, timeout_sec, log_in_file, language,
+                                                 retries, time_sleep))
                         threads.append(t)
                         t.start()
                         trying += 1

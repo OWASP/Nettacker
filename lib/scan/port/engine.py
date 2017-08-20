@@ -9,13 +9,14 @@ from core.alert import *
 from core.targets import target_type
 
 
-def connect(host, port, timeout_sec, log_in_file, language):
+def connect(host, port, timeout_sec, log_in_file, language, time_sleep):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
     _PASSWORD = messages(language, 55)
     _PORT = messages(language, 56)
     _TYPE = messages(language, 57)
     _DESCRIPTION = messages(language, 58)
+    time.sleep(time_sleep)
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if timeout_sec is not None:
@@ -40,7 +41,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         trying = 0
         total_req = len(ports)
         for port in ports:
-            t = threading.Thread(target=connect, args=(target, int(port), timeout_sec, log_in_file, language))
+            t = threading.Thread(target=connect,
+                                 args=(target, int(port), timeout_sec, log_in_file, language, time_sleep))
             threads.append(t)
             t.start()
             trying += 1

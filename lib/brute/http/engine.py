@@ -24,7 +24,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
             except:
                 exit += 1
-                if exit is 3:
+                if exit is retries:
                     error('error')
                     portflag = False
                     break

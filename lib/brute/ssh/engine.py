@@ -9,7 +9,7 @@ from core.alert import *
 from core.targets import target_type
 
 
-def login(user, passwd, target, port, timeout_sec, log_in_file, language):
+def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
     _PASSWORD = messages(language, 55)
@@ -26,10 +26,10 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language):
             break
         except:
             exit += 1
-            if exit is 10:
+            if exit is retries:
                 warn(messages(language, 76).format(target, str(port), user, passwd))
                 return 1
-            time.sleep(0.1)
+        time.sleep(time_sleep)
     if flag is 0:
         try:
             ssh = paramiko.SSHClient()
@@ -77,24 +77,25 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         break
                     else:
                         exit += 1
-                        if exit is 3:
+                        if exit is retries:
                             error(messages(language, 77).format(target, port, str(num), str(total)))
                             portflag = False
                             break
-                        time.sleep(0.1)
                 except:
                     exit += 1
                     if exit is 3:
                         error(messages(language, 77).format(target, port, str(num), str(total)))
                         portflag = False
                         break
-                    time.sleep(0.1)
+                time.sleep(time_sleep)
 
             if portflag is True:
                 for user in users:
                     for passwd in passwds:
                         t = threading.Thread(target=login,
-                                             args=(user, passwd, target, port, timeout_sec, log_in_file, language))
+                                             args=(
+                                                 user, passwd, target, port, timeout_sec, log_in_file, language,
+                                                 retries, time_sleep))
                         threads.append(t)
                         t.start()
                         trying += 1
