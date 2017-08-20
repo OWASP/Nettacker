@@ -26,7 +26,7 @@ def logo():
 
 
 def version():
-    return int(str(sys.version_info.major)[0])
+    return int(sys.version_info[0])
 
 
 def check(language):
