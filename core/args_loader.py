@@ -89,10 +89,10 @@ def load_all_args(module_names):
                       dest="ports", default=None,
                       help=messages(language, 23))
     method.add_option("-T", "--timeout", action="store",
-                      dest="timeout_sec", default=None, type="float",
+                      dest="timeout_sec", default=3.0, type="float",
                       help=messages(language, 24))
     method.add_option("-w", "--time-sleep", action="store",
-                      dest="time_sleep", default=None, type="float",
+                      dest="time_sleep", default=0.0, type="float",
                       help=messages(language, 25))
     method.add_option("-r", "--range", action="store_true",
                       default=False, dest="check_ranges",
