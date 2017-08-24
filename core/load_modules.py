@@ -15,4 +15,5 @@ def load_all_modules():
         lib = lib.rsplit('\\')[-2]
         if lib + '_scan' not in module_names:
             module_names.append(lib + '_scan')
+    module_names.append('all')
     return module_names
