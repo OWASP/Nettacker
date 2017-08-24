@@ -9,7 +9,8 @@ from core.alert import *
 try:
     import netaddr.ip
 except:
-    sys.exit(error('pip install -r requirements.txt'))
+    error('pip install -r requirements.txt')
+    sys.exit(1)
 
 
 def target_type(target):
