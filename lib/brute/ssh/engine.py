@@ -5,6 +5,7 @@ import threading
 import time
 import json
 import paramiko
+import logging
 from core.alert import *
 from core.targets import target_type
 
@@ -21,6 +22,8 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     while 1:
         try:
             paramiko.Transport((target, int(port)))
+            paramiko_logger = logging.getLogger("paramiko.transport")
+            paramiko_logger.disabled = True
             flag = 0
             exit = 0
             break
