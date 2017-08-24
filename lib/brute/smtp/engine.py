@@ -46,7 +46,10 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         save.close()
     else:
         pass
-    server.quit()
+    try:
+        server.quit()
+    except:
+        pass
     return flag
 
 
