@@ -3,6 +3,7 @@
 
 #pyCharm settings
 .idea/*
+build/*
 
 #tmp files
 *.py~
