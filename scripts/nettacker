@@ -1,0 +1,2 @@
+#!/bin/sh
+python "`dirname $0`/nettacker.py $@"
