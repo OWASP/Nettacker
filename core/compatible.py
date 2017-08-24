@@ -5,6 +5,9 @@ import sys
 import os
 from core.alert import *
 
+__version__ = '0.1'
+__code_name__ = 'SAME'
+
 
 def logo():
     from core.alert import write
@@ -13,8 +16,8 @@ def logo():
   / __ \ \        / /\    / ____|  __ \ 
  | |  | \ \  /\  / /  \  | (___ | |__) |
  | |  | |\ \/  \/ / /\ \  \___ \|  ___/ 
- | |__| | \  /\  / ____ \ ____) | |     
-  \____/   \/  \/_/    \_\_____/|_|      
+ | |__| | \  /\  / ____ \ ____) | |     Version {0}  
+  \____/   \/  \/_/    \_\_____/|_|     {1}
                           _   _      _   _             _            
                          | \ | |    | | | |           | |            
   github.com/viraintel   |  \| | ___| |_| |_ __ _  ___| | _____ _ __ 
@@ -22,7 +25,7 @@ def logo():
   viraintel.com          | |\  |  __/ |_| || (_| | (__|   <  __/ |   
                          |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|   
                                                
-    \n\n''')
+    \n\n'''.format(__version__,__code_name__))
 
 
 def version():
