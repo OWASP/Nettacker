@@ -21,4 +21,4 @@ install:
 
 # Run
 script:
-- "python nettacker.py --help"
+- "python scripts/__travis_test__.py"
