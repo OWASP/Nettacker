@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from core import compatible
-os_name = compatible.os_name()
-
 
 def color(color):
+    from core import compatible
+    os_name = compatible.os_name()
     if 'linux' in os_name or os_name == 'darwin':
         if color == 'reset':
             return '\033[0m'
