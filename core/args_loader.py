@@ -65,6 +65,10 @@ def load_all_args(module_names):
     # Build Options
     parser.add_option_group(target)
 
+    # Exclude Module Name
+    exclude_names = module_names[:]
+    exclude_names.remove('all')
+
     # Methods Options
     method = OptionGroup(parser, "Method", messages(language, 16))
     method.add_option("-m", "--method", action="store",
@@ -72,7 +76,7 @@ def load_all_args(module_names):
                       help=messages(language, 17).format(module_names))
     method.add_option("-x", "--exclude", action="store",
                       dest="exclude_method", default=None,
-                      help=messages(language, 18).format(module_names))
+                      help=messages(language, 18).format(exclude_names))
     method.add_option("-u", "--usernames", action="store",
                       dest="users", default=None,
                       help=messages(language, 19))
