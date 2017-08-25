@@ -5,11 +5,11 @@ import sys
 from distutils.core import setup
 
 setup(
-    install_requires=['netaddr', 'dnspython', 'requests', 'paramiko', 'texttable'],
+    install_requires=['netaddr', 'dnspython', 'requests', 'paramiko', 'texttable', 'PySocks', 'win_inet_pton'],
     name='OWASP-Nettacker',
     version='0.1 Beta',
     packages=['lib', 'lib.scan', 'lib.scan.port', 'lib.brute', 'lib.brute.ftp', 'lib.brute.ssh', 'lib.brute.http',
-              'lib.brute.smtp', 'lib.sublist3r.subbrute', 'core'],
+              'lib.brute.smtp', 'lib.sublist3r.subbrute', 'core', 'scripts'],
     url='https://github.com/viraintel/OWASP-Nettacker',
     license='GNU General Public License v3.0',
     author='Ali Razmjoo',
