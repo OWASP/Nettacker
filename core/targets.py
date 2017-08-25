@@ -56,7 +56,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                         for IP in IPm:
                             yield IP
             else:
-                info(messages(language, 52).format(target))
+                info(messages(language, 81).format(target))
                 yield target
 
         elif target_type(target) == 'RANGE_IPv4' or target_type(target) == 'CIDR_IPv4':
@@ -75,16 +75,17 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                 if check_ranges is True:
                     info(messages(language, 52).format(target))
                     tmp_exec = os.popen(
-                        'python lib/sublist3r/sublist3r.py -d ' + target + ' -o %s' % (subs_temp)).read()
-                    tmp_exec = list(set(open(subs_temp, 'r').read().rsplit()))
+                        'python lib/sublist3r/sublist3r.py -d {0} -o {1} '.format(target, subs_temp)).read()
+                    tmp_exec = list(set(open(subs_temp, 'r').read().replace(' ', '').rsplit()))
                     sub_domains = []
                     for sub in tmp_exec:
-                        if 'this.data.stolen.from.PTRarchive.com.' not in sub and '.internal.nsa.gov.' not in sub:
+                        if 'PTRarchive.com' not in sub and '.internal.nsa.gov.' not in sub\
+                                and 'Sublist3r' not in sub and sub not in sub_domains:
                             sub_domains.append(sub)
                     if target not in sub_domains:
                         sub_domains.append(target)
                     for target in sub_domains:
-                        info(messages(language, 52).format(target))
+                        info(messages(language, 81).format(target))
                         yield target
                         n = 0
                         err = 0
@@ -113,16 +114,18 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                                         yield IPn
                 else:
                     info(messages(language, 52).format(target))
-                    tmp_exec = os.popen('python lib/sublist3r/sublist3r.py -d ' + target + ' -o tmp/subs_temp').read()
-                    tmp_exec = list(set(open('tmp/subs_temp', 'r').read().rsplit()))
+                    tmp_exec = os.popen(
+                        'python lib/sublist3r/sublist3r.py -d {0} -o {1} '.format(target, subs_temp)).read()
+                    tmp_exec = list(set(open(subs_temp, 'r').read().replace(' ','').rsplit()))
                     sub_domains = []
                     for sub in tmp_exec:
-                        if 'this.data.stolen.from.PTRarchive.com.' not in sub and '.internal.nsa.gov.' not in sub:
+                        if 'PTRarchive.com' not in sub and '.internal.nsa.gov.' not in sub \
+                                and 'Sublist3r' not in sub and sub not in sub_domains:
                             sub_domains.append(sub)
                     if target not in sub_domains:
                         sub_domains.append(target)
                     for target in sub_domains:
-                        info(messages(language, 52).format(target))
+                        info(messages(language, 81).format(target))
                         yield target
             else:
                 if check_ranges is True:
@@ -154,7 +157,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                                 for IPn in IPm:
                                     yield IPn
                 else:
-                    info(messages(language, 52).format(target))
+                    info(messages(language, 81).format(target))
                     yield target
 
         elif target_type(target) == 'HTTP':
