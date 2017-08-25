@@ -247,5 +247,8 @@ def all_messages():
             },
             "80": {
                 "en": "host: {0} port: {1} found!"
+            },
+            "81": {
+                "en": "target {0} submitted!"
             }
         }
