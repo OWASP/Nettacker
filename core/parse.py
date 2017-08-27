@@ -51,6 +51,7 @@ def load():
     show_version = options.show_version
     check_update = options.check_update
     proxies = options.proxies
+    proxies_file = options.proxies_file
     retries = options.retries
 
     info(messages("en", 0))
@@ -58,12 +59,12 @@ def load():
     (targets, targets_list, thread_number, thread_number_host,
      log_in_file, scan_method, exclude_method, users, users_list,
      passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-     check_update, proxies, retries) = \
+     check_update, proxies, proxies_file, retries) = \
         check_all_required(
             targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
             passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-            check_update, proxies, retries
+            check_update, proxies, proxies_file, retries
         )
 
     suff = str(datetime.datetime.now()).replace(' ', '_').replace(':', '-') + '_' + ''.join(
@@ -112,7 +113,7 @@ def load():
     os.remove(subs_temp)
     os.remove(range_temp)
     info(messages(language, 43))
-    sort_logs(log_in_file,language)
+    sort_logs(log_in_file, language)
     write('\n')
     info(messages(language, 44))
     write('\n\n')
