@@ -17,6 +17,9 @@ python:
 # Select OS
 os:
  - "linux"
+ dist: "trusty"
+ - "linux"
+ dist: "precise"
 
 # Install requirements
 install:
