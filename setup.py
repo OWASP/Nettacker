@@ -7,7 +7,7 @@ from distutils.core import setup
 setup(
     install_requires=['netaddr', 'dnspython', 'requests', 'paramiko', 'texttable', 'PySocks', 'win_inet_pton'],
     name='OWASP-Nettacker',
-    version='0.1 Beta',
+    version='0.0.1 SAME',
     packages=['lib', 'lib.scan', 'lib.scan.port', 'lib.brute', 'lib.brute.ftp', 'lib.brute.ssh', 'lib.brute.http',
               'lib.brute.smtp', 'lib.sublist3r.subbrute', 'core', 'scripts'],
     url='https://github.com/viraintel/OWASP-Nettacker',
