@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import os
 from optparse import OptionGroup
 from optparse import OptionParser
 from core.alert import error
 from core.alert import write
 from core.alert import warn
+from core.alert import info
 from core.alert import messages
 from core.compatible import check
 
@@ -114,7 +116,7 @@ def load_all_args(module_names):
                       dest="proxies", default=None,
                       help=messages(language, 62))
     method.add_option("--proxy-list", action="store",
-                      dest="proxies", default=None,
+                      dest="proxies_file", default=None,
                       help=messages(language, 63))
     method.add_option("--retries", action="store",
                       dest="retries", default=3,
@@ -126,15 +128,28 @@ def load_all_args(module_names):
     return [parser, parser.parse_args()]
 
 
-def check_all_required(targets, targets_list, thread_number, thread_number_host, log_in_file, scan_method,
-                       exclude_method, users, users_list, passwds, passwds_list, timeout_sec, ports, parser,
-                       module_names, language, verbose_level, show_version, check_update, proxies, retries):
+def check_all_required(targets, targets_list, thread_number, thread_number_host,
+                       log_in_file, scan_method, exclude_method, users, users_list,
+                       passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level,
+                       show_version, check_update, proxies, proxies_file, retries):
     # Checking Requirements
+    # Check version
+    if show_version is True:
+        from core import compatible
+        from core import color
+        info(messages(language, 84).format(color.color('yellow'), compatible.__version__, color.color('reset'), color.color('cyan'),
+                                           compatible.__code_name__, color.color('reset')))
+        sys.exit(0)
+    # Check update
+    if check_update is True:
+        info(messages(language, 85))
+        sys.exit(0)
     # Check the target(s)
     if targets is None and targets_list is None:
         parser.print_help()
         write("\n")
-        sys.exit(error(messages(language, 26)))
+        error(messages(language, 26))
+        sys.exit(1)
     else:
         if targets is not None:
             targets = list(set(targets.rsplit(",")))
@@ -142,7 +157,8 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             try:
                 targets = list(set(open(targets_list, "rb").read().rsplit()))
             except:
-                sys.exit(error(messages(language, 27).format(targets_list)))
+                error(messages(language, 27).format(targets_list))
+                sys.exit(1)
     # Check thread number
     if thread_number > 100 or thread_number_host > 100:
         warn(messages(language, 28))
@@ -158,15 +174,18 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             scan_method = scan_method.rsplit(",")
             for sm in scan_method:
                 if sm not in module_names:
-                    sys.exit(error(messages(language, 30).format(sm)))
+                    error(messages(language, 30).format(sm))
+                    sys.exit(1)
                 if sm == "all":
                     scan_method = module_names
                     scan_method.remove("all")
                     break
         else:
-            sys.exit(error(messages(language, 31).format(scan_method)))
+            error(messages(language, 31).format(scan_method))
+            sys.exit(1)
     elif scan_method is None:
-        sys.exit(error(messages(language, 41)))
+        error(messages(language, 41))
+        sys.exit(1)
     else:
         scan_method = scan_method.rsplit()
     if exclude_method is not None:
@@ -174,16 +193,20 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         for exm in exclude_method:
             if exm in scan_method:
                 if "all" == exm:
-                    sys.exit(messages(language, 32))
+                    messages(language, 32)
+                    sys.exit(1)
                 else:
                     scan_method.remove(exm)
                     if len(scan_method) is 0:
-                        sys.exit(messages(language, 33))
+                        messages(language, 33)
+                        sys.exit(1)
             else:
-                sys.exit(messages(language, 34).format(exm))
+                messages(language, 34).format(exm)
+                sys.exit(1)
     # Check port(s)
     if ports is None:
-        sys.exit(error(messages(language, 35)))
+        error(messages(language, 35))
+        sys.exit(1)
     if type(ports) is not list and "-" in ports:
         ports = ports.rsplit("-")
         ports = range(int(ports[0]), int(ports[1]) + 1)
@@ -193,7 +216,8 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     if users is None and users_list is None and scan_method is not None:
         for imethod in scan_method:
             if "_brute" in imethod:
-                sys.exit(error(messages(language, 36)))
+                error(messages(language, 36))
+                sys.exit(1)
     else:
         if users is not None:
             users = list(set(users.rsplit(",")))
@@ -201,12 +225,14 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             try:
                 users = list(set(open(users_list).read().rsplit("\n")))  # fix later
             except:
-                sys.exit(error(messages(language, 37).format(targets_list)))
+                error(messages(language, 37).format(targets_list))
+                sys.exit(1)
     # Check password list
     if passwds is None and passwds_list is None and scan_method is not None:
         for imethod in scan_method:
             if "_brute" in imethod:
-                sys.exit(error(messages(language, 38)))
+                error(messages(language, 38))
+                sys.exit(1)
     else:
         if passwds is not None:
             passwds = list(set(passwds.rsplit(",")))
@@ -214,15 +240,29 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             try:
                 passwds = list(set(open(passwds_list).read().rsplit("\n")))  # fix later
             except:
-                sys.exit(error(messages(language, 39).format(targets_list)))
+                error(messages(language, 39).format(targets_list))
+                sys.exit(1)
     # Check output file
     try:
         tmpfile = open(log_in_file, "a")
     except:
-        sys.exit(error(messages(language, 40).format(log_in_file)))
-
+        error(messages(language, 40).format(log_in_file))
+        sys.exit(1)
+    # Check Proxies
+    if proxies is not None:
+        proxies = list(set(proxies.rsplit(',')))
+    elif proxies_file is not None:
+        if os.path.isfile(proxies_file):
+            try:
+                proxies = list(set(open(proxies_file).read().rsplit()))
+            except:
+                error(messages(language, 82).format(proxies_file))
+                sys.exit(1)
+        else:
+            error(messages(language, 83).format(proxies_file))
+            sys.exit(1)
     # Return the values
     return [targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
             passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-            check_update, proxies, retries]
+            check_update, proxies, proxies_file, retries]
