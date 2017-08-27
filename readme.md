@@ -19,17 +19,18 @@ Nettacker project was created to automated for information gathering, vulnerabil
 ```
 
 
+
    ______          __      _____ _____
   / __ \ \        / /\    / ____|  __ \
  | |  | \ \  /\  / /  \  | (___ | |__) |
  | |  | |\ \/  \/ / /\ \  \___ \|  ___/
- | |__| | \  /\  / ____ \ ____) | |
-  \____/   \/  \/_/    \_\_____/|_|
+ | |__| | \  /\  / ____ \ ____) | |     Version 0.0.1
+  \____/   \/  \/_/    \_\_____/|_|     SAME
                           _   _      _   _             _
                          | \ | |    | | | |           | |
   github.com/viraintel   |  \| | ___| |_| |_ __ _  ___| | _____ _ __
   owasp.org              | . ` |/ _ \ __| __/ _` |/ __| |/ / _ \ '__|
-                         | |\  |  __/ |_| || (_| | (__|   <  __/ |
+  viraintel.com          | |\  |  __/ |_| || (_| | (__|   <  __/ |
                          |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|
 
 
@@ -66,7 +67,7 @@ Options:
 
     -m SCAN_METHOD, --method=SCAN_METHOD
                         choose scan method ['ftp_brute', 'http_brute',
-                        'smtp_brute', 'ssh_brute', 'port_scan']
+                        'smtp_brute', 'ssh_brute', 'port_scan', 'all']
     -x EXCLUDE_METHOD, --exclude=EXCLUDE_METHOD
                         choose scan method to exclude ['ftp_brute',
                         'http_brute', 'smtp_brute', 'ssh_brute', 'port_scan']
@@ -93,7 +94,7 @@ Options:
     -R PROXIES, --proxy=PROXIES
                         proxy(s) list, separate with "," (out going
                         connections)
-    --proxy-list=PROXIES
+    --proxy-list=PROXIES_FILE
                         read proxies from file (out going connections)
     --retries=RETRIES   Retries when the connection timeouts (default 3)
 
@@ -107,6 +108,5 @@ Please read license and agreements https://github.com/Nettacker/Nettacker
 *	Services Brute Force Testing
 *	Services Vulnerability Testing
 *	HTTP/HTTPS Crawling, Fuzzing, Information Gathering and … 
-*	Python and Nmap Module Version [ .nse Lua language ]
 *	HTML and Text Outputs
 *	This project is at the moment in research and development phase and most of results/codes are not published yet.
