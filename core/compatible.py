@@ -5,7 +5,7 @@ import sys
 import os
 from core.alert import *
 
-__version__ = '0.1'
+__version__ = '0.0.1'
 __code_name__ = 'SAME'
 
 
