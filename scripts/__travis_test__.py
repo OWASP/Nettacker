@@ -3,6 +3,10 @@
 
 import os
 
+# System info
+os.system('free -m')
+os.system('mpstat -P ALL')
+os.system('cat /proc/cpuinfo')
 # Test help menu command
 os.system('time python nettacker.py --help')
 # Test show version command
