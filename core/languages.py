@@ -250,5 +250,19 @@ def all_messages():
             },
             "81": {
                 "en": "target {0} submitted!"
+            },
+            "82": {
+                "en": "cannot open proxies list file {0}"
+            },
+            "83": {
+                "en": "cannot find proxies list file {0}"
+            },
+            "84": {
+                "en": "you are running OWASP Nettacker version {0}{1}{2} with code name {3}{4}{5}"
+            },
+            "85": {
+                "en": "this feature is not available yet! please run \"git clone "
+                      "https://github.com/viraintel/OWASP-Nettacker.git\" or \"pip "
+                      "install -U OWASP-Nettacker\" to get the last version."
             }
         }
