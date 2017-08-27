@@ -138,7 +138,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         from core import compatible
         from core import color
         info(messages(language, 84).format(color.color('yellow'), compatible.__version__, color.color('reset'), color.color('cyan'),
-                                           compatible.__code_name__, color.color('reset')))
+                                           compatible.__code_name__, color.color('reset'),color.color('green')))
         sys.exit(0)
     # Check update
     if check_update is True:

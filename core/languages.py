@@ -258,7 +258,7 @@ def all_messages():
                 "en": "cannot find proxies list file {0}"
             },
             "84": {
-                "en": "you are running OWASP Nettacker version {0}{1}{2} with code name {3}{4}{5}"
+                "en": "you are running OWASP Nettacker version {0}{1}{2}{6} with code name {3}{4}{5}"
             },
             "85": {
                 "en": "this feature is not available yet! please run \"git clone "
