@@ -8,7 +8,7 @@ Nettacker
 [![Python 3.4](https://img.shields.io/badge/python-3.4-blue.svg)](https://www.python.org/downloads/release/python-346/)
 [![Python 3.5](https://img.shields.io/badge/python-3.5-blue.svg)](https://www.python.org/downloads/release/python-353/)
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-362/)
-[![Python 3.6](https://img.shields.io/badge/License-GNU%20GPL%20V3-green.svg)](https://github.com/viraintel/OWASP-Nettacker/blob/master/LICENSE)
+[![Python 3.6](https://img.shields.io/badge/License-Apache%20v2-green.svg)](https://github.com/viraintel/OWASP-Nettacker/blob/master/LICENSE)
 
 
 ***THIS SOFTWARE WAS CREATED TO AUTOMATED PENETRATION TESTING AND INFORMATION GATHERING. CONTRIBUTORS WILL NOT BE RESPONSIBLE FOR ANY ILLEGAL USAGE.***
