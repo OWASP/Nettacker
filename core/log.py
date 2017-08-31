@@ -26,8 +26,8 @@ def sort_logs(log_in_file, language):
             _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION)
         for value in data:
             _table += '<th>{0}</th><th>{1}</th><th>{2}</th><th>{3}</th><th>{4}</th><th>{5}</th></tr>\n'.format(
-                value['HOST'], value['USERNAME'], value['PASSWORD'], str(value['PORT']), value['TYPE'],
-                value['DESCRIPTION'])
+                value[_HOST], value[_USERNAME], value[_PASSWORD], value[_PORT], value[_TYPE],
+                value[_DESCRIPTION])
         _table += '</table><br><br>'
         save_old = open(log_in_file)
         old = ''
@@ -48,14 +48,14 @@ def sort_logs(log_in_file, language):
         _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION]])
         for value in data:
             _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION],
-                             [value['HOST'], value['USERNAME'], value['PASSWORD'], value['PORT'], value['TYPE'],
-                              value['DESCRIPTION']]])
+                             [value[_HOST], value[_USERNAME], value[_PASSWORD], value[_PORT], value[_TYPE],
+                              value[_DESCRIPTION]]])
         save_old = open(log_in_file)
         old = ''
         for value in save_old:
             if value[0] != '{':
                 old += value
         save = open(log_in_file, 'w')
-        save.write(old + _table.draw() + '\n\n')
+        save.write(old + _table.draw().encode('utf8') + '\n\n')
         save.close()
     return 0
