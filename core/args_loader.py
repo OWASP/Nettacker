@@ -20,7 +20,7 @@ def load_all_args(module_names):
         try:
             index = sys.argv.index("-L") + 1
         except:
-            index = sys.argv.index("-language") + 1
+            index = sys.argv.index("--language") + 1
     else:
         index = -1
     if index is -1:
