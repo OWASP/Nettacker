@@ -1,14 +1,9 @@
 Nettacker
 =========
 [![Build Status Travic CI](https://travis-ci.org/viraintel/OWASP-Nettacker.svg?branch=master)](https://travis-ci.org/viraintel/OWASP-Nettacker)
-[![Python 2.6](https://img.shields.io/badge/python-2.6-blue.svg)](https://www.python.org/download/releases/2.6.9/)
-[![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg)](https://www.python.org/downloads/release/python-2713/)
-[![Python 3.2](https://img.shields.io/badge/python-3.2-blue.svg)](https://www.python.org/downloads/release/python-326/)
-[![Python 3.3](https://img.shields.io/badge/python-3.3-blue.svg)](https://www.python.org/download/releases/3.3.6/)
-[![Python 3.4](https://img.shields.io/badge/python-3.4-blue.svg)](https://www.python.org/downloads/release/python-346/)
-[![Python 3.5](https://img.shields.io/badge/python-3.5-blue.svg)](https://www.python.org/downloads/release/python-353/)
-[![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-362/)
-[![Python 3.6](https://img.shields.io/badge/License-Apache%20v2-green.svg)](https://github.com/viraintel/OWASP-Nettacker/blob/master/LICENSE)
+[![Python 2.x](https://img.shields.io/badge/python-2.x-blue.svg)](https://travis-ci.org/viraintel/OWASP-Nettacker)
+[![Python 3.x](https://img.shields.io/badge/python-3.x-blue.svg)](https://travis-ci.org/viraintel/OWASP-Nettacker)
+[![Apache License](https://img.shields.io/badge/License-Apache%20v2-green.svg)](https://github.com/viraintel/OWASP-Nettacker/blob/master/LICENSE)
 
 
 ***THIS SOFTWARE WAS CREATED TO AUTOMATED PENETRATION TESTING AND INFORMATION GATHERING. CONTRIBUTORS WILL NOT BE RESPONSIBLE FOR ANY ILLEGAL USAGE.***
