@@ -48,6 +48,8 @@ Options:
     -c, --update        check for update
     -o LOG_IN_FILE, --output=LOG_IN_FILE
                         save all logs in file (results.txt, results.html)
+    --graph             build a graph of all activities and information, you
+                        must use html output
 
   Target:
     Target input options
@@ -94,6 +96,7 @@ Options:
     --retries=RETRIES   Retries when the connection timeout (default 3)
 
 Please read license and agreements https://github.com/Nettacker/Nettacker
+
 ```
 
 * ***IoT Scanner***
