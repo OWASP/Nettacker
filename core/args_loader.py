@@ -54,7 +54,7 @@ def load_all_args(module_names):
     engineOpt.add_option("-o", "--output", action="store",
                          default="results.html", dest="log_in_file",
                          help=messages(language, 11))
-    engineOpt.add_option("--graph", action="store",
+    engineOpt.add_option("--graph", action="store_true",
                          default=False, dest="graph_flag",
                          help=messages(language, 86))
 
@@ -248,7 +248,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                 sys.exit(1)
     # Check output file
     try:
-        tmpfile = open(log_in_file, "a")
+        tmpfile = open(log_in_file, "w")
     except:
         error(messages(language, 40).format(log_in_file))
         sys.exit(1)
