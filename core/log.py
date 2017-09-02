@@ -6,7 +6,7 @@ import texttable
 from core.alert import messages
 
 
-def sort_logs(log_in_file, language):
+def sort_logs(log_in_file, language, graph_flag):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
     _PASSWORD = messages(language, 55)
