@@ -362,5 +362,9 @@ def all_messages():
             "86": {
                 "en": "build a graph of all activities and information, you must use html output",
                 "fa": "ساخت گراف از همه فعالیت ها و اطلاعات، شما باید از خروجی HTML استفاده کنید"
+            },
+            "87": {
+                "en": "to use graph feature your output filename must end with \".html\" or \".htm\"!",
+                "fa": "جهت استفاده از ویژگی گراف نام فایل خروجی شما باید با\".html\" یا \".htm\" تمام شود! "
             }
         }
