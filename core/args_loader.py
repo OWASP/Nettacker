@@ -54,6 +54,9 @@ def load_all_args(module_names):
     engineOpt.add_option("-o", "--output", action="store",
                          default="results.txt", dest="log_in_file",
                          help=messages(language, 11))
+    engineOpt.add_option("--graph", action="store",
+                         default=False, dest="graph_flag",
+                         help=messages(language, 86))
 
     # Build Engine Options
     parser.add_option_group(engineOpt)
@@ -137,8 +140,9 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     if show_version is True:
         from core import compatible
         from core import color
-        info(messages(language, 84).format(color.color('yellow'), compatible.__version__, color.color('reset'), color.color('cyan'),
-                                           compatible.__code_name__, color.color('reset'),color.color('green')))
+        info(messages(language, 84).format(color.color('yellow'), compatible.__version__, color.color('reset'),
+                                           color.color('cyan'),
+                                           compatible.__code_name__, color.color('reset'), color.color('green')))
         sys.exit(0)
     # Check update
     if check_update is True:
