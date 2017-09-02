@@ -358,5 +358,9 @@ def all_messages():
                 "fa": "این ویژگی هنوز فعال نشده است! لطفا \"git clone "
                       "https://github.com/viraintel/OWASP-Nettacker.git\" یا \"pip "
                       "install -U OWASP-Nettacker\" را جهت گرفتن اخرین ورژن اجرا کنید."
+            },
+            "86": {
+                "en": "build a graph of all activities and information, you must use html output",
+                "fa": "ساخت گراف از همه فعالیت ها و اطلاعات، شما باید از خروجی HTML استفاده کنید"
             }
         }
