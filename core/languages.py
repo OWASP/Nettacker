@@ -390,5 +390,9 @@ def all_messages():
             "92": {
                 "en": "OWASP Nettacker Report",
                 "fa": "گزارش OWASP Nettacker"
+            },
+            "93": {
+                "en": "Software Details: OWASP Nettacker version {0} [{1}] in {2}",
+                "fa": "جزییات نرم افزار: OWASP Nettacker ورژن {0} [{1}] در {2}"
             }
         }
