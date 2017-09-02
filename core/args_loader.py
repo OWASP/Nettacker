@@ -52,7 +52,7 @@ def load_all_args(module_names):
                          default=False, dest="check_update",
                          help=messages(language, 61))
     engineOpt.add_option("-o", "--output", action="store",
-                         default="results.txt", dest="log_in_file",
+                         default="results.html", dest="log_in_file",
                          help=messages(language, 11))
     engineOpt.add_option("--graph", action="store",
                          default=False, dest="graph_flag",
