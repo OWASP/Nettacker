@@ -43,6 +43,7 @@ def build_graph(language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESC
         if add_flag:
             dgraph["children"].append(_to_modify)
         _to_modify = {
+            "children": [],
             "id": ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(20)),
             "name": data_graph[_TYPE],
             "data": {
@@ -80,7 +81,7 @@ def build_graph(language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESC
                          _USERNAME + ': "' + data_graph[_USERNAME] + '"',
                          _PASSWORD + ': "' + data_graph[_PASSWORD] + '"'])
             else:
-                if dgraph["children"][position]["children"][__position]["data"]["relation"]\
+                if dgraph["children"][position]["children"][__position]["data"]["relation"] \
                         [0] != _PORT + ': "' + str(data_graph[_PORT]) + '"':
                     dgraph["children"][position]["children"][__position]["data"]["relation"].append(
                         [_PORT + ': "' + str(data_graph[_PORT]) + '"',
@@ -89,6 +90,29 @@ def build_graph(language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESC
                          _PASSWORD + ': "' + data_graph[_PASSWORD] + '"'])
         n += 1
     info(messages(language, 89))
+    backup_dgraph = json.loads(json.dumps(dgraph))
+
+    for b in range(0,len(backup_dgraph["children"])):
+        for c in range(0, len(backup_dgraph["children"][b])):
+            for d in range(0,len(backup_dgraph["children"][b]["children"])):
+                for a in backup_dgraph["children"][b]["children"][d]["data"]["relation"]:
+                    a = json.loads(json.dumps(a))
+                    _to_modify = {
+                        "children": [],
+                        "id": ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(20)),
+                        "name": a[0].rsplit()[-1].replace('\"',''),
+                        "data": {
+                            "band": a[1],
+                            "relation": [a]
+                        }
+                    }
+                    add_flag = True
+                    for e in dgraph["children"][b]["children"][d]["children"]:
+                        if _to_modify["name"] == e["name"]:
+                            add_flag = False
+                    if add_flag:
+                        dgraph["children"][b]["children"][d]["children"].append(_to_modify)
+
 
     return open('lib/jit/sample.html').read() \
         .replace('__data_will_locate_here__', json.dumps(dgraph)) \
