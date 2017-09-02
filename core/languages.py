@@ -366,5 +366,13 @@ def all_messages():
             "87": {
                 "en": "to use graph feature your output filename must end with \".html\" or \".htm\"!",
                 "fa": "جهت استفاده از ویژگی گراف نام فایل خروجی شما باید با\".html\" یا \".htm\" تمام شود! "
+            },
+            "88": {
+                "en": "building graph ...",
+                "fa": "در حال ساخت گراف ..."
+            },
+            "89": {
+                "en": "finish building graph!",
+                "fa": "پایان ساخت گراف!"
             }
         }
