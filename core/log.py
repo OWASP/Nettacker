@@ -15,14 +15,15 @@ def sort_logs(log_in_file, language, graph_flag):
     _DESCRIPTION = messages(language, 58)
 
     if (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
-            len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
+                    len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
         o = open(log_in_file)
         data = ''
         for value in o:
             if value[0] == '{':
                 data += value + ','
         data = json.loads('[' + data[:-1] + ']')
-        _table = '<table border="1">\n<tr><th>{0}</th><th>{1}</th><th>{2}</th><th>{3}</th><th>{4}</th><th>{5}</th></tr>\n'.format(
+        _table = '<table border="1">\n<tr><th>{0}</th><th>{1}</th><th>{2}</th><th>{3}' \
+                 '</th><th>{4}</th><th>{5}</th></tr>\n'.format(
             _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION)
         for value in data:
             _table += '<th>{0}</th><th>{1}</th><th>{2}</th><th>{3}</th><th>{4}</th><th>{5}</th></tr>\n'.format(
