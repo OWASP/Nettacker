@@ -41,7 +41,7 @@ Options:
     Engine input options
 
     -L LANGUAGE, --language=LANGUAGE
-                        select a language ['en']
+                        select a language ['fa', 'en']
     -v VERBOSE_LEVEL, --verbose=VERBOSE_LEVEL
                         verbose mode level (0-5) (default 0)
     -V, --version       show software version
@@ -91,7 +91,7 @@ Options:
                         connections)
     --proxy-list=PROXIES_FILE
                         read proxies from file (out going connections)
-    --retries=RETRIES   Retries when the connection timeouts (default 3)
+    --retries=RETRIES   Retries when the connection timeout (default 3)
 
 Please read license and agreements https://github.com/Nettacker/Nettacker
 ```
