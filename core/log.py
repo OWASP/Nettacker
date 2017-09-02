@@ -104,8 +104,12 @@ def sort_logs(log_in_file, language, graph_flag):
                                  _PASSWORD + ': "' + data_graph[_PASSWORD] + '"'])
                 n += 1
             info(messages(language, 89))
-        _graph = open('lib/jit/sample.html').read().replace('__data_will_locate_here__', json.dumps(dgraph)).replace(
-            '__js_jit_lib_will_locate_here__', open('lib/jit/jit-yc.js').read())
+        _graph = open('lib/jit/sample.html').read().replace('__data_will_locate_here__',
+                json.dumps(dgraph)).replace('__js_jit_lib_will_locate_here__',
+                open('lib/jit/jit-yc.js').read()).replace('__title_to_replace__',
+                messages(language, 90)).replace('__description_to_replace__',
+                messages(language, 91)).replace('__html_title_to_replace__',
+                messages(language, 92))
         _table = '{6}\n\n<center><br><br><br><table border="1">\n<tr><th>{0}</th><th>{1}</th><th>{2}</th><th>{3}' \
                  '</th><th>{4}</th><th>{5}</th></tr>\n'.format(
             _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _graph)

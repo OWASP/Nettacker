@@ -374,5 +374,21 @@ def all_messages():
             "89": {
                 "en": "finish building graph!",
                 "fa": "پایان ساخت گراف!"
+            },
+            "90": {
+                "en": "Penetration Testing Graphs",
+                "fa": "گراف تست نفوذ"
+            },
+            "91": {
+                "en": "This graph created by OWASP Nettacker. Graph contains all modules "
+                      "activities, network map and sensitive information, Please don't share "
+                      "this file with anyone if it's not reliable.",
+                "fa": "این گراف توسط OWASP Nettacker ایجاد شده است. گراف شامل فعالیت همه "
+                      "ماژول ها، نقشه شبکه و اطلاعات حساس می باشد، لطفا با کسی که قابل"
+                      " اعتماد نیست به اشتراک تگذارید."
+            },
+            "92": {
+                "en": "OWASP Nettacker Report",
+                "fa": "گزارش OWASP Nettacker"
             }
         }
