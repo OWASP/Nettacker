@@ -114,7 +114,7 @@ def load():
     os.remove(subs_temp)
     os.remove(range_temp)
     info(messages(language, 43))
-    sort_logs(log_in_file, language)
+    sort_logs(log_in_file, language, graph_flag)
     write('\n')
     info(messages(language, 44))
     write('\n\n')
