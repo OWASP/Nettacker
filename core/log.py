@@ -5,9 +5,10 @@ import json
 import texttable
 import string
 import random
+import datetime
 from core.alert import messages
 from core.alert import info
-
+from core import compatible
 
 def sort_logs(log_in_file, language, graph_flag):
     _HOST = messages(language, 53)
@@ -109,7 +110,9 @@ def sort_logs(log_in_file, language, graph_flag):
                 open('lib/jit/jit-yc.js').read()).replace('__title_to_replace__',
                 messages(language, 90)).replace('__description_to_replace__',
                 messages(language, 91)).replace('__html_title_to_replace__',
-                messages(language, 92))
+                messages(language, 92)).replace('__time_and_version_to_replace__',
+                messages(language, 93).format(compatible.__version__,
+                compatible.__code_name__,datetime.datetime.now()))
         _table = '{6}\n\n<center><br><br><br><table border="1">\n<tr><th>{0}</th><th>{1}</th><th>{2}</th><th>{3}' \
                  '</th><th>{4}</th><th>{5}</th></tr>\n'.format(
             _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _graph)
