@@ -53,18 +53,19 @@ def load():
     proxies = options.proxies
     proxies_file = options.proxies_file
     retries = options.retries
+    graph_flag = options.graph_flag
 
     info(messages("en", 0))
     # Checking Requirements
     (targets, targets_list, thread_number, thread_number_host,
      log_in_file, scan_method, exclude_method, users, users_list,
      passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-     check_update, proxies, proxies_file, retries) = \
+     check_update, proxies, proxies_file, retries, graph_flag) = \
         check_all_required(
             targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
             passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-            check_update, proxies, proxies_file, retries
+            check_update, proxies, proxies_file, retries, graph_flag
         )
 
     suff = str(datetime.datetime.now()).replace(' ', '_').replace(':', '-') + '_' + ''.join(
