@@ -134,7 +134,7 @@ def load_all_args(module_names):
 def check_all_required(targets, targets_list, thread_number, thread_number_host,
                        log_in_file, scan_method, exclude_method, users, users_list,
                        passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level,
-                       show_version, check_update, proxies, proxies_file, retries):
+                       show_version, check_update, proxies, proxies_file, retries, graph_flag):
     # Checking Requirements
     # Check version
     if show_version is True:
@@ -265,8 +265,15 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         else:
             error(messages(language, 83).format(proxies_file))
             sys.exit(1)
+    # Check Graph
+    if graph_flag is True:
+        if not (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
+                    not len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
+            error(messages(language, 87))
+            sys.exit(1)
+
     # Return the values
     return [targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
             passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-            check_update, proxies, proxies_file, retries]
+            check_update, proxies, proxies_file, retries, graph_flag]
