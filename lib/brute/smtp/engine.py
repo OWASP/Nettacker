@@ -5,11 +5,14 @@ import threading
 import time
 import smtplib
 import json
+import string
+import random
+import os
 from core.alert import *
 from core.targets import target_type
 
 
-def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep):
+def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
     _PASSWORD = messages(language, 55)
@@ -44,6 +47,9 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         save.write(json.dumps({_HOST: target, _USERNAME: user, _PASSWORD: passwd, _PORT: port, _TYPE: 'smtp_brute',
                                _DESCRIPTION: messages(language, 66)}) + '\n')
         save.close()
+        thread_write = open(thread_tmp_filename, 'w')
+        thread_write.write('0')
+        thread_write.close()
     else:
         pass
     try:
@@ -59,6 +65,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         threads = []
         max = thread_number
         total_req = len(users) * len(passwds)
+        thread_tmp_filename = 'tmp/thread_tmp_' + ''.join(
+            random.choice(string.ascii_letters + string.digits) for _ in range(20))
+        thread_write = open(thread_tmp_filename, 'w')
+        thread_write.write('1')
+        thread_write.close()
         for port in ports:
             # test smtp
             trying = 0
@@ -88,7 +99,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         t = threading.Thread(target=login,
                                              args=(
                                                  user, passwd, target, port, timeout_sec, log_in_file, language,
-                                                 retries, time_sleep))
+                                                 retries, time_sleep, thread_tmp_filename))
                         threads.append(t)
                         t.start()
                         trying += 1
@@ -114,5 +125,18 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             time.sleep(0.1)
             if n is True:
                 break
+        thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
+        if thread_write is 1:
+            _HOST = messages(language, 53)
+            _USERNAME = messages(language, 54)
+            _PASSWORD = messages(language, 55)
+            _PORT = messages(language, 56)
+            _TYPE = messages(language, 57)
+            _DESCRIPTION = messages(language, 58)
+            save = open(log_in_file, 'a')
+            save.write(json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'smtp_brute',
+                                   _DESCRIPTION: messages(language, 95)}) + '\n')
+            save.close()
+        os.remove(thread_tmp_filename)
     else:
         warn(messages(language, 69).format(target))
