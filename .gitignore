@@ -9,6 +9,7 @@ build/*
 *.py~
 tmp/ranges_*
 tmp/subs_temp_*
+tmp/thread_*
 results.*
 user.txt
 pass.txt
