@@ -5,11 +5,14 @@ import socket
 import time
 import json
 import threading
+import string
+import random
+import os
 from core.alert import *
 from core.targets import target_type
 
 
-def connect(host, port, timeout_sec, log_in_file, language, time_sleep):
+def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
     _PASSWORD = messages(language, 55)
@@ -28,6 +31,9 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep):
         save.write(json.dumps({_HOST: host, _USERNAME: '', _PASSWORD: '', _PORT: port, _TYPE: 'port_scan',
                                _DESCRIPTION: messages(language, 79)}) + '\n')
         save.close()
+        thread_write = open(thread_tmp_filename, 'w')
+        thread_write.write('0')
+        thread_write.close()
         return True
     except socket.error:
         return False
@@ -40,9 +46,15 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         max = thread_number
         trying = 0
         total_req = len(ports)
+        thread_tmp_filename = 'tmp/thread_tmp_' + ''.join(
+            random.choice(string.ascii_letters + string.digits) for _ in range(20))
+        thread_write = open(thread_tmp_filename, 'w')
+        thread_write.write('1')
+        thread_write.close()
         for port in ports:
             t = threading.Thread(target=connect,
-                                 args=(target, int(port), timeout_sec, log_in_file, language, time_sleep))
+                                 args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
+                                       thread_tmp_filename))
             threads.append(t)
             t.start()
             trying += 1
@@ -68,5 +80,19 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             time.sleep(0.1)
             if n is True:
                 break
+        thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
+        if thread_write is 1:
+            _HOST = messages(language, 53)
+            _USERNAME = messages(language, 54)
+            _PASSWORD = messages(language, 55)
+            _PORT = messages(language, 56)
+            _TYPE = messages(language, 57)
+            _DESCRIPTION = messages(language, 58)
+            save = open(log_in_file, 'a')
+            save.write(json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'port_scan',
+                                   _DESCRIPTION: messages(language, 94)}) + '\n')
+            save.close()
+        os.remove(thread_tmp_filename)
+
     else:
         warn(messages(language, 69).format('port_scan', target))
