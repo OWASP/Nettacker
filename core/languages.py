@@ -398,5 +398,9 @@ def all_messages():
             "94": {
                 "en": "no open ports found!",
                 "fa": "هیچ درگاه بازی پیدا نشد!"
+            },
+            "95": {
+                "en": "no user/password found!",
+                "fa": "هیچ نام کاربری/پسوردی پیدا نشد!"
             }
         }
