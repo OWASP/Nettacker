@@ -92,15 +92,15 @@ def build_graph(language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESC
     info(messages(language, 89))
     backup_dgraph = json.loads(json.dumps(dgraph))
 
-    for b in range(0,len(backup_dgraph["children"])):
+    for b in range(0, len(backup_dgraph["children"])):
         for c in range(0, len(backup_dgraph["children"][b])):
-            for d in range(0,len(backup_dgraph["children"][b]["children"])):
+            for d in range(0, len(backup_dgraph["children"][b]["children"])):
                 for a in backup_dgraph["children"][b]["children"][d]["data"]["relation"]:
                     a = json.loads(json.dumps(a))
                     _to_modify = {
                         "children": [],
                         "id": ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(20)),
-                        "name": a[0].rsplit()[-1].replace('\"',''),
+                        "name": a[0].rsplit()[-1].replace('\"', ''),
                         "data": {
                             "band": a[1],
                             "relation": [a]
@@ -112,7 +112,6 @@ def build_graph(language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESC
                             add_flag = False
                     if add_flag:
                         dgraph["children"][b]["children"][d]["children"].append(_to_modify)
-
 
     return open('lib/jit/sample.html').read() \
         .replace('__data_will_locate_here__', json.dumps(dgraph)) \
@@ -141,26 +140,29 @@ def sort_logs(log_in_file, language, graph_flag):
         for value in o:
             if value[0] == '{':
                 data += value + ','
-        data = json.loads('[' + data[:-1] + ']')
+        data = sorted(json.loads('[' + data[:-1] + ']'))
         # if user want a graph
         _graph = ''
         if graph_flag is True:
             _graph = build_graph(language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION)
-        _table = '{6}\n\n<center><br><br><br><table border="1">\n<tr><th>{0}</th><th>{1}</th><th>{2}</th><th>{3}' \
-                 '</th><th>{4}</th><th>{5}</th></tr>\n'.format(
-            _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _graph)
+        _table = '%s\n\n<center><br><br><br><table border="1">\n<tr><th>%s</th><th>%s</th><th>%s</th><th>%s' \
+                 '</th><th>%s</th><th>%s</th></tr>\n' % (_graph,
+                                                         _HOST,
+                                                         _USERNAME,
+                                                         _PASSWORD,
+                                                         _PORT,
+                                                         _TYPE,
+                                                         _DESCRIPTION,
+                                                         )
         for value in data:
-            _table += '<th>{0}</th><th>{1}</th><th>{2}</th><th>{3}</th><th>{4}</th><th>{5}</th></tr>\n'.format(
+            _table += '<th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>\n' % (
                 value[_HOST], value[_USERNAME], value[_PASSWORD], value[_PORT], value[_TYPE],
                 value[_DESCRIPTION])
-        _table += '</table><br><br></center>'
-        save_old = open(log_in_file)
-        old = ''
-        for value in save_old:
-            if value[0] != '{':
-                old += value
+        _table += '</table><br><br></center><br><br>' + messages(language, 93) \
+            .format(compatible.__version__, compatible.__code_name__,
+                    datetime.datetime.now())
         save = open(log_in_file, 'w')
-        save.write(old + _table + '\n\n')
+        save.write(_table.encode('utf8'))
         save.close()
     else:
         o = open(log_in_file)
@@ -168,21 +170,16 @@ def sort_logs(log_in_file, language, graph_flag):
         for value in o:
             if value[0] == '{':
                 data += value + ','
-        data = json.loads('[' + data[:-1] + ']')
+        data = sorted(json.loads('[' + data[:-1] + ']'))
         _table = texttable.Texttable()
         _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION]])
         for value in data:
             _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION],
                              [value[_HOST], value[_USERNAME], value[_PASSWORD], value[_PORT], value[_TYPE],
                               value[_DESCRIPTION]]])
-        save_old = open(log_in_file)
-        old = ''
-        for value in save_old:
-            if value[0] != '{':
-                old += value
         save = open(log_in_file, 'w')
-        save.write(old + _table.draw().encode('utf8') + '\n\n' +
-                   messages(language, 93).format(compatible.__version__,
-                                                 compatible.__code_name__, datetime.datetime.now()) + '\n\n')
+        save.write(_table.draw().encode('utf8') + '\n\n' +
+                   messages(language, 93).format(compatible.__version__, compatible.__code_name__,
+                                                 datetime.datetime.now()).encode('utf8') + '\n\n')
         save.close()
     return 0
