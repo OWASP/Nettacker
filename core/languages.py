@@ -394,5 +394,9 @@ def all_messages():
             "93": {
                 "en": "Software Details: OWASP Nettacker version {0} [{1}] in {2}",
                 "fa": "جزییات نرم افزار: OWASP Nettacker ورژن {0} [{1}] در {2}"
+            },
+            "94": {
+                "en": "no open ports found!",
+                "fa": "هیچ درگاه بازی پیدا نشد!"
             }
         }
