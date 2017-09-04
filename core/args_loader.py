@@ -35,7 +35,8 @@ def load_all_args(module_names):
 
     # Check if compatible
     check(language)
-
+    from core.color import finish
+    finish()
     # Start Parser
     parser = OptionParser(usage=messages(language, 1),
                           description=messages(language, 2),

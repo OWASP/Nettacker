@@ -39,37 +39,37 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         return False
 
 
-def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
+def start(target, users, passwds, port, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
           language, verbose_level, show_version, check_update, proxies, retries):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN':
         threads = []
         max = thread_number
         trying = 0
-        total_req = len(ports)
+        total_req = len(port.rsplit())
         thread_tmp_filename = 'tmp/thread_tmp_' + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         thread_write = open(thread_tmp_filename, 'w')
         thread_write.write('1')
         thread_write.close()
-        for port in ports:
-            t = threading.Thread(target=connect,
-                                 args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
-                                       thread_tmp_filename))
-            threads.append(t)
-            t.start()
-            trying += 1
-            while 1:
-                n = 0
-                for thread in threads:
-                    if thread.isAlive() is True:
-                        n += 1
-                    else:
-                        threads.remove(thread)
-                if n >= max:
-                    time.sleep(0.1)
+
+        t = threading.Thread(target=connect,
+                             args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
+                                   thread_tmp_filename))
+        threads.append(t)
+        t.start()
+        trying += 1
+        while 1:
+            n = 0
+            for thread in threads:
+                if thread.isAlive() is True:
+                    n += 1
                 else:
-                    break
-            info(messages(language, 72).format(trying, total_req, num, total, target, port))
+                    threads.remove(thread)
+            if n >= max:
+                time.sleep(0.1)
+            else:
+                break
+        info(messages(language, 72).format(trying, total_req, num, total, target, port))
 
         # wait for threads
         while 1:

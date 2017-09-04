@@ -7,6 +7,7 @@ import os
 import datetime
 import random
 import string
+import sys
 from core.targets import analysis
 from core.attack import start_attack
 from core.alert import info
@@ -27,8 +28,12 @@ def load():
     module_names = load_all_modules()
 
     # Parse ARGVs
-    parser, (options, args) = load_all_args(module_names)
-
+    try:
+        parser, (options, args) = load_all_args(module_names)
+    except SystemExit:
+        from core.color import finish
+        finish()
+        sys.exit(1)
     # Filling Options
     check_ranges = options.check_ranges
     check_subdomains = options.check_subdomains
@@ -78,30 +83,31 @@ def load():
                      language, verbose_level, show_version, check_update, proxies, retries)):
         pass
     total_targets += 1
-    total_targets = total_targets * len(scan_method)
+    total_targets = total_targets * len(scan_method) * len(ports)
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
                        language, verbose_level, show_version, check_update, proxies, retries)
     threads = []
     trying = 0
     for target in targets:
         for sm in scan_method:
-            trying += 1
-            t = threading.Thread(target=start_attack, args=(
-                str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
-                ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, proxies, retries))
-            threads.append(t)
-            t.start()
-            while 1:
-                n = 0
-                for thread in threads:
-                    if thread.isAlive() is True:
-                        n += 1
+            for port in ports:
+                trying += 1
+                t = threading.Thread(target=start_attack, args=(
+                    str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
+                    port, log_in_file, time_sleep, language, verbose_level, show_version, check_update, proxies, retries))
+                threads.append(t)
+                t.start()
+                while 1:
+                    n = 0
+                    for thread in threads:
+                        if thread.isAlive() is True:
+                            n += 1
+                        else:
+                            threads.remove(thread)
+                    if n >= thread_number_host:
+                        time.sleep(0.1)
                     else:
-                        threads.remove(thread)
-                if n >= thread_number_host:
-                    time.sleep(0.1)
-                else:
-                    break
+                        break
     while 1:
         n = True
         for thread in threads:
