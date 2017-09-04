@@ -118,3 +118,5 @@ def load():
     write('\n')
     info(messages(language, 44))
     write('\n\n')
+    from core.color import finish
+    finish()

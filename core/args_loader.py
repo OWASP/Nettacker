@@ -28,7 +28,10 @@ def load_all_args(module_names):
     else:
         language = sys.argv[index]
         if language not in language_list:
-            sys.exit(error("Please select one of these languages {0}".format(language_list)))
+            error("Please select one of these languages {0}".format(language_list))
+            from core.color import finish
+            finish()
+            sys.exit(1)
 
     # Check if compatible
     check(language)
@@ -143,16 +146,22 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         info(messages(language, 84).format(color.color('yellow'), compatible.__version__, color.color('reset'),
                                            color.color('cyan'), compatible.__code_name__, color.color('reset'),
                                            color.color('green')))
+        from core.color import finish
+        finish()
         sys.exit(0)
     # Check update
     if check_update is True:
         info(messages(language, 85))
+        from core.color import finish
+        finish()
         sys.exit(0)
     # Check the target(s)
     if targets is None and targets_list is None:
         parser.print_help()
         write("\n")
         error(messages(language, 26))
+        from core.color import finish
+        finish()
         sys.exit(1)
     else:
         if targets is not None:
@@ -162,6 +171,8 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                 targets = list(set(open(targets_list, "rb").read().rsplit()))
             except:
                 error(messages(language, 27).format(targets_list))
+                from core.color import finish
+                finish()
                 sys.exit(1)
     # Check thread number
     if thread_number > 100 or thread_number_host > 100:
@@ -179,6 +190,8 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             for sm in scan_method:
                 if sm not in module_names:
                     error(messages(language, 30).format(sm))
+                    from core.color import finish
+                    finish()
                     sys.exit(1)
                 if sm == "all":
                     scan_method = module_names
@@ -186,9 +199,13 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                     break
         else:
             error(messages(language, 31).format(scan_method))
+            from core.color import finish
+            finish()
             sys.exit(1)
     elif scan_method is None:
         error(messages(language, 41))
+        from core.color import finish
+        finish()
         sys.exit(1)
     else:
         scan_method = scan_method.rsplit()
@@ -198,18 +215,26 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             if exm in scan_method:
                 if "all" == exm:
                     messages(language, 32)
+                    from core.color import finish
+                    finish()
                     sys.exit(1)
                 else:
                     scan_method.remove(exm)
                     if len(scan_method) is 0:
                         messages(language, 33)
+                        from core.color import finish
+                        finish()
                         sys.exit(1)
             else:
                 messages(language, 34).format(exm)
+                from core.color import finish
+                finish()
                 sys.exit(1)
     # Check port(s)
     if ports is None:
         error(messages(language, 35))
+        from core.color import finish
+        finish()
         sys.exit(1)
     if type(ports) is not list and "-" in ports:
         ports = ports.rsplit("-")
@@ -221,6 +246,8 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         for imethod in scan_method:
             if "_brute" in imethod:
                 error(messages(language, 36))
+                from core.color import finish
+                finish()
                 sys.exit(1)
     else:
         if users is not None:
@@ -230,12 +257,16 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                 users = list(set(open(users_list).read().rsplit("\n")))  # fix later
             except:
                 error(messages(language, 37).format(targets_list))
+                from core.color import finish
+                finish()
                 sys.exit(1)
     # Check password list
     if passwds is None and passwds_list is None and scan_method is not None:
         for imethod in scan_method:
             if "_brute" in imethod:
                 error(messages(language, 38))
+                from core.color import finish
+                finish()
                 sys.exit(1)
     else:
         if passwds is not None:
@@ -245,12 +276,16 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                 passwds = list(set(open(passwds_list).read().rsplit("\n")))  # fix later
             except:
                 error(messages(language, 39).format(targets_list))
+                from core.color import finish
+                finish()
                 sys.exit(1)
     # Check output file
     try:
         tmpfile = open(log_in_file, "w")
     except:
         error(messages(language, 40).format(log_in_file))
+        from core.color import finish
+        finish()
         sys.exit(1)
     # Check Proxies
     if proxies is not None:
@@ -261,15 +296,21 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                 proxies = list(set(open(proxies_file).read().rsplit()))
             except:
                 error(messages(language, 82).format(proxies_file))
+                from core.color import finish
+                finish()
                 sys.exit(1)
         else:
             error(messages(language, 83).format(proxies_file))
+            from core.color import finish
+            finish()
             sys.exit(1)
     # Check Graph
     if graph_flag is True:
         if not (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
                     not len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
             error(messages(language, 87))
+            from core.color import finish
+            finish()
             sys.exit(1)
 
     # Return the values

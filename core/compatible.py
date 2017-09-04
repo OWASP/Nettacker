@@ -43,11 +43,17 @@ def check(language):
         pass
         # os.system('cls')
     else:
-        sys.exit(error(messages(language, 47)))
+        error(messages(language, 47))
+        from core.color import finish
+        finish()
+        sys.exit(1)
     if version() is 2 or version() is 3:
         pass
     else:
-        sys.exit(error(messages(language, 48)))
+        error(messages(language, 48))
+        from core.color import finish
+        finish()
+        sys.exit(1)
     logo()
     return
 
