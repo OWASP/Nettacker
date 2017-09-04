@@ -171,8 +171,8 @@ def build_graph(language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESC
                             if add_flag:
                                 d3_structure["children"][k]["children"][l]["children"].append(_to_modify)
 
-    return open('lib/d3/sample.html','rb').read().decode('utf8') \
-        .replace('__data_will_locate_here__', json.dumps(d3_structure))\
+    return open('lib/d3/sample.html', 'rb').read().decode('utf8') \
+        .replace('__data_will_locate_here__', json.dumps(d3_structure)) \
         .replace('__title_to_replace__', messages(language, 90)) \
         .replace('__description_to_replace__', messages(language, 91)) \
         .replace('__html_title_to_replace__', messages(language, 92))
@@ -198,14 +198,99 @@ def sort_logs(log_in_file, language, graph_flag):
         _graph = ''
         if graph_flag is True:
             _graph = build_graph(language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION)
-        _table = '%s\n\n<center><br><br><br><table>\n<tr><th>%s</th><th>%s</th><th>%s</th><th>%s' \
-                 '</th><th>%s</th><th>%s</th></tr>\n' % (_graph,
-                                                         _HOST,
-                                                         _USERNAME,
-                                                         _PASSWORD,
-                                                         _PORT,
-                                                         _TYPE,
-                                                         _DESCRIPTION,
+        _css = '''<style>
+
+    table {
+        background: #f5f5f5;
+        border-collapse: separate;
+        box-shadow: inset 0 1px 0 #fff;
+        font-size: 12px;
+        line-height: 24px;
+        margin: 30px auto;
+        text-align: left;
+        width: 800px;
+    }
+    
+    th {
+        background: url(https://jackrugile.com/images/misc/noise-diagonal.png), linear-gradient(#777, #444);
+        border-left: 1px solid #555;
+        border-right: 1px solid #777;
+        border-top: 1px solid #555;
+        border-bottom: 1px solid #333;
+        box-shadow: inset 0 1px 0 #999;
+        color: #fff;
+      font-weight: bold;
+        padding: 10px 15px;
+        position: relative;
+        text-shadow: 0 1px 0 #000;
+    }
+    
+    th:after {
+        background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,.08));
+        content: '';
+        display: block;
+        height: 25%;
+        left: 0;
+        margin: 1px 0 0 0;
+        position: absolute;
+        top: 25%;
+        width: 100%;
+    }
+    
+    th:first-child {
+        border-left: 1px solid #777;
+        box-shadow: inset 1px 1px 0 #999;
+    }
+    
+    th:last-child {
+        box-shadow: inset -1px 1px 0 #999;
+    }
+    
+    td {
+        border-right: 1px solid #fff;
+        border-left: 1px solid #e8e8e8;
+        border-top: 1px solid #fff;
+        border-bottom: 1px solid #e8e8e8;
+        padding: 10px 15px;
+        position: relative;
+        transition: all 300ms;
+    }
+    
+    td:first-child {
+        box-shadow: inset 1px 0 0 #fff;
+    }
+    
+    td:last-child {
+        border-right: 1px solid #e8e8e8;
+        box-shadow: inset -1px 0 0 #fff;
+    }
+    
+    
+    tr:last-of-type td {
+        box-shadow: inset 0 -1px 0 #fff;
+    }
+    
+    tr:last-of-type td:first-child {
+        box-shadow: inset 1px -1px 0 #fff;
+    }
+    
+    tr:last-of-type td:last-child {
+        box-shadow: inset -1px -1px 0 #fff;
+    }
+    
+    tbody:hover td {
+        color: transparent;
+        text-shadow: 0 0 3px #aaa;
+    }
+    
+    tbody:hover tr:hover td {
+        color: #444;
+        text-shadow: 0 1px 0 #fff;
+    }
+    </style>'''
+        _table = '%s%s\n\n<center><br><br><br><table>\n<tr><th>%s</th><th>%s</th><th>%s</th><th>%s' \
+                 '</th><th>%s</th><th>%s</th></tr>\n' % (_graph, _css, _HOST, _USERNAME,
+                                                         _PASSWORD, _PORT, _TYPE, _DESCRIPTION,
                                                          )
         for value in data:
             _table += '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' % (
