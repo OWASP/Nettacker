@@ -1,10 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import sys
+from core import compatible
 
+os_name = compatible.os_name()
+
+
+def finish():
+    if 'linux' in os_name or os_name == 'darwin':
+        sys.std.write('\033[0m')
+    else:
+        import ctypes
+        std_out_handle = ctypes.windll.kernel32.GetStdHandle(-11)
+        handle = std_out_handle
+        ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 7)
 
 def color(color):
-    from core import compatible
-    os_name = compatible.os_name()
     if 'linux' in os_name or os_name == 'darwin':
         if color == 'reset':
             return '\033[0m'
@@ -25,28 +36,25 @@ def color(color):
         if color == 'white':
             return '\033[1;37m'
     else:
-        return ''
-    ''' Add in next versions!
-		import ctypes
-		std_out_handle = ctypes.windll.kernel32.GetStdHandle(-11)
-		handle=std_out_handle
-		if color == 'reset':
-			pass
-		if color == 'grey':
-			ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 0x07)
-		if color == 'red':
-			ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 12)
-		if color == 'green':
-			ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 10)
-		if color == 'yellow':
-			ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 0x06)
-		if color == 'blue':
-			ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 0x09)
-		if color == 'purple':
-			ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 13)
-		if color == 'cyan':
-			ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 11)
-		if color == 'white':
-			ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 0x07)
-
-	'''
+        import ctypes
+        std_out_handle = ctypes.windll.kernel32.GetStdHandle(-11)
+        handle = std_out_handle
+        if color == 'reset':
+            pass
+        if color == 'grey':
+            ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 0x07)
+        if color == 'red':
+            ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 12)
+        if color == 'green':
+            ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 10)
+        if color == 'yellow':
+            ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 0x06)
+        if color == 'blue':
+            ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 0x09)
+        if color == 'purple':
+            ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 13)
+        if color == 'cyan':
+            ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 11)
+        if color == 'white':
+            ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 0x07)
+    return ''
