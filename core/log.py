@@ -198,7 +198,7 @@ def sort_logs(log_in_file, language, graph_flag):
         _graph = ''
         if graph_flag is True:
             _graph = build_graph(language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION)
-        _table = '%s\n\n<center><br><br><br><table border="1">\n<tr><th>%s</th><th>%s</th><th>%s</th><th>%s' \
+        _table = '%s\n\n<center><br><br><br><table>\n<tr><th>%s</th><th>%s</th><th>%s</th><th>%s' \
                  '</th><th>%s</th><th>%s</th></tr>\n' % (_graph,
                                                          _HOST,
                                                          _USERNAME,
@@ -208,7 +208,7 @@ def sort_logs(log_in_file, language, graph_flag):
                                                          _DESCRIPTION,
                                                          )
         for value in data:
-            _table += '<th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>\n' % (
+            _table += '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' % (
                 value[_HOST], value[_USERNAME], value[_PASSWORD], value[_PORT], value[_TYPE],
                 value[_DESCRIPTION])
         _table += '</table><br><br></center><br><br>' + messages(language, 93) \
