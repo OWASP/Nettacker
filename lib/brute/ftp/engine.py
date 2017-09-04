@@ -131,7 +131,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             if n is True:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1:
+        if thread_write is 1 and verbose_level is not 0:
             _HOST = messages(language, 53)
             _USERNAME = messages(language, 54)
             _PASSWORD = messages(language, 55)
