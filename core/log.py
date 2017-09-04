@@ -6,6 +6,8 @@ import texttable
 import string
 import random
 import datetime
+import binascii
+from lib.d3 import sample
 from core.alert import messages
 from core.alert import info
 from core import compatible
@@ -171,7 +173,7 @@ def build_graph(language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESC
                             if add_flag:
                                 d3_structure["children"][k]["children"][l]["children"].append(_to_modify)
 
-    return open('lib/d3/sample.html', 'rb').read().decode('utf8') \
+    return binascii.a2b_base64(sample.content()).decode('utf8') \
         .replace('__data_will_locate_here__', json.dumps(d3_structure)) \
         .replace('__title_to_replace__', messages(language, 90)) \
         .replace('__description_to_replace__', messages(language, 91)) \
