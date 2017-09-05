@@ -315,7 +315,6 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             finish()
             sys.exit(1)
         if graph_flag not in load_all_graphs():
-            print load_all_graphs()
             error(messages(language, 97).format(graph_flag))
             from core.color import finish
             finish()
