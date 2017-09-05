@@ -11496,10 +11496,10 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.*/
 
 
 // Get JSON data
-treeJSON = d3.json("https://bl.ocks.org/robschmuecker/raw/7880033/flare.json", function(error, treeData) {
+treeJSON = d3.json("https://github.com/viraintel/OWASP-Nettacker", function(error, treeData) {
 
     // Calculate total nodes, max label length
-\ttreeData = __data_will_locate_here__;
+    treeData = __data_will_locate_here__;
     var totalNodes = 0;
     var maxLabelLength = 0;
     // variables for drag/drop
