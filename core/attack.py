@@ -38,7 +38,7 @@ def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, t
             error(messages(language, 46).format(scan_method))
             from core.color import finish
             finish()
-            sys.exit()
+            sys.exit(1)
         start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
               verbose_level, show_version,
               check_update, proxies, retries)
