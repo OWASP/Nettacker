@@ -11,9 +11,10 @@ from core.alert import warn
 from core.alert import info
 from core.alert import messages
 from core.compatible import check
+from core.load_modules import load_all_graphs
 
 
-def load_all_args(module_names):
+def load_all_args(module_names, graph_names):
     # Language Options
     language_list = [lang for lang in messages(-1, 0)]
     if "-L" in sys.argv or "--language" in sys.argv:
@@ -58,9 +59,9 @@ def load_all_args(module_names):
     engineOpt.add_option("-o", "--output", action="store",
                          default="results.html", dest="log_in_file",
                          help=messages(language, 11))
-    engineOpt.add_option("--graph", action="store_true",
-                         default=False, dest="graph_flag",
-                         help=messages(language, 86))
+    engineOpt.add_option("--graph", action="store",
+                         default=None, dest="graph_flag",
+                         help=messages(language, 86).format(graph_names))
 
     # Build Engine Options
     parser.add_option_group(engineOpt)
@@ -306,13 +307,20 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             finish()
             sys.exit(1)
     # Check Graph
-    if graph_flag is True:
+    if graph_flag is not None:
         if not (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
                     not len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
             error(messages(language, 87))
             from core.color import finish
             finish()
             sys.exit(1)
+        if graph_flag not in load_all_graphs():
+            print load_all_graphs()
+            error(messages(language, 97).format(graph_flag))
+            from core.color import finish
+            finish()
+            sys.exit(1)
+
 
     # Return the values
     return [targets, targets_list, thread_number, thread_number_host,

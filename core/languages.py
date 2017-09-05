@@ -360,8 +360,8 @@ def all_messages():
                       "install -U OWASP-Nettacker\" را جهت گرفتن اخرین ورژن اجرا کنید."
             },
             "86": {
-                "en": "build a graph of all activities and information, you must use html output",
-                "fa": "ساخت گراف از همه فعالیت ها و اطلاعات، شما باید از خروجی HTML استفاده کنید"
+                "en": "build a graph of all activities and information, you must use html output. available graphs: {0}",
+                "fa": "ساخت گراف از همه فعالیت ها و اطلاعات، شما باید از خروجی HTML استفاده کنید. گراف های در دسترس: {0}"
             },
             "87": {
                 "en": "to use graph feature your output filename must end with \".html\" or \".htm\"!",
@@ -402,5 +402,17 @@ def all_messages():
             "95": {
                 "en": "no user/password found!",
                 "fa": "هیچ نام کاربری/پسوردی پیدا نشد!"
+            },
+            "96": {
+                "en": "{0} modules loaded ...",
+                "fa": "{0} ماژول بارگزاری شد ..."
+            },
+            "97": {
+                "en": "this graph module not found: {0}",
+                "fa": "این ماژول گراف پیدا نشد: {0}"
+            },
+            "98": {
+                "en": "this graph module \"{0}\" is not available",
+                "fa": "این ماژول گراف \"{0}\" در دسترس نیست"
             }
         }

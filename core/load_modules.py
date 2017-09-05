@@ -5,6 +5,15 @@ import sys
 from glob import glob
 
 
+def load_all_graphs():
+    graph_names = []
+    for lib in glob('lib/graph/*/engine.py'):
+        lib = lib.rsplit('\\' if sys.platform == 'win32' or sys.platform == 'win64' else '/')[-2]
+        if lib + '_graph' not in graph_names:
+            graph_names.append(lib + '_graph')
+    return graph_names
+
+
 def load_all_modules():
     # Search for Modules
     module_names = []

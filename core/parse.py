@@ -17,6 +17,7 @@ from core.alert import write
 from core.alert import messages
 from core.log import sort_logs
 from core.load_modules import load_all_modules
+from core.load_modules import load_all_graphs
 from core.args_loader import load_all_args
 from core.args_loader import check_all_required
 
@@ -24,12 +25,13 @@ from core.args_loader import check_all_required
 def load():
     write('\n\n')
 
-    # load all modules in lib/brute and lib/scan
+    # load all modules in lib/brute, lib/scan, lib/graph
     module_names = load_all_modules()
+    graph_names = load_all_graphs()
 
     # Parse ARGVs
     try:
-        parser, (options, args) = load_all_args(module_names)
+        parser, (options, args) = load_all_args(module_names, graph_names)
     except SystemExit:
         from core.color import finish
         finish()
@@ -60,7 +62,8 @@ def load():
     retries = options.retries
     graph_flag = options.graph_flag
 
-    info(messages("en", 0))
+    info(messages(language, 0))
+    info(messages(language,96).format(len(graph_names) + len(module_names) - 1))
     # Checking Requirements
     (targets, targets_list, thread_number, thread_number_host,
      log_in_file, scan_method, exclude_method, users, users_list,
@@ -94,7 +97,8 @@ def load():
                 trying += 1
                 t = threading.Thread(target=start_attack, args=(
                     str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
-                    port, log_in_file, time_sleep, language, verbose_level, show_version, check_update, proxies, retries))
+                    port, log_in_file, time_sleep, language, verbose_level, show_version, check_update, proxies,
+                    retries))
                 threads.append(t)
                 t.start()
                 while 1:
