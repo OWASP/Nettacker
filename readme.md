@@ -48,8 +48,9 @@ Options:
     -c, --update        check for update
     -o LOG_IN_FILE, --output=LOG_IN_FILE
                         save all logs in file (results.txt, results.html)
-    --graph             build a graph of all activities and information, you
-                        must use html output
+    --graph=GRAPH_FLAG  build a graph of all activities and information, you
+                        must use html output. available graphs:
+                        ['d3_tree_v1_graph', 'jit_circle_v1_graph']
 
   Target:
     Target input options
@@ -63,11 +64,11 @@ Options:
     Scan method options
 
     -m SCAN_METHOD, --method=SCAN_METHOD
-                        choose scan method ['ftp_brute', 'http_brute',
-                        'smtp_brute', 'ssh_brute', 'port_scan', 'all']
+                        choose scan method ['ftp_brute', 'smtp_brute',
+                        'ssh_brute', 'port_scan', 'all']
     -x EXCLUDE_METHOD, --exclude=EXCLUDE_METHOD
                         choose scan method to exclude ['ftp_brute',
-                        'http_brute', 'smtp_brute', 'ssh_brute', 'port_scan']
+                        'smtp_brute', 'ssh_brute', 'port_scan']
     -u USERS, --usernames=USERS
                         username(s) list, separate with ","
     -U USERS_LIST, --users-list=USERS_LIST
@@ -96,7 +97,6 @@ Options:
     --retries=RETRIES   Retries when the connection timeout (default 3)
 
 Please read license and agreements https://github.com/Nettacker/Nettacker
-
 ```
 
 * ***IoT Scanner***
