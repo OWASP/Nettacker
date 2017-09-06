@@ -144,13 +144,14 @@ def sort_logs(log_in_file, language, graph_flag):
                                                          )
         for value in data:
             _table += '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' % (
-                value[_HOST], value[_USERNAME], value[_PASSWORD], value[_PORT], value[_TYPE],
+                value[_HOST.decode('utf8')], value[_USERNAME.decode('utf8')], value[_PASSWORD.decode('utf8')],
+                value[_PORT.decode('utf8')], value[_TYPE.decode('utf8')],
                 value[_DESCRIPTION])
         _table += '</table><br><br></center><br><br>' + messages(language, 93) \
             .format(compatible.__version__, compatible.__code_name__,
                     datetime.datetime.now())
-        save = open(log_in_file, 'wb')
-        save.write(_table.encode('utf8'))
+        save = open(log_in_file, 'w')
+        save.write(_table)
         save.close()
     else:
         o = open(log_in_file)
