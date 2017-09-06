@@ -149,7 +149,7 @@ def sort_logs(log_in_file, language, graph_flag):
         _table += '</table><br><br></center><br><br>' + messages(language, 93) \
             .format(compatible.__version__, compatible.__code_name__,
                     datetime.datetime.now())
-        save = open(log_in_file, 'w')
+        save = open(log_in_file, 'wb')
         save.write(_table.encode('utf8'))
         save.close()
     else:
@@ -165,7 +165,7 @@ def sort_logs(log_in_file, language, graph_flag):
             _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION],
                              [value[_HOST], value[_USERNAME], value[_PASSWORD], value[_PORT], value[_TYPE],
                               value[_DESCRIPTION]]])
-        save = open(log_in_file, 'w')
+        save = open(log_in_file, 'wb')
         save.write(_table.draw().encode('utf8') + '\n\n' +
                    messages(language, 93).format(compatible.__version__, compatible.__code_name__,
                                                  datetime.datetime.now()).encode('utf8') + '\n\n')

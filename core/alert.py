@@ -23,7 +23,7 @@ def messages(language, msg_id):
 
 def info(content):
     if '-L' in sys.argv or '--logs' in sys.argv:
-        f = open('logs.txt', 'a')
+        f = open('logs.txt', 'ab')
         f.write('[+] ' + content.encode('utf8') + '\n')
         f.close()
     if '\n' in content:
@@ -38,7 +38,7 @@ def info(content):
 
 def write(content):
     if '-L' in sys.argv or '--logs' in sys.argv:
-        f = open('logs.txt', 'a')
+        f = open('logs.txt', 'ab')
         f.write(content.encode('utf8') + '\n')
         f.close()
     sys.stdout.write(content.encode('utf8'))
@@ -47,7 +47,7 @@ def write(content):
 
 def warn(content):
     if '-L' in sys.argv or '--logs' in sys.argv:
-        f = open('logs.txt', 'a')
+        f = open('logs.txt', 'ab')
         f.write('[!] ' + content.encode('utf8') + '\n')
         f.close()
     if '\n' in content:
@@ -62,7 +62,7 @@ def warn(content):
 
 def error(content):
     if '-L' in sys.argv or '--logs' in sys.argv:
-        f = open('logs.txt', 'a')
+        f = open('logs.txt', 'ab')
         f.write('[X] ' + content.encode('utf8') + '\n')
         f.close()
     if '\n' in content:
