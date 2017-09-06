@@ -8,7 +8,7 @@ os_name = compatible.os_name()
 
 def finish():
     if 'linux' in os_name or os_name == 'darwin':
-        sys.std.write('\033[0m')
+        sys.stdout.write('\033[0m')
     else:
         import ctypes
         std_out_handle = ctypes.windll.kernel32.GetStdHandle(-11)
