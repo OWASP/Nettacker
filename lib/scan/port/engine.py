@@ -45,7 +45,7 @@ def start(target, users, passwds, port, timeout_sec, thread_number, num, total, 
         threads = []
         max = thread_number
         trying = 0
-        total_req = len(port.rsplit())
+        total_req = len(str(port).rsplit())
         thread_tmp_filename = 'tmp/thread_tmp_' + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         thread_write = open(thread_tmp_filename, 'w')
