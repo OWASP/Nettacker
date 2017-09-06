@@ -9,7 +9,7 @@ Nettacker
 ***THIS SOFTWARE WAS CREATED TO AUTOMATED PENETRATION TESTING AND INFORMATION GATHERING. CONTRIBUTORS WILL NOT BE RESPONSIBLE FOR ANY ILLEGAL USAGE.***
 
 
-Nettacker project was created to automated for information gathering, vulnerability scanning and eventually generating report for networks, including services, bugs, vulnerabilities, misconfigurations and information. This software is able to use SYN, ACK, TCP, ICMP and many other protocols to detect and bypass the Firewalls/IDS/IPS and devices. By using a unique solution in Nettacker to find protected services such as SCADA We could make a point to be one of the bests of scanners.  
+Nettacker project was created to automated for information gathering, vulnerability scanning and eventually generating a report for networks, including services, bugs, vulnerabilities, misconfigurations and information. This software is able to use SYN, ACK, TCP, ICMP and many other protocols to detect and bypass the Firewalls/IDS/IPS and devices. By using a unique solution in Nettacker to find protected services such as SCADA We could make a point to be one of the bests of scanners.  
 
 ```
 
@@ -50,7 +50,8 @@ Options:
                         save all logs in file (results.txt, results.html)
     --graph=GRAPH_FLAG  build a graph of all activities and information, you
                         must use html output. available graphs:
-                        ['d3_tree_v1_graph', 'jit_circle_v1_graph']
+                        ['d3_tree_v1_graph', 'd3_tree_v2_graph',
+                        'jit_circle_v1_graph']
 
   Target:
     Target input options
