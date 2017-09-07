@@ -2,13 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import json
-import texttable
 import datetime
 import sys
 from core.alert import messages
 from core.alert import info
 from core.alert import error
 from core import compatible
+
+try:
+    import texttable
+except:
+    error('pip install -r requirements.txt')
+    sys.exit(1)
 
 
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
