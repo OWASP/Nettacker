@@ -40,8 +40,13 @@ def check(language):
         pass
         # os.system('clear')
     elif 'win32' == sys.platform or 'win64' == sys.platform:
-        pass
-        # os.system('cls')
+        if language != 'en':
+            from core.color import finish
+            from core.alert import error
+            error('please use english language on windows!')
+            finish()
+            sys.exit(1)
+            # os.system('cls')
     else:
         error(messages(language, 47))
         from core.color import finish
