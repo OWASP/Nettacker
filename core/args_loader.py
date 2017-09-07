@@ -27,8 +27,12 @@ def load_all_args(module_names, graph_names):
     if index is -1:
         language = "en"
     else:
-        language = sys.argv[index]
-        if language not in language_list:
+        _error_flag = False
+        try:
+            language = sys.argv[index]
+        except:
+            _error_flag = True
+        if _error_flag or language not in language_list:
             error("Please select one of these languages {0}".format(language_list))
             from core.color import finish
             finish()
