@@ -15,7 +15,8 @@ try:
     from netaddr import iprange_to_cidrs
     from netaddr import IPNetwork
 except:
-    sys.exit(error('pip install -r requirements.txt'))
+    error('pip install -r requirements.txt')
+    sys.exit(1)
 
 
 def getIPRange(IP):
