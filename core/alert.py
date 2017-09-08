@@ -4,6 +4,7 @@
 import sys
 from core import color
 from core.languages import all_messages
+from core.compatible import version
 
 
 def messages(language, msg_id):
@@ -14,7 +15,12 @@ def messages(language, msg_id):
     if language is -1:
         return msgs["0"]
 
-    # Returning message
+    if version() is 2:
+        # Returning message
+        try:
+            return msgs[str(msg_id)][language].decode('utf8')
+        except:
+            return msgs[str(msg_id)]['en'].decode('utf8')
     try:
         return msgs[str(msg_id)][language]
     except:
@@ -23,8 +29,11 @@ def messages(language, msg_id):
 
 def info(content):
     if '-L' in sys.argv or '--logs' in sys.argv:
-        f = open('logs.txt', 'a')
-        f.write('[+] ' + content + '\n')
+        f = open('logs.txt', 'a' if type(content) == str else 'ab')
+        if version() is 2:
+            f.write('[+] ' + content.encode('utf8') + '\n')
+        else:
+            f.write('[+] ' + content + '\n')
         f.close()
     if '\n' in content:
         num_newline = len(content) - len(content.rstrip("\n"))
@@ -38,8 +47,11 @@ def info(content):
 
 def write(content):
     if '-L' in sys.argv or '--logs' in sys.argv:
-        f = open('logs.txt', 'a')
-        f.write(content + '\n')
+        f = open('logs.txt', 'a' if type(content) == str else 'ab')
+        if version() is 2:
+            f.write(content.encode('utf8') + '\n')
+        else:
+            f.write(content + '\n')
         f.close()
     sys.stdout.write(content)
     return
@@ -47,8 +59,11 @@ def write(content):
 
 def warn(content):
     if '-L' in sys.argv or '--logs' in sys.argv:
-        f = open('logs.txt', 'ab')
-        f.write('[!] ' + content + '\n')
+        f = open('logs.txt', 'a' if type(content) == str else 'ab')
+        if version() is 2:
+            f.write('[!] ' + content.encode('utf8') + '\n')
+        else:
+            f.write('[!] ' + content + '\n')
         f.close()
     if '\n' in content:
         num_newline = len(content) - len(content.rstrip("\n"))
@@ -62,8 +77,11 @@ def warn(content):
 
 def error(content):
     if '-L' in sys.argv or '--logs' in sys.argv:
-        f = open('logs.txt', 'ab')
-        f.write('[X] ' + content + '\n')
+        f = open('logs.txt', 'a' if type(content) == str else 'ab')
+        if version() is 2:
+            f.write('[X] ' + content.encode('utf8') + '\n')
+        else:
+            f.write('[X] ' + content + '\n')
         f.close()
     if '\n' in content:
         num_newline = len(content) - len(content.rstrip("\n"))

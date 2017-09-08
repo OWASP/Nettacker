@@ -4,6 +4,7 @@ import string
 import random
 import json
 from core.alert import messages
+from core.compatible import version
 
 
 def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
@@ -105,7 +106,7 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
                             add_flag = False
                     if add_flag:
                         dgraph["children"][b]["children"][d]["children"].append(_to_modify)
-    return '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    data = '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!-- THIS SAMPLE COPIED AND MODIFIED FROM http://philogb.github.io/jit/static/v20/Jit/Examples/Hypertree/example1.html -->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -14843,8 +14844,10 @@ __title_to_replace__
 <div id="log"></div>
 </div>
 </body>
-</html>'''.decode('utf8') \
-        .replace('__data_will_locate_here__', json.dumps(dgraph)) \
+</html>'''.replace('__data_will_locate_here__', json.dumps(dgraph)) \
         .replace('__title_to_replace__', messages(language, 90)) \
         .replace('__description_to_replace__', messages(language, 91)) \
         .replace('__html_title_to_replace__', messages(language, 92))
+    if version() is 2:
+        return data.decode('utf8')
+    return data
