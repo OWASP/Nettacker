@@ -39,7 +39,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     try:
         server.login(user, passwd)
         flag = 0
-    except smtplib.SMTPException, err:
+    except smtplib.SMTPException as err:
         pass
     if flag is 0:
         info(messages(language, 70).format(user, passwd, target, port))

@@ -86,7 +86,7 @@ def start(target, users, passwds, port, timeout_sec, thread_number, num, total, 
                     ssh.connect(target, username='', password='')
                 exit = 0
                 break
-            except paramiko.ssh_exception.AuthenticationException, ssherr:
+            except paramiko.ssh_exception.AuthenticationException as ssherr:
                 if 'Authentication failed.' in ssherr:
                     break
                 else:
