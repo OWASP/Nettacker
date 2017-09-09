@@ -63,7 +63,6 @@ def load():
     graph_flag = options.graph_flag
 
     info(messages(language, 0))
-    info(messages(language,96).format(len(graph_names) + len(module_names) - 1))
     # Checking Requirements
     (targets, targets_list, thread_number, thread_number_host,
      log_in_file, scan_method, exclude_method, users, users_list,
@@ -75,7 +74,7 @@ def load():
             passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
             check_update, proxies, proxies_file, retries, graph_flag
         )
-
+    info(messages(language, 96).format(len(graph_names) + len(module_names) - 1))
     suff = str(datetime.datetime.now()).replace(' ', '_').replace(':', '-') + '_' + ''.join(
         random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
     subs_temp = 'tmp/subs_temp_%s' % (suff)

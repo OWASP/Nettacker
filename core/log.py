@@ -163,7 +163,8 @@ def sort_logs(log_in_file, language, graph_flag):
         _table += '</table><br><br></center><br><br>' + messages(language, 93) \
             .format(compatible.__version__, compatible.__code_name__,
                     datetime.datetime.now())
-        save = open(log_in_file, 'w')
+        _table = _table.encode('utf8')
+        save = open(log_in_file, 'w' if type(_table) == str else 'wb')
         save.write(_table)
         save.close()
     else:

@@ -28,66 +28,56 @@ def messages(language, msg_id):
 
 
 def info(content):
-    if '-L' in sys.argv or '--logs' in sys.argv:
-        f = open('logs.txt', 'a' if type(content) == str else 'ab')
-        if version() is 2:
-            f.write('[+] ' + content.encode('utf8') + '\n')
-        else:
-            f.write('[+] ' + content + '\n')
-        f.close()
-    if '\n' in content:
-        num_newline = len(content) - len(content.rstrip("\n"))
+    if version() is 2:
         sys.stdout.write(color.color('yellow') + '[+] ' + color.color('green') +
-                         content[:-num_newline] + color.color('reset') + "\n" * num_newline)
+                         content.encode('utf8') + color.color('reset') + "\n")
     else:
-        sys.stdout.write(color.color('yellow') + '[+] ' + color.color('green') +
-                         content + color.color('reset') + "\n")
+        sys.stdout.buffer.write(bytes(color.color('yellow') + '[+] ' + color.color('green') +
+                                      content + color.color('reset') + "\n", 'utf8'))
     return
 
 
 def write(content):
-    if '-L' in sys.argv or '--logs' in sys.argv:
-        f = open('logs.txt', 'a' if type(content) == str else 'ab')
-        if version() is 2:
-            f.write(content.encode('utf8') + '\n')
-        else:
-            f.write(content + '\n')
-        f.close()
-    sys.stdout.write(content)
+    if version() is 2:
+        sys.stdout.write(content.encode('utf8'))
+    else:
+        sys.stdout.buffer.write(bytes(content, 'utf8'))
     return
 
 
 def warn(content):
-    if '-L' in sys.argv or '--logs' in sys.argv:
-        f = open('logs.txt', 'a' if type(content) == str else 'ab')
-        if version() is 2:
-            f.write('[!] ' + content.encode('utf8') + '\n')
-        else:
-            f.write('[!] ' + content + '\n')
-        f.close()
     if '\n' in content:
         num_newline = len(content) - len(content.rstrip("\n"))
-        sys.stdout.write(color.color('blue') + '[!] ' + color.color('yellow') +
-                         content[:-num_newline] + color.color('reset') + "\n" * num_newline)
+        if version() is 2:
+            sys.stdout.write(color.color('blue') + '[!] ' + color.color('yellow') +
+                             content[:-num_newline].encode('utf8') + color.color('reset') + "\n" * num_newline)
+        else:
+            sys.stdout.buffer.write(bytes(color.color('blue') + '[!] ' + color.color('yellow') +
+                                          content[:-num_newline] + color.color('reset') + "\n" * num_newline), 'utf8')
     else:
-        sys.stdout.write(color.color('blue') + '[!] ' + color.color('yellow') +
-                         content + color.color('reset') + "\n")
+        if version() is 2:
+            sys.stdout.write(color.color('blue') + '[!] ' + color.color('yellow') +
+                             content.encode('utf8') + color.color('reset') + "\n")
+        else:
+            sys.stdout.buffer.write(bytes(color.color('blue') + '[!] ' + color.color('yellow') +
+                                          content + color.color('reset') + "\n"), 'utf8')
     return
 
 
 def error(content):
-    if '-L' in sys.argv or '--logs' in sys.argv:
-        f = open('logs.txt', 'a' if type(content) == str else 'ab')
-        if version() is 2:
-            f.write('[X] ' + content.encode('utf8') + '\n')
-        else:
-            f.write('[X] ' + content + '\n')
-        f.close()
     if '\n' in content:
         num_newline = len(content) - len(content.rstrip("\n"))
-        sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
-                         content[:-num_newline] + color.color('reset') + "\n" * num_newline)
+        if version() is 2:
+            sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
+                             content[:-num_newline].encode('utf8') + color.color('reset') + "\n" * num_newline)
+        else:
+            sys.stdout.buffer.write(bytes(color.color('red') + '[X] ' + color.color('yellow') +
+                                          content[:-num_newline] + color.color('reset') + "\n" * num_newline), 'utf8')
     else:
-        sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
-                         content + color.color('reset') + "\n")
+        if version() is 2:
+            sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
+                             content.encode('utf8') + color.color('reset') + "\n")
+        else:
+            data = color.color('red') + '[X] ' + color.color('yellow') + content + color.color('reset') + "\n"
+            sys.stdout.buffer.write(data.encode('utf8'))
     return

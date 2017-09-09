@@ -36,17 +36,18 @@ def version():
 
 
 def check(language):
-    if 'linux' in sys.platform or 'darwin' in sys.platform:
+    if 'linux' in os_name() or 'darwin' in os_name():
         pass
         # os.system('clear')
-    elif 'win32' == sys.platform or 'win64' == sys.platform:
-        if language != 'en':
-            from core.color import finish
-            from core.alert import error
-            error('please use english language on windows!')
-            finish()
-            sys.exit(1)
+    elif 'win32' == os_name() or 'win64' == os_name():
+        #if language != 'en':
+        #    from core.color import finish
+        #    from core.alert import error
+        #   error('please use english language on windows!')
+        #    finish()
+        #    sys.exit(1)
             # os.system('cls')
+        pass
     else:
         error(messages(language, 47))
         from core.color import finish

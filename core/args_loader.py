@@ -14,6 +14,16 @@ from core.compatible import check
 from core.load_modules import load_all_graphs
 
 
+def print_help(self, file=None):
+    """print_help(file : file = stdout)
+
+    Print an extended help message, listing all options and any
+    help text provided with them, to 'file' (default stdout).
+    """
+    if file is None:
+        file = sys.stdout.buffer if int(sys.version_info[0]) is 3 else sys.stdout
+    file.write(self.format_help().encode('utf8'))
+
 def load_all_args(module_names, graph_names):
     # Language Options
     language_list = [lang for lang in messages(-1, 0)]
@@ -323,7 +333,6 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             from core.color import finish
             finish()
             sys.exit(1)
-
 
     # Return the values
     return [targets, targets_list, thread_number, thread_number_host,
