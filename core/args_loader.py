@@ -24,6 +24,7 @@ def print_help(self, file=None):
         file = sys.stdout.buffer if int(sys.version_info[0]) is 3 else sys.stdout
     file.write(self.format_help().encode('utf8'))
 
+
 def load_all_args(module_names, graph_names):
     # Language Options
     language_list = [lang for lang in messages(-1, 0)]
@@ -141,7 +142,7 @@ def load_all_args(module_names, graph_names):
                       dest="proxies_file", default=None,
                       help=messages(language, 63))
     method.add_option("--retries", action="store",
-                      dest="retries", default=3,
+                      dest="retries", type=int, default=3,
                       help=messages(language, 64))
     # Build Options
     parser.add_option_group(method)
