@@ -31,7 +31,7 @@ def load():
 
     # Parse ARGVs
     try:
-        parser, (options, args) = load_all_args(module_names, graph_names)
+        parser, options = load_all_args(module_names, graph_names)
     except SystemExit:
         from core.color import finish
         finish()

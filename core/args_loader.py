@@ -3,8 +3,7 @@
 
 import sys
 import os
-from optparse import OptionGroup
-from optparse import OptionParser
+import argparse
 from core.alert import error
 from core.alert import write
 from core.alert import warn
@@ -54,98 +53,94 @@ def load_all_args(module_names, graph_names):
     from core.color import finish
     finish()
     # Start Parser
-    parser = OptionParser(usage=messages(language, 1),
-                          description=messages(language, 2),
-                          epilog=messages(language, 3))
-    # Engine Options
-    engineOpt = OptionGroup(parser, messages(language, 4), messages(language, 5))
-    engineOpt.add_option("-L", "--language", action="store",
-                         dest="language", default="en",
-                         help=messages(language, 6).format(language_list))
-    engineOpt.add_option("-v", "--verbose", action="store",
-                         dest="verbose_level", default=0,
-                         help=messages(language, 59))
-    engineOpt.add_option("-V", "--version", action="store_true",
-                         default=False, dest="show_version",
-                         help=messages(language, 60))
-    engineOpt.add_option("-c", "--update", action="store_true",
-                         default=False, dest="check_update",
-                         help=messages(language, 61))
-    engineOpt.add_option("-o", "--output", action="store",
-                         default="results.html", dest="log_in_file",
-                         help=messages(language, 11))
-    engineOpt.add_option("--graph", action="store",
-                         default=None, dest="graph_flag",
-                         help=messages(language, 86).format(graph_names))
+    parser = argparse.ArgumentParser(prog="Nettacker", add_help=False)
 
-    # Build Engine Options
-    parser.add_option_group(engineOpt)
+    # parser = OptionParser(usage=messages(language, 1),
+    #                      description=messages(language, 2),
+    #                      epilog=messages(language, 3))
+
+    # Engine Options
+    engineOpt = parser.add_argument_group(messages(language, 4), messages(language, 5))
+    engineOpt.add_argument("-L", "--language", action="store",
+                           dest="language", default="en",
+                           help=messages(language, 6).format(language_list))
+    engineOpt.add_argument("-v", "--verbose", action="store",
+                           dest="verbose_level", default=0,
+                           help=messages(language, 59))
+    engineOpt.add_argument("-V", "--version", action="store_true",
+                           default=False, dest="show_version",
+                           help=messages(language, 60))
+    engineOpt.add_argument("-c", "--update", action="store_true",
+                           default=False, dest="check_update",
+                           help=messages(language, 61))
+    engineOpt.add_argument("-o", "--output", action="store",
+                           default="results.html", dest="log_in_file",
+                           help=messages(language, 11))
+    engineOpt.add_argument("--graph", action="store",
+                           default=None, dest="graph_flag",
+                           help=messages(language, 86).format(graph_names))
 
     # Target Options
-    target = OptionGroup(parser, messages(language, 12), messages(language, 13))
-    target.add_option("-i", "--targets", action="store", dest="targets", default=None,
-                      help=messages(language, 14))
-    target.add_option("-l", "--targets-list", action="store", dest="targets_list", default=None,
-                      help=messages(language, 15))
-    # Build Options
-    parser.add_option_group(target)
+    target = parser.add_argument_group(messages(language, 12), messages(language, 13))
+    target.add_argument("-i", "--targets", action="store", dest="targets", default=None,
+                        help=messages(language, 14))
+    target.add_argument("-l", "--targets-list", action="store", dest="targets_list", default=None,
+                        help=messages(language, 15))
 
     # Exclude Module Name
     exclude_names = module_names[:]
     exclude_names.remove('all')
 
     # Methods Options
-    method = OptionGroup(parser, "Method", messages(language, 16))
-    method.add_option("-m", "--method", action="store",
-                      dest="scan_method", default=None,
-                      help=messages(language, 17).format(module_names))
-    method.add_option("-x", "--exclude", action="store",
-                      dest="exclude_method", default=None,
-                      help=messages(language, 18).format(exclude_names))
-    method.add_option("-u", "--usernames", action="store",
-                      dest="users", default=None,
-                      help=messages(language, 19))
-    method.add_option("-U", "--users-list", action="store",
-                      dest="users_list", default=None,
-                      help=messages(language, 20))
-    method.add_option("-p", "--passwords", action="store",
-                      dest="passwds", default=None,
-                      help=messages(language, 21))
-    method.add_option("-P", "--passwords-list", action="store",
-                      dest="passwds_list", default=None,
-                      help=messages(language, 22))
-    method.add_option("-g", "--ports", action="store",
-                      dest="ports", default=None,
-                      help=messages(language, 23))
-    method.add_option("-T", "--timeout", action="store",
-                      dest="timeout_sec", default=3.0, type="float",
-                      help=messages(language, 24))
-    method.add_option("-w", "--time-sleep", action="store",
-                      dest="time_sleep", default=0.0, type="float",
-                      help=messages(language, 25))
-    method.add_option("-r", "--range", action="store_true",
-                      default=False, dest="check_ranges",
-                      help=messages(language, 7))
-    method.add_option("-s", "--sub-domains", action="store_true",
-                      default=False, dest="check_subdomains",
-                      help=messages(language, 8))
-    method.add_option("-t", "--thread-connection", action="store",
-                      default=10, type="int", dest="thread_number",
-                      help=messages(language, 9))
-    method.add_option("-M", "--thread-hostscan", action="store",
-                      default=10, type="int", dest="thread_number_host",
-                      help=messages(language, 10))
-    method.add_option("-R", "--proxy", action="store",
-                      dest="proxies", default=None,
-                      help=messages(language, 62))
-    method.add_option("--proxy-list", action="store",
-                      dest="proxies_file", default=None,
-                      help=messages(language, 63))
-    method.add_option("--retries", action="store",
-                      dest="retries", type=int, default=3,
-                      help=messages(language, 64))
-    # Build Options
-    parser.add_option_group(method)
+    method = parser.add_argument_group("Method", messages(language, 16))
+    method.add_argument("-m", "--method", action="store",
+                        dest="scan_method", default=None,
+                        help=messages(language, 17).format(module_names))
+    method.add_argument("-x", "--exclude", action="store",
+                        dest="exclude_method", default=None,
+                        help=messages(language, 18).format(exclude_names))
+    method.add_argument("-u", "--usernames", action="store",
+                        dest="users", default=None,
+                        help=messages(language, 19))
+    method.add_argument("-U", "--users-list", action="store",
+                        dest="users_list", default=None,
+                        help=messages(language, 20))
+    method.add_argument("-p", "--passwords", action="store",
+                        dest="passwds", default=None,
+                        help=messages(language, 21))
+    method.add_argument("-P", "--passwords-list", action="store",
+                        dest="passwds_list", default=None,
+                        help=messages(language, 22))
+    method.add_argument("-g", "--ports", action="store",
+                        dest="ports", default=None,
+                        help=messages(language, 23))
+    method.add_argument("-T", "--timeout", action="store",
+                        dest="timeout_sec", default=3.0, type=float,
+                        help=messages(language, 24))
+    method.add_argument("-w", "--time-sleep", action="store",
+                        dest="time_sleep", default=0.0, type=float,
+                        help=messages(language, 25))
+    method.add_argument("-r", "--range", action="store_true",
+                        default=False, dest="check_ranges",
+                        help=messages(language, 7))
+    method.add_argument("-s", "--sub-domains", action="store_true",
+                        default=False, dest="check_subdomains",
+                        help=messages(language, 8))
+    method.add_argument("-t", "--thread-connection", action="store",
+                        default=10, type=int, dest="thread_number",
+                        help=messages(language, 9))
+    method.add_argument("-M", "--thread-hostscan", action="store",
+                        default=10, type=int, dest="thread_number_host",
+                        help=messages(language, 10))
+    method.add_argument("-R", "--proxy", action="store",
+                        dest="proxies", default=None,
+                        help=messages(language, 62))
+    method.add_argument("--proxy-list", action="store",
+                        dest="proxies_file", default=None,
+                        help=messages(language, 63))
+    method.add_argument("--retries", action="store",
+                        dest="retries", type=int, default=3,
+                        help=messages(language, 64))
 
     # Return Options
     return [parser, parser.parse_args()]
