@@ -13,17 +13,6 @@ from core.compatible import check
 from core.load_modules import load_all_graphs
 
 
-def print_help(self, file=None):
-    """print_help(file : file = stdout)
-
-    Print an extended help message, listing all options and any
-    help text provided with them, to 'file' (default stdout).
-    """
-    if file is None:
-        file = sys.stdout.buffer if int(sys.version_info[0]) is 3 else sys.stdout
-    file.write(self.format_help().encode('utf8'))
-
-
 def load_all_args(module_names, graph_names):
     # Language Options
     language_list = [lang for lang in messages(-1, 0)]
@@ -79,6 +68,9 @@ def load_all_args(module_names, graph_names):
     engineOpt.add_argument("--graph", action="store",
                            default=None, dest="graph_flag",
                            help=messages(language, 86).format(graph_names))
+    engineOpt.add_argument("-h", "--help", action="store_true",
+                           default=False, dest="help_menu_flag",
+                           help=messages(language, 2))
 
     # Target Options
     target = parser.add_argument_group(messages(language, 12), messages(language, 13))
@@ -141,7 +133,6 @@ def load_all_args(module_names, graph_names):
     method.add_argument("--retries", action="store",
                         dest="retries", type=int, default=3,
                         help=messages(language, 64))
-
     # Return Options
     return [parser, parser.parse_args()]
 
@@ -149,8 +140,14 @@ def load_all_args(module_names, graph_names):
 def check_all_required(targets, targets_list, thread_number, thread_number_host,
                        log_in_file, scan_method, exclude_method, users, users_list,
                        passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level,
-                       show_version, check_update, proxies, proxies_file, retries, graph_flag):
+                       show_version, check_update, proxies, proxies_file, retries, graph_flag, help_menu_flag):
     # Checking Requirements
+    # Check Help Menu
+    if help_menu_flag is True:
+        parser.print_help()
+        from core.color import finish
+        finish()
+        sys.exit(0)
     # Check version
     if show_version is True:
         from core import compatible

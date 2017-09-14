@@ -14,8 +14,8 @@ def all_messages():
                 "fa": "python nettacker.py [گزینه ها]"
             },
             "2": {
-                "en": "Nettacker Help Menu",
-                "fa": "منوی راهنمای Nettacker"
+                "en": "Show Nettacker Help Menu",
+                "fa": "نشان دادن منوی راهنمای Nettacker"
             },
             "3": {
                 "en": "Please read license and agreements https://github.com/Nettacker/Nettacker",
