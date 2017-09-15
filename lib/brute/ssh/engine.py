@@ -60,7 +60,93 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     return flag
 
 
-def start(target, users, passwds, port, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
+def __connect_to_port(port, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename):
+    port = int(port)
+    exit = 0
+    while 1:
+        try:
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            if timeout_sec is not None:
+                ssh.connect(target, username='', password='', timeout=timeout_sec)
+            else:
+                ssh.connect(target, username='', password='')
+            exit = 0
+            break
+        except paramiko.ssh_exception.AuthenticationException as ssherr:
+            if 'Authentication failed.' in ssherr:
+                break
+            else:
+                exit += 1
+                if exit is retries:
+                    error(messages(language, 77).format(target, port, str(num), str(total)))
+                    try:
+                        f = open(ports_tmp_filename, 'a')
+                        f.write(str(port) + '\n')
+                        f.close()
+                    except:
+                        pass
+                    break
+        except:
+            exit += 1
+            if exit is 3:
+                error(messages(language, 77).format(target, port, str(num), str(total)))
+                try:
+                    f = open(ports_tmp_filename, 'a')
+                    f.write(str(port) + '\n')
+                    f.close()
+                except:
+                    pass
+                break
+        time.sleep(time_sleep)
+
+
+def test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
+                           thread_number, total_req):
+    threads = []
+    trying = 0
+    for port in ports:
+        t = threading.Thread(target=__connect_to_port,
+                             args=(
+                                 port, timeout_sec, target, retries, language, num, total, time_sleep,
+                                 ports_tmp_filename))
+        threads.append(t)
+        t.start()
+        trying += 1
+        info(messages(language, 72).format(trying, total_req, num, total, target, port))
+        while 1:
+            n = 0
+            for thread in threads:
+                if thread.isAlive() is True:
+                    n += 1
+                else:
+                    threads.remove(thread)
+            if n >= thread_number:
+                time.sleep(0.1)
+            else:
+                break
+    while 1:
+        n = True
+        for thread in threads:
+            if thread.isAlive() is True:
+                n = False
+        time.sleep(0.1)
+        if n is True:
+            break
+    _ports = list(set(open(ports_tmp_filename).read().rsplit()))
+    for port in _ports:
+        try:
+            ports.remove(int(port))
+        except:
+            try:
+                ports.remove(port)
+            except:
+                pass
+    os.remove(ports_tmp_filename)
+    return ports
+
+
+def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
           language, verbose_level, show_version, check_update, proxies, retries):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN':
         threads = []
@@ -68,42 +154,19 @@ def start(target, users, passwds, port, timeout_sec, thread_number, num, total, 
         total_req = len(users) * len(passwds)
         thread_tmp_filename = 'tmp/thread_tmp_' + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
+        ports_tmp_filename = 'tmp/ports_tmp_' + ''.join(
+            random.choice(string.ascii_letters + string.digits) for _ in range(20))
         thread_write = open(thread_tmp_filename, 'w')
         thread_write.write('1')
         thread_write.close()
-
-        # test ssh
         trying = 0
-        portflag = True
-        exit = 0
-        while 1:
-            try:
-                ssh = paramiko.SSHClient()
-                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                if timeout_sec is not None:
-                    ssh.connect(target, username='', password='', timeout=timeout_sec)
-                else:
-                    ssh.connect(target, username='', password='')
-                exit = 0
-                break
-            except paramiko.ssh_exception.AuthenticationException as ssherr:
-                if 'Authentication failed.' in ssherr:
-                    break
-                else:
-                    exit += 1
-                    if exit is retries:
-                        error(messages(language, 77).format(target, port, str(num), str(total)))
-                        portflag = False
-                        break
-            except:
-                exit += 1
-                if exit is 3:
-                    error(messages(language, 77).format(target, port, str(num), str(total)))
-                    portflag = False
-                    break
-            time.sleep(time_sleep)
-
-        if portflag is True:
+        ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
+                           thread_number, total_req)
+        for port in ports:
+            # test ssh
+            portflag = True
+            exit = 0
+            port = int(port)
             for user in users:
                 for passwd in passwds:
                     t = threading.Thread(target=login,

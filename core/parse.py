@@ -86,32 +86,31 @@ def load():
                      language, verbose_level, show_version, check_update, proxies, retries)):
         pass
     total_targets += 1
-    total_targets = total_targets * len(scan_method) * len(ports)
+    total_targets = total_targets * len(scan_method)
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
                        language, verbose_level, show_version, check_update, proxies, retries)
     threads = []
     trying = 0
     for target in targets:
         for sm in scan_method:
-            for port in ports:
-                trying += 1
-                t = threading.Thread(target=start_attack, args=(
-                    str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
-                    port, log_in_file, time_sleep, language, verbose_level, show_version, check_update, proxies,
-                    retries))
-                threads.append(t)
-                t.start()
-                while 1:
-                    n = 0
-                    for thread in threads:
-                        if thread.isAlive() is True:
-                            n += 1
-                        else:
-                            threads.remove(thread)
-                    if n >= thread_number_host:
-                        time.sleep(0.1)
+            trying += 1
+            t = threading.Thread(target=start_attack, args=(
+                str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
+                ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, proxies,
+                retries))
+            threads.append(t)
+            t.start()
+            while 1:
+                n = 0
+                for thread in threads:
+                    if thread.isAlive() is True:
+                        n += 1
                     else:
-                        break
+                        threads.remove(thread)
+                if n >= thread_number_host:
+                    time.sleep(0.1)
+                else:
+                    break
     while 1:
         n = True
         for thread in threads:
