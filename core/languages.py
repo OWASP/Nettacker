@@ -10,7 +10,7 @@ def all_messages():
                 "fa": "انجین Nettacker شروع به کار کرد...\n\n",
                 "ru": "Начался запуск Nettacker ... \n\n"
             },
-            "1": {
+            "1": {  # not using replace optparse with argparse
                 "en": "python nettacker.py [options]",
                 "fa": "python nettacker.py [گزینه ها]",
                 "ru": "python nettacker.py [опции]"
@@ -23,7 +23,7 @@ def all_messages():
             "3": {
                 "en": "Please read license and agreements https://github.com/Nettacker/Nettacker",
                 "fa": "لطفا مجوز و موافقت نامه را مطالعه فرمایید https://github.com/Nettacker/Nettacker",
-                "ru": "Пожалуйста, прочтите лицензию и соглашения https://github.com/Nettacker/Nettacker"
+                "ru": "Пожалуйста, прочтите лицензию и соглашение https://github.com/Nettacker/Nettacker"
             },
             "4": {
                 "en": "Engine",
@@ -83,7 +83,7 @@ def all_messages():
             "15": {
                 "en": "read target(s) from file",
                 "fa": "خواندن هدف (ها) از فایل",
-                "ru": "читать цели (цели) из файла"
+                "ru": "читать цель (цели) из файла"
             },
             "16": {
                 "en": "Scan method options",
@@ -98,7 +98,7 @@ def all_messages():
             "18": {
                 "en": "choose scan method to exclude {0}",
                 "fa": "انتخاب متود اسکن استثنا {0}",
-                "ru": "выберите метод сканирования, чтобы исключить {0}"
+                "ru": "выберите исключительный метод сканирования {0}"
             },
             "19": {
                 "en": "username(s) list, separate with \",\"",
@@ -143,7 +143,7 @@ def all_messages():
             "27": {
                 "en": "Cannot specify the target(s), unable to open file: {0}",
                 "fa": "عدم توانایی در مشخص کردن هدف (ها)، عدم توانایی در بازکردن فایل: {0}",
-                "ru": "Невозможно указать цель (ы), неспособную открыть файл: {0}"
+                "ru": "Невозможно указать цель (ы), неспособность открыть файл: {0}"
             },
             "28": {
                 "en": "it\'s better to use thread number lower than 100, BTW we are continuing...",
