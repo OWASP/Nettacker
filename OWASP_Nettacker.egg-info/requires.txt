@@ -1,0 +1,7 @@
+netaddr
+dnspython
+requests
+paramiko
+texttable
+PySocks
+win_inet_pton

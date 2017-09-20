@@ -3,14 +3,24 @@
 
 import sys
 import os
-import argparse
 from core.alert import error
 from core.alert import write
 from core.alert import warn
 from core.alert import info
 from core.alert import messages
 from core.compatible import check
+from core.compatible import version
+from core.compatible import os_name
 from core.load_modules import load_all_graphs
+
+# temporary use fixed version of argparse
+if os_name() == 'win32' or os_name() == 'win64':
+    if version() is 2:
+        from lib.argparse import argparse_v2 as argparse
+    else:
+        from lib.argparse import argparse_v3 as argparse
+else:
+    import argparse
 
 
 def load_all_args(module_names, graph_names):
