@@ -525,5 +525,15 @@ def all_messages():
                 "en": "this graph module \"{0}\" is not available",
                 "fa": "این ماژول گراف \"{0}\" در دسترس نیست",
                 "ru": "этот модуль графа \"{0}\" недоступен"
+            },
+            "99": {
+                "en": "ping before scan the host",
+                "fa": "پینگ کردن هست قبل از اسکن"
+            },
+            "100": {
+                "en": "skipping whole target {0} and scanning methods {1} because of --ping-before-scan"
+                      " is true and it didn\'t response!",
+                "fa": "از هدف {0} و متود های اسکن {1} به دلیل true بودن --ping-before-scan "
+                      "و عدم دریافت پاسخ صرف نظر شد! "
             }
         }
