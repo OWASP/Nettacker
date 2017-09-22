@@ -354,9 +354,9 @@ def all_messages():
                       "переход к следующему шагу"
             },
             "69": {
-                "en": "input target for {0} module must be DOMAIN or SINGLE_IPv4, skipping {1}",
-                "fa": "ورودی هدف برای ماژول {0} باید DOMAIN یا SINGLE_IPv4 باشد، از {1} چشم پوشی شد",
-                "ru": "входная цель для модуля {0} должна быть DOMAIN или SINGLE_IPv4, пропуская {1}"
+                "en": "input target for {0} module must be DOMAIN, HTTP or SINGLE_IPv4, skipping {1}",
+                "fa": "ورودی هدف برای ماژول {0} باید DOMAIN، HTTP یا SINGLE_IPv4 باشد، از {1} چشم پوشی شد",
+                "ru": "входная цель для модуля {0} должна быть DOMAIN, HTTP или SINGLE_IPv4, пропуская {1}"
             },
             "70": {
                 "en": "user: {0} pass:{1} host:{2} port:{3} found!",
