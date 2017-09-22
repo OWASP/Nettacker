@@ -51,7 +51,7 @@ def warn(content):
                          content.encode('utf8') + color.color('reset') + "\n")
     else:
         sys.stdout.buffer.write(bytes(color.color('blue') + '[!] ' + color.color('yellow') +
-                                      content + color.color('reset') + "\n"), 'utf8')
+                                      content + color.color('reset') + "\n", 'utf8'))
     return
 
 
