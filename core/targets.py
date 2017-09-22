@@ -13,6 +13,12 @@ except:
     sys.exit(1)
 
 
+def target_to_host(target):
+    if target_type(target) == 'HTTP':
+        target = target.lower().replace('http://', '').replace('https://', '').rsplit('/')[0]
+    return target
+
+
 def target_type(target):
     if isIP(target) is True:
         return 'SINGLE_IPv4'
@@ -28,7 +34,7 @@ def target_type(target):
             return 'CIDR_IPv4'
     elif '.' in target and '/' not in target:
         return 'DOMAIN'
-    elif 'http://' in target.lower() or 'https://' in target.lower():
+    elif target.lower().startswith('http://') or target.lower().startswith('https://'):
         return 'HTTP'
     else:
         return 'UNKNOW'
@@ -79,7 +85,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                     tmp_exec = list(set(open(subs_temp, 'r').read().replace(' ', '').rsplit()))
                     sub_domains = []
                     for sub in tmp_exec:
-                        if 'PTRarchive.com' not in sub and '.internal.nsa.gov.' not in sub\
+                        if 'PTRarchive.com' not in sub and '.internal.nsa.gov.' not in sub \
                                 and 'Sublist3r' not in sub and sub not in sub_domains:
                             sub_domains.append(sub)
                     if target not in sub_domains:
@@ -116,7 +122,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                     info(messages(language, 52).format(target))
                     tmp_exec = os.popen(
                         'python lib/sublist3r/sublist3r.py -d {0} -o {1} '.format(target, subs_temp)).read()
-                    tmp_exec = list(set(open(subs_temp, 'r').read().replace(' ','').rsplit()))
+                    tmp_exec = list(set(open(subs_temp, 'r').read().replace(' ', '').rsplit()))
                     sub_domains = []
                     for sub in tmp_exec:
                         if 'PTRarchive.com' not in sub and '.internal.nsa.gov.' not in sub \
