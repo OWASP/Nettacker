@@ -11,6 +11,7 @@ import os
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
+from lib.icmp.engine import do_one as do_one_ping
 
 
 def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename):
@@ -41,10 +42,13 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
-          language, verbose_level, show_version, check_update, proxies, retries):  # Main function
+          language, verbose_level, show_version, check_update, proxies, retries, ping_flag):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP':
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
+        if do_one_ping(target, timeout_sec, 8) is None:
+            warn(messages(language, 100).format(target, 'port_scan'))
+            return None
         threads = []
         max = thread_number
         total_req = len(ports)

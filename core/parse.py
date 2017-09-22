@@ -20,8 +20,6 @@ from core.load_modules import load_all_modules
 from core.load_modules import load_all_graphs
 from core.args_loader import load_all_args
 from core.args_loader import check_all_required
-from lib.icmp.engine import do_one as do_one_ping
-from core.targets import target_to_host
 
 
 def load():
@@ -95,49 +93,25 @@ def load():
     threads = []
     trying = 0
     for target in targets:
-        if ping_flag is True and do_one_ping(target_to_host(target), timeout_sec, 8) is not None:
-            for sm in scan_method:
-                trying += 1
-                t = threading.Thread(target=start_attack, args=(
-                    str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
-                    ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, proxies,
-                    retries))
-                threads.append(t)
-                t.start()
-                while 1:
-                    n = 0
-                    for thread in threads:
-                        if thread.isAlive() is True:
-                            n += 1
-                        else:
-                            threads.remove(thread)
-                    if n >= thread_number_host:
-                        time.sleep(0.1)
+        for sm in scan_method:
+            trying += 1
+            t = threading.Thread(target=start_attack, args=(
+                str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
+                ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, proxies,
+                retries, ping_flag))
+            threads.append(t)
+            t.start()
+            while 1:
+                n = 0
+                for thread in threads:
+                    if thread.isAlive() is True:
+                        n += 1
                     else:
-                        break
-        elif ping_flag is True:
-            warn(messages(language, 100).format(target, scan_method))
-            trying += len(scan_method)
-        elif ping_flag is False:
-            for sm in scan_method:
-                trying += 1
-                t = threading.Thread(target=start_attack, args=(
-                    str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
-                    ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, proxies,
-                    retries))
-                threads.append(t)
-                t.start()
-                while 1:
-                    n = 0
-                    for thread in threads:
-                        if thread.isAlive() is True:
-                            n += 1
-                        else:
-                            threads.remove(thread)
-                    if n >= thread_number_host:
-                        time.sleep(0.1)
-                    else:
-                        break
+                        threads.remove(thread)
+                if n >= thread_number_host:
+                    time.sleep(0.1)
+                else:
+                    break
 
     while 1:
         n = True

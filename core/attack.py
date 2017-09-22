@@ -9,7 +9,7 @@ from core.alert import messages
 
 def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, thread_number, ports, log_in_file,
                  time_sleep, language, verbose_level, show_version,
-                 check_update, proxies, retries):
+                 check_update, proxies, retries, ping_flag):
     info(messages(language, 45).format(str(target), str(num), str(total)))
     # Calling Engines
     # BruteForce Engines
@@ -25,8 +25,7 @@ def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, t
             finish()
             sys.exit(1)
         start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
-              verbose_level, show_version,
-              check_update, proxies, retries)
+              verbose_level, show_version, check_update, proxies, retries, ping_flag)
     # Scanners Engines
     if scan_method[-5:] == '_scan':
         try:
@@ -40,5 +39,4 @@ def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, t
             finish()
             sys.exit(1)
         start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
-              verbose_level, show_version,
-              check_update, proxies, retries)
+              verbose_level, show_version, check_update, proxies, retries, ping_flag)
