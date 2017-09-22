@@ -158,6 +158,8 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     # Check Help Menu
     if help_menu_flag is True:
         parser.print_help()
+        write('\n\n')
+        write(messages(language, 3))
         from core.color import finish
         finish()
         sys.exit(0)
