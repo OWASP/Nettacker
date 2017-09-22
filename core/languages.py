@@ -528,12 +528,15 @@ def all_messages():
             },
             "99": {
                 "en": "ping before scan the host",
-                "fa": "پینگ کردن هست قبل از اسکن"
+                "fa": "پینگ کردن هست قبل از اسکن",
+                "ru": "ping перед сканированием хоста"
             },
             "100": {
                 "en": "skipping whole target {0} and scanning methods {1} because of --ping-before-scan"
                       " is true and it didn\'t response!",
                 "fa": "از هدف {0} و متود های اسکن {1} به دلیل true بودن --ping-before-scan "
-                      "و عدم دریافت پاسخ صرف نظر شد! "
+                      "و عدم دریافت پاسخ صرف نظر شد! ",
+                "ru": "пропуская мишень {0} и методы сканирования {1} из-за --ping-before-scan истинны,"
+                      " и он не ответил!"
             }
         }
