@@ -153,11 +153,14 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         ports_tmp_filename = 'tmp/ports_tmp_' + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
-        ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
-                           thread_number, total_req)
         thread_write = open(thread_tmp_filename, 'w')
         thread_write.write('1')
         thread_write.close()
+        ports_write = open(ports_tmp_filename, 'w')
+        ports_write.write('')
+        ports_write.close()
+        ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
+                           thread_number, total_req)
         trying = 0
         for port in ports:
             for user in users:

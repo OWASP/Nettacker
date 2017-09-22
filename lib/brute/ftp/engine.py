@@ -157,6 +157,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = open(thread_tmp_filename, 'w')
         thread_write.write('1')
         thread_write.close()
+        ports_write = open(ports_tmp_filename, 'w')
+        ports_write.write('')
+        ports_write.close()
         trying = 0
         ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
                            thread_number, total_req)
