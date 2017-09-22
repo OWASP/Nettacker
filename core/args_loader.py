@@ -143,6 +143,9 @@ def load_all_args(module_names, graph_names):
     method.add_argument("--retries", action="store",
                         dest="retries", type=int, default=3,
                         help=messages(language, 64))
+    method.add_argument('--ping-before-scan', action="store_true",
+                        dest='ping_flag', default=False,
+                        help=messages(language,99))
     # Return Options
     return [parser, parser.parse_args()]
 
