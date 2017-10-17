@@ -13,6 +13,7 @@ Nettacker project was created to automated for information gathering, vulnerabil
 
 ```
 
+
    ______          __      _____ _____
   / __ \ \        / /\    / ____|  __ \
  | |  | \ \  /\  / /  \  | (___ | |__) |
@@ -44,7 +45,9 @@ Engine:
   Engine input options
 
   -L LANGUAGE, --language LANGUAGE
-                        select a language ['fa', 'hi', 'en', 'ru']
+                        select a language ['ru', 'fr', 'en', 'nl', 'el', 'vi',
+                        'de', 'am', 'ps', 'tr', 'fa', 'ja', 'hi', 'ko', 'it',
+                        'hy', 'ur', 'ar', 'id', 'es']
   -v VERBOSE_LEVEL, --verbose VERBOSE_LEVEL
                         verbose mode level (0-5) (default 0)
   -V, --version         show software version
