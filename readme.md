@@ -46,8 +46,8 @@ Engine:
 
   -L LANGUAGE, --language LANGUAGE
                         select a language ['ru', 'fr', 'en', 'nl', 'el', 'vi',
-                        'de', 'am', 'ps', 'tr', 'fa', 'ja', 'hi', 'ko', 'it',
-                        'hy', 'ur', 'ar', 'id', 'es']
+                        'de', 'tr', 'ps', 'ur', 'fa', 'ja', 'hi', 'ko', 'it',
+                        'hy', 'ar', 'id', 'es']
   -v VERBOSE_LEVEL, --verbose VERBOSE_LEVEL
                         verbose mode level (0-5) (default 0)
   -V, --version         show software version
