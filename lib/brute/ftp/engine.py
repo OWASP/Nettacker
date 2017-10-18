@@ -144,7 +144,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP':
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
-        if do_one_ping(target, timeout_sec, 8) is None:
+        if ping_flag and do_one_ping(target, timeout_sec, 8) is None:
             warn(messages(language, 100).format(target, 'ftp_brute'))
             return None
         threads = []
