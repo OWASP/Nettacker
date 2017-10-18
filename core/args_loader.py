@@ -145,7 +145,7 @@ def load_all_args(module_names, graph_names):
                         help=messages(language, 64))
     method.add_argument('--ping-before-scan', action="store_true",
                         dest='ping_flag', default=False,
-                        help=messages(language,99))
+                        help=messages(language, 99))
     # Return Options
     return [parser, parser.parse_args()]
 
@@ -175,8 +175,10 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         sys.exit(0)
     # Check update
     if check_update is True:
-        info(messages(language, 85))
         from core.color import finish
+        from core.update import _update
+        from core import compatible
+        _update(compatible.__version__, compatible.__code_name__, language)
         finish()
         sys.exit(0)
     # Check the target(s)

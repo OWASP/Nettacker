@@ -2123,5 +2123,14 @@ def all_messages():
                 "ar": "تخطي الهدف الكامل {0} وطريقة المسح {1} بسبب --ping-بري--سكان صحيح وأنه لم يستجب!",
                 "ja": "--ping-before-scanが真であり、応答しなかったため、ターゲット{0}とスキャン方法{1}全体をスキップします！",
                 "es": "omitir el objetivo completo {0} y el método de exploración {1} debido a --ping-before-scan es verdadero y no respondió."
+            },
+            "101": {
+                "en": "you are not using the last version of OWASP Nettacker, please update."
+            },
+            "102": {
+                "en": "cannot check for update, please check your internet connection."
+            },
+            "103": {
+                "en": "You are using the last version of OWASP Nettacker ..."
             }
         }

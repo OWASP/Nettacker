@@ -14,6 +14,11 @@ except:
     __code_name__ = 'UNKNOWN'
 
 
+def _version_info():
+    version_info = open('version').read().rsplit()
+    return [version_info[0], ' '.join(version_info[1:])]
+
+
 def logo():
     from core.alert import write
     from core import color

@@ -20,6 +20,8 @@ from core.load_modules import load_all_modules
 from core.load_modules import load_all_graphs
 from core.args_loader import load_all_args
 from core.args_loader import check_all_required
+from core.update import _check
+from core.compatible import _version_info
 
 
 def load():
@@ -76,6 +78,10 @@ def load():
             passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
             check_update, proxies, proxies_file, retries, graph_flag, help_menu_flag
         )
+    # check for update
+    __version__, __code_name__ = _version_info()
+    _check(__version__, __code_name__, language)
+
     info(messages(language, 96).format(len(graph_names) + len(module_names) - 1))
     suff = str(datetime.datetime.now()).replace(' ', '_').replace(':', '-') + '_' + ''.join(
         random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
