@@ -5,8 +5,13 @@ import sys
 import os
 from core.alert import *
 
-__version__ = '0.0.1'
-__code_name__ = 'SAME'
+try:
+    version_info = open('version').read().rsplit()
+    __version__ = version_info[0]
+    __code_name__ = ' '.join(version_info[1:])
+except:
+    __version__ = 'UNKNOWN'
+    __code_name__ = 'UNKNOWN'
 
 
 def logo():
@@ -40,13 +45,13 @@ def check(language):
         pass
         # os.system('clear')
     elif 'win32' == os_name() or 'win64' == os_name():
-        #if language != 'en':
+        # if language != 'en':
         #    from core.color import finish
         #    from core.alert import error
         #   error('please use english language on windows!')
         #    finish()
         #    sys.exit(1)
-            # os.system('cls')
+        # os.system('cls')
         pass
     else:
         error(messages(language, 47))
