@@ -5,7 +5,7 @@ Nettacker
 [![Python 3.x](https://img.shields.io/badge/python-3.x-blue.svg)](https://travis-ci.org/viraintel/OWASP-Nettacker)
 [![Apache License](https://img.shields.io/badge/License-Apache%20v2-green.svg)](https://github.com/viraintel/OWASP-Nettacker/blob/master/LICENSE)
 [![Executed](https://nettacker.z3r0d4y.com/count_update.py)](https://github.com/viraintel/OWASP-Nettacker/)
-[![Views](https://nettacker.z3r0d4y.com/github.py)](https://github.com/viraintel/OWASP-Nettacker/)
+[![Views](https://nettacker.z3r0d4y.com/git.py)](https://github.com/viraintel/OWASP-Nettacker/)
 
 
 ***THIS SOFTWARE WAS CREATED TO AUTOMATED PENETRATION TESTING AND INFORMATION GATHERING. CONTRIBUTORS WILL NOT BE RESPONSIBLE FOR ANY ILLEGAL USAGE.***
