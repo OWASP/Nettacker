@@ -770,7 +770,7 @@ def all_messages():
                 "id": "tidak bisa membaca file {0}",
                 "de": "kann die Datei {0} nicht lesen",
                 "tr": "{0} dosyası okunamıyor",
-                "ps": "د دوتنه فایل نه شی کولی",
+                "ps": "د دوتنه فایل نه شی کولی {0}",
                 "ur": "فائل {0} نہیں پڑھ سکتی",
                 "fa": "عدم توانایی در خواندن فایل {0}",
                 "hy": "{0} ֆայլը չի ​​կարող ընթերցել",
