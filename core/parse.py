@@ -121,12 +121,15 @@ def load():
                     break
 
     while 1:
-        n = True
-        for thread in threads:
-            if thread.isAlive() is True:
-                n = False
-        time.sleep(0.1)
-        if n is True:
+        try:
+            n = True
+            for thread in threads:
+                if thread.isAlive() is True:
+                    n = False
+            time.sleep(0.1)
+            if n is True:
+                break
+        except KeyboardInterrupt:
             break
     info(messages(language, 42))
     os.remove(subs_temp)
