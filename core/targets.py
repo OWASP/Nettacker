@@ -171,12 +171,12 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
         elif target_type(target) == 'HTTP':
             info(messages(language, 52).format(target))
             yield target
-            if 'http://' == target[:7].lower():
-                target = target[7:].rsplit('/')[0]
-            if 'https://' == target[:8].lower():
-                target = target[8:].rsplit('/')[0]
-            yield target
             if check_ranges is True:
+                if 'http://' == target[:7].lower():
+                    target = target[7:].rsplit('/')[0]
+                if 'https://' == target[:8].lower():
+                    target = target[8:].rsplit('/')[0]
+                yield target
                 IPs = []
                 while True:
                     try:
