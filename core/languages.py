@@ -802,26 +802,9 @@ def all_messages():
                 "ja": "ユーザー名を指定できません。ファイルを開くことができません：{0}",
                 "es": "No se puede especificar el nombre de usuario (s), no se puede abrir el archivo: {0}"
             },
-            "38": {  # remove
-                "ru": "этот модуль требует пароля (списка) для перебора!",
-                "fr": "ce module nécessite un ou des mot (s) de passe (liste) à force brute!",
-                "en": "this module requires password(s) (list) to brute force!",
-                "nl": "Deze module vereist wachtwoord (s) (lijst) om brute kracht!",
-                "el": "αυτή η ενότητα απαιτεί κωδικό (-ες) (λίστα) για ωμή δύναμη!",
-                "vi": "mô-đun này đòi hỏi mật khẩu (s) (danh sách) để bạo lực!",
-                "de": "Dieses Modul erfordert Passwort (s) (Brute Force)!",
-                "tr": "Bu modül kaba kuvvet için şifre (liste) gerektirir!",
-                "ps": "دا ماډل د بریښنا د ټینګولو لپاره پاسورډ (لیست) ته اړتیا لري!",
-                "ur": "اس ماڈیول کی طاقت کو طاقت دینے کیلئے پاس ورڈ (ے) (فہرست) کی ضرورت ہوتی ہے!",
-                "fa": "این ماژول نیازمند به (لیست) کلمه عبور (ها) جهت بروتفورس را دارد!",
-                "hi": "इस मॉड्यूल को जानवर बल के लिए पासवर्ड (सूची) की आवश्यकता है!",
-                "id": "modul ini membutuhkan password (daftar) untuk brute force!",
-                "ko": "이 모듈은 무차별 한 패스워드 (들) (리스트)를 필요로합니다!",
-                "it": "questo modulo richiede password (elenco) a forza brutale!",
-                "hy": "այս մոդուլը պահանջում է գաղտնաբառ (ներ) ը (ցուցակ) ուժեղացնել ուժը:",
-                "ar": "هذه الوحدة تتطلب كلمة (ق) (قائمة) للقوة الغاشمة!",
-                "ja": "このモジュールは無理な力にパスワード（リスト）を必要とします！",
-                "es": "¡Este módulo requiere contraseña (s) (lista) a la fuerza bruta!"
+            "38": {
+                "en": "{0} found! ({1}:{2})",
+                "fa": "{0} پیدا شد!({2}:{1})"
             },
             "39": {
                 "el": "Δεν είναι δυνατός ο προσδιορισμός των κωδικών πρόσβασης, δεν είναι δυνατή η ανοίξη αρχείου: {0}",
@@ -2186,5 +2169,29 @@ def all_messages():
                 "ar": "أنت تستخدم الإصدار الأخير من أواسب نيتاكر ...",
                 "ja": "OWASP Nettackerの最新バージョンを使用しています...",
                 "es": "Estás usando la última versión de OWASP Nettacker ..."
+            },
+            "104": {
+                "en": "directoy listing found in {0}",
+                "fa": "دایرکتوری لیستینگ در {0} پیدا شد"
+            },
+            "105": {
+                "en": "please insert port through the -g or --methods-args switch instead of url",
+                "fa": "لطفا پورت را به وسیله سویچ -g یا --methods-args به جای url وارد کنید"
+            },
+            "106": {
+                "en": "http connection {0} timeout!",
+                "fa": "ارتباط http در {0} قطع شد!"
+            },
+            "108": {
+                "en": "no directory or file found for {0} in port {1}",
+                "fa": "دایرکتوری یا فایلی برای {0} در پورت {1} پیدا نشد"
+            },
+            "109": {
+                "en": "unable to open {0}",
+                "fa": "عدم توانایی در باز کردن {0}"
+            },
+            "110": {
+                "en": "dir_scan_http_method value must be GET or HEAD, set default to GET.",
+                "fa": "مقدار dir_scan_http_method باید GET یا HEAD باشد، به صورت پیشفرض GET تنظیم شد."
             }
         }
