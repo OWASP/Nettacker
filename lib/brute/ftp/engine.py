@@ -14,6 +14,18 @@ from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
 
 
+def extra_requirements_dict():
+    return {
+            "ftp_brute_users": ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
+            "ftp_brute_passwds": ["admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
+                                  "123456", "124567", "12345678", "123456789", "1234567890", "admin1", "password!@#"
+                                                                                                       "654321",
+                                  "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx", "password1"
+                                                                                         "1qazxcvbnm", "zxcvbnm",
+                                  "iloveyou", "password", "p@ssw0rd", "admin123"],
+            "ftp_brute_ports": ["21", "990"]
+        }
+
 def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
@@ -144,19 +156,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
           methods_args):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP':
         # requirements check
-        extra_requirements = {
-            "ftp_brute_users": ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
-            "ftp_brute_passwds": ["admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
-                                  "123456", "124567", "12345678", "123456789", "1234567890", "admin1", "password!@#"
-                                                                                                       "654321",
-                                  "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx", "password1"
-                                                                                         "1qazxcvbnm", "zxcvbnm",
-                                  "iloveyou", "password", "p@ssw0rd", "admin123"],
-            "ftp_brute_ports": ["21", "990"]
-        }
-        new_extra_requirements = extra_requirements
+        new_extra_requirements = extra_requirements_dict()
         if methods_args is not None:
-            for extra_requirement in extra_requirements:
+            for extra_requirement in extra_requirements_dict():
                 if extra_requirement in methods_args:
                     new_extra_requirements[extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
