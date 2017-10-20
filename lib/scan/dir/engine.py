@@ -21,7 +21,18 @@ def extra_requirements_dict():
         "dir_scan_ports": ["80"],
         "dir_scan_http_method": ["GET"],
         "dir_scan_random_agent": ["True"],
-        "dir_scan_list": ["~adm", "~admin", "~administrator", "~amanda", "~apache", "~bin", "~ftp", "~guest","~http", "~httpd", "~log", "~logs", "~lp", "~mail", "~nobody", "~operator", "~root","~sys", "~sysadm", "~sysadmin", "~test", "~tmp", "~user", "~webmaster", "~www","wp-admin", "wp-login.php", "administrator", "~backup", "backup.sql", "database.sql","backup.zip", "backup.tar.gz", "backup", "backup-db", "mysql.sql", "phpmyadmin" , "admin","administrator","server-status","server-info","info.php","php.php","info.php","phpinfo.php", "test.php", ".git", ".htaccess", ".htaccess.old", ".htaccess.save", ".htaccess.txt", ".php-ini", "php-ini", "FCKeditor","FCK", "editor", "Desktop.ini", "INSTALL", "install", "install.php", "update", "upgrade", "upgrade.php", "update.php", "LICENSE", "LICENSE.txt", "Server.php", "WS_FTP.LOG", "WS_FTP.ini", "WS_FTP.log", "Web.config", "Webalizer", "webalizer", "config.php", "config.php.new", "config.php~", "controlpanel", "cpanel", "favicon.ico", "old", "php-error", "php.ini~", "php.ini", "php.log", "robots.txt", "security", "webdav","1"]
+        "dir_scan_list": ["~adm", "~admin", "~administrator", "~amanda", "~apache", "~bin", "~ftp", "~guest", "~http",
+                          "~httpd", "~log", "~logs", "~lp", "~mail", "~nobody", "~operator", "~root", "~sys", "~sysadm",
+                          "~sysadmin", "~test", "~tmp", "~user", "~webmaster", "~www", "wp-admin", "wp-login.php",
+                          "administrator", "~backup", "backup.sql", "database.sql", "backup.zip", "backup.tar.gz",
+                          "backup", "backup-db", "mysql.sql", "phpmyadmin", "admin", "administrator", "server-status",
+                          "server-info", "info.php", "php.php", "info.php", "phpinfo.php", "test.php", ".git",
+                          ".htaccess", ".htaccess.old", ".htaccess.save", ".htaccess.txt", ".php-ini", "php-ini",
+                          "FCKeditor", "FCK", "editor", "Desktop.ini", "INSTALL", "install", "install.php", "update",
+                          "upgrade", "upgrade.php", "update.php", "LICENSE", "LICENSE.txt", "Server.php", "WS_FTP.LOG",
+                          "WS_FTP.ini", "WS_FTP.log", "Web.config", "Webalizer", "webalizer", "config.php",
+                          "config.php.new", "config.php~", "controlpanel", "cpanel", "favicon.ico", "old", "php-error",
+                          "php.ini~", "php.ini", "php.log", "robots.txt", "security", "webdav", "1"]
     }
 
 
