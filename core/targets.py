@@ -16,6 +16,8 @@ except:
 def target_to_host(target):
     if target_type(target) == 'HTTP':
         target = target.lower().replace('http://', '').replace('https://', '').rsplit('/')[0]
+        if ':' in target:
+            target = target.rsplit(':')[0]
     return target
 
 
@@ -28,14 +30,14 @@ def target_type(target):
             return 'RANGE_IPv4'
         else:
             return 'DOMAIN'
+    elif target.lower().startswith('http://') or target.lower().startswith('https://'):
+        return 'HTTP'
     elif len(target.rsplit('.')) is 4 and '-' not in target and '/' in target:
         IP, CIDR = target.rsplit('/')
         if isIP(IP) is True and (int(CIDR) >= 0 and int(CIDR) <= 32):
             return 'CIDR_IPv4'
     elif '.' in target and '/' not in target:
         return 'DOMAIN'
-    elif target.lower().startswith('http://') or target.lower().startswith('https://'):
-        return 'HTTP'
     else:
         return 'UNKNOW'
 
