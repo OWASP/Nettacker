@@ -149,8 +149,32 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
-          language, verbose_level, show_version, check_update, proxies, retries, ping_flag):  # Main function
+          language, verbose_level, show_version, check_update, proxies, retries, ping_flag,
+          methods_args):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) == 'HTTP':
+        # requirements check
+        extra_requirements = {
+            "ssh_brute_users": ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
+            "ssh_brute_passwds": ["admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
+                                  "123456", "124567", "12345678", "123456789", "1234567890", "admin1", "password!@#"
+                                                                                                       "654321",
+                                  "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx", "password1"
+                                                                                         "1qazxcvbnm", "zxcvbnm",
+                                  "iloveyou", "password", "p@ssw0rd", "admin123"],
+            "ssh_brute_ports": ["22"]
+        }
+        new_extra_requirements = extra_requirements
+        if methods_args is not None:
+            for extra_requirement in extra_requirements:
+                if extra_requirement in methods_args:
+                    new_extra_requirements[extra_requirement] = methods_args[extra_requirement]
+        extra_requirements = new_extra_requirements
+        if users is None:
+            users = extra_requirements["ssh_brute_users"]
+        if passwds is None:
+            passwds = extra_requirements["ssh_brute_passwds"]
+        if ports is None:
+            ports = extra_requirements["ssh_brute_ports"]
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         if ping_flag and do_one_ping(target, timeout_sec, 8) is None:

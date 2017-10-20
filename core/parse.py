@@ -65,18 +65,19 @@ def load():
     graph_flag = options.graph_flag
     help_menu_flag = options.help_menu_flag
     ping_flag = options.ping_flag
+    methods_args = options.methods_args
 
     info(messages(language, 0))
     # Checking Requirements
     (targets, targets_list, thread_number, thread_number_host,
      log_in_file, scan_method, exclude_method, users, users_list,
      passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-     check_update, proxies, proxies_file, retries, graph_flag, help_menu_flag) = \
+     check_update, proxies, proxies_file, retries, graph_flag, help_menu_flag, methods_args) = \
         check_all_required(
             targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
             passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-            check_update, proxies, proxies_file, retries, graph_flag, help_menu_flag
+            check_update, proxies, proxies_file, retries, graph_flag, help_menu_flag, methods_args
         )
     # check for update
     __version__, __code_name__ = _version_info()
@@ -104,7 +105,7 @@ def load():
             t = threading.Thread(target=start_attack, args=(
                 str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
                 ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, proxies,
-                retries, ping_flag))
+                retries, ping_flag, methods_args))
             threads.append(t)
             t.start()
             while 1:

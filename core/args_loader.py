@@ -146,14 +146,18 @@ def load_all_args(module_names, graph_names):
     method.add_argument('--ping-before-scan', action="store_true",
                         dest='ping_flag', default=False,
                         help=messages(language, 99))
+    method.add_argument('--method-args', action="store",
+                        dest="methods_args", default=None,
+                        help=messages(language, 35))
     # Return Options
     return [parser, parser.parse_args()]
 
 
 def check_all_required(targets, targets_list, thread_number, thread_number_host,
                        log_in_file, scan_method, exclude_method, users, users_list,
-                       passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level,
-                       show_version, check_update, proxies, proxies_file, retries, graph_flag, help_menu_flag):
+                       passwds, passwds_list, timeout_sec, ports, parser, module_names,
+                       language, verbose_level, show_version, check_update, proxies, proxies_file,
+                       retries, graph_flag, help_menu_flag, methods_args):
     # Checking Requirements
     # Check Help Menu
     if help_menu_flag is True:
@@ -257,54 +261,33 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                 finish()
                 sys.exit(1)
     # Check port(s)
-    if ports is None:
-        error(messages(language, 35))
-        from core.color import finish
-        finish()
-        sys.exit(1)
-    if type(ports) is not list and "-" in ports:
+    if type(ports) is not list and ports is not None and "-" in ports:
         ports = ports.rsplit("-")
         ports = range(int(ports[0]), int(ports[1]) + 1)
-    elif type(ports) is not list:
+    elif type(ports) is not list and ports is not None:
         ports = ports.rsplit(",")
     # Check user list
-    if users is None and users_list is None and scan_method is not None:
-        for imethod in scan_method:
-            if "_brute" in imethod:
-                error(messages(language, 36))
-                from core.color import finish
-                finish()
-                sys.exit(1)
-    else:
-        if users is not None:
-            users = list(set(users.rsplit(",")))
-        if users_list is not None:
-            try:
-                users = list(set(open(users_list).read().rsplit("\n")))  # fix later
-            except:
-                error(messages(language, 37).format(targets_list))
-                from core.color import finish
-                finish()
-                sys.exit(1)
+    if users is not None:
+        users = list(set(users.rsplit(",")))
+    elif users_list is not None:
+        try:
+            users = list(set(open(users_list).read().rsplit("\n")))  # fix later
+        except:
+            error(messages(language, 37).format(targets_list))
+            from core.color import finish
+            finish()
+            sys.exit(1)
     # Check password list
-    if passwds is None and passwds_list is None and scan_method is not None:
-        for imethod in scan_method:
-            if "_brute" in imethod:
-                error(messages(language, 38))
-                from core.color import finish
-                finish()
-                sys.exit(1)
-    else:
-        if passwds is not None:
-            passwds = list(set(passwds.rsplit(",")))
-        if passwds_list is not None:
-            try:
-                passwds = list(set(open(passwds_list).read().rsplit("\n")))  # fix later
-            except:
-                error(messages(language, 39).format(targets_list))
-                from core.color import finish
-                finish()
-                sys.exit(1)
+    if passwds is not None:
+        passwds = list(set(passwds.rsplit(",")))
+    if passwds_list is not None:
+        try:
+            passwds = list(set(open(passwds_list).read().rsplit("\n")))  # fix later
+        except:
+            error(messages(language, 39).format(targets_list))
+            from core.color import finish
+            finish()
+            sys.exit(1)
     # Check output file
     try:
         tmpfile = open(log_in_file, "w")
@@ -343,9 +326,29 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             from core.color import finish
             finish()
             sys.exit(1)
-
+    # Check Methods ARGS
+    if methods_args is not None:
+        new_methods_args = {}
+        methods_args = methods_args.rsplit('&')
+        for imethod_args in methods_args:
+            if len(imethod_args.rsplit('=')) is 2:
+                if imethod_args.rsplit('=')[1].startswith('read_from_file:'):
+                    try:
+                        read_data = list(set(open(imethod_args.rsplit('=read_from_file:')[1]).read().rsplit('\n')))
+                    except:
+                        error(messages(language, 36))
+                        from core.color import finish
+                        finish()
+                        sys.exit(1)
+                    new_methods_args[imethod_args.rsplit('=')[0]] = read_data
+                else:
+                    new_methods_args[imethod_args.rsplit('=')[0]] = imethod_args.rsplit('=')[1].rsplit(',')
+            else:
+                new_methods_args[imethod_args.rsplit('=')[0]] = ""
+        methods_args = new_methods_args
     # Return the values
     return [targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
-            passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-            check_update, proxies, proxies_file, retries, graph_flag, help_menu_flag]
+            passwds, passwds_list, timeout_sec, ports, parser, module_names,
+            language, verbose_level, show_version, check_update, proxies, proxies_file,
+            retries, graph_flag, help_menu_flag, methods_args]
