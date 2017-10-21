@@ -15,6 +15,7 @@ Nettacker project was created to automated for information gathering, vulnerabil
 ```
 
 
+
    ______          __      _____ _____
   / __ \ \        / /\    / ____|  __ \
  | |  | \ \  /\  / /  \  | (___ | |__) |
@@ -40,15 +41,16 @@ usage: Nettacker [-L LANGUAGE] [-v VERBOSE_LEVEL] [-V] [-c] [-o LOG_IN_FILE]
                  [-T TIMEOUT_SEC] [-w TIME_SLEEP] [-r] [-s] [-t THREAD_NUMBER]
                  [-M THREAD_NUMBER_HOST] [-R PROXIES]
                  [--proxy-list PROXIES_FILE] [--retries RETRIES]
-                 [--ping-before-scan]
+                 [--ping-before-scan] [--method-args METHODS_ARGS]
+                 [--method-args-list]
 
 Engine:
   Engine input options
 
   -L LANGUAGE, --language LANGUAGE
                         select a language ['ru', 'fr', 'en', 'nl', 'el', 'vi',
-                        'de', 'tr', 'ps', 'ur', 'fa', 'ja', 'hi', 'ko', 'it',
-                        'hy', 'ar', 'id', 'es']
+                        'id', 'de', 'tr', 'ps', 'ur', 'fa', 'hy', 'hi', 'ko',
+                        'it', 'zh-cn', 'ar', 'ja', 'es']
   -v VERBOSE_LEVEL, --verbose VERBOSE_LEVEL
                         verbose mode level (0-5) (default 0)
   -V, --version         show software version
@@ -74,10 +76,10 @@ Method:
 
   -m SCAN_METHOD, --method SCAN_METHOD
                         choose scan method ['ftp_brute', 'smtp_brute',
-                        'ssh_brute', 'port_scan', 'all']
+                        'ssh_brute', 'dir_scan', 'port_scan', 'all']
   -x EXCLUDE_METHOD, --exclude EXCLUDE_METHOD
                         choose scan method to exclude ['ftp_brute',
-                        'smtp_brute', 'ssh_brute', 'port_scan']
+                        'smtp_brute', 'ssh_brute', 'dir_scan', 'port_scan']
   -u USERS, --usernames USERS
                         username(s) list, separate with ","
   -U USERS_LIST, --users-list USERS_LIST
@@ -105,6 +107,11 @@ Method:
                         read proxies from a file (outgoing connections)
   --retries RETRIES     Retries when the connection timeout (default 3)
   --ping-before-scan    ping before scan the host
+  --method-args METHODS_ARGS
+                        enter methods inputs, example: "ftp_brute_users=test,a
+                        dmin&ftp_brute_passwds=read_from_file:/tmp/pass.txt&ft
+                        p_brute_port=21"
+  --method-args-list    list all methods args
 
 
 Please read license and agreements https://github.com/viraintel/OWASP-Nettacker
