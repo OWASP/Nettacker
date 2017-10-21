@@ -2295,5 +2295,48 @@ def all_messages():
                 "ar": "يجب أن تكون قيمة dir_scan_http_method جيت أو هيد، تعيين الافتراضي إلى جيت.",
                 "ja": "dir_scan_http_methodの値はGETまたはHEADでなければなりません。デフォルトはGETに設定されています。",
                 "es": "El valor dir_scan_http_method debe ser GET o HEAD, establecer de manera predeterminada en GET."
+            },
+            "111": {
+                "el": "λίστα όλων των μεθόδων args",
+                "fr": "liste toutes les méthodes args",
+                "en": "list all methods args",
+                "nl": "lijst alle methoden args",
+                "ru": "перечислить все методы args",
+                "vi": "liệt kê tất cả các phương pháp args",
+                "id": "daftar semua metode args",
+                "de": "liste alle Methodenargumente auf",
+                "tr": "Tüm yöntemleri listeler args",
+                "ps": "ټول میتودونه لیست کړئ",
+                "ur": "تمام طریقوں کی فہرست کی فہرست",
+                "fa": "لیست کردن کل args مربوط به متود ها",
+                "hy": "ցուցադրել բոլոր մեթոդները args",
+                "ko": "모든 메소드 args를 나열하십시오.",
+                "it": "elenca tutti i metodi args",
+                "hi": "सूची सभी विधियों तर्क",
+                "ar": "قائمة جميع الطرق يجادل",
+                "ja": "すべてのメソッドargsをリストする",
+                "es": "lista todos los métodos args"
+            },
+            "112": {
+                "el": "δεν μπορεί να πάρει {0} args module",
+                "fr": "cannot get {0} module args",
+                "en": "cannot get {0} module args",
+                "nl": "kan {0} module args niet krijgen",
+                "ru": "не может получить {0} модуль args",
+                "vi": "không thể có được (0) mô-đun args",
+                "id": "tidak bisa mendapatkan {0} modul args",
+                "de": "kann {0} Modulargumente nicht abrufen",
+                "tr": "{0} modülü args alamıyor",
+                "ps": "نشي کولی د ماډول ارقام ترلاسه کړي",
+                "ur": "ماڈیول args حاصل نہیں کر سکتے ہیں",
+                "fa": "عدم توانایی در گرفتن ورودی های ماژول {0} ",
+                "hy": "չի կարող ձեռք բերել {0} մոդուլային args",
+                "ko": "{0} 모듈 인수를 얻을 수 없습니다.",
+                "it": "non è possibile ottenere {0} modulo args",
+                "hi": "{0} मॉड्यूल आरजीएस नहीं मिल सकता है",
+                "ar": "لا يمكن الحصول على {0} وحدة يجادل",
+                "ja": "{0}モジュールの引数を取得できません",
+                "es": "no puede obtener {0} argumentos del módulo"
             }
+
         }

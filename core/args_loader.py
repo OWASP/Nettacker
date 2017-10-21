@@ -149,6 +149,9 @@ def load_all_args(module_names, graph_names):
     method.add_argument('--method-args', action="store",
                         dest="methods_args", default=None,
                         help=messages(language, 35))
+    method.add_argument('--method-args-list', action='store_true',
+                        dest='method_args_list', default=False,
+                        help=messages(language, 111))
     # Return Options
     return [parser, parser.parse_args()]
 
@@ -157,13 +160,20 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                        log_in_file, scan_method, exclude_method, users, users_list,
                        passwds, passwds_list, timeout_sec, ports, parser, module_names,
                        language, verbose_level, show_version, check_update, proxies, proxies_file,
-                       retries, graph_flag, help_menu_flag, methods_args):
+                       retries, graph_flag, help_menu_flag, methods_args, method_args_list):
     # Checking Requirements
     # Check Help Menu
     if help_menu_flag is True:
         parser.print_help()
         write('\n\n')
         write(messages(language, 3))
+        from core.color import finish
+        finish()
+        sys.exit(0)
+    # Check if method args list called
+    if method_args_list is True:
+        from core.load_modules import load_all_method_args
+        load_all_method_args(language)
         from core.color import finish
         finish()
         sys.exit(0)
@@ -351,4 +361,4 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
             passwds, passwds_list, timeout_sec, ports, parser, module_names,
             language, verbose_level, show_version, check_update, proxies, proxies_file,
-            retries, graph_flag, help_menu_flag, methods_args]
+            retries, graph_flag, help_menu_flag, methods_args, method_args_list]

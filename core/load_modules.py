@@ -3,6 +3,9 @@
 
 import sys
 from glob import glob
+from core.alert import messages
+from core.alert import info
+from core.alert import warn
 
 
 def load_all_graphs():
@@ -26,4 +29,33 @@ def load_all_modules():
         if lib + '_scan' not in module_names:
             module_names.append(lib + '_scan')
     module_names.append('all')
+    return module_names
+
+
+def load_all_method_args(language):
+    module_names = []
+    modules_args = {}
+    # get module names
+    for lib in glob('lib/brute/*/engine.py'):
+        lib = lib.replace('/', '.').replace('\\', '.').rsplit('.py')[0]
+        if lib not in module_names:
+            module_names.append(lib)
+    for lib in glob('lib/scan/*/engine.py'):
+        lib = lib.replace('/', '.').replace('\\', '.').rsplit('.py')[0]
+        if lib not in module_names:
+            module_names.append(lib)
+    # get args
+    for imodule in module_names:
+        try:
+            extra_requirements_dict = getattr(__import__(imodule, fromlist=['extra_requirements_dict']),
+                                              'extra_requirements_dict')
+        except:
+            warn(messages(language, 112).format(imodule))
+        imodule_args = extra_requirements_dict()
+        modules_args[imodule] = []
+        for imodule_arg in imodule_args:
+            modules_args[imodule].append(imodule_arg)
+    for imodule in modules_args:
+        info(imodule.rsplit('.')[2] + '_' + imodule.rsplit('.')[1] + ' --> '
+             + ", ".join(modules_args[imodule]))
     return module_names

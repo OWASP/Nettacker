@@ -66,18 +66,19 @@ def load():
     help_menu_flag = options.help_menu_flag
     ping_flag = options.ping_flag
     methods_args = options.methods_args
+    method_args_list = options.method_args_list
 
     info(messages(language, 0))
     # Checking Requirements
     (targets, targets_list, thread_number, thread_number_host,
      log_in_file, scan_method, exclude_method, users, users_list,
      passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-     check_update, proxies, proxies_file, retries, graph_flag, help_menu_flag, methods_args) = \
+     check_update, proxies, proxies_file, retries, graph_flag, help_menu_flag, methods_args, method_args_list) = \
         check_all_required(
             targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
             passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-            check_update, proxies, proxies_file, retries, graph_flag, help_menu_flag, methods_args
+            check_update, proxies, proxies_file, retries, graph_flag, help_menu_flag, methods_args, method_args_list
         )
     # check for update
     __version__, __code_name__ = _version_info()
