@@ -85,7 +85,6 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
                          _PASSWORD + ': "' + data_graph[_PASSWORD] + '"'])
         n += 1
     backup_dgraph = json.loads(json.dumps(dgraph))
-
     for b in range(0, len(backup_dgraph["children"])):
         for c in range(0, len(backup_dgraph["children"][b])):
             for d in range(0, len(backup_dgraph["children"][b]["children"])):
@@ -102,7 +101,8 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
                     }
                     add_flag = True
                     for e in dgraph["children"][b]["children"][d]["children"]:
-                        if _to_modify["name"] == e["name"]:
+                        if _to_modify["name"] == e["name"] and _to_modify["data"]["band"]\
+                                == e["data"]["band"]:
                             add_flag = False
                     if add_flag:
                         dgraph["children"][b]["children"][d]["children"].append(_to_modify)
@@ -141,7 +141,6 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
                     }
                     if add_flag:
                         d3_structure["children"][k]["children"].append(_to_modify)
-
     for i in range(0, len(dgraph["children"])):
         for j in range(0, len(dgraph["children"][i]["children"])):
             for k in range(0, len(dgraph["children"])):
