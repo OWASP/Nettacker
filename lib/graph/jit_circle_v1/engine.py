@@ -102,7 +102,8 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
                     }
                     add_flag = True
                     for e in dgraph["children"][b]["children"][d]["children"]:
-                        if _to_modify["name"] == e["name"]:
+                        if _to_modify["name"] == e["name"] and _to_modify["data"]["band"] \
+                                == e["data"]["band"]:
                             add_flag = False
                     if add_flag:
                         dgraph["children"][b]["children"][d]["children"].append(_to_modify)
