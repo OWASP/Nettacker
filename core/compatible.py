@@ -46,6 +46,7 @@ def version():
 
 
 def check(language):
+    from core.color import finish
     if 'linux' in os_name() or 'darwin' in os_name():
         pass
         # os.system('clear')
@@ -60,14 +61,12 @@ def check(language):
         pass
     else:
         error(messages(language, 47))
-        from core.color import finish
         finish()
         sys.exit(1)
     if version() is 2 or version() is 3:
         pass
     else:
         error(messages(language, 48))
-        from core.color import finish
         finish()
         sys.exit(1)
     logo()

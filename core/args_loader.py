@@ -25,6 +25,8 @@ else:
 
 def load_all_args(module_names, graph_names):
     # Language Options
+    # import libs
+    from core.color import finish
     language_list = [lang for lang in messages(-1, 0)]
     if "-L" in sys.argv or "--language" in sys.argv:
         try:
@@ -43,13 +45,11 @@ def load_all_args(module_names, graph_names):
             _error_flag = True
         if _error_flag or language not in language_list:
             error("Please select one of these languages {0}".format(language_list))
-            from core.color import finish
             finish()
             sys.exit(1)
 
     # Check if compatible
     check(language)
-    from core.color import finish
     finish()
     # Start Parser
     parser = argparse.ArgumentParser(prog="Nettacker", add_help=False)
@@ -162,36 +162,33 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                        language, verbose_level, show_version, check_update, proxies, proxies_file,
                        retries, graph_flag, help_menu_flag, methods_args, method_args_list):
     # Checking Requirements
+    # import libs
+    from core.color import finish
+    from core import compatible
     # Check Help Menu
     if help_menu_flag is True:
         parser.print_help()
         write('\n\n')
         write(messages(language, 3))
-        from core.color import finish
         finish()
         sys.exit(0)
     # Check if method args list called
     if method_args_list is True:
         from core.load_modules import load_all_method_args
         load_all_method_args(language)
-        from core.color import finish
         finish()
         sys.exit(0)
     # Check version
     if show_version is True:
-        from core import compatible
         from core import color
         info(messages(language, 84).format(color.color('yellow'), compatible.__version__, color.color('reset'),
                                            color.color('cyan'), compatible.__code_name__, color.color('reset'),
                                            color.color('green')))
-        from core.color import finish
         finish()
         sys.exit(0)
     # Check update
     if check_update is True:
-        from core.color import finish
         from core.update import _update
-        from core import compatible
         _update(compatible.__version__, compatible.__code_name__, language)
         finish()
         sys.exit(0)
@@ -200,7 +197,6 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         parser.print_help()
         write("\n")
         error(messages(language, 26))
-        from core.color import finish
         finish()
         sys.exit(1)
     else:
@@ -211,7 +207,6 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                 targets = list(set(open(targets_list, "rb").read().rsplit()))
             except:
                 error(messages(language, 27).format(targets_list))
-                from core.color import finish
                 finish()
                 sys.exit(1)
     # Check thread number
@@ -230,7 +225,6 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             for sm in scan_method:
                 if sm not in module_names:
                     error(messages(language, 30).format(sm))
-                    from core.color import finish
                     finish()
                     sys.exit(1)
                 if sm == "all":
@@ -239,12 +233,10 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                     break
         else:
             error(messages(language, 31).format(scan_method))
-            from core.color import finish
             finish()
             sys.exit(1)
     elif scan_method is None:
         error(messages(language, 41))
-        from core.color import finish
         finish()
         sys.exit(1)
     else:
@@ -255,19 +247,16 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             if exm in scan_method:
                 if "all" == exm:
                     messages(language, 32)
-                    from core.color import finish
                     finish()
                     sys.exit(1)
                 else:
                     scan_method.remove(exm)
                     if len(scan_method) is 0:
                         messages(language, 33)
-                        from core.color import finish
                         finish()
                         sys.exit(1)
             else:
                 messages(language, 34).format(exm)
-                from core.color import finish
                 finish()
                 sys.exit(1)
     # Check port(s)
@@ -284,7 +273,6 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             users = list(set(open(users_list).read().rsplit("\n")))  # fix later
         except:
             error(messages(language, 37).format(targets_list))
-            from core.color import finish
             finish()
             sys.exit(1)
     # Check password list
@@ -295,7 +283,6 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             passwds = list(set(open(passwds_list).read().rsplit("\n")))  # fix later
         except:
             error(messages(language, 39).format(targets_list))
-            from core.color import finish
             finish()
             sys.exit(1)
     # Check output file
@@ -303,7 +290,6 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         tmpfile = open(log_in_file, "w")
     except:
         error(messages(language, 40).format(log_in_file))
-        from core.color import finish
         finish()
         sys.exit(1)
     # Check Proxies
@@ -315,12 +301,10 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                 proxies = list(set(open(proxies_file).read().rsplit()))
             except:
                 error(messages(language, 82).format(proxies_file))
-                from core.color import finish
                 finish()
                 sys.exit(1)
         else:
             error(messages(language, 83).format(proxies_file))
-            from core.color import finish
             finish()
             sys.exit(1)
     # Check Graph
@@ -328,12 +312,10 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         if not (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
                     not len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
             error(messages(language, 87))
-            from core.color import finish
             finish()
             sys.exit(1)
         if graph_flag not in load_all_graphs():
             error(messages(language, 97).format(graph_flag))
-            from core.color import finish
             finish()
             sys.exit(1)
     # Check Methods ARGS
@@ -347,7 +329,6 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                         read_data = list(set(open(imethod_args.rsplit('=read_from_file:')[1]).read().rsplit('\n')))
                     except:
                         error(messages(language, 36))
-                        from core.color import finish
                         finish()
                         sys.exit(1)
                     new_methods_args[imethod_args.rsplit('=')[0]] = read_data

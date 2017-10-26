@@ -26,7 +26,8 @@ from core.compatible import _version_info
 
 def load():
     write('\n\n')
-
+    # load libs
+    from core.color import finish
     # load all modules in lib/brute, lib/scan, lib/graph
     module_names = load_all_modules()
     graph_names = load_all_graphs()
@@ -35,7 +36,6 @@ def load():
     try:
         parser, options = load_all_args(module_names, graph_names)
     except SystemExit:
-        from core.color import finish
         finish()
         sys.exit(1)
     # Filling Options
@@ -140,5 +140,4 @@ def load():
     write('\n')
     info(messages(language, 44))
     write('\n\n')
-    from core.color import finish
     finish()
