@@ -1,3 +1,25 @@
+Nettacker
+=========
+[![Build Status Travic CI](https://travis-ci.org/viraintel/OWASP-Nettacker.svg?branch=master)](https://travis-ci.org/viraintel/OWASP-Nettacker)
+[![Python 2.x](https://img.shields.io/badge/python-2.x-blue.svg)](https://travis-ci.org/viraintel/OWASP-Nettacker)
+[![Python 3.x](https://img.shields.io/badge/python-3.x-blue.svg)](https://travis-ci.org/viraintel/OWASP-Nettacker)
+[![Apache License](https://img.shields.io/badge/License-Apache%20v2-green.svg)](https://github.com/viraintel/OWASP-Nettacker/blob/master/LICENSE)
+[![Executed](http://nettacker.z3r0d4y.com/update_counter.py)](https://github.com/viraintel/OWASP-Nettacker/)
+
+
+***THIS SOFTWARE WAS CREATED TO AUTOMATED PENETRATION TESTING AND INFORMATION GATHERING. CONTRIBUTORS WILL NOT BE RESPONSIBLE FOR ANY ILLEGAL USAGE.***
+
+
+Nettacker project was created to automated for information gathering, vulnerability scanning and eventually generating a report for networks, including services, bugs, vulnerabilities, misconfigurations and information. This software is able to use SYN, ACK, TCP, ICMP and many other protocols to detect and bypass the Firewalls/IDS/IPS and devices. By using a unique solution in Nettacker to find protected services such as SCADA We could make a point to be one of the bests of scanners.  
+
+
+* OWASP Page: https://github.com/viraintel/OWASP-Nettacker
+* Home: http://nettacker.z3r0d4y.com/
+* Github: https://github.com/viraintel/OWASP-Nettacker
+* Mailing List: https://groups.google.com/forum/#!forum/owasp-nettacker
+
+
+```
 
 
 
@@ -97,3 +119,14 @@ Method:
 
 
 Please read license and agreements https://github.com/viraintel/OWASP-Nettacker
+```
+
+* ***IoT Scanner***
+*	Python Multi Thread & Multi Process Network Information Gathering Vulnerability Scanner
+*	Service and Device Detection ( SCADA, Restricted Areas, Routers, HTTP Servers, Logins and Authentications, None-Indexed HTTP, Paradox System, Cameras, Firewalls, UTM, WebMails, VPN, RDP, SSH, FTP, TELNET Services, Proxy Servers and Many Devices like Juniper, Cisco, Switches and many more… ) 
+*	Network Service Analysis
+*	Services Brute Force Testing
+*	Services Vulnerability Testing
+*	HTTP/HTTPS Crawling, Fuzzing, Information Gathering and … 
+*	HTML and Text Outputs
+*	This project is at the moment in research and development phase and most of results/codes are not published yet.
