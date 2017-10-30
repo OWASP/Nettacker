@@ -34,7 +34,7 @@ def load():
 
     # Parse ARGVs
     try:
-        parser, options = load_all_args(module_names, graph_names)
+        parser, options, startup_update_flag = load_all_args(module_names, graph_names)
     except SystemExit:
         finish()
         sys.exit(1)
@@ -82,8 +82,9 @@ def load():
 
     info(messages(language, 0))
     # check for update
-    __version__, __code_name__ = _version_info()
-    _check(__version__, __code_name__, language)
+    if startup_update_flag is True:
+        __version__, __code_name__ = _version_info()
+        _check(__version__, __code_name__, language)
 
     info(messages(language, 96).format(len(graph_names) + len(module_names) - 1))
     suff = str(datetime.datetime.now()).replace(' ', '_').replace(':', '-') + '_' + ''.join(

@@ -12,6 +12,8 @@ from core.compatible import check
 from core.compatible import version
 from core.compatible import os_name
 from core.load_modules import load_all_graphs
+from config import get_config
+from core.config_builder import _builder
 
 # temporary use fixed version of argparse
 if os_name() == 'win32' or os_name() == 'win64':
@@ -27,6 +29,7 @@ def load_all_args(module_names, graph_names):
     # Language Options
     # import libs
     from core.color import finish
+    default_config = _builder(get_config())
     language_list = [lang for lang in messages(-1, 0)]
     if "-L" in sys.argv or "--language" in sys.argv:
         try:
@@ -61,33 +64,33 @@ def load_all_args(module_names, graph_names):
     # Engine Options
     engineOpt = parser.add_argument_group(messages(language, 4), messages(language, 5))
     engineOpt.add_argument("-L", "--language", action="store",
-                           dest="language", default="en",
+                           dest="language", default=default_config["language"],
                            help=messages(language, 6).format(language_list))
     engineOpt.add_argument("-v", "--verbose", action="store",
-                           dest="verbose_level", default=0,
+                           dest="verbose_level", default=default_config["verbose_level"],
                            help=messages(language, 59))
     engineOpt.add_argument("-V", "--version", action="store_true",
-                           default=False, dest="show_version",
+                           default=default_config["show_version"], dest="show_version",
                            help=messages(language, 60))
     engineOpt.add_argument("-c", "--update", action="store_true",
-                           default=False, dest="check_update",
+                           default=default_config["check_update"], dest="check_update",
                            help=messages(language, 61))
     engineOpt.add_argument("-o", "--output", action="store",
-                           default="results.html", dest="log_in_file",
+                           default=default_config["log_in_file"], dest="log_in_file",
                            help=messages(language, 11))
     engineOpt.add_argument("--graph", action="store",
-                           default=None, dest="graph_flag",
+                           default=default_config["graph_flag"], dest="graph_flag",
                            help=messages(language, 86).format(graph_names))
     engineOpt.add_argument("-h", "--help", action="store_true",
-                           default=False, dest="help_menu_flag",
+                           default=default_config["help_menu_flag"], dest="help_menu_flag",
                            help=messages(language, 2))
 
     # Target Options
     target = parser.add_argument_group(messages(language, 12), messages(language, 13))
-    target.add_argument("-i", "--targets", action="store", dest="targets", default=None,
-                        help=messages(language, 14))
-    target.add_argument("-l", "--targets-list", action="store", dest="targets_list", default=None,
-                        help=messages(language, 15))
+    target.add_argument("-i", "--targets", action="store", dest="targets",
+                        default=default_config["targets"], help=messages(language, 14))
+    target.add_argument("-l", "--targets-list", action="store", dest="targets_list",
+                        default=default_config["targets_list"], help=messages(language, 15))
 
     # Exclude Module Name
     exclude_names = module_names[:]
@@ -96,64 +99,64 @@ def load_all_args(module_names, graph_names):
     # Methods Options
     method = parser.add_argument_group("Method", messages(language, 16))
     method.add_argument("-m", "--method", action="store",
-                        dest="scan_method", default=None,
+                        dest="scan_method", default=default_config["scan_method"],
                         help=messages(language, 17).format(module_names))
     method.add_argument("-x", "--exclude", action="store",
-                        dest="exclude_method", default=None,
+                        dest="exclude_method", default=default_config["exclude_method"],
                         help=messages(language, 18).format(exclude_names))
     method.add_argument("-u", "--usernames", action="store",
-                        dest="users", default=None,
+                        dest="users", default=default_config["users"],
                         help=messages(language, 19))
     method.add_argument("-U", "--users-list", action="store",
-                        dest="users_list", default=None,
+                        dest="users_list", default=default_config["users_list"],
                         help=messages(language, 20))
     method.add_argument("-p", "--passwords", action="store",
-                        dest="passwds", default=None,
+                        dest="passwds", default=default_config["passwds"],
                         help=messages(language, 21))
     method.add_argument("-P", "--passwords-list", action="store",
-                        dest="passwds_list", default=None,
+                        dest="passwds_list", default=default_config["passwds_list"],
                         help=messages(language, 22))
     method.add_argument("-g", "--ports", action="store",
-                        dest="ports", default=None,
+                        dest="ports", default=default_config["ports"],
                         help=messages(language, 23))
     method.add_argument("-T", "--timeout", action="store",
-                        dest="timeout_sec", default=3.0, type=float,
+                        dest="timeout_sec", default=default_config["timeout_sec"], type=float,
                         help=messages(language, 24))
     method.add_argument("-w", "--time-sleep", action="store",
-                        dest="time_sleep", default=0.0, type=float,
+                        dest="time_sleep", default=default_config["time_sleep"], type=float,
                         help=messages(language, 25))
     method.add_argument("-r", "--range", action="store_true",
-                        default=False, dest="check_ranges",
+                        default=default_config["check_ranges"], dest="check_ranges",
                         help=messages(language, 7))
     method.add_argument("-s", "--sub-domains", action="store_true",
-                        default=False, dest="check_subdomains",
+                        default=default_config["check_subdomains"], dest="check_subdomains",
                         help=messages(language, 8))
     method.add_argument("-t", "--thread-connection", action="store",
-                        default=10, type=int, dest="thread_number",
+                        default=default_config["thread_number"], type=int, dest="thread_number",
                         help=messages(language, 9))
     method.add_argument("-M", "--thread-hostscan", action="store",
-                        default=10, type=int, dest="thread_number_host",
-                        help=messages(language, 10))
+                        default=default_config["thread_number_host"], type=int,
+                        dest="thread_number_host", help=messages(language, 10))
     method.add_argument("-R", "--proxy", action="store",
-                        dest="proxies", default=None,
+                        dest="proxies", default=default_config["proxies"],
                         help=messages(language, 62))
     method.add_argument("--proxy-list", action="store",
-                        dest="proxies_file", default=None,
+                        dest="proxies_file", default=default_config["proxies_file"],
                         help=messages(language, 63))
     method.add_argument("--retries", action="store",
-                        dest="retries", type=int, default=3,
+                        dest="retries", type=int, default=default_config["retries"],
                         help=messages(language, 64))
     method.add_argument('--ping-before-scan', action="store_true",
-                        dest='ping_flag', default=False,
+                        dest='ping_flag', default=default_config["ping_flag"],
                         help=messages(language, 99))
     method.add_argument('--method-args', action="store",
-                        dest="methods_args", default=None,
+                        dest="methods_args", default=default_config["methods_args"],
                         help=messages(language, 35))
     method.add_argument('--method-args-list', action='store_true',
-                        dest='method_args_list', default=False,
+                        dest='method_args_list', default=default_config["method_args_list"],
                         help=messages(language, 111))
     # Return Options
-    return [parser, parser.parse_args()]
+    return [parser, parser.parse_args(), default_config["startup_check_for_update"]]
 
 
 def check_all_required(targets, targets_list, thread_number, thread_number_host,
