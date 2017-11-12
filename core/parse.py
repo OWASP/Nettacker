@@ -119,7 +119,7 @@ def load():
                     else:
                         threads.remove(thread)
                 if n >= thread_number_host:
-                    time.sleep(0.1)
+                    time.sleep(0.01)
                 else:
                     break
 
@@ -129,7 +129,7 @@ def load():
             for thread in threads:
                 if thread.isAlive() is True:
                     n = False
-            time.sleep(0.1)
+            time.sleep(0.01)
             if n is True:
                 break
         except KeyboardInterrupt:
