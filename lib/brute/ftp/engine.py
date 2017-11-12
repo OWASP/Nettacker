@@ -16,15 +16,15 @@ from lib.icmp.engine import do_one as do_one_ping
 
 def extra_requirements_dict():
     return {
-            "ftp_brute_users": ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
-            "ftp_brute_passwds": ["admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
-                                  "123456", "124567", "12345678", "123456789", "1234567890", "admin1", "password!@#"
-                                                                                                       "654321",
-                                  "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx", "password1"
-                                                                                         "1qazxcvbnm", "zxcvbnm",
-                                  "iloveyou", "password", "p@ssw0rd", "admin123"],
-            "ftp_brute_ports": ["21", "990"]
-        }
+        "ftp_brute_users": ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
+        "ftp_brute_passwds": ["admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
+                              "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
+                              "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
+                              "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
+                              "admin123", ""],
+        "ftp_brute_ports": ["21", "990"]
+    }
+
 
 def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename):
     _HOST = messages(language, 53)

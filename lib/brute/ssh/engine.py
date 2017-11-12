@@ -22,7 +22,7 @@ def extra_requirements_dict():
                               "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
                               "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
                               "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
-                              "admin123"],
+                              "admin123", ""],
         "ssh_brute_ports": ["22"]
     }
 
