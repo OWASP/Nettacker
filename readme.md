@@ -14,7 +14,7 @@ Nettacker
 Nettacker project was created to automated for information gathering, vulnerability scanning and eventually generating a report for networks, including services, bugs, vulnerabilities, misconfigurations and information. This software is able to use SYN, ACK, TCP, ICMP and many other protocols to detect and bypass the Firewalls/IDS/IPS and devices. By using a unique solution in Nettacker to find protected services such as SCADA We could make a point to be one of the bests of scanners.  
 
 
-* OWASP Page: https://github.com/viraintel/OWASP-Nettacker
+* OWASP Page: https://www.owasp.org/index.php/OWASP_Nettacker
 * Home: http://nettacker.z3r0d4y.com/
 * Github: https://github.com/viraintel/OWASP-Nettacker
 * Mailing List: https://groups.google.com/forum/#!forum/owasp-nettacker
