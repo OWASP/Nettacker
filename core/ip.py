@@ -15,7 +15,9 @@ try:
     from netaddr import iprange_to_cidrs
     from netaddr import IPNetwork
 except:
+    from core.color import finish
     error('pip install -r requirements.txt')
+    finish()
     sys.exit(1)
 
 
