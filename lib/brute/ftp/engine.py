@@ -127,7 +127,7 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
                 else:
                     threads.remove(thread)
             if n >= thread_number:
-                time.sleep(0.1)
+                time.sleep(0.01)
             else:
                 break
     while 1:
@@ -135,7 +135,7 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         for thread in threads:
             if thread.isAlive() is True:
                 n = False
-        time.sleep(0.1)
+        time.sleep(0.01)
         if n is True:
             break
     _ports = list(set(open(ports_tmp_filename).read().rsplit()))
@@ -209,7 +209,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                             else:
                                 threads.remove(thread)
                         if n >= max:
-                            time.sleep(0.1)
+                            time.sleep(0.01)
                         else:
                             break
 
@@ -219,7 +219,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             for thread in threads:
                 if thread.isAlive() is True:
                     n = False
-            time.sleep(0.1)
+            time.sleep(0.01)
             if n is True:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])

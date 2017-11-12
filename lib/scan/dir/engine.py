@@ -202,7 +202,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                             else:
                                 threads.remove(thread)
                         if n >= max:
-                            time.sleep(0.1)
+                            time.sleep(0.01)
                         else:
                             break
                     info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port))
@@ -215,7 +215,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             for thread in threads:
                 if thread.isAlive() is True:
                     n = False
-            time.sleep(0.1)
+            time.sleep(0.01)
             if n is True:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
