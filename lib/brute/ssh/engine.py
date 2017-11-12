@@ -19,11 +19,10 @@ def extra_requirements_dict():
     return {
         "ssh_brute_users": ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
         "ssh_brute_passwds": ["admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
-                              "123456", "124567", "12345678", "123456789", "1234567890", "admin1", "password!@#"
-                                                                                                   "654321",
-                              "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx", "password1"
-                                                                                     "1qazxcvbnm", "zxcvbnm",
-                              "iloveyou", "password", "p@ssw0rd", "admin123"],
+                              "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
+                              "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
+                              "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
+                              "admin123"],
         "ssh_brute_ports": ["22"]
     }
 
