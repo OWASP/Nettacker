@@ -79,12 +79,14 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
     exit = 0
     while 1:
         try:
+            paramiko_logger = logging.getLogger("paramiko.transport")
+            paramiko_logger.disabled = True
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             if timeout_sec is not None:
-                ssh.connect(target, username='', password='', timeout=timeout_sec)
+                ssh.connect(target, username='', password='', timeout=timeout_sec, port=port)
             else:
-                ssh.connect(target, username='', password='')
+                ssh.connect(target, username='', password='', port=port)
             exit = 0
             break
         except paramiko.ssh_exception.AuthenticationException as ssherr:
@@ -92,7 +94,23 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
                 break
             else:
                 exit += 1
-                if exit is retries:
+                if exit \
+                        is retries:
+                    error(messages(language, 77).format(target, port, str(num), str(total)))
+                    try:
+                        f = open(ports_tmp_filename, 'a')
+                        f.write(str(port) + '\n')
+                        f.close()
+                    except:
+                        pass
+                    break
+        except paramiko.ssh_exception.NoValidConnectionsError as ssherr:
+            if '[Errno None] Unable to connect to port' in ssherr:
+                break
+            else:
+                exit += 1
+                if exit \
+                        is retries:
                     error(messages(language, 77).format(target, port, str(num), str(total)))
                     try:
                         f = open(ports_tmp_filename, 'a')
