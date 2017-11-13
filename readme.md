@@ -24,98 +24,100 @@ Nettacker project was created to automated for information gathering, vulnerabil
 
 
 
-   ______          __      _____ _____  
-  / __ \ \        / /\    / ____|  __ \ 
+   ______          __      _____ _____
+  / __ \ \        / /\    / ____|  __ \
  | |  | \ \  /\  / /  \  | (___ | |__) |
- | |  | |\ \/  \/ / /\ \  \___ \|  ___/ 
- | |__| | \  /\  / ____ \ ____) | |     Version 0.0.1  
+ | |  | |\ \/  \/ / /\ \  \___ \|  ___/
+ | |__| | \  /\  / ____ \ ____) | |     Version 0.0.1
   \____/   \/  \/_/    \_\_____/|_|     SAME
-						  _   _      _   _             _            
-						 | \ | |    | | | |           | |            
-  github.com/viraintel   |  \| | ___| |_| |_ __ _  ___| | _____ _ __ 
+                          _   _      _   _             _
+                         | \ | |    | | | |           | |
+  github.com/viraintel   |  \| | ___| |_| |_ __ _  ___| | _____ _ __
   owasp.org              | . ` |/ _ \ __| __/ _` |/ __| |/ / _ \ '__|
-  viraintel.com          | |\  |  __/ |_| || (_| | (__|   <  __/ |   
-						 |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|   
+  viraintel.com          | |\  |  __/ |_| || (_| | (__|   <  __/ |
+                         |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|
 
 
 
 usage: Nettacker [-L LANGUAGE] [-v VERBOSE_LEVEL] [-V] [-c] [-o LOG_IN_FILE]
-				 [--graph GRAPH_FLAG] [-h] [-i TARGETS] [-l TARGETS_LIST]
-				 [-m SCAN_METHOD] [-x EXCLUDE_METHOD] [-u USERS]
-				 [-U USERS_LIST] [-p PASSWDS] [-P PASSWDS_LIST] [-g PORTS]
-				 [-T TIMEOUT_SEC] [-w TIME_SLEEP] [-r] [-s] [-t THREAD_NUMBER]
-				 [-M THREAD_NUMBER_HOST] [-R PROXIES]
-				 [--proxy-list PROXIES_FILE] [--retries RETRIES]
-				 [--ping-before-scan] [--method-args METHODS_ARGS]
-				 [--method-args-list]
+                 [--graph GRAPH_FLAG] [-h] [-i TARGETS] [-l TARGETS_LIST]
+                 [-m SCAN_METHOD] [-x EXCLUDE_METHOD] [-u USERS]
+                 [-U USERS_LIST] [-p PASSWDS] [-P PASSWDS_LIST] [-g PORTS]
+                 [-T TIMEOUT_SEC] [-w TIME_SLEEP] [-r] [-s] [-t THREAD_NUMBER]
+                 [-M THREAD_NUMBER_HOST] [-R PROXIES]
+                 [--proxy-list PROXIES_FILE] [--retries RETRIES]
+                 [--ping-before-scan] [--method-args METHODS_ARGS]
+                 [--method-args-list]
 
 Engine:
   Engine input options
 
   -L LANGUAGE, --language LANGUAGE
-						select a language ['ru', 'fr', 'en', 'nl', 'el', 'vi',
-						'id', 'de', 'tr', 'ps', 'ur', 'fa', 'hy', 'hi', 'ko',
-						'it', 'zh-cn', 'ar', 'ja', 'es']
+                        select a language ['ru', 'fr', 'en', 'nl', 'el', 'vi',
+                        'id', 'de', 'tr', 'ps', 'ur', 'fa', 'hy', 'hi', 'ko',
+                        'it', 'zh-cn', 'ar', 'ja', 'es']
   -v VERBOSE_LEVEL, --verbose VERBOSE_LEVEL
-						verbose mode level (0-5) (default 0)
+                        verbose mode level (0-5) (default 0)
   -V, --version         show software version
   -c, --update          check for update
   -o LOG_IN_FILE, --output LOG_IN_FILE
-						save all logs in file (results.txt, results.html)
+                        save all logs in file (results.txt, results.html)
   --graph GRAPH_FLAG    build a graph of all activities and information, you
-						must use HTML output. available graphs:
-						['d3_tree_v1_graph', 'd3_tree_v2_graph',
-						'jit_circle_v1_graph']
+                        must use HTML output. available graphs:
+                        ['d3_tree_v1_graph', 'd3_tree_v2_graph',
+                        'jit_circle_v1_graph']
   -h, --help            Show Nettacker Help Menu
 
 Target:
   Target input options
 
   -i TARGETS, --targets TARGETS
-						target(s) list, separate with ","
+                        target(s) list, separate with ","
   -l TARGETS_LIST, --targets-list TARGETS_LIST
-						read target(s) from file
+                        read target(s) from file
 
 Method:
   Scan method options
 
   -m SCAN_METHOD, --method SCAN_METHOD
-						choose scan method ['ftp_brute', 'smtp_brute',
-						'ssh_brute', 'dir_scan', 'port_scan', 'all']
+                        choose scan method ['ftp_brute', 'smtp_brute',
+                        'ssh_brute', 'dir_scan', 'port_scan',
+                        'viewdns_reverse_ip_lookup_scan', 'all']
   -x EXCLUDE_METHOD, --exclude EXCLUDE_METHOD
-						choose scan method to exclude ['ftp_brute',
-						'smtp_brute', 'ssh_brute', 'dir_scan', 'port_scan']
+                        choose scan method to exclude ['ftp_brute',
+                        'smtp_brute', 'ssh_brute', 'dir_scan', 'port_scan',
+                        'viewdns_reverse_ip_lookup_scan']
   -u USERS, --usernames USERS
-						username(s) list, separate with ","
+                        username(s) list, separate with ","
   -U USERS_LIST, --users-list USERS_LIST
-						read username(s) from file
+                        read username(s) from file
   -p PASSWDS, --passwords PASSWDS
-						password(s) list, separate with ","
+                        password(s) list, separate with ","
   -P PASSWDS_LIST, --passwords-list PASSWDS_LIST
-						read password(s) from file
+                        read password(s) from file
   -g PORTS, --ports PORTS
-						port(s) list, separate with ","
+                        port(s) list, separate with ","
   -T TIMEOUT_SEC, --timeout TIMEOUT_SEC
-						read passwords(s) from file
+                        read passwords(s) from file
   -w TIME_SLEEP, --time-sleep TIME_SLEEP
-						time to sleep between each request
+                        time to sleep between each request
   -r, --range           scan all IPs in the range
   -s, --sub-domains     find and scan subdomains
   -t THREAD_NUMBER, --thread-connection THREAD_NUMBER
-						thread numbers for connections to a host
+                        thread numbers for connections to a host
   -M THREAD_NUMBER_HOST, --thread-hostscan THREAD_NUMBER_HOST
-						thread numbers for scan hosts
+                        thread numbers for scan hosts
   -R PROXIES, --proxy PROXIES
-						proxy(s) list, separate with "," (out going
-						connections)
+                        proxy(s) list, separate with "," (out going
+                        connections)
   --proxy-list PROXIES_FILE
-						read proxies from a file (outgoing connections)
+                        read proxies from a file (outgoing connections)
   --retries RETRIES     Retries when the connection timeout (default 3)
   --ping-before-scan    ping before scan the host
   --method-args METHODS_ARGS
-						enter methods inputs, example: "ftp_brute_users=test,a
-						dmin&ftp_brute_passwds=read_from_file:/tmp/pass.txt&ft
-						p_brute_port=21"
+                        enter methods inputs, example: "ftp_brute_users=test,a
+                        dmin&ftp_brute_passwds=read_from_file:/tmp/pass.txt&ft
+                        p_brute_port=21"
   --method-args-list    list all methods args
 
 
