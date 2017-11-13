@@ -1,21 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import socket
 import time
 import json
-import threading
-import string
-import random
-import ssl
 from xml.etree import ElementTree as ET
-import os
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
 import requests
-import random
 
 
 def extra_requirements_dict():
