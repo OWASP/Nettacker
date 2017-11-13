@@ -52,14 +52,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 if n is retries:
                     warn(messages(language, 106).format("viewdns.info"))
                     return 1
-        s = '<table>' + res.rsplit('''<table border="1">''')[1].rsplit("<br></td></tr><tr></tr>")[0]
         _values = []
-        table = ET.XML(s)
-        rows = iter(table)
-        headers = [col.text for col in next(rows)]
-        for row in rows:
-            values = [col.text for col in row]
-            _values.append(dict(zip(headers, values))["Domain"])
+        try:
+            s = '<table>' + res.rsplit('''<table border="1">''')[1].rsplit("<br></td></tr><tr></tr>")[0]
+            table = ET.XML(s)
+            rows = iter(table)
+            headers = [col.text for col in next(rows)]
+            for row in rows:
+                values = [col.text for col in row]
+                _values.append(dict(zip(headers, values))["Domain"])
+        except:
+            pass
         info(messages(language, 114).format(len(_values), ", ".join(_values) if len(_values) > 0 else "None"))
         if len(_values) > 0:
             save = open(log_in_file, 'a')
