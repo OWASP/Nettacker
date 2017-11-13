@@ -2449,5 +2449,11 @@ def all_messages():
                 "ar": "لا يمكن الحصول على {0} وحدة يجادل",
                 "id": "tidak bisa mendapatkan {0} modul args",
                 "es": "no puede obtener {0} argumentos del módulo"
+            },
+            "113": {
+                "en": "trying {0} of {1} in process {2} of {3} on {4} (viewdns ip lookup)"
+            },
+            "114": {
+                "en": "{0} domain found: {1}"
             }
         }
