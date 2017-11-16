@@ -149,26 +149,34 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             t.start()
             trying += 1
             while 1:
-                n = 0
-                for thread in threads:
-                    if thread.isAlive() is True:
-                        n += 1
+                try:
+                    n = 0
+                    for thread in threads:
+                        if thread.isAlive() is True:
+                            n += 1
+                        else:
+                            threads.remove(thread)
+                    if n >= max:
+                        time.sleep(0.01)
                     else:
-                        threads.remove(thread)
-                if n >= max:
-                    time.sleep(0.01)
-                else:
+                        break
+                except KeyboardInterrupt:
                     break
-            info(messages(language, 72).format(trying, total_req, num, total, target, port))
+                    break
+            if verbose_level is not 0:
+                info(messages(language, 72).format(trying, total_req, num, total, target, port))
 
         # wait for threads
         while 1:
-            n = True
-            for thread in threads:
-                if thread.isAlive() is True:
-                    n = False
-            time.sleep(0.01)
-            if n is True:
+            try:
+                n = True
+                for thread in threads:
+                    if thread.isAlive() is True:
+                        n = False
+                time.sleep(0.01)
+                if n is True:
+                    break
+            except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
