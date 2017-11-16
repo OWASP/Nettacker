@@ -86,7 +86,7 @@ def load():
         __version__, __code_name__ = _version_info()
         _check(__version__, __code_name__, language)
 
-    info(messages(language, 96).format(len(graph_names) + len(module_names) - 1))
+    info(messages(language, 96).format(len(load_all_modules()) - 1 + len(load_all_graphs())))
     suff = str(datetime.datetime.now()).replace(' ', '_').replace(':', '-') + '_' + ''.join(
         random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
     subs_temp = 'tmp/subs_temp_%s' % (suff)
