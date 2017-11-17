@@ -148,6 +148,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             threads.append(t)
             t.start()
             trying += 1
+            if verbose_level is not 0:
+                info(messages(language, 72).format(trying, total_req, num, total, target, port))
             while 1:
                 try:
                     n = 0
@@ -163,8 +165,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 except KeyboardInterrupt:
                     break
                     break
-            if verbose_level is not 0:
-                info(messages(language, 72).format(trying, total_req, num, total, target, port))
 
         # wait for threads
         while 1:

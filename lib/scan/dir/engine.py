@@ -194,6 +194,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     threads.append(t)
                     t.start()
                     trying += 1
+                    if verbose_level is not 0:
+                        info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port))
                     while 1:
                         n = 0
                         for thread in threads:
@@ -205,7 +207,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                             time.sleep(0.01)
                         else:
                             break
-                    info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port))
             else:
                 warn(messages(language, 109).format(url))
 
