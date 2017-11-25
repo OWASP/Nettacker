@@ -312,15 +312,13 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             sys.exit(1)
     # Check Graph
     if graph_flag is not None:
-        if not (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
-                    not len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
-            error(messages(language, 87))
-            finish()
-            sys.exit(1)
         if graph_flag not in load_all_graphs():
             error(messages(language, 97).format(graph_flag))
             finish()
             sys.exit(1)
+        if not (log_in_file.endswith('.html') or log_in_file.endswith('.htm')):
+            warn(messages(language, 87))
+            graph_flag = None
     # Check Methods ARGS
     if methods_args is not None:
         new_methods_args = {}
