@@ -12,7 +12,9 @@ from core import compatible
 try:
     import texttable
 except:
+    from core.color import finish
     error('pip install -r requirements.txt')
+    finish()
     sys.exit(1)
 
 
