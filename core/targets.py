@@ -87,9 +87,12 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                     tmp_exec = list(set(open(subs_temp, 'r').read().replace(' ', '').rsplit()))
                     sub_domains = []
                     for sub in tmp_exec:
-                        if 'PTRarchive.com' not in sub and '.internal.nsa.gov.' not in sub \
-                                and 'Sublist3r' not in sub and sub not in sub_domains:
-                            sub_domains.append(sub)
+                        if '.internal.nsa.gov.' not in sub and 'Sublist3r' not in sub and \
+                                sub not in sub_domains:
+                            if 'PTRarchive.com' not in sub:
+                                sub_domains.append(sub)
+                            elif sub.startswith('From http://PTRarchive.com:') and sub.rsplit()[-1] not in sub_domains:
+                                sub_domains.append(sub.rsplit()[-1])
                     if target not in sub_domains:
                         sub_domains.append(target)
                     for target in sub_domains:
@@ -127,9 +130,12 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                     tmp_exec = list(set(open(subs_temp, 'r').read().replace(' ', '').rsplit()))
                     sub_domains = []
                     for sub in tmp_exec:
-                        if 'PTRarchive.com' not in sub and '.internal.nsa.gov.' not in sub \
-                                and 'Sublist3r' not in sub and sub not in sub_domains:
-                            sub_domains.append(sub)
+                        if '.internal.nsa.gov.' not in sub and 'Sublist3r' not in sub and \
+                                sub not in sub_domains:
+                            if 'PTRarchive.com' not in sub:
+                                sub_domains.append(sub)
+                            elif sub.startswith('From http://PTRarchive.com:') and sub.rsplit()[-1] not in sub_domains:
+                                sub_domains.append(sub.rsplit()[-1])
                     if target not in sub_domains:
                         sub_domains.append(target)
                     for target in sub_domains:
