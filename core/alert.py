@@ -41,7 +41,6 @@ def info(content):
 
 
 def write(content):
-    time.sleep(1.0000 * random.choice(range(0, 1000)) / 1000)
     if version() is 2:
         sys.stdout.write(content.encode('utf8'))
     else:
