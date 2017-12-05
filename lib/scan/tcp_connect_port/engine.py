@@ -16,7 +16,7 @@ from lib.icmp.engine import do_one as do_one_ping
 
 def extra_requirements_dict():
     return {  # 1000 common ports used by nmap scanner
-        "port_scan_ports": [1, 3, 4, 6, 7, 9, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32, 33, 37, 42, 43, 49, 53,
+        "tcp_connect_port_scan_ports": [1, 3, 4, 6, 7, 9, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32, 33, 37, 42, 43, 49, 53,
                             70, 79, 80, 81, 82, 83, 84, 85, 88, 89, 90, 99, 100, 106, 109, 110, 111, 113, 119, 125, 135,
                             139, 143, 144, 146, 161, 163, 179, 199, 211, 212, 222, 254, 255, 256, 259, 264, 280, 301,
                             306, 311, 340, 366, 389, 406, 407, 416, 417, 425, 427, 443, 444, 445, 458, 464, 465, 481,
@@ -102,7 +102,7 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         s.close()
         info(messages(language, 80).format(host, port))
         save = open(log_in_file, 'a')
-        save.write(json.dumps({_HOST: host, _USERNAME: '', _PASSWORD: '', _PORT: port, _TYPE: 'port_scan',
+        save.write(json.dumps({_HOST: host, _USERNAME: '', _PASSWORD: '', _PORT: port, _TYPE: 'tcp_connect_port_scan',
                                _DESCRIPTION: messages(language, 79)}) + '\n')
         save.close()
         thread_write = open(thread_tmp_filename, 'w')
@@ -125,11 +125,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     new_extra_requirements[extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["port_scan_ports"]
+            ports = extra_requirements["tcp_connect_port_scan_ports"]
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         if ping_flag and do_one_ping(target, timeout_sec, 8) is None:
-            warn(messages(language, 100).format(target, 'port_scan'))
+            warn(messages(language, 100).format(target, 'tcp_connect_port_scan'))
             return None
         threads = []
         max = thread_number
@@ -187,10 +187,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             _TYPE = messages(language, 57)
             _DESCRIPTION = messages(language, 58)
             save = open(log_in_file, 'a')
-            save.write(json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'port_scan',
+            save.write(json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'tcp_connect_port_scan',
                                    _DESCRIPTION: messages(language, 94)}) + '\n')
             save.close()
         os.remove(thread_tmp_filename)
 
     else:
-        warn(messages(language, 69).format('port_scan', target))
+        warn(messages(language, 69).format('tcp_connect_port_scan', target))
