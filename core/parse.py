@@ -111,11 +111,12 @@ def load():
             p.start()
             while 1:
                 n = 0
-                for process in multiprocessing.active_children():
+                processes = multiprocessing.active_children()
+                for process in processes:
                     if process.is_alive() is True:
                         n += 1
                     else:
-                        process.remove(thread)
+                        processes.remove(process)
                 if n >= thread_number_host:
                     time.sleep(0.01)
                 else:
