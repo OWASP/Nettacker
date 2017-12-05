@@ -131,6 +131,8 @@ def load():
             if exitflag is True:
                 break
         except KeyboardInterrupt:
+            for process in multiprocessing.active_children():
+                process.terminate()
             break
     info(messages(language, 42))
     os.remove(subs_temp)
