@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import threading
+import multiprocessing
 import time
 import os
 import datetime
@@ -100,24 +100,22 @@ def load():
     total_targets = total_targets * len(scan_method)
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
                        language, verbose_level, show_version, check_update, proxies, retries)
-    threads = []
     trying = 0
     for target in targets:
         for sm in scan_method:
             trying += 1
-            t = threading.Thread(target=start_attack, args=(
+            p = multiprocessing.Process(target=start_attack, args=(
                 str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
                 ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, proxies,
                 retries, ping_flag, methods_args))
-            threads.append(t)
-            t.start()
+            p.start()
             while 1:
                 n = 0
-                for thread in threads:
-                    if thread.isAlive() is True:
+                for process in multiprocessing.active_children():
+                    if process.is_alive() is True:
                         n += 1
                     else:
-                        threads.remove(thread)
+                        process.remove(thread)
                 if n >= thread_number_host:
                     time.sleep(0.01)
                 else:
@@ -125,12 +123,12 @@ def load():
 
     while 1:
         try:
-            n = True
-            for thread in threads:
-                if thread.isAlive() is True:
-                    n = False
+            exitflag = True
+            for process in multiprocessing.active_children():
+                if process.is_alive() is True:
+                    exitflag = False
             time.sleep(0.01)
-            if n is True:
+            if exitflag is True:
                 break
         except KeyboardInterrupt:
             break
