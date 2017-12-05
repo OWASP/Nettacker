@@ -105,7 +105,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
 
 
 def test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
-               thread_number, total_req):
+               thread_number, total_req, verbose_level):
     _ports = ports[:]
     threads = []
     trying = 0
@@ -118,7 +118,8 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         threads.append(t)
         t.start()
         trying += 1
-        info(messages(language, 72).format(trying, total_req, num, total, target, port))
+        if verbose_level is not 0:
+            info(messages(language, 72).format(trying, total_req, num, total, target, port))
         while 1:
             n = 0
             for thread in threads:
@@ -188,7 +189,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         ports_write.close()
         trying = 0
         ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
-                           thread_number, total_req)
+                           thread_number, total_req, verbose_level)
 
         for port in ports:
             for user in users:
