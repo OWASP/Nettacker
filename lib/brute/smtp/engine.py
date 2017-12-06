@@ -22,7 +22,8 @@ def extra_requirements_dict():
                                "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
                                "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
                                "admin123", ""],
-        "smtp_brute_ports": ["25", "465", "587"]
+        "smtp_brute_ports": ["25", "465", "587"],
+        "smtp_brute_split_user_set_pass": ["False"]
     }
 
 
@@ -168,6 +169,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             passwds = extra_requirements["smtp_brute_passwds"]
         if ports is None:
             ports = extra_requirements["smtp_brute_ports"]
+        if extra_requirements["smtp_brute_split_user_set_pass"][0] not in ["False", "True"]:
+            extra_requirements["smtp_brute_split_user_set_pass"][0] = "False"
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         if ping_flag and do_one_ping(target, timeout_sec, 8) is None:
@@ -175,7 +178,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             return None
         threads = []
         max = thread_number
-        total_req = len(users) * len(passwds) * len(ports)
+        total_req = int(len(users) * len(passwds) * len(ports)) \
+            if extra_requirements["smtp_brute_split_user_set_pass"][0] == "False" \
+            else int(len(users) * len(ports))
         thread_tmp_filename = 'tmp/thread_tmp_' + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         ports_tmp_filename = 'tmp/ports_tmp_' + ''.join(
@@ -189,13 +194,35 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
                            thread_number, total_req, verbose_level)
         trying = 0
-        for port in ports:
-            for user in users:
-                for passwd in passwds:
-                    t = threading.Thread(target=login,
-                                         args=(
-                                             user, passwd, target, port, timeout_sec, log_in_file, language,
-                                             retries, time_sleep, thread_tmp_filename))
+        if extra_requirements["smtp_brute_split_user_set_pass"][0] == "False":
+            for port in ports:
+                for user in users:
+                    for passwd in passwds:
+                        t = threading.Thread(target=login, args=(user, passwd, target, port,
+                                                                 timeout_sec, log_in_file, language,
+                                                                 retries, time_sleep, thread_tmp_filename))
+                        threads.append(t)
+                        t.start()
+                        trying += 1
+                        if verbose_level is not 0:
+                            info(messages(language, 72).format(trying, total_req, num, total, target, port))
+                        while 1:
+                            n = 0
+                            for thread in threads:
+                                if thread.isAlive() is True:
+                                    n += 1
+                                else:
+                                    threads.remove(thread)
+                            if n >= max:
+                                time.sleep(0.01)
+                            else:
+                                break
+        else:
+            for port in ports:
+                for user in users:
+                    t = threading.Thread(target=login, args=(user, user.rsplit('@')[0], target, port,
+                                                             timeout_sec, log_in_file, language,
+                                                             retries, time_sleep, thread_tmp_filename))
                     threads.append(t)
                     t.start()
                     trying += 1
