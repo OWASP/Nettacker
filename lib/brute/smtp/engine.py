@@ -3,6 +3,8 @@
 
 import threading
 import time
+import socks
+import socket
 import smtplib
 import json
 import string
@@ -12,6 +14,7 @@ from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
+from lib.socks_resolver.engine import getaddrinfo
 
 
 def extra_requirements_dict():
@@ -28,7 +31,8 @@ def extra_requirements_dict():
     }
 
 
-def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename):
+def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename,
+          socks_proxy):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
     _PASSWORD = messages(language, 55)
@@ -36,6 +40,10 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     _TYPE = messages(language, 57)
     _DESCRIPTION = messages(language, 58)
     exit = 0
+    if socks_proxy is not None:
+        socks.set_default_proxy(socks.SOCKS5, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+        socket.socket = socks.socksocket
+        socket.getaddrinfo = getaddrinfo
     while 1:
         try:
             if timeout_sec is not None:
@@ -76,9 +84,13 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
 
 
 def __connect_to_port(port, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
-                      thread_number, total_req):
+                      thread_number, total_req, socks_proxy):
     exit = 0
     port = int(port)
+    if socks_proxy is not None:
+        socks.set_default_proxy(socks.SOCKS5, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+        socket.socket = socks.socksocket
+        socket.getaddrinfo = getaddrinfo
     while 1:
         try:
             if timeout_sec is not None:
@@ -104,7 +116,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
 
 
 def test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
-               thread_number, total_req, verbose_level):
+               thread_number, total_req, verbose_level, socks_proxy):
     # test smtp
     _ports = ports[:]
     threads = []
@@ -113,8 +125,7 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         t = threading.Thread(target=__connect_to_port,
                              args=(
                                  port, timeout_sec, target, retries, language, num, total, time_sleep,
-                                 ports_tmp_filename,
-                                 thread_number, total_req))
+                                 ports_tmp_filename, thread_number, total_req, socks_proxy))
         threads.append(t)
         t.start()
         trying += 1
@@ -179,7 +190,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             return None
         threads = []
         max = thread_number
-        total_req = int(len(users) * len(passwds) * len(ports) * len(extra_requirements["smtp_brute_split_user_set_pass_prefix"])) \
+        total_req = int(
+            len(users) * len(passwds) * len(ports) * len(extra_requirements["smtp_brute_split_user_set_pass_prefix"])) \
             if extra_requirements["smtp_brute_split_user_set_pass"][0] == "False" \
             else int(len(users) * len(ports) * len(extra_requirements["smtp_brute_split_user_set_pass_prefix"]))
         thread_tmp_filename = 'tmp/thread_tmp_' + ''.join(
@@ -193,7 +205,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         ports_write.write('')
         ports_write.close()
         ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
-                           thread_number, total_req, verbose_level)
+                           thread_number, total_req, verbose_level, socks_proxy)
         trying = 0
         if extra_requirements["smtp_brute_split_user_set_pass"][0] == "False":
             for port in ports:
@@ -201,7 +213,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     for passwd in passwds:
                         t = threading.Thread(target=login, args=(user, passwd, target, port,
                                                                  timeout_sec, log_in_file, language,
-                                                                 retries, time_sleep, thread_tmp_filename))
+                                                                 retries, time_sleep, thread_tmp_filename, socks_proxy))
                         threads.append(t)
                         t.start()
                         trying += 1
