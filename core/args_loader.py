@@ -324,5 +324,5 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     return [targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
             passwds, passwds_list, timeout_sec, ports, parser, module_names,
-            language, verbose_level, show_version, check_update, proxies, proxies_file,
+            language, verbose_level, show_version, check_update, socks_proxy,
             retries, graph_flag, help_menu_flag, methods_args, method_args_list]
