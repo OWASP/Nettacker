@@ -301,6 +301,20 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         if not (log_in_file.endswith('.html') or log_in_file.endswith('.htm')):
             warn(messages(language, 87))
             graph_flag = None
+    # Check Socks
+    if socks_proxy is not None:
+        e = False
+        try:
+            if '://' in socks_proxy:
+                socks_proxy = socks_proxy.rsplit('://')[1].rsplit('/')[0]
+            if len(socks_proxy.rsplit(':')) is not 2 or socks_proxy.rsplit(':')[1] == '':
+                e = True
+        except:
+            e = True
+        if e:
+            error(messages(language, 63))
+            finish()
+            sys.exit(1)
     # Check Methods ARGS
     if methods_args is not None:
         new_methods_args = {}
