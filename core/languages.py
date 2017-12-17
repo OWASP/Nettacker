@@ -1372,7 +1372,7 @@ def all_messages():
                 "id": "daftar proxy, terpisah dengan \",\" (koneksi keluar)",
                 "es": "lista de proxy (s), separada con \",\" (conexiones salientes)"
             },
-            "63": {
+            "63": {  # remove
                 "ru": "читать прокси из файла (исходящие соединения)",
                 "fr": "lire des procurations à partir d'un fichier (connexions sortantes)",
                 "en": "read proxies from a file (outgoing connections)",

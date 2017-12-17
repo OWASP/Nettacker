@@ -59,8 +59,7 @@ def load():
     verbose_level = options.verbose_level
     show_version = options.show_version
     check_update = options.check_update
-    proxies = options.proxies
-    proxies_file = options.proxies_file
+    socks_proxy = options.proxies
     retries = options.retries
     graph_flag = options.graph_flag
     help_menu_flag = options.help_menu_flag
@@ -72,12 +71,12 @@ def load():
     (targets, targets_list, thread_number, thread_number_host,
      log_in_file, scan_method, exclude_method, users, users_list,
      passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-     check_update, proxies, proxies_file, retries, graph_flag, help_menu_flag, methods_args, method_args_list) = \
+     check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args, method_args_list) = \
         check_all_required(
             targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
             passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-            check_update, proxies, proxies_file, retries, graph_flag, help_menu_flag, methods_args, method_args_list
+            check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args, method_args_list
         )
 
     info(messages(language, 0))
@@ -94,19 +93,19 @@ def load():
     total_targets = -1
     for total_targets, _ in enumerate(
             analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-                     language, verbose_level, show_version, check_update, proxies, retries)):
+                     language, verbose_level, show_version, check_update, socks_proxy, retries)):
         pass
     total_targets += 1
     total_targets = total_targets * len(scan_method)
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-                       language, verbose_level, show_version, check_update, proxies, retries)
+                       language, verbose_level, show_version, check_update, socks_proxy, retries)
     trying = 0
     for target in targets:
         for sm in scan_method:
             trying += 1
             p = multiprocessing.Process(target=start_attack, args=(
                 str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
-                ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, proxies,
+                ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, socks_proxy,
                 retries, ping_flag, methods_args))
             p.start()
             while 1:

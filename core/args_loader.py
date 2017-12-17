@@ -137,12 +137,9 @@ def load_all_args(module_names, graph_names):
     method.add_argument("-M", "--thread-hostscan", action="store",
                         default=default_config["thread_number_host"], type=int,
                         dest="thread_number_host", help=messages(language, 10))
-    method.add_argument("-R", "--proxy", action="store",
-                        dest="proxies", default=default_config["proxies"],
+    method.add_argument("-R", "--socks-proxy", action="store",
+                        dest="proxies", default=default_config["socks_proxy"],
                         help=messages(language, 62))
-    method.add_argument("--proxy-list", action="store",
-                        dest="proxies_file", default=default_config["proxies_file"],
-                        help=messages(language, 63))
     method.add_argument("--retries", action="store",
                         dest="retries", type=int, default=default_config["retries"],
                         help=messages(language, 64))
@@ -162,7 +159,7 @@ def load_all_args(module_names, graph_names):
 def check_all_required(targets, targets_list, thread_number, thread_number_host,
                        log_in_file, scan_method, exclude_method, users, users_list,
                        passwds, passwds_list, timeout_sec, ports, parser, module_names,
-                       language, verbose_level, show_version, check_update, proxies, proxies_file,
+                       language, verbose_level, show_version, check_update, socks_proxy,
                        retries, graph_flag, help_menu_flag, methods_args, method_args_list):
     # Checking Requirements
     # import libs
@@ -295,21 +292,6 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         error(messages(language, 40).format(log_in_file))
         finish()
         sys.exit(1)
-    # Check Proxies
-    if proxies is not None:
-        proxies = list(set(proxies.rsplit(',')))
-    elif proxies_file is not None:
-        if os.path.isfile(proxies_file):
-            try:
-                proxies = list(set(open(proxies_file).read().rsplit()))
-            except:
-                error(messages(language, 82).format(proxies_file))
-                finish()
-                sys.exit(1)
-        else:
-            error(messages(language, 83).format(proxies_file))
-            finish()
-            sys.exit(1)
     # Check Graph
     if graph_flag is not None:
         if graph_flag not in load_all_graphs():

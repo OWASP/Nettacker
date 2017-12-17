@@ -26,14 +26,14 @@ def all_config_keys():
         "check_subdomains": False,
         "thread_number": 10,
         "thread_number_host": 10,
-        "proxies": None,
-        "proxies_file": None,
+        "socks_proxy": None,
         "retries": 3,
         "ping_flag": False,
         "methods_args": None,
         "method_args_list": False,
         "startup_check_for_update": True
     }
+
 
 def _builder(default_config):
     config_keys = all_config_keys()
