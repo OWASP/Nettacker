@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import socket
+import socks
 import time
 import json
 import threading
@@ -12,6 +13,7 @@ from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
+from lib.socks_resolver.engine import getaddrinfo
 
 
 def extra_requirements_dict():
@@ -86,7 +88,7 @@ def extra_requirements_dict():
     }
 
 
-def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename):
+def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
     _PASSWORD = messages(language, 55)
@@ -95,6 +97,10 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
     _DESCRIPTION = messages(language, 58)
     time.sleep(time_sleep)
     try:
+        if socks_proxy is not None:
+            socks.set_default_proxy(socks.SOCKS5, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if timeout_sec is not None:
             s.settimeout(timeout_sec)
@@ -109,7 +115,7 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         thread_write.write('0')
         thread_write.close()
         return True
-    except socket.error:
+    except:
         return False
 
 
@@ -144,7 +150,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             port = int(port)
             t = threading.Thread(target=connect,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
-                                       thread_tmp_filename))
+                                       thread_tmp_filename, socks_proxy))
             threads.append(t)
             t.start()
             trying += 1
