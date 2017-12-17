@@ -12,7 +12,7 @@ url = 'http://nettacker.z3r0d4y.com/version.py'
 
 def _update(__version__, __code_name__, language):
     try:
-        data = requests.get(url, headers={"User-Agent" : "OWASP Nettacker"}).content
+        data = requests.get(url, headers={"User-Agent": "OWASP Nettacker"}).content
         if version() is 3:
             data = data.decode("utf-8")
         if __version__ + ' ' + __code_name__ == data.rsplit('\n')[0]:
