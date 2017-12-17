@@ -2,13 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import time
+import requests
+import socks
+import socket
 import json
 from xml.etree import ElementTree as ET
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
-import requests
+from lib.socks_resolver.engine import getaddrinfo
 
 
 def extra_requirements_dict():
@@ -28,7 +31,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         _DESCRIPTION = messages(language, 58)
         port = ""
         time.sleep(time_sleep)
-
+        if socks_proxy is not None:
+            socks.set_default_proxy(socks.SOCKS5, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
         # set user agent
         headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0",
                    "Accept": "text/javascript, text/html, application/xml, text/xml, */*",
