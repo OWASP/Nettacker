@@ -1372,27 +1372,9 @@ def all_messages():
                 "id": "daftar proxy, terpisah dengan \",\" (koneksi keluar)",
                 "es": "lista de proxy (s), separada con \",\" (conexiones salientes)"
             },
-            "63": {  # remove
-                "ru": "читать прокси из файла (исходящие соединения)",
-                "fr": "lire des procurations à partir d'un fichier (connexions sortantes)",
-                "en": "read proxies from a file (outgoing connections)",
-                "nl": "proxy's lezen van een bestand (uitgaande verbindingen)",
-                "el": "να διαβάσει πληρεξούσια από ένα αρχείο (εξερχόμενες συνδέσεις)",
-                "vi": "đọc các proxy từ một tệp (các kết nối gửi đi)",
-                "de": "Proxys (für ausgehende Verbindungen) aus einer Datei lesen",
-                "tr": "bir dosyadan proxy'leri okuma (giden bağlantılar)",
-                "ps": "د دوتنې (بهرنی اړیکو) څخه پروسیزونه ولولی",
-                "ur": "ایک فائل (باہر جانے والے کنکشن) سے پراکس پڑھیں",
-                "fa": "خواندن پراکسی ها از فایل (ارتباطات خروجی)",
-                "ja": "ファイルからプロキシを読む（発信接続）",
-                "hi": "एक फ़ाइल से प्रॉक्सी पढ़ें (आउटगोइंग कनेक्शन)",
-                "zh-cn": "从文件读取代理（传出连接）",
-                "ko": "파일에서 프록시 읽기 (나가는 연결)",
-                "it": "leggere proxy da un file (connessioni in uscita)",
-                "hy": "կարդացեք ֆայլից վստահված անձինք (ելքային կապեր)",
-                "ar": "قراءة بروكسيات من ملف (اتصالات الصادرة)",
-                "id": "baca proksi dari file (koneksi keluar)",
-                "es": "leer proxies desde un archivo (conexiones salientes)"
+            "63": {
+                "en": "please enter valid socks address and port. example: 127.0.0.1:9050 or socks://127.0.0.1:9050",
+                "fa": "لطفا آدرس و پورت معتبر socks را وارد کنید. مثال: 127.0.0.1:9050 یا socks://127.0.0.1:9050"
             },
             "64": {
                 "ru": "Повторяет попытку, когда таймаут соединения (по умолчанию 3)",
