@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import threading
+import socks
+import socket
 import time
 import json
 import string
@@ -12,6 +14,7 @@ from ftplib import FTP
 from core.targets import target_type
 from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
+from lib.socks_resolver.engine import getaddrinfo
 
 
 def extra_requirements_dict():
@@ -26,7 +29,7 @@ def extra_requirements_dict():
     }
 
 
-def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename):
+def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename, socks_proxy):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
     _PASSWORD = messages(language, 55)
@@ -34,6 +37,10 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     _TYPE = messages(language, 57)
     _DESCRIPTION = messages(language, 58)
     exit = 0
+    if socks_proxy is not None:
+        socks.set_default_proxy(socks.SOCKS5, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+        socket.socket = socks.socksocket
+        socket.getaddrinfo = getaddrinfo
     while 1:
         try:
             if timeout_sec is not None:
@@ -79,8 +86,12 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     return flag
 
 
-def __connect_to_port(port, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename):
+def __connect_to_port(port, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename, socks_proxy):
     exit = 0
+    if socks_proxy is not None:
+        socks.set_default_proxy(socks.SOCKS5, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+        socket.socket = socks.socksocket
+        socket.getaddrinfo = getaddrinfo
     while 1:
         try:
             if timeout_sec is not None:
@@ -105,7 +116,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
 
 
 def test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
-               thread_number, total_req, verbose_level):
+               thread_number, total_req, verbose_level, socks_proxy):
     _ports = ports[:]
     threads = []
     trying = 0
@@ -114,7 +125,7 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         t = threading.Thread(target=__connect_to_port,
                              args=(
                                  port, timeout_sec, target, retries, language, num, total, time_sleep,
-                                 ports_tmp_filename))
+                                 ports_tmp_filename, socks_proxy))
         threads.append(t)
         t.start()
         trying += 1
@@ -189,7 +200,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         ports_write.close()
         trying = 0
         ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
-                           thread_number, total_req, verbose_level)
+                           thread_number, total_req, verbose_level, socks_proxy)
 
         for port in ports:
             for user in users:
@@ -197,7 +208,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     t = threading.Thread(target=login,
                                          args=(
                                              user, passwd, target, port, timeout_sec, log_in_file, language,
-                                             retries, time_sleep, thread_tmp_filename))
+                                             retries, time_sleep, thread_tmp_filename, socks_proxy))
                     threads.append(t)
                     t.start()
                     trying += 1
