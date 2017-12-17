@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import socket
+import socks
 import time
 import json
 import threading
@@ -14,6 +15,7 @@ from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
 import requests
 import random
+from lib.socks_resolver.engine import getaddrinfo
 
 
 def extra_requirements_dict():
@@ -37,7 +39,7 @@ def extra_requirements_dict():
 
 
 def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
-          http_method):
+          http_method, socks_proxy):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
     _PASSWORD = messages(language, 55)
@@ -50,6 +52,10 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                               "- Browsing directory "]
     time.sleep(time_sleep)
     try:
+        if socks_proxy is not None:
+            socks.set_default_proxy(socks.SOCKS5, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
         n = 0
         while 1:
             try:
@@ -92,7 +98,11 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
         return False
 
 
-def test(target, retries, timeout_sec, user_agent, http_method):
+def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy):
+    if socks_proxy is not None:
+        socks.set_default_proxy(socks.SOCKS5, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+        socket.socket = socks.socksocket
+        socket.getaddrinfo = getaddrinfo
     n = 0
     while 1:
         try:
@@ -174,7 +184,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 host = target_to_host(target)
                 path = "/".join(target.replace('http://', '').replace('https://', '').rsplit('/')[1:])
                 url = http + '://' + host + ':' + str(port) + '/' + path
-            if test(url, retries, timeout_sec, user_agent, extra_requirements["dir_scan_http_method"][0]) is 0:
+            if test(url, retries, timeout_sec, user_agent, extra_requirements["dir_scan_http_method"][0], socks_proxy) is 0:
                 for idir in extra_requirements["dir_scan_list"]:
                     # check target type
                     if target_type(target) == 'SINGLE_IPv4' or target_type(target) == 'DOMAIN':
@@ -190,7 +200,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     t = threading.Thread(target=check,
                                          args=(url, user_agent, timeout_sec, log_in_file, language, time_sleep,
                                                thread_tmp_filename, retries,
-                                               extra_requirements["dir_scan_http_method"][0]))
+                                               extra_requirements["dir_scan_http_method"][0], socks_proxy))
                     threads.append(t)
                     t.start()
                     trying += 1
