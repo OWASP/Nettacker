@@ -41,7 +41,9 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     _DESCRIPTION = messages(language, 58)
     exit = 0
     if socks_proxy is not None:
-        socks.set_default_proxy(socks.SOCKS5, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+        socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+        socks_proxy = socks_proxy.rsplit('://')[1]
+        socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
         socket.socket = socks.socksocket
         socket.getaddrinfo = getaddrinfo
     while 1:
@@ -88,7 +90,9 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
     exit = 0
     port = int(port)
     if socks_proxy is not None:
-        socks.set_default_proxy(socks.SOCKS5, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+        socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+        socks_proxy = socks_proxy.rsplit('://')[1]
+        socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
         socket.socket = socks.socksocket
         socket.getaddrinfo = getaddrinfo
     while 1:
