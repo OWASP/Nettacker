@@ -138,7 +138,7 @@ def load_all_args(module_names, graph_names):
                         default=default_config["thread_number_host"], type=int,
                         dest="thread_number_host", help=messages(language, 10))
     method.add_argument("-R", "--socks-proxy", action="store",
-                        dest="proxies", default=default_config["socks_proxy"],
+                        dest="socks_proxy", default=default_config["socks_proxy"],
                         help=messages(language, 62))
     method.add_argument("--retries", action="store",
                         dest="retries", type=int, default=default_config["retries"],
@@ -304,9 +304,20 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     # Check Socks
     if socks_proxy is not None:
         e = False
+        if socks_proxy.startswith('socks://'):
+            socks_flag = 5
+            socks_proxy = socks_proxy.replace('socks://','')
+        elif socks_proxy.startswith('socks5://'):
+            socks_flag = 5
+            socks_proxy = socks_proxy.replace('socks5://', '')
+        elif socks_proxy.startswith('socks4://'):
+            socks_flag = 4
+            socks_proxy = socks_proxy.replace('socks4://', '')
+        else:
+            socks_flag = 5
+        if '://' in socks_proxy:
+            socks_proxy = socks_proxy.rsplit('://')[1].rsplit('/')[0]
         try:
-            if '://' in socks_proxy:
-                socks_proxy = socks_proxy.rsplit('://')[1].rsplit('/')[0]
             if len(socks_proxy.rsplit(':')) is not 2 or socks_proxy.rsplit(':')[1] == '':
                 e = True
         except:
@@ -315,6 +326,10 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             error(messages(language, 63))
             finish()
             sys.exit(1)
+        if socks_flag is 4:
+            socks_proxy = 'socks4://' + socks_proxy
+        if socks_flag is 5:
+            socks_proxy = 'socks5://' + socks_proxy
     # Check Methods ARGS
     if methods_args is not None:
         new_methods_args = {}

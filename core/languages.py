@@ -1351,30 +1351,14 @@ def all_messages():
                 "es": "Buscar actualizaciones"
             },
             "62": {
-                "ru": "прокси (ы), разделяемые с \",\" (исходящие соединения)",
-                "fr": "proxy (s), séparez-les par \",\" (connexions sortantes)",
-                "en": "proxy(s) list, separate with \",\" (out going connections)",
-                "nl": "proxy (s) lijst, apart met \",\" (out going connections)",
-                "el": "λίστα με πληρεξούσια, χωριστά με \",\" (συνδέσεις εκτός σύνδεσης)",
-                "vi": "danh sách proxy, tách biệt với \",\" (các kết nối ra)",
-                "de": "Proxy-Liste (für ausgehende Verbindungen) mit \",\" getrennt",
-                "tr": "proxy (ler) listesi, \",\" ile ayr (dışarıya giden bağlantılar)",
-                "ps": "د پراکسی لسټ، د \",\" سره (جلا روان اړیکو)",
-                "ur": "پراکسی (ے) کی فہرست، \",\" کے ساتھ الگ الگ",
-                "fa": "لیست پروکسی (ها)، جدا سازی به وسیله \",\" (ارتباطات خروجی)",
-                "ja": "プロキシリスト、 \",\"で区切られた（外への接続）",
-                "hi": "प्रॉक्सी (एस) सूची, \",\" से अलग (बाहर जा रहे कनेक्शन)",
-                "zh-cn": "代理列表，与\",\"分开（出站连接）",
-                "ko": "프록시 (들) 목록, \",\"로 분리하십시오 (나가는 연결)",
-                "it": "elenco proxy (s), separato con \",\" (connessioni in uscita)",
-                "hy": "վստահված անձի ցուցակը, առանձին \",\" (ելքային կապեր)",
-                "ar": "بروكسي (s)، منفصلة مع \",\" (اتصالات الذهاب)",
-                "id": "daftar proxy, terpisah dengan \",\" (koneksi keluar)",
-                "es": "lista de proxy (s), separada con \",\" (conexiones salientes)"
+                "en": "outgoing connections proxy (socks)",
+                "fa": "پراکسی ارتباطات خروجی (socks)"
             },
             "63": {
-                "en": "please enter valid socks address and port. example: 127.0.0.1:9050 or socks://127.0.0.1:9050",
-                "fa": "لطفا آدرس و پورت معتبر socks را وارد کنید. مثال: 127.0.0.1:9050 یا socks://127.0.0.1:9050"
+                "en": "please enter valid socks address and port. example socks5: 127.0.0.1:9050, "
+                      "socks://127.0.0.1:9050, socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050",
+                "fa": "لطفا آدرس و پورت معتبر socks را وارد کنید. socks5 مثال: 127.0.0.1:9050، socks://127.0.0.1:9050،"
+                      " socks5:127.0.0.1:9050 یا socks4: socks4://127.0.0.1:9050"
             },
             "64": {
                 "ru": "Повторяет попытку, когда таймаут соединения (по умолчанию 3)",

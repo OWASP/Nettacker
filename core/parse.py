@@ -59,7 +59,7 @@ def load():
     verbose_level = options.verbose_level
     show_version = options.show_version
     check_update = options.check_update
-    socks_proxy = options.proxies
+    socks_proxy = options.socks_proxy
     retries = options.retries
     graph_flag = options.graph_flag
     help_menu_flag = options.help_menu_flag
