@@ -98,7 +98,9 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
     time.sleep(time_sleep)
     try:
         if socks_proxy is not None:
-            socks.set_default_proxy(socks.SOCKS5, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+            socks_proxy = socks_proxy.rsplit('://')[1]
+            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
