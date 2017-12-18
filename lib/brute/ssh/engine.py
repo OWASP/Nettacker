@@ -155,7 +155,9 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
     threads = []
     trying = 0
     if socks_proxy is not None:
-        socks.set_default_proxy(socks.SOCKS5, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+        socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+        _socks_proxy = socks_proxy.rsplit('://')[1]
+        socks.set_default_proxy(socks_version, str(_socks_proxy.rsplit(':')[0]), int(_socks_proxy.rsplit(':')[1]))
         socket.socket = socks.socksocket
         socket.getaddrinfo = getaddrinfo
     for port in ports:
