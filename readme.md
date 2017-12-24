@@ -45,8 +45,7 @@ usage: Nettacker [-L LANGUAGE] [-v VERBOSE_LEVEL] [-V] [-c] [-o LOG_IN_FILE]
                  [-m SCAN_METHOD] [-x EXCLUDE_METHOD] [-u USERS]
                  [-U USERS_LIST] [-p PASSWDS] [-P PASSWDS_LIST] [-g PORTS]
                  [-T TIMEOUT_SEC] [-w TIME_SLEEP] [-r] [-s] [-t THREAD_NUMBER]
-                 [-M THREAD_NUMBER_HOST] [-R PROXIES]
-                 [--proxy-list PROXIES_FILE] [--retries RETRIES]
+                 [-M THREAD_NUMBER_HOST] [-R SOCKS_PROXY] [--retries RETRIES]
                  [--ping-before-scan] [--method-args METHODS_ARGS]
                  [--method-args-list]
 
@@ -82,11 +81,12 @@ Method:
 
   -m SCAN_METHOD, --method SCAN_METHOD
                         choose scan method ['ftp_brute', 'smtp_brute',
-                        'ssh_brute', 'dir_scan', 'port_scan',
+                        'ssh_brute', 'dir_scan', 'tcp_connect_port_scan',
                         'viewdns_reverse_ip_lookup_scan', 'all']
   -x EXCLUDE_METHOD, --exclude EXCLUDE_METHOD
                         choose scan method to exclude ['ftp_brute',
-                        'smtp_brute', 'ssh_brute', 'dir_scan', 'port_scan',
+                        'smtp_brute', 'ssh_brute', 'dir_scan',
+                        'tcp_connect_port_scan',
                         'viewdns_reverse_ip_lookup_scan']
   -u USERS, --usernames USERS
                         username(s) list, separate with ","
@@ -108,11 +108,8 @@ Method:
                         thread numbers for connections to a host
   -M THREAD_NUMBER_HOST, --thread-hostscan THREAD_NUMBER_HOST
                         thread numbers for scan hosts
-  -R PROXIES, --proxy PROXIES
-                        proxy(s) list, separate with "," (out going
-                        connections)
-  --proxy-list PROXIES_FILE
-                        read proxies from a file (outgoing connections)
+  -R SOCKS_PROXY, --socks-proxy SOCKS_PROXY
+                        outgoing connections proxy (socks)
   --retries RETRIES     Retries when the connection timeout (default 3)
   --ping-before-scan    ping before scan the host
   --method-args METHODS_ARGS
