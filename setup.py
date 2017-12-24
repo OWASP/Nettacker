@@ -5,7 +5,8 @@ import sys
 from distutils.core import setup
 
 setup(
-    install_requires=['netaddr', 'dnspython', 'requests', 'paramiko', 'texttable', 'PySocks', 'win_inet_pton'],
+    install_requires=['netaddr', 'dnspython', 'requests', 'paramiko', 'texttable', 'PySocks', 'win_inet_pton',
+                      'pyOpenSSL'],
     name='OWASP-Nettacker',
     version=open('version').read(),
     packages=['lib', 'lib.scan', 'lib.scan.port', 'lib.brute', 'lib.brute.ftp', 'lib.brute.ssh', 'lib.brute.http',
