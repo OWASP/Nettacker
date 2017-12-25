@@ -186,10 +186,39 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                                            color.color('green')))
         finish()
         sys.exit(0)
+    # Check Socks
+    if socks_proxy is not None:
+        e = False
+        if socks_proxy.startswith('socks://'):
+            socks_flag = 5
+            socks_proxy = socks_proxy.replace('socks://', '')
+        elif socks_proxy.startswith('socks5://'):
+            socks_flag = 5
+            socks_proxy = socks_proxy.replace('socks5://', '')
+        elif socks_proxy.startswith('socks4://'):
+            socks_flag = 4
+            socks_proxy = socks_proxy.replace('socks4://', '')
+        else:
+            socks_flag = 5
+        if '://' in socks_proxy:
+            socks_proxy = socks_proxy.rsplit('://')[1].rsplit('/')[0]
+        try:
+            if len(socks_proxy.rsplit(':')) is not 2 or socks_proxy.rsplit(':')[1] == '':
+                e = True
+        except:
+            e = True
+        if e:
+            error(messages(language, 63))
+            finish()
+            sys.exit(1)
+        if socks_flag is 4:
+            socks_proxy = 'socks4://' + socks_proxy
+        if socks_flag is 5:
+            socks_proxy = 'socks5://' + socks_proxy
     # Check update
     if check_update is True:
         from core.update import _update
-        _update(compatible.__version__, compatible.__code_name__, language)
+        _update(compatible.__version__, compatible.__code_name__, language, socks_proxy)
         finish()
         sys.exit(0)
     # Check the target(s)
@@ -306,7 +335,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         e = False
         if socks_proxy.startswith('socks://'):
             socks_flag = 5
-            socks_proxy = socks_proxy.replace('socks://','')
+            socks_proxy = socks_proxy.replace('socks://', '')
         elif socks_proxy.startswith('socks5://'):
             socks_flag = 5
             socks_proxy = socks_proxy.replace('socks5://', '')
