@@ -83,7 +83,7 @@ def load():
     # check for update
     if startup_update_flag is True:
         __version__, __code_name__ = _version_info()
-        _check(__version__, __code_name__, language)
+        _check(__version__, __code_name__, language, socks_proxy)
 
     info(messages(language, 96).format(len(load_all_modules()) - 1 + len(load_all_graphs())))
     suff = str(datetime.datetime.now()).replace(' ', '_').replace(':', '-') + '_' + ''.join(
