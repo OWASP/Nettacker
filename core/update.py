@@ -34,8 +34,14 @@ def _update(__version__, __code_name__, language, socks_proxy):
     return
 
 
-def _check(__version__, __code_name__, language):
+def _check(__version__, __code_name__, language, socks_proxy):
     try:
+        if socks_proxy is not None:
+            socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+            socks_proxy = socks_proxy.rsplit('://')[1]
+            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
         data = requests.get(url, headers={"User-Agent": "OWASP Nettacker"}).content
         if version() is 3:
             data = data.decode("utf-8")
