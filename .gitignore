@@ -14,7 +14,8 @@ tmp/ranges_*
 tmp/subs_temp_*
 tmp/thread_*
 tmp/ports_*
-results.*
+results*.*
+results/*.html
 user.txt
 pass.txt
 logs.txt
