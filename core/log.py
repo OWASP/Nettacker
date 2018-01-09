@@ -83,7 +83,7 @@ def sort_logs(log_in_file, language, graph_flag):
         save = open(log_in_file, 'w' if type(_table) == str else 'wb')
         save.write(_table)
         save.close()
-    if len(log_in_file) >= 5 and log_in_file[-5:] == '.json':
+    elif len(log_in_file) >= 5 and log_in_file[-5:] == '.json':
         data = json.dumps(sorted(json.loads('[' + _get_log_values(log_in_file) + ']')))
         save = open(log_in_file, 'wb')
         save.write(data.encode('utf8'))

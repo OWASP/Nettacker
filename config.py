@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import datetime
+import random
+import string
+
 
 def get_config():
     return {  # OWASP Nettacker Default Configuration
@@ -8,7 +12,9 @@ def get_config():
         "verbose_level": 0,
         "show_version": False,
         "check_update": False,
-        "log_in_file": "results.html",
+        "log_in_file": "results/results_{0}_{1}.html".format(datetime.datetime.now().isoformat().rsplit('.')[0]
+                                                         .replace(':', '_').replace('T', '_').replace('-', '_'),
+                                                         ''.join(random.choice(string.ascii_lowercase) for x in range(10))),
         "graph_flag": "d3_tree_v1_graph",
         "help_menu_flag": False,
         "targets": None,
