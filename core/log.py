@@ -35,6 +35,15 @@ def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, 
     return start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION)
 
 
+def _get_log_values(log_in_file):
+    o = open(log_in_file)
+    data = ''
+    for value in o:
+        if value[0] == '{':
+            data += value + ','
+    return data[:-1]
+
+
 def sort_logs(log_in_file, language, graph_flag):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
@@ -47,13 +56,8 @@ def sort_logs(log_in_file, language, graph_flag):
         reload(sys)
         sys.setdefaultencoding('utf8')
     if (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
-                    len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
-        o = open(log_in_file)
-        data = ''
-        for value in o:
-            if value[0] == '{':
-                data += value + ','
-        data = sorted(json.loads('[' + data[:-1] + ']'), key=lambda x: sorted(x.keys()))
+            len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
+        data = sorted(json.loads('[' + _get_log_values(log_in_file) + ']'), key=lambda x: sorted(x.keys()))
         # if user want a graph
         _graph = ''
         if graph_flag is not None:
@@ -176,12 +180,7 @@ def sort_logs(log_in_file, language, graph_flag):
         save.write(_table)
         save.close()
     else:
-        o = open(log_in_file)
-        data = ''
-        for value in o:
-            if value[0] == '{':
-                data += value + ','
-        data = sorted(json.loads('[' + data[:-1] + ']'))
+        data = sorted(json.loads('[' + _get_log_values(log_in_file) + ']'))
         _table = texttable.Texttable()
         _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION]])
         for value in data:
