@@ -70,18 +70,23 @@ def sort_logs(log_in_file, language, graph_flag):
         for value in data:
             if compatible.version() is 2:
                 _table += _log_data.table_items.format(value[_HOST.decode('utf8')], value[_USERNAME.decode('utf8')],
-                                                  value[_PASSWORD.decode('utf8')],
-                                                  value[_PORT.decode('utf8')], value[_TYPE.decode('utf8')],
-                                                  value[_DESCRIPTION.decode('utf8')])
+                                                       value[_PASSWORD.decode('utf8')],
+                                                       value[_PORT.decode('utf8')], value[_TYPE.decode('utf8')],
+                                                       value[_DESCRIPTION.decode('utf8')])
             else:
                 _table += _log_data.table_items.format(value[_HOST], value[_USERNAME], value[_PASSWORD],
-                                                  value[_PORT], value[_TYPE], value[_DESCRIPTION])
+                                                       value[_PORT], value[_TYPE], value[_DESCRIPTION])
         _table += _log_data.table_end + messages(language, 93) \
             .format(compatible.__version__, compatible.__code_name__,
                     datetime.datetime.now())
         _table = _table.encode('utf8')
         save = open(log_in_file, 'w' if type(_table) == str else 'wb')
         save.write(_table)
+        save.close()
+    if len(log_in_file) >= 5 and log_in_file[-5:] == '.json':
+        data = json.dumps(sorted(json.loads('[' + _get_log_values(log_in_file) + ']')))
+        save = open(log_in_file, 'wb')
+        save.write(data.encode('utf8'))
         save.close()
     else:
         data = sorted(json.loads('[' + _get_log_values(log_in_file) + ']'))
