@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import json
-import datetime
 import sys
 from core.alert import messages
 from core.alert import info
 from core.alert import error
 from core import compatible
+from core.time import now
 
 try:
     import texttable
@@ -79,8 +79,7 @@ def sort_logs(log_in_file, language, graph_flag):
                 _table += _log_data.table_items.format(value[_HOST], value[_USERNAME], value[_PASSWORD],
                                                        value[_PORT], value[_TYPE], value[_DESCRIPTION], value[_TIME])
         _table += _log_data.table_end + messages(language, 93) \
-            .format(compatible.__version__, compatible.__code_name__,
-                    datetime.datetime.now())
+            .format(compatible.__version__, compatible.__code_name__, now())
         _table = _table.encode('utf8')
         save = open(log_in_file, 'w' if type(_table) == str else 'wb')
         save.write(_table)
@@ -101,7 +100,6 @@ def sort_logs(log_in_file, language, graph_flag):
         save = open(log_in_file, 'wb')
         save.write(_table.draw().encode('utf8') + '\n\n' +
                    messages(language, 93).format(compatible.__version__, compatible.__code_name__,
-                                                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")).encode(
-                       'utf8') + '\n\n')
+                                                 now()).encode('utf8') + '\n\n')
         save.close()
     return 0

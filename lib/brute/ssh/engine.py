@@ -5,7 +5,6 @@ import threading
 import socket
 import socks
 import time
-import datetime
 import json
 import paramiko
 import logging
@@ -17,6 +16,7 @@ from core.targets import target_type
 from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
+from core.time import now
 
 
 def extra_requirements_dict():
@@ -84,7 +84,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             save.write(
                 json.dumps({_HOST: target, _USERNAME: user, _PASSWORD: passwd, _PORT: port, _TYPE: 'ssh_brute',
                             _DESCRIPTION: messages(language, 66),
-                            _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
+                            _TIME: now()}) + '\n')
             save.close()
             thread_write = open(thread_tmp_filename, 'w')
             thread_write.write('0')
@@ -334,7 +334,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             save = open(log_in_file, 'a')
             save.write(json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'ssh_brute',
                                    _DESCRIPTION: messages(language, 95),
-                                   _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
+                                   _TIME: now()}) + '\n')
             save.close()
         os.remove(thread_tmp_filename)
     else:

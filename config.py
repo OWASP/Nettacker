@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import datetime
 import random
 import string
-
+from core.time import now
 
 def get_config():
     return {  # OWASP Nettacker Default Configuration
@@ -12,7 +11,7 @@ def get_config():
         "verbose_level": 0,
         "show_version": False,
         "check_update": False,
-        "log_in_file": "results/results_{0}_{1}.html".format(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
+        "log_in_file": "results/results_{0}_{1}.html".format(now(),
                                                          ''.join(random.choice(string.ascii_lowercase) for x in range(10))),
         "graph_flag": "d3_tree_v1_graph",
         "help_menu_flag": False,

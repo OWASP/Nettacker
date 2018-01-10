@@ -6,7 +6,7 @@ import requests
 import socks
 import socket
 import json
-import datetime
+from core.time import now
 from xml.etree import ElementTree as ET
 from core.alert import *
 from core.targets import target_type
@@ -104,14 +104,14 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             save.write(json.dumps(
                 {_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'viewdns_reverse_ip_lookup_scan',
                  _DESCRIPTION: messages(language, 114).format(len(_values), ", ".join(_values) if len(
-                     _values) > 0 else "None"), _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
+                     _values) > 0 else "None"), _TIME: now()}) + '\n')
             save.close()
         if verbose_level is not 0:
             save = open(log_in_file, 'a')
             save.write(json.dumps(
                 {_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'viewdns_reverse_ip_lookup_scan',
                  _DESCRIPTION: messages(language, 114).format(len(_values), ", ".join(_values) if len(
-                     _values) > 0 else "None"), _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
+                     _values) > 0 else "None"), _TIME: now()}) + '\n')
             save.close()
     else:
         warn(messages(language, 69).format('viewdns_reverse_ip_lookup_scan', target))

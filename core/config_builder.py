@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import datetime
 import random
 import string
+from core.time import now
 
 
 def all_config_keys():
@@ -12,8 +12,9 @@ def all_config_keys():
         "verbose_level": 0,
         "show_version": False,
         "check_update": False,
-        "log_in_file": "results/results_{0}_{1}.html".format(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
-                                                         ''.join(random.choice(string.ascii_lowercase) for x in range(10))),
+        "log_in_file": "results/results_{0}_{1}.html".format(now(),
+                                                             ''.join(random.choice(string.ascii_lowercase) for x in
+                                                                     range(10))),
         "graph_flag": "d3_tree_v1_graph",
         "help_menu_flag": False,
         "targets": None,

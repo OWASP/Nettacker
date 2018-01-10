@@ -4,7 +4,6 @@
 import socket
 import socks
 import time
-import datetime
 import json
 import threading
 import string
@@ -15,6 +14,7 @@ from core.targets import target_type
 from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
+from core.time import now
 
 
 def extra_requirements_dict():
@@ -237,7 +237,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             save.write(
                 json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'tcp_connect_port_scan',
                             _DESCRIPTION: messages(language, 94),
-                            _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
+                            _TIME: now()}) + '\n')
             save.close()
         os.remove(thread_tmp_filename)
 

@@ -8,15 +8,15 @@ import json
 import threading
 import string
 import random
-import datetime
+import requests
+import random
 import os
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
-import requests
-import random
 from lib.socks_resolver.engine import getaddrinfo
+from core.time import now
 
 
 def extra_requirements_dict():
@@ -94,7 +94,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
             save.write(json.dumps({_HOST: target_to_host(target), _USERNAME: '', _PASSWORD: '',
                                    _PORT: int(target.rsplit(':')[2].rsplit('/')[0]), _TYPE: 'dir_scan',
                                    _DESCRIPTION: messages(language, 38).format(target, r.status_code, r.reason),
-                                   _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
+                                   _TIME: now()}) + '\n')
             save.close()
             if r.status_code is 200:
                 for dlmsg in directory_listing_msgs:
@@ -104,7 +104,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                         save.write(json.dumps({_HOST: target_to_host(target), _USERNAME: '', _PASSWORD: '',
                                                _PORT: int(target.rsplit(':')[1].rsplit('/')[0]), _TYPE: 'dir_scan',
                                                _DESCRIPTION: messages(language, 104).format(target),
-                                               _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
+                                               _TIME: now()}) + '\n')
                         save.close()
                         break
         return True
@@ -285,7 +285,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 save = open(log_in_file, 'a')
                 save.write(json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'dir_scan',
                                        _DESCRIPTION: messages(language, 94),
-                                       _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
+                                       _TIME: now()}) + '\n')
                 save.close()
         os.remove(thread_tmp_filename)
     else:
