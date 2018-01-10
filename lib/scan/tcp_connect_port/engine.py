@@ -133,7 +133,7 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         save = open(log_in_file, 'a')
         save.write(json.dumps({_HOST: host, _USERNAME: '', _PASSWORD: '', _PORT: port, _TYPE: 'tcp_connect_port_scan',
                                _DESCRIPTION: messages(language, 79),
-                               _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
+                               _TIME: now()}) + '\n')
         save.close()
         thread_write = open(thread_tmp_filename, 'w')
         thread_write.write('0')
