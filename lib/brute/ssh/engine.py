@@ -132,23 +132,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
                 break
             else:
                 exit += 1
-                if exit \
-                        is retries:
-                    error(messages(language, 77).format(target, port, str(num), str(total)))
-                    try:
-                        f = open(ports_tmp_filename, 'a')
-                        f.write(str(port) + '\n')
-                        f.close()
-                    except:
-                        pass
-                    break
-        except paramiko.ssh_exception.NoValidConnectionsError as ssherr:
-            if '[Errno None] Unable to connect to port' in ssherr:
-                break
-            else:
-                exit += 1
-                if exit \
-                        is retries:
+                if exit is retries:
                     error(messages(language, 77).format(target, port, str(num), str(total)))
                     try:
                         f = open(ports_tmp_filename, 'a')
