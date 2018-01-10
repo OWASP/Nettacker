@@ -1,4 +1,4 @@
-Nettacker
+OWASP Nettacker
 =========
 [![Build Status Travic CI](https://travis-ci.org/viraintel/OWASP-Nettacker.svg?branch=master)](https://travis-ci.org/viraintel/OWASP-Nettacker)
 [![Python 2.x](https://img.shields.io/badge/python-2.x-blue.svg)](https://travis-ci.org/viraintel/OWASP-Nettacker)
@@ -61,7 +61,8 @@ Engine:
   -V, --version         show software version
   -c, --update          check for update
   -o LOG_IN_FILE, --output LOG_IN_FILE
-                        save all logs in file (results.txt, results.html)
+                        save all logs in file (results.txt, results.html,
+                        results.json)
   --graph GRAPH_FLAG    build a graph of all activities and information, you
                         must use HTML output. available graphs:
                         ['d3_tree_v1_graph', 'd3_tree_v2_graph',
@@ -109,7 +110,13 @@ Method:
   -M THREAD_NUMBER_HOST, --thread-hostscan THREAD_NUMBER_HOST
                         thread numbers for scan hosts
   -R SOCKS_PROXY, --socks-proxy SOCKS_PROXY
-                        outgoing connections proxy (socks)
+                        outgoing connections proxy (socks). example socks5:
+                        127.0.0.1:9050, socks://127.0.0.1:9050,
+                        socks5://127.0.0.1:9050 or socks4:
+                        socks4://127.0.0.1:9050, authentication:
+                        socks://username:password@127.0.0.1,
+                        socks4://username:password@127.0.0.1,
+                        socks5://username:password@127.0.0.1
   --retries RETRIES     Retries when the connection timeout (default 3)
   --ping-before-scan    ping before scan the host
   --method-args METHODS_ARGS
