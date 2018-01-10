@@ -53,6 +53,22 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                    }
         # timeout check
         if ping_flag and do_one_ping(target_to_host(target), timeout_sec, 8) is None:
+            if socks_proxy is not None:
+                socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+                socks_proxy = socks_proxy.rsplit('://')[1]
+                if '@' in socks_proxy:
+                    socks_username = socks_proxy.rsplit(':')[0]
+                    socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
+                    socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
+                                            int(socks_proxy.rsplit(':')[-1]), username=socks_username,
+                                            password=socks_password)
+                    socket.socket = socks.socksocket
+                    socket.getaddrinfo = getaddrinfo
+                else:
+                    socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]),
+                                            int(socks_proxy.rsplit(':')[1]))
+                    socket.socket = socks.socksocket
+                    socket.getaddrinfo = getaddrinfo
             warn(messages(language, 100).format(target_to_host(target), 'viewdns_reverse_ip_lookup_scan'))
             return None
         total_req = 1
