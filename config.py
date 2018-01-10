@@ -3,7 +3,7 @@
 
 import random
 import string
-from core.time import now
+from core._time import now
 
 def get_config():
     return {  # OWASP Nettacker Default Configuration

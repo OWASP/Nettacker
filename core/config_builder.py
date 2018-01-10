@@ -3,7 +3,7 @@
 
 import random
 import string
-from core.time import now
+from core._time import now
 
 
 def all_config_keys():

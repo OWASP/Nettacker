@@ -7,7 +7,7 @@ from core.alert import messages
 from core.alert import info
 from core.alert import error
 from core import compatible
-from core.time import now
+from core._time import now
 
 try:
     import texttable

@@ -4,7 +4,6 @@
 import multiprocessing
 import time
 import os
-import datetime
 import random
 import string
 import sys
@@ -22,7 +21,7 @@ from core.args_loader import load_all_args
 from core.args_loader import check_all_required
 from core.update import _check
 from core.compatible import _version_info
-
+from core._time import now
 
 def load():
     write('\n\n')
@@ -86,7 +85,7 @@ def load():
         _check(__version__, __code_name__, language, socks_proxy)
 
     info(messages(language, 96).format(len(load_all_modules()) - 1 + len(load_all_graphs())))
-    suff = str(datetime.datetime.now()).replace(' ', '_').replace(':', '-') + '_' + ''.join(
+    suff = str(now()).replace(' ', '_').replace(':', '-') + '_' + ''.join(
         random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
     subs_temp = 'tmp/subs_temp_%s' % (suff)
     range_temp = 'tmp/ranges_%s' % (suff)

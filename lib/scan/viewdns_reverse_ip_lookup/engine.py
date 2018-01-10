@@ -6,7 +6,7 @@ import requests
 import socks
 import socket
 import json
-from core.time import now
+from core._time import now
 from xml.etree import ElementTree as ET
 from core.alert import *
 from core.targets import target_type
