@@ -43,9 +43,18 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.rsplit('://')[1]
-        socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
-        socket.socket = socks.socksocket
-        socket.getaddrinfo = getaddrinfo
+        if '@' in socks_proxy:
+            socks_username = socks_proxy.rsplit(':')[0]
+            socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
+            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
+                                    int(socks_proxy.rsplit(':')[-1]), username=socks_username,
+                                    password=socks_password)
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
+        else:
+            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
     while 1:
         try:
             paramiko.Transport((target, int(port)))
@@ -91,9 +100,18 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.rsplit('://')[1]
-        socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
-        socket.socket = socks.socksocket
-        socket.getaddrinfo = getaddrinfo
+        if '@' in socks_proxy:
+            socks_username = socks_proxy.rsplit(':')[0]
+            socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
+            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
+                                    int(socks_proxy.rsplit(':')[-1]), username=socks_username,
+                                    password=socks_password)
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
+        else:
+            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
     while 1:
         try:
             paramiko_logger = logging.getLogger("paramiko.transport")
@@ -156,10 +174,19 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
     trying = 0
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
-        _socks_proxy = socks_proxy.rsplit('://')[1]
-        socks.set_default_proxy(socks_version, str(_socks_proxy.rsplit(':')[0]), int(_socks_proxy.rsplit(':')[1]))
-        socket.socket = socks.socksocket
-        socket.getaddrinfo = getaddrinfo
+        socks_proxy = socks_proxy.rsplit('://')[1]
+        if '@' in socks_proxy:
+            socks_username = socks_proxy.rsplit(':')[0]
+            socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
+            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
+                                    int(socks_proxy.rsplit(':')[-1]), username=socks_username,
+                                    password=socks_password)
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
+        else:
+            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
     for port in ports:
         t = threading.Thread(target=__connect_to_port,
                              args=(

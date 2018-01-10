@@ -203,7 +203,11 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         if '://' in socks_proxy:
             socks_proxy = socks_proxy.rsplit('://')[1].rsplit('/')[0]
         try:
-            if len(socks_proxy.rsplit(':')) is not 2 or socks_proxy.rsplit(':')[1] == '':
+            if len(socks_proxy.rsplit(':')) < 2 or len(socks_proxy.rsplit(':')) > 3:
+                e = True
+            elif len(socks_proxy.rsplit(':')) is 2 and socks_proxy.rsplit(':')[1] == '':
+                e = True
+            elif len(socks_proxy.rsplit(':')) is 3 and socks_proxy.rsplit(':')[2] == '':
                 e = True
         except:
             e = True

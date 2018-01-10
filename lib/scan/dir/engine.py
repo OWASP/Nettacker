@@ -55,9 +55,18 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
             socks_proxy = socks_proxy.rsplit('://')[1]
-            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
-            socket.socket = socks.socksocket
-            socket.getaddrinfo = getaddrinfo
+            if '@' in socks_proxy:
+                socks_username = socks_proxy.rsplit(':')[0]
+                socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
+                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
+                                        int(socks_proxy.rsplit(':')[-1]), username=socks_username,
+                                        password=socks_password)
+                socket.socket = socks.socksocket
+                socket.getaddrinfo = getaddrinfo
+            else:
+                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+                socket.socket = socks.socksocket
+                socket.getaddrinfo = getaddrinfo
         n = 0
         while 1:
             try:
@@ -104,9 +113,18 @@ def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy):
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.rsplit('://')[1]
-        socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
-        socket.socket = socks.socksocket
-        socket.getaddrinfo = getaddrinfo
+        if '@' in socks_proxy:
+            socks_username = socks_proxy.rsplit(':')[0]
+            socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
+            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
+                                    int(socks_proxy.rsplit(':')[-1]), username=socks_username,
+                                    password=socks_password)
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
+        else:
+            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
     n = 0
     while 1:
         try:

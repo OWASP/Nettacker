@@ -1351,14 +1351,24 @@ def all_messages():
                 "es": "Buscar actualizaciones"
             },
             "62": {
-                "en": "outgoing connections proxy (socks)",
-                "fa": "پراکسی ارتباطات خروجی (socks)"
+                "en": "outgoing connections proxy (socks). example socks5: 127.0.0.1:9050, "
+                      "socks://127.0.0.1:9050, socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050, "
+                      "authentication: socks://username:password@127.0.0.1, socks4://username:password@127.0.0.1, "
+                      "socks5://username:password@127.0.0.1",
+                "fa": "پراکسی ارتباطات خروجی (socks) مثال: 127.0.0.1:9050، socks://127.0.0.1:9050،"
+                      " socks5:127.0.0.1:9050 یا socks4: socks4://127.0.0.1:9050, احراز هویت: "
+                      "socks://username:password@127.0.0.1, socks4://username:password@127.0.0.1, "
+                      "socks5://username:password@127.0.0.1"
             },
             "63": {
                 "en": "please enter valid socks address and port. example socks5: 127.0.0.1:9050, "
-                      "socks://127.0.0.1:9050, socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050",
+                      "socks://127.0.0.1:9050, socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050, "
+                      "authentication: socks://username:password@127.0.0.1, socks4://username:password@127.0.0.1, "
+                      "socks5://username:password@127.0.0.1",
                 "fa": "لطفا آدرس و پورت معتبر socks را وارد کنید. socks5 مثال: 127.0.0.1:9050، socks://127.0.0.1:9050،"
-                      " socks5:127.0.0.1:9050 یا socks4: socks4://127.0.0.1:9050"
+                      " socks5:127.0.0.1:9050 یا socks4: socks4://127.0.0.1:9050, احراز هویت: "
+                      "socks://username:password@127.0.0.1, socks4://username:password@127.0.0.1, "
+                      "socks5://username:password@127.0.0.1"
             },
             "64": {
                 "ru": "Повторяет попытку, когда таймаут соединения (по умолчанию 3)",
