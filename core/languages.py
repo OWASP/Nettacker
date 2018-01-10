@@ -2433,7 +2433,7 @@ def all_messages():
                 "en": "{0} domain found: {1}"
             },
             "115": {
-                "en": "time",
+                "en": "TIME",
                 "fa": "زمان"
             }
         }
