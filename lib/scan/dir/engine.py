@@ -8,6 +8,7 @@ import json
 import threading
 import string
 import random
+import datetime
 import os
 from core.alert import *
 from core.targets import target_type
@@ -46,6 +47,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
     _PORT = messages(language, 56)
     _TYPE = messages(language, 57)
     _DESCRIPTION = messages(language, 58)
+    _TIME = messages(language, 115)
     status_codes = [200, 401, 403]
     directory_listing_msgs = ["<title>Index of /", "<a href=\"\\?C=N;O=D\">Name</a>", "Directory Listing for",
                               "Parent Directory</a>", "Last modified</a>", "<TITLE>Folder Listing.",
@@ -91,8 +93,8 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
             save = open(log_in_file, 'a')
             save.write(json.dumps({_HOST: target_to_host(target), _USERNAME: '', _PASSWORD: '',
                                    _PORT: int(target.rsplit(':')[2].rsplit('/')[0]), _TYPE: 'dir_scan',
-                                   _DESCRIPTION: messages(language, 38).format(target, r.status_code,
-                                                                               r.reason)}) + '\n')
+                                   _DESCRIPTION: messages(language, 38).format(target, r.status_code, r.reason),
+                                   _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
             save.close()
             if r.status_code is 200:
                 for dlmsg in directory_listing_msgs:
@@ -101,7 +103,8 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                         save = open(log_in_file, 'a')
                         save.write(json.dumps({_HOST: target_to_host(target), _USERNAME: '', _PASSWORD: '',
                                                _PORT: int(target.rsplit(':')[1].rsplit('/')[0]), _TYPE: 'dir_scan',
-                                               _DESCRIPTION: messages(language, 104).format(target)}) + '\n')
+                                               _DESCRIPTION: messages(language, 104).format(target),
+                                               _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
                         save.close()
                         break
         return True
@@ -222,7 +225,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 host = target_to_host(target)
                 path = "/".join(target.replace('http://', '').replace('https://', '').rsplit('/')[1:])
                 url = http + '://' + host + ':' + str(port) + '/' + path
-            if test(url, retries, timeout_sec, user_agent, extra_requirements["dir_scan_http_method"][0], socks_proxy) is 0:
+            if test(url, retries, timeout_sec, user_agent, extra_requirements["dir_scan_http_method"][0],
+                    socks_proxy) is 0:
                 for idir in extra_requirements["dir_scan_list"]:
                     # check target type
                     if target_type(target) == 'SINGLE_IPv4' or target_type(target) == 'DOMAIN':
@@ -277,9 +281,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 _PORT = messages(language, 56)
                 _TYPE = messages(language, 57)
                 _DESCRIPTION = messages(language, 58)
+                _TIME = messages(language, 115)
                 save = open(log_in_file, 'a')
                 save.write(json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'dir_scan',
-                                       _DESCRIPTION: messages(language, 94)}) + '\n')
+                                       _DESCRIPTION: messages(language, 94),
+                                       _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
                 save.close()
         os.remove(thread_tmp_filename)
     else:

@@ -4,6 +4,7 @@
 import socket
 import socks
 import time
+import datetime
 import json
 import threading
 import string
@@ -105,6 +106,7 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
     _PORT = messages(language, 56)
     _TYPE = messages(language, 57)
     _DESCRIPTION = messages(language, 58)
+    _TIME = messages(language, 115)
     time.sleep(time_sleep)
     try:
         if socks_proxy is not None:
@@ -130,7 +132,8 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         info(messages(language, 80).format(host, port))
         save = open(log_in_file, 'a')
         save.write(json.dumps({_HOST: host, _USERNAME: '', _PASSWORD: '', _PORT: port, _TYPE: 'tcp_connect_port_scan',
-                               _DESCRIPTION: messages(language, 79)}) + '\n')
+                               _DESCRIPTION: messages(language, 79),
+                               _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
         save.close()
         thread_write = open(thread_tmp_filename, 'w')
         thread_write.write('0')
@@ -229,10 +232,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             _PORT = messages(language, 56)
             _TYPE = messages(language, 57)
             _DESCRIPTION = messages(language, 58)
+            _TIME = messages(language, 115)
             save = open(log_in_file, 'a')
             save.write(
                 json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'tcp_connect_port_scan',
-                            _DESCRIPTION: messages(language, 94)}) + '\n')
+                            _DESCRIPTION: messages(language, 94),
+                            _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
             save.close()
         os.remove(thread_tmp_filename)
 

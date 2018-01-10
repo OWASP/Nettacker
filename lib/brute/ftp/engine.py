@@ -5,6 +5,7 @@ import threading
 import socks
 import socket
 import time
+import datetime
 import json
 import string
 import random
@@ -29,13 +30,15 @@ def extra_requirements_dict():
     }
 
 
-def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename, socks_proxy):
+def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename,
+          socks_proxy):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
     _PASSWORD = messages(language, 55)
     _PORT = messages(language, 56)
     _TYPE = messages(language, 57)
     _DESCRIPTION = messages(language, 58)
+    _TIME = messages(language, 115)
     exit = 0
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -81,13 +84,15 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             save = open(log_in_file, 'a')
             save.write(
                 json.dumps({_HOST: target, _USERNAME: user, _PASSWORD: passwd, _PORT: port, _TYPE: 'ftp_brute',
-                            _DESCRIPTION: messages(language, 66)}) + '\n')
+                            _DESCRIPTION: messages(language, 66),
+                            _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
             save.close()
         except:
             info(messages(language, 70).format(user, passwd, target, port) + ' ' + messages(language, 71))
             save = open(log_in_file, 'a')
             save.write(json.dumps({_HOST: target, _USERNAME: user, _PASSWORD: passwd, _PORT: port, _TYPE: 'FTP',
-                                   _DESCRIPTION: messages(language, 67)}) + '\n')
+                                   _DESCRIPTION: messages(language, 67),
+                                   _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
             save.close()
         thread_write = open(thread_tmp_filename, 'w')
         thread_write.write('0')
@@ -97,7 +102,8 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     return flag
 
 
-def __connect_to_port(port, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename, socks_proxy):
+def __connect_to_port(port, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
+                      socks_proxy):
     exit = 0
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -281,9 +287,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             _PORT = messages(language, 56)
             _TYPE = messages(language, 57)
             _DESCRIPTION = messages(language, 58)
+            _TIME = messages(language, 115)
             save = open(log_in_file, 'a')
             save.write(json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'ftp_brute',
-                                   _DESCRIPTION: messages(language, 95)}) + '\n')
+                                   _DESCRIPTION: messages(language, 95),
+                                   _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
             save.close()
         os.remove(thread_tmp_filename)
     else:

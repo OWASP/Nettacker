@@ -2431,5 +2431,9 @@ def all_messages():
             },
             "114": {
                 "en": "{0} domain found: {1}"
+            },
+            "115": {
+                "en": "time",
+                "fa": "زمان"
             }
         }

@@ -3,6 +3,7 @@
 
 import threading
 import time
+import datetime
 import socks
 import socket
 import smtplib
@@ -39,6 +40,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     _PORT = messages(language, 56)
     _TYPE = messages(language, 57)
     _DESCRIPTION = messages(language, 58)
+    _TIME = messages(language, 115)
     exit = 0
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -80,7 +82,8 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         info(messages(language, 70).format(user, passwd, target, port))
         save = open(log_in_file, 'a')
         save.write(json.dumps({_HOST: target, _USERNAME: user, _PASSWORD: passwd, _PORT: port, _TYPE: 'smtp_brute',
-                               _DESCRIPTION: messages(language, 66)}) + '\n')
+                               _DESCRIPTION: messages(language, 66),
+                               _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
         save.close()
         thread_write = open(thread_tmp_filename, 'w')
         thread_write.write('0')
@@ -309,9 +312,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             _PORT = messages(language, 56)
             _TYPE = messages(language, 57)
             _DESCRIPTION = messages(language, 58)
+            _TIME = messages(language, 115)
             save = open(log_in_file, 'a')
             save.write(json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'smtp_brute',
-                                   _DESCRIPTION: messages(language, 95)}) + '\n')
+                                   _DESCRIPTION: messages(language, 95),
+                                   _TIME: datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}) + '\n')
             save.close()
         os.remove(thread_tmp_filename)
     else:
