@@ -31,6 +31,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         _TYPE = messages(language, 57)
         _DESCRIPTION = messages(language, 58)
         _TIME = messages(language, 115)
+        _CATEGORY = messages(language, 116)
         port = ""
         time.sleep(time_sleep)
         if socks_proxy is not None:
@@ -104,14 +105,14 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             save.write(json.dumps(
                 {_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'viewdns_reverse_ip_lookup_scan',
                  _DESCRIPTION: messages(language, 114).format(len(_values), ", ".join(_values) if len(
-                     _values) > 0 else "None"), _TIME: now()}) + '\n')
+                     _values) > 0 else "None"), _TIME: now(), _CATEGORY: "scan"}) + '\n')
             save.close()
         if verbose_level is not 0:
             save = open(log_in_file, 'a')
             save.write(json.dumps(
                 {_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'viewdns_reverse_ip_lookup_scan',
                  _DESCRIPTION: messages(language, 114).format(len(_values), ", ".join(_values) if len(
-                     _values) > 0 else "None"), _TIME: now()}) + '\n')
+                     _values) > 0 else "None"), _TIME: now(), _CATEGORY: "scan"}) + '\n')
             save.close()
     else:
         warn(messages(language, 69).format('viewdns_reverse_ip_lookup_scan', target))
