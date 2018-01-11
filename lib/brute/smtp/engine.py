@@ -41,6 +41,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     _TYPE = messages(language, 57)
     _DESCRIPTION = messages(language, 58)
     _TIME = messages(language, 115)
+    _CATEGORY = messages(language, 116)
     exit = 0
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -83,7 +84,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         save = open(log_in_file, 'a')
         save.write(json.dumps({_HOST: target, _USERNAME: user, _PASSWORD: passwd, _PORT: port, _TYPE: 'smtp_brute',
                                _DESCRIPTION: messages(language, 66),
-                               _TIME: now()}) + '\n')
+                               _TIME: now(), _CATEGORY: "brute"}) + '\n')
         save.close()
         thread_write = open(thread_tmp_filename, 'w')
         thread_write.write('0')
@@ -313,10 +314,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             _TYPE = messages(language, 57)
             _DESCRIPTION = messages(language, 58)
             _TIME = messages(language, 115)
+            _CATEGORY = messages(language, 116)
             save = open(log_in_file, 'a')
             save.write(json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'smtp_brute',
                                    _DESCRIPTION: messages(language, 95),
-                                   _TIME: now()}) + '\n')
+                                   _TIME: now(), _CATEGORY: "brute"}) + '\n')
             save.close()
         os.remove(thread_tmp_filename)
     else:
