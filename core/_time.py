@@ -4,5 +4,5 @@
 import datetime
 
 
-def now():
-    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+def now(model="%Y-%m-%d %H:%M:%S"):
+    return datetime.datetime.now().strftime(model)

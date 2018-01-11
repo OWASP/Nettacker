@@ -12,7 +12,7 @@ def all_config_keys():
         "verbose_level": 0,
         "show_version": False,
         "check_update": False,
-        "log_in_file": "results/results_{0}_{1}.html".format(now(),
+        "log_in_file": "results/results_{0}_{1}.html".format(now(model="%Y_%m_%d_%H_%M_%S"),
                                                              ''.join(random.choice(string.ascii_lowercase) for x in
                                                                      range(10))),
         "graph_flag": "d3_tree_v1_graph",
