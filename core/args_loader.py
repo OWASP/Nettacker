@@ -14,6 +14,9 @@ from core.compatible import os_name
 from core.load_modules import load_all_graphs
 from config import get_config
 from core.config_builder import _builder
+from core._die import __die_success
+from core._die import __die_failure
+from core.color import finish
 
 # temporary use fixed version of argparse
 if os_name() == 'win32' or os_name() == 'win64':
@@ -28,7 +31,6 @@ else:
 def load_all_args(module_names, graph_names):
     # Language Options
     # import libs
-    from core.color import finish
     default_config = _builder(get_config())
     language_list = [lang for lang in messages(-1, 0)]
     if "-L" in sys.argv or "--language" in sys.argv:
@@ -47,9 +49,7 @@ def load_all_args(module_names, graph_names):
         except:
             _error_flag = True
         if _error_flag or language not in language_list:
-            error("Please select one of these languages {0}".format(language_list))
-            finish()
-            sys.exit(1)
+            __die_failure("Please select one of these languages {0}".format(language_list))
 
     # Check if compatible
     check(language)
@@ -163,29 +163,25 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                        retries, graph_flag, help_menu_flag, methods_args, method_args_list):
     # Checking Requirements
     # import libs
-    from core.color import finish
     from core import compatible
     # Check Help Menu
     if help_menu_flag is True:
         parser.print_help()
         write('\n\n')
         write(messages(language, 3))
-        finish()
-        sys.exit(0)
+        __die_success()
     # Check if method args list called
     if method_args_list is True:
         from core.load_modules import load_all_method_args
         load_all_method_args(language)
-        finish()
-        sys.exit(0)
+        __die_success()
     # Check version
     if show_version is True:
         from core import color
         info(messages(language, 84).format(color.color('yellow'), compatible.__version__, color.color('reset'),
                                            color.color('cyan'), compatible.__code_name__, color.color('reset'),
                                            color.color('green')))
-        finish()
-        sys.exit(0)
+        __die_success()
     # Check Socks
     if socks_proxy is not None:
         e = False
@@ -212,9 +208,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         except:
             e = True
         if e:
-            error(messages(language, 63))
-            finish()
-            sys.exit(1)
+            __die_failure(messages(language, 63))
         if socks_flag is 4:
             socks_proxy = 'socks4://' + socks_proxy
         if socks_flag is 5:
@@ -223,15 +217,12 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     if check_update is True:
         from core.update import _update
         _update(compatible.__version__, compatible.__code_name__, language, socks_proxy)
-        finish()
-        sys.exit(0)
+        __die_success()
     # Check the target(s)
     if targets is None and targets_list is None:
         parser.print_help()
         write("\n")
-        error(messages(language, 26))
-        finish()
-        sys.exit(1)
+        __die_failure(messages(language, 26))
     else:
         if targets is not None:
             targets = list(set(targets.rsplit(",")))
@@ -239,9 +230,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             try:
                 targets = list(set(open(targets_list, "rb").read().rsplit()))
             except:
-                error(messages(language, 27).format(targets_list))
-                finish()
-                sys.exit(1)
+                __die_failure(messages(language, 27).format(targets_list))
     # Check thread number
     if thread_number > 100 or thread_number_host > 100:
         warn(messages(language, 28))
@@ -257,21 +246,15 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             scan_method = scan_method.rsplit(",")
             for sm in scan_method:
                 if sm not in module_names:
-                    error(messages(language, 30).format(sm))
-                    finish()
-                    sys.exit(1)
+                    __die_failure(messages(language, 30).format(sm))
                 if sm == "all":
                     scan_method = module_names
                     scan_method.remove("all")
                     break
         else:
-            error(messages(language, 31).format(scan_method))
-            finish()
-            sys.exit(1)
+            __die_failure(messages(language, 31).format(scan_method))
     elif scan_method is None:
-        error(messages(language, 41))
-        finish()
-        sys.exit(1)
+        __die_failure(messages(language, 41))
     else:
         scan_method = scan_method.rsplit()
     if exclude_method is not None:
@@ -279,19 +262,13 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         for exm in exclude_method:
             if exm in scan_method:
                 if "all" == exm:
-                    messages(language, 32)
-                    finish()
-                    sys.exit(1)
+                    __die_failure(messages(language, 32))
                 else:
                     scan_method.remove(exm)
                     if len(scan_method) is 0:
-                        messages(language, 33)
-                        finish()
-                        sys.exit(1)
+                        __die_failure(messages(language, 33))
             else:
-                messages(language, 34).format(exm)
-                finish()
-                sys.exit(1)
+                __die_failure(messages(language, 34).format(exm))
     # Check port(s)
     if type(ports) is not list and ports is not None and "-" in ports:
         ports = ports.rsplit("-")
@@ -305,9 +282,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         try:
             users = list(set(open(users_list).read().rsplit("\n")))  # fix later
         except:
-            error(messages(language, 37).format(targets_list))
-            finish()
-            sys.exit(1)
+            __die_failure(messages(language, 37).format(targets_list))
     # Check password list
     if passwds is not None:
         passwds = list(set(passwds.rsplit(",")))
@@ -315,22 +290,16 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         try:
             passwds = list(set(open(passwds_list).read().rsplit("\n")))  # fix later
         except:
-            error(messages(language, 39).format(targets_list))
-            finish()
-            sys.exit(1)
+            __die_failure(messages(language, 39).format(targets_list))
     # Check output file
     try:
         tmpfile = open(log_in_file, "w")
     except:
-        error(messages(language, 40).format(log_in_file))
-        finish()
-        sys.exit(1)
+        __die_failure(messages(language, 40).format(log_in_file))
     # Check Graph
     if graph_flag is not None:
         if graph_flag not in load_all_graphs():
-            error(messages(language, 97).format(graph_flag))
-            finish()
-            sys.exit(1)
+            __die_failure(messages(language, 97).format(graph_flag))
         if not (log_in_file.endswith('.html') or log_in_file.endswith('.htm')):
             warn(messages(language, 87))
             graph_flag = None
@@ -344,9 +313,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                     try:
                         read_data = list(set(open(imethod_args.rsplit('=read_from_file:')[1]).read().rsplit('\n')))
                     except:
-                        error(messages(language, 36))
-                        finish()
-                        sys.exit(1)
+                        __die_failure(messages(language, 36))
                     new_methods_args[imethod_args.rsplit('=')[0]] = read_data
                 else:
                     new_methods_args[imethod_args.rsplit('=')[0]] = imethod_args.rsplit('=')[1].rsplit(',')
