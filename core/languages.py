@@ -2435,5 +2435,9 @@ def all_messages():
             "115": {
                 "en": "TIME",
                 "fa": "زمان"
+            },
+            "116": {
+                "en": "CATEGORY",
+                "fa": "دسته"
             }
         }
