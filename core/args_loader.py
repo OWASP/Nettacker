@@ -242,6 +242,20 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         scan_method = module_names
         scan_method.remove("all")
     elif scan_method is not None and scan_method not in module_names:
+        if "*_" in scan_method:
+            scan_method = scan_method.rsplit(',')
+            tmp_scan_method = scan_method[:]
+            for sm in scan_method:
+                if sm.startswith('*_'):
+                    scan_method.remove(sm)
+                    found_flag = False
+                    for mn in module_names:
+                        if mn.endswith('_' + sm.rsplit('*_')[1]):
+                            scan_method.append(mn)
+                            found_flag = True
+                    if found_flag is False:
+                        __die_failure(messages(language, 117).format(sm))
+            scan_method = ','.join(scan_method)
         if "," in scan_method:
             scan_method = scan_method.rsplit(",")
             for sm in scan_method:
@@ -257,6 +271,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         __die_failure(messages(language, 41))
     else:
         scan_method = scan_method.rsplit()
+    # Check for exluding scanning method
     if exclude_method is not None:
         exclude_method = exclude_method.rsplit(",")
         for exm in exclude_method:

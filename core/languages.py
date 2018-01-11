@@ -2439,5 +2439,9 @@ def all_messages():
             "116": {
                 "en": "CATEGORY",
                 "fa": "دسته"
+            },
+            "117": {
+                "en": "cannot find any module with {0} pattern!",
+                "fa": "ماژولی با پترن {0} پیدا نشد!"
             }
         }
