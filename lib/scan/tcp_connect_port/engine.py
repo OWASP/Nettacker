@@ -199,13 +199,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 info(messages(language, 72).format(trying, total_req, num, total, target, port))
             while 1:
                 try:
-                    n = 0
-                    for thread in threads:
-                        if thread.isAlive() is True:
-                            n += 1
-                        else:
-                            threads.remove(thread)
-                    if n >= max:
+                    if threading.activeCount() >= max:
                         time.sleep(0.01)
                     else:
                         break
@@ -215,13 +209,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
 
         # wait for threads
         while 1:
+            time.sleep(0.1)
             try:
-                n = True
-                for thread in threads:
-                    if thread.isAlive() is True:
-                        n = False
-                time.sleep(0.01)
-                if n is True:
+                if threading.activeCount() is 1:
                     break
             except KeyboardInterrupt:
                 break

@@ -260,15 +260,13 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     if verbose_level is not 0:
                         info(messages(language, 72).format(trying, total_req, num, total, target, port))
                     while 1:
-                        n = 0
-                        for thread in threads:
-                            if thread.isAlive() is True:
-                                n += 1
+                        try:
+                            if threading.activeCount() >= max:
+                                time.sleep(0.01)
                             else:
-                                threads.remove(thread)
-                        if n >= max:
-                            time.sleep(0.01)
-                        else:
+                                break
+                        except KeyboardInterrupt:
+                            break
                             break
 
         # wait for threads
