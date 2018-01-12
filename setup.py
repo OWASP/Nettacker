@@ -2,27 +2,26 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from distutils.core import setup
+from setuptools import setup
 
 setup(
-    install_requires=['netaddr', 'dnspython', 'requests', 'paramiko', 'texttable', 'PySocks', 'win_inet_pton',
-                      'pyOpenSSL', 'xmljson'],
     name='OWASP-Nettacker',
-    version=open('version').read(),
-    packages=['lib', 'lib.scan', 'lib.scan.port', 'lib.brute', 'lib.brute.ftp', 'lib.brute.ssh', 'lib.brute.http',
-              'lib.brute.smtp', 'lib.sublist3r.subbrute', 'core', 'scripts'],
+    version='0.0.1',
+    packages=['lib', 'lib.icmp', 'lib.scan', 'lib.scan.dir', 'lib.scan.tcp_connect_port',
+              'lib.scan.viewdns_reverse_ip_lookup', 'lib.brute', 'lib.brute.ftp', 'lib.brute.ssh', 'lib.brute.smtp',
+              'lib.graph', 'lib.graph.d3_tree_v1', 'lib.graph.d3_tree_v2', 'lib.graph.jit_circle_v1', 'lib.argparse',
+              'lib.argparse.v2' if int(sys.version_info[0]) is 2 else 'lib.argparse.v3', 'lib.html_log', 'lib.language',
+              'lib.sublist3r.subbrute', 'lib.socks_resolver', 'core'],
     url='https://github.com/viraintel/OWASP-Nettacker',
-    license='GNU General Public License v3.0',
+    license='Apache-2.0',
     author='Ali Razmjoo',
     author_email='ali.razmjoo@owasp.org',
-    description='Automated Penetration Testing Framework',
-    long_description='Nettacker project was created to automated for information gathering'
-                     ' vulnerability scanning and eventually generating report for networks,'
-                     ' including services, bugs, vulnerabilities, misconfigurations and information.'
-                     ' This software is able to use SYN, ACK, TCP, ICMP and many other protocols to'
-                     ' detect and bypass the Firewalls/IDS/IPS and devices. By using a unique solution'
-                     ' in Nettacker to find protected services such as SCADA We could make a point to be one of'
-                     ' the bests of scanners.',
-    scripts=['scripts/nettacker.bat' if sys.platform == 'win32' or sys.platform == 'win64' else 'scripts/nettacker',
-             'nettacker.py']
+    description='Automated Penetration Testing Framework - OWASP Nettacker project is created to'
+                ' automate information gathering, vulnerability scanning and eventually generating'
+                ' a report for networks, including services, bugs, vulnerabilities, misconfigurations,'
+                ' and other information. This software will utilize TCP SYN, ACK, ICMP and many other'
+                ' protocols in order to detect and bypass Firewall/IDS/IPS devices. By leveraging a'
+                ' unique method in OWASP Nettacker for discovering protected services and devices such'
+                ' as SCADA. It would make a competitive edge compared to other scanner making it one of'
+                ' the bests.'
 )

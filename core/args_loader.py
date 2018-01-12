@@ -21,9 +21,9 @@ from core.color import finish
 # temporary use fixed version of argparse
 if os_name() == 'win32' or os_name() == 'win64':
     if version() is 2:
-        from lib.argparse import argparse_v2 as argparse
+        from lib.argparse.v2 import argparse
     else:
-        from lib.argparse import argparse_v3 as argparse
+        from lib.argparse.v3 import argparse
 else:
     import argparse
 
