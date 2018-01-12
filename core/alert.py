@@ -36,6 +36,15 @@ def messages(language, msg_id):
                        'all_messages')()[str(msg_id)]
 
 
+def __input_msg(content):
+    if version() is 2:
+        return color.color('yellow') + '[+] ' + color.color('green') \
+               + content.encode('utf8') + color.color('reset')
+    else:
+        return bytes(color.color('yellow') + '[+] ' + color.color('green') +
+                     content + color.color('reset'), 'utf8')
+
+
 def info(content):
     time.sleep(1.0000 * random.choice(range(0, 1000)) / 1000)
     if version() is 2:
