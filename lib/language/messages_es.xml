@@ -35,7 +35,7 @@
     <msg_id_32>no puede excluir todos los métodos de escaneo</msg_id_32>
     <msg_id_33>no puede excluir todos los métodos de escaneo</msg_id_33>
     <msg_id_34>el {0} módulo que seleccionó para excluir no encontrado!</msg_id_34>
-    <msg_id_35>ingrese las entradas de métodos, ejemplo: "ftp_brute_users = test, admin & ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_35>ingrese las entradas de métodos, ejemplo: "ftp_brute_users = test, admin &amp; ftp_brute_passwds = read_from_file: /tmp/pass.txt&amp;ftp_brute_port=21"</msg_id_35>
     <msg_id_36>no se puede leer el archivo {0}</msg_id_36>
     <msg_id_37>No se puede especificar el nombre de usuario (s), no se puede abrir el archivo: {0}</msg_id_37>
     <msg_id_38></msg_id_38>

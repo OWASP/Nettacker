@@ -35,7 +35,7 @@
     <msg_id_32>вы не можете исключить все методы сканирования</msg_id_32>
     <msg_id_33>вы не можете исключить все методы сканирования</msg_id_33>
     <msg_id_34>модуль {0}, который вы выбрали для исключения, не найден!</msg_id_34>
-    <msg_id_35>введите методы ввода, например: «ftp_brute_users = test, admin & ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_35>введите методы ввода, например: «ftp_brute_users = test, admin &amp; ftp_brute_passwds = read_from_file: /tmp/pass.txt&amp;ftp_brute_port=21"</msg_id_35>
     <msg_id_36>не может читать файл {0}</msg_id_36>
     <msg_id_37>Невозможно указать имя пользователя (ов), неспособное открыть файл: {0}</msg_id_37>
     <msg_id_38></msg_id_38>

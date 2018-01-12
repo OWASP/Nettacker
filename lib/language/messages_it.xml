@@ -35,7 +35,7 @@
     <msg_id_32>non è possibile escludere tutti i metodi di scansione</msg_id_32>
     <msg_id_33>non è possibile escludere tutti i metodi di scansione</msg_id_33>
     <msg_id_34>il modulo {0} selezionato per escludere non trovato!</msg_id_34>
-    <msg_id_35>inserire gli input di metodi, ad esempio: "ftp_brute_users = test, admin & ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_35>inserire gli input di metodi, ad esempio: "ftp_brute_users = test, admin &amp; ftp_brute_passwds = read_from_file: /tmp/pass.txt&amp;ftp_brute_port=21"</msg_id_35>
     <msg_id_36>non riesce a leggere file {0}</msg_id_36>
     <msg_id_37>Impossibile specificare il nome utente, impossibile aprire il file: {0}</msg_id_37>
     <msg_id_38></msg_id_38>

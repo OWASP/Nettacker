@@ -35,7 +35,7 @@
     <msg_id_32></msg_id_32>
     <msg_id_33>आप सभी स्कैन विधियों को बहिष्कृत नहीं कर सकते</msg_id_33>
     <msg_id_34>आप सभी स्कैन विधियों को बहिष्कृत नहीं कर सकते</msg_id_34>
-    <msg_id_35>तरीकों में इनपुट दर्ज करें, उदाहरण: "ftp_brute_users = test, admin और ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_35>तरीकों में इनपुट दर्ज करें, उदाहरण: "ftp_brute_users = test, admin और ftp_brute_passwds = read_from_file: /tmp/pass.txt&amp;ftp_brute_port=21"</msg_id_35>
     <msg_id_36>फ़ाइल {0} को नहीं पढ़ सकता है</msg_id_36>
     <msg_id_37>उपयोगकर्ता नाम निर्दिष्ट नहीं किया जा सकता, फ़ाइल खोलने में असमर्थ: {0}</msg_id_37>
     <msg_id_38></msg_id_38>

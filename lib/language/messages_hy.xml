@@ -35,7 +35,7 @@
     <msg_id_32>դուք չեք կարող բացառել բոլոր սկանավորման եղանակները</msg_id_32>
     <msg_id_33>դուք չեք կարող բացառել բոլոր սկանավորման եղանակները</msg_id_33>
     <msg_id_34>ձեր ընտրած {0} մոդուլը բացառել չի գտնվել:</msg_id_34>
-    <msg_id_35>մուտքագրեք մեթոդների մուտքագրությունները, օրինակ `" ftp_brute_users = test, admin & ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21 "</msg_id_35>
+    <msg_id_35>մուտքագրեք մեթոդների մուտքագրությունները, օրինակ `" ftp_brute_users = test, admin &amp; ftp_brute_passwds = read_from_file: /tmp/pass.txt&amp;ftp_brute_port=21 "</msg_id_35>
     <msg_id_36>{0} ֆայլը չի ​​կարող ընթերցել</msg_id_36>
     <msg_id_37>Հնարավոր չէ նշել օգտվողի անունը (ներ), չկարողանալ բացել ֆայլը, {0}</msg_id_37>
     <msg_id_38></msg_id_38>

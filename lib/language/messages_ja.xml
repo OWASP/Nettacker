@@ -35,7 +35,7 @@
     <msg_id_32>すべてのスキャン方法を除外することはできません</msg_id_32>
     <msg_id_33>すべてのスキャン方法を除外することはできません</msg_id_33>
     <msg_id_34>除外するように選択した{0}モジュールが見つかりません！</msg_id_34>
-    <msg_id_35>メソッドの入力を入力します（例： "ftp_brute_users = test、admin＆ftp_brute_passwds = read_from_file：/tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_35>メソッドの入力を入力します（例： "ftp_brute_users = test、admin＆ftp_brute_passwds = read_from_file：/tmp/pass.txt&amp;ftp_brute_port=21"</msg_id_35>
     <msg_id_36>ファイル{0}を読むことができません</msg_id_36>
     <msg_id_37>ユーザー名を指定できません。ファイルを開くことができません：{0}</msg_id_37>
     <msg_id_38></msg_id_38>

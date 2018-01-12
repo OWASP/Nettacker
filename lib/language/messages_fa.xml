@@ -35,7 +35,7 @@
     <msg_id_32>شما نمی توانید همه متود های اسکن را استثنا کنید</msg_id_32>
     <msg_id_33>شما نمی توانید همه متود های اسکن را استثنا کنید</msg_id_33>
     <msg_id_34>ماژول {0} که شما جهت استثنا کردن انتخاب کردید پیدا نشد!</msg_id_34>
-    <msg_id_35>ورودی های متود ها را وارد کنید، مثال: "ftp_brute_users=test,admin&ftp_brute_passwds=read_from_file:/tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_35>ورودی های متود ها را وارد کنید، مثال: "ftp_brute_users=test,admin&amp;ftp_brute_passwds=read_from_file:/tmp/pass.txt&amp;ftp_brute_port=21"</msg_id_35>
     <msg_id_36>عدم توانایی در خواندن فایل {0}</msg_id_36>
     <msg_id_37>عدم توانایی مشخص کردن نام کاربری (ها)، عدم توانایی در بازکردن فایل: {0}</msg_id_37>
     <msg_id_38>{0} پیدا شد!({2}:{1})</msg_id_38>

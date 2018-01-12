@@ -35,7 +35,7 @@
     <msg_id_32>bạn không thể loại trừ tất cả các phương pháp quét</msg_id_32>
     <msg_id_33>bạn không thể loại trừ tất cả các phương pháp quét</msg_id_33>
     <msg_id_34>mô-đun {0} bạn đã chọn để loại trừ không tìm thấy!</msg_id_34>
-    <msg_id_35>nhập các phương thức đầu vào, ví dụ: "ftp_brute_users = test, admin & ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_35>nhập các phương thức đầu vào, ví dụ: "ftp_brute_users = test, admin &amp; ftp_brute_passwds = read_from_file: /tmp/pass.txt&amp;ftp_brute_port=21"</msg_id_35>
     <msg_id_36>không thể đọc tập tin {0}</msg_id_36>
     <msg_id_37>Không thể chỉ định tên người dùng, không thể mở tệp: {0}</msg_id_37>
     <msg_id_38></msg_id_38>

@@ -35,7 +35,7 @@
     <msg_id_32>vous ne pouvez pas exclure toutes les méthodes d'analyse</msg_id_32>
     <msg_id_33>vous ne pouvez pas exclure toutes les méthodes d'analyse</msg_id_33>
     <msg_id_34>le module {0} que vous avez choisi d'exclure n'a pas été trouvé!</msg_id_34>
-    <msg_id_35>enter methods inputs, example: "ftp_brute_users=test,admin&ftp_brute_passwds=read_from_file:/tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_35>enter methods inputs, example: "ftp_brute_users=test,admin&amp;ftp_brute_passwds=read_from_file:/tmp/pass.txt&amp;ftp_brute_port=21"</msg_id_35>
     <msg_id_36>Impossible de lire le fichier {0}</msg_id_36>
     <msg_id_37>Impossible d'indiquer le nom d'utilisateur (s), impossible d'ouvrir le fichier: {0}</msg_id_37>
     <msg_id_38></msg_id_38>

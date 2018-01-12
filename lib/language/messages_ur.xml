@@ -35,7 +35,7 @@
     <msg_id_32>آپ تمام سکین طریقوں کو خارج نہیں کر سکتے ہیں</msg_id_32>
     <msg_id_33>آپ تمام سکین طریقوں کو خارج نہیں کر سکتے ہیں</msg_id_33>
     <msg_id_34>{ما} ماڈیول آپ کو منتخب نہیں کرنے کے لئے منتخب کیا!</msg_id_34>
-    <msg_id_35>طریقوں کے آدانوں میں داخل کریں: مثال کے طور پر: "ftp_brute_users = ٹیسٹ، منتظم اور ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_35>طریقوں کے آدانوں میں داخل کریں: مثال کے طور پر: "ftp_brute_users = ٹیسٹ، منتظم اور ftp_brute_passwds = read_from_file: /tmp/pass.txt&amp;ftp_brute_port=21"</msg_id_35>
     <msg_id_36>فائل {0} نہیں پڑھ سکتی</msg_id_36>
     <msg_id_37>فائل کو کھولنے میں ناکام صارف نام (ے) کی وضاحت نہیں کرسکتا: {0}</msg_id_37>
     <msg_id_38></msg_id_38>

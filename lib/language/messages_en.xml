@@ -35,7 +35,7 @@
     <msg_id_32>you cannot exclude all scan methods</msg_id_32>
     <msg_id_33>you cannot exclude all scan methods</msg_id_33>
     <msg_id_34>the {0} module you selected to exclude not found!</msg_id_34>
-    <msg_id_35>enter methods inputs, example: "ftp_brute_users=test,admin&ftp_brute_passwds=read_from_file:/tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_35>enter methods inputs, example: "ftp_brute_users=test,admin&amp;ftp_brute_passwds=read_from_file:/tmp/pass.txt&amp;ftp_brute_port=21"</msg_id_35>
     <msg_id_36>cannot reading file {0}</msg_id_36>
     <msg_id_37>Cannot specify the username(s), unable to open file: {0}</msg_id_37>
     <msg_id_38>{0} found! ({1}:{2})</msg_id_38>

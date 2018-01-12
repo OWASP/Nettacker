@@ -35,7 +35,7 @@
     <msg_id_32>Anda tidak dapat mengecualikan semua metode pemindaian</msg_id_32>
     <msg_id_33>Anda tidak dapat mengecualikan semua metode pemindaian</msg_id_33>
     <msg_id_34>modul {0} yang Anda pilih untuk dikecualikan tidak ditemukan!</msg_id_34>
-    <msg_id_35>masukkan metode input, contoh: "ftp_brute_users = test, admin & ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_35>masukkan metode input, contoh: "ftp_brute_users = test, admin &amp; ftp_brute_passwds = read_from_file: /tmp/pass.txt&amp;ftp_brute_port=21"</msg_id_35>
     <msg_id_36>tidak bisa membaca file {0}</msg_id_36>
     <msg_id_37>Tidak dapat menentukan nama pengguna (s), tidak dapat membuka file: {0}</msg_id_37>
     <msg_id_38></msg_id_38>

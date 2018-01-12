@@ -35,7 +35,7 @@
     <msg_id_32>δεν μπορείτε να εξαιρέσετε όλες τις μεθόδους σάρωσης</msg_id_32>
     <msg_id_33>δεν μπορείτε να εξαιρέσετε όλες τις μεθόδους σάρωσης</msg_id_33>
     <msg_id_34>η {0} ενότητα που επιλέξατε για να εξαιρέσετε δεν βρέθηκε!</msg_id_34>
-    <msg_id_35>εισάγετε τις μεθόδους εισόδου, για παράδειγμα: "ftp_brute_users = test, admin & ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_35>εισάγετε τις μεθόδους εισόδου, για παράδειγμα: "ftp_brute_users = test, admin &amp; ftp_brute_passwds = read_from_file: /tmp/pass.txt&amp;ftp_brute_port=21"</msg_id_35>
     <msg_id_36>δεν μπορεί να διαβάσει το αρχείο {0}</msg_id_36>
     <msg_id_37>Δεν είναι δυνατός ο προσδιορισμός των ονομάτων χρηστών που δεν μπορούν να ανοίξουν το αρχείο: {0}</msg_id_37>
     <msg_id_38></msg_id_38>

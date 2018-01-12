@@ -35,7 +35,7 @@
     <msg_id_32>您不能排除所有扫描方法</msg_id_32>
     <msg_id_33>您不能排除所有扫描方法</msg_id_33>
     <msg_id_34>您选择排除的{0}模块未找到！</msg_id_34>
-    <msg_id_35>输入方法输入，例如："ftp_brute_users = test，admin＆ftp_brute_passwds = read_from_file：/tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_35>输入方法输入，例如："ftp_brute_users = test，admin＆ftp_brute_passwds = read_from_file：/tmp/pass.txt&amp;ftp_brute_port=21"</msg_id_35>
     <msg_id_36>无法读取文件{0}</msg_id_36>
     <msg_id_37>无法指定用户名，无法打开文件：{0}</msg_id_37>
     <msg_id_38>{0}发现！ （{1}：{2}）</msg_id_38>

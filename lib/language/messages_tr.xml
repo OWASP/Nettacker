@@ -35,7 +35,7 @@
     <msg_id_32>tüm tarama yöntemlerini hariç tutamazsınız</msg_id_32>
     <msg_id_33>tüm tarama yöntemlerini hariç tutamazsınız</msg_id_33>
     <msg_id_34>hariç tutmayı seçtiğiniz {0} modülü bulunamadı!</msg_id_34>
-    <msg_id_35>yöntem girişlerini girin, örneğin: "ftp_brute_users = test, admin & ftp_brute_passwds = okunur_from_file: /tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_35>yöntem girişlerini girin, örneğin: "ftp_brute_users = test, admin &amp; ftp_brute_passwds = okunur_from_file: /tmp/pass.txt&amp;ftp_brute_port=21"</msg_id_35>
     <msg_id_36>{0} dosyası okunamıyor</msg_id_36>
     <msg_id_37>Kullanıcı adı (ları) belirtilemiyor, dosya açılamıyor: {0}</msg_id_37>
     <msg_id_38></msg_id_38>
