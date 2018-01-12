@@ -17,6 +17,7 @@ from core.config_builder import _builder
 from core._die import __die_success
 from core._die import __die_failure
 from core.color import finish
+from core.wizard import __wizard
 
 # temporary use fixed version of argparse
 if os_name() == 'win32' or os_name() == 'win64':
@@ -84,6 +85,9 @@ def load_all_args(module_names, graph_names):
     engineOpt.add_argument("-h", "--help", action="store_true",
                            default=default_config["help_menu_flag"], dest="help_menu_flag",
                            help=messages(language, 2))
+    engineOpt.add_argument("-W", "--wizard", action="store_true",
+                           default=default_config["wizard_mode"], dest="wizard_mode",
+                           help=messages(language, 107))
 
     # Target Options
     target = parser.add_argument_group(messages(language, 12), messages(language, 13))
@@ -160,7 +164,8 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                        log_in_file, scan_method, exclude_method, users, users_list,
                        passwds, passwds_list, timeout_sec, ports, parser, module_names,
                        language, verbose_level, show_version, check_update, socks_proxy,
-                       retries, graph_flag, help_menu_flag, methods_args, method_args_list):
+                       retries, graph_flag, help_menu_flag, methods_args, method_args_list,
+                       wizard_mode):
     # Checking Requirements
     # import libs
     from core import compatible
@@ -182,6 +187,19 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                                            color.color('cyan'), compatible.__code_name__, color.color('reset'),
                                            color.color('green')))
         __die_success()
+    # Wizard mode
+    if wizard_mode is True:
+        (targets, thread_number, thread_number_host,
+             log_in_file, scan_method, exclude_method, users,
+             passwds, timeout_sec, ports, verbose_level,
+             socks_proxy, retries, graph_flag) = \
+            __wizard(
+                targets, thread_number, thread_number_host,
+                log_in_file, module_names, exclude_method, users,
+                passwds, timeout_sec, ports, verbose_level,
+                socks_proxy, retries, load_all_graphs(), language
+            )
+
     # Check Socks
     if socks_proxy is not None:
         e = False
@@ -340,4 +358,5 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
             passwds, passwds_list, timeout_sec, ports, parser, module_names,
             language, verbose_level, show_version, check_update, socks_proxy,
-            retries, graph_flag, help_menu_flag, methods_args, method_args_list]
+            retries, graph_flag, help_menu_flag, methods_args, method_args_list,
+            wizard_mode]
