@@ -14,8 +14,7 @@ def messages(language, msg_id):
     if language is -1:
         return list(set([langs.rsplit('_')[1].rsplit('.')[0] for langs in
                          os.listdir(os.path.dirname(os.path.abspath(__file__)).replace('\\', '/') + '/../lib/language/')
-                         if
-                         langs != 'readme.md']))
+                         if langs != 'readme.md' and langs.rsplit('_')[1].rsplit('.')[0] != '']))
     all_messages = getattr(__import__('lib.language.messages_{0}'.format(language), fromlist=['all_messages']),
                            'all_messages')
     # Importing messages
