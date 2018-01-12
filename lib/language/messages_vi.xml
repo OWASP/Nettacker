@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<data>
+    <msg_id_0>Công cụ Nettacker bắt đầu ...\n\n</msg_id_0>
+    <msg_id_1>python nettacker.py [tuỳ chọn]</msg_id_1>
+    <msg_id_2>Hiển thị Menu Trợ giúp Nettacker</msg_id_2>
+    <msg_id_3>Vui lòng đọc giấy phép và thỏa thuận https://github.com/viraintel/OWASP-Nettacker\n</msg_id_3>
+    <msg_id_4>Động cơ</msg_id_4>
+    <msg_id_5>Tùy chọn đầu vào động cơ</msg_id_5>
+    <msg_id_6>chọn một ngôn ngữ {0}</msg_id_6>
+    <msg_id_7>quét tất cả các IP trong phạm vi</msg_id_7>
+    <msg_id_8>tìm và quét tên miền phụ</msg_id_8>
+    <msg_id_9>số chuỗi cho các kết nối đến máy chủ lưu trữ</msg_id_9>
+    <msg_id_10>số luồng cho máy chủ quét</msg_id_10>
+    <msg_id_11>lưu tất cả các bản ghi trong tệp (results.txt, results.html, results.json)</msg_id_11>
+    <msg_id_12>Mục tiêu</msg_id_12>
+    <msg_id_13>Tùy chọn nhập mục tiêu</msg_id_13>
+    <msg_id_14>mục tiêu (các) mục tiêu, tách biệt với ","</msg_id_14>
+    <msg_id_15>đọc (các) mục tiêu từ tệp</msg_id_15>
+    <msg_id_16>Tùy chọn phương pháp quét</msg_id_16>
+    <msg_id_17>chọn phương pháp quét {0}</msg_id_17>
+    <msg_id_18>chọn phương pháp quét để loại trừ {0}</msg_id_18>
+    <msg_id_19>(các) tên người dùng, tách biệt với ","</msg_id_19>
+    <msg_id_20>đọc (các) tên người dùng từ tệp</msg_id_20>
+    <msg_id_21>(các) danh sách mật khẩu, tách biệt với ","</msg_id_21>
+    <msg_id_22>đọc (các) mật khẩu từ tệp tin</msg_id_22>
+    <msg_id_23>(các) danh sách cổng, tách biệt với ","</msg_id_23>
+    <msg_id_24>đọc (các) mật khẩu từ tệp tin</msg_id_24>
+    <msg_id_25>thời gian để ngủ giữa mỗi yêu cầu</msg_id_25>
+    <msg_id_26>Không thể chỉ rõ mục tiêu (s)</msg_id_26>
+    <msg_id_27>Không thể chỉ rõ mục tiêu, không thể mở tệp: {0}</msg_id_27>
+    <msg_id_28>nó tốt hơn để sử dụng số thread thấp hơn 100, BTW chúng tôi đang tiếp tục ...</msg_id_28>
+    <msg_id_29>thiết lập thời gian chờ đến {0} giây, nó là quá lớn, phải không? bằng cách chúng tôi đang tiếp tục ...</msg_id_29>
+    <msg_id_30>mô-đun quét này [{0}] không tìm thấy!</msg_id_30>
+    <msg_id_31>mô-đun quét này [{0}] không tìm thấy!</msg_id_31>
+    <msg_id_32>bạn không thể loại trừ tất cả các phương pháp quét</msg_id_32>
+    <msg_id_33>bạn không thể loại trừ tất cả các phương pháp quét</msg_id_33>
+    <msg_id_34>mô-đun {0} bạn đã chọn để loại trừ không tìm thấy!</msg_id_34>
+    <msg_id_35>nhập các phương thức đầu vào, ví dụ: "ftp_brute_users = test, admin & ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_36>không thể đọc tập tin {0}</msg_id_36>
+    <msg_id_37>Không thể chỉ định tên người dùng, không thể mở tệp: {0}</msg_id_37>
+    <msg_id_38></msg_id_38>
+    <msg_id_39>Không thể chỉ định mật khẩu, không thể mở tệp: {0}</msg_id_39>
+    <msg_id_40>tập tin "{0}" không ghi được!</msg_id_40>
+    <msg_id_41>xin vui lòng chọn phương pháp quét của bạn!</msg_id_41>
+    <msg_id_42>loại bỏ các tập tin temp!</msg_id_42>
+    <msg_id_43>phân loại kết quả!</msg_id_43>
+    <msg_id_44>làm xong!</msg_id_44>
+    <msg_id_45>bắt đầu tấn công {0}, {1} của {2}</msg_id_45>
+    <msg_id_46>mô đun này "{0}" không có sẵn</msg_id_46>
+    <msg_id_47>tiếc là phiên bản này của phần mềm chỉ có thể chạy trên Linux/osx/windows.</msg_id_47>
+    <msg_id_48>Phiên bản Python của bạn không được hỗ trợ!</msg_id_48>
+    <msg_id_49>bỏ qua mục tiêu trùng lặp (một số tên miền phụ / tên miền có thể có cùng một IP và Ranges)</msg_id_49>
+    <msg_id_50>loại mục tiêu không xác định [{0}]</msg_id_50>
+    <msg_id_51>kiểm tra {0} phạm vi ...</msg_id_51>
+    <msg_id_52>kiểm tra {0} ...</msg_id_52>
+    <msg_id_53>HOST</msg_id_53>
+    <msg_id_54>USERNAME</msg_id_54>
+    <msg_id_55>MẬT KHẨU</msg_id_55>
+    <msg_id_56>HẢI CẢNG</msg_id_56>
+    <msg_id_57>KIỂU</msg_id_57>
+    <msg_id_58>SỰ MIÊU TẢ</msg_id_58>
+    <msg_id_59>chế độ tiết verbose (0-5) (mặc định 0)</msg_id_59>
+    <msg_id_60>hiển thị phiên bản phần mềm</msg_id_60>
+    <msg_id_61>kiểm tra cập nhật</msg_id_61>
+    <msg_id_62></msg_id_62>
+    <msg_id_63></msg_id_63>
+    <msg_id_64>Thử lại khi thời gian chờ kết nối (mặc định là 3)</msg_id_64>
+    <msg_id_65>kết nối ftp với {0}: {1} timeout, bỏ qua {2}: {3}</msg_id_65>
+    <msg_id_66>ĐĂNG KÝ THÀNH CÔNG!</msg_id_66>
+    <msg_id_67>ĐĂNG KÝ ĐÃ ĐƯỢC ĐƯỢC ĐƯỢC ĐƯỢC ĐƯỢC ĐƯỢC ĐƯỢC ĐƯỢC ĐƯỢC HƯỞNG CHO DANH BẠ!</msg_id_67>
+    <msg_id_68>kết nối ftp đến {0}: {1} không thành công, bỏ qua toàn bộ bước [process {2} of {3}]! đi tới bước tiếp theo</msg_id_68>
+    <msg_id_69>mục tiêu đầu vào cho {0} mô-đun phải là DOMAIN, HTTP hoặc SINGLE_IPv4, bỏ qua {1}</msg_id_69>
+    <msg_id_70>user: {0} pass: {1} host: {2} port: {3} found!</msg_id_70>
+    <msg_id_71>(KHÔNG CẤP GIẤY PHÉP DANH SÁCH CÁC DANH SÁCH)</msg_id_71>
+    <msg_id_72>đang thử {0} {1} đang trong quá trình {2} của {3} {4}: {5}</msg_id_72>
+    <msg_id_73>kết nối smtp đến {0}: {1} timeout, bỏ qua {2}: {3}</msg_id_73>
+    <msg_id_74>kết nối smtp đến {0}: {1} không thành công, bỏ qua toàn bộ bước [process {2} of {3}]! đi tới bước tiếp theo</msg_id_74>
+    <msg_id_75>mục tiêu đầu vào cho {0} mô-đun phải là HTTP, bỏ qua {1}</msg_id_75>
+    <msg_id_76>kết nối ssh đến {0}: {1} timeout, bỏ qua {2}: {3}</msg_id_76>
+    <msg_id_77>kết nối ssh tới {0}: {1} không thành công, bỏ qua toàn bộ bước [process {2} of {3}]! đi tới bước tiếp theo</msg_id_77>
+    <msg_id_78>ssh kết nối đến% s:% s không thành công, bỏ qua toàn bộ bước [process% s of% s]! đi tới bước tiếp theo</msg_id_78>
+    <msg_id_79>OPEN PORT</msg_id_79>
+    <msg_id_80>host: {0} port: {1} found!</msg_id_80>
+    <msg_id_81>mục tiêu {0} đã gửi!</msg_id_81>
+    <msg_id_82>không thể mở tệp danh sách proxy: {0}</msg_id_82>
+    <msg_id_83>không thể tìm thấy tệp danh sách proxy: {0}</msg_id_83>
+    <msg_id_84>bạn đang chạy phiên bản OWASP Nettacker {0} {1} {2} {6} với tên mã {3} {4} {5}</msg_id_84>
+    <msg_id_85>tính năng này chưa có sẵn! hãy chạy "git clone https://github.com/viraintel/OWASP-Nettacker.git" hoặc "pip install -U OWASP-Nettacker" để có được phiên bản mới nhất.</msg_id_85>
+    <msg_id_86>xây dựng một đồ thị của tất cả các hoạt động và thông tin, bạn phải sử dụng đầu ra HTML. biểu đồ khả dụng: {0}</msg_id_86>
+    <msg_id_87>để sử dụng biểu đồ tính năng tên tập tin đầu ra của bạn phải kết thúc bằng ".html" hoặc ".htm"!</msg_id_87>
+    <msg_id_88>xây dựng đồ thị ...</msg_id_88>
+    <msg_id_89>hoàn thành đồ thị xây dựng!</msg_id_89>
+    <msg_id_90>Đồ thị kiểm tra thâm nhập</msg_id_90>
+    <msg_id_91>Đồ thị này được tạo bởi OWASP Nettacker. Biểu đồ chứa tất cả các hoạt động mô-đun, bản đồ mạng và thông tin nhạy cảm, Vui lòng không chia sẻ tệp này với bất kỳ ai nếu nó không đáng tin cậy.</msg_id_91>
+    <msg_id_92>OWASP Nettacker Report</msg_id_92>
+    <msg_id_93>Chi tiết phần mềm: Phiên bản OWASP Nettacker {0} [{1}] trong {2}</msg_id_93>
+    <msg_id_94>không tìm thấy cổng mở!</msg_id_94>
+    <msg_id_95>không tìm thấy người dùng / mật khẩu!</msg_id_95>
+    <msg_id_96>Đã nạp {0} môđun ...</msg_id_96>
+    <msg_id_97>mô-đun đồ thị này không tìm thấy: {0}</msg_id_97>
+    <msg_id_98>mô-đun đồ thị này "{0}" không khả dụng</msg_id_98>
+    <msg_id_99>ping trước khi quét máy chủ</msg_id_99>
+    <msg_id_100>bỏ qua toàn bộ mục tiêu {0} và phương pháp quét {1} vì -ping-trước-scan là đúng và nó đã không đáp ứng!</msg_id_100>
+    <msg_id_101>bạn không sử dụng phiên bản cuối cùng của OWASP Nettacker, vui lòng cập nhật.</msg_id_101>
+    <msg_id_102>không thể kiểm tra để cập nhật, vui lòng kiểm tra kết nối internet của bạn.</msg_id_102>
+    <msg_id_103>Bạn đang sử dụng phiên bản cuối cùng của OWASP Nettacker ...</msg_id_103>
+    <msg_id_104>danh sách thư mục được tìm thấy trong {0}</msg_id_104>
+    <msg_id_105>hãy chèn cổng thông qua các -g hoặc --methods-args chuyển đổi thay vì url</msg_id_105>
+    <msg_id_106>kết nối http {0} timeout!</msg_id_106>
+    <msg_id_107></msg_id_107>
+    <msg_id_108>không tìm thấy thư mục hoặc tệp cho {0} trong cổng {1}</msg_id_108>
+    <msg_id_109>không thể mở được {0}</msg_id_109>
+    <msg_id_110>giá trị dir_scan_http_method phải là GET hoặc HEAD, được đặt mặc định là GET.</msg_id_110>
+    <msg_id_111>liệt kê tất cả các phương pháp args</msg_id_111>
+    <msg_id_112>không thể có được (0) mô-đun args</msg_id_112>
+    <msg_id_113></msg_id_113>
+    <msg_id_114></msg_id_114>
+    <msg_id_115></msg_id_115>
+    <msg_id_116></msg_id_116>
+    <msg_id_117></msg_id_117>
+</data>

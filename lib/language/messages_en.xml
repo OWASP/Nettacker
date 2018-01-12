@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<data>
+    <msg_id_0>Nettacker engine started ...\n\n</msg_id_0>
+    <msg_id_1>python nettacker.py [options]</msg_id_1>
+    <msg_id_2>Show Nettacker Help Menu</msg_id_2>
+    <msg_id_3>Please read license and agreements https://github.com/viraintel/OWASP-Nettacker\n</msg_id_3>
+    <msg_id_4>Engine</msg_id_4>
+    <msg_id_5>Engine input options</msg_id_5>
+    <msg_id_6>select a language {0}</msg_id_6>
+    <msg_id_7>scan all IPs in the range</msg_id_7>
+    <msg_id_8>find and scan subdomains</msg_id_8>
+    <msg_id_9>thread numbers for connections to a host</msg_id_9>
+    <msg_id_10>thread numbers for scan hosts</msg_id_10>
+    <msg_id_11>save all logs in file (results.txt, results.html, results.json)</msg_id_11>
+    <msg_id_12>Target</msg_id_12>
+    <msg_id_13>Target input options</msg_id_13>
+    <msg_id_14>target(s) list, separate with ","</msg_id_14>
+    <msg_id_15>read target(s) from file</msg_id_15>
+    <msg_id_16>Scan method options</msg_id_16>
+    <msg_id_17>choose scan method {0}</msg_id_17>
+    <msg_id_18>choose scan method to exclude {0}</msg_id_18>
+    <msg_id_19>username(s) list, separate with ","</msg_id_19>
+    <msg_id_20>read username(s) from file</msg_id_20>
+    <msg_id_21>password(s) list, separate with ","</msg_id_21>
+    <msg_id_22>read password(s) from file</msg_id_22>
+    <msg_id_23>port(s) list, separate with ","</msg_id_23>
+    <msg_id_24>read passwords(s) from file</msg_id_24>
+    <msg_id_25>time to sleep between each request</msg_id_25>
+    <msg_id_26>Cannot specify the target(s)</msg_id_26>
+    <msg_id_27>Cannot specify the target(s), unable to open file: {0}</msg_id_27>
+    <msg_id_28>it's better to use thread number lower than 100, BTW we are continuing...</msg_id_28>
+    <msg_id_29>set timeout to {0} seconds, it is too big, isn't it ? by the way we are continuing...</msg_id_29>
+    <msg_id_30>this scan module [{0}] not found!</msg_id_30>
+    <msg_id_31>this scan module [{0}] not found!</msg_id_31>
+    <msg_id_32>you cannot exclude all scan methods</msg_id_32>
+    <msg_id_33>you cannot exclude all scan methods</msg_id_33>
+    <msg_id_34>the {0} module you selected to exclude not found!</msg_id_34>
+    <msg_id_35>enter methods inputs, example: "ftp_brute_users=test,admin&ftp_brute_passwds=read_from_file:/tmp/pass.txt&ftp_brute_port=21"</msg_id_35>
+    <msg_id_36>cannot reading file {0}</msg_id_36>
+    <msg_id_37>Cannot specify the username(s), unable to open file: {0}</msg_id_37>
+    <msg_id_38>{0} found! ({1}:{2})</msg_id_38>
+    <msg_id_39>Cannot specify the password(s), unable to open file: {0}</msg_id_39>
+    <msg_id_40>file "{0}" is not writable!</msg_id_40>
+    <msg_id_41>please choose your scan method!</msg_id_41>
+    <msg_id_42>removing temp files!</msg_id_42>
+    <msg_id_43>sorting results!</msg_id_43>
+    <msg_id_44>done!</msg_id_44>
+    <msg_id_45>start attacking {0}, {1} of {2}</msg_id_45>
+    <msg_id_46>this module "{0}" is not available</msg_id_46>
+    <msg_id_47>unfortunately this version of the software just could be run on linux/osx/windows.</msg_id_47>
+    <msg_id_48>Your Python version is not supported!</msg_id_48>
+    <msg_id_49>skip duplicate target (some subdomains/domains may have same IP and Ranges)</msg_id_49>
+    <msg_id_50>unknown type of target [{0}]</msg_id_50>
+    <msg_id_51>checking {0} range ...</msg_id_51>
+    <msg_id_52>checking {0} ...</msg_id_52>
+    <msg_id_53>HOST</msg_id_53>
+    <msg_id_54>USERNAME</msg_id_54>
+    <msg_id_55>PASSWORD</msg_id_55>
+    <msg_id_56>PORT</msg_id_56>
+    <msg_id_57>TYPE</msg_id_57>
+    <msg_id_58>DESCRIPTION</msg_id_58>
+    <msg_id_59>verbose mode level (0-5) (default 0)</msg_id_59>
+    <msg_id_60>show software version</msg_id_60>
+    <msg_id_61>check for update</msg_id_61>
+    <msg_id_62>outgoing connections proxy (socks). example socks5: 127.0.0.1:9050, socks://127.0.0.1:9050, socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050, authentication: socks://username:password@127.0.0.1, socks4://username:password@127.0.0.1, socks5://username:password@127.0.0.1</msg_id_62>
+    <msg_id_63>please enter valid socks address and port. example socks5: 127.0.0.1:9050, socks://127.0.0.1:9050, socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050, authentication: socks://username:password@127.0.0.1, socks4://username:password@127.0.0.1, socks5://username:password@127.0.0.1</msg_id_63>
+    <msg_id_64>Retries when the connection timeout (default 3)</msg_id_64>
+    <msg_id_65>ftp connection to {0}:{1} timeout, skipping {2}:{3}</msg_id_65>
+    <msg_id_66>LOGGED IN SUCCESSFULLY!</msg_id_66>
+    <msg_id_67>LOGGED IN SUCCESSFULLY, PERMISSION DENIED FOR LIST COMMAND!</msg_id_67>
+    <msg_id_68>ftp connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step</msg_id_68>
+    <msg_id_69>input target for {0} module must be DOMAIN, HTTP or SINGLE_IPv4, skipping {1}</msg_id_69>
+    <msg_id_70>user: {0} pass:{1} host:{2} port:{3} found!</msg_id_70>
+    <msg_id_71>(NO PERMISSION FOR LIST FILES)</msg_id_71>
+    <msg_id_72>trying {0} of {1} in process {2} of {3} {4}:{5}</msg_id_72>
+    <msg_id_73>smtp connection to {0}:{1} timeout, skipping {2}:{3}</msg_id_73>
+    <msg_id_74>smtp connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step</msg_id_74>
+    <msg_id_75>input target for {0} module must be HTTP, skipping {1}</msg_id_75>
+    <msg_id_76>ssh connection to {0}:{1} timeout, skipping {2}:{3}</msg_id_76>
+    <msg_id_77>ssh connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step</msg_id_77>
+    <msg_id_78>ssh connection to %s:%s failed, skipping whole step [process %s of %s]! going to next step</msg_id_78>
+    <msg_id_79>OPEN PORT</msg_id_79>
+    <msg_id_80>host: {0} port: {1} found!</msg_id_80>
+    <msg_id_81>target {0} submitted!</msg_id_81>
+    <msg_id_82>cannot open proxies list file: {0}</msg_id_82>
+    <msg_id_83>cannot find proxies list file: {0}</msg_id_83>
+    <msg_id_84>you are running OWASP Nettacker version {0}{1}{2}{6} with code name {3}{4}{5}</msg_id_84>
+    <msg_id_85>this feature is not available yet! please run "git clone https://github.com/viraintel/OWASP-Nettacker.git" or "pip install -U OWASP-Nettacker" to get the last version.</msg_id_85>
+    <msg_id_86>build a graph of all activities and information, you must use HTML output. available graphs: {0}</msg_id_86>
+    <msg_id_87>to use graph feature your output filename must end with ".html" or ".htm"!</msg_id_87>
+    <msg_id_88>building graph ...</msg_id_88>
+    <msg_id_89>finish building graph!</msg_id_89>
+    <msg_id_90>Penetration Testing Graphs</msg_id_90>
+    <msg_id_91>This graph created by OWASP Nettacker. Graph contains all modules activities, network map and sensitive information, Please don't share this file with anyone if it's not reliable.</msg_id_91>
+    <msg_id_92>OWASP Nettacker Report</msg_id_92>
+    <msg_id_93>Software Details: OWASP Nettacker version {0} [{1}] in {2}</msg_id_93>
+    <msg_id_94>no open ports found!</msg_id_94>
+    <msg_id_95>no user/password found!</msg_id_95>
+    <msg_id_96>{0} modules loaded ...</msg_id_96>
+    <msg_id_97>this graph module not found: {0}</msg_id_97>
+    <msg_id_98>this graph module "{0}" is not available</msg_id_98>
+    <msg_id_99>ping before scan the host</msg_id_99>
+    <msg_id_100>skipping whole target {0} and scanning method {1} because of --ping-before-scan is true and it didn't response!</msg_id_100>
+    <msg_id_101>you are not using the last version of OWASP Nettacker, please update.</msg_id_101>
+    <msg_id_102>cannot check for update, please check your internet connection.</msg_id_102>
+    <msg_id_103>You are using the last version of OWASP Nettacker ...</msg_id_103>
+    <msg_id_104>directoy listing found in {0}</msg_id_104>
+    <msg_id_105>please insert port through the -g or --methods-args switch instead of url</msg_id_105>
+    <msg_id_106>http connection {0} timeout!</msg_id_106>
+    <msg_id_107></msg_id_107>
+    <msg_id_108>no directory or file found for {0} in port {1}</msg_id_108>
+    <msg_id_109>unable to open {0}</msg_id_109>
+    <msg_id_110>dir_scan_http_method value must be GET or HEAD, set default to GET.</msg_id_110>
+    <msg_id_111>list all methods args</msg_id_111>
+    <msg_id_112>cannot get {0} module args</msg_id_112>
+    <msg_id_113>trying {0} of {1} in process {2} of {3} on {4} (viewdns ip lookup)</msg_id_113>
+    <msg_id_114>{0} domain found: {1}</msg_id_114>
+    <msg_id_115>TIME</msg_id_115>
+    <msg_id_116>CATEGORY</msg_id_116>
+    <msg_id_117>cannot find any module with {0} pattern!</msg_id_117>
+</data>
