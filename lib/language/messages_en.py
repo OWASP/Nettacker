@@ -40,7 +40,8 @@ def all_messages():
             "32": "you cannot exclude all scan methods",
             "33": "you cannot exclude all scan methods",
             "34": "the {0} module you selected to exclude not found!",
-            "35": "enter methods inputs, example: \"ftp_brute_users=test,admin&ftp_brute_passwds=read_from_file:/tmp/pass.txt&ftp_brute_port=21\"",
+            "35": "enter methods inputs, example: \"ftp_brute_users=test,admin&ftp_brute_passwds="
+                  "read_from_file:/tmp/pass.txt&ftp_brute_port=21\"",
             "36": "cannot reading file {0}",
             "37": "Cannot specify the username(s), unable to open file: {0}",
             "38": "{0} found! ({1}:{2})",
@@ -67,8 +68,12 @@ def all_messages():
             "59": "verbose mode level (0-5) (default 0)",
             "60": "show software version",
             "61": "check for update",
-            "62": "outgoing connections proxy (socks). example socks5: 127.0.0.1:9050, socks://127.0.0.1:9050, socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050, authentication: socks://username:password@127.0.0.1, socks4://username:password@127.0.0.1, socks5://username:password@127.0.0.1",
-            "63": "please enter valid socks address and port. example socks5: 127.0.0.1:9050, socks://127.0.0.1:9050, socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050, authentication: socks://username:password@127.0.0.1, socks4://username:password@127.0.0.1, socks5://username:password@127.0.0.1",
+            "62": "outgoing connections proxy (socks). example socks5: 127.0.0.1:9050, socks://127.0.0.1:9050,"
+                  " socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050, authentication: socks://username:"
+                  "password@127.0.0.1, socks4://username:password@127.0.0.1, socks5://username:password@127.0.0.1",
+            "63": "please enter valid socks address and port. example socks5: 127.0.0.1:9050, socks://127.0.0.1:9050,"
+                  " socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050, authentication: socks://username:passwo"
+                  "rd@127.0.0.1, socks4://username:password@127.0.0.1, socks5://username:password@127.0.0.1",
             "64": "Retries when the connection timeout (default 3)",
             "65": "ftp connection to {0}:{1} timeout, skipping {2}:{3}",
             "66": "LOGGED IN SUCCESSFULLY!",
@@ -90,13 +95,15 @@ def all_messages():
             "82": "cannot open proxies list file: {0}",
             "83": "cannot find proxies list file: {0}",
             "84": "you are running OWASP Nettacker version {0}{1}{2}{6} with code name {3}{4}{5}",
-            "85": "this feature is not available yet! please run \"git clone https://github.com/viraintel/OWASP-Nettacker.git\" or \"pip install -U OWASP-Nettacker\" to get the last version.",
+            "85": "this feature is not available yet! please run \"git clone https://github.com/viraintel/OWAS"
+                  "P-Nettacker.git\" or \"pip install -U OWASP-Nettacker\" to get the last version.",
             "86": "build a graph of all activities and information, you must use HTML output. available graphs: {0}",
             "87": "to use graph feature your output filename must end with \".html\" or \".htm\"!",
             "88": "building graph ...",
             "89": "finish building graph!",
             "90": "Penetration Testing Graphs",
-            "91": "This graph created by OWASP Nettacker. Graph contains all modules activities, network map and sensitive information, Please don't share this file with anyone if it's not reliable.",
+            "91": "This graph created by OWASP Nettacker. Graph contains all modules activities, network map and"
+                  " sensitive information, Please don't share this file with anyone if it's not reliable.",
             "92": "OWASP Nettacker Report",
             "93": "Software Details: OWASP Nettacker version {0} [{1}] in {2}",
             "94": "no open ports found!",
@@ -105,7 +112,8 @@ def all_messages():
             "97": "this graph module not found: {0}",
             "98": "this graph module \"{0}\" is not available",
             "99": "ping before scan the host",
-            "100": "skipping whole target {0} and scanning method {1} because of --ping-before-scan is true and it didn't response!",
+            "100": "skipping whole target {0} and scanning method {1} because of --ping-before-scan is true and "
+                   "it didn't response!",
             "101": "you are not using the last version of OWASP Nettacker, please update.",
             "102": "cannot check for update, please check your internet connection.",
             "103": "You are using the last version of OWASP Nettacker ...",

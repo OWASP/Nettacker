@@ -40,7 +40,8 @@ def all_messages():
             "32": "您不能排除所有扫描方法",
             "33": "您不能排除所有扫描方法",
             "34": "您选择排除的{0}模块未找到！",
-            "35": "输入方法输入，例如：\"ftp_brute_users = test，admin＆ftp_brute_passwds = read_from_file：/tmp/pass.txt&ftp_brute_port=21\"",
+            "35": "输入方法输入，例如：\"ftp_brute_users = test，admin＆ftp_brute_passwds ="
+                  " read_from_file：/tmp/pass.txt&ftp_brute_port=21\"",
             "36": "无法读取文件{0}",
             "37": "无法指定用户名，无法打开文件：{0}",
             "38": "{0}发现！ （{1}：{2}）",
@@ -90,13 +91,15 @@ def all_messages():
             "82": "无法打开代理列表文件：{0}",
             "83": "找不到代理列表文件：{0}",
             "84": "您正在运行OWASP Nettacker版本{0} {1} {2} {6}，代码名称为{3} {4} {5}",
-            "85": "此功能尚不可用！请运行 \"git clone https://github.com/viraintel/OWASP-Nettacker.git\" 或 \"pip install -U OWASP-Nettacker\"获取最新版本。",
+            "85": "此功能尚不可用！请运行 \"git clone https://github.com/viraintel/OWASP-Nettacker."
+                  "git\" 或 \"pip install -U OWASP-Nettacker\"获取最新版本。",
             "86": "构建所有活动和信息的图表，您必须使用HTML输出。可用图：{0}",
             "87": "要使用图形功能，您的输出文件名必须以\".html\"或\".htm\"结尾！",
             "88": "建筑图...",
             "89": "完成建筑图！",
             "90": "渗透测试图",
-            "91": "此图由OWASP Nettacker创建。图包含所有模块活动，网络地图和敏感信息，如果不可靠，请不要与任何人共享此文件。",
+            "91": "此图由OWASP Nettacker创建。图包含所有模块活动，网络地图和敏感信息，如果不可靠，"
+                  "请不要与任何人共享此文件。",
             "92": "OWASP Nettacker报告",
             "93": "软件详细信息：{2}中的OWASP Nettacker版本{0} [{1}]",
             "94": "没有开放的端口找到！",

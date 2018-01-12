@@ -40,7 +40,8 @@ def all_messages():
             "32": "Es können nicht alle Scan-Methoden ausgeschlosen werden",
             "33": "Es können nicht alle Scan-Methoden ausgeschlosen werden",
             "34": "Das Modul {0}, das zum Ausschließen ausgewählt wurde, wurde nicht gefunden!",
-            "35": "Bitte Eingabe für Methode angeben, Beispiel: \"ftp_brute_users = test, admin & ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21\"",
+            "35": "Bitte Eingabe für Methode angeben, Beispiel: \"ftp_brute_users =test,admin&ftp_brute_passwds="
+                  "read_from_file:/tmp/pass.txt&ftp_brute_port=21\"",
             "36": "Datei {0} kann nicht gelesen werden",
             "37": "Der Benutzername kann nicht angegeben werden. Die Datei kann nicht geöffnet werden: {0}",
             "38": "",
@@ -73,30 +74,39 @@ def all_messages():
             "65": "ftp-Verbindung zu {0}: {1} Zeitüberschreitung, überspringen {2}: {3}",
             "66": "ERFOLGREICH EINGELOGGT!",
             "67": "ERFOLGREICH ABGESCHLOSSEN, KEINE BERECHTIGUNG FÜR LISTE-BEFEHL!",
-            "68": "ftp-Verbindung zu {0}: {1} ist fehlgeschlagen, gesamter Schritt wirdübersprungen [process {2} von {3}]! weiter mit nächstem Schritt",
+            "68": "ftp-Verbindung zu {0}: {1} ist fehlgeschlagen, gesamter Schritt wirdübersprungen"
+                  " [process {2} von {3}]! weiter mit nächstem Schritt",
             "69": "Das Ziel für das {0} -Modul muss DOMAIN, HTTP oder SINGLE_IPv4 sein, wobei {1}",
             "70": "Benutzer: {0} übergeben: {1} Host: {2} Port: {3} gefunden!",
             "71": "(KEINE BERECHTIGUNG FÜR LISTEN-DATEIEN)",
             "72": "versuche {0} von {1} im Prozess {2} von {3} {4}: {5}",
             "73": "SMTP-Verbindung zu {0}: {1} Zeitüberschreitung, überspringe {2}: {3}",
-            "74": "smtp-Verbindung zu {0}: {1} ist fehlgeschlagen, gesamter Schritt wird übersprungen [process {2} von {3}]! weiter mit nächstem Schritt",
+            "74": "smtp-Verbindung zu {0}: {1} ist fehlgeschlagen, gesamter Schritt wird übersprungen "
+                  "[process {2} von {3}]! weiter mit nächstem Schritt",
             "75": "Ziel für {0} -Modul muss HTTP sein, {1} wird übersprungen",
             "76": "ssh-Verbindung zu {0}: {1} Zeitüberschreitung, überspringe {2}: {3}",
-            "77": "ssh-Verbindung zu {0}: {1} ist fehlgeschlagen, gesamter Schritt wird übersprungen [process {2} von {3}]! weiter mit nächstem Schritt",
-            "78": "ssh-Verbindung zu% s:% s ist fehlgeschlagen, gesamter Schritt [Prozess% s von% s] wird übersprungen! weiter mit nächstem Schritt",
+            "77": "ssh-Verbindung zu {0}: {1} ist fehlgeschlagen, gesamter Schritt wird übersprungen "
+                  "[process {2} von {3}]! weiter mit nächstem Schritt",
+            "78": "ssh-Verbindung zu% s:% s ist fehlgeschlagen, gesamter Schritt [Prozess% s von% s]"
+                  " wird übersprungen! weiter mit nächstem Schritt",
             "79": "OFFENER PORT",
             "80": "Host: {0} Port: {1} gefunden!",
             "81": "Ziel {0} eingereicht!",
             "82": "Kann keine Proxy-Listendatei öffnen: {0}",
             "83": "Proxy-Listendatei kann nicht gefunden werden: {0}",
             "84": "OWASP-Nettacker-Version {0} {1} {2} {6} mit dem Codenamen {3} {4} {5} wird ausgeführt",
-            "85": "Diese Funktion ist noch nicht verfügbar! Bitte \"git clone https://github.com/viraintel/OWASP-Nettacker.git\" oder \"pip install -U OWASP-Nettacker\" ausführen, um die letzte Version zu erhalten.",
-            "86": "Erstellen Sie ein Diagramm aller Aktivitäten und Informationen erstellen, HTML-Ausgabe muss verwendet werden. Verfügbare Diagramme: {0}",
+            "85": "Diese Funktion ist noch nicht verfügbar! Bitte \"git clone https://github.com/viraintel/"
+                  "OWASP-Nettacker.git\" oder \"pip install -U OWASP-Nettacker\" ausführen, um die letzte"
+                  " Version zu erhalten.",
+            "86": "Erstellen Sie ein Diagramm aller Aktivitäten und Informationen erstellen, HTML-Ausgabe"
+                  " muss verwendet werden. Verfügbare Diagramme: {0}",
             "87": "Um den Graphen verwenden zu können, muss der Ausgabedateiname mit \".html\" oder \".htm\" enden!",
             "88": "Diagramm erstellen ...",
             "89": "Diagramm fertig bauen!",
             "90": "Penetrationstests",
-            "91": "Diese Grafik wurde von OWASP Nettacker erstellt. Diagramm enthält alle Module Aktivitäten, Netzwerkkarte und vertrauliche Informationen, Bitte teilen Sie diese Datei nicht mit jemandem, wenn es nicht zuverlässig ist.",
+            "91": "Diese Grafik wurde von OWASP Nettacker erstellt. Diagramm enthält alle Module Aktivitäten"
+                  ", Netzwerkkarte und vertrauliche Informationen, Bitte teilen Sie diese Datei nicht mit"
+                  " jemandem, wenn es nicht zuverlässig ist.",
             "92": "OWASP Nettacker Bericht",
             "93": "Softwaredetails: OWASP-Nettacker-Version {0} [{1}] in {2}",
             "94": "Keine offenen Ports gefunden!",
@@ -105,7 +115,8 @@ def all_messages():
             "97": "Dieses Grafikmodul wurde nicht gefunden: {0}",
             "98": "Dieses Grafikmodul \"{0}\" ist nicht verfügbar",
             "99": "ping vor dem Scan des Host",
-            "100": "Überspringe gesamtes Ziel und Scanmethode {1}, weil --ping-before-scan benutzt wurde und keine Antwort erhalten hat!",
+            "100": "Überspringe gesamtes Ziel und Scanmethode {1}, weil --ping-before-scan benutzt wurde und"
+                   " keine Antwort erhalten hat!",
             "101": "Es wird nicht die aktuelle Version von OWASP Nettacker verwendet, bitte aktualisieren.",
             "102": "Kann nicht nach Update suchen, bitte Internetverbindung überprüfen.",
             "103": "Es wird nicht die aktuelle Version von OWASP Nettacker verwendet ...",

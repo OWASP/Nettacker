@@ -40,7 +40,8 @@ def all_messages():
             "32": "no puede excluir todos los métodos de escaneo",
             "33": "no puede excluir todos los métodos de escaneo",
             "34": "el {0} módulo que seleccionó para excluir no encontrado!",
-            "35": "ingrese las entradas de métodos, ejemplo: \"ftp_brute_users = test, admin & ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21\"",
+            "35": "ingrese las entradas de métodos, ejemplo: \"ftp_brute_users =test,admin&ftp_brute_passwds="
+                  "read_from_file:/tmp/pass.txt&ftp_brute_port=21\"",
             "36": "no se puede leer el archivo {0}",
             "37": "No se puede especificar el nombre de usuario (s), no se puede abrir el archivo: {0}",
             "38": "",
@@ -73,16 +74,19 @@ def all_messages():
             "65": "conexión de ftp a {0}: {1} tiempo de espera, omitiendo {2}: {3}",
             "66": "¡REGISTRO EXITOSAMENTE!",
             "67": "¡REGISTRO EXITOSAMENTE, PERMISO NEGADO PARA EL COMANDO DE LA LISTA!",
-            "68": "La conexión de ftp a {0}: {1} falló, omitiendo todo el paso [proceso {2} de {3}]! yendo al siguiente paso",
+            "68": "La conexión de ftp a {0}: {1} falló, omitiendo todo el paso [proceso {2}"
+                  " de {3}]! yendo al siguiente paso",
             "69": "el objetivo de entrada para el módulo {0} debe ser DOMAIN, HTTP o SINGLE_IPv4, omitiendo {1}",
             "70": "usuario: {0} pass: {1} host: {2} puerto: {3} encontrado!",
             "71": "(SIN PERMISO PARA LOS ARCHIVOS DE LA LISTA)",
             "72": "intentando {0} de {1} en el proceso {2} de {3} {4}: {5}",
             "73": "conexión smtp a {0}: {1} tiempo de espera, omitiendo {2}: {3}",
-            "74": "La conexión smtp a {0}: {1} falló, omitiendo todo el paso [proceso {2} de {3}]! yendo al siguiente paso",
+            "74": "La conexión smtp a {0}: {1} falló, omitiendo todo el paso [proceso {2} de {3}]!"
+                  " yendo al siguiente paso",
             "75": "El objetivo de entrada para el módulo {0} debe ser HTTP, omitiendo {1}",
             "76": "ssh connection to {0}: {1} timeout, omitiendo {2}: {3}",
-            "77": "La conexión ssh a {0}: {1} falló, omitiendo todo el paso [proceso {2} de {3}]! yendo al siguiente paso",
+            "77": "La conexión ssh a {0}: {1} falló, omitiendo todo el paso [proceso {2} de {3}]!"
+                  " yendo al siguiente paso",
             "78": "La conexión ssh a% s:% s falló, omitiendo todo el paso [proceso% s de% s]! yendo al siguiente paso",
             "79": "PUERTO ABIERTO",
             "80": "host: {0} puerto: {1} encontrado!",
@@ -90,13 +94,17 @@ def all_messages():
             "82": "no se puede abrir el archivo de lista de proxies: {0}",
             "83": "no puede encontrar el archivo de la lista de proxies: {0}",
             "84": "está ejecutando la versión OWASP Nettacker {0} {1} {2} {6} con el nombre del código {3} {4} {5}",
-            "85": "¡esta función aún no está disponible! ejecute \"git clone https://github.com/viraintel/OWASP-Nettacker.git\" o \"instale pip -U OWASP-Nettacker\" para obtener la última versión.",
-            "86": "Cree un gráfico de todas las actividades e información, debe usar el resultado HTML. Gráficos disponibles: {0}",
+            "85": "¡esta función aún no está disponible! ejecute \"git clone https://github.com/viraintel/"
+                  "OWASP-Nettacker.git\" o \"instale pip -U OWASP-Nettacker\" para obtener la última versión.",
+            "86": "Cree un gráfico de todas las actividades e información, debe usar el resultado HTML."
+                  " Gráficos disponibles: {0}",
             "87": "Para usar la función gráfica, su nombre de archivo de salida debe terminar con \".html\" o \".htm\".",
             "88": "edificio gráfico ...",
             "89": "¡Termina el gráfico de construcción!",
             "90": "Gráficos de pruebas de penetración",
-            "91": "Este gráfico creado por OWASP Nettacker. El gráfico contiene todas las actividades de los módulos, el mapa de red y la información confidencial. No comparta este archivo con nadie si no es confiable.",
+            "91": "Este gráfico creado por OWASP Nettacker. El gráfico contiene todas las actividades "
+                  "de los módulos, el mapa de red y la información confidencial. No comparta este archivo "
+                  "con nadie si no es confiable.",
             "92": "Informe OWASP Nettacker",
             "93": "Detalles del software: versión OWASP Nettacker {0} [{1}] en {2}",
             "94": "no se encontraron puertos abiertos",
@@ -105,7 +113,8 @@ def all_messages():
             "97": "este módulo de gráficos no se encuentra: {0}",
             "98": "este módulo de gráficos \"{0}\" no está disponible",
             "99": "ping antes de escanear el host",
-            "100": "omitir el objetivo completo {0} y el método de exploración {1} debido a --ping-before-scan es verdadero y no respondió.",
+            "100": "omitir el objetivo completo {0} y el método de exploración {1} debido a "
+                   "--ping-before-scan es verdadero y no respondió.",
             "101": "no está utilizando la última versión de OWASP Nettacker, actualice.",
             "102": "No puedo verificar si hay alguna actualización, comprueba tu conexión a internet.",
             "103": "Estás usando la última versión de OWASP Nettacker ...",
