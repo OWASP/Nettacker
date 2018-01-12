@@ -42,7 +42,7 @@ def load():
     check_subdomains = options.check_subdomains
     targets = options.targets
     targets_list = options.targets_list
-    thread_number = options.thread_number
+    thread_number = options.thread_number + 1
     thread_number_host = options.thread_number_host
     log_in_file = options.log_in_file
     scan_method = options.scan_method
