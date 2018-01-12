@@ -1,1 +1,1 @@
-result files will store in here by default!
+language library files stored in here
