@@ -76,7 +76,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             return None
         total_req = 1
         trying = 1
-        info(messages(language, 113).format(trying, total_req, num, total, target))
+        info(messages(language, 113).format(trying, total_req, num, total, target, '(viewdns ip lookup)'))
         n = 0
         while 1:
             try:
