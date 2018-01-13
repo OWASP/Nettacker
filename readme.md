@@ -42,7 +42,7 @@ OWASP Nettacker project is created to automate information gathering, vulnerabil
 
 
 usage: Nettacker [-L LANGUAGE] [-v VERBOSE_LEVEL] [-V] [-c] [-o LOG_IN_FILE]
-                 [--graph GRAPH_FLAG] [-h] [-i TARGETS] [-l TARGETS_LIST]
+                 [--graph GRAPH_FLAG] [-h] [-W] [-i TARGETS] [-l TARGETS_LIST]
                  [-m SCAN_METHOD] [-x EXCLUDE_METHOD] [-u USERS]
                  [-U USERS_LIST] [-p PASSWDS] [-P PASSWDS_LIST] [-g PORTS]
                  [-T TIMEOUT_SEC] [-w TIME_SLEEP] [-r] [-s] [-t THREAD_NUMBER]
@@ -54,9 +54,9 @@ Engine:
   Engine input options
 
   -L LANGUAGE, --language LANGUAGE
-                        select a language ['ru', 'fr', 'en', 'nl', 'el', 'vi',
-                        'id', 'de', 'tr', 'ps', 'ur', 'fa', 'hy', 'hi', 'ko',
-                        'it', 'zh-cn', 'ar', 'ja', 'es']
+                        select a language ['el', 'fr', 'en', 'nl', 'ps', 'tr',
+                        'de', 'ko', 'it', 'ja', 'fa', 'hy', 'ar', 'zh-cn',
+                        'vi', 'ru', 'hi', 'ur', 'id', 'es']
   -v VERBOSE_LEVEL, --verbose VERBOSE_LEVEL
                         verbose mode level (0-5) (default 0)
   -V, --version         show software version
@@ -69,6 +69,7 @@ Engine:
                         ['d3_tree_v1_graph', 'd3_tree_v2_graph',
                         'jit_circle_v1_graph']
   -h, --help            Show Nettacker Help Menu
+  -W, --wizard          start wizard mode
 
 Target:
   Target input options
@@ -83,12 +84,13 @@ Method:
 
   -m SCAN_METHOD, --method SCAN_METHOD
                         choose scan method ['ftp_brute', 'smtp_brute',
-                        'ssh_brute', 'dir_scan', 'tcp_connect_port_scan',
+                        'ssh_brute', 'dir_scan', 'subdomain_scan',
+                        'tcp_connect_port_scan',
                         'viewdns_reverse_ip_lookup_scan', 'all']
   -x EXCLUDE_METHOD, --exclude EXCLUDE_METHOD
                         choose scan method to exclude ['ftp_brute',
                         'smtp_brute', 'ssh_brute', 'dir_scan',
-                        'tcp_connect_port_scan',
+                        'subdomain_scan', 'tcp_connect_port_scan',
                         'viewdns_reverse_ip_lookup_scan']
   -u USERS, --usernames USERS
                         username(s) list, separate with ","
