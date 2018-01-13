@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import socket
+import json
 from core.ip import *
 from core.alert import *
 from lib.scan.subdomain.engine import __get_subs
@@ -43,18 +44,18 @@ def target_type(target):
 
 
 def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-             language, verbose_level, show_version, check_update, proxies, retries, socks_proxy):
-    tmp = open(range_temp, 'w')
+             language, verbose_level, show_version, check_update, proxies, retries, socks_proxy, enumerate_flag):
+    tmp = open(range_temp, 'a')
     tmp.write('')
     tmp.close()
-    tmp = open(subs_temp, 'w')
+    tmp = open(subs_temp, 'a')
     tmp.write('')
     tmp.close()
 
     for target in targets:
         if target_type(target) == 'SINGLE_IPv4':
             if check_ranges is True:
-                info(messages(language, 51).format(target))
+                if not enumerate_flag: info(messages(language, 51).format(target))
                 IPs = IPRange(getIPRange(target), range_temp, language)
                 if type(IPs) == netaddr.ip.IPNetwork:
                     for IPm in IPs:
@@ -64,12 +65,12 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                         for IP in IPm:
                             yield IP
             else:
-                info(messages(language, 81).format(target))
+                if not enumerate_flag: info(messages(language, 81).format(target))
                 yield target
 
         elif target_type(target) == 'RANGE_IPv4' or target_type(target) == 'CIDR_IPv4':
             IPs = IPRange(target, range_temp, language)
-            info(messages(language, 52).format(target))
+            if not enumerate_flag: info(messages(language, 52).format(target))
             if type(IPs) == netaddr.ip.IPNetwork:
                 for IPm in IPs:
                     yield IPm
@@ -81,12 +82,17 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
         elif target_type(target) == 'DOMAIN':
             if check_subdomains is True:
                 if check_ranges is True:
-                    info(messages(language, 52).format(target))
-                    sub_domains =  __get_subs(target, 3, '', 0, language, 0, socks_proxy, 3, 0, 0)
+                    if enumerate_flag: info(messages(language, 52).format(target))
+                    sub_domains = json.loads(open(subs_temp).read()) if len(open(subs_temp).read()) > 0 else \
+                        __get_subs(target, 3, '', 0, language, 0, socks_proxy, 3, 0, 0)
+                    if len(open(subs_temp).read()) is 0:
+                        f = open(subs_temp, 'a')
+                        f.write(json.dumps(sub_domains))
+                        f.close()
                     if target not in sub_domains:
                         sub_domains.append(target)
                     for target in sub_domains:
-                        info(messages(language, 81).format(target))
+                        if not enumerate_flag: info(messages(language, 81).format(target))
                         yield target
                         n = 0
                         err = 0
@@ -104,7 +110,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                                     break
                         IPz = list(set(IPs))
                         for IP in IPz:
-                            info(messages(language, 51).format(IP))
+                            if not enumerate_flag: info(messages(language, 51).format(IP))
                             IPs = IPRange(getIPRange(IP), range_temp, language)
                             if type(IPs) == netaddr.ip.IPNetwork:
                                 for IPm in IPs:
@@ -114,16 +120,21 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                                     for IPn in IPm:
                                         yield IPn
                 else:
-                    info(messages(language, 52).format(target))
-                    sub_domains = __get_subs(target, 3, '', 0, language, 0, socks_proxy, 3, 0, 0)
+                    if enumerate_flag: info(messages(language, 52).format(target))
+                    sub_domains = json.loads(open(subs_temp).read()) if len(open(subs_temp).read()) > 0 else \
+                        __get_subs(target, 3, '', 0, language, 0, socks_proxy, 3, 0, 0)
+                    if len(open(subs_temp).read()) is 0:
+                        f = open(subs_temp, 'a')
+                        f.write(json.dumps(sub_domains))
+                        f.close()
                     if target not in sub_domains:
                         sub_domains.append(target)
                     for target in sub_domains:
-                        info(messages(language, 81).format(target))
+                        if not enumerate_flag: info(messages(language, 81).format(target))
                         yield target
             else:
                 if check_ranges is True:
-                    info(messages(language, 52).format(target))
+                    if not enumerate_flag: info(messages(language, 52).format(target))
                     yield target
                     n = 0
                     err = 0
@@ -141,7 +152,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                                 break
                     IPz = list(set(IPs))
                     for IP in IPz:
-                        info(messages(language, 51).format(IP))
+                        if not enumerate_flag: info(messages(language, 51).format(IP))
                         IPs = IPRange(getIPRange(IP), range_temp, language)
                         if type(IPs) == netaddr.ip.IPNetwork:
                             for IPm in IPs:
@@ -151,11 +162,11 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                                 for IPn in IPm:
                                     yield IPn
                 else:
-                    info(messages(language, 81).format(target))
+                    if not enumerate_flag: info(messages(language, 81).format(target))
                     yield target
 
         elif target_type(target) == 'HTTP':
-            info(messages(language, 52).format(target))
+            if not enumerate_flag: info(messages(language, 52).format(target))
             yield target
             if check_ranges is True:
                 if 'http://' == target[:7].lower():
@@ -177,7 +188,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                             break
                 IPz = list(set(IPs))
                 for IP in IPz:
-                    info(messages(language, 51).format(IP))
+                    if not enumerate_flag: info(messages(language, 51).format(IP))
                     IPs = IPRange(getIPRange(IP), range_temp, language)
                     if type(IPs) == netaddr.ip.IPNetwork:
                         for IPm in IPs:
