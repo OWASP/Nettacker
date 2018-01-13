@@ -87,19 +87,19 @@ def load():
         _check(__version__, __code_name__, language, socks_proxy)
 
     info(messages(language, 96).format(len(load_all_modules()) - 1 + len(load_all_graphs())))
-    suff = str(now()).replace(' ', '_').replace(':', '-') + '_' + ''.join(
-        random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-    subs_temp = 'tmp/subs_temp_%s' % (suff)
-    range_temp = 'tmp/ranges_%s' % (suff)
+    suff = now(model="%Y_%m_%d_%H_%M_%S") + ''.join(random.choice(string.ascii_lowercase) for x in
+                                                    range(10))
+    subs_temp = 'tmp/subs_temp_' + suff
+    range_temp = 'tmp/ranges_' + suff
     total_targets = -1
     for total_targets, _ in enumerate(
             analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-                     language, verbose_level, show_version, check_update, socks_proxy, retries, socks_proxy)):
+                     language, verbose_level, show_version, check_update, socks_proxy, retries, socks_proxy, True)):
         pass
     total_targets += 1
     total_targets = total_targets * len(scan_method)
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-                       language, verbose_level, show_version, check_update, socks_proxy, retries, socks_proxy)
+                       language, verbose_level, show_version, check_update, socks_proxy, retries, socks_proxy, False)
     trying = 0
     for target in targets:
         for sm in scan_method:
