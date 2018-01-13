@@ -126,7 +126,7 @@ def all_messages():
             "110": "dir_scan_http_method value must be GET or HEAD, set default to GET.",
             "111": "list all methods args",
             "112": "cannot get {0} module args",
-            "113": "trying {0} of {1} in process {2} of {3} on {4} (viewdns ip lookup)",
+            "113": "trying {0} of {1} in process {2} of {3} on {4} {5}",
             "114": "{0} domain found: {1}",
             "115": "TIME",
             "116": "CATEGORY",
@@ -146,5 +146,6 @@ def all_messages():
             "130": "the verbose level",
             "131": "the socks proxy",
             "132": "the retries number",
-            "133": "a graph"
+            "133": "a graph",
+            "135": "{0} subdomain found: {1}"
         }
