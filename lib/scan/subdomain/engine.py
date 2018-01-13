@@ -73,7 +73,7 @@ def __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
             if results.status_code is 200:
                 for l in re.compile('<a href="http://toolbar.netcraft.com/site_report\?url=(.*)">').findall(
                         results.content):
-                    if target_to_host(l) not in subs:
+                    if target_to_host(l).endswith(target) and target_to_host(l) not in subs:
                         subs.append(target_to_host(l))
             else:
                 # warn 403
@@ -183,7 +183,7 @@ def __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose
         if results.status_code is 200:
             try:
                 for l in re.compile('<TD>(.*?)</TD>').findall(results.content):
-                    if l not in subs and l.endswith(target) and '*' not in l:
+                    if l.endswith(target) and '*' not in l and l not in subs:
                         subs.append(l)
             except:
                 pass
@@ -228,7 +228,7 @@ def __virustotal(target, timeout_sec, log_in_file, time_sleep, language, verbose
             try:
                 for l in re.compile('<div class="enum.*?">.*?<a target="_blank" href=".*?">(.*?)</a>', re.S).findall(
                         results.content):
-                    if target_to_host(l.strip()) not in subs and target_to_host(l.strip()).endswith(target):
+                    if target_to_host(l.strip()).endswith(target) and target_to_host(l.strip()) not in subs:
                         subs.append(target_to_host(l.strip()))
             except:
                 pass
@@ -281,47 +281,65 @@ def __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose
 
 
 def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries,
-               num, total, headers={
+               num, total, extra_requirements={
+            "subdomain_scan_use_netcraft": ["True"],
+            "subdomain_scan_use_dnsdumpster": ["True"],
+            "subdomain_scan_use_virustotal": ["True"],
+            "subdomain_scan_use_threatcrowd": ["True"],
+            "subdomain_scan_use_comodo_crt": ["True"],
+            "subdomain_scan_use_ptrarchive": ["True"]
+
+        }, headers={
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
                           '(KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.9',
             'Accept-Encoding': 'gzip, deflate, br',
         }):
-    total_req = 6
-    trying = 1
-    if verbose_level is not 0:
-        info(messages(language, 113).format(trying, total_req, num, total, target,
-                                            '(subdomain_scan - netcraft)'))
-    subs = __sub_append([], __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
-                                       socks_proxy, retries, headers))
-    trying += 1
-    if verbose_level is not 0:
-        info(messages(language, 113).format(trying, total_req, num, total, target, '(subdomain_scan - ptrarchive)'))
-    subs = __sub_append(subs, __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
+    total_req = 0
+    trying = 0
+    for key in extra_requirements:
+        if extra_requirements[key][0] == 'True':
+            total_req += 1
+    if extra_requirements['subdomain_scan_use_netcraft'][0] == 'True':
+        trying += 1
+        if verbose_level is not 0:
+            info(messages(language, 113).format(trying, total_req, num, total, target,
+                                                '(subdomain_scan - netcraft)'))
+        subs = __sub_append([], __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                            socks_proxy, retries, headers))
-    trying += 1
-    if verbose_level is not 0:
-        info(
-            messages(language, 113).format(trying, total_req, num, total, target, '(subdomain_scan - threatcrowd)'))
-    subs = __sub_append(subs, __threatcrowd(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
-                                            socks_proxy, retries, headers))
-    trying += 1
-    if verbose_level is not 0:
-        info(messages(language, 113).format(trying, total_req, num, total, target, '(subdomain_scan - virustotal)'))
-    subs = __sub_append(subs, __virustotal(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
-                                           socks_proxy, retries, headers))
-    trying += 1
-    if verbose_level is not 0:
-        info(messages(language, 113).format(trying, total_req, num, total, target, '(subdomain_scan - comodo crt)'))
-    subs = __sub_append(subs, __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
-                                           socks_proxy, retries, headers))
-    trying += 1
-    if verbose_level is not 0:
-        info(messages(language, 113).format(trying, total_req, num,
-                                            total, target, '(subdomain_scan - dnsdumpster)'))
-    subs = __sub_append(subs, __dnsdumpster(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
-                                            socks_proxy, retries, headers))
+    if extra_requirements['subdomain_scan_use_ptrarchive'][0] == 'True':
+        trying += 1
+        if verbose_level is not 0:
+            info(messages(language, 113).format(trying, total_req, num, total, target, '(subdomain_scan - ptrarchive)'))
+        subs = __sub_append(subs, __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
+                                               socks_proxy, retries, headers))
+    if extra_requirements['subdomain_scan_use_threatcrowd'][0] == 'True':
+        trying += 1
+        if verbose_level is not 0:
+            info(
+                messages(language, 113).format(trying, total_req, num, total, target, '(subdomain_scan - threatcrowd)'))
+        subs = __sub_append(subs, __threatcrowd(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
+                                                socks_proxy, retries, headers))
+    if extra_requirements['subdomain_scan_use_virustotal'][0] == 'True':
+        trying += 1
+        if verbose_level is not 0:
+            info(messages(language, 113).format(trying, total_req, num, total, target, '(subdomain_scan - virustotal)'))
+        subs = __sub_append(subs, __virustotal(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
+                                               socks_proxy, retries, headers))
+    if extra_requirements['subdomain_scan_use_comodo_crt'][0] == 'True':
+        trying += 1
+        if verbose_level is not 0:
+            info(messages(language, 113).format(trying, total_req, num, total, target, '(subdomain_scan - comodo crt)'))
+        subs = __sub_append(subs, __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
+                                               socks_proxy, retries, headers))
+    if extra_requirements['subdomain_scan_use_dnsdumpster'][0] == 'True':
+        trying += 1
+        if verbose_level is not 0:
+            info(messages(language, 113).format(trying, total_req, num,
+                                                total, target, '(subdomain_scan - dnsdumpster)'))
+        subs = __sub_append(subs, __dnsdumpster(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
+                                                socks_proxy, retries, headers))
     return subs
 
 
@@ -360,7 +378,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             warn(messages(language, 100).format(target, 'subdomain_scan'))
             return None
         subs = __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries,
-                          num, total)
+                          num, total, extra_requirements=extra_requirements)
         _HOST = messages(language, 53)
         _USERNAME = messages(language, 54)
         _PASSWORD = messages(language, 55)
