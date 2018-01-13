@@ -23,6 +23,7 @@ from core.update import _check
 from core.compatible import _version_info
 from core._time import now
 
+
 def load():
     write('\n\n')
     # load libs
@@ -93,12 +94,12 @@ def load():
     total_targets = -1
     for total_targets, _ in enumerate(
             analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-                     language, verbose_level, show_version, check_update, socks_proxy, retries)):
+                     language, verbose_level, show_version, check_update, socks_proxy, retries, socks_proxy)):
         pass
     total_targets += 1
     total_targets = total_targets * len(scan_method)
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-                       language, verbose_level, show_version, check_update, socks_proxy, retries)
+                       language, verbose_level, show_version, check_update, socks_proxy, retries, socks_proxy)
     trying = 0
     for target in targets:
         for sm in scan_method:

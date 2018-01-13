@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import socket
-import os
 from core.ip import *
 from core.alert import *
+from lib.scan.subdomain.engine import __get_subs
 
 try:
     import netaddr.ip
@@ -43,7 +43,7 @@ def target_type(target):
 
 
 def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-             language, verbose_level, show_version, check_update, proxies, retries):
+             language, verbose_level, show_version, check_update, proxies, retries, socks_proxy):
     tmp = open(range_temp, 'w')
     tmp.write('')
     tmp.close()
@@ -82,17 +82,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
             if check_subdomains is True:
                 if check_ranges is True:
                     info(messages(language, 52).format(target))
-                    tmp_exec = os.popen(
-                        'python lib/sublist3r/sublist3r.py -d {0} -o {1} '.format(target, subs_temp)).read()
-                    tmp_exec = list(set(open(subs_temp, 'r').read().replace(' ', '').rsplit()))
-                    sub_domains = []
-                    for sub in tmp_exec:
-                        if '.internal.nsa.gov.' not in sub and 'Sublist3r' not in sub and \
-                                sub not in sub_domains:
-                            if 'PTRarchive.com' not in sub:
-                                sub_domains.append(sub)
-                            elif sub.startswith('From http://PTRarchive.com:') and sub.rsplit()[-1] not in sub_domains:
-                                sub_domains.append(sub.rsplit()[-1])
+                    sub_domains =  __get_subs(target, 3, '', 0, language, 0, socks_proxy, 3, 0, 0)
                     if target not in sub_domains:
                         sub_domains.append(target)
                     for target in sub_domains:
@@ -125,17 +115,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                                         yield IPn
                 else:
                     info(messages(language, 52).format(target))
-                    tmp_exec = os.popen(
-                        'python lib/sublist3r/sublist3r.py -d {0} -o {1} '.format(target, subs_temp)).read()
-                    tmp_exec = list(set(open(subs_temp, 'r').read().replace(' ', '').rsplit()))
-                    sub_domains = []
-                    for sub in tmp_exec:
-                        if '.internal.nsa.gov.' not in sub and 'Sublist3r' not in sub and \
-                                sub not in sub_domains:
-                            if 'PTRarchive.com' not in sub:
-                                sub_domains.append(sub)
-                            elif sub.startswith('From http://PTRarchive.com:') and sub.rsplit()[-1] not in sub_domains:
-                                sub_domains.append(sub.rsplit()[-1])
+                    sub_domains = __get_subs(target, 3, '', 0, language, 0, socks_proxy, 3, 0, 0)
                     if target not in sub_domains:
                         sub_domains.append(target)
                     for target in sub_domains:
