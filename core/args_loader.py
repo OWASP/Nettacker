@@ -18,6 +18,9 @@ from core._die import __die_success
 from core._die import __die_failure
 from core.color import finish
 from core.wizard import __wizard
+from core.config_builder import all_config_keys
+from core.config_builder import all_profiles
+from config import get_profiles
 
 # temporary use fixed version of argparse
 if os_name() == 'win32' or os_name() == 'win64':
@@ -32,7 +35,9 @@ else:
 def load_all_args(module_names, graph_names):
     # Language Options
     # import libs
-    default_config = _builder(get_config())
+    default_config = _builder(get_config(), all_config_keys())
+    _all_profiles = [key for key in _builder(get_profiles(), all_profiles())]
+    _all_profiles.append('all')
     language_list = [lang for lang in messages(-1, 0)]
     if "-L" in sys.argv or "--language" in sys.argv:
         try:
@@ -88,6 +93,9 @@ def load_all_args(module_names, graph_names):
     engineOpt.add_argument("-W", "--wizard", action="store_true",
                            default=default_config["wizard_mode"], dest="wizard_mode",
                            help=messages(language, 107))
+    engineOpt.add_argument('--profile', action="store",
+                           default=default_config["profile"], dest='profile',
+                           help=messages(language, 136).format(_all_profiles))
 
     # Target Options
     target = parser.add_argument_group(messages(language, 12), messages(language, 13))
@@ -165,7 +173,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                        passwds, passwds_list, timeout_sec, ports, parser, module_names,
                        language, verbose_level, show_version, check_update, socks_proxy,
                        retries, graph_flag, help_menu_flag, methods_args, method_args_list,
-                       wizard_mode):
+                       wizard_mode, profile):
     # Checking Requirements
     # import libs
     from core import compatible
@@ -190,16 +198,35 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     # Wizard mode
     if wizard_mode is True:
         (targets, thread_number, thread_number_host,
-             log_in_file, scan_method, exclude_method, users,
-             passwds, timeout_sec, ports, verbose_level,
-             socks_proxy, retries, graph_flag) = \
+         log_in_file, scan_method, exclude_method, users,
+         passwds, timeout_sec, ports, verbose_level,
+         socks_proxy, retries, graph_flag) = \
             __wizard(
                 targets, thread_number, thread_number_host,
                 log_in_file, module_names, exclude_method, users,
                 passwds, timeout_sec, ports, verbose_level,
                 socks_proxy, retries, load_all_graphs(), language
             )
-
+    # Select a Profile
+    if profile is not None:
+        _all_profiles = _builder(get_profiles(), all_profiles())
+        if scan_method is None:
+            scan_method = ''
+        else:
+            scan_method += ','
+        if profile == 'all':
+            profile = ','.join(_all_profiles)
+        tmp_sm = scan_method
+        for pr in profile.rsplit(','):
+            try:
+                for sm in _all_profiles[pr]:
+                    if sm not in tmp_sm.rsplit(','):
+                        tmp_sm += sm + ','
+            except:
+                __die_failure(messages(language, 137).format(pr))
+        if tmp_sm[-1] == ',':
+            tmp_sm = tmp_sm[0:-1]
+        scan_method = ','.join(list(set(tmp_sm.rsplit(','))))
     # Check Socks
     if socks_proxy is not None:
         e = False
@@ -359,4 +386,4 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             passwds, passwds_list, timeout_sec, ports, parser, module_names,
             language, verbose_level, show_version, check_update, socks_proxy,
             retries, graph_flag, help_menu_flag, methods_args, method_args_list,
-            wizard_mode]
+            wizard_mode, profile]

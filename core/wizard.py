@@ -4,6 +4,7 @@
 import config
 from core.config_builder import _builder
 from config import get_config
+from core.config_builder import all_config_keys
 from core.load_modules import load_all_graphs
 from core.get_input import __input
 from core.alert import messages
@@ -17,7 +18,7 @@ def __wizard(targets, thread_number, thread_number_host,
     module_name = scan_method[:]
     ex_module_name = scan_method[:]
     ex_module_name.remove('all')
-    default_config = _builder(get_config())
+    default_config = _builder(get_config(), all_config_keys())
     targets = __input(messages(language, 118).format(messages(language, 120), default_config["targets"]),
                       default_config["targets"])
     thread_number = __input(messages(language, 118).format(messages(language, 121), default_config["thread_number"]),
