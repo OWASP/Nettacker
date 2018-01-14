@@ -63,21 +63,16 @@ def sort_logs(log_in_file, language, graph_flag):
         # if user want a graph
         _graph = ''
         if graph_flag is not None:
-            _graph = build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION)
+            _graph = build_graph(graph_flag, language, data, 'HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE',
+                                 'DESCRIPTION')
         from lib.html_log import _log_data
         _css = _log_data.css_1
         _table = _log_data.table_title.format(_graph, _css, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION,
                                               _TIME)
 
         for value in data:
-            if compatible.version() is 2:
-                _table += _log_data.table_items.format(value[_HOST.decode('utf8')], value[_USERNAME.decode('utf8')],
-                                                       value[_PASSWORD.decode('utf8')],
-                                                       value[_PORT.decode('utf8')], value[_TYPE.decode('utf8')],
-                                                       value[_DESCRIPTION.decode('utf8')], value[_TIME.decode('utf8')])
-            else:
-                _table += _log_data.table_items.format(value[_HOST], value[_USERNAME], value[_PASSWORD],
-                                                       value[_PORT], value[_TYPE], value[_DESCRIPTION], value[_TIME])
+            _table += _log_data.table_items.format(value['HOST'], value['USERNAME'], value['PASSWORD'],
+                                                   value['PORT'], value['TYPE'], value['DESCRIPTION'], value['TIME'])
         _table += _log_data.table_end + messages(language, 93) \
             .format(compatible.__version__, compatible.__code_name__, now())
         _table = _table.encode('utf8')
@@ -95,8 +90,8 @@ def sort_logs(log_in_file, language, graph_flag):
         _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _TIME]])
         for value in data:
             _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _TIME],
-                             [value[_HOST], value[_USERNAME], value[_PASSWORD], value[_PORT], value[_TYPE],
-                              value[_DESCRIPTION], value[_TIME]]])
+                             [value['HOST'], value['USERNAME'], value['PASSWORD'], value['PORT'], value['TYPE'],
+                              value['DESCRIPTION'], value['TYPE']]])
         save = open(log_in_file, 'wb')
         save.write(_table.draw().encode('utf8') + '\n\n' +
                    messages(language, 93).format(compatible.__version__, compatible.__code_name__,
