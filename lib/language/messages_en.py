@@ -82,7 +82,7 @@ def all_messages():
             "69": "input target for {0} module must be DOMAIN, HTTP or SINGLE_IPv4, skipping {1}",
             "70": "user: {0} pass:{1} host:{2} port:{3} found!",
             "71": "(NO PERMISSION FOR LIST FILES)",
-            "72": "trying {0} of {1} in process {2} of {3} {4}:{5}",
+            "72": "trying {0} of {1} in process {2} of {3} {4}:{5} ({6})",
             "73": "smtp connection to {0}:{1} timeout, skipping {2}:{3}",
             "74": "smtp connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step",
             "75": "input target for {0} module must be HTTP, skipping {1}",
@@ -126,7 +126,7 @@ def all_messages():
             "110": "dir_scan_http_method value must be GET or HEAD, set default to GET.",
             "111": "list all methods args",
             "112": "cannot get {0} module args",
-            "113": "trying {0} of {1} in process {2} of {3} on {4} {5}",
+            "113": "trying {0} of {1} in process {2} of {3} on {4} ({5})",
             "114": "{0} domain found: {1}",
             "115": "TIME",
             "116": "CATEGORY",
@@ -147,5 +147,8 @@ def all_messages():
             "131": "the socks proxy",
             "132": "the retries number",
             "133": "a graph",
-            "135": "{0} subdomain found: {1}"
+            "135": "{0} subdomain found: {1}",
+            "136": "select profile {0}",
+            "137": "the profile \"{0}\" not found!",
+            "138": "waiting for {0}"
         }

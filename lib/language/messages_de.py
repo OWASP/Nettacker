@@ -79,7 +79,7 @@ def all_messages():
             "69": "Das Ziel für das {0} -Modul muss DOMAIN, HTTP oder SINGLE_IPv4 sein, wobei {1}",
             "70": "Benutzer: {0} übergeben: {1} Host: {2} Port: {3} gefunden!",
             "71": "(KEINE BERECHTIGUNG FÜR LISTEN-DATEIEN)",
-            "72": "versuche {0} von {1} im Prozess {2} von {3} {4}: {5}",
+            "72": "versuche {0} von {1} im Prozess {2} von {3} {4}:{5} {6}",
             "73": "SMTP-Verbindung zu {0}: {1} Zeitüberschreitung, überspringe {2}: {3}",
             "74": "smtp-Verbindung zu {0}: {1} ist fehlgeschlagen, gesamter Schritt wird übersprungen "
                   "[process {2} von {3}]! weiter mit nächstem Schritt",
