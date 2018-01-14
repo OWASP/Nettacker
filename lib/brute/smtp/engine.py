@@ -304,7 +304,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if thread_write is 1 and verbose_level is not 0:
             save = open(log_in_file, 'a')
             save.write(json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'smtp_brute',
-                                   'DESCRIPTION': messages(language, 95), 'TYPE': now(), 'CATEGORY': "brute",
+                                   'DESCRIPTION': messages(language, 95), 'TIME': now(), 'CATEGORY': "brute",
                                    'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
             save.close()
         os.remove(thread_tmp_filename)
