@@ -42,13 +42,13 @@ OWASP Nettacker project is created to automate information gathering, vulnerabil
 
 
 usage: Nettacker [-L LANGUAGE] [-v VERBOSE_LEVEL] [-V] [-c] [-o LOG_IN_FILE]
-                 [--graph GRAPH_FLAG] [-h] [-W] [-i TARGETS] [-l TARGETS_LIST]
-                 [-m SCAN_METHOD] [-x EXCLUDE_METHOD] [-u USERS]
-                 [-U USERS_LIST] [-p PASSWDS] [-P PASSWDS_LIST] [-g PORTS]
-                 [-T TIMEOUT_SEC] [-w TIME_SLEEP] [-r] [-s] [-t THREAD_NUMBER]
-                 [-M THREAD_NUMBER_HOST] [-R SOCKS_PROXY] [--retries RETRIES]
-                 [--ping-before-scan] [--method-args METHODS_ARGS]
-                 [--method-args-list]
+                 [--graph GRAPH_FLAG] [-h] [-W] [--profile PROFILE]
+                 [-i TARGETS] [-l TARGETS_LIST] [-m SCAN_METHOD]
+                 [-x EXCLUDE_METHOD] [-u USERS] [-U USERS_LIST] [-p PASSWDS]
+                 [-P PASSWDS_LIST] [-g PORTS] [-T TIMEOUT_SEC] [-w TIME_SLEEP]
+                 [-r] [-s] [-t THREAD_NUMBER] [-M THREAD_NUMBER_HOST]
+                 [-R SOCKS_PROXY] [--retries RETRIES] [--ping-before-scan]
+                 [--method-args METHODS_ARGS] [--method-args-list]
 
 Engine:
   Engine input options
@@ -70,6 +70,7 @@ Engine:
                         'jit_circle_v1_graph']
   -h, --help            Show Nettacker Help Menu
   -W, --wizard          start wizard mode
+  --profile PROFILE     select profile ['information_gathering', 'all']
 
 Target:
   Target input options
