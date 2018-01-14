@@ -3,8 +3,6 @@
 
 import os
 import sys
-import time
-import random
 from core import color
 from core.compatible import version
 
@@ -46,7 +44,6 @@ def __input_msg(content):
 
 
 def info(content):
-    time.sleep(1.0000 * random.choice(range(0, 1000)) / 1000)
     if version() is 2:
         sys.stdout.write(color.color('yellow') + '[+] ' + color.color('green') +
                          content.encode('utf8') + color.color('reset') + '\n')
@@ -65,7 +62,6 @@ def write(content):
 
 
 def warn(content):
-    time.sleep(1.0000 * random.choice(range(0, 1000)) / 1000)
     if version() is 2:
         sys.stdout.write(color.color('blue') + '[!] ' + color.color('yellow') +
                          content.encode('utf8') + color.color('reset') + '\n')
@@ -76,7 +72,6 @@ def warn(content):
 
 
 def error(content):
-    time.sleep(1.0000 * random.choice(range(0, 1000)) / 1000)
     if version() is 2:
         sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
                          content.encode('utf8') + color.color('reset') + '\n')
