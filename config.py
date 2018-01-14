@@ -8,7 +8,7 @@ from core._time import now
 
 def get_profiles():
     return {
-        "information_gathering": ["tcp_connect_port_scan", "ftp+bru"]
+        "information_gathering": ["tcp_connect_port_scan"]
     }
 
 
