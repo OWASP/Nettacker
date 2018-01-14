@@ -159,7 +159,7 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         t.start()
         trying += 1
         if verbose_level is not 0:
-            info(messages(language, 72).format(trying, total_req, num, total, target, port))
+            info(messages(language, 72).format(trying, total_req, num, total, target, port, 'ftp_brute'))
         while 1:
             n = 0
             for thread in threads:
@@ -258,7 +258,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     t.start()
                     trying += 1
                     if verbose_level is not 0:
-                        info(messages(language, 72).format(trying, total_req, num, total, target, port))
+                        info(messages(language, 72).format(trying, total_req, num, total, target, port, 'ftp_brute'))
                     while 1:
                         try:
                             if threading.activeCount() >= max:
@@ -268,15 +268,16 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         except KeyboardInterrupt:
                             break
                             break
-
         # wait for threads
+        kill_switch = 0
+        kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
         while 1:
-            n = True
-            for thread in threads:
-                if thread.isAlive() is True:
-                    n = False
-            time.sleep(0.01)
-            if n is True:
+            time.sleep(0.1)
+            kill_switch += 1
+            try:
+                if threading.activeCount() is 1 or kill_switch is kill_time:
+                    break
+            except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:

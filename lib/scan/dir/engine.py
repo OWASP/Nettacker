@@ -113,7 +113,11 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
         return False
 
 
-def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy):
+def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, verbose_level, trying, total_req, total,
+         num, port, language):
+    if verbose_level is not 0:
+        info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port,
+                                           'dir_scan'))
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.rsplit('://')[1]
@@ -227,7 +231,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 path = "/".join(target.replace('http://', '').replace('https://', '').rsplit('/')[1:])
                 url = http + '://' + host + ':' + str(port) + '/' + path
             if test(url, retries, timeout_sec, user_agent, extra_requirements["dir_scan_http_method"][0],
-                    socks_proxy) is 0:
+                    socks_proxy, verbose_level, trying, total_req, total, num, port, language) is 0:
                 for idir in extra_requirements["dir_scan_list"]:
                     # check target type
                     if target_type(target) == 'SINGLE_IPv4' or target_type(target) == 'DOMAIN':
@@ -248,7 +252,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     t.start()
                     trying += 1
                     if verbose_level is not 0:
-                        info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port))
+                        info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port,
+                                                           'dir_scan'))
                     while 1:
                         try:
                             if threading.activeCount() >= max:
@@ -262,10 +267,13 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 warn(messages(language, 109).format(url))
 
         # wait for threads
+        kill_switch = 0
+        kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
         while 1:
             time.sleep(0.1)
+            kill_switch += 1
             try:
-                if threading.activeCount() is 1:
+                if threading.activeCount() is 1 or kill_switch is kill_time:
                     break
             except KeyboardInterrupt:
                 break

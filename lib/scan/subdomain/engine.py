@@ -110,7 +110,7 @@ def __threatcrowd(target, timeout_sec, log_in_file, time_sleep, language, verbos
         subs = []
         while 1:
             try:
-                results = requests.get(url, headers=headers)
+                results = requests.get(url, headers=headers, timeout_sec=timeout_sec)
                 break
             except:
                 n += 1
@@ -311,33 +311,33 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
     if extra_requirements['subdomain_scan_use_ptrarchive'][0] == 'True':
         trying += 1
         if verbose_level is not 0:
-            info(messages(language, 113).format(trying, total_req, num, total, target, '(subdomain_scan - ptrarchive)'))
+            info(messages(language, 113).format(trying, total_req, num, total, target, 'subdomain_scan - ptrarchive'))
         subs = __sub_append(subs, __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                                socks_proxy, retries, headers))
     if extra_requirements['subdomain_scan_use_threatcrowd'][0] == 'True':
         trying += 1
         if verbose_level is not 0:
             info(
-                messages(language, 113).format(trying, total_req, num, total, target, '(subdomain_scan - threatcrowd)'))
+                messages(language, 113).format(trying, total_req, num, total, target, 'subdomain_scan - threatcrowd'))
         subs = __sub_append(subs, __threatcrowd(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                                 socks_proxy, retries, headers))
     if extra_requirements['subdomain_scan_use_virustotal'][0] == 'True':
         trying += 1
         if verbose_level is not 0:
-            info(messages(language, 113).format(trying, total_req, num, total, target, '(subdomain_scan - virustotal)'))
+            info(messages(language, 113).format(trying, total_req, num, total, target, 'subdomain_scan - virustotal'))
         subs = __sub_append(subs, __virustotal(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                                socks_proxy, retries, headers))
     if extra_requirements['subdomain_scan_use_comodo_crt'][0] == 'True':
         trying += 1
         if verbose_level is not 0:
-            info(messages(language, 113).format(trying, total_req, num, total, target, '(subdomain_scan - comodo crt)'))
+            info(messages(language, 113).format(trying, total_req, num, total, target, 'subdomain_scan - comodo crt'))
         subs = __sub_append(subs, __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                                socks_proxy, retries, headers))
     if extra_requirements['subdomain_scan_use_dnsdumpster'][0] == 'True':
         trying += 1
         if verbose_level is not 0:
             info(messages(language, 113).format(trying, total_req, num,
-                                                total, target, '(subdomain_scan - dnsdumpster)'))
+                                                total, target, 'subdomain_scan - dnsdumpster'))
         subs = __sub_append(subs, __dnsdumpster(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                                 socks_proxy, retries, headers))
     return subs
@@ -404,6 +404,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                            .format(len(subs), ', '.join(subs) if len(subs) > 0 else 'None'),
                             _TIME: now(), _CATEGORY: "scan"}) + '\n')
             save.close()
-
+        return subs
     else:
         warn(messages(language, 69).format('subdomain_scan', target))
+        return []

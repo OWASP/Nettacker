@@ -196,7 +196,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             t.start()
             trying += 1
             if verbose_level is not 0:
-                info(messages(language, 72).format(trying, total_req, num, total, target, port))
+                info(messages(language, 72).format(trying, total_req, num, total, target, port, 'tcp_connect_port_scan'))
             while 1:
                 try:
                     if threading.activeCount() >= max:
@@ -208,10 +208,13 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     break
 
         # wait for threads
+        kill_switch = 0
+        kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
         while 1:
             time.sleep(0.1)
+            kill_switch += 1
             try:
-                if threading.activeCount() is 1:
+                if threading.activeCount() is 1 or kill_switch is kill_time:
                     break
             except KeyboardInterrupt:
                 break
