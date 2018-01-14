@@ -67,17 +67,20 @@ def load():
     methods_args = options.methods_args
     method_args_list = options.method_args_list
     wizard_mode = options.wizard_mode
+    profile = options.profile
 
     # Checking Requirements
     (targets, targets_list, thread_number, thread_number_host,
      log_in_file, scan_method, exclude_method, users, users_list,
      passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-     check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args, method_args_list, wizard_mode) = \
+     check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args, method_args_list, wizard_mode,
+     profile) = \
         check_all_required(
             targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
             passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-            check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args, method_args_list, wizard_mode
+            check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args, method_args_list, wizard_mode,
+            profile
         )
 
     info(messages(language, 0))
@@ -109,6 +112,7 @@ def load():
                 ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, socks_proxy,
                 retries, ping_flag, methods_args))
             p.start()
+            p.name = target + '->' + sm
             while 1:
                 n = 0
                 processes = multiprocessing.active_children()
@@ -121,13 +125,16 @@ def load():
                     time.sleep(0.01)
                 else:
                     break
-
+    _waiting_for = 0
     while 1:
         try:
             exitflag = True
-            for process in multiprocessing.active_children():
-                if process.is_alive() is True:
-                    exitflag = False
+            if len(multiprocessing.active_children()) is not 0:
+                exitflag = False
+                _waiting_for += 1
+            if _waiting_for > 3000:
+                _waiting_for = 0
+                info(messages(language, 138).format(', '.join([p.name for p in multiprocessing.active_children()])))
             time.sleep(0.01)
             if exitflag is True:
                 break
