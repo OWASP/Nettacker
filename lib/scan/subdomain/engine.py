@@ -345,7 +345,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
           language, verbose_level, show_version, check_update, socks_proxy, retries, ping_flag,
-          methods_args):  # Main function
+          methods_args, scan_id, scan_cmd):  # Main function
     from core.targets import target_type
     from core.targets import target_to_host
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP':

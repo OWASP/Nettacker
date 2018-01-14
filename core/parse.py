@@ -104,13 +104,15 @@ def load():
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
                        language, verbose_level, show_version, check_update, socks_proxy, retries, socks_proxy, False)
     trying = 0
+    scan_id = ''.join(random.choice('0123456789abcdef') for x in range(32))
+    scan_cmd = ' '.join(sys.argv)
     for target in targets:
         for sm in scan_method:
             trying += 1
             p = multiprocessing.Process(target=start_attack, args=(
                 str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
                 ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, socks_proxy,
-                retries, ping_flag, methods_args))
+                retries, ping_flag, methods_args, scan_id, scan_cmd))
             p.start()
             p.name = target + '->' + sm
             while 1:
