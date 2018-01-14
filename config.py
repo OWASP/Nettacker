@@ -5,6 +5,13 @@ import random
 import string
 from core._time import now
 
+
+def get_profiles():
+    return {
+        "information_gathering": ["tcp_connect_port_scan", "ftp+bru"]
+    }
+
+
 def get_config():
     return {  # OWASP Nettacker Default Configuration
         "language": "en",
@@ -12,7 +19,8 @@ def get_config():
         "show_version": False,
         "check_update": False,
         "log_in_file": "results/results_{0}_{1}.html".format(now(model="%Y_%m_%d_%H_%M_%S"),
-                                                         ''.join(random.choice(string.ascii_lowercase) for x in range(10))),
+                                                             ''.join(random.choice(string.ascii_lowercase) for x in
+                                                                     range(10))),
         "graph_flag": "d3_tree_v1_graph",
         "help_menu_flag": False,
         "targets": None,
@@ -36,5 +44,6 @@ def get_config():
         "methods_args": None,
         "method_args_list": False,
         "startup_check_for_update": True,
-        "wizard_mode": False
+        "wizard_mode": False,
+        "profile": None
     }

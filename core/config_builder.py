@@ -6,6 +6,12 @@ import string
 from core._time import now
 
 
+def all_profiles():
+    return {
+        "information_gathering": ["tcp_connect_port_scan"]
+    }
+
+
 def all_config_keys():
     return {
         "language": "en",
@@ -38,15 +44,15 @@ def all_config_keys():
         "methods_args": None,
         "method_args_list": False,
         "startup_check_for_update": True,
-        "wizard_mode": False
+        "wizard_mode": False,
+        "profile": None
     }
 
 
-def _builder(default_config):
-    config_keys = all_config_keys()
-    for key in config_keys:
+def _builder(defaults, keys):
+    for key in keys:
         try:
-            default_config[key]
+            defaults[key]
         except:
-            default_config[key] = config_keys[key]
-    return default_config
+            defaults[key] = keys[key]
+    return defaults
