@@ -33,14 +33,6 @@ def extra_requirements_dict():
 
 def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep,
           thread_tmp_filename, socks_proxy):
-    _HOST = messages(language, 53)
-    _USERNAME = messages(language, 54)
-    _PASSWORD = messages(language, 55)
-    _PORT = messages(language, 56)
-    _TYPE = messages(language, 57)
-    _DESCRIPTION = messages(language, 58)
-    _TIME = messages(language, 115)
-    _CATEGORY = messages(language, 116)
     exit = 0
     flag = 1
     if socks_proxy is not None:
@@ -83,9 +75,8 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             info(messages(language, 70).format(user, passwd, target, port))
             save = open(log_in_file, 'a')
             save.write(
-                json.dumps({_HOST: target, _USERNAME: user, _PASSWORD: passwd, _PORT: port, _TYPE: 'ssh_brute',
-                            _DESCRIPTION: messages(language, 66),
-                            _TIME: now(), _CATEGORY: "brute"}) + '\n')
+                json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ssh_brute',
+                            'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute"}) + '\n')
             save.close()
             thread_write = open(thread_tmp_filename, 'w')
             thread_write.write('0')
@@ -309,18 +300,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            _HOST = messages(language, 53)
-            _USERNAME = messages(language, 54)
-            _PASSWORD = messages(language, 55)
-            _PORT = messages(language, 56)
-            _TYPE = messages(language, 57)
-            _DESCRIPTION = messages(language, 58)
-            _TIME = messages(language, 115)
-            _CATEGORY = messages(language, 14)
             save = open(log_in_file, 'a')
-            save.write(json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'ssh_brute',
-                                   _DESCRIPTION: messages(language, 95),
-                                   _TIME: now(), _CATEGORY: "brute"}) + '\n')
+            save.write(json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ssh_brute',
+                                   'DESCRIPTION': messages(language, 95), 'TIME': now(), 'CATEGORY': "brute"}) + '\n')
             save.close()
         os.remove(thread_tmp_filename)
     else:

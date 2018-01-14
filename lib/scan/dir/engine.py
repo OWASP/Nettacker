@@ -41,14 +41,6 @@ def extra_requirements_dict():
 
 def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
           http_method, socks_proxy):
-    _HOST = messages(language, 53)
-    _USERNAME = messages(language, 54)
-    _PASSWORD = messages(language, 55)
-    _PORT = messages(language, 56)
-    _TYPE = messages(language, 57)
-    _DESCRIPTION = messages(language, 58)
-    _TIME = messages(language, 115)
-    _CATEGORY = messages(language, 116)
     status_codes = [200, 401, 403]
     directory_listing_msgs = ["<title>Index of /", "<a href=\"\\?C=N;O=D\">Name</a>", "Directory Listing for",
                               "Parent Directory</a>", "Last modified</a>", "<TITLE>Folder Listing.",
@@ -92,20 +84,20 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
             thread_write.write('0')
             thread_write.close()
             save = open(log_in_file, 'a')
-            save.write(json.dumps({_HOST: target_to_host(target), _USERNAME: '', _PASSWORD: '',
-                                   _PORT: int(target.rsplit(':')[2].rsplit('/')[0]), _TYPE: 'dir_scan',
-                                   _DESCRIPTION: messages(language, 38).format(target, r.status_code, r.reason),
-                                   _TIME: now(), _CATEGORY: "scan"}) + '\n')
+            save.write(json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                                   'PORT': int(target.rsplit(':')[2].rsplit('/')[0]), 'TYPE': 'dir_scan',
+                                   'DESCRIPTION': messages(language, 38).format(target, r.status_code, r.reason),
+                                   'TIME': now(), 'CATEGORY': "scan"}) + '\n')
             save.close()
             if r.status_code is 200:
                 for dlmsg in directory_listing_msgs:
                     if dlmsg in content:
                         info(messages(language, 104).format(target))
                         save = open(log_in_file, 'a')
-                        save.write(json.dumps({_HOST: target_to_host(target), _USERNAME: '', _PASSWORD: '',
-                                               _PORT: int(target.rsplit(':')[1].rsplit('/')[0]), _TYPE: 'dir_scan',
-                                               _DESCRIPTION: messages(language, 104).format(target),
-                                               _TIME: now(), _CATEGORY: "scan"}) + '\n')
+                        save.write(json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                                               'PORT': int(target.rsplit(':')[1].rsplit('/')[0]), 'TYPE': 'dir_scan',
+                                               'DESCRIPTION': messages(language, 104).format(target),
+                                               'TIME': now(), 'CATEGORY': "scan"}) + '\n')
                         save.close()
                         break
         return True
@@ -281,18 +273,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if thread_write is 1:
             info(messages(language, 108).format(target, ",".join(ports)))
             if verbose_level is not 0:
-                _HOST = messages(language, 53)
-                _USERNAME = messages(language, 54)
-                _PASSWORD = messages(language, 55)
-                _PORT = messages(language, 56)
-                _TYPE = messages(language, 57)
-                _DESCRIPTION = messages(language, 58)
-                _TIME = messages(language, 115)
-                _CATEGORY = messages(language, 116)
                 save = open(log_in_file, 'a')
-                save.write(json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'dir_scan',
-                                       _DESCRIPTION: messages(language, 94),
-                                       _TIME: now(), _CATEGORY: "scan"}) + '\n')
+                save.write(json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'dir_scan',
+                                       'DESCRIPTION': messages(language, 94), 'TIME': now(),
+                                       'CATEGORY': "scan"}) + '\n')
                 save.close()
         os.remove(thread_tmp_filename)
     else:

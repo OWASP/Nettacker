@@ -379,30 +379,20 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             return None
         subs = __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries,
                           num, total, extra_requirements=extra_requirements)
-        _HOST = messages(language, 53)
-        _USERNAME = messages(language, 54)
-        _PASSWORD = messages(language, 55)
-        _PORT = messages(language, 56)
-        _TYPE = messages(language, 57)
-        _DESCRIPTION = messages(language, 58)
-        _TIME = messages(language, 115)
-        _CATEGORY = messages(language, 116)
         info(messages(language, 135).format(len(subs), ', '.join(subs) if len(subs) > 0 else 'None'))
         if len(subs) is not 0:
             save = open(log_in_file, 'a')
             save.write(
-                json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'subdomain_scan',
-                            _DESCRIPTION: messages(language, 135)
-                           .format(len(subs), ', '.join(subs) if len(subs) > 0 else 'None'),
-                            _TIME: now(), _CATEGORY: "scan"}) + '\n')
+                json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
+                            'DESCRIPTION': messages(language, 135).format(len(subs), ', '.join(subs)
+                            if len(subs) > 0 else 'None'), 'TIME': now(), 'CATEGORY': "scan"}) + '\n')
             save.close()
         if len(subs) is 0 and verbose_level is not 0:
             save = open(log_in_file, 'a')
             save.write(
-                json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'subdomain_scan',
-                            _DESCRIPTION: messages(language, 135)
-                           .format(len(subs), ', '.join(subs) if len(subs) > 0 else 'None'),
-                            _TIME: now(), _CATEGORY: "scan"}) + '\n')
+                json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
+                            'DESCRIPTION': messages(language, 135).format(len(subs), ', '.join(subs)
+                            if len(subs) > 0 else 'None'), 'TIME': now(), 'CATEGORY': "scan"}) + '\n')
             save.close()
         return subs
     else:

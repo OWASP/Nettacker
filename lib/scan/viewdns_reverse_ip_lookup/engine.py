@@ -24,15 +24,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
           methods_args, scan_id, scan_cmd):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP':
         # output format
-        _HOST = messages(language, 53)
-        _USERNAME = messages(language, 54)
-        _PASSWORD = messages(language, 55)
-        _PORT = messages(language, 56)
-        _TYPE = messages(language, 57)
-        _DESCRIPTION = messages(language, 58)
-        _TIME = messages(language, 115)
-        _CATEGORY = messages(language, 116)
-        port = ""
         time.sleep(time_sleep)
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -103,16 +94,16 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if len(_values) > 0:
             save = open(log_in_file, 'a')
             save.write(json.dumps(
-                {_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'viewdns_reverse_ip_lookup_scan',
-                 _DESCRIPTION: messages(language, 114).format(len(_values), ", ".join(_values) if len(
-                     _values) > 0 else "None"), _TIME: now(), _CATEGORY: "scan"}) + '\n')
+                {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'viewdns_reverse_ip_lookup_scan',
+                 'DESCRIPTION': messages(language, 114).format(len(_values), ", ".join(_values) if len(
+                     _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan"}) + '\n')
             save.close()
         if verbose_level is not 0:
             save = open(log_in_file, 'a')
             save.write(json.dumps(
-                {_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'viewdns_reverse_ip_lookup_scan',
-                 _DESCRIPTION: messages(language, 114).format(len(_values), ", ".join(_values) if len(
-                     _values) > 0 else "None"), _TIME: now(), _CATEGORY: "scan"}) + '\n')
+                {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'viewdns_reverse_ip_lookup_scan',
+                 'DESCRIPTION': messages(language, 114).format(len(_values), ", ".join(_values) if len(
+                     _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan"}) + '\n')
             save.close()
     else:
         warn(messages(language, 69).format('viewdns_reverse_ip_lookup_scan', target))

@@ -100,14 +100,6 @@ def extra_requirements_dict():
 
 
 def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy):
-    _HOST = messages(language, 53)
-    _USERNAME = messages(language, 54)
-    _PASSWORD = messages(language, 55)
-    _PORT = messages(language, 56)
-    _TYPE = messages(language, 57)
-    _DESCRIPTION = messages(language, 58)
-    _TIME = messages(language, 115)
-    _CATEGORY = messages(language, 116)
     time.sleep(time_sleep)
     try:
         if socks_proxy is not None:
@@ -132,9 +124,9 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         s.close()
         info(messages(language, 80).format(host, port))
         save = open(log_in_file, 'a')
-        save.write(json.dumps({_HOST: host, _USERNAME: '', _PASSWORD: '', _PORT: port, _TYPE: 'tcp_connect_port_scan',
-                               _DESCRIPTION: messages(language, 79),
-                               _TIME: now(), _CATEGORY: "scan"}) + '\n')
+        save.write(
+            json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'tcp_connect_port_scan',
+                        'DESCRIPTION': messages(language, 79), 'TIME': now(), 'CATEGORY': "scan"}) + '\n')
         save.close()
         thread_write = open(thread_tmp_filename, 'w')
         thread_write.write('0')
@@ -221,19 +213,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            _HOST = messages(language, 53)
-            _USERNAME = messages(language, 54)
-            _PASSWORD = messages(language, 55)
-            _PORT = messages(language, 56)
-            _TYPE = messages(language, 57)
-            _DESCRIPTION = messages(language, 58)
-            _TIME = messages(language, 115)
-            _CATEGORY = messages(language, 116)
             save = open(log_in_file, 'a')
             save.write(
-                json.dumps({_HOST: target, _USERNAME: '', _PASSWORD: '', _PORT: '', _TYPE: 'tcp_connect_port_scan',
-                            _DESCRIPTION: messages(language, 94),
-                            _TIME: now(), _CATEGORY: "scan"}) + '\n')
+                json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'tcp_connect_port_scan',
+                            'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan"}) + '\n')
             save.close()
         os.remove(thread_tmp_filename)
 
