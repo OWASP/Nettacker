@@ -32,7 +32,7 @@ def extra_requirements_dict():
 
 
 def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep,
-          thread_tmp_filename, socks_proxy):
+          thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     exit = 0
     flag = 1
     if socks_proxy is not None:
@@ -76,7 +76,8 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             save = open(log_in_file, 'a')
             save.write(
                 json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ssh_brute',
-                            'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute"}) + '\n')
+                            'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute",
+                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
             save.close()
             thread_write = open(thread_tmp_filename, 'w')
             thread_write.write('0')
@@ -270,9 +271,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             for user in users:
                 for passwd in passwds:
                     t = threading.Thread(target=login,
-                                         args=(
-                                             user, passwd, target, port, timeout_sec, log_in_file, language,
-                                             retries, time_sleep, thread_tmp_filename, socks_proxy))
+                                         args=(user, passwd, target, port, timeout_sec, log_in_file, language,
+                                               retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
+                                               scan_cmd))
                     threads.append(t)
                     t.start()
                     trying += 1
@@ -302,7 +303,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if thread_write is 1 and verbose_level is not 0:
             save = open(log_in_file, 'a')
             save.write(json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ssh_brute',
-                                   'DESCRIPTION': messages(language, 95), 'TIME': now(), 'CATEGORY': "brute"}) + '\n')
+                                   'DESCRIPTION': messages(language, 95), 'TIME': now(), 'CATEGORY': "brute",
+                                   'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
             save.close()
         os.remove(thread_tmp_filename)
     else:

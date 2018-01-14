@@ -385,14 +385,16 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             save.write(
                 json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
                             'DESCRIPTION': messages(language, 135).format(len(subs), ', '.join(subs)
-                            if len(subs) > 0 else 'None'), 'TIME': now(), 'CATEGORY': "scan"}) + '\n')
+                            if len(subs) > 0 else 'None'), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                            'SCAN_CMD': scan_cmd}) + '\n')
             save.close()
         if len(subs) is 0 and verbose_level is not 0:
             save = open(log_in_file, 'a')
             save.write(
                 json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
                             'DESCRIPTION': messages(language, 135).format(len(subs), ', '.join(subs)
-                            if len(subs) > 0 else 'None'), 'TIME': now(), 'CATEGORY': "scan"}) + '\n')
+                            if len(subs) > 0 else 'None'), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                            'SCAN_CMD': scan_cmd}) + '\n')
             save.close()
         return subs
     else:

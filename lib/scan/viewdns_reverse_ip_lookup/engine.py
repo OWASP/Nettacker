@@ -96,14 +96,16 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             save.write(json.dumps(
                 {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'viewdns_reverse_ip_lookup_scan',
                  'DESCRIPTION': messages(language, 114).format(len(_values), ", ".join(_values) if len(
-                     _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan"}) + '\n')
+                     _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                 'SCAN_CMD': scan_cmd}) + '\n')
             save.close()
         if verbose_level is not 0:
             save = open(log_in_file, 'a')
             save.write(json.dumps(
                 {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'viewdns_reverse_ip_lookup_scan',
                  'DESCRIPTION': messages(language, 114).format(len(_values), ", ".join(_values) if len(
-                     _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan"}) + '\n')
+                     _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                 'SCAN_CMD': scan_cmd}) + '\n')
             save.close()
     else:
         warn(messages(language, 69).format('viewdns_reverse_ip_lookup_scan', target))

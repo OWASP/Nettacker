@@ -40,7 +40,7 @@ def extra_requirements_dict():
 
 
 def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
-          http_method, socks_proxy):
+          http_method, socks_proxy, scan_id, scan_cmd):
     status_codes = [200, 401, 403]
     directory_listing_msgs = ["<title>Index of /", "<a href=\"\\?C=N;O=D\">Name</a>", "Directory Listing for",
                               "Parent Directory</a>", "Last modified</a>", "<TITLE>Folder Listing.",
@@ -87,7 +87,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
             save.write(json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
                                    'PORT': int(target.rsplit(':')[2].rsplit('/')[0]), 'TYPE': 'dir_scan',
                                    'DESCRIPTION': messages(language, 38).format(target, r.status_code, r.reason),
-                                   'TIME': now(), 'CATEGORY': "scan"}) + '\n')
+                                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
             save.close()
             if r.status_code is 200:
                 for dlmsg in directory_listing_msgs:
@@ -96,8 +96,8 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                         save = open(log_in_file, 'a')
                         save.write(json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
                                                'PORT': int(target.rsplit(':')[1].rsplit('/')[0]), 'TYPE': 'dir_scan',
-                                               'DESCRIPTION': messages(language, 104).format(target),
-                                               'TIME': now(), 'CATEGORY': "scan"}) + '\n')
+                                               'DESCRIPTION': messages(language, 104).format(target), 'TIME': now(),
+                                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
                         save.close()
                         break
         return True
@@ -239,7 +239,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     t = threading.Thread(target=check,
                                          args=(url, user_agent, timeout_sec, log_in_file, language, time_sleep,
                                                thread_tmp_filename, retries,
-                                               extra_requirements["dir_scan_http_method"][0], socks_proxy))
+                                               extra_requirements["dir_scan_http_method"][0], socks_proxy, scan_id,
+                                               scan_cmd))
                     threads.append(t)
                     t.start()
                     trying += 1
@@ -275,8 +276,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             if verbose_level is not 0:
                 save = open(log_in_file, 'a')
                 save.write(json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'dir_scan',
-                                       'DESCRIPTION': messages(language, 94), 'TIME': now(),
-                                       'CATEGORY': "scan"}) + '\n')
+                                       'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan",
+                                       'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
                 save.close()
         os.remove(thread_tmp_filename)
     else:
