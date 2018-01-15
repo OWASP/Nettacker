@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-import sys
 from setuptools import setup
 
 setup(
@@ -10,8 +6,8 @@ setup(
     packages=['lib', 'lib.icmp', 'lib.scan', 'lib.scan.dir', 'lib.scan.subdomain', 'lib.scan.tcp_connect_port',
               'lib.scan.viewdns_reverse_ip_lookup', 'lib.vuln', 'lib.vuln.heartbleed', 'lib.brute', 'lib.brute.ftp',
               'lib.brute.ssh', 'lib.brute.smtp', 'lib.graph', 'lib.graph.d3_tree_v1', 'lib.graph.d3_tree_v2',
-              'lib.graph.jit_circle_v1', 'lib.argparse', 'lib.html_log', 'lib.language', 'lib.socks_resolver', 'core',
-              'lib.argparse.v2' if int(sys.version_info[0]) is 2 else 'lib.argparse.v3'],
+              'lib.graph.jit_circle_v1', 'lib.argparse', 'lib.argparse.v2', 'lib.argparse.v3', 'lib.html_log',
+              'lib.language', 'lib.socks_resolver', 'core'],
     url='https://github.com/viraintel/OWASP-Nettacker',
     license='Apache-2.0',
     author='Ali Razmjoo',
