@@ -70,7 +70,8 @@ Engine:
                         'jit_circle_v1_graph']
   -h, --help            Show Nettacker Help Menu
   -W, --wizard          start wizard mode
-  --profile PROFILE     select profile ['information_gathering', 'all']
+  --profile PROFILE     select profile ['vulnerabilities',
+                        'information_gathering', 'all']
 
 Target:
   Target input options
@@ -87,12 +88,13 @@ Method:
                         choose scan method ['ftp_brute', 'smtp_brute',
                         'ssh_brute', 'dir_scan', 'subdomain_scan',
                         'tcp_connect_port_scan',
-                        'viewdns_reverse_ip_lookup_scan', 'all']
+                        'viewdns_reverse_ip_lookup_scan', 'heartbleed_vuln',
+                        'all']
   -x EXCLUDE_METHOD, --exclude EXCLUDE_METHOD
                         choose scan method to exclude ['ftp_brute',
                         'smtp_brute', 'ssh_brute', 'dir_scan',
                         'subdomain_scan', 'tcp_connect_port_scan',
-                        'viewdns_reverse_ip_lookup_scan']
+                        'viewdns_reverse_ip_lookup_scan', 'heartbleed_vuln']
   -u USERS, --usernames USERS
                         username(s) list, separate with ","
   -U USERS_LIST, --users-list USERS_LIST
