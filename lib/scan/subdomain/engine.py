@@ -298,6 +298,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         }):
     total_req = 0
     trying = 0
+    subs = []
     for key in extra_requirements:
         if extra_requirements[key][0] == 'True':
             total_req += 1
