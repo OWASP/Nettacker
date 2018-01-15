@@ -25,6 +25,7 @@ def extra_requirements_dict():
         "subdomain_scan_use_threatcrowd": ["True"],
         "subdomain_scan_use_comodo_crt": ["True"],
         "subdomain_scan_use_ptrarchive": ["True"],
+        "subdomain_scan_use_google_dig": ["True"],
         "subdomain_scan_time_limit_seconds": ["-1"]
 
     }
@@ -35,6 +36,57 @@ def __sub_append(subs, data):
         if sub not in subs:
             subs.append(sub)
     return subs
+
+
+def __google_dig(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers,
+                 thread_tmp_filename):
+    try:
+        if socks_proxy is not None:
+            socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+            socks_proxy = socks_proxy.rsplit('://')[1]
+            if '@' in socks_proxy:
+                socks_username = socks_proxy.rsplit(':')[0]
+                socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
+                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
+                                        int(socks_proxy.rsplit(':')[-1]), username=socks_username,
+                                        password=socks_password)
+                socket.socket = socks.socksocket
+                socket.getaddrinfo = getaddrinfo
+            else:
+                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+                socket.socket = socks.socksocket
+                socket.getaddrinfo = getaddrinfo
+        url_1 = 'https://toolbox.googleapps.com/apps/dig/#ANY/'
+        url_2 = 'https://toolbox.googleapps.com/apps/dig/lookup'
+        s = requests.session()
+        req = s.get(url_1)
+        csrf_middleware = re.compile("<input type='hidden' name='csrfmiddlewaretoken' value='(.*?)' />",
+                                     re.S).findall(req.content)[0]
+        req = s.post(url_2, cookies={'csrftoken': csrf_middleware},
+                     data={'csrfmiddlewaretoken': csrf_middleware, 'domain': target, 'typ': 'ANY'},
+                     headers={'Referer': url_1})
+        subs = []
+        if req.status_code is 200:
+            for w in json.loads(req.content)["response"].replace('"', ' ').replace(';', '').rsplit():
+                if w.endswith(target + '.') and w[:-1] not in subs:
+                    try:
+                        socket.gethostbyname(w[:-1])
+                        subs.append(w[:-1])
+                    except:
+                        try:
+                            socket.gethostbyname_ex(w[:-1])
+                            subs.append(w[:-1])
+                        except:
+                            pass
+        else:
+            # warn 403
+            pass
+        f = open(thread_tmp_filename, 'a')
+        f.write('\n'.join(subs) + '\n')
+        f.close()
+        return subs
+    except:
+        return []
 
 
 def __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers,
@@ -393,7 +445,17 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         threads.append(t)
         t.start()
         threads.append(t)
-
+    if extra_requirements['subdomain_scan_use_google_dig'][0] == 'True':
+        trying += 1
+        if verbose_level is not 0:
+            info(messages(language, 113).format(trying, total_req, num, total, target,
+                                                '(subdomain_scan - netcraft)'))
+        t = threading.Thread(target=__google_dig,
+                             args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
+                                   socks_proxy, retries, headers, thread_tmp_filename))
+        threads.append(t)
+        t.start()
+        threads.append(t)
     # wait for threads
     kill_switch = 0
     try:
