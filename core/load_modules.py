@@ -20,14 +20,11 @@ def load_all_graphs():
 def load_all_modules():
     # Search for Modules
     module_names = []
-    for lib in glob('lib/brute/*/engine.py'):
-        lib = lib.rsplit('\\' if sys.platform == 'win32' or sys.platform == 'win64' else '/')[-2]
-        if lib + '_brute' not in module_names:
-            module_names.append(lib + '_brute')
-    for lib in glob('lib/scan/*/engine.py'):
-        lib = lib.rsplit('\\' if sys.platform == 'win32' or sys.platform == 'win64' else '/')[-2]
-        if lib + '_scan' not in module_names:
-            module_names.append(lib + '_scan')
+    for lib in glob('lib/*/*/engine.py'):
+        libname = lib.rsplit('\\' if sys.platform == 'win32' or sys.platform == 'win64' else '/')[-2]
+        category = lib.rsplit('\\' if sys.platform == 'win32' or sys.platform == 'win64' else '/')[1]
+        if category != 'graph' and libname + '_' + category not in module_names:
+            module_names.append(libname + '_' + category)
     module_names.append('all')
     return module_names
 
@@ -36,13 +33,9 @@ def load_all_method_args(language):
     module_names = []
     modules_args = {}
     # get module names
-    for lib in glob('lib/brute/*/engine.py'):
+    for lib in glob('lib/*/*/engine.py'):
         lib = lib.replace('/', '.').replace('\\', '.').rsplit('.py')[0]
-        if lib not in module_names:
-            module_names.append(lib)
-    for lib in glob('lib/scan/*/engine.py'):
-        lib = lib.replace('/', '.').replace('\\', '.').rsplit('.py')[0]
-        if lib not in module_names:
+        if lib.rsplit('.')[1] != 'graph' and lib not in module_names:
             module_names.append(lib)
     # get args
     for imodule in module_names:
