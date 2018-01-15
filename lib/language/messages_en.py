@@ -153,6 +153,6 @@ def all_messages():
             "138": "waiting for {0}",
             "139": "vulnerable to {0}",
             "140": "target {0}:{1} is vunerable to {2}!",
-            "141": "no vulnerability found!"
+            "141": "no vulnerability found! ({0})"
 
         }

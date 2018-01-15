@@ -280,11 +280,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
+            info(messages(language, 141).format('heartbleed'))
             save = open(log_in_file, 'a')
             save.write(
                 json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'heartbleed_vuln',
-                            'DESCRIPTION': messages(language, 141), 'TIME': now(), 'CATEGORY': "scan",
-                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
+                            'DESCRIPTION': messages(language, 141).format('heartbleed'), 'TIME': now(),
+                            'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
             save.close()
         os.remove(thread_tmp_filename)
 
