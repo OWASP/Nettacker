@@ -24,7 +24,8 @@ def extra_requirements_dict():
         "subdomain_scan_use_virustotal": ["True"],
         "subdomain_scan_use_threatcrowd": ["True"],
         "subdomain_scan_use_comodo_crt": ["True"],
-        "subdomain_scan_use_ptrarchive": ["True"]
+        "subdomain_scan_use_ptrarchive": ["True"],
+        "subdomain_scan_time_limit_seconds": ["-1"]
 
     }
 
@@ -36,7 +37,8 @@ def __sub_append(subs, data):
     return subs
 
 
-def __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers):
+def __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers,
+               thread_tmp_filename):
     try:
         from core.targets import target_to_host
         if socks_proxy is not None:
@@ -83,12 +85,16 @@ def __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
                     results.content)[0]
             except:
                 break
+        f = open(thread_tmp_filename, 'a')
+        f.write('\n'.join(subs) + '\n')
+        f.close()
         return subs
     except:
         return []
 
 
-def __threatcrowd(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers):
+def __threatcrowd(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers,
+                  thread_tmp_filename):
     try:
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -110,7 +116,7 @@ def __threatcrowd(target, timeout_sec, log_in_file, time_sleep, language, verbos
         subs = []
         while 1:
             try:
-                results = requests.get(url, headers=headers, timeout_sec=timeout_sec)
+                results = requests.get(url, headers=headers)
                 break
             except:
                 n += 1
@@ -124,12 +130,16 @@ def __threatcrowd(target, timeout_sec, log_in_file, time_sleep, language, verbos
         else:
             # warn 403
             pass
+        f = open(thread_tmp_filename, 'a')
+        f.write('\n'.join(subs) + '\n')
+        f.close()
         return subs
     except:
         return []
 
 
-def __dnsdumpster(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers):
+def __dnsdumpster(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers,
+                  thread_tmp_filename):
     try:
         url = 'https://dnsdumpster.com/'
         s = requests.session()
@@ -147,12 +157,16 @@ def __dnsdumpster(target, timeout_sec, log_in_file, time_sleep, language, verbos
         else:
             # warn 403
             pass
+        f = open(thread_tmp_filename, 'a')
+        f.write('\n'.join(subs) + '\n')
+        f.close()
         return subs
     except:
         return []
 
 
-def __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers):
+def __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers,
+                 thread_tmp_filename):
     try:
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -190,12 +204,16 @@ def __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose
         else:
             # warn 403
             pass
+        f = open(thread_tmp_filename, 'a')
+        f.write('\n'.join(subs) + '\n')
+        f.close()
         return subs
     except:
         return []
 
 
-def __virustotal(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers):
+def __virustotal(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers,
+                 thread_tmp_filename):
     try:
         from core.targets import target_to_host
         if socks_proxy is not None:
@@ -235,12 +253,16 @@ def __virustotal(target, timeout_sec, log_in_file, time_sleep, language, verbose
         else:
             # warn 403
             pass
+        f = open(thread_tmp_filename, 'a')
+        f.write('\n'.join(subs) + '\n')
+        f.close()
         return subs
     except:
         return []
 
 
-def __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers):
+def __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers,
+                 thread_tmp_filename):
     try:
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -275,6 +297,9 @@ def __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose
         else:
             # warn 403
             pass
+        f = open(thread_tmp_filename, 'a')
+        f.write('\n'.join(subs) + '\n')
+        f.close()
         return subs
     except:
         return []
@@ -287,7 +312,8 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
             "subdomain_scan_use_virustotal": ["True"],
             "subdomain_scan_use_threatcrowd": ["True"],
             "subdomain_scan_use_comodo_crt": ["True"],
-            "subdomain_scan_use_ptrarchive": ["True"]
+            "subdomain_scan_use_ptrarchive": ["True"],
+            "subdomain_scan_time_limit_seconds": ["-1"]
 
         }, headers={
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
@@ -298,7 +324,9 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         }):
     total_req = 0
     trying = 0
-    subs = []
+    threads = []
+    thread_tmp_filename = 'tmp/thread_tmp_' + ''.join(
+        random.choice(string.ascii_letters + string.digits) for _ in range(20))
     for key in extra_requirements:
         if extra_requirements[key][0] == 'True':
             total_req += 1
@@ -307,40 +335,85 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         if verbose_level is not 0:
             info(messages(language, 113).format(trying, total_req, num, total, target,
                                                 '(subdomain_scan - netcraft)'))
-        subs = __sub_append([], __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
-                                           socks_proxy, retries, headers))
+        t = threading.Thread(target=__netcraft,
+                             args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
+                                   socks_proxy, retries, headers, thread_tmp_filename))
+        threads.append(t)
+        t.start()
+        threads.append(t)
     if extra_requirements['subdomain_scan_use_ptrarchive'][0] == 'True':
         trying += 1
         if verbose_level is not 0:
             info(messages(language, 113).format(trying, total_req, num, total, target, 'subdomain_scan - ptrarchive'))
-        subs = __sub_append(subs, __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
-                                               socks_proxy, retries, headers))
+        t = threading.Thread(target=__ptrarchive,
+                             args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
+                                   socks_proxy, retries, headers, thread_tmp_filename))
+        threads.append(t)
+        t.start()
+        threads.append(t)
     if extra_requirements['subdomain_scan_use_threatcrowd'][0] == 'True':
         trying += 1
         if verbose_level is not 0:
             info(
                 messages(language, 113).format(trying, total_req, num, total, target, 'subdomain_scan - threatcrowd'))
-        subs = __sub_append(subs, __threatcrowd(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
-                                                socks_proxy, retries, headers))
+        t = threading.Thread(target=__threatcrowd,
+                             args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
+                                   socks_proxy, retries, headers, thread_tmp_filename))
+        threads.append(t)
+        t.start()
+        threads.append(t)
     if extra_requirements['subdomain_scan_use_virustotal'][0] == 'True':
         trying += 1
         if verbose_level is not 0:
             info(messages(language, 113).format(trying, total_req, num, total, target, 'subdomain_scan - virustotal'))
-        subs = __sub_append(subs, __virustotal(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
-                                               socks_proxy, retries, headers))
+        t = threading.Thread(target=__virustotal,
+                             args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
+                                   socks_proxy, retries, headers, thread_tmp_filename))
+        threads.append(t)
+        t.start()
+        threads.append(t)
     if extra_requirements['subdomain_scan_use_comodo_crt'][0] == 'True':
         trying += 1
         if verbose_level is not 0:
             info(messages(language, 113).format(trying, total_req, num, total, target, 'subdomain_scan - comodo crt'))
-        subs = __sub_append(subs, __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
-                                               socks_proxy, retries, headers))
+        t = threading.Thread(target=__comodo_crt,
+                             args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
+                                   socks_proxy, retries, headers, thread_tmp_filename))
+        threads.append(t)
+        t.start()
+        threads.append(t)
     if extra_requirements['subdomain_scan_use_dnsdumpster'][0] == 'True':
         trying += 1
         if verbose_level is not 0:
             info(messages(language, 113).format(trying, total_req, num,
                                                 total, target, 'subdomain_scan - dnsdumpster'))
-        subs = __sub_append(subs, __dnsdumpster(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
-                                                socks_proxy, retries, headers))
+        t = threading.Thread(target=__dnsdumpster,
+                             args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
+                                   socks_proxy, retries, headers, thread_tmp_filename))
+        threads.append(t)
+        t.start()
+        threads.append(t)
+
+    # wait for threads
+    kill_switch = 0
+    try:
+        kill_time = -1 if extra_requirements["subdomain_scan_time_limit_seconds"][0] == -1 \
+            else int(int(extra_requirements["subdomain_scan_time_limit_seconds"[0]]) / 0.1)
+    except:
+        kill_time = -1
+    while 1:
+        time.sleep(0.1)
+        kill_switch += 1
+        try:
+            if threading.activeCount() is 1 or (kill_time is not -1 and kill_switch is kill_time):
+                break
+        except KeyboardInterrupt:
+            break
+    try:
+        subs = list(set(open(thread_tmp_filename).read().rsplit()))
+        os.remove(thread_tmp_filename)
+    except:
+        subs = []
     return subs
 
 
