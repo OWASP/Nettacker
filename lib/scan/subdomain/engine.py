@@ -193,6 +193,21 @@ def __threatcrowd(target, timeout_sec, log_in_file, time_sleep, language, verbos
 def __dnsdumpster(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers,
                   thread_tmp_filename):
     try:
+        if socks_proxy is not None:
+            socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+            socks_proxy = socks_proxy.rsplit('://')[1]
+            if '@' in socks_proxy:
+                socks_username = socks_proxy.rsplit(':')[0]
+                socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
+                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
+                                        int(socks_proxy.rsplit(':')[-1]), username=socks_username,
+                                        password=socks_password)
+                socket.socket = socks.socksocket
+                socket.getaddrinfo = getaddrinfo
+            else:
+                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+                socket.socket = socks.socksocket
+                socket.getaddrinfo = getaddrinfo
         url = 'https://dnsdumpster.com/'
         s = requests.session()
         req = s.get(url)
