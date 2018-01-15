@@ -358,7 +358,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         extra_requirements = new_extra_requirements
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
-        if ping_flag and do_one_ping(target, timeout_sec, 8) is None:
+        if ping_flag:
             if socks_proxy is not None:
                 socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
                 socks_proxy = socks_proxy.rsplit('://')[1]
@@ -375,8 +375,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                                             int(socks_proxy.rsplit(':')[1]))
                     socket.socket = socks.socksocket
                     socket.getaddrinfo = getaddrinfo
-            warn(messages(language, 100).format(target, 'subdomain_scan'))
-            return None
+            warn(messages(language, 100).format(target, 'heartbleed_vuln'))
+            if do_one_ping(target, timeout_sec, 8) is None:
+                return None
         subs = __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries,
                           num, total, extra_requirements=extra_requirements)
         info(messages(language, 135).format(len(subs), ', '.join(subs) if len(subs) > 0 else 'None'))

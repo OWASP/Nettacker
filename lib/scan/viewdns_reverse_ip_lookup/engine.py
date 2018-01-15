@@ -46,7 +46,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                    "Accept-Language": "en-US,en;q=0.5"
                    }
         # timeout check
-        if ping_flag and do_one_ping(target_to_host(target), timeout_sec, 8) is None:
+        if ping_flag:
             if socks_proxy is not None:
                 socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
                 socks_proxy = socks_proxy.rsplit('://')[1]
@@ -63,8 +63,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                                             int(socks_proxy.rsplit(':')[1]))
                     socket.socket = socks.socksocket
                     socket.getaddrinfo = getaddrinfo
-            warn(messages(language, 100).format(target_to_host(target), 'viewdns_reverse_ip_lookup_scan'))
-            return None
+            warn(messages(language, 100).format(target, 'heartbleed_vuln'))
+            if do_one_ping(target, timeout_sec, 8) is None:
+                return None
         total_req = 1
         trying = 1
         info(messages(language, 113).format(trying, total_req, num, total, target, 'viewdns ip lookup'))
