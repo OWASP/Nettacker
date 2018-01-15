@@ -8,7 +8,8 @@ from core._time import now
 
 def all_profiles():
     return {
-        "information_gathering": ["tcp_connect_port_scan"]
+        "information_gathering": ["tcp_connect_port_scan"],
+        "vulnerabilities": ["heartbleed_vuln"]
     }
 
 
