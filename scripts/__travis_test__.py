@@ -5,9 +5,10 @@ import os
 import sys
 
 # Test help menu command
-os.system('time python nettacker.py --help')
+os.system("time python nettacker.py --help")
+os.system("time python nettacker.py --help -L fa")
 # Test show version command
-os.system('time python nettacker.py --version')
+os.system("time python nettacker.py --version")
 # Test all modules command + check if it's finish successfully + without graph
 if os.system("time python nettacker.py -i 127.0.0.1 -u user1,user2 -p "
              "pass1,pass2 -m all -g 21,25,80,443 -t 2 -T 0.1 -v 5") is not 0:
