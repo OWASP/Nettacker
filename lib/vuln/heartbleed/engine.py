@@ -187,7 +187,7 @@ def bleed(target, port, timeout_sec, log_in_file, language, time_sleep,
 def __heartbleed(target, port, timeout_sec, log_in_file, language, time_sleep,
                  thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     if bleed(target, port, timeout_sec, log_in_file, language, time_sleep,
-             thread_tmp_filename, socks_proxy, scan_id, scan_cmd) is True:
+             thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, 140).format(target, port, 'heartbleed'))
         thread_write = open(thread_tmp_filename, 'w')
         thread_write.write('0')

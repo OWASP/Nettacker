@@ -23,11 +23,11 @@ def target_to_host(target):
 
 
 def target_type(target):
-    if isIP(target) is True:
+    if isIP(target):
         return 'SINGLE_IPv4'
     elif len(target.rsplit('.')) is 7 and '-' in target and '/' not in target:
         start_ip, stop_ip = target.rsplit('-')
-        if isIP(start_ip) is True and isIP(stop_ip) is True:
+        if isIP(start_ip) and isIP(stop_ip):
             return 'RANGE_IPv4'
         else:
             return 'DOMAIN'
@@ -35,7 +35,7 @@ def target_type(target):
         return 'HTTP'
     elif len(target.rsplit('.')) is 4 and '-' not in target and '/' in target:
         IP, CIDR = target.rsplit('/')
-        if isIP(IP) is True and (int(CIDR) >= 0 and int(CIDR) <= 32):
+        if isIP(IP) and (int(CIDR) >= 0 and int(CIDR) <= 32):
             return 'CIDR_IPv4'
     elif '.' in target and '/' not in target:
         return 'DOMAIN'
@@ -54,7 +54,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
 
     for target in targets:
         if target_type(target) == 'SINGLE_IPv4':
-            if check_ranges is True:
+            if check_ranges:
                 if not enumerate_flag: info(messages(language, 51).format(target))
                 IPs = IPRange(getIPRange(target), range_temp, language)
                 if type(IPs) == netaddr.ip.IPNetwork:
@@ -80,8 +80,8 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                         yield IP
 
         elif target_type(target) == 'DOMAIN':
-            if check_subdomains is True:
-                if check_ranges is True:
+            if check_subdomains:
+                if check_ranges:
                     if enumerate_flag: info(messages(language, 52).format(target))
                     sub_domains = json.loads(open(subs_temp).read()) if len(open(subs_temp).read()) > 0 else \
                         __get_subs(target, 3, '', 0, language, 0, socks_proxy, 3, 0, 0)
@@ -133,7 +133,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                         if not enumerate_flag: info(messages(language, 81).format(target))
                         yield target
             else:
-                if check_ranges is True:
+                if check_ranges:
                     if not enumerate_flag: info(messages(language, 52).format(target))
                     yield target
                     n = 0
@@ -168,7 +168,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
         elif target_type(target) == 'HTTP':
             if not enumerate_flag: info(messages(language, 52).format(target))
             yield target
-            if check_ranges is True:
+            if check_ranges:
                 if 'http://' == target[:7].lower():
                     target = target[7:].rsplit('/')[0]
                 if 'https://' == target[:8].lower():

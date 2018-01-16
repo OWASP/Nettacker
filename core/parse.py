@@ -85,7 +85,7 @@ def load():
 
     info(messages(language, 0))
     # check for update
-    if startup_update_flag is True:
+    if startup_update_flag:
         __version__, __code_name__ = _version_info()
         _check(__version__, __code_name__, language, socks_proxy)
 
@@ -119,7 +119,7 @@ def load():
                 n = 0
                 processes = multiprocessing.active_children()
                 for process in processes:
-                    if process.is_alive() is True:
+                    if process.is_alive():
                         n += 1
                     else:
                         processes.remove(process)
@@ -138,7 +138,7 @@ def load():
                 _waiting_for = 0
                 info(messages(language, 138).format(', '.join([p.name for p in multiprocessing.active_children()])))
             time.sleep(0.01)
-            if exitflag is True:
+            if exitflag:
                 break
         except KeyboardInterrupt:
             for process in multiprocessing.active_children():

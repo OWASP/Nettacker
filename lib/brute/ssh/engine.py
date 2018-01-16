@@ -180,7 +180,7 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         while 1:
             n = 0
             for thread in threads:
-                if thread.isAlive() is True:
+                if thread.isAlive():
                     n += 1
                 else:
                     threads.remove(thread)
@@ -191,10 +191,10 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
     while 1:
         n = True
         for thread in threads:
-            if thread.isAlive() is True:
+            if thread.isAlive():
                 n = False
         time.sleep(0.01)
-        if n is True:
+        if n:
             break
     _ports = list(set(open(ports_tmp_filename).read().rsplit()))
     for port in _ports:

@@ -65,7 +65,7 @@ def IPRange(Range, range_temp, language):
         if len(Range.rsplit('.')) is 7 and '-' in Range and '/' not in Range:
             if len(Range.rsplit('-')) is 2:
                 start_ip, stop_ip = Range.rsplit('-')
-                if isIP(start_ip) is True and isIP(stop_ip) is True:
+                if isIP(start_ip) and isIP(stop_ip):
                     return iprange_to_cidrs(start_ip, stop_ip)
                 else:
                     return []

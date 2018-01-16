@@ -235,7 +235,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         path = "/".join(target.replace('http://', '').replace('https://', '').rsplit('/')[1:])
                         url = http + '://' + host + ':' + str(port) + '/' + path + '/' + idir
 
-                    if random_agent_flag is True:
+                    if random_agent_flag:
                         user_agent = {'User-agent': random.choice(user_agent_list)}
                     t = threading.Thread(target=check,
                                          args=(url, user_agent, timeout_sec, log_in_file, language, time_sleep,

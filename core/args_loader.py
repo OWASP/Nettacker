@@ -178,25 +178,25 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     # import libs
     from core import compatible
     # Check Help Menu
-    if help_menu_flag is True:
+    if help_menu_flag:
         parser.print_help()
         write('\n\n')
         write(messages(language, 3))
         __die_success()
     # Check if method args list called
-    if method_args_list is True:
+    if method_args_list:
         from core.load_modules import load_all_method_args
         load_all_method_args(language)
         __die_success()
     # Check version
-    if show_version is True:
+    if show_version:
         from core import color
         info(messages(language, 84).format(color.color('yellow'), compatible.__version__, color.color('reset'),
                                            color.color('cyan'), compatible.__code_name__, color.color('reset'),
                                            color.color('green')))
         __die_success()
     # Wizard mode
-    if wizard_mode is True:
+    if wizard_mode:
         (targets, thread_number, thread_number_host,
          log_in_file, scan_method, exclude_method, users,
          passwds, timeout_sec, ports, verbose_level,
@@ -259,7 +259,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         if socks_flag is 5:
             socks_proxy = 'socks5://' + socks_proxy
     # Check update
-    if check_update is True:
+    if check_update:
         from core.update import _update
         _update(compatible.__version__, compatible.__code_name__, language, socks_proxy)
         __die_success()
