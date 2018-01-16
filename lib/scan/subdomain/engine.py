@@ -26,10 +26,10 @@ def extra_requirements_dict():
         "subdomain_scan_use_comodo_crt": ["True"],
         "subdomain_scan_use_ptrarchive": ["True"],
         "subdomain_scan_use_google_dig": ["True"],
+        "subdomain_scan_use_cert_spotter": ["True"],
         "subdomain_scan_time_limit_seconds": ["-1"]
 
         # Must add later!
-        # https://certspotter.com/api/v0/certs?domain=domain
         # https://censys.io/certificates?q=domain
         # https://transparencyreport.google.com/https/certificates
 
@@ -41,6 +41,41 @@ def __sub_append(subs, data):
         if sub not in subs:
             subs.append(sub)
     return subs
+
+
+def __cert_spotter(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers,
+                   thread_tmp_filename):
+    try:
+        if socks_proxy is not None:
+            socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+            socks_proxy = socks_proxy.rsplit('://')[1]
+            if '@' in socks_proxy:
+                socks_username = socks_proxy.rsplit(':')[0]
+                socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
+                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
+                                        int(socks_proxy.rsplit(':')[-1]), username=socks_username,
+                                        password=socks_password)
+                socket.socket = socks.socksocket
+                socket.getaddrinfo = getaddrinfo
+            else:
+                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+                socket.socket = socks.socksocket
+                socket.getaddrinfo = getaddrinfo
+        req = requests.get('https://certspotter.com/api/v0/certs?domain={0}'.format(target), headers=headers)
+        subs = []
+        if req.status_code is 200:
+            for w in req.content.replace('"', ' ').replace('\'', ' ').rsplit():
+                if '*' not in w and w.endswith('.' + target) and w not in subs:
+                    subs.append(w)
+        else:
+            # warn 403
+            pass
+        f = open(thread_tmp_filename, 'a')
+        f.write('\n'.join(subs) + '\n')
+        f.close()
+        return subs
+    except:
+        return []
 
 
 def __google_dig(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, headers,
@@ -124,7 +159,8 @@ def __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
             if results.status_code is 200:
                 for l in re.compile('<a href="http://toolbar.netcraft.com/site_report\?url=(.*)">').findall(
                         results.content):
-                    if target_to_host(l).endswith('.' + target) and target_to_host(l) not in subs:
+                    if '*' not in target_to_host(l) and target_to_host(l).endswith('.' + target) and target_to_host(
+                            l) not in subs:
                         subs.append(target_to_host(l))
             else:
                 # warn 403
@@ -216,7 +252,7 @@ def __dnsdumpster(target, timeout_sec, log_in_file, time_sleep, language, verbos
         subs = []
         if req.status_code is 200:
             for w in req.content.replace('.<', ' ').replace('<', ' ').replace('>', ' ').rsplit():
-                if w.endswith('.' + target) and w not in subs:
+                if '*' not in w and w.endswith('.' + target) and w not in subs:
                     subs.append(w)
         else:
             # warn 403
@@ -261,7 +297,7 @@ def __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose
         if results.status_code is 200:
             try:
                 for l in re.compile('<TD>(.*?)</TD>').findall(results.content):
-                    if l.endswith('.' + target) and '*' not in l and l not in subs:
+                    if '*' not in l and l.endswith('.' + target) and l not in subs:
                         subs.append(l)
             except:
                 pass
@@ -310,7 +346,8 @@ def __virustotal(target, timeout_sec, log_in_file, time_sleep, language, verbose
             try:
                 for l in re.compile('<div class="enum.*?">.*?<a target="_blank" href=".*?">(.*?)</a>', re.S).findall(
                         results.content):
-                    if target_to_host(l.strip()).endswith('.' + target) and target_to_host(l.strip()) not in subs:
+                    if '*' not in target_to_host(l) and target_to_host(l.strip()).endswith(
+                            '.' + target) and target_to_host(l.strip()) not in subs:
                         subs.append(target_to_host(l.strip()))
             except:
                 pass
@@ -356,7 +393,7 @@ def __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose
                     break
         if results.status_code is 200:
             for sub in results.content.rsplit():
-                if sub.endswith('.' + target) and sub not in subs:
+                if '*' in sub and sub.endswith('.' + target) and sub not in subs:
                     subs.append(sub)
         else:
             # warn 403
@@ -452,8 +489,19 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         trying += 1
         if verbose_level is not 0:
             info(messages(language, 113).format(trying, total_req, num, total, target,
-                                                '(subdomain_scan - netcraft)'))
+                                                '(subdomain_scan - google dig)'))
         t = threading.Thread(target=__google_dig,
+                             args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
+                                   socks_proxy, retries, headers, thread_tmp_filename))
+        threads.append(t)
+        t.start()
+        threads.append(t)
+    if extra_requirements['subdomain_scan_use_cert_spotter'][0] == 'True':
+        trying += 1
+        if verbose_level is not 0:
+            info(messages(language, 113).format(trying, total_req, num, total, target,
+                                                '(subdomain_scan - cert spotter)'))
+        t = threading.Thread(target=__cert_spotter,
                              args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                    socks_proxy, retries, headers, thread_tmp_filename))
         threads.append(t)
