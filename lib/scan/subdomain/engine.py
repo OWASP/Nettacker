@@ -28,6 +28,11 @@ def extra_requirements_dict():
         "subdomain_scan_use_google_dig": ["True"],
         "subdomain_scan_time_limit_seconds": ["-1"]
 
+        # Must add later!
+        # https://certspotter.com/api/v0/certs?domain=domain
+        # https://censys.io/certificates?q=domain
+        # https://transparencyreport.google.com/https/certificates
+
     }
 
 
@@ -67,17 +72,9 @@ def __google_dig(target, timeout_sec, log_in_file, time_sleep, language, verbose
                      headers={'Referer': url_1})
         subs = []
         if req.status_code is 200:
-            for w in json.loads(req.content)["response"].replace('"', ' ').replace(';', '').rsplit():
-                if w.endswith(target + '.') and w[:-1] not in subs:
-                    try:
-                        socket.gethostbyname(w[:-1])
-                        subs.append(w[:-1])
-                    except:
-                        try:
-                            socket.gethostbyname_ex(w[:-1])
-                            subs.append(w[:-1])
-                        except:
-                            pass
+            for w in json.loads(req.content)["response"].replace('"', ' ').replace(';', ' ').rsplit():
+                if '*' not in w and w.endswith('.' + target + '.') and w[:-1] not in subs:
+                    subs.append(w[:-1])
         else:
             # warn 403
             pass
@@ -127,7 +124,7 @@ def __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
             if results.status_code is 200:
                 for l in re.compile('<a href="http://toolbar.netcraft.com/site_report\?url=(.*)">').findall(
                         results.content):
-                    if target_to_host(l).endswith(target) and target_to_host(l) not in subs:
+                    if target_to_host(l).endswith('.' + target) and target_to_host(l) not in subs:
                         subs.append(target_to_host(l))
             else:
                 # warn 403
@@ -176,9 +173,9 @@ def __threatcrowd(target, timeout_sec, log_in_file, time_sleep, language, verbos
                     break
         if results.status_code is 200:
             try:
-                return json.loads(results.content)["subdomains"]
+                subs = json.loads(results.content)["subdomains"]
             except:
-                pass
+                subs = []
         else:
             # warn 403
             pass
@@ -219,7 +216,7 @@ def __dnsdumpster(target, timeout_sec, log_in_file, time_sleep, language, verbos
         subs = []
         if req.status_code is 200:
             for w in req.content.replace('.<', ' ').replace('<', ' ').replace('>', ' ').rsplit():
-                if w.endswith(target) and w not in subs:
+                if w.endswith('.' + target) and w not in subs:
                     subs.append(w)
         else:
             # warn 403
@@ -264,7 +261,7 @@ def __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose
         if results.status_code is 200:
             try:
                 for l in re.compile('<TD>(.*?)</TD>').findall(results.content):
-                    if l.endswith(target) and '*' not in l and l not in subs:
+                    if l.endswith('.' + target) and '*' not in l and l not in subs:
                         subs.append(l)
             except:
                 pass
@@ -313,7 +310,7 @@ def __virustotal(target, timeout_sec, log_in_file, time_sleep, language, verbose
             try:
                 for l in re.compile('<div class="enum.*?">.*?<a target="_blank" href=".*?">(.*?)</a>', re.S).findall(
                         results.content):
-                    if target_to_host(l.strip()).endswith(target) and target_to_host(l.strip()) not in subs:
+                    if target_to_host(l.strip()).endswith('.' + target) and target_to_host(l.strip()) not in subs:
                         subs.append(target_to_host(l.strip()))
             except:
                 pass
@@ -359,7 +356,7 @@ def __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose
                     break
         if results.status_code is 200:
             for sub in results.content.rsplit():
-                if sub.endswith(target) and sub not in subs:
+                if sub.endswith('.' + target) and sub not in subs:
                     subs.append(sub)
         else:
             # warn 403
@@ -373,16 +370,7 @@ def __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose
 
 
 def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries,
-               num, total, extra_requirements={
-            "subdomain_scan_use_netcraft": ["True"],
-            "subdomain_scan_use_dnsdumpster": ["True"],
-            "subdomain_scan_use_virustotal": ["True"],
-            "subdomain_scan_use_threatcrowd": ["True"],
-            "subdomain_scan_use_comodo_crt": ["True"],
-            "subdomain_scan_use_ptrarchive": ["True"],
-            "subdomain_scan_time_limit_seconds": ["-1"]
-
-        }, headers={
+               num, total, extra_requirements=extra_requirements_dict(), headers={
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
                           '(KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
