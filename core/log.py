@@ -73,8 +73,8 @@ def sort_logs(log_in_file, language, graph_flag):
         for value in data:
             _table += _log_data.table_items.format(value['HOST'], value['USERNAME'], value['PASSWORD'],
                                                    value['PORT'], value['TYPE'], value['DESCRIPTION'], value['TIME'])
-        _table += _log_data.table_end + messages(language, 93) \
-            .format(compatible.__version__, compatible.__code_name__, now())
+        _table += _log_data.table_end + '<p class="footer">' + messages(language, 93) \
+            .format(compatible.__version__, compatible.__code_name__, now()) + '</p>'
         _table = _table.encode('utf8')
         save = open(log_in_file, 'w' if type(_table) == str else 'wb')
         save.write(_table)
