@@ -277,7 +277,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             except:
                 __die_failure(messages(language, 27).format(targets_list))
     # Check thread number
-    if thread_number > 100 or thread_number_host > 100:
+    if thread_number > 101 or thread_number_host > 101:
         warn(messages(language, 28))
     # Check timeout number
     if timeout_sec is not None and timeout_sec >= 15:
