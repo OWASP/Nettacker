@@ -7,4 +7,4 @@ texttable
 PySocks
 win_inet_pton
 pyOpenSSL
-xmljson
+flask

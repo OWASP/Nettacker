@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='OWASP-Nettacker',
     version='0.0.1',
-    packages=['lib', 'lib.icmp', 'lib.scan', 'lib.scan.dir', 'lib.scan.subdomain', 'lib.scan.tcp_connect_port',
+    packages=['api', 'lib', 'lib.icmp', 'lib.scan', 'lib.scan.dir', 'lib.scan.subdomain', 'lib.scan.tcp_connect_port',
               'lib.scan.viewdns_reverse_ip_lookup', 'lib.vuln', 'lib.vuln.heartbleed', 'lib.brute', 'lib.brute.ftp',
               'lib.brute.ssh', 'lib.brute.smtp', 'lib.graph', 'lib.graph.d3_tree_v1', 'lib.graph.d3_tree_v2',
               'lib.graph.jit_circle_v1', 'lib.argparse', 'lib.argparse.v2', 'lib.argparse.v3', 'lib.html_log',
