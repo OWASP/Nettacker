@@ -20,7 +20,7 @@ from core.color import finish
 from core.wizard import __wizard
 from core.config_builder import _core_default_config
 from core.config_builder import default_profiles
-from config import _profiles
+from core.config import _profiles
 
 # temporary use fixed version of argparse
 if os_name() == "win32" or os_name() == "win64":
