@@ -23,7 +23,7 @@ from core.config_builder import default_profiles
 from config import _profiles
 
 # temporary use fixed version of argparse
-if os_name() == 'win32' or os_name() == 'win64':
+if os_name() == "win32" or os_name() == "win64":
     if version() is 2:
         from lib.argparse.v2 import argparse
     else:
@@ -37,7 +37,7 @@ def load_all_args(module_names, graph_names):
     # import libs
     default_config = _builder(_core_config(), _core_default_config())
     _all_profiles = [key for key in _builder(_profiles(), default_profiles())]
-    _all_profiles.append('all')
+    _all_profiles.append("all")
     language_list = [lang for lang in messages(-1, 0)]
     if "-L" in sys.argv or "--language" in sys.argv:
         try:
@@ -93,8 +93,8 @@ def load_all_args(module_names, graph_names):
     engineOpt.add_argument("-W", "--wizard", action="store_true",
                            default=default_config["wizard_mode"], dest="wizard_mode",
                            help=messages(language, 107))
-    engineOpt.add_argument('--profile', action="store",
-                           default=default_config["profile"], dest='profile',
+    engineOpt.add_argument("--profile", action="store",
+                           default=default_config["profile"], dest="profile",
                            help=messages(language, 136).format(_all_profiles))
 
     # Target Options
@@ -106,10 +106,10 @@ def load_all_args(module_names, graph_names):
 
     # Exclude Module Name
     exclude_names = module_names[:]
-    exclude_names.remove('all')
+    exclude_names.remove("all")
 
     # Methods Options
-    method = parser.add_argument_group("Method", messages(language, 16))
+    method = parser.add_argument_group(messages(language, 142), messages(language, 16))
     method.add_argument("-m", "--method", action="store",
                         dest="scan_method", default=default_config["scan_method"],
                         help=messages(language, 17).format(module_names))
@@ -155,32 +155,64 @@ def load_all_args(module_names, graph_names):
     method.add_argument("--retries", action="store",
                         dest="retries", type=int, default=default_config["retries"],
                         help=messages(language, 64))
-    method.add_argument('--ping-before-scan', action="store_true",
-                        dest='ping_flag', default=default_config["ping_flag"],
+    method.add_argument("--ping-before-scan", action="store_true",
+                        dest="ping_flag", default=default_config["ping_flag"],
                         help=messages(language, 99))
-    method.add_argument('--method-args', action="store",
+    method.add_argument("--method-args", action="store",
                         dest="methods_args", default=default_config["methods_args"],
                         help=messages(language, 35))
-    method.add_argument('--method-args-list', action='store_true',
-                        dest='method_args_list', default=default_config["method_args_list"],
+    method.add_argument("--method-args-list", action="store_true",
+                        dest="method_args_list", default=default_config["method_args_list"],
                         help=messages(language, 111))
+
+    # API Options
+    api = parser.add_argument_group(messages(language, 143), messages(language, 144))
+    api.add_argument("--start-api", action="store_true",
+                     dest="start_api", default=default_config["start_api"],
+                     help=messages(language, 145))
+    api.add_argument("--api-host", action="store",
+                     dest="api_host", default=default_config["api_host"],
+                     help=messages(language, 146))
+    api.add_argument("--api-port", action="store",
+                     dest="api_port", default=default_config["api_port"],
+                     help=messages(language, 147))
+    api.add_argument("--api-debug-mode", action="store_true",
+                     dest="api_debug_mode", default=default_config["api_debug_mode"],
+                     help=messages(language, 148))
+    api.add_argument("--api-access-key", action="store",
+                     dest="api_access_key", default=default_config["api_access_key"],
+                     help=messages(language, 149))
+    api.add_argument("--api-client-white-list", action="store_true",
+                     dest="api_client_white_list", default=default_config["api_client_white_list"],
+                     help=messages(language, 150))
+    api.add_argument("--api-client-white-list-ips", action="store",
+                     dest="api_client_white_list_ips", default=default_config["api_client_white_list_ips"],
+                     help=messages(language, 151))
+    api.add_argument("--api-access-log", action="store_true",
+                     dest="api_access_log", default=default_config["api_access_log"],
+                     help=messages(language, 152))
+    api.add_argument("--api-access-log-filename", action="store",
+                     dest="api_access_log_filename", default=default_config["api_access_log_filename"],
+                     help=messages(language, 153))
+
     # Return Options
     return [parser, parser.parse_args(), default_config["startup_check_for_update"]]
 
 
 def check_all_required(targets, targets_list, thread_number, thread_number_host,
                        log_in_file, scan_method, exclude_method, users, users_list,
-                       passwds, passwds_list, timeout_sec, ports, parser, module_names,
-                       language, verbose_level, show_version, check_update, socks_proxy,
-                       retries, graph_flag, help_menu_flag, methods_args, method_args_list,
-                       wizard_mode, profile):
+                       passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level,
+                       show_version, check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args,
+                       method_args_list, wizard_mode, profile, start_api, api_host, api_port, api_debug_mode,
+                       api_access_key, api_client_white_list, api_client_white_list_ips, api_access_log,
+                       api_access_log_filename):
     # Checking Requirements
     # import libs
     from core import compatible
     # Check Help Menu
     if help_menu_flag:
         parser.print_help()
-        write('\n\n')
+        write("\n\n")
         write(messages(language, 3))
         __die_success()
     # Check if method args list called
@@ -191,10 +223,47 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     # Check version
     if show_version:
         from core import color
-        info(messages(language, 84).format(color.color('yellow'), compatible.__version__, color.color('reset'),
-                                           color.color('cyan'), compatible.__code_name__, color.color('reset'),
-                                           color.color('green')))
+        info(messages(language, 84).format(color.color("yellow"), compatible.__version__, color.color("reset"),
+                                           color.color("cyan"), compatible.__code_name__, color.color("reset"),
+                                           color.color("green")))
         __die_success()
+    # API mode
+    if start_api:
+        from api.engine import _start_api
+        from core.targets import target_type
+        from core.ip import _generate_IPRange
+
+        try:
+            api_port = int(api_port)
+        except:
+            __die_failure(messages(language, 154))
+        if api_client_white_list:
+            if type(api_client_white_list_ips) != type([]):
+                api_client_white_list_ips = list(set(api_client_white_list_ips.rsplit(",")))
+            hosts = []
+            for data in api_client_white_list_ips:
+                if target_type(data) == "SINGLE_IPv4":
+                    if data not in hosts:
+                        hosts.append(data)
+                elif target_type(data) == "RANGE_IPv4":
+                    for cidr in _generate_IPRange(data):
+                        for ip in cidr:
+                            if ip not in hosts:
+                                hosts.append(ip)
+                elif target_type(data) == "CIDR_IPv4":
+                    for ip in _generate_IPRange(data):
+                        if ip not in hosts:
+                            hosts.append(str(ip))
+                else:
+                    __die_failure(messages(language, 155))
+            api_client_white_list_ips = hosts[:]
+        if api_access_log:
+            try:
+                f = open(api_access_log_filename, 'a')
+            except:
+                __die_failure(messages(language, 40).format(api_access_log_filename))
+        _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
+                   api_client_white_list_ips, api_access_log, api_access_log_filename, language)
     # Wizard mode
     if wizard_mode:
         (targets, thread_number, thread_number_host,
@@ -209,55 +278,55 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             )
     # Select a Profile
     if profile is not None:
-        _all_profiles = _builder(get_profiles(), all_profiles())
+        _all_profiles = _builder(_profiles(), default_profiles())
         if scan_method is None:
-            scan_method = ''
+            scan_method = ""
         else:
-            scan_method += ','
-        if profile == 'all':
-            profile = ','.join(_all_profiles)
+            scan_method += ","
+        if profile == "all":
+            profile = ",".join(_all_profiles)
         tmp_sm = scan_method
-        for pr in profile.rsplit(','):
+        for pr in profile.rsplit(","):
             try:
                 for sm in _all_profiles[pr]:
-                    if sm not in tmp_sm.rsplit(','):
-                        tmp_sm += sm + ','
+                    if sm not in tmp_sm.rsplit(","):
+                        tmp_sm += sm + ","
             except:
                 __die_failure(messages(language, 137).format(pr))
-        if tmp_sm[-1] == ',':
+        if tmp_sm[-1] == ",":
             tmp_sm = tmp_sm[0:-1]
-        scan_method = ','.join(list(set(tmp_sm.rsplit(','))))
+        scan_method = ",".join(list(set(tmp_sm.rsplit(","))))
     # Check Socks
     if socks_proxy is not None:
         e = False
-        if socks_proxy.startswith('socks://'):
+        if socks_proxy.startswith("socks://"):
             socks_flag = 5
-            socks_proxy = socks_proxy.replace('socks://', '')
-        elif socks_proxy.startswith('socks5://'):
+            socks_proxy = socks_proxy.replace("socks://", "")
+        elif socks_proxy.startswith("socks5://"):
             socks_flag = 5
-            socks_proxy = socks_proxy.replace('socks5://', '')
-        elif socks_proxy.startswith('socks4://'):
+            socks_proxy = socks_proxy.replace("socks5://", "")
+        elif socks_proxy.startswith("socks4://"):
             socks_flag = 4
-            socks_proxy = socks_proxy.replace('socks4://', '')
+            socks_proxy = socks_proxy.replace("socks4://", "")
         else:
             socks_flag = 5
-        if '://' in socks_proxy:
-            socks_proxy = socks_proxy.rsplit('://')[1].rsplit('/')[0]
+        if "://" in socks_proxy:
+            socks_proxy = socks_proxy.rsplit("://")[1].rsplit("/")[0]
         try:
-            if len(socks_proxy.rsplit(':')) < 2 or len(socks_proxy.rsplit(':')) > 3:
+            if len(socks_proxy.rsplit(":")) < 2 or len(socks_proxy.rsplit(":")) > 3:
                 e = True
-            elif len(socks_proxy.rsplit(':')) is 2 and socks_proxy.rsplit(':')[1] == '':
+            elif len(socks_proxy.rsplit(":")) is 2 and socks_proxy.rsplit(":")[1] == "":
                 e = True
-            elif len(socks_proxy.rsplit(':')) is 3 and socks_proxy.rsplit(':')[2] == '':
+            elif len(socks_proxy.rsplit(":")) is 3 and socks_proxy.rsplit(":")[2] == "":
                 e = True
         except:
             e = True
         if e:
             __die_failure(messages(language, 63))
         if socks_flag is 4:
-            socks_proxy = 'socks4://' + socks_proxy
+            socks_proxy = "socks4://" + socks_proxy
         if socks_flag is 5:
-            socks_proxy = 'socks5://' + socks_proxy
+            socks_proxy = "socks5://" + socks_proxy
     # Check update
     if check_update:
         from core.update import _update
@@ -288,19 +357,19 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         scan_method.remove("all")
     elif scan_method is not None and scan_method not in module_names:
         if "*_" in scan_method:
-            scan_method = scan_method.rsplit(',')
+            scan_method = scan_method.rsplit(",")
             tmp_scan_method = scan_method[:]
             for sm in scan_method:
-                if sm.startswith('*_'):
+                if sm.startswith("*_"):
                     scan_method.remove(sm)
                     found_flag = False
                     for mn in module_names:
-                        if mn.endswith('_' + sm.rsplit('*_')[1]):
+                        if mn.endswith("_" + sm.rsplit("*_")[1]):
                             scan_method.append(mn)
                             found_flag = True
                     if found_flag is False:
                         __die_failure(messages(language, 117).format(sm))
-            scan_method = ','.join(scan_method)
+            scan_method = ",".join(scan_method)
         if "," in scan_method:
             scan_method = scan_method.rsplit(",")
             for sm in scan_method:
@@ -360,30 +429,31 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     if graph_flag is not None:
         if graph_flag not in load_all_graphs():
             __die_failure(messages(language, 97).format(graph_flag))
-        if not (log_in_file.endswith('.html') or log_in_file.endswith('.htm')):
+        if not (log_in_file.endswith(".html") or log_in_file.endswith(".htm")):
             warn(messages(language, 87))
             graph_flag = None
     # Check Methods ARGS
     if methods_args is not None:
         new_methods_args = {}
-        methods_args = methods_args.rsplit('&')
+        methods_args = methods_args.rsplit("&")
         for imethod_args in methods_args:
-            if len(imethod_args.rsplit('=')) is 2:
-                if imethod_args.rsplit('=')[1].startswith('read_from_file:'):
+            if len(imethod_args.rsplit("=")) is 2:
+                if imethod_args.rsplit("=")[1].startswith("read_from_file:"):
                     try:
-                        read_data = list(set(open(imethod_args.rsplit('=read_from_file:')[1]).read().rsplit('\n')))
+                        read_data = list(set(open(imethod_args.rsplit("=read_from_file:")[1]).read().rsplit("\n")))
                     except:
                         __die_failure(messages(language, 36))
-                    new_methods_args[imethod_args.rsplit('=')[0]] = read_data
+                    new_methods_args[imethod_args.rsplit("=")[0]] = read_data
                 else:
-                    new_methods_args[imethod_args.rsplit('=')[0]] = imethod_args.rsplit('=')[1].rsplit(',')
+                    new_methods_args[imethod_args.rsplit("=")[0]] = imethod_args.rsplit("=")[1].rsplit(",")
             else:
-                new_methods_args[imethod_args.rsplit('=')[0]] = ""
+                new_methods_args[imethod_args.rsplit("=")[0]] = ""
         methods_args = new_methods_args
     # Return the values
     return [targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
-            passwds, passwds_list, timeout_sec, ports, parser, module_names,
-            language, verbose_level, show_version, check_update, socks_proxy,
-            retries, graph_flag, help_menu_flag, methods_args, method_args_list,
-            wizard_mode, profile]
+            passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level,
+            show_version, check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args,
+            method_args_list, wizard_mode, profile, start_api, api_host, api_port, api_debug_mode,
+            api_access_key, api_client_white_list, api_client_white_list_ips, api_access_log,
+            api_access_log_filename]

@@ -153,6 +153,21 @@ def all_messages():
             "138": "waiting for {0}",
             "139": "vulnerable to {0}",
             "140": "target {0}:{1} is vunerable to {2}!",
-            "141": "no vulnerability found! ({0})"
+            "141": "no vulnerability found! ({0})",
+            "142": "Method",
+            "143": "API",
+            "144": "API options",
+            "145": "start the API service",
+            "146": "API host address",
+            "147": "API port number",
+            "148": "API debug mode",
+            "149": "API access key",
+            "150": "just allow white list hosts to connect to the API",
+            "151": "define white list hosts, separate with \",\" (examples: 127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)",
+            "152": "generate API access log",
+            "153": "API access log filename",
+            "154": "API port must be an integer!",
+            "155": "unknown input type, accepted types are SINGLE_IPv4, RANGE_IPv4, CIDR_IPv4",
+            "156": " * API Key: {0}\n"
 
         }

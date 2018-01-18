@@ -25,7 +25,7 @@ from core._time import now
 
 
 def load():
-    write('\n\n')
+    write("\n\n")
     # load libs
     from core.color import finish
     # load all modules in lib/brute, lib/scan, lib/graph
@@ -68,19 +68,30 @@ def load():
     method_args_list = options.method_args_list
     wizard_mode = options.wizard_mode
     profile = options.profile
+    start_api = options.start_api
+    api_host = options.api_host
+    api_port = options.api_port
+    api_debug_mode = options.api_debug_mode
+    api_access_key = options.api_access_key
+    api_client_white_list = options.api_client_white_list
+    api_client_white_list_ips = options.api_client_white_list_ips
+    api_access_log = options.api_access_log
+    api_access_log_filename = options.api_access_log_filename
 
     # Checking Requirements
     (targets, targets_list, thread_number, thread_number_host,
      log_in_file, scan_method, exclude_method, users, users_list,
      passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
      check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args, method_args_list, wizard_mode,
-     profile) = \
+     profile, start_api, api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
+     api_client_white_list_ips, api_access_log, api_access_log_filename) = \
         check_all_required(
             targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
             passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
             check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args, method_args_list, wizard_mode,
-            profile
+            profile, start_api, api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
+            api_client_white_list_ips, api_access_log, api_access_log_filename
         )
 
     info(messages(language, 0))
@@ -90,10 +101,10 @@ def load():
         _check(__version__, __code_name__, language, socks_proxy)
 
     info(messages(language, 96).format(len(load_all_modules()) - 1 + len(load_all_graphs())))
-    suff = now(model="%Y_%m_%d_%H_%M_%S") + ''.join(random.choice(string.ascii_lowercase) for x in
+    suff = now(model="%Y_%m_%d_%H_%M_%S") + "".join(random.choice(string.ascii_lowercase) for x in
                                                     range(10))
-    subs_temp = 'tmp/subs_temp_' + suff
-    range_temp = 'tmp/ranges_' + suff
+    subs_temp = "tmp/subs_temp_" + suff
+    range_temp = "tmp/ranges_" + suff
     total_targets = -1
     for total_targets, _ in enumerate(
             analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
@@ -104,8 +115,8 @@ def load():
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
                        language, verbose_level, show_version, check_update, socks_proxy, retries, socks_proxy, False)
     trying = 0
-    scan_id = ''.join(random.choice('0123456789abcdef') for x in range(32))
-    scan_cmd = ' '.join(sys.argv)
+    scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
+    scan_cmd = " ".join(sys.argv)
     for target in targets:
         for sm in scan_method:
             trying += 1
@@ -114,7 +125,7 @@ def load():
                 ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, socks_proxy,
                 retries, ping_flag, methods_args, scan_id, scan_cmd))
             p.start()
-            p.name = target + '->' + sm
+            p.name = target + "->" + sm
             while 1:
                 n = 0
                 processes = multiprocessing.active_children()
@@ -136,7 +147,7 @@ def load():
                 _waiting_for += 1
             if _waiting_for > 3000:
                 _waiting_for = 0
-                info(messages(language, 138).format(', '.join([p.name for p in multiprocessing.active_children()])))
+                info(messages(language, 138).format(", ".join([p.name for p in multiprocessing.active_children()])))
             time.sleep(0.01)
             if exitflag:
                 break
@@ -149,7 +160,7 @@ def load():
     os.remove(range_temp)
     info(messages(language, 43))
     sort_logs(log_in_file, language, graph_flag)
-    write('\n')
+    write("\n")
     info(messages(language, 44))
-    write('\n\n')
+    write("\n\n")
     finish()
