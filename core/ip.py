@@ -16,6 +16,7 @@ try:
     from netaddr import IPNetwork
 except:
     from core.color import finish
+
     error('pip install -r requirements.txt')
     finish()
     sys.exit(1)
@@ -77,4 +78,20 @@ def IPRange(Range, range_temp, language):
             return []
     else:
         warn(messages(language, 49))
+        return []
+
+
+def _generate_IPRange(Range):
+    if len(Range.rsplit('.')) is 7 and '-' in Range and '/' not in Range:
+        if len(Range.rsplit('-')) is 2:
+            start_ip, stop_ip = Range.rsplit('-')
+            if isIP(start_ip) and isIP(stop_ip):
+                return iprange_to_cidrs(start_ip, stop_ip)
+            else:
+                return []
+        else:
+            return []
+    elif len(Range.rsplit('.')) is 4 and '-' not in Range and '/' in Range:
+        return IPNetwork(Range)
+    else:
         return []
