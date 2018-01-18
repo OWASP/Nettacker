@@ -171,14 +171,20 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
 <!-- THIS PAGE COPIED AND MODIFIED FROM http://bl.ocks.org/robschmuecker/7880033-->
 <title>__html_title_to_replace__</title>
 <meta charset="utf-8">
-<h3><a href="https://github.com/viraintel/nettacker">OWASP Nettacker</a></h3>
-<h3>__title_to_replace__</h3>
+<div class="header">
+    <h3><a href="https://github.com/viraintel/nettacker">OWASP Nettacker</a></h3>
+    <h3>__title_to_replace__</h3>
+</div>
 <style type="text/css">
 
-\t.node {
+\t.header{
+    margin:2%;
+    text-align:center;
+  }
+  .node {
     cursor: pointer;
   }
-
+  
   .overlay{
       background-color:#EEE;
   }
@@ -211,9 +217,19 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
   }
 
   .ghostCircle, .activeDrag .ghostCircle{
-       display: none;
+      display: none;
   }
 
+  .description{
+      margin:2% auto;
+      text-align:center;
+      width:70%;
+  }
+  
+  .footer{
+      text-align:center;
+      font-size:small;
+  }
 </style>
 <script>
 /*! jQuery v1.10.2 | (c) 2005, 2013 jQuery Foundation, Inc. | jquery.org/license
@@ -11987,7 +12003,7 @@ treeJSON = d3.json("https://github.com/viraintel/OWASP-Nettacker", function(erro
     centerNode(root);
 });
 </script>
-<body  style="background-color:#F0F0F0;">__description_to_replace__<br><br>
+<body  style="background-color:#F0F0F0;"><p class='description'>__description_to_replace__</p><br><br>
     <center>
         <div id="tree-container"></div><br>
     </center>
