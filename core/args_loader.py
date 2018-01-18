@@ -12,7 +12,7 @@ from core.compatible import check
 from core.compatible import version
 from core.compatible import os_name
 from core.load_modules import load_all_graphs
-from config import _core_config
+from core.config import _core_config
 from core.config_builder import _builder
 from core._die import __die_success
 from core._die import __die_failure

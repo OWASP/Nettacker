@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import config
 from core.config_builder import _builder
-from config import _core_config
+from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.load_modules import load_all_graphs
 from core.get_input import __input
