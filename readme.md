@@ -49,6 +49,12 @@ usage: Nettacker [-L LANGUAGE] [-v VERBOSE_LEVEL] [-V] [-c] [-o LOG_IN_FILE]
                  [-r] [-s] [-t THREAD_NUMBER] [-M THREAD_NUMBER_HOST]
                  [-R SOCKS_PROXY] [--retries RETRIES] [--ping-before-scan]
                  [--method-args METHODS_ARGS] [--method-args-list]
+                 [--start-api] [--api-host API_HOST] [--api-port API_PORT]
+                 [--api-debug-mode] [--api-access-key API_ACCESS_KEY]
+                 [--api-client-white-list]
+                 [--api-client-white-list-ips API_CLIENT_WHITE_LIST_IPS]
+                 [--api-access-log]
+                 [--api-access-log-filename API_ACCESS_LOG_FILENAME]
 
 Engine:
   Engine input options
@@ -130,6 +136,24 @@ Method:
                         dmin&ftp_brute_passwds=read_from_file:/tmp/pass.txt&ft
                         p_brute_port=21"
   --method-args-list    list all methods args
+
+API:
+  API options
+
+  --start-api           start the API service
+  --api-host API_HOST   API host address
+  --api-port API_PORT   API port number
+  --api-debug-mode      API debug mode
+  --api-access-key API_ACCESS_KEY
+                        API access key
+  --api-client-white-list
+                        just allow white list hosts to connect to the API
+  --api-client-white-list-ips API_CLIENT_WHITE_LIST_IPS
+                        define white list hosts, separate with "," (examples:
+                        127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)
+  --api-access-log      generate API access log
+  --api-access-log-filename API_ACCESS_LOG_FILENAME
+                        API access log filename
 
 
 Please read license and agreements https://github.com/viraintel/OWASP-Nettacker
