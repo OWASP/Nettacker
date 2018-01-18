@@ -6,14 +6,14 @@ import string
 from core._time import now
 
 
-def get_profiles():
+def _profiles():
     return {
         "information_gathering": ["tcp_connect_port_scan"],
         "vulnerabilities": ["heartbleed_vuln"]
     }
 
 
-def get_config():
+def _core_config():
     return {  # OWASP Nettacker Default Configuration
         "language": "en",
         "verbose_level": 0,
@@ -47,4 +47,21 @@ def get_config():
         "startup_check_for_update": True,
         "wizard_mode": False,
         "profile": None
+    }
+
+
+def _api_config():
+    return {
+        "api_host": "127.0.0.1",
+        "api_port": 5000,
+        "api_debug_mode": False,
+        "api_access_key": "random_private_access_key",
+        "api_client_white_list": {
+            "enabled": False,
+            "api_client_white_list_ip": ["127.0.0.1", "10.0.0.1"]
+        },
+        "api_access_log": {
+            "enabled": False,
+            "filename": "nettacker_api_access_log"
+        }
     }

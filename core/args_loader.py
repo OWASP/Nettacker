@@ -12,15 +12,15 @@ from core.compatible import check
 from core.compatible import version
 from core.compatible import os_name
 from core.load_modules import load_all_graphs
-from config import get_config
+from config import _core_config
 from core.config_builder import _builder
 from core._die import __die_success
 from core._die import __die_failure
 from core.color import finish
 from core.wizard import __wizard
-from core.config_builder import all_config_keys
-from core.config_builder import all_profiles
-from config import get_profiles
+from core.config_builder import _core_default_config
+from core.config_builder import default_profiles
+from config import _profiles
 
 # temporary use fixed version of argparse
 if os_name() == 'win32' or os_name() == 'win64':
@@ -35,8 +35,8 @@ else:
 def load_all_args(module_names, graph_names):
     # Language Options
     # import libs
-    default_config = _builder(get_config(), all_config_keys())
-    _all_profiles = [key for key in _builder(get_profiles(), all_profiles())]
+    default_config = _builder(_core_config(), _core_default_config())
+    _all_profiles = [key for key in _builder(_profiles(), default_profiles())]
     _all_profiles.append('all')
     language_list = [lang for lang in messages(-1, 0)]
     if "-L" in sys.argv or "--language" in sys.argv:
