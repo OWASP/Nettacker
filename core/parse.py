@@ -112,6 +112,11 @@ def load():
         pass
     total_targets += 1
     total_targets = total_targets * len(scan_method)
+    try:
+        os.remove(range_temp)
+    except:
+        pass
+    range_temp = "tmp/ranges_" + suff
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
                        language, verbose_level, show_version, check_update, socks_proxy, retries, socks_proxy, False)
     trying = 0
@@ -124,8 +129,8 @@ def load():
                 str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
                 ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, socks_proxy,
                 retries, ping_flag, methods_args, scan_id, scan_cmd))
+            p.name = str(target) + "->" + sm
             p.start()
-            p.name = target + "->" + sm
             while 1:
                 n = 0
                 processes = multiprocessing.active_children()
