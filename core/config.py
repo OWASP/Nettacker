@@ -21,7 +21,7 @@ def _api_config():
         "api_access_key": "".join(random.choice("0123456789abcdef") for x in range(32)),
         "api_client_white_list": {
             "enabled": False,
-            "ips": ["127.0.0.1", "10.0.0.1-10.0.0.0/24", "192.168.1.1-192.168.1.255"]
+            "ips": ["127.0.0.1", "10.0.0.0/24", "192.168.1.1-192.168.1.255"]
         },
         "api_access_log": {
             "enabled": False,
