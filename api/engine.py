@@ -22,6 +22,16 @@ def limit_remote_addr():
         if flask_request.remote_addr not in app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list_ips"]:
             return jsonify(__structure(status="error",
                                        msg="your IP not authorized")), 403
+    try:
+        key = flask_request.args["key"]
+    except:
+        try:
+            key = flask_request.form["key"]
+        except:
+            key = None
+    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != key:
+        return jsonify(__structure(status="error",
+                                   msg="invalid API key")), 401
 
 
 @app.route('/', methods=["GET", "POST"])
