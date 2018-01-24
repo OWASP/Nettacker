@@ -3,7 +3,6 @@
 
 import multiprocessing
 import time
-import os
 from flask import Flask
 from flask import jsonify
 from flask import request as flask_request
@@ -16,8 +15,8 @@ from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
 from api.api_core import __remove_non_api_keys
-from core.targets import analysis
 from api.api_core import __rules
+from api.__start_scan import __scan
 
 app = Flask(__name__)
 
@@ -55,8 +54,8 @@ def new_scan():
     _start_scan_config = __rules(__remove_non_api_keys(_builder(_start_scan_config,
                                                                 _builder(_core_config(), _core_default_config()))),
                                  _core_default_config(), app.config["OWASP_NETTACKER_CONFIG"]["language"])
-    # targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-    #                    language, verbose_level, show_version, check_update, socks_proxy, retries, socks_proxy, False)
+    p = multiprocessing.Process(target=__scan, args=[_start_scan_config])
+    p.start()
     return jsonify(_start_scan_config)
 
 
