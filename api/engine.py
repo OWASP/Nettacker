@@ -10,7 +10,8 @@ from flask import abort
 from core.alert import write
 from core.alert import messages
 from core._die import __die_success
-from api.routes import __structure
+from api.api_core import __structure
+from api.api_core import __get_value
 
 app = Flask(__name__)
 
@@ -22,14 +23,8 @@ def limit_remote_addr():
         if flask_request.remote_addr not in app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list_ips"]:
             return jsonify(__structure(status="error",
                                        msg="your IP not authorized")), 403
-    try:
-        key = flask_request.args["key"]
-    except:
-        try:
-            key = flask_request.form["key"]
-        except:
-            key = None
-    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != key:
+    # API Key Ckeck
+    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != __get_value(flask_request, "key"):
         return jsonify(__structure(status="error",
                                    msg="invalid API key")), 401
 
