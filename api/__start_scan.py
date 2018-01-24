@@ -17,7 +17,7 @@ from core.log import sort_logs
 from core.color import finish
 
 
-def __scan(config):
+def __scan(config, scan_id, scan_cmd):
     # Setting Variables
     targets = config["targets"]
     check_ranges = config["check_ranges"]
@@ -58,8 +58,6 @@ def __scan(config):
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
                        language, verbose_level, retries, socks_proxy, False)
     trying = 0
-    scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
-    scan_cmd = " ".join(sys.argv)
     for target in targets:
         for sm in scan_method:
             trying += 1

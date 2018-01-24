@@ -3,6 +3,7 @@
 
 import multiprocessing
 import time
+import random
 from flask import Flask
 from flask import jsonify
 from flask import request as flask_request
@@ -54,7 +55,10 @@ def new_scan():
     _start_scan_config = __rules(__remove_non_api_keys(_builder(_start_scan_config,
                                                                 _builder(_core_config(), _core_default_config()))),
                                  _core_default_config(), app.config["OWASP_NETTACKER_CONFIG"]["language"])
-    p = multiprocessing.Process(target=__scan, args=[_start_scan_config])
+    scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
+    scan_cmd = "Through the OWASP Nettacker API"
+    _start_scan_config["scan_id"] = scan_id
+    p = multiprocessing.Process(target=__scan, args=[_start_scan_config, scan_id, scan_cmd])
     p.start()
     return jsonify(_start_scan_config)
 
