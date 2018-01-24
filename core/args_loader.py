@@ -412,7 +412,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                         if p not in tmp_ports:
                             tmp_ports.append(p)
             except:
-                pass
+                __die_failure(messages(language, 157))
         if len(tmp_ports) is 0:
             ports = None
         else:

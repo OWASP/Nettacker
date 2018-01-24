@@ -168,6 +168,7 @@ def all_messages():
             "153": "API access log filename",
             "154": "API port must be an integer!",
             "155": "unknown input type, accepted types are SINGLE_IPv4, RANGE_IPv4, CIDR_IPv4",
-            "156": " * API Key: {0}\n"
+            "156": " * API Key: {0}\n",
+            "157": "ports must be integers! (e.g. 80 || 80,1080 || 80,1080-1300,9000,12000-15000"
 
         }
