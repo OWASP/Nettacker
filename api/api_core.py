@@ -53,13 +53,13 @@ def __rules(config, defaults, language):
     if config["targets"] is not None:
         config["targets"] = list(set(config["targets"].rsplit(",")))
     else:
-        abort(400, "you must enter a target!")
+        abort(400, messages(language, 26))
     # Check Log File
     try:
         f = open(config["log_in_file"], "a")
         f.close()
     except:
-        abort(400, "file is not writable!")
+        abort(400, messages(language, 40).format(config["log_in_file"]))
     # Check Method ARGS
     methods_args = config["methods_args"]
     if methods_args is not None:
@@ -92,7 +92,7 @@ def __rules(config, defaults, language):
                         if p not in tmp_ports:
                             tmp_ports.append(p)
             except:
-                abort(400, "ports must be integers! (e.g. 80 || 80,1080 || 80,1080-1300,9000,12000-15000")
+                abort(400, messages(language, 157))
         if len(tmp_ports) is 0:
             ports = None
         else:
@@ -114,7 +114,7 @@ def __rules(config, defaults, language):
                     if sm not in tmp_sm.rsplit(","):
                         tmp_sm += sm + ","
             except:
-                abort(400, "profile \"{0}\" not found!".format(pr))
+                abort(400, messages(language, 137).format(pr))
         if tmp_sm[-1] == ",":
             tmp_sm = tmp_sm[0:-1]
         config["scan_method"] = ",".join(list(set(tmp_sm.rsplit(","))))
@@ -126,7 +126,7 @@ def __rules(config, defaults, language):
     # Check Scanning Method
     config["scan_method"] = config["scan_method"].rsplit(',') if config["scan_method"] is not None else None
     if config["scan_method"] is None:
-        abort(400, "you must select a scanning method!")
+        abort(400, messages(language, 41))
     else:
         if "all" in config["scan_method"]:
             config["scan_method"] = load_all_modules()
@@ -135,7 +135,7 @@ def __rules(config, defaults, language):
             methods = config["scan_method"][:]
             for sm in methods:
                 if sm not in load_all_modules():
-                    abort(400, "did not find \"{0}\" module!".format(sm))
+                    abort(400, messages(language, 30).format(sm))
     # Check Socks Proxy
     socks_proxy = config["socks_proxy"]
     if socks_proxy is not None:
@@ -163,10 +163,7 @@ def __rules(config, defaults, language):
         except:
             e = True
         if e:
-            abort(400,
-                  "please enter valid socks address and port. example socks5: 127.0.0.1:9050, socks://127.0.0.1:9050,"
-                  " socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050, authentication: socks://username:passwo"
-                  "rd@127.0.0.1, socks4://username:password@127.0.0.1, socks5://username:password@127.0.0.1")
+            abort(400, messages(language, 63))
         if socks_flag is 4:
             socks_proxy = "socks4://" + socks_proxy
         if socks_flag is 5:

@@ -24,15 +24,14 @@ app = Flask(__name__)
 
 @app.before_request
 def limit_remote_addr():
+    language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
     # IP Limitation
     if app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list"]:
         if flask_request.remote_addr not in app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list_ips"]:
-            return jsonify(__structure(status="error",
-                                       msg="your IP not authorized")), 403
+            return jsonify(__structure(status="error", msg=messages(language, 161))), 403
     # API Key Ckeck
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != __get_value(flask_request, "key"):
-        return jsonify(__structure(status="error",
-                                   msg="invalid API key")), 401
+        return jsonify(__structure(status="error", msg=messages(language, 160))), 401
 
 
 @app.errorhandler(400)
@@ -42,21 +41,22 @@ def error_400(error):
 
 @app.route('/', methods=["GET", "POST"])
 def index():
-    return jsonify(__structure(status="ok",
-                               msg="please read documentations https://github.com/viraintel/OWASP-Nettacker/wiki"))
+    language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
+    return jsonify(__structure(status="ok", msg=messages(language, 159)))
 
 
 @app.route('/new/scan', methods=["GET", "POST"])
 def new_scan():
     _start_scan_config = {}
+    language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
     for key in _core_default_config():
         if __get_value(flask_request, key) is not None:
             _start_scan_config[key] = __get_value(flask_request, key)
     _start_scan_config = __rules(__remove_non_api_keys(_builder(_start_scan_config,
                                                                 _builder(_core_config(), _core_default_config()))),
-                                 _core_default_config(), app.config["OWASP_NETTACKER_CONFIG"]["language"])
+                                 _core_default_config(), language)
     scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
-    scan_cmd = "Through the OWASP Nettacker API"
+    scan_cmd = messages(language, 158)
     _start_scan_config["scan_id"] = scan_id
     p = multiprocessing.Process(target=__scan, args=[_start_scan_config, scan_id, scan_cmd])
     p.start()

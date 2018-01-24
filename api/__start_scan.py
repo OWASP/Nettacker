@@ -105,4 +105,4 @@ def __scan(config, scan_id, scan_cmd):
     info(messages(language, 44))
     write("\n\n")
     finish()
-    return 1
+    return True
