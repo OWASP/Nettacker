@@ -3,15 +3,21 @@
 
 import multiprocessing
 import time
+import os
 from flask import Flask
 from flask import jsonify
 from flask import request as flask_request
-from flask import abort
 from core.alert import write
 from core.alert import messages
 from core._die import __die_success
 from api.api_core import __structure
 from api.api_core import __get_value
+from core.config import _core_config
+from core.config_builder import _core_default_config
+from core.config_builder import _builder
+from api.api_core import __remove_non_api_keys
+from core.targets import analysis
+from api.api_core import __rules
 
 app = Flask(__name__)
 
@@ -33,6 +39,20 @@ def limit_remote_addr():
 def index():
     return jsonify(__structure(status="ok",
                                msg="please read documentations https://github.com/viraintel/OWASP-Nettacker/wiki"))
+
+
+@app.route('/new/scan', methods=["GET", "POST"])
+def new_scan():
+    _start_scan_config = {}
+    for key in _core_default_config():
+        if __get_value(flask_request, key) is not None:
+            _start_scan_config[key] = __get_value(flask_request, key)
+    _start_scan_config = __rules(__remove_non_api_keys(_builder(_start_scan_config,
+                                                                _builder(_core_config(), _core_default_config()))),
+                                 _core_default_config(), app.config["OWASP_NETTACKER_CONFIG"]["language"])
+    # targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
+    #                    language, verbose_level, show_version, check_update, socks_proxy, retries, socks_proxy, False)
+    return jsonify(_start_scan_config)
 
 
 def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
