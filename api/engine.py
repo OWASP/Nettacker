@@ -35,6 +35,11 @@ def limit_remote_addr():
                                    msg="invalid API key")), 401
 
 
+@app.errorhandler(400)
+def error_400(error):
+    return jsonify(__structure(status="error", msg=error.description)), 400
+
+
 @app.route('/', methods=["GET", "POST"])
 def index():
     return jsonify(__structure(status="ok",
