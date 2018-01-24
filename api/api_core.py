@@ -68,7 +68,7 @@ def __rules(config, defaults, language):
             else:
                 new_methods_args[imethod_args.rsplit("=")[0]] = ""
         methods_args = new_methods_args
-    config["methods_args"] = methods_args[:]
+    config["methods_args"] = methods_args
 
     # Check Passwords
     config["passwds"] = config["passwds"].rsplit(',') if config["passwds"] is not None else None
@@ -105,7 +105,7 @@ def __rules(config, defaults, language):
         if config["profile"][0] == "all":
             config["profile"] = ",".join(_builder(_profiles(), default_profiles()))
         tmp_sm = config["scan_method"]
-        for pr in config["profile"].rsplit(","):
+        for pr in config["profile"]:
             try:
                 for sm in _builder(_profiles(), default_profiles())[pr]:
                     if sm not in tmp_sm.rsplit(","):
