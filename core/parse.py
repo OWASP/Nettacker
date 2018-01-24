@@ -108,7 +108,7 @@ def load():
     total_targets = -1
     for total_targets, _ in enumerate(
             analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-                     language, verbose_level, show_version, check_update, socks_proxy, retries, socks_proxy, True)):
+                     language, verbose_level, retries, socks_proxy, True)):
         pass
     total_targets += 1
     total_targets = total_targets * len(scan_method)
@@ -118,7 +118,7 @@ def load():
         pass
     range_temp = "tmp/ranges_" + suff
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-                       language, verbose_level, show_version, check_update, socks_proxy, retries, socks_proxy, False)
+                       language, verbose_level, retries, socks_proxy, False)
     trying = 0
     scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
     scan_cmd = " ".join(sys.argv)
@@ -127,8 +127,8 @@ def load():
             trying += 1
             p = multiprocessing.Process(target=start_attack, args=(
                 str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
-                ports, log_in_file, time_sleep, language, verbose_level, show_version, check_update, socks_proxy,
-                retries, ping_flag, methods_args, scan_id, scan_cmd))
+                ports, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args,
+                scan_id, scan_cmd))
             p.name = str(target) + "->" + sm
             p.start()
             while 1:

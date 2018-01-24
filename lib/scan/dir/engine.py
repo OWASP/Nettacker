@@ -140,8 +140,7 @@ def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, ver
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
-          verbose_level, show_version, check_update, socks_proxy, retries, ping_flag, methods_args, scan_id,
-          scan_cmd):  # Main function
+          verbose_level, socks_proxy, retries, ping_flag, methods_args, scan_id, scan_cmd):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP':
         # rand useragent
         user_agent_list = [

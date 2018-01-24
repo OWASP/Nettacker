@@ -44,7 +44,7 @@ def target_type(target):
 
 
 def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-             language, verbose_level, show_version, check_update, proxies, retries, socks_proxy, enumerate_flag):
+             language, verbose_level, retries, socks_proxy, enumerate_flag):
     tmp = open(range_temp, 'a')
     tmp.write('')
     tmp.close()
