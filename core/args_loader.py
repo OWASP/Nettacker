@@ -399,11 +399,24 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             else:
                 __die_failure(messages(language, 34).format(exm))
     # Check port(s)
-    if type(ports) is not list and ports is not None and "-" in ports:
-        ports = ports.rsplit("-")
-        ports = range(int(ports[0]), int(ports[1]) + 1)
-    elif type(ports) is not list and ports is not None:
-        ports = ports.rsplit(",")
+    if type(ports) is not list and ports is not None:
+        tmp_ports = []
+        for port in ports.rsplit(','):
+            try:
+                if '-' not in port:
+                    if int(port) not in tmp_ports:
+                        tmp_ports.append(int(port))
+                else:
+                    t_ports = range(int(port.rsplit('-')[0], int(port.rsplit('-')[1]) + 1))
+                    for p in t_ports:
+                        if p not in tmp_ports:
+                            tmp_ports.append(p)
+            except:
+                pass
+        if len(tmp_ports) is 0:
+            ports = None
+        else:
+            ports = tmp_ports[:]
     # Check user list
     if users is not None:
         users = list(set(users.rsplit(",")))
