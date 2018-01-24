@@ -407,7 +407,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                     if int(port) not in tmp_ports:
                         tmp_ports.append(int(port))
                 else:
-                    t_ports = range(int(port.rsplit('-')[0], int(port.rsplit('-')[1]) + 1))
+                    t_ports = range(int(port.rsplit('-')[0]), int(port.rsplit('-')[1]) + 1)
                     for p in t_ports:
                         if p not in tmp_ports:
                             tmp_ports.append(p)
