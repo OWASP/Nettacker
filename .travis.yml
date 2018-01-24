@@ -11,8 +11,8 @@ python:
  - "3.5"
  - "3.6"
  - "3.6-dev"
- - "3.7-dev"
- - "nightly"
+# - "3.7-dev" error at the moment: https://travis-ci.org/viraintel/OWASP-Nettacker/jobs/332849350
+# - "nightly" error at the moment: https://travis-ci.org/viraintel/OWASP-Nettacker/jobs/332849351
 
 # Select OS
 os:
