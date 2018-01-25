@@ -567,6 +567,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 return None
         subs = __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries,
                           num, total, extra_requirements=extra_requirements)
+        if len(subs) is 0:
+            info(messages(language, 163))
         if len(subs) is not 0:
             save = open(log_in_file, 'a')
             for sub in subs:
