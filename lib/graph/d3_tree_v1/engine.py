@@ -42,11 +42,9 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
             "id": ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(20)),
             "name": data_graph[_TYPE],
             "data": {
-                "band": data_graph[_DESCRIPTION] if len(data_graph[_DESCRIPTION])
-                                                    <= 50 else data_graph[_DESCRIPTION] + '...',
+                "band": data_graph[_DESCRIPTION],
                 "relation": [[_PORT + ': "' + str(data_graph[_PORT]) + '"',
-                              _DESCRIPTION + ': "' + data_graph[_DESCRIPTION] if len(data_graph[_DESCRIPTION])
-                                                    <= 50 else data_graph[_DESCRIPTION] + '...' + '"',
+                              _DESCRIPTION + ': "' + data_graph[_DESCRIPTION] + '\"',
                               _USERNAME + ': "' + data_graph[_USERNAME] + '"',
                               _PASSWORD + ': "' + data_graph[_PASSWORD] + '"']]
             }
@@ -74,8 +72,7 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
                         [0] != _PORT + ': "' + str(data_graph[_PORT]) + '"':
                     dgraph["children"][_position]["children"][__position]["data"]["relation"].append(
                         [_PORT + ': "' + str(data_graph[_PORT]) + '"',
-                         _DESCRIPTION + ': "' + data_graph[_DESCRIPTION] if len(data_graph[_DESCRIPTION])
-                                                    <= 50 else data_graph[_DESCRIPTION] + '...' + '"',
+                         _DESCRIPTION + ': "' + data_graph[_DESCRIPTION] + '"',
                          _USERNAME + ': "' + data_graph[_USERNAME] + '"',
                          _PASSWORD + ': "' + data_graph[_PASSWORD] + '"'])
             else:
@@ -83,8 +80,7 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
                         [0] != _PORT + ': "' + str(data_graph[_PORT]) + '"':
                     dgraph["children"][position]["children"][__position]["data"]["relation"].append(
                         [_PORT + ': "' + str(data_graph[_PORT]) + '"',
-                         _DESCRIPTION + ': "' + data_graph[_DESCRIPTION] if len(data_graph[_DESCRIPTION])
-                                                    <= 50 else data_graph[_DESCRIPTION] + '...' + '"',
+                         _DESCRIPTION + ': "' + data_graph[_DESCRIPTION] + '"',
                          _USERNAME + ': "' + data_graph[_USERNAME] + '"',
                          _PASSWORD + ': "' + data_graph[_PASSWORD] + '"'])
         n += 1
@@ -105,7 +101,7 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
                     }
                     add_flag = True
                     for e in dgraph["children"][b]["children"][d]["children"]:
-                        if _to_modify["name"] == e["name"] and _to_modify["data"]["band"]\
+                        if _to_modify["name"] == e["name"] and _to_modify["data"]["band"] \
                                 == e["data"]["band"]:
                             add_flag = False
                     if add_flag:
