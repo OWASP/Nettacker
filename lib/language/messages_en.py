@@ -163,7 +163,8 @@ def all_messages():
             "148": "API debug mode",
             "149": "API access key",
             "150": "just allow white list hosts to connect to the API",
-            "151": "define white list hosts, separate with \",\" (examples: 127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)",
+            "151": "define white list hosts, separate with \",\" "
+                   "(examples: 127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)",
             "152": "generate API access log",
             "153": "API access log filename",
             "154": "API port must be an integer!",
@@ -171,7 +172,7 @@ def all_messages():
             "156": " * API Key: {0}\n",
             "157": "ports must be integers! (e.g. 80 || 80,1080 || 80,1080-1300,9000,12000-15000",
             "158": "Through the OWASP Nettacker API",
-            "159": "please read documentations https://github.com/viraintel/OWASP-Nettacker/wiki",
+            "159": "please read documentations https://github.com/viraintel/OWASP-Nettacker/wiki",  # remove
             "160": "invalid API key",
             "161": "your IP not authorized",
             "162": "Not Found!"
