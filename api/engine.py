@@ -7,7 +7,7 @@ import random
 from flask import Flask
 from flask import jsonify
 from flask import request as flask_request
-from core.alert import write
+from core.alert import write_to_api_console
 from core.alert import messages
 from core._die import __die_success
 from api.api_core import __structure
@@ -79,7 +79,7 @@ def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_
 def _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
                api_client_white_list_ips, api_access_log, api_access_log_filename, language):
     # Starting the API
-    write(messages(language, 156).format(api_access_key))
+    write_to_api_console(messages(language, 156).format(api_access_key))
     p = multiprocessing.Process(target=__process_it,
                                 args=(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
                                       api_client_white_list_ips, api_access_log, api_access_log_filename, language))
