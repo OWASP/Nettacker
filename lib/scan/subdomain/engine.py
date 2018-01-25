@@ -567,14 +567,14 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 return None
         subs = __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries,
                           num, total, extra_requirements=extra_requirements)
-        info(messages(language, 135).format(len(subs), ', '.join(subs) if len(subs) > 0 else 'None'))
         if len(subs) is not 0:
             save = open(log_in_file, 'a')
-            save.write(
-                json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
-                            'DESCRIPTION': messages(language, 135).format(len(subs), ', '.join(subs)
-                            if len(subs) > 0 else 'None'), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                            'SCAN_CMD': scan_cmd}) + '\n')
+            for sub in subs:
+                info(messages(language, 135).format(sub))
+                save.write(
+                    json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
+                                'DESCRIPTION': sub, 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                                'SCAN_CMD': scan_cmd}) + '\n')
             save.close()
         if len(subs) is 0 and verbose_level is not 0:
             save = open(log_in_file, 'a')

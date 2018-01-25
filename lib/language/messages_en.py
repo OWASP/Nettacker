@@ -147,7 +147,7 @@ def all_messages():
             "131": "the socks proxy",
             "132": "the retries number",
             "133": "a graph",
-            "135": "{0} subdomain found: {1}",
+            "135": "subdomain found: {0}",
             "136": "select profile {0}",
             "137": "the profile \"{0}\" not found!",
             "138": "waiting for {0}",
