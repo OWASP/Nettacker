@@ -7,6 +7,13 @@ from core import color
 from core.compatible import version
 
 
+def is_not_run_from_api():
+    if '--start-api' in sys.argv:
+        return False
+    else:
+        return True
+
+
 def messages(language, msg_id):
     # Returning selected langauge
     if language is -1:
@@ -44,38 +51,50 @@ def __input_msg(content):
 
 
 def info(content):
-    if version() is 2:
-        sys.stdout.write(color.color('yellow') + '[+] ' + color.color('green') +
-                         content.encode('utf8') + color.color('reset') + '\n')
-    else:
-        sys.stdout.buffer.write(bytes(color.color('yellow') + '[+] ' + color.color('green') +
-                                      content + color.color('reset') + '\n', 'utf8'))
+    if is_not_run_from_api():
+        if version() is 2:
+            sys.stdout.write(color.color('yellow') + '[+] ' + color.color('green') +
+                             content.encode('utf8') + color.color('reset') + '\n')
+        else:
+            sys.stdout.buffer.write(bytes(color.color('yellow') + '[+] ' + color.color('green') +
+                                          content + color.color('reset') + '\n', 'utf8'))
     return
 
 
 def write(content):
-    if version() is 2:
-        sys.stdout.write(content.encode('utf8'))
-    else:
-        sys.stdout.buffer.write(bytes(content, 'utf8'))
+    if is_not_run_from_api():
+        if version() is 2:
+            sys.stdout.write(content.encode('utf8'))
+        else:
+            sys.stdout.buffer.write(bytes(content, 'utf8'))
     return
 
 
 def warn(content):
-    if version() is 2:
-        sys.stdout.write(color.color('blue') + '[!] ' + color.color('yellow') +
-                         content.encode('utf8') + color.color('reset') + '\n')
-    else:
-        sys.stdout.buffer.write(bytes(color.color('blue') + '[!] ' + color.color('yellow') +
-                                      content + color.color('reset') + '\n', 'utf8'))
+    if is_not_run_from_api():
+        if version() is 2:
+            sys.stdout.write(color.color('blue') + '[!] ' + color.color('yellow') +
+                             content.encode('utf8') + color.color('reset') + '\n')
+        else:
+            sys.stdout.buffer.write(bytes(color.color('blue') + '[!] ' + color.color('yellow') +
+                                          content + color.color('reset') + '\n', 'utf8'))
     return
 
 
 def error(content):
+    if is_not_run_from_api():
+        if version() is 2:
+            sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
+                             content.encode('utf8') + color.color('reset') + '\n')
+        else:
+            data = color.color('red') + '[X] ' + color.color('yellow') + content + color.color('reset') + '\n'
+            sys.stdout.buffer.write(data.encode('utf8'))
+    return
+
+
+def write_to_api_console(content):
     if version() is 2:
-        sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
-                         content.encode('utf8') + color.color('reset') + '\n')
+        sys.stdout.write(content.encode('utf8'))
     else:
-        data = color.color('red') + '[X] ' + color.color('yellow') + content + color.color('reset') + '\n'
-        sys.stdout.buffer.write(data.encode('utf8'))
+        sys.stdout.buffer.write(bytes(content, 'utf8'))
     return
