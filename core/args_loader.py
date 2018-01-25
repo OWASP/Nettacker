@@ -21,6 +21,7 @@ from core.wizard import __wizard
 from core.config_builder import _core_default_config
 from core.config_builder import default_profiles
 from core.config import _profiles
+from core.alert import write_to_api_console
 
 # temporary use fixed version of argparse
 if os_name() == "win32" or os_name() == "win64":
@@ -261,7 +262,8 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             try:
                 f = open(api_access_log_filename, 'a')
             except:
-                __die_failure(messages(language, 40).format(api_access_log_filename))
+                write_to_api_console(" * " + messages(language, 40).format(api_access_log_filename) + "\n")
+                __die_failure("")
         _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
                    api_client_white_list_ips, api_access_log, api_access_log_filename, language)
     # Wizard mode
