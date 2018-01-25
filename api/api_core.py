@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 from core.load_modules import load_all_modules
 from core.load_modules import load_all_graphs
 from core.alert import messages
@@ -38,6 +39,96 @@ def __remove_non_api_keys(config):
         if key not in non_api_keys:
             new_config[key] = config[key]
     return new_config
+
+
+def __mime_types():
+    return {
+        ".aac": "audio/aac",
+        ".abw": "application/x-abiword",
+        ".arc": "application/octet-stream",
+        ".avi": "video/x-msvideo",
+        ".azw": "application/vnd.amazon.ebook",
+        ".bin": "application/octet-stream",
+        ".bz": "application/x-bzip",
+        ".bz2": "application/x-bzip2",
+        ".csh": "application/x-csh",
+        ".css": "text/css",
+        ".csv": "text/csv",
+        ".doc": "application/msword",
+        ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ".eot": "application/vnd.ms-fontobject",
+        ".epub": "application/epub+zip",
+        ".gif": "image/gif",
+        ".htm": ".htm",
+        ".html": "text/html",
+        ".ico": "image/x-icon",
+        ".ics": "text/calendar",
+        ".jar": "application/java-archive",
+        ".jpeg": ".jpeg",
+        ".jpg": "image/jpeg",
+        ".js": "application/javascript",
+        ".json": "application/json",
+        ".mid": ".mid",
+        ".midi": "audio/midi",
+        ".mpeg": "video/mpeg",
+        ".mpkg": "application/vnd.apple.installer+xml",
+        ".odp": "application/vnd.oasis.opendocument.presentation",
+        ".ods": "application/vnd.oasis.opendocument.spreadsheet",
+        ".odt": "application/vnd.oasis.opendocument.text",
+        ".oga": "audio/ogg",
+        ".ogv": "video/ogg",
+        ".ogx": "application/ogg",
+        ".otf": "font/otf",
+        ".png": "image/png",
+        ".pdf": "application/pdf",
+        ".ppt": "application/vnd.ms-powerpoint",
+        ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        ".rar": "application/x-rar-compressed",
+        ".rtf": "application/rtf",
+        ".sh": "application/x-sh",
+        ".svg": "image/svg+xml",
+        ".swf": "application/x-shockwave-flash",
+        ".tar": "application/x-tar",
+        ".tif": ".tif",
+        ".tiff": "image/tiff",
+        ".ts": "application/typescript",
+        ".ttf": "font/ttf",
+        ".vsd": "application/vnd.visio",
+        ".wav": "audio/x-wav",
+        ".weba": "audio/webm",
+        ".webm": "video/webm",
+        ".webp": "image/webp",
+        ".woff": "font/woff",
+        ".woff2": "font/woff2",
+        ".xhtml": "application/xhtml+xml",
+        ".xls": "application/vnd.ms-excel",
+        ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ".xml": "application/xml",
+        ".xul": "application/vnd.mozilla.xul+xml",
+        ".zip": "application/zip",
+        ".3gp": "video/3gpp",
+        "audio/3gpp": "video",
+        ".3g2": "video/3gpp2",
+        "audio/3gpp2": "video",
+        ".7z": "application/x-7z-compressed"
+    }
+
+
+def root_dir():
+    return os.path.join(os.path.join(os.path.dirname(os.path.dirname(__file__)), "web"), "static")
+
+
+def get_file(filename):
+    try:
+        src = os.path.join(root_dir(), filename)
+        return open(src, 'rb').read()
+    except IOError as exc:
+        abort(404)
+
+
+def __api_key_check(app, flask_request, language):
+    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != __get_value(flask_request, "key"):
+        abort(401, messages(language, 160))
 
 
 def __rules(config, defaults, language):

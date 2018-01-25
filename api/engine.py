@@ -4,25 +4,54 @@
 import multiprocessing
 import time
 import random
-import json
+import os
 from flask import Flask
 from flask import jsonify
 from flask import request as flask_request
+from flask import render_template
+from flask import abort
+from flask import Response
 from core.alert import write_to_api_console
 from core.alert import messages
 from core._die import __die_success
-from core._die import __die_failure
 from api.api_core import __structure
 from api.api_core import __get_value
+from api.api_core import root_dir
+from api.api_core import get_file
+from api.api_core import __mime_types
 from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
 from api.api_core import __remove_non_api_keys
 from api.api_core import __rules
+from api.api_core import __api_key_check
 from api.__start_scan import __scan
 from core._time import now
 
-app = Flask(__name__)
+template_dir = os.path.join(os.path.join(os.path.dirname(os.path.dirname(__file__)), "web"), "static")
+app = Flask(__name__, template_folder=template_dir)
+app.config.from_object(__name__)
+
+
+@app.errorhandler(400)
+def error_400(error):
+    return jsonify(__structure(status="error", msg=error.description)), 400
+
+
+@app.errorhandler(401)
+def error_401(error):
+    return jsonify(__structure(status="error", msg=error.description)), 401
+
+
+@app.errorhandler(403)
+def error_403(error):
+    return jsonify(__structure(status="error", msg=error.description)), 403
+
+
+@app.errorhandler(404)
+def error_404(error):
+    return jsonify(__structure(status="error",
+                               msg=messages(app.config["OWASP_NETTACKER_CONFIG"]["language"], 162))), 404
 
 
 @app.before_request
@@ -31,10 +60,7 @@ def limit_remote_addr():
     # IP Limitation
     if app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list"]:
         if flask_request.remote_addr not in app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list_ips"]:
-            return jsonify(__structure(status="error", msg=messages(language, 161))), 403
-    # API Key Ckeck
-    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != __get_value(flask_request, "key"):
-        return jsonify(__structure(status="error", msg=messages(language, 160))), 401
+            abort(403, messages(language, 161))
 
 
 @app.after_request
@@ -54,27 +80,25 @@ def access_log(response):
     return response
 
 
-@app.errorhandler(400)
-def error_400(error):
-    return jsonify(__structure(status="error", msg=error.description)), 400
-
-
-@app.errorhandler(404)
-def error_404(error):
-    return jsonify(__structure(status="error",
-                               msg=messages(app.config["OWASP_NETTACKER_CONFIG"]["language"], 162))), 400
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def get_statics(path):
+    static_types = __mime_types()
+    return Response(get_file(os.path.join(root_dir(), path)),
+                    mimetype=static_types.get(os.path.splitext(path)[1], "text/html"))
 
 
 @app.route('/', methods=["GET", "POST"])
 def index():
     language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
-    return jsonify(__structure(status="ok", msg=messages(language, 159)))
+    return render_template("index.html", welcome=messages(language, 159))
 
 
 @app.route('/new/scan', methods=["GET", "POST"])
 def new_scan():
     _start_scan_config = {}
     language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
+    __api_key_check(app, flask_request, language)
     for key in _core_default_config():
         if __get_value(flask_request, key) is not None:
             _start_scan_config[key] = __get_value(flask_request, key)
