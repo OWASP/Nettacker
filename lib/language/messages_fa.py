@@ -178,5 +178,6 @@ def all_messages():
             "158": "از طریق OWASP Nettacker API",
             "159": "لطفا داکیومنت ها را مطالعه فرمایید https://github.com/viraintel/OWASP-Nettacker/wiki",
             "160": "کلید API نادرست!",
-            "161": "آدرس IP شما مجاز نیست"
+            "161": "آدرس IP شما مجاز نیست",
+            "162": "یافت نشد!"
         }

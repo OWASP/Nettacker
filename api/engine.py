@@ -39,6 +39,12 @@ def error_400(error):
     return jsonify(__structure(status="error", msg=error.description)), 400
 
 
+@app.errorhandler(404)
+def error_404(error):
+    return jsonify(__structure(status="error",
+                               msg=messages(app.config["OWASP_NETTACKER_CONFIG"]["language"], 162))), 400
+
+
 @app.route('/', methods=["GET", "POST"])
 def index():
     language = app.config["OWASP_NETTACKER_CONFIG"]["language"]

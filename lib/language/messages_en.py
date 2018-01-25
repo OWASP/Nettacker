@@ -173,6 +173,7 @@ def all_messages():
             "158": "Through the OWASP Nettacker API",
             "159": "please read documentations https://github.com/viraintel/OWASP-Nettacker/wiki",
             "160": "invalid API key",
-            "161": "your IP not authorized"
+            "161": "your IP not authorized",
+            "162": "Not Found!"
 
         }
