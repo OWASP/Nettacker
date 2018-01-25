@@ -20,9 +20,10 @@ def _version_info():
 
 
 def logo():
-    from core.alert import write
+    from core.alert import write_to_api_console
     from core import color
-    write('''    
+    from core.color import finish
+    write_to_api_console('''    
    ______          __      _____ _____  
   / __ \ \        / /\    / ____|  __ \ 
  | |  | \ \  /\  / /  \  | (___ | |__) |
@@ -39,6 +40,7 @@ def logo():
     \n\n'''.format(__version__, __code_name__, color.color('red'), color.color('reset'), color.color('yellow'),
                    color.color('reset'), color.color('cyan'), color.color('reset'), color.color('cyan'),
                    color.color('reset'), color.color('cyan'), color.color('reset')))
+    finish()
 
 
 def version():
