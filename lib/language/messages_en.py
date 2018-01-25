@@ -127,7 +127,7 @@ def all_messages():
             "111": "list all methods args",
             "112": "cannot get {0} module args",
             "113": "trying {0} of {1} in process {2} of {3} on {4} ({5})",
-            "114": "{0} domain found: {1}",
+            "114": "domain found: {0}",
             "115": "TIME",
             "116": "CATEGORY",
             "117": "cannot find any module with {0} pattern!",
@@ -175,6 +175,8 @@ def all_messages():
             "159": "please read documentations https://github.com/viraintel/OWASP-Nettacker/wiki",  # remove
             "160": "invalid API key",
             "161": "your IP not authorized",
-            "162": "Not Found!"
+            "162": "Not Found!",
+            "163": "subdomain_scan: no subdomain founded!",
+            "164": "viewdns_reverse_ip_lookup_scan: no domain found!"
 
         }
