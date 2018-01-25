@@ -25,7 +25,7 @@ def _api_default_config():
         },
         "api_access_log": {
             "enabled": False,
-            "filename": "nettacker_api_access_log"
+            "filename": "nettacker_api_access.log"
         }
     }
 
