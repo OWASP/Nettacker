@@ -4,12 +4,14 @@
 import multiprocessing
 import time
 import random
+import json
 from flask import Flask
 from flask import jsonify
 from flask import request as flask_request
 from core.alert import write_to_api_console
 from core.alert import messages
 from core._die import __die_success
+from core._die import __die_failure
 from api.api_core import __structure
 from api.api_core import __get_value
 from core.config import _core_config
@@ -18,6 +20,7 @@ from core.config_builder import _builder
 from api.api_core import __remove_non_api_keys
 from api.api_core import __rules
 from api.__start_scan import __scan
+from core._time import now
 
 app = Flask(__name__)
 
@@ -32,6 +35,23 @@ def limit_remote_addr():
     # API Key Ckeck
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != __get_value(flask_request, "key"):
         return jsonify(__structure(status="error", msg=messages(language, 160))), 401
+
+
+@app.after_request
+def access_log(response):
+    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"]:
+        r_log = open(app.config["OWASP_NETTACKER_CONFIG"]["api_access_log_filename"], "ab")
+        # if you need to log POST data
+        # r_log.write(
+        #     '{0} [{1}] {2} "{3} {4}" {5} {6} {7}\r\n'.format(flask_request.remote_addr, now(), flask_request.host,
+        #                                                      flask_request.method, flask_request.full_path,
+        #                                                      flask_request.user_agent, response.status_code,
+        #                                                      json.dumps(flask_request.form)))
+        r_log.write('{0} [{1}] {2} "{3} {4}" {5} {6}\r\n'.format(flask_request.remote_addr, now(), flask_request.host,
+                                                                 flask_request.method, flask_request.full_path,
+                                                                 flask_request.user_agent, response.status_code))
+        r_log.close()
+    return response
 
 
 @app.errorhandler(400)
