@@ -1,8 +1,8 @@
 # Compiled python files
 *.pyc
 
-#pyCharm settings
-.idea/*
+#ignore IDE settings
+*.idea*
 
 #setup
 build/*
