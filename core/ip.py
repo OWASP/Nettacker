@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import netaddr
 import time
 import sys
 from core.alert import *
@@ -43,18 +43,8 @@ def getIPRange(IP):
 
 def isIP(IP):
     IP = str(IP)
-    if len(IP.rsplit('.')) is 4 and '-' not in IP and '/' not in IP:
-        ip_flag = True
-        for num in IP.rsplit('.'):
-            try:
-                if int(num) <= 255:
-                    pass
-                else:
-                    ip_flag = False
-            except:
-                ip_flag = False
-        return ip_flag
-    return False
+    ip_flag=netaddr.valid_ipv4(IP)
+    return ip_flag
 
 
 def IPRange(Range, range_temp, language):
@@ -95,3 +85,9 @@ def _generate_IPRange(Range):
         return IPNetwork(Range)
     else:
         return []
+
+def isIP6(IP):
+    IP = str(IP)
+    ip_flag=netaddr.valid_ipv6(IP)
+    return ip_flag
+
