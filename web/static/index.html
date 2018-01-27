@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <title>OWASP Nettacker</title>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -38,52 +39,75 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand visible-xs-inline-block nav-logo" href="/"><img
-                            src="/images/logo-dark-inset.png" class="img-responsive" alt=""></a>
                 </div>
 
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse navbar-ex1-collapse">
                     <ul class="nav navbar-nav js-nav-add-active-class">
-                        <li><a class="glyphicon glyphicon-home active" href="/index.html"> Home</a></li>
+                        <a class="navbar-brand" action="javascript:home()" id="home_btn" href="#">OWASP Nettacker</a>
                     </ul>
-                    <ul id="set_session" class="nav navbar-nav navbar-right hidden-xs">
+
+                    <ul id="set_session" class="nav navbar-nav navbar-right hidden">
                         <form id="api_key_form" class="navbar-form navbar-left" action="javascript:check_api_session()">
                             <div class="form-group">
-                                <input id="session_value" action="javascript:check_api_session()" type="text"
-                                       class="form-control" placeholder="API Key">
+                                <input autocomplete="off" id="session_value" action="javascript:check_api_session()" type="text"
+                                       class="form-control" placeholder="API Key" value="">
                             </div>
                             <a id="send_session" type="submit" action="javascript:check_api_session()"
-                               class="navbar-btn btn btn-danger"
+                               class="btn btn-danger"
                                am-latosans="bold">Set Session
                             </a>
                         </form>
                     </ul>
-                    <div id="success_key" class="hidden alert alert-success nav navbar-nav navbar-right hidden-x">
-                        <strong>Success!</strong> Your session updated!
-                    </div>
-                    <div id="failed_key" class="hidden shake animated alert alert-danger nav navbar-nav navbar-right hidden-x">
-                        <strong>Failed!</strong> Invalid API key!
-                    </div>
+                    <ul id="logout_btn" class="nav navbar-nav navbar-right hidden">
+                        <form class="navbar-form navbar-left" action="javascript:do_logout()">
+                            <a type="submit" action="javascript:do_logout()"
+                               class="btn btn-info"
+                               am-latosans="bold">logout
+                            </a>
+                        </form>
+                    </ul>
+                    <button id="new_scan_btn" class="btn btn-warning navbar-btn navbar-right ">New Scan</button>
                 </div><!-- /.navbar-collapse -->
             </div>
         </nav>
     </div>
+    <div id="success_key" class="hidden alert alert-success nav navbar-nav navbar-right">
+        <strong>Success!</strong> Your session updated!
+    </div>
+    <div id="failed_key" class="hidden shake animated alert alert-danger navbar-right">
+        <strong>Failed!</strong> Invalid API key!
+    </div>
+    <div id="logout_success" class="hidden alert alert-success nav navbar-nav navbar-right">
+        <strong>logged out!</strong> cleared browser your session!
+    </div>
+    <body>
+    <br><br>
+    <div id="home" class="">
+        <h1>OWASP Nettacker</h1>
+        <p class="text-justify"><strong>OWASP Nettacker</strong> project is created to automate information gathering,
+            vulnerability scanning and eventually generating a report for networks, including services, bugs,
+            vulnerabilities, misconfigurations, and other information. This software will utilize <code>TCP</code>, <code>SYN</code>,
+            <code>ACK</code>, <code>ICMP</code> and many other protocols in order to detect and bypass <code>Firewall</code>/<code>IDS</code>/<code>IPS</code>
+            devices. By leveraging a unique method in OWASP Nettacker for discovering protected services and devices such as
+            SCADA. It would make a competitive edge compared to other scanner making it one of the bests.</p>
+        <h2>Links</h2>
+        <ul>
+            <li>GitHub <a href="https://github.com/viraintel/OWASP-Nettacker" class="glyphicon glyphicon-link"></a></li>
+            <li>OWASP <a href="https://www.owasp.org/index.php/OWASP_Nettacker" class="glyphicon glyphicon-link"></a></li>
+        </ul>
+    </div>
+    <div id="new_scan" class="hidden">
+        <form class="form-inline" action="javascript:submit_new_scan()">
+            <div class="form-group">
+                <label class="">Target:</label>
+                <input type="target" class="form-control" id="target">
+            </div>
+            <br><br>
+            <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+    </div>
+    </body>
 </div>
-<body>
-<div class="container">
-    <h1>OWASP Nettacker</h1>
-    <p class="text-justify"><strong>OWASP Nettacker</strong> project is created to automate information gathering,
-        vulnerability scanning and eventually generating a report for networks, including services, bugs,
-        vulnerabilities, misconfigurations, and other information. This software will utilize <code>TCP</code>, <code>SYN</code>,
-        <code>ACK</code>, <code>ICMP</code> and many other protocols in order to detect and bypass <code>Firewall</code>/<code>IDS</code>/<code>IPS</code>
-        devices. By leveraging a unique method in OWASP Nettacker for discovering protected services and devices such as
-        SCADA. It would make a competitive edge compared to other scanner making it one of the bests.</p>
-    <h2>Links</h2>
-    <ul>
-        <li>GitHub <a href="https://github.com/viraintel/OWASP-Nettacker" class="glyphicon glyphicon-link"></a></li>
-        <li>OWASP <a href="https://www.owasp.org/index.php/OWASP_Nettacker" class="glyphicon glyphicon-link"></a></li>
-    </ul>
-</div>
-</body>
+
 </html>

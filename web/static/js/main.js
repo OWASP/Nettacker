@@ -9,9 +9,16 @@ $(document).ready(function () {
         url: "/session/check",
         dataType: "text"
     }).done(function (res) {
-        // Your `success` code
+        $("#set_session").addClass("hidden");
+        $("#set_session").hide();
+        $("#logout_btn").removeClass("hidden");
+        $("#logout_btn").show();
+
     }).fail(function (jqXHR, textStatus, errorThrown) {
+        $("#set_session").removeClass("hidden");
         $("#set_session").show();
+        $("#logout_btn").addClass("hidden");
+        $("#logout_btn").hide();
     });
 
     // set session key
@@ -31,6 +38,8 @@ $(document).ready(function () {
             $("#success_key").removeClass("hidden");
             setTimeout("$(\"#success_key\").addClass(\"animated fadeOut\");", 1000);
             setTimeout("$(\"#success_key\").addClass(\"hidden\");", 1500);
+            $("#logout_btn").removeClass("hidden");
+            $("#logout_btn").show();
         }).fail(function (jqXHR, textStatus, errorThrown) {
             $("#set_session").hide();
             $("#failed_key").removeClass("hidden");
@@ -39,8 +48,37 @@ $(document).ready(function () {
         });
     });
 
+    $("#logout_btn").click(function () {
+        $.ajax({
+            type: "GET",
+            url: "/session/kill",
+            dataType: "text"
+        }).done(function (res) {
+            $("#session_value").val("");
+            $("#logout_btn").addClass("hidden");
+            $("#logout_btn").hide();
+            $("#set_session").removeClass("hidden");
+            $("#set_session").show();
+            $("#logout_success").removeClass("hidden");
+            setTimeout("$(\"#logout_success\").addClass(\"animated fadeOut\");", 1000);
+            setTimeout("$(\"#logout_success\").addClass(\"hidden\");", 1500);
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            // codes
+        });
+    });
+
+
+    $("#home_btn").click(function () {
+        $("#new_scan").addClass("hidden");
+        $("#home").removeClass("hidden");
+
+    });
+
+    $("#new_scan_btn").click(function () {
+        $("#home").addClass("hidden");
+        $("#new_scan").removeClass("hidden");
+
+
+    });
+
 });
-
-function check_api_session() {
-
-}
