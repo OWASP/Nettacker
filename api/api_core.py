@@ -25,7 +25,10 @@ def __get_value(flask_request, _key):
         try:
             key = flask_request.form[_key]
         except:
-            key = None
+            try:
+                key = flask_request.cookies[_key]
+            except:
+                key = None
     return key
 
 

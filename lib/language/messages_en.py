@@ -177,6 +177,7 @@ def all_messages():
             "161": "your IP not authorized",
             "162": "Not Found!",
             "163": "subdomain_scan: no subdomain founded!",
-            "164": "viewdns_reverse_ip_lookup_scan: no domain found!"
+            "164": "viewdns_reverse_ip_lookup_scan: no domain found!",
+            "165": "your session is valid"
 
         }

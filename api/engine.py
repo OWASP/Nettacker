@@ -11,6 +11,7 @@ from flask import request as flask_request
 from flask import render_template
 from flask import abort
 from flask import Response
+from flask import make_response
 from core.alert import write_to_api_console
 from core.alert import messages
 from core._die import __die_success
@@ -69,32 +70,32 @@ def access_log(response):
         r_log = open(app.config["OWASP_NETTACKER_CONFIG"]["api_access_log_filename"], "ab")
         # if you need to log POST data
         # r_log.write(
-        #     '{0} [{1}] {2} "{3} {4}" {5} {6} {7}\r\n'.format(flask_request.remote_addr, now(), flask_request.host,
+        #     "{0} [{1}] {2} \"{3} {4}\" {5} {6} {7}\r\n".format(flask_request.remote_addr, now(), flask_request.host,
         #                                                      flask_request.method, flask_request.full_path,
         #                                                      flask_request.user_agent, response.status_code,
         #                                                      json.dumps(flask_request.form)))
-        r_log.write('{0} [{1}] {2} "{3} {4}" {5} {6}\r\n'.format(flask_request.remote_addr, now(), flask_request.host,
-                                                                 flask_request.method, flask_request.full_path,
-                                                                 flask_request.user_agent, response.status_code))
+        r_log.write("{0} [{1}] {2} \"{3} {4}\" {5} {6}\r\n".format(flask_request.remote_addr, now(), flask_request.host,
+                                                                   flask_request.method, flask_request.full_path,
+                                                                   flask_request.user_agent, response.status_code))
         r_log.close()
     return response
 
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
 def get_statics(path):
     static_types = __mime_types()
     return Response(get_file(os.path.join(root_dir(), path)),
                     mimetype=static_types.get(os.path.splitext(path)[1], "text/html"))
 
 
-@app.route('/', methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def index():
     language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
     return render_template("index.html", welcome=messages(language, 159))
 
 
-@app.route('/new/scan', methods=["GET", "POST"])
+@app.route("/new/scan", methods=["GET", "POST"])
 def new_scan():
     _start_scan_config = {}
     language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
@@ -111,6 +112,22 @@ def new_scan():
     p = multiprocessing.Process(target=__scan, args=[_start_scan_config, scan_id, scan_cmd])
     p.start()
     return jsonify(_start_scan_config)
+
+
+@app.route("/session/check", methods=["GET"])
+def __session_check():
+    language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
+    __api_key_check(app, flask_request, language)
+    return jsonify(__structure(status="ok", msg=messages(language, 165))), 200
+
+
+@app.route("/session/set", methods=["GET"])
+def __session_set():
+    language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
+    __api_key_check(app, flask_request, language)
+    res = make_response(jsonify(__structure(status="ok", msg=messages(language, 165))))
+    res.set_cookie("key", value=app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"])
+    return res
 
 
 def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,

@@ -181,5 +181,6 @@ def all_messages():
             "161": "آدرس IP شما مجاز نیست",
             "162": "یافت نشد!",
             "163": "subdomain_scan: سابدامینی پیدا نشد!",
-            "164": "viewdns_reverse_ip_lookup_scan: دامینی پیدا نشد!"
+            "164": "viewdns_reverse_ip_lookup_scan: دامنه ای پیدا نشد!",
+            "165": "سیشن شما معتبر است!"
         }
