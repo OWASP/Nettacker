@@ -130,6 +130,14 @@ def __session_set():
     return res
 
 
+@app.route("/session/kill", methods=["GET"])
+def __session_kill():
+    language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
+    res = make_response(jsonify(__structure(status="ok", msg=messages(language, 166))))
+    res.set_cookie("key", value="expired")
+    return res
+
+
 def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
                  api_client_white_list_ips, api_access_log, api_access_log_filename, language):
     app.config["OWASP_NETTACKER_CONFIG"] = {
