@@ -25,6 +25,8 @@ def target_to_host(target):
 def target_type(target):
     if isIP(target):
         return 'SINGLE_IPv4'
+    elif isIP6(target):
+        return 'SINGLE_IPv6'
     elif len(target.rsplit('.')) is 7 and '-' in target and '/' not in target:
         start_ip, stop_ip = target.rsplit('-')
         if isIP(start_ip) and isIP(stop_ip):
@@ -40,7 +42,7 @@ def target_type(target):
     elif '.' in target and '/' not in target:
         return 'DOMAIN'
     else:
-        return 'UNKNOW'
+        return 'UNKNOWN'
 
 
 def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
@@ -67,6 +69,8 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
             else:
                 if not enumerate_flag: info(messages(language, 81).format(target))
                 yield target
+        elif target_type(target) == 'SINGLE_IPv6':
+            yield target
 
         elif target_type(target) == 'RANGE_IPv4' or target_type(target) == 'CIDR_IPv4':
             IPs = IPRange(target, range_temp, language)
