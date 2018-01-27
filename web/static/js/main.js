@@ -29,11 +29,12 @@ $(document).ready(function () {
         }).done(function (res) {
             $("#set_session").hide();
             $("#success_key").removeClass("hidden");
-            setTimeout("$(\"#success_key\").addClass(\"hidden\");", 1000);
+            setTimeout("$(\"#success_key\").addClass(\"animated fadeOut\");", 1000);
+            setTimeout("$(\"#success_key\").addClass(\"hidden\");", 1500);
         }).fail(function (jqXHR, textStatus, errorThrown) {
             $("#set_session").hide();
             $("#failed_key").removeClass("hidden");
-            setTimeout("$(\"#failed_key\").addClass(\"hidden\");", 1000);
+            setTimeout("$(\"#failed_key\").addClass(\"hidden\");", 2000);
             $("#set_session").show();
         });
     });
