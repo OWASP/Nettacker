@@ -1,7 +1,6 @@
 argparse
 netaddr
 requests
-pycrypto
 paramiko
 texttable
 PySocks

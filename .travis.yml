@@ -3,10 +3,10 @@ language: python
 
 # Select python version
 python:
- - "2.6"
+# - "2.6" paramiko not supported
  - "2.7"
 # - "3.2" texttable is not supporting this version!
- - "3.3"
+# - "3.3" paramiko not supported
  - "3.4"
  - "3.5"
  - "3.6"
