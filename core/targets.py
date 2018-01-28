@@ -6,6 +6,7 @@ import json
 import netaddr.ip
 from core.ip import *
 from core.alert import *
+from core._die import __die_failure
 from lib.scan.subdomain.engine import __get_subs
 
 
@@ -194,4 +195,4 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                                 yield IPn
 
         else:
-            sys.exit(error(messages(language, 50).format(target)))
+            __die_failure(messages(language, 50).format(target))

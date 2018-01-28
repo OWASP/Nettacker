@@ -17,6 +17,7 @@ from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
+from core._die import __die_failure
 
 
 def extra_requirements_dict():
@@ -214,10 +215,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 url = 'http://{0}:{1}/'.format(target, str(port))
             else:
                 if target.count(':') > 1:
-                    error(messages(language, 105))
-                    from core.color import finish
-                    finish()
-                    sys.exit(1)
+                    __die_failure(messages(language, 105))
                 http = target.rsplit('://')[0]
                 host = target_to_host(target)
                 path = "/".join(target.replace('http://', '').replace('https://', '').rsplit('/')[1:])

@@ -4,6 +4,7 @@
 import sys
 import os
 from core.alert import *
+from core._die import __die_failure
 
 try:
     version_info = open('version').read().rsplit()
@@ -62,15 +63,11 @@ def check(language):
         # os.system('cls')
         pass
     else:
-        error(messages(language, 47))
-        finish()
-        sys.exit(1)
+        __die_failure(messages(language, 47))
     if version() is 2 or version() is 3:
         pass
     else:
-        error(messages(language, 48))
-        finish()
-        sys.exit(1)
+        __die_failure(messages(language, 48))
     logo()
     return
 
