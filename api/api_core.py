@@ -134,6 +134,67 @@ def __api_key_check(app, flask_request, language):
         abort(401, messages(language, 160))
 
 
+def __languages():
+    languages = [lang for lang in messages(-1, 0)]
+    res = ""
+    flags = {
+        "el": "gr",
+        "fr": "fr",
+        "en": "us",
+        "nl": "nl",
+        "ps": "ps",
+        "tr": "tr",
+        "de": "de",
+        "ko": "kr",
+        "it": "it",
+        "ja": "jp",
+        "fa": "ir",
+        "hy": "am",
+        "ar": "sa",
+        "zh-cn": "cn",
+        "vi": "vi",
+        "ru": "ru",
+        "hi": "in",
+        "ur": "pk",
+        "id": "id",
+        "es": "es"
+    }
+    for lang in languages:
+        res += """<label><input id="{0}" type="radio" class="radio"><a
+                                    class="label label-warning">{0}</a>&nbsp;<a class="flag-icon flag-icon-{1}"></a>
+                                    </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(lang, flags[lang])
+    return res
+
+
+def __graphs():
+    res = ""
+    for graph in load_all_graphs():
+        res += """<label><input id="{0}" type="radio" class="radio"><a
+                            class="label label-default">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(graph)
+    return res
+
+
+def __profiles():
+    profiles = _builder(_profiles(), default_profiles())
+    res = ""
+    for profile in profiles:
+        res += """<label><input id="{0}" type="checkbox" class="checkbox"><a class="label 
+        label-primary">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(profile)
+    return res
+
+
+def __scan_methods():
+    methods = load_all_modules()
+    methods.remove("all")
+    res = ""
+    for sm in methods:
+        label = "success" if sm.endswith("_scan") else "warning" if sm.endswith("_brute") else "danger" if sm.endswith(
+            "_vuln") else "default"
+        res += """<label><input type="checkbox" class="checkbox">
+        <a class="label label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(sm, label)
+    return res
+
+
 def __rules(config, defaults, language):
     # Check Ranges
     config["check_ranges"] = True if config["check_ranges"] is not False else False

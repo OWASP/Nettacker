@@ -28,7 +28,7 @@ $(document).ready(function () {
         }
     });
     $("#send_session").click(function () {
-        var key = "/session/set?key=" + $('#session_value').val();
+        var key = "/session/set?key=" + $("#session_value").val();
         $.ajax({
             type: "GET",
             url: key,
@@ -79,6 +79,10 @@ $(document).ready(function () {
         $("#new_scan").removeClass("hidden");
 
 
+    });
+
+    $("#select_all_scan_methods").click(function () {
+        $('input:checkbox').filter('#scan_method_').attr(":checked")
     });
 
 });

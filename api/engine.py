@@ -5,6 +5,7 @@ import multiprocessing
 import time
 import random
 import os
+import string
 from flask import Flask
 from flask import jsonify
 from flask import request as flask_request
@@ -20,6 +21,10 @@ from api.api_core import __get_value
 from api.api_core import root_dir
 from api.api_core import get_file
 from api.api_core import __mime_types
+from api.api_core import __scan_methods
+from api.api_core import __profiles
+from api.api_core import __graphs
+from api.api_core import __languages
 from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
@@ -92,7 +97,11 @@ def get_statics(path):
 @app.route("/", methods=["GET", "POST"])
 def index():
     language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
-    return render_template("index.html", welcome=messages(language, 159))
+    filename = "results/results_{0}_{1}.html".format(now(model="%Y_%m_%d_%H_%M_%S"),
+                                                     "".join(random.choice(string.ascii_lowercase) for x in
+                                                             range(10)))
+    return render_template("index.html", scan_methods=__scan_methods(), profiles=__profiles(),
+                           graphs=__graphs(), languages=__languages(), filename=filename)
 
 
 @app.route("/new/scan", methods=["GET", "POST"])

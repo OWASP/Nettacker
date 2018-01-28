@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/css/flag-icon.min.css">
     <link rel="stylesheet" href="/css/buttons.css">
     <link rel="stylesheet" href="/css/animate.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/jquery.min.js"></script>
     <script src="/js/angular.min.js"></script>
@@ -50,7 +51,8 @@
                     <ul id="set_session" class="nav navbar-nav navbar-right hidden">
                         <form id="api_key_form" class="navbar-form navbar-left" action="javascript:check_api_session()">
                             <div class="form-group">
-                                <input autocomplete="off" id="session_value" action="javascript:check_api_session()" type="text"
+                                <input autocomplete="off" id="session_value" action="javascript:check_api_session()"
+                                       type="text"
                                        class="form-control" placeholder="API Key" value="">
                             </div>
                             <a id="send_session" type="submit" action="javascript:check_api_session()"
@@ -87,25 +89,110 @@
         <h1>OWASP Nettacker</h1>
         <p class="text-justify"><strong>OWASP Nettacker</strong> project is created to automate information gathering,
             vulnerability scanning and eventually generating a report for networks, including services, bugs,
-            vulnerabilities, misconfigurations, and other information. This software will utilize <code>TCP</code>, <code>SYN</code>,
-            <code>ACK</code>, <code>ICMP</code> and many other protocols in order to detect and bypass <code>Firewall</code>/<code>IDS</code>/<code>IPS</code>
-            devices. By leveraging a unique method in OWASP Nettacker for discovering protected services and devices such as
+            vulnerabilities, misconfigurations, and other information. This software will utilize <code>TCP</code>,
+            <code>SYN</code>,
+            <code>ACK</code>, <code>ICMP</code> and many other protocols in order to detect and bypass
+            <code>Firewall</code>/<code>IDS</code>/<code>IPS</code>
+            devices. By leveraging a unique method in OWASP Nettacker for discovering protected services and devices
+            such as
             SCADA. It would make a competitive edge compared to other scanner making it one of the bests.</p>
         <h2>Links</h2>
         <ul>
             <li>GitHub <a href="https://github.com/viraintel/OWASP-Nettacker" class="glyphicon glyphicon-link"></a></li>
-            <li>OWASP <a href="https://www.owasp.org/index.php/OWASP_Nettacker" class="glyphicon glyphicon-link"></a></li>
+            <li>OWASP <a href="https://www.owasp.org/index.php/OWASP_Nettacker" class="glyphicon glyphicon-link"></a>
+            </li>
         </ul>
     </div>
     <div id="new_scan" class="hidden">
-        <form class="form-inline" action="javascript:submit_new_scan()">
-            <div class="form-group">
-                <label class="">Target:</label>
-                <input type="target" class="form-control" id="target">
+        <h2>Submit a new scan</h2>
+        <form>
+            <h3>Targets</h3>
+            <div class="input-group col-xs-4">
+                <span class="input-group-addon"><i class="fa fa-space-shuttle"></i></span>
+                <input id="targets" type="text" class="form-control" name="targets" placeholder="targets">
             </div>
-            <br><br>
-            <button type="submit" class="btn btn-success">Submit</button>
+            <h3>Profiles</h3>
+            <div class="form-group">
+                <div id="profiles" class="checkbox text-justify">
+                    <label><input id="select_all_profiles" type="checkbox" class="checkbox"><a
+                            class="label label-info">Select all profiles</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {% autoescape off %}{{profiles}}{% endautoescape %}
+                </div>
+            </div>
+            <h3>Scan Methods</h3>
+            <div class="form-group">
+                <div id="scan_methods" class="checkbox text-justify">
+                    <label><input id="select_all_scan_methods" type="checkbox" class="checkbox"><a
+                            class="label label-info">Select all</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {% autoescape off %}{{scan_methods}}{% endautoescape %}
+                </div>
+            </div>
+            <h3>Graph</h3>
+            <div class="form-group">
+                <div id="graph_flag" class="radio text-justify">
+                    {% autoescape off %}{{graphs}}{% endautoescape %}
+                </div>
+            </div>
+            <h3>Language</h3>
+            <div class="form-group">
+                <div id="languages" class="radio text-justify">
+                    {% autoescape off %}{{languages}}{% endautoescape %}
+                </div>
+            </div>
+            <h3>Output</h3>
+            <div id="log_in_file" class="input-group col-xs-5">
+                <span class="input-group-addon">filename</span>
+                <input type="text" class="form-control" placeholder="Additional Info"
+                       value="{% autoescape off %}{{filename}}{% endautoescape %}">
+            </div>
+            <h3>Flags</h3>
+            <div id="scan_options" class="form-group">
+                <div class="checkbox text-justify">
+                    <label><input id="check_ranges" type="checkbox" class="checkbox"><a class="label label-success">check_ranges</a></label>
+                    <label><input id="check_subdomains" type="checkbox"><a
+                            class="label label-success">check_subdomains</a></label>
+                    <label><input id="ping_flag" type="checkbox"><a class="label label-success">ping_flag</a></label>
+                </div>
+            </div>
+            <h3>Engine Options</h3>
+            <div class="input-group col-xs-3">
+                <span class="input-group-addon">Thread numbers</span>
+                <input id="thread_number" type="text" class="form-control" placeholder="100"
+                       value="100">
+            </div><br>
+            <div class="input-group col-xs-3">
+                <span class="input-group-addon">Host thread number</span>
+                <input id="thread_number_host" type="text" class="form-control" placeholder="30"
+                       value="30">
+            </div><br>
+            <div class="input-group col-xs-3">
+                <span class="input-group-addon">Retries</span>
+                <input id="retries" type="text" class="form-control" placeholder="3"
+                       value="3">
+            </div><br>
+            <div class="input-group col-xs-3">
+                <span class="input-group-addon">Time sleep</span>
+                <input id="time_sleep" type="text" class="form-control" placeholder="0"
+                       value="0">
+            </div><br>
+            <div class="input-group col-xs-3">
+                <span class="input-group-addon">Time sleep</span>
+                <input id="timeout_sec" type="text" class="form-control" placeholder="3"
+                       value="3">
+            </div><br>
+            <div class="input-group col-xs-3">
+                <span class="input-group-addon">Verbose level</span>
+                <input id="verbose_level" type="text" class="form-control" placeholder="0"
+                       value="0">
+            </div>
+            <h3>Ports</h3>
+            <div class="input-group col-xs-3">
+                <span class="input-group-addon">Ports</span>
+                <input id="ports" type="text" class="form-control" placeholder="1-1000 - leave it empty to use default ports"
+                       value="">
+            </div><br>
         </form>
+        <br><br>
     </div>
     </body>
 </div>
