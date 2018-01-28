@@ -1,6 +1,5 @@
 argparse
 netaddr
-dnspython
 requests
 paramiko
 texttable

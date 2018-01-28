@@ -3,15 +3,10 @@
 
 import socket
 import json
+import netaddr.ip
 from core.ip import *
 from core.alert import *
 from lib.scan.subdomain.engine import __get_subs
-
-try:
-    import netaddr.ip
-except:
-    error('pip install -r requirements.txt')
-    sys.exit(1)
 
 
 def target_to_host(target):

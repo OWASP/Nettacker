@@ -3,30 +3,19 @@
 
 import time
 import sys
+import requests
 from core.alert import *
 from core.compatible import version
-
-if version() is 2:
-    from urllib2 import urlopen
-elif version is 3:
-    from urllib.request import urlopen
-
-try:
-    from netaddr import iprange_to_cidrs
-    from netaddr import IPNetwork
-except:
-    from core.color import finish
-
-    error('pip install -r requirements.txt')
-    finish()
-    sys.exit(1)
+from netaddr import iprange_to_cidrs
+from netaddr import IPNetwork
 
 
 def getIPRange(IP):
     n = 0
     while 1:
         try:
-            data = urlopen('http://rest.db.ripe.net/search.json?query-string={0}&flags=no-filtering'.format(IP)).read()
+            data = requests.get(
+                'http://rest.db.ripe.net/search.json?query-string={0}&flags=no-filtering'.format(IP)).content
             for line in data.rsplit('\n'):
                 line = line.rsplit('"')
                 for R in line:

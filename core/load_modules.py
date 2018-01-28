@@ -6,6 +6,7 @@ from glob import glob
 from core.alert import messages
 from core.alert import info
 from core.alert import warn
+from core._die import __die_failure
 
 
 def load_all_graphs():
@@ -52,3 +53,14 @@ def load_all_method_args(language):
         info(imodule.rsplit('.')[2] + '_' + imodule.rsplit('.')[1] + ' --> '
              + ", ".join(modules_args[imodule]))
     return module_names
+
+
+def __check_external_modules():
+    external_modules = ["argparse", "netaddr", "requests", "paramiko", "texttable", "socks", "win_inet_pton",
+                        "flask"]
+    for module in external_modules:
+        try:
+            __import__(module)
+        except:
+            __die_failure("pip install -r requirements.txt")
+    return True

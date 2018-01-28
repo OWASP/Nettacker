@@ -3,34 +3,24 @@
 
 import json
 import sys
+import texttable
 from core.alert import messages
 from core.alert import info
 from core.alert import error
 from core import compatible
 from core._time import now
-
-try:
-    import texttable
-except:
-    from core.color import finish
-
-    error('pip install -r requirements.txt')
-    finish()
-    sys.exit(1)
+from core._die import __die_failure
 
 
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
     info(messages(language, 88))
     try:
         start = getattr(
-            __import__('lib.graph.%s.engine' % (graph_flag.rsplit('_graph')[0]),
+            __import__('lib.graph.{0}.engine'.format(graph_flag.rsplit('_graph')[0]),
                        fromlist=['start']),
             'start')
     except:
-        error(messages(language, 98).format(graph_flag))
-        from core.color import finish
-        finish()
-        sys.exit(1)
+        __die_failure(messages(language, 98).format(graph_flag))
 
     info(messages(language, 89))
     return start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION)
