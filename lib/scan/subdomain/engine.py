@@ -535,7 +535,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
           scan_cmd):  # Main function
     from core.targets import target_type
     from core.targets import target_to_host
-    if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP':
+    if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
         # requirements check
         new_extra_requirements = extra_requirements_dict()
         if methods_args is not None:
