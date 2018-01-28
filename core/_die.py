@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from core.alert import error
 from core.color import finish
 
 
@@ -12,6 +11,7 @@ def __die_success():
 
 
 def __die_failure(msg):
+    from core.alert import error
     error(msg)
     finish()
     sys.exit(1)
