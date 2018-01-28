@@ -62,6 +62,6 @@ def __check_external_modules():
         try:
             __import__(module)
         except:
-            __die_failure("pip install -r requirements.txt " + module)
+            # __die_failure("pip install -r requirements.txt " + module)
             __import__(module)
     return True
