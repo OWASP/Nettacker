@@ -9,7 +9,9 @@ from core._time import now
 def default_profiles():
     return {
         "information_gathering": ["tcp_connect_port_scan"],
-        "vulnerabilities": ["heartbleed_vuln"]
+        "vulnerability": ["*_vuln"],
+        "scan": ["*_scan"],
+        "brute": ["*_brute"]
     }
 
 
