@@ -12,8 +12,7 @@ from core._time import now
 from core._die import __die_failure
 import lockfile
 
-flock = lockfile.FileLock('log.txt')
-
+write_blocks = []
 
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
     info(messages(language, 88))
@@ -87,6 +86,17 @@ def sort_logs(log_in_file, language, graph_flag):
     return 0
 
 def __log_into_file(filename, mode, data):
+    flock.acquire()
+    with open(filename, mode) as save:
+        save.write(data + '\n')
+    flock.release()
+
+def __log_into_file(filename, mode, data):
+    
+    if filename not in write_blocks:
+        flock = lockfile.FileLock(filename)
+        write_blocks.append(filename)
+
     flock.acquire()
     with open(filename, mode) as save:
         save.write(data + '\n')
