@@ -44,6 +44,12 @@ def __remove_non_api_keys(config):
     return new_config
 
 
+def __is_login(app, flask_request):
+    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] == __get_value(flask_request, "key"):
+        return True
+    return False
+
+
 def __mime_types():
     return {
         ".aac": "audio/aac",
@@ -132,10 +138,6 @@ def get_file(filename):
 def __api_key_check(app, flask_request, language):
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != __get_value(flask_request, "key"):
         abort(401, messages(language, 160))
-
-
-def __method_args_list(language):
-    return load_all_method_args(language, API=True)
 
 
 def __languages():

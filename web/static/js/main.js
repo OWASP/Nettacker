@@ -85,4 +85,22 @@ $(document).ready(function () {
         $('input:checkbox').filter('#scan_method_').attr(":checked")
     });
 
+    $("#submit_new_scan").click(function () {
+
+        $.ajax({
+            type: "POST",
+            url: "/new/scan",
+            data: {
+                targets: "127.0.0.1",
+                scan_method: "tcp_connect_port_scan"
+            },
+        }).done(function (res) {
+            alert(res);
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            alert(errorThrown);
+        });
+
+
+    });
+
 });

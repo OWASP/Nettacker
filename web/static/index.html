@@ -111,7 +111,7 @@
             <h3>Targets</h3>
             <div class="input-group col-xs-4">
                 <span class="input-group-addon"><i class="fa fa-space-shuttle"></i></span>
-                <input id="targets" type="text" class="form-control" name="targets" placeholder="targets">
+                <input id="targets" type="text" class="form-control" placeholder="targets">
             </div>
             <h3>Profiles</h3>
             <div class="form-group">
@@ -160,55 +160,78 @@
                 </div>
             </div>
             <h3>Engine Options</h3>
-            <div class="input-group col-xs-3">
-                <span class="input-group-addon">Thread numbers</span>
-                <input id="thread_number" type="text" class="form-control" placeholder="100"
-                       value="100">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-addon">Thread numbers</span>
+                        <input id="thread_number" type="text" class="form-control" placeholder="100"
+                               value="100">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-addon">Host thread number</span>
+                        <input id="thread_number_host" type="text" class="form-control" placeholder="30"
+                               value="30">
+                    </div>
+                </div>
             </div>
             <br>
-            <div class="input-group col-xs-3">
-                <span class="input-group-addon">Host thread number</span>
-                <input id="thread_number_host" type="text" class="form-control" placeholder="30"
-                       value="30">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-addon">Retries</span>
+                        <input id="retries" type="text" class="form-control" placeholder="3"
+                               value="3">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-addon">Time sleep</span>
+                        <input id="time_sleep" type="text" class="form-control" placeholder="0"
+                               value="0">
+                    </div>
+                </div>
             </div>
             <br>
-            <div class="input-group col-xs-3">
-                <span class="input-group-addon">Retries</span>
-                <input id="retries" type="text" class="form-control" placeholder="3"
-                       value="3">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-addon">Time sleep</span>
+                        <input id="timeout_sec" type="text" class="form-control" placeholder="3"
+                               value="3">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-addon">Verbose level</span>
+                        <input id="verbose_level" type="text" class="form-control" placeholder="0"
+                               value="0">
+                    </div>
+                </div>
             </div>
             <br>
-            <div class="input-group col-xs-3">
-                <span class="input-group-addon">Time sleep</span>
-                <input id="time_sleep" type="text" class="form-control" placeholder="0"
-                       value="0">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Ports</h3>
+                    <div class="input-group col-xs-12">
+                        <span class="input-group-addon">Ports</span>
+                        <input id="ports" type="text" class="form-control"
+                               placeholder="1-1000 - leave it empty to use default ports"
+                               value="">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h3>Socks Proxy</h3>
+                    <div class="input-group col-xs-12">
+                        <span class="input-group-addon">Socks</span>
+                        <input id="socks_proxy" type="text" class="form-control" placeholder="socks5://127.0.0.1:9050">
+                    </div>
+                </div>
             </div>
             <br>
-            <div class="input-group col-xs-3">
-                <span class="input-group-addon">Time sleep</span>
-                <input id="timeout_sec" type="text" class="form-control" placeholder="3"
-                       value="3">
-            </div>
-            <br>
-            <div class="input-group col-xs-3">
-                <span class="input-group-addon">Verbose level</span>
-                <input id="verbose_level" type="text" class="form-control" placeholder="0"
-                       value="0">
-            </div>
-            <h3>Ports</h3>
-            <div class="input-group col-xs-3">
-                <span class="input-group-addon">Ports</span>
-                <input id="ports" type="text" class="form-control"
-                       placeholder="1-1000 - leave it empty to use default ports"
-                       value="">
-            </div>
-            <br>
-            <h3>Socks Proxy</h3>
-            <div class="input-group col-xs-3">
-                <span class="input-group-addon">Socks</span>
-                <input id="socks_proxy" type="text" class="form-control" placeholder="socks5://127.0.0.1:9050">
-            </div>
-            <br>
+
             <div class="form-group col-md-6">
                 <h3>Users</h3>
                 <textarea class="input-mini form-control" rows="8" cols="50" id="users"
@@ -225,7 +248,7 @@
                 <textarea class="form-control" rows="8" cols="50" id="methods_args">{% autoescape off %}{{method_args_list}}{% endautoescape %}</textarea>
             </div>
             <br>
-            <button type="Submit" class="btn btn-primary">Submit</button>
+            <ul id="submit_new_scan" class="btn btn-primary" action="javascript:submit_new_scan()">Submit</ul>
         </form>
         <br><br>
     </div>
