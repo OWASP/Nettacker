@@ -249,7 +249,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         ports_tmp_filename = 'tmp/ports_tmp_' + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
-        __log_into_file(threads_tmp_filename, 'w', '1')
+        __log_into_file(thread_tmp_filename, 'w', '1')
         __log_into_file(ports_tmp_filename, 'w', '')
         trying = 0
         ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
