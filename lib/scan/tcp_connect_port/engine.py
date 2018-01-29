@@ -118,11 +118,16 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
                 socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
-       
-        s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM,0)
+        if target_type(host) == "SINGLE_IPv6":
+            s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0)
+        else:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if timeout_sec is not None:
             s.settimeout(timeout_sec)
-        s.connect((host, port,0,0))
+        if target_type(host) == "SINGLE_IPv6":
+            s.connect((host, port, 0, 0))
+        else:
+            s.connect((host, port))
         s.close()
         info(messages(language, 80).format(host, port))
         save = open(log_in_file, 'a')
@@ -142,7 +147,8 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
           verbose_level, socks_proxy, retries, ping_flag, methods_args, scan_id,
           scan_cmd):  # Main function
-    if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP' or target_type(target)!= 'SINGLE_IPv6':
+    if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
+            target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
         # requirements check
         new_extra_requirements = extra_requirements_dict()
         if methods_args is not None:
@@ -184,7 +190,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write.close()
         trying = 0
         for port in ports:
-            port = int(port)
             t = threading.Thread(target=connect,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
