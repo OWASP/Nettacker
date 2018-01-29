@@ -75,14 +75,13 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             tmpl = []
             tmp = my_ftp.retrlines('LIST', tmpl.append)
             info(messages(language, 70).format(user, passwd, target, port))
-            data = 
-                json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ftp_brute',
-                            'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute"})
+            data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ftp_brute', 
+                'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute"})
             __log_into_file(log_in_file, 'a', data)
         except:
             info(messages(language, 70).format(user, passwd, target, port) + ' ' + messages(language, 71))
-            data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'FTP',
-                                   'DESCRIPTION': messages(language, 67), 'TIME': now(), 'CATEGORY': "brute"})
+            data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'FTP', 
+                'DESCRIPTION': messages(language, 67), 'TIME': now(), 'CATEGORY': "brute"})
             __log_into_file(log_in_file, 'a', data)
         __log_into_file(thread_tmp_filename, 'w', '0')
     else:
@@ -263,9 +262,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ftp_brute',
-                                   'DESCRIPTION': messages(language, 95), 'TIME': now(), 'CATEGORY': "brute",
-                                   'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ftp_brute', 
+                'DESCRIPTION': messages(language, 95), 'TIME': now(), 'CATEGORY': "brute", 
+                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data)
         os.remove(thread_tmp_filename)
     else:

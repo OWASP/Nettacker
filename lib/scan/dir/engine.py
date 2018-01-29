@@ -83,19 +83,19 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
         if r.status_code in status_codes:
             info(messages(language, 38).format(target, r.status_code, r.reason))
             __log_into_file(thread_tmp_filename, 'w', '0')
-            data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
-                                   'PORT': int(target.rsplit(':')[2].rsplit('/')[0]), 'TYPE': 'dir_scan',
-                                   'DESCRIPTION': messages(language, 38).format(target, r.status_code, r.reason),
-                                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 
+                'PORT': int(target.rsplit(':')[2].rsplit('/')[0]), 'TYPE': 'dir_scan', 
+                'DESCRIPTION': messages(language, 38).format(target, r.status_code, r.reason), 
+                'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data)
             if r.status_code is 200:
                 for dlmsg in directory_listing_msgs:
                     if dlmsg in content:
                         info(messages(language, 104).format(target))
-                        data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
-                                               'PORT': int(target.rsplit(':')[1].rsplit('/')[0]), 'TYPE': 'dir_scan',
-                                               'DESCRIPTION': messages(language, 104).format(target), 'TIME': now(),
-                                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                        data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 
+                            'PORT': int(target.rsplit(':')[1].rsplit('/')[0]), 'TYPE': 'dir_scan', 
+                            'DESCRIPTION': messages(language, 104).format(target), 'TIME': now(), 
+                            'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
                         __log_into_file(log_in_file, 'a', data)
                         break
         return True
@@ -267,9 +267,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if thread_write is 1:
             info(messages(language, 108).format(target, ",".join(map(str, ports))))
             if verbose_level is not 0:
-                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'dir_scan',
-                                       'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan",
-                                       'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'dir_scan', 
+                    'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan", 
+                    'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
                 __log_into_file(log_in_file, 'a', data)
         os.remove(thread_tmp_filename)
     else:
