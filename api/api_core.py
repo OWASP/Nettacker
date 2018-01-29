@@ -134,6 +134,10 @@ def __api_key_check(app, flask_request, language):
         abort(401, messages(language, 160))
 
 
+def __method_args_list(language):
+    return load_all_method_args(language, API=True)
+
+
 def __languages():
     languages = [lang for lang in messages(-1, 0)]
     res = ""
@@ -160,9 +164,8 @@ def __languages():
         "es": "es"
     }
     for lang in languages:
-        res += """<label><input id="{0}" type="radio" class="radio"><a
-                                    class="label label-warning">{0}</a>&nbsp;<a class="flag-icon flag-icon-{1}"></a>
-                                    </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(lang, flags[lang])
+        res += """<option {2} data-content='<span class="flag-icon flag-icon-{1}"></span> {0}'></option>""" \
+            .format(lang, flags[lang], "selected" if lang == "en" else "")
     return res
 
 

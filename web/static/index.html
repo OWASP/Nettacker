@@ -10,12 +10,14 @@
     <link rel="stylesheet" href="/css/buttons.css">
     <link rel="stylesheet" href="/css/animate.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <script src="/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/css/bootstrap-select.min.css">
     <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
     <script src="/js/angular.min.js"></script>
     <script src="/js/d3.v4.min.js"></script>
     <script src="/js/buttons.js"></script>
     <script src="/js/main.js"></script>
+    <script src="/js/bootstrap-select.min.js"></script>
 </head>
 <div class="container">
     <!-- Topper w/ logo -->
@@ -133,12 +135,15 @@
                     {% autoescape off %}{{graphs}}{% endautoescape %}
                 </div>
             </div>
-            <h3>Language</h3>
+            <h3>Reporting Language</h3>
             <div class="form-group">
-                <div id="languages" class="radio text-justify">
+                <label for="sel2">Select Language:</label>
+                <select class="selectpicker" data-width="fit">
                     {% autoescape off %}{{languages}}{% endautoescape %}
-                </div>
+                </select>
             </div>
+
+
             <h3>Output</h3>
             <div id="log_in_file" class="input-group col-xs-5">
                 <span class="input-group-addon">filename</span>
@@ -159,27 +164,32 @@
                 <span class="input-group-addon">Thread numbers</span>
                 <input id="thread_number" type="text" class="form-control" placeholder="100"
                        value="100">
-            </div><br>
+            </div>
+            <br>
             <div class="input-group col-xs-3">
                 <span class="input-group-addon">Host thread number</span>
                 <input id="thread_number_host" type="text" class="form-control" placeholder="30"
                        value="30">
-            </div><br>
+            </div>
+            <br>
             <div class="input-group col-xs-3">
                 <span class="input-group-addon">Retries</span>
                 <input id="retries" type="text" class="form-control" placeholder="3"
                        value="3">
-            </div><br>
+            </div>
+            <br>
             <div class="input-group col-xs-3">
                 <span class="input-group-addon">Time sleep</span>
                 <input id="time_sleep" type="text" class="form-control" placeholder="0"
                        value="0">
-            </div><br>
+            </div>
+            <br>
             <div class="input-group col-xs-3">
                 <span class="input-group-addon">Time sleep</span>
                 <input id="timeout_sec" type="text" class="form-control" placeholder="3"
                        value="3">
-            </div><br>
+            </div>
+            <br>
             <div class="input-group col-xs-3">
                 <span class="input-group-addon">Verbose level</span>
                 <input id="verbose_level" type="text" class="form-control" placeholder="0"
@@ -188,9 +198,34 @@
             <h3>Ports</h3>
             <div class="input-group col-xs-3">
                 <span class="input-group-addon">Ports</span>
-                <input id="ports" type="text" class="form-control" placeholder="1-1000 - leave it empty to use default ports"
+                <input id="ports" type="text" class="form-control"
+                       placeholder="1-1000 - leave it empty to use default ports"
                        value="">
-            </div><br>
+            </div>
+            <br>
+            <h3>Socks Proxy</h3>
+            <div class="input-group col-xs-3">
+                <span class="input-group-addon">Socks</span>
+                <input id="socks_proxy" type="text" class="form-control" placeholder="socks5://127.0.0.1:9050">
+            </div>
+            <br>
+            <div class="form-group col-md-6">
+                <h3>Users</h3>
+                <textarea class="input-mini form-control" rows="8" cols="50" id="users"
+                          placeholder="separate with commas or new line"></textarea>
+            </div>
+            <div class="form-group col-md-6">
+                <h3>Passwords</h3>
+                <textarea class="form-control" rows="8" cols="50" id="passwds"
+                          placeholder="separate with commas or new line"></textarea>
+            </div>
+            <br>
+            <h3>Extra Module Options</h3>
+            <div class="form-group">
+                <textarea class="form-control" rows="8" cols="50" id="methods_args">{% autoescape off %}{{method_args_list}}{% endautoescape %}</textarea>
+            </div>
+            <br>
+            <button type="Submit" class="btn btn-primary">Submit</button>
         </form>
         <br><br>
     </div>

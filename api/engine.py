@@ -25,6 +25,7 @@ from api.api_core import __scan_methods
 from api.api_core import __profiles
 from api.api_core import __graphs
 from api.api_core import __languages
+from core.load_modules import load_all_method_args
 from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
@@ -101,7 +102,8 @@ def index():
                                                      "".join(random.choice(string.ascii_lowercase) for x in
                                                              range(10)))
     return render_template("index.html", scan_methods=__scan_methods(), profiles=__profiles(),
-                           graphs=__graphs(), languages=__languages(), filename=filename)
+                           graphs=__graphs(), languages=__languages(), filename=filename,
+                           method_args_list=load_all_method_args(language, API=True))
 
 
 @app.route("/new/scan", methods=["GET", "POST"])
