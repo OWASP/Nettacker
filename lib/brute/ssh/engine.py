@@ -17,6 +17,7 @@ from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
+from core.log import __log_into_file
 
 
 def extra_requirements_dict():
@@ -74,14 +75,12 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                 ssh.connect(hostname=target, username=user, password=passwd, port=int(port))
             info(messages(language, 70).format(user, passwd, target, port))
             save = open(log_in_file, 'a')
-            save.write(
+            data = 
                 json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ssh_brute',
                             'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute",
-                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
-            save.close()
-            thread_write = open(thread_tmp_filename, 'w')
-            thread_write.write('0')
-            thread_write.close()
+                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            __log_into_file(log_in_file, 'a', data)
+            __log_into_file(thread_tmp_filename, 'w', '0')
         except:
             pass
     else:
@@ -128,9 +127,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
                 if exit is retries:
                     error(messages(language, 77).format(target, port, str(num), str(total)))
                     try:
-                        f = open(ports_tmp_filename, 'a')
-                        f.write(str(port) + '\n')
-                        f.close()
+                        __log_into_file(ports_tmp_filename, 'a', str(port))
                     except:
                         pass
                     break
@@ -139,9 +136,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
             if exit is 3:
                 error(messages(language, 77).format(target, port, str(num), str(total)))
                 try:
-                    f = open(ports_tmp_filename, 'a')
-                    f.write(str(port) + '\n')
-                    f.close()
+                    __log_into_file(ports_tmp_filename, 'a', str(port))
                 except:
                     pass
                 break
@@ -255,12 +250,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         ports_tmp_filename = 'tmp/ports_tmp_' + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
-        thread_write = open(thread_tmp_filename, 'w')
-        thread_write.write('1')
-        thread_write.close()
-        ports_write = open(ports_tmp_filename, 'w')
-        ports_write.write('')
-        ports_write.close()
+        __log_into_file(threads_tmp_filename, 'w', '1')
+        __log_into_file(ports_tmp_filename, 'w', '')
         trying = 0
         ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
                            thread_number, total_req, verbose_level, socks_proxy)
@@ -302,11 +293,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            save = open(log_in_file, 'a')
-            save.write(json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ssh_brute',
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ssh_brute',
                                    'DESCRIPTION': messages(language, 95), 'TIME': now(), 'CATEGORY': "brute",
-                                   'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
-            save.close()
+                                   'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            __log_into_file(log_in_file, 'a', data)
         os.remove(thread_tmp_filename)
     else:
         warn(messages(language, 69).format('ssh_brute', target))

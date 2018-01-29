@@ -17,6 +17,7 @@ from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
+from core.log import __log_into_file
 from core._die import __die_failure
 
 
@@ -81,25 +82,21 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
             content = content.decode('utf8')
         if r.status_code in status_codes:
             info(messages(language, 38).format(target, r.status_code, r.reason))
-            thread_write = open(thread_tmp_filename, 'w')
-            thread_write.write('0')
-            thread_write.close()
-            save = open(log_in_file, 'a')
-            save.write(json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+            __log_into_file(thread_tmp_filename, 'w', '0')
+            data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
                                    'PORT': int(target.rsplit(':')[2].rsplit('/')[0]), 'TYPE': 'dir_scan',
                                    'DESCRIPTION': messages(language, 38).format(target, r.status_code, r.reason),
-                                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
-            save.close()
+                                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            __log_into_file(log_in_file, 'a', data)
             if r.status_code is 200:
                 for dlmsg in directory_listing_msgs:
                     if dlmsg in content:
                         info(messages(language, 104).format(target))
-                        save = open(log_in_file, 'a')
-                        save.write(json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                        data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
                                                'PORT': int(target.rsplit(':')[1].rsplit('/')[0]), 'TYPE': 'dir_scan',
                                                'DESCRIPTION': messages(language, 104).format(target), 'TIME': now(),
-                                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
-                        save.close()
+                                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                        __log_into_file(log_in_file, 'a', data)
                         break
         return True
     except:
@@ -205,9 +202,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         total_req = len(extra_requirements["dir_scan_list"]) * len(ports)
         thread_tmp_filename = 'tmp/thread_tmp_' + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
-        thread_write = open(thread_tmp_filename, 'w')
-        thread_write.write('1')
-        thread_write.close()
+        __log_into_file(thread_tmp_filename, 'w', '1')
         trying = 0
         for port in ports:
             port = int(port)
@@ -272,11 +267,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if thread_write is 1:
             info(messages(language, 108).format(target, ",".join(map(str, ports))))
             if verbose_level is not 0:
-                save = open(log_in_file, 'a')
-                save.write(json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'dir_scan',
+                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'dir_scan',
                                        'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan",
-                                       'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
-                save.close()
+                                       'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                __log_into_file(log_in_file, 'a', data)
         os.remove(thread_tmp_filename)
     else:
         warn(messages(language, 69).format('dir_scan', target))
