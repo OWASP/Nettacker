@@ -5,7 +5,6 @@ import sys
 from glob import glob
 from core.alert import messages
 from core.alert import info
-from core.alert import warn
 from core._die import __die_failure
 
 
@@ -30,7 +29,7 @@ def load_all_modules():
     return module_names
 
 
-def load_all_method_args(language):
+def load_all_method_args(language, API=False):
     module_names = []
     modules_args = {}
     # get module names
@@ -39,16 +38,21 @@ def load_all_method_args(language):
         if lib.rsplit('.')[1] != 'graph' and lib not in module_names:
             module_names.append(lib)
     # get args
+    res = ""
     for imodule in module_names:
         try:
             extra_requirements_dict = getattr(__import__(imodule, fromlist=['extra_requirements_dict']),
                                               'extra_requirements_dict')
         except:
-            warn(messages(language, 112).format(imodule))
+            __die_failure(messages(language, 112).format(imodule))
         imodule_args = extra_requirements_dict()
         modules_args[imodule] = []
         for imodule_arg in imodule_args:
+            if API:
+                res += imodule_arg + "=" + ",".join(map(str, imodule_args[imodule_arg])) + "\n"
             modules_args[imodule].append(imodule_arg)
+    if API:
+        return res
     for imodule in modules_args:
         info(imodule.rsplit('.')[2] + '_' + imodule.rsplit('.')[1] + ' --> '
              + ", ".join(modules_args[imodule]))
