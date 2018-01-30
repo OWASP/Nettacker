@@ -101,8 +101,6 @@ def __scan(config, scan_id, scan_cmd):
     os.remove(range_temp)
     info(messages(language, 43))
     sort_logs(log_in_file, language, graph_flag)
-    write("\n")
     info(messages(language, 44))
-    write("\n\n")
     finish()
     return True

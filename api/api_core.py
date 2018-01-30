@@ -172,10 +172,10 @@ def __languages():
 
 
 def __graphs():
-    res = """<label><input id="none_graph" type="radio" class="radio"><a
+    res = """<label><input id="none_graph" type="radio" name="graph_flag" class="radio"><a
                             class="label label-default">None</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""
     for graph in load_all_graphs():
-        res += """<label><input id="{0}" type="radio" class="radio"><a
+        res += """<label><input id="{0}" type="radio" name="graph_flag" class="radio"><a
                             class="label label-default">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(graph)
     return res
 

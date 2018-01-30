@@ -110,7 +110,6 @@ def index():
 def new_scan():
     _start_scan_config = {}
     language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
-    print flask_request.data
     __api_key_check(app, flask_request, language)
     for key in _core_default_config():
         if __get_value(flask_request, key) is not None:
