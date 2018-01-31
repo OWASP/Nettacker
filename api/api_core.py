@@ -166,16 +166,16 @@ def __languages():
         "es": "es"
     }
     for lang in languages:
-        res += """<option {2} id="language" data-content='<span class="flag-icon flag-icon-{1}" value="{0}"></span> {0}'></option>""" \
+        res += """<option {2} id="{0}" data-content='<span class="flag-icon flag-icon-{1}" value="{0}"></span> {0}'></option>""" \
             .format(lang, flags[lang], "selected" if lang == "en" else "")
     return res
 
 
 def __graphs():
-    res = """<label><input id="graph_flag" type="radio" name="graph_flag" value="" class="radio"><a
+    res = """<label><input id="" type="radio" name="graph_flag" value="" class="radio"><a
                             class="label label-default">None</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""
     for graph in load_all_graphs():
-        res += """<label><input id="graph_flag" type="radio" name="graph_flag" value="{0}" class="radio"><a
+        res += """<label><input id="{0}" type="radio" name="graph_flag" value="{0}" class="radio"><a
                             class="label label-default">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(graph)
     return res
 

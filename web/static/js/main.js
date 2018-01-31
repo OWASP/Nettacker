@@ -1,6 +1,6 @@
 // check for session key
 $(document).ready(function () {
-    String.prototype.replaceAll = function(search, replacement) {
+    String.prototype.replaceAll = function (search, replacement) {
         var target = this;
         return target.replace(new RegExp(search, 'g'), replacement);
     };
@@ -119,7 +119,7 @@ $(document).ready(function () {
         });
         var profile = p.join(",");
 
-        //scan_methods
+        // scan_methods
         n = 0;
         p = []
         $('#scan_methods input:checked').each(function () {
@@ -128,13 +128,26 @@ $(document).ready(function () {
         });
         var scan_methods = p.join(",")
 
+        // language
+        var language = "";
+        $('#languages option:selected').each(function () {
+            language = this.id;
+        });
+
+        // graph_flag
+        var graph_flag = "";
+        $('#graph_flags input:checked').each(function () {
+            graph_flag = this.id;
+        });
+
+
         // build post data
         var tmp_data = {
             targets: $("#targets").val(),
             profile: profile,
             scan_methods: scan_methods,
-            graph_flag: $("#graph_flag").val(),
-            language: $("#language").val(),
+            graph_flag: graph_flag,
+            language: language,
             log_in_file: $("#log_in_file").val(),
             check_ranges: p_1,
             check_subdomains: p_3,

@@ -131,14 +131,14 @@
             </div>
             <h3>Graph</h3>
             <div class="form-group">
-                <div id="graph_flag" class="radio text-justify">
+                <div id="graph_flags" class="radio text-justify">
                     {% autoescape off %}{{graphs}}{% endautoescape %}
                 </div>
             </div>
             <h3>Reporting Language</h3>
             <div class="form-group">
                 <label for="sel2">Select Language:</label>
-                <select class="selectpicker" data-width="fit">
+                <select id="languages" class="selectpicker" data-width="fit">
                     {% autoescape off %}{{languages}}{% endautoescape %}
                 </select>
             </div>
