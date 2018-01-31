@@ -362,7 +362,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     if timeout_sec is not None and timeout_sec >= 15:
         warn(messages(language, 29).format(timeout_sec))
     # Check scanning method
-    if scan_method is not None and scan_method == "all":
+    if scan_method is not None and "all" in scan_method.rsplit(","):
         scan_method = module_names
         scan_method.remove("all")
     elif scan_method is not None and scan_method not in module_names:
