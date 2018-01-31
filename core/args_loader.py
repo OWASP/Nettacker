@@ -285,14 +285,6 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             scan_method = ""
         else:
             scan_method += ","
-        for pr in profile.rsplit(","):
-            if pr.startswith("*_"):
-                pr_c = pr.rsplit("_")[-1]
-                for real_pr in _all_profiles:
-                    if real_pr.endswith("_" + pr_c):
-                        profile += real_pr + ","
-        if profile[-1] == ",":
-            profile = profile[0:-1]
         if "all" in profile.rsplit(","):
             profile = ",".join(_all_profiles)
         tmp_sm = scan_method
@@ -365,36 +357,45 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     if scan_method is not None and "all" in scan_method.rsplit(","):
         scan_method = module_names
         scan_method.remove("all")
-    elif scan_method is not None and scan_method not in module_names:
-        if "*_" in scan_method:
-            scan_method = scan_method.rsplit(",")
-            tmp_scan_method = scan_method[:]
-            for sm in scan_method:
-                if sm.startswith("*_"):
-                    scan_method.remove(sm)
-                    found_flag = False
-                    for mn in module_names:
-                        if mn.endswith("_" + sm.rsplit("*_")[1]):
-                            scan_method.append(mn)
-                            found_flag = True
-                    if found_flag is False:
-                        __die_failure(messages(language, 117).format(sm))
-            scan_method = ",".join(scan_method)
-        if "," in scan_method:
-            scan_method = scan_method.rsplit(",")
-            for sm in scan_method:
-                if sm not in module_names:
-                    __die_failure(messages(language, 30).format(sm))
-                if sm == "all":
-                    scan_method = module_names
-                    scan_method.remove("all")
-                    break
+    elif len(scan_method.rsplit(",")) is 1 and "*_" not in scan_method:
+        if scan_method in module_names:
+            scan_method = scan_method.rsplit()
         else:
-            __die_failure(messages(language, 31).format(scan_method))
-    elif scan_method is None:
-        __die_failure(messages(language, 41))
+            __die_failure(messages(language, 30).format(scan_method))
     else:
-        scan_method = scan_method.rsplit()
+        if scan_method is not None:
+            if scan_method not in module_names:
+                if "*_" in scan_method or "," in scan_method:
+                    scan_method = scan_method.rsplit(",")
+                    scan_method_tmp = scan_method[:]
+                    for sm in scan_method_tmp:
+                        scan_method_error = True
+                        if sm.startswith("*_"):
+                            scan_method.remove(sm)
+                            found_flag = False
+                            for mn in module_names:
+                                if mn.endswith("_" + sm.rsplit("*_")[1]):
+                                    scan_method.append(mn)
+                                    scan_method_error = False
+                                    found_flag = True
+                            if found_flag is False:
+                                __die_failure(messages(language, 117).format(sm))
+                        elif sm == "all":
+                            scan_method = module_names
+                            scan_method_error = False
+                            scan_method.remove("all")
+                            break
+                        elif sm in module_names:
+                            scan_method_error = False
+                        elif sm not in module_names:
+                            __die_failure(messages(language, 30).format(sm))
+                else:
+                    scan_method_error = True
+            if scan_method_error:
+                __die_failure(messages(language, 30).format(scan_method))
+        else:
+            __die_failure(messages(language, 41))
+    scan_method = list(set(scan_method))
     # Check for exluding scanning method
     if exclude_method is not None:
         exclude_method = exclude_method.rsplit(",")
