@@ -79,17 +79,17 @@ def sort_logs(log_in_file, language, graph_flag):
             _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _TIME],
                              [value['HOST'], value['USERNAME'], value['PASSWORD'], value['PORT'], value['TYPE'],
                               value['DESCRIPTION'], value['TYPE']]])
-        data = _table.draw().encode('utf8') + '\n\n' 
+        data = _table.draw().encode('utf8') + '\n\n'
         + messages(language, 93).format(compatible.__version__, compatible.__code_name__,
                                                  now()).encode('utf8')
         __log_into_file(log_in_file, 'wb', data)
     return 0
 
 def __log_into_file(filename, mode, data):
-    
+
     if filename not in write_blocks:
-        flock = lockfile.FileLock(filename)
         write_blocks.append(filename)
+        flock = lockfile.FileLock(filename)
 
     flock.acquire()
     with open(filename, mode) as save:
