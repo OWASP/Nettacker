@@ -106,6 +106,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 'DESCRIPTION': messages(language, 114).format(len(_values), ", ".join(_values) if len(
                     _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 
                 'SCAN_CMD': scan_cmd}) + "\n"
-            __log_into_file('log.txt', 'a', data)
+            __log_into_file(log_in_file, 'a', data)
     else:
         warn(messages(language, 69).format('viewdns_reverse_ip_lookup_scan', target))
