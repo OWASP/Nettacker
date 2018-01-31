@@ -15,6 +15,7 @@ from core.alert import *
 from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
+from core.log import __log_into_file
 
 
 def extra_requirements_dict():
@@ -70,9 +71,7 @@ def __cert_spotter(target, timeout_sec, log_in_file, time_sleep, language, verbo
         else:
             # warn 403
             pass
-        f = open(thread_tmp_filename, 'a')
-        f.write('\n'.join(subs) + '\n')
-        f.close()
+        __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs))
         return subs
     except:
         return []
@@ -113,9 +112,7 @@ def __google_dig(target, timeout_sec, log_in_file, time_sleep, language, verbose
         else:
             # warn 403
             pass
-        f = open(thread_tmp_filename, 'a')
-        f.write('\n'.join(subs) + '\n')
-        f.close()
+        __log_into_file(thread_tmp_filename, 'a','\n'.join(subs))
         return subs
     except:
         return []
@@ -170,9 +167,7 @@ def __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
                     results.content)[0]
             except:
                 break
-        f = open(thread_tmp_filename, 'a')
-        f.write('\n'.join(subs) + '\n')
-        f.close()
+        __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs))
         return subs
     except:
         return []
@@ -215,9 +210,7 @@ def __threatcrowd(target, timeout_sec, log_in_file, time_sleep, language, verbos
         else:
             # warn 403
             pass
-        f = open(thread_tmp_filename, 'a')
-        f.write('\n'.join(subs) + '\n')
-        f.close()
+        __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs))
         return subs
     except:
         return []
@@ -257,9 +250,7 @@ def __dnsdumpster(target, timeout_sec, log_in_file, time_sleep, language, verbos
         else:
             # warn 403
             pass
-        f = open(thread_tmp_filename, 'a')
-        f.write('\n'.join(subs) + '\n')
-        f.close()
+        __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs))
         return subs
     except:
         return []
@@ -304,9 +295,7 @@ def __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose
         else:
             # warn 403
             pass
-        f = open(thread_tmp_filename, 'a')
-        f.write('\n'.join(subs) + '\n')
-        f.close()
+        __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs))
         return subs
     except:
         return []
@@ -354,9 +343,7 @@ def __virustotal(target, timeout_sec, log_in_file, time_sleep, language, verbose
         else:
             # warn 403
             pass
-        f = open(thread_tmp_filename, 'a')
-        f.write('\n'.join(subs) + '\n')
-        f.close()
+        __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs))
         return subs
     except:
         return []
@@ -398,9 +385,7 @@ def __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose
         else:
             # warn 403
             pass
-        f = open(thread_tmp_filename, 'a')
-        f.write('\n'.join(subs) + '\n')
-        f.close()
+        __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs))
         return subs
     except:
         return []
@@ -570,22 +555,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if len(subs) is 0:
             info(messages(language, 163))
         if len(subs) is not 0:
-            save = open(log_in_file, 'a')
             for sub in subs:
                 info(messages(language, 135).format(sub))
-                save.write(
-                    json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
-                                'DESCRIPTION': sub, 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                                'SCAN_CMD': scan_cmd}) + '\n')
-            save.close()
+                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan', 
+                    'DESCRIPTION': sub, 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                __log_into_file(log_in_file, 'a', data)
         if len(subs) is 0 and verbose_level is not 0:
-            save = open(log_in_file, 'a')
-            save.write(
-                json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
-                            'DESCRIPTION': messages(language, 135).format(len(subs), ', '.join(subs)
-                            if len(subs) > 0 else 'None'), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                            'SCAN_CMD': scan_cmd}) + '\n')
-            save.close()
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan', 
+                'DESCRIPTION': messages(language, 135).format(len(subs), ', '.join(subs) 
+                    if len(subs) > 0 else 'None'), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                'SCAN_CMD': scan_cmd})
+            __log_into_file( log_in_file, 'a', data)
         return subs
     else:
         warn(messages(language, 69).format('subdomain_scan', target))

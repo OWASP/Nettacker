@@ -15,6 +15,7 @@ from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
+from core.log import __log_into_file
 
 
 def extra_requirements_dict():
@@ -130,15 +131,11 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
             s.connect((host, port))
         s.close()
         info(messages(language, 80).format(host, port))
-        save = open(log_in_file, 'a')
-        save.write(
-            json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'tcp_connect_port_scan',
-                        'DESCRIPTION': messages(language, 79), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                        'SCAN_CMD': scan_cmd}) + '\n')
-        save.close()
-        thread_write = open(thread_tmp_filename, 'w')
-        thread_write.write('0')
-        thread_write.close()
+        data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'tcp_connect_port_scan', 
+            'DESCRIPTION': messages(language, 79), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 
+            'SCAN_CMD': scan_cmd}) + '\n')
+        __log_into_file(log_in_file, 'a', data)
+        __log_into_file(thread_tmp_filename, 'w', '0')
         return True
     except:
         return False
@@ -185,9 +182,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         total_req = len(ports)
         thread_tmp_filename = 'tmp/thread_tmp_' + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
-        thread_write = open(thread_tmp_filename, 'w')
-        thread_write.write('1')
-        thread_write.close()
+        __log_into_file(thread_tmp_filename, 'w', '1')
         trying = 0
         for port in ports:
             t = threading.Thread(target=connect,
@@ -222,12 +217,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            save = open(log_in_file, 'a')
-            save.write(
-                json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'tcp_connect_port_scan',
-                            'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan",
-                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
-            save.close()
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'tcp_connect_port_scan', 
+                'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan", 
+                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            __log_into_file(log_in_file, 'a', data)
         os.remove(thread_tmp_filename)
 
     else:

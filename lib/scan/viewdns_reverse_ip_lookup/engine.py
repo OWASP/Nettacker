@@ -11,6 +11,7 @@ from xml.etree import ElementTree as ET
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
+from core.log import __log_into_file
 from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 
@@ -94,21 +95,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if len(_values) is 0:
             info(messages(language, 164))
         if len(_values) > 0:
-            save = open(log_in_file, 'a')
             for domain in _values:
                 info(messages(language, 114).format(domain))
-                save.write(json.dumps(
-                    {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
-                     'TYPE': 'viewdns_reverse_ip_lookup_scan', 'DESCRIPTION': domain,
-                     'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
-            save.close()
+                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 
+                    'TYPE': 'viewdns_reverse_ip_lookup_scan', 'DESCRIPTION': domain, 
+                    'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                __log_into_file(log_in_file, 'a', data)
         if verbose_level is not 0:
-            save = open(log_in_file, 'a')
-            save.write(json.dumps(
-                {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'viewdns_reverse_ip_lookup_scan',
-                 'DESCRIPTION': messages(language, 114).format(len(_values), ", ".join(_values) if len(
-                     _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                 'SCAN_CMD': scan_cmd}) + '\n')
-            save.close()
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'viewdns_reverse_ip_lookup_scan', 
+                'DESCRIPTION': messages(language, 114).format(len(_values), ", ".join(_values) if len(
+                    _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 
+                'SCAN_CMD': scan_cmd})
+            __log_into_file('log.txt', 'a', data)
     else:
         warn(messages(language, 69).format('viewdns_reverse_ip_lookup_scan', target))
