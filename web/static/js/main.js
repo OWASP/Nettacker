@@ -1,5 +1,9 @@
 // check for session key
 $(document).ready(function () {
+    String.prototype.replaceAll = function(search, replacement) {
+        var target = this;
+        return target.replace(new RegExp(search, 'g'), replacement);
+    };
     // hide set session key
     $("#set_session").hide();
 
@@ -87,19 +91,100 @@ $(document).ready(function () {
 
     $("#submit_new_scan").click(function () {
 
+        // set variables
+        // check ranges
+        if (document.getElementById('check_ranges').checked) {
+            var p_1 = true;
+        } else {
+            var p_1 = false;
+        }
+        // ping before scan
+        if (document.getElementById('ping_flag').checked) {
+            var p_2 = true;
+        } else {
+            var p_2 = false;
+        }
+        // subdomains
+        if (document.getElementById('check_subdomains').checked) {
+            var p_3 = true;
+        } else {
+            var p_3 = false;
+        }
+        // profiles
+        var p = []
+        var n = 0;
+        $('#profile input:checked').each(function () {
+            p[n] = this.id;
+            n += 1;
+        });
+        var profile = p.join(",");
+
+        //scan_methods
+        n = 0;
+        p = []
+        $('#scan_methods input:checked').each(function () {
+            p[n] = this.id;
+            n += 1;
+        });
+        var scan_methods = p.join(",")
+
+        // build post data
+        var tmp_data = {
+            targets: $("#targets").val(),
+            profile: profile,
+            scan_methods: scan_methods,
+            graph_flag: $("#graph_flag").val(),
+            language: $("#language").val(),
+            log_in_file: $("#log_in_file").val(),
+            check_ranges: p_1,
+            check_subdomains: p_3,
+            ping_flag: p_2,
+            thread_number: $("#thread_number").val(),
+            thread_number_host: $("#thread_number_host").val(),
+            retries: $("#retries").val(),
+            time_sleep: $("#time_sleep").val(),
+            timeout_sec: $("#timeout_sec").val(),
+            verbose_level: $("#verbose_level").val(),
+            ports: $("#ports").val(),
+            socks_proxy: $("#socks_proxy").val(),
+            users: $("#users").val(),
+            passwds: $("#passwds").val(),
+            methods_args: $("#methods_args").val().replaceAll("\n", "&"),
+
+        };
+
+        // replace "" with null
+        var key = "";
+        var data = {};
+        for (key in tmp_data) {
+            if (tmp_data[key] != "" && tmp_data[key] != false && tmp_data[key] != null) {
+                data[key] = tmp_data[key];
+            }
+        }
+
         $.ajax({
             type: "POST",
             url: "/new/scan",
-            data: {
-                targets: "127.0.0.1",
-                scan_method: "tcp_connect_port_scan"
-            },
+            data: data,
         }).done(function (res) {
-            alert(res);
+            var results = JSON.stringify(res);
+            results = results.replaceAll(",", ",<br>");
+            document.getElementById('success_msg').innerHTML = results;
+            $("#success_request").removeClass("hidden");
+            setTimeout("$(\"#success_request\").addClass(\"animated fadeOut\");", 5000);
+            setTimeout("$(\"#success_request\").addClass(\"hidden\");", 6000);
+            $("#success_request").removeClass("animated fadeOut");
         }).fail(function (jqXHR, textStatus, errorThrown) {
-            alert(errorThrown);
+            document.getElementById('error_msg').innerHTML = jqXHR.responseText;
+            if (errorThrown == "BAD REQUEST") {
+                $("#failed_request").removeClass("hidden");
+                setTimeout("$(\"#failed_request\").addClass(\"hidden\");", 5000);
+            }
+            if (errorThrown == "UNAUTHORIZED") {
+                $("#failed_request").removeClass("hidden");
+                setTimeout("$(\"#failed_request\").addClass(\"hidden\");", 5000);
+            }
         });
-
 
     });
 

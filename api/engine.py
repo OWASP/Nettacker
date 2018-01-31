@@ -101,7 +101,7 @@ def index():
     filename = "results/results_{0}_{1}.html".format(now(model="%Y_%m_%d_%H_%M_%S"),
                                                      "".join(random.choice(string.ascii_lowercase) for x in
                                                              range(10)))
-    return render_template("index.html", scan_methods=__scan_methods(), profiles=__profiles(),
+    return render_template("index.html", scan_methods=__scan_methods(), profile=__profiles(),
                            graphs=__graphs(), languages=__languages(), filename=filename,
                            method_args_list=load_all_method_args(language, API=True))
 
@@ -122,6 +122,10 @@ def new_scan():
     _start_scan_config["scan_id"] = scan_id
     p = multiprocessing.Process(target=__scan, args=[_start_scan_config, scan_id, scan_cmd])
     p.start()
+    # Sometimes method_args is too big!
+    _start_scan_config["methods_args"] = {
+        "as_user_set": "set_successfully"
+    }
     return jsonify(_start_scan_config)
 
 

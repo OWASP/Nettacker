@@ -166,16 +166,16 @@ def __languages():
         "es": "es"
     }
     for lang in languages:
-        res += """<option {2} data-content='<span class="flag-icon flag-icon-{1}"></span> {0}'></option>""" \
+        res += """<option {2} id="language" data-content='<span class="flag-icon flag-icon-{1}" value="{0}"></span> {0}'></option>""" \
             .format(lang, flags[lang], "selected" if lang == "en" else "")
     return res
 
 
 def __graphs():
-    res = """<label><input id="none_graph" type="radio" name="graph_flag" class="radio"><a
+    res = """<label><input id="graph_flag" type="radio" name="graph_flag" value="" class="radio"><a
                             class="label label-default">None</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""
     for graph in load_all_graphs():
-        res += """<label><input id="{0}" type="radio" name="graph_flag" class="radio"><a
+        res += """<label><input id="graph_flag" type="radio" name="graph_flag" value="{0}" class="radio"><a
                             class="label label-default">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(graph)
     return res
 
@@ -184,7 +184,7 @@ def __profiles():
     profiles = _builder(_profiles(), default_profiles())
     res = ""
     for profile in profiles:
-        res += """<label><input id="{0}" type="checkbox" class="checkbox"><a class="label 
+        res += """<label><input name="profiles[]" id="{0}" type="checkbox" class="checkbox"><a class="label 
         label-primary">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(profile)
     return res
 
@@ -196,7 +196,7 @@ def __scan_methods():
     for sm in methods:
         label = "success" if sm.endswith("_scan") else "warning" if sm.endswith("_brute") else "danger" if sm.endswith(
             "_vuln") else "default"
-        res += """<label><input type="checkbox" class="checkbox">
+        res += """<label><input name="scan_methods[]" type="checkbox" class="checkbox">
         <a class="label label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(sm, label)
     return res
 

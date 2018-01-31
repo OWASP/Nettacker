@@ -115,16 +115,16 @@
             </div>
             <h3>Profiles</h3>
             <div class="form-group">
-                <div id="profiles" class="checkbox text-justify">
-                    <label><input id="select_all_profiles" type="checkbox" class="checkbox"><a
+                <div id="profile" class="checkbox text-justify">
+                    <label><input id="all" type="checkbox" class="checkbox"><a
                             class="label label-info">Select all profiles</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    {% autoescape off %}{{profiles}}{% endautoescape %}
+                    {% autoescape off %}{{profile}}{% endautoescape %}
                 </div>
             </div>
             <h3>Scan Methods</h3>
             <div class="form-group">
                 <div id="scan_methods" class="checkbox text-justify">
-                    <label><input id="select_all_scan_methods" type="checkbox" class="checkbox"><a
+                    <label><input id="all" type="checkbox" class="checkbox"><a
                             class="label label-info">Select all</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     {% autoescape off %}{{scan_methods}}{% endautoescape %}
                 </div>
@@ -145,18 +145,20 @@
 
 
             <h3>Output</h3>
-            <div id="log_in_file" class="input-group col-xs-5">
+            <div class="input-group col-xs-5">
                 <span class="input-group-addon">filename</span>
-                <input type="text" class="form-control" placeholder="Additional Info"
+                <input id="log_in_file" type="text" class="form-control" placeholder="Additional Info"
                        value="{% autoescape off %}{{filename}}{% endautoescape %}">
             </div>
             <h3>Flags</h3>
             <div id="scan_options" class="form-group">
                 <div class="checkbox text-justify">
-                    <label><input id="check_ranges" type="checkbox" class="checkbox"><a class="label label-success">check_ranges</a></label>
+                    <label><input id="check_ranges" type="checkbox"><a
+                            class="label label-success">check_ranges</a></label>
                     <label><input id="check_subdomains" type="checkbox"><a
                             class="label label-success">check_subdomains</a></label>
-                    <label><input id="ping_flag" type="checkbox"><a class="label label-success">ping_flag</a></label>
+                    <label><input id="ping_flag" type="checkbox"><a
+                            class="label label-success">ping_flag</a></label>
                 </div>
             </div>
             <h3>Engine Options</h3>
@@ -218,8 +220,7 @@
                     <div class="input-group col-xs-12">
                         <span class="input-group-addon">Ports</span>
                         <input id="ports" type="text" class="form-control"
-                               placeholder="1-1000 - leave it empty to use default ports"
-                               value="">
+                               placeholder="1-1000 - leave it empty to use default ports">
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -250,6 +251,15 @@
             <br>
             <ul id="submit_new_scan" class="btn btn-primary" action="javascript:submit_new_scan()">Submit</ul>
         </form>
+        <br><br>
+        <div id="success_request" class="alert alert-success hidden text-justify">
+            <strong>Success!</strong> Request submitted!<br>
+            <code><p class="text-justify" id="success_msg"></p></code>
+        </div>
+        <div id="failed_request" class="alert alert-danger hidden shake animated text-justify">
+            <strong>Failed!</strong><br>
+            <code><p class="text-justify" id="error_msg"></p></code>
+        </div>
         <br><br>
     </div>
     </body>
