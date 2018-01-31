@@ -285,7 +285,15 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             scan_method = ""
         else:
             scan_method += ","
-        if profile == "all":
+        for pr in profile.rsplit(","):
+            if pr.startswith("*_"):
+                pr_c = pr.rsplit("_")[-1]
+                for real_pr in _all_profiles:
+                    if real_pr.endswith("_" + pr_c):
+                        profile += real_pr + ","
+        if profile[-1] == ",":
+            profile = profile[0:-1]
+        if "all" in profile.rsplit(","):
             profile = ",".join(_all_profiles)
         tmp_sm = scan_method
         for pr in profile.rsplit(","):
