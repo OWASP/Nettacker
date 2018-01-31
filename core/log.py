@@ -87,10 +87,7 @@ def sort_logs(log_in_file, language, graph_flag):
 
 def __log_into_file(filename, mode, data):
 
-    if filename not in write_blocks:
-        write_blocks.append(filename)
-        flock = lockfile.FileLock(filename)
-
+    flock = lockfile.FileLock(filename)
     flock.acquire()
     with open(filename, mode) as save:
         save.write(data + '\n')
