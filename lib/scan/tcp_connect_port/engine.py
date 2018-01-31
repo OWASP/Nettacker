@@ -133,7 +133,7 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         info(messages(language, 80).format(host, port))
         data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'tcp_connect_port_scan', 
             'DESCRIPTION': messages(language, 79), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 
-            'SCAN_CMD': scan_cmd}) + '\n')
+            'SCAN_CMD': scan_cmd}) + '\n'
         __log_into_file(log_in_file, 'a', data)
         __log_into_file(thread_tmp_filename, 'w', '0')
         return True
