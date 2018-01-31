@@ -22,6 +22,7 @@ from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
+from core.log import __log_into_file
 
 
 def extra_requirements_dict():
@@ -189,15 +190,11 @@ def __heartbleed(target, port, timeout_sec, log_in_file, language, time_sleep,
     if bleed(target, port, timeout_sec, log_in_file, language, time_sleep,
              thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, 140).format(target, port, 'heartbleed'))
-        thread_write = open(thread_tmp_filename, 'w')
-        thread_write.write('0')
-        thread_write.close()
-        save = open(log_in_file, 'a')
-        save.write(
-            json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'heartbleed_vuln',
-                        'DESCRIPTION': messages(language, 139).format('heartbleed'), 'TIME': now(), 'CATEGORY': "vuln",
-                        'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
-        save.close()
+        __log_into_file(thread_tmp_filename, 'w', '0')
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'heartbleed_vuln', 
+            'DESCRIPTION': messages(language, 139).format('heartbleed'), 'TIME': now(), 'CATEGORY': "vuln", 
+            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+        __log_into_file(log_in_file, 'a', data)
         return True
     else:
         return False
@@ -243,9 +240,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         total_req = len(ports)
         thread_tmp_filename = 'tmp/thread_tmp_' + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
-        thread_write = open(thread_tmp_filename, 'w')
-        thread_write.write('1')
-        thread_write.close()
+        __log_into_file(thread_tmp_filename, 'w', '1')
         trying = 0
 
         for port in ports:
@@ -282,12 +277,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, 141).format('heartbleed'))
-            save = open(log_in_file, 'a')
-            save.write(
-                json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'heartbleed_vuln',
-                            'DESCRIPTION': messages(language, 141).format('heartbleed'), 'TIME': now(),
-                            'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
-            save.close()
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'heartbleed_vuln', 
+                'DESCRIPTION': messages(language, 141).format('heartbleed'), 'TIME': now(), 
+                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            __log_into_file(log_in_file, 'a', data)
         os.remove(thread_tmp_filename)
 
     else:

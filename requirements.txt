@@ -7,3 +7,4 @@ PySocks
 win_inet_pton
 pyOpenSSL
 flask
+lockfile

@@ -10,7 +10,7 @@ from core.alert import error
 from core import compatible
 from core._time import now
 from core._die import __die_failure
-
+import lockfile
 
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
     info(messages(language, 88))
@@ -65,15 +65,10 @@ def sort_logs(log_in_file, language, graph_flag):
                                                    value['PORT'], value['TYPE'], value['DESCRIPTION'], value['TIME'])
         _table += _log_data.table_end + '<p class="footer">' + messages(language, 93) \
             .format(compatible.__version__, compatible.__code_name__, now()) + '</p>'
-        _table = _table.encode('utf8')
-        save = open(log_in_file, 'w' if type(_table) == str else 'wb')
-        save.write(_table)
-        save.close()
+        __log_into_file(log_in_file, 'w' if type(_table) == str else 'wb', _table)
     elif len(log_in_file) >= 5 and log_in_file[-5:] == '.json':
         data = json.dumps(sorted(json.loads('[' + _get_log_values(log_in_file) + ']')))
-        save = open(log_in_file, 'wb')
-        save.write(data.encode('utf8'))
-        save.close()
+        __log_into_file(log_in_file, 'wb', data)
     else:
         data = sorted(json.loads('[' + _get_log_values(log_in_file) + ']'))
         _table = texttable.Texttable()
@@ -82,9 +77,16 @@ def sort_logs(log_in_file, language, graph_flag):
             _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _TIME],
                              [value['HOST'], value['USERNAME'], value['PASSWORD'], value['PORT'], value['TYPE'],
                               value['DESCRIPTION'], value['TYPE']]])
-        save = open(log_in_file, 'wb')
-        save.write(_table.draw().encode('utf8') + '\n\n' +
-                   messages(language, 93).format(compatible.__version__, compatible.__code_name__,
-                                                 now()).encode('utf8') + '\n\n')
-        save.close()
+        data = _table.draw().encode('utf8') + '\n\n'
+        + messages(language, 93).format(compatible.__version__, compatible.__code_name__,
+                                                 now()).encode('utf8')
+        __log_into_file(log_in_file, 'wb', data)
     return 0
+
+def __log_into_file(filename, mode, data):
+
+    flock = lockfile.FileLock(filename)
+    flock.acquire()
+    with open(filename, mode) as save:
+        save.write(data + '\n')
+    flock.release()
