@@ -12,8 +12,6 @@ from core._time import now
 from core._die import __die_failure
 import lockfile
 
-write_blocks = []
-
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
     info(messages(language, 88))
     try:
