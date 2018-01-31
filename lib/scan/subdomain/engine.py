@@ -559,12 +559,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 info(messages(language, 135).format(sub))
                 data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan', 
                     'DESCRIPTION': sub, 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-                __log_into_file(log_in_file, 'a', data)
+                __log_into_file(log_in_file, 'a', data) + "\n"
         if len(subs) is 0 and verbose_level is not 0:
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan', 
                 'DESCRIPTION': messages(language, 135).format(len(subs), ', '.join(subs) 
                     if len(subs) > 0 else 'None'), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                'SCAN_CMD': scan_cmd})
+                'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file( log_in_file, 'a', data)
         return subs
     else:

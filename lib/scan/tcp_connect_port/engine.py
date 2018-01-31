@@ -219,7 +219,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if thread_write is 1 and verbose_level is not 0:
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'tcp_connect_port_scan', 
                 'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan", 
-                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data)
         os.remove(thread_tmp_filename)
 

@@ -76,8 +76,8 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             info(messages(language, 70).format(user, passwd, target, port))
             save = open(log_in_file, 'a')
             data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ssh_brute', 
-                'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute", 
-                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute",
+                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data)
             __log_into_file(thread_tmp_filename, 'w', '0')
         except:
@@ -294,7 +294,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if thread_write is 1 and verbose_level is not 0:
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ssh_brute', 
                 'DESCRIPTION': messages(language, 95), 'TIME': now(), 'CATEGORY': "brute", 
-                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data)
         os.remove(thread_tmp_filename)
     else:

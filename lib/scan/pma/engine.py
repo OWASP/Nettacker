@@ -17,6 +17,7 @@ from core.targets import target_to_host
 from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
+from core.log import __log_into_file
 
 
 def extra_requirements_dict():
@@ -24,38 +25,41 @@ def extra_requirements_dict():
         "pma_scan_ports": ["80"],
         "pma_scan_http_method": ["GET"],
         "pma_scan_random_agent": ["True"],
-        "pma_scan_list": ['/admin/','/accounts/login/','/admin1.php/','/admin.php/',
-                          '/admin.html/','/admin1.php/','/admin1.html/','/login.php/','/admin/cp.php/','/cp.php/',
-                          '/administrator/index.php/','/administrator/index.html/','/administartor/','/admin.login/',
-                          '/administrator/login.php/','/administrator/login.html/','/phpMyAdmin/','/phpmyadmin/',
-                          '/PMA/','/pma/','/dbadmin/','/mysql/',
-                          '/myadmin/','/phpmyadmin2/','/phpMyAdmin2/','/phpMyAdmin-2/',
-                          '/php-my-admin/','/phpMyAdmin-2.2.3/','/phpMyAdmin-2.2.6/','/phpMyAdmin-2.5.1/',
-                          '/phpMyAdmin-2.5.4/','/phpMyAdmin-2.5.5-rc1/','/phpMyAdmin-2.5.5-rc2/','/phpMyAdmin-2.5.5/',
-                          '/phpMyAdmin-2.5.5-pl1/','/phpMyAdmin-2.5.6-rc1/','/phpMyAdmin-2.5.6-rc2/','/phpMyAdmin-2.5.6/',
-                          '/phpMyAdmin-2.5.7/','/phpMyAdmin-2.5.7-pl1/','/phpMyAdmin-2.6.0-alpha/','/phpMyAdmin-2.6.0-alpha2/',
-                          '/phpMyAdmin-2.6.0-beta1/','/phpMyAdmin-2.6.0-beta2/','/phpMyAdmin-2.6.0-rc1/','/phpMyAdmin-2.6.0-rc2/' ,
-                          '/phpMyAdmin-2.6.0-rc3/','/phpMyAdmin-2.6.0/','/phpMyAdmin-2.6.0-pl1/','/phpMyAdmin-2.6.0-pl2/',
-                          '/phpMyAdmin-2.6.0-pl3/','/phpMyAdmin-2.6.1-rc1/','/phpMyAdmin-2.6.1-rc2/','/phpMyAdmin-2.6.1/',
-                          '/phpMyAdmin-2.6.1-pl1/','/phpMyAdmin-2.6.1-pl2/','/phpMyAdmin-2.6.1-pl3/','/phpMyAdmin-2.6.2-rc1/',
-                          '/phpMyAdmin-2.6.2-beta1/','/phpMyAdmin-2.6.2-rc1/','/phpMyAdmin-2.6.2/','/phpMyAdmin-2.6.2-pl1/',
-                          '/phpMyAdmin-2.6.3/','/phpMyAdmin-2.6.3-rc1/','/phpMyAdmin-2.6.3/','/phpMyAdmin-2.6.3-pl1/',
-                          '/phpMyAdmin-2.6.4-rc1/','/phpMyAdmin-2.6.4-pl1/','/phpMyAdmin-2.6.4-pl2/','/phpMyAdmin-2.6.4-pl3/',
-                          '/phpMyAdmin-2.6.4-pl4/','/phpMyAdmin-2.6.4/','/phpMyAdmin-2.7.0-beta1/','/phpMyAdmin-2.7.0-rc1/',
-                          '/phpMyAdmin-2.7.0-pl1/','/phpMyAdmin-2.7.0-pl2/','/phpMyAdmin-2.7.0/','/phpMyAdmin-2.8.0-beta1/',
-                          '/phpMyAdmin-2.8.0-rc1/','/phpMyAdmin-2.8.0-rc2/','/phpMyAdmin-2.8.0/','/phpMyAdmin-2.8.0.1/', 
-                          '/phpMyAdmin-2.8.0.2/','/phpMyAdmin-2.8.0.3/','/phpMyAdmin-2.8.0.4/','/phpMyAdmin-2.8.1-rc1/',
-                          '/phpMyAdmin-2.8.1/','/phpMyAdmin-2.8.2/','/sqlmanager/','/mysqlmanager/','/p/m/a/',
-                          '/PMA2005/','/pma2005/','/phpmanager/','/php-myadmin/',
-                          '/phpmy-admin/','/webadmin/','/sqlweb/','/websql/',
-                          '/webdb/','/mysqladmin/','/mysql-admin/','/mya/']
+        "pma_scan_list": ['/admin/', '/accounts/login/', '/admin1.php/', '/admin.php/',
+                          '/admin.html/', '/admin1.php/', '/admin1.html/', '/login.php/', '/admin/cp.php/', '/cp.php/',
+                          '/administrator/index.php/', '/administrator/index.html/', '/administartor/', '/admin.login/',
+                          '/administrator/login.php/', '/administrator/login.html/', '/phpMyAdmin/', '/phpmyadmin/',
+                          '/PMA/', '/pma/', '/dbadmin/', '/mysql/', '/myadmin/', '/phpmyadmin2/', '/phpMyAdmin2/',
+                          '/phpMyAdmin-2/', '/php-my-admin/', '/phpMyAdmin-2.2.3/', '/phpMyAdmin-2.2.6/',
+                          '/phpMyAdmin-2.5.1/', '/phpMyAdmin-2.5.4/', '/phpMyAdmin-2.5.5-rc1/',
+                          '/phpMyAdmin-2.5.5-rc2/', '/phpMyAdmin-2.5.5/', '/phpMyAdmin-2.5.5-pl1/',
+                          '/phpMyAdmin-2.5.6-rc1/', '/phpMyAdmin-2.5.6-rc2/', '/phpMyAdmin-2.5.6/',
+                          '/phpMyAdmin-2.5.7/', '/phpMyAdmin-2.5.7-pl1/', '/phpMyAdmin-2.6.0-alpha/',
+                          '/phpMyAdmin-2.6.0-alpha2/', '/phpMyAdmin-2.6.0-beta1/', '/phpMyAdmin-2.6.0-beta2/',
+                          '/phpMyAdmin-2.6.0-rc1/', '/phpMyAdmin-2.6.0-rc2/', '/phpMyAdmin-2.6.0-rc3/',
+                          '/phpMyAdmin-2.6.0/', '/phpMyAdmin-2.6.0-pl1/', '/phpMyAdmin-2.6.0-pl2/',
+                          '/phpMyAdmin-2.6.0-pl3/', '/phpMyAdmin-2.6.1-rc1/', '/phpMyAdmin-2.6.1-rc2/',
+                          '/phpMyAdmin-2.6.1/', '/phpMyAdmin-2.6.1-pl1/', '/phpMyAdmin-2.6.1-pl2/',
+                          '/phpMyAdmin-2.6.1-pl3/', '/phpMyAdmin-2.6.2-rc1/', '/phpMyAdmin-2.6.2-beta1/',
+                          '/phpMyAdmin-2.6.2-rc1/', '/phpMyAdmin-2.6.2/', '/phpMyAdmin-2.6.2-pl1/',
+                          '/phpMyAdmin-2.6.3/', '/phpMyAdmin-2.6.3-rc1/', '/phpMyAdmin-2.6.3/',
+                          '/phpMyAdmin-2.6.3-pl1/', '/phpMyAdmin-2.6.4-rc1/', '/phpMyAdmin-2.6.4-pl1/',
+                          '/phpMyAdmin-2.6.4-pl2/', '/phpMyAdmin-2.6.4-pl3/', '/phpMyAdmin-2.6.4-pl4/',
+                          '/phpMyAdmin-2.6.4/', '/phpMyAdmin-2.7.0-beta1/', '/phpMyAdmin-2.7.0-rc1/',
+                          '/phpMyAdmin-2.7.0-pl1/', '/phpMyAdmin-2.7.0-pl2/', '/phpMyAdmin-2.7.0/',
+                          '/phpMyAdmin-2.8.0-beta1/', '/phpMyAdmin-2.8.0-rc1/', '/phpMyAdmin-2.8.0-rc2/',
+                          '/phpMyAdmin-2.8.0/', '/phpMyAdmin-2.8.0.1/', '/phpMyAdmin-2.8.0.2/', '/phpMyAdmin-2.8.0.3/',
+                          '/phpMyAdmin-2.8.0.4/', '/phpMyAdmin-2.8.1-rc1/', '/phpMyAdmin-2.8.1/', '/phpMyAdmin-2.8.2/',
+                          '/sqlmanager/', '/mysqlmanager/', '/p/m/a/', '/PMA2005/', '/pma2005/', '/phpmanager/',
+                          '/php-myadmin/', '/phpmy-admin/', '/webadmin/', '/sqlweb/', '/websql/',
+                          '/webdb/', '/mysqladmin/', '/mysql-admin/', '/mya/']
     }
 
 
 def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
           http_method, socks_proxy, scan_id, scan_cmd):
     status_codes = [200, 401, 403]
-    pmaectory_listing_msgs = ["<title>Index of /", "<a href=\"\\?C=N;O=D\">Name</a>", "Directory Listing for",
+    directory_listing_msgs = ["<title>Index of /", "<a href=\"\\?C=N;O=D\">Name</a>", "Directory Listing for",
                               "Parent Directory</a>", "Last modified</a>", "<TITLE>Folder Listing.",
                               "- Browsing directory "]
     time.sleep(time_sleep)
@@ -96,22 +100,24 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
             thread_write = open(thread_tmp_filename, 'w')
             thread_write.write('0')
             thread_write.close()
-            save = open(log_in_file, 'a')
-            save.write(json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
-                                   'PORT': int(target.rsplit(':')[2].rsplit('/')[0]), 'TYPE': 'pma_scan',
-                                   'DESCRIPTION': messages(language, 38).format(target, r.status_code, r.reason),
-                                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
-            save.close()
+            __log_into_file(log_in_file, 'a',
+                            json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                                        'PORT': int(target.rsplit(':')[2].rsplit('/')[0]), 'TYPE': 'pma_scan',
+                                        'DESCRIPTION': messages(language, 38).format(target, r.status_code, r.reason),
+                                        'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                                        'SCAN_CMD': scan_cmd}) + '\n')
             if r.status_code is 200:
                 for dlmsg in directory_listing_msgs:
                     if dlmsg in content:
                         info(messages(language, 104).format(target))
-                        save = open(log_in_file, 'a')
-                        save.write(json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
-                                               'PORT': int(target.rsplit(':')[1].rsplit('/')[0]), 'TYPE': 'pma_scan',
-                                               'DESCRIPTION': messages(language, 104).format(target), 'TIME': now(),
-                                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
-                        save.close()
+                        __log_into_file(log_in_file, 'a',
+                                        json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                                                    'PORT': int(target.rsplit(':')[1].rsplit('/')[0]),
+                                                    'TYPE': 'pma_scan',
+                                                    'DESCRIPTION': messages(language, 104).format(target),
+                                                    'TIME': now(),
+                                                    'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                                                    'SCAN_CMD': scan_cmd}) + '\n')
                         break
         return True
     except:
@@ -154,7 +160,8 @@ def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, ver
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
           verbose_level, socks_proxy, retries, ping_flag, methods_args, scan_id, scan_cmd):  # Main function
-    if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
+    if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
+            target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
         # rand useragent
         user_agent_list = [
             "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
@@ -223,7 +230,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         trying = 0
         for port in ports:
             port = int(port)
-            if target_type(target) == 'SINGLE_IPv4' or target_type(target) == 'DOMAIN' or target_type(target) == 'SINGLE_IPv6':
+            if target_type(target) == 'SINGLE_IPv4' or target_type(target) == 'DOMAIN' or target_type(
+                    target) == 'SINGLE_IPv6':
                 url = 'http://{0}:{1}/'.format(target, str(port))
             else:
                 if target.count(':') > 1:
@@ -239,7 +247,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     socks_proxy, verbose_level, trying, total_req, total, num, port, language) is 0:
                 for idir in extra_requirements["pma_scan_list"]:
                     # check target type
-                    if target_type(target) == 'SINGLE_IPv4' or target_type(target) == 'DOMAIN' or target_type(target) == 'SINGLE_IPv6':
+                    if target_type(target) == 'SINGLE_IPv4' or target_type(target) == 'DOMAIN' or target_type(
+                            target) == 'SINGLE_IPv6':
                         url = 'http://{0}:{1}/{2}'.format(target, str(port), idir)
                     else:
                         http = target.rsplit('://')[0]
