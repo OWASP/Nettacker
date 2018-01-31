@@ -285,7 +285,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1:
-            info(messages(language, 108).format(target, ",".join(ports)))
+            info(messages(language, 108).format(target, ",".join(map(str, ports))))
             if verbose_level is not 0:
                 save = open(log_in_file, 'a')
                 save.write(json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'pma_scan',
