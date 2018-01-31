@@ -184,7 +184,7 @@ def __profiles():
     profiles = _builder(_profiles(), default_profiles())
     res = ""
     for profile in profiles:
-        res += """<label><input name="profiles[]" id="{0}" type="checkbox" class="checkbox"><a class="label 
+        res += """<label><input id="{0}" type="checkbox" class="checkbox"><a class="label 
         label-primary">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(profile)
     return res
 
@@ -196,7 +196,7 @@ def __scan_methods():
     for sm in methods:
         label = "success" if sm.endswith("_scan") else "warning" if sm.endswith("_brute") else "danger" if sm.endswith(
             "_vuln") else "default"
-        res += """<label><input name="scan_methods[]" type="checkbox" class="checkbox">
+        res += """<label><input id="{0}" type="checkbox" class="checkbox">
         <a class="label label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(sm, label)
     return res
 
@@ -260,18 +260,18 @@ def __rules(config, defaults, language):
             ports = tmp_ports[:]
     config["ports"] = ports
     # Check Profiles
-    config["profile"] = config["profile"].rsplit(',') if config["profile"] is not None else None
     if config["profile"] is not None:
+        _all_profiles = _builder(_profiles(), default_profiles())
         if config["scan_method"] is None:
             config["scan_method"] = ""
         else:
             config["scan_method"] += ","
-        if config["profile"][0] == "all":
-            config["profile"] = ",".join(_builder(_profiles(), default_profiles()))
+        if "all" in config["profile"].rsplit(","):
+            config["profile"] = ",".join(_all_profiles)
         tmp_sm = config["scan_method"]
-        for pr in config["profile"]:
+        for pr in config["profile"].rsplit(","):
             try:
-                for sm in _builder(_profiles(), default_profiles())[pr]:
+                for sm in _all_profiles[pr]:
                     if sm not in tmp_sm.rsplit(","):
                         tmp_sm += sm + ","
             except:
@@ -279,24 +279,56 @@ def __rules(config, defaults, language):
         if tmp_sm[-1] == ",":
             tmp_sm = tmp_sm[0:-1]
         config["scan_method"] = ",".join(list(set(tmp_sm.rsplit(","))))
+
     # Check retries
     try:
         config["retries"] = int(config["retries"])
     except:
         config["retries"] = defaults["retries"]
     # Check Scanning Method
-    config["scan_method"] = config["scan_method"].rsplit(',') if config["scan_method"] is not None else None
-    if config["scan_method"] is None:
-        abort(400, messages(language, 41))
-    else:
-        if "all" in config["scan_method"]:
-            config["scan_method"] = load_all_modules()
-            config["scan_method"].remove("all")
+    if config["scan_method"] is not None and "all" in config["scan_method"].rsplit(","):
+        config["scan_method"] = load_all_modules()
+        config["scan_method"].remove("all")
+    elif len(config["scan_method"].rsplit(",")) is 1 and "*_" not in config["scan_method"]:
+        if config["scan_method"] in load_all_modules():
+            config["scan_method"] = config["scan_method"].rsplit()
         else:
-            methods = config["scan_method"][:]
-            for sm in methods:
-                if sm not in load_all_modules():
-                    abort(400, messages(language, 30).format(sm))
+            abort(400, messages(language, 30).format(config["scan_method"]))
+    else:
+        if config["scan_method"] is not None:
+            if config["scan_method"] not in load_all_modules():
+                if "*_" in config["scan_method"] or "," in config["scan_method"]:
+                    config["scan_method"] = config["scan_method"].rsplit(",")
+                    scan_method_tmp = config["scan_method"][:]
+                    for sm in scan_method_tmp:
+                        scan_method_error = True
+                        if sm.startswith("*_"):
+                            config["scan_method"].remove(sm)
+                            found_flag = False
+                            for mn in load_all_modules():
+                                if mn.endswith("_" + sm.rsplit("*_")[1]):
+                                    config["scan_method"].append(mn)
+                                    scan_method_error = False
+                                    found_flag = True
+                            if found_flag is False:
+                                abort(400, messages(language, 117).format(sm))
+                        elif sm == "all":
+                            config["scan_method"] = load_all_modules()
+                            scan_method_error = False
+                            config["scan_method"].remove("all")
+                            break
+                        elif sm in load_all_modules():
+                            scan_method_error = False
+                        elif sm not in load_all_modules():
+                            abort(400, messages(language, 30).format(sm))
+                else:
+                    scan_method_error = True
+            if scan_method_error:
+                abort(400, messages(language, 30).format(config["scan_method"]))
+        else:
+            abort(400, messages(language, 41))
+        config["scan_method"] = list(set(config["scan_method"]))
+
     # Check Socks Proxy
     socks_proxy = config["socks_proxy"]
     if socks_proxy is not None:

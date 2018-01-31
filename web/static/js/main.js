@@ -84,10 +84,7 @@ $(document).ready(function () {
 
 
     });
-
-    $("#select_all_scan_methods").click(function () {
-        $('input:checkbox').filter('#scan_method_').attr(":checked")
-    });
+    
 
     $("#submit_new_scan").click(function () {
 
@@ -121,13 +118,12 @@ $(document).ready(function () {
 
         // scan_methods
         n = 0;
-        p = []
-        $('#scan_methods input:checked').each(function () {
-            p[n] = this.id;
+        sm = []
+        $('#scan_method input:checked').each(function () {
+            sm[n] = this.id;
             n += 1;
         });
-        var scan_methods = p.join(",")
-
+        var scan_method = sm.join(",")
         // language
         var language = "";
         $('#languages option:selected').each(function () {
@@ -145,7 +141,7 @@ $(document).ready(function () {
         var tmp_data = {
             targets: $("#targets").val(),
             profile: profile,
-            scan_methods: scan_methods,
+            scan_method: scan_method,
             graph_flag: graph_flag,
             language: language,
             log_in_file: $("#log_in_file").val(),
