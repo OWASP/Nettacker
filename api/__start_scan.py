@@ -39,6 +39,7 @@ def __scan(config, scan_id, scan_cmd):
     thread_number_host = config["thread_number_host"]
     graph_flag = config["graph_flag"]
     profile = config["profile"]
+    backup_ports = config["backup_ports"]
 
     suff = now(model="%Y_%m_%d_%H_%M_%S") + "".join(random.choice(string.ascii_lowercase) for x in
                                                     range(10))
@@ -101,7 +102,7 @@ def __scan(config, scan_id, scan_cmd):
     os.remove(subs_temp)
     os.remove(range_temp)
     info(messages(language, 43))
-    sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_level, 1, profile, scan_method, ports)
+    sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_level, 1, profile, scan_method, backup_ports)
     info(messages(language, 44))
     finish()
     return True

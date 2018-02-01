@@ -40,14 +40,14 @@ $(document).ready(function () {
         }).done(function (res) {
             $("#set_session").hide();
             $("#success_key").removeClass("hidden");
-            setTimeout("$(\"#success_key\").addClass(\"animated fadeOut\");", 1000);
-            setTimeout("$(\"#success_key\").addClass(\"hidden\");", 1500);
+            setTimeout("$(\"#success_key\").addClass(\"animated fadeOut\");", 5000);
+            setTimeout("$(\"#success_key\").addClass(\"hidden\");", 5000);
             $("#logout_btn").removeClass("hidden");
             $("#logout_btn").show();
         }).fail(function (jqXHR, textStatus, errorThrown) {
             $("#set_session").hide();
             $("#failed_key").removeClass("hidden");
-            setTimeout("$(\"#failed_key\").addClass(\"hidden\");", 2000);
+            setTimeout("$(\"#failed_key\").addClass(\"hidden\");", 5000);
             $("#set_session").show();
         });
     });
@@ -204,29 +204,82 @@ $(document).ready(function () {
 
     });
 
+    
+    function show_scans(res) {
+        res = JSON.parse(res);
+        var HTMLData= "";
+        var i;
+        var id;
+        var date;
+        var scan_id;
+        var report_filename;
+        var events_num;
+        var verbose;
+        var api_flag;
+        var report_type;
+        var graph_flag;
+        var category;
+        var profile;
+        var scan_method;
+        var language;
+        var scan_cmd;
+        var ports;
+
+        for(i=0; i < res.length; i++){
+            id = res[i]["id"];
+            date = res[i]["date"];
+            scan_id = res[i]["scan_id"];
+            report_filename = res[i]["report_filename"];
+            events_num = res[i]["events_num"];
+            verbose = res[i]["verbose"];
+            api_flag = res[i]["api_flag"];
+            report_type = res[i]["report_type"];
+            graph_flag = res[i]["graph_flag"];
+            category = res[i]["category"];
+            profile = res[i]["profile"];
+            scan_method = res[i]["scan_method"];
+            language = res[i]["language"];
+            scan_cmd = res[i]["scan_cmd"];
+            ports = res[i]["ports"];
+            HTMLData += "<a target='_blank' href=\"/results/get?id=" + id + "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
+                "                        <div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
+                "                            <h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
+                "                      class=\"bold label label-primary\">" + id +"</span>&nbsp;&nbsp;&nbsp;<small class=\"label label-info\">" + date + "</small></h3>\n" +
+                "                        </div></div>\n" + "<p class=\"mb-1\"> " +
+                "<p class='mb-1  bold label label-danger'>scan_id:" + scan_id + "</p>&nbsp;&nbsp;&nbsp;<br>" +
+                "<p class='mb-1  bold label label-info'>report_filename:" + report_filename + "</p>&nbsp;&nbsp;&nbsp;<br>" +
+                "<p class='mb-1 bold label label-success'>events_num:" + events_num + "</p>&nbsp;&nbsp;&nbsp;" +
+                "<p class='mb-1 bold label label-danger'>ports:" + ports + "</p>&nbsp;&nbsp;&nbsp;<br>" +
+                "<p class='mb-1 bold label label-info'>category:" + category + "</p>&nbsp;&nbsp;&nbsp;<br>" +
+                "<p class='mb-1 bold label label-success'>profile:" + profile + "</p>&nbsp;&nbsp;&nbsp;<br>" +
+                "<p class='mb-1 bold label label-warning'>scan_method:" + scan_method + "</p>&nbsp;&nbsp;&nbsp;<br>" +
+                "<p class='mb-1 bold  label label-primary'>api_flag:" + api_flag + "</p>&nbsp;&nbsp;&nbsp;" +
+                "<p class='mb-1 bold label label-warning'>verbose:" + verbose + "</p>&nbsp;&nbsp;&nbsp;" +
+                "<p class='mb-1 bold label label-info'>report_type:" + report_type + "</p>&nbsp;&nbsp;&nbsp;" +
+                "<p class='mb-1 bold label label-primary'>graph_flag:" + graph_flag + "</p>&nbsp;&nbsp;&nbsp;" +
+                "<p class='mb-1 bold label label-success'>language:" + language + "</p>&nbsp;&nbsp;&nbsp;<br>" +
+                "<p class='mb-1 bold label label-default'>scan_cmd:" + scan_cmd + "</p>&nbsp;&nbsp;&nbsp;" +
+
+                "                   </p>\n </a>";
+        }
+        document.getElementById('scan_results').innerHTML = HTMLData;
+
+    }
 
     $("#results_btn").click(function () {
         $.ajax({
             type: "GET",
-            url: "/results/get",
+            url: "/results/get_list",
             dataType: "text"
         }).done(function (res) {
             $("#login_first").addClass("hidden");
             $("#scan_results").removeClass("hidden");
-            document.getElementById('success_msg').innerHTML = res;
+            show_scans(res);
         }).fail(function (jqXHR, textStatus, errorThrown) {
             $("#login_first").removeClass("hidden");
             $("#scan_results").addClass("hidden");
         });
     });
-// <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
-//         <div class="d-flex w-100 justify-content-between">
-//         <h4 class="mb-1">List group item heading</h4>
-//     <small>3 days ago</small>
-//     </div>
-//     <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius
-//     blandit.</p>
-//     <small>Donec id elit non mi porta.</small>
-//     </a>
+
 });
 

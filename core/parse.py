@@ -77,6 +77,7 @@ def load():
     api_client_white_list_ips = options.api_client_white_list_ips
     api_access_log = options.api_access_log
     api_access_log_filename = options.api_access_log_filename
+    backup_ports = ports
 
     # Checking Requirements
     (targets, targets_list, thread_number, thread_number_host,
@@ -164,7 +165,7 @@ def load():
     os.remove(subs_temp)
     os.remove(range_temp)
     info(messages(language, 43))
-    sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_level, 0, profile, scan_method, ports)
+    sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_level, 0, profile, scan_method, backup_ports)
     write("\n")
     info(messages(language, 44))
     write("\n\n")

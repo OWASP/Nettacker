@@ -9,6 +9,8 @@ from core.config_builder import _builder
 from core.alert import warn
 from core.alert import info
 from core.alert import messages
+from api.api_core import __structure
+from flask import jsonify
 
 
 def create_connection(language, api_flag):
@@ -75,3 +77,52 @@ def submit_logs_to_db(language, api_flag, log):
             warn(messages(language, 168))
         return False
     return True
+
+
+def __select_results(language, page, api_flag):
+    conn = create_connection(language, api_flag)
+    log = ""
+    page = page * 10 if page > 0 else page * -10
+    data_structure = {"id": "", "date": "", "scan_id": "", "report_filename": "",
+                      "events_num": "", "verbose": "", "api_flag": "", "report_type": "",
+                      "graph_flag": "", "category": "", "profile": "", "scan_method": "",
+                      "language": "", "scan_cmd": "", "ports": ""}
+    selected = []
+    try:
+        c = conn.cursor()
+        for data in c.execute("""select * from reports where 1 order by id desc limit {0},10""".format(page)):
+            tmp = dict(data_structure)
+            tmp["id"] = data[0]
+            tmp["date"] = data[1]
+            tmp["scan_id"] = data[2]
+            tmp["report_filename"] = data[3]
+            tmp["events_num"] = data[4]
+            tmp["verbose"] = data[5]
+            tmp["api_flag"] = data[6]
+            tmp["report_type"] = data[7]
+            tmp["graph_flag"] = data[8]
+            tmp["category"] = data[9]
+            tmp["profile"] = data[10]
+            tmp["scan_method"] = data[11]
+            tmp["language"] = data[12]
+            tmp["scan_cmd"] = data[13]
+            tmp["ports"] = data[14]
+            selected.append(tmp)
+        conn.close()
+    except:
+        return __structure(status="error", msg="database error!")
+    return selected
+
+
+def __get_result(language, id, api_flag):
+    conn = create_connection(language, api_flag)
+    try:
+        c = conn.cursor()
+        c.execute("""select report_filename from reports where id={0}""".format(id))
+        try:
+            filename = c.fetchone()[0]
+            return open(filename, 'rb').read(), 200
+        except:
+            return jsonify(__structure(status="error", msg="cannot find the file!")), 400
+    except:
+        return jsonify(__structure(status="error", msg="database error!")), 200

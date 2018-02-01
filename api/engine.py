@@ -32,6 +32,8 @@ from core.config_builder import _builder
 from api.api_core import __remove_non_api_keys
 from api.api_core import __rules
 from api.api_core import __api_key_check
+from api.__database import __select_results
+from api.__database import __get_result
 from api.__start_scan import __scan
 from core._time import now
 
@@ -115,6 +117,7 @@ def new_scan():
     for key in _core_default_config():
         if __get_value(flask_request, key) is not None:
             _start_scan_config[key] = __get_value(flask_request, key)
+    _start_scan_config["backup_ports"] = __get_value(flask_request, "ports")
     _start_scan_config = __rules(__remove_non_api_keys(_builder(_start_scan_config,
                                                                 _builder(_core_config(), _core_default_config()))),
                                  _core_default_config(), __language())
@@ -151,10 +154,24 @@ def __session_kill():
     return res
 
 
-@app.route("/results/get", methods=["GET"])
+@app.route("/results/get_list", methods=["GET"])
 def __get_results():
     __api_key_check(app, flask_request, __language())
-    return jsonify(__structure(status="ok", msg="results....")), 200
+    try:
+        page = int(__get_value(flask_request, "page"))
+    except:
+        page = 0
+    return jsonify(__select_results(__language(), page, 1)), 200
+
+
+@app.route("/results/get", methods=["GET"])
+def __get_result_content():
+    __api_key_check(app, flask_request, __language())
+    try:
+        id = int(__get_value(flask_request, "id"))
+    except:
+        return jsonify(__structure(status="error", msg="your scan id is not valid!")), 400
+    return __get_result(__language(), id, 1)
 
 
 def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,

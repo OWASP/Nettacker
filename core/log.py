@@ -106,6 +106,8 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     scan_method = ",".join(scan_method)
     if ports is None:
         ports = "default"
+    else:
+        pass
     submit_report_to_db(now(), scan_id, log_in_file, events_num, 0 if verbose_level is 0 else 1, api_flag, report_type,
                         graph_flag, category, profile, scan_method, language, scan_cmd, ports)
     if api_flag is 0:
