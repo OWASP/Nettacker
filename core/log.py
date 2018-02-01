@@ -4,13 +4,15 @@
 import json
 import sys
 import texttable
+import lockfile
 from core.alert import messages
 from core.alert import info
 from core.alert import error
 from core import compatible
 from core._time import now
 from core._die import __die_failure
-import lockfile
+from api.__database import submit_report_to_db
+
 
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
     info(messages(language, 88))
@@ -35,7 +37,7 @@ def _get_log_values(log_in_file):
     return data[:-1]
 
 
-def sort_logs(log_in_file, language, graph_flag):
+def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_level, api_flag, profile, scan_method):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
     _PASSWORD = messages(language, 55)
@@ -43,12 +45,15 @@ def sort_logs(log_in_file, language, graph_flag):
     _TYPE = messages(language, 57)
     _DESCRIPTION = messages(language, 58)
     _TIME = messages(language, 115)
+    events_num = 0
+    report_type = ""
     if compatible.version() is 2:
         import sys
         reload(sys)
         sys.setdefaultencoding('utf8')
     if (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
             len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
+        report_type = "HTML"
         data = sorted(json.loads('[' + _get_log_values(log_in_file) + ']'), key=lambda x: sorted(x.keys()))
         # if user want a graph
         _graph = ''
@@ -63,13 +68,20 @@ def sort_logs(log_in_file, language, graph_flag):
         for value in data:
             _table += _log_data.table_items.format(value['HOST'], value['USERNAME'], value['PASSWORD'],
                                                    value['PORT'], value['TYPE'], value['DESCRIPTION'], value['TIME'])
+            events_num += 1
         _table += _log_data.table_end + '<p class="footer">' + messages(language, 93) \
             .format(compatible.__version__, compatible.__code_name__, now()) + '</p>'
-        __log_into_file(log_in_file, 'w' if type(_table) == str else 'wb', _table)
+        __log_into_file(log_in_file, 'w' if type(_table) == str else 'wb', _table, final=True)
     elif len(log_in_file) >= 5 and log_in_file[-5:] == '.json':
-        data = json.dumps(sorted(json.loads('[' + _get_log_values(log_in_file) + ']')))
-        __log_into_file(log_in_file, 'wb', data)
+        graph_flag = ""
+        report_type = "JSON"
+        JSON_Data = sorted(json.loads('[' + _get_log_values(log_in_file) + ']'))
+        data = json.dumps(JSON_Data)
+        events_num = len(JSON_Data)
+        __log_into_file(log_in_file, 'wb', data, final=True)
     else:
+        graph_flag = ""
+        report_type = "TEXT"
         data = sorted(json.loads('[' + _get_log_values(log_in_file) + ']'))
         _table = texttable.Texttable()
         _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _TIME]])
@@ -77,16 +89,28 @@ def sort_logs(log_in_file, language, graph_flag):
             _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _TIME],
                              [value['HOST'], value['USERNAME'], value['PASSWORD'], value['PORT'], value['TYPE'],
                               value['DESCRIPTION'], value['TYPE']]])
+            events_num += 1
         data = _table.draw().encode('utf8') + '\n\n'
         + messages(language, 93).format(compatible.__version__, compatible.__code_name__,
-                                                 now()).encode('utf8')
-        __log_into_file(log_in_file, 'wb', data)
-    return 0
+                                        now()).encode('utf8')
+        __log_into_file(log_in_file, 'wb', data, final=True)
+    info(messages(language, 167))
+    category = []
+    for sm in scan_method:
+        if sm.rsplit("_")[-1] not in category:
+            category.append(sm.rsplit("_")[-1])
+    category = ",".join(list(set(category)))
+    scan_method = ",".join(scan_method)
+    submit_report_to_db(now(), scan_id, log_in_file, events_num, 0 if verbose_level is 0 else 1, api_flag, report_type, graph_flag,
+                        category, profile, scan_method, language, scan_cmd)
+    return True
 
-def __log_into_file(filename, mode, data):
 
-    flock = lockfile.FileLock(filename)
-    flock.acquire()
+def __log_into_file(filename, mode, data, final=False):
+    if not final:
+        flock = lockfile.FileLock(filename)
+        flock.acquire()
     with open(filename, mode) as save:
         save.write(data + '\n')
-    flock.release()
+    if not final:
+        flock.release()
