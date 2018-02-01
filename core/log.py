@@ -12,6 +12,7 @@ from core import compatible
 from core._time import now
 from core._die import __die_failure
 from api.__database import submit_report_to_db
+from api.__database import submit_logs_to_db
 
 
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
@@ -37,7 +38,8 @@ def _get_log_values(log_in_file):
     return data[:-1]
 
 
-def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_level, api_flag, profile, scan_method):
+def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_level, api_flag, profile, scan_method,
+              ports):
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
     _PASSWORD = messages(language, 55)
@@ -47,6 +49,7 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     _TIME = messages(language, 115)
     events_num = 0
     report_type = ""
+    JSON_Data = sorted(json.loads('[' + _get_log_values(log_in_file) + ']'))
     if compatible.version() is 2:
         import sys
         reload(sys)
@@ -75,7 +78,6 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     elif len(log_in_file) >= 5 and log_in_file[-5:] == '.json':
         graph_flag = ""
         report_type = "JSON"
-        JSON_Data = sorted(json.loads('[' + _get_log_values(log_in_file) + ']'))
         data = json.dumps(JSON_Data)
         events_num = len(JSON_Data)
         __log_into_file(log_in_file, 'wb', data, final=True)
@@ -94,15 +96,22 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
         + messages(language, 93).format(compatible.__version__, compatible.__code_name__,
                                         now()).encode('utf8')
         __log_into_file(log_in_file, 'wb', data, final=True)
-    info(messages(language, 167))
+    if api_flag is 0:
+        info(messages(language, 167))
     category = []
     for sm in scan_method:
         if sm.rsplit("_")[-1] not in category:
             category.append(sm.rsplit("_")[-1])
     category = ",".join(list(set(category)))
     scan_method = ",".join(scan_method)
-    submit_report_to_db(now(), scan_id, log_in_file, events_num, 0 if verbose_level is 0 else 1, api_flag, report_type, graph_flag,
-                        category, profile, scan_method, language, scan_cmd)
+    if ports is None:
+        ports = "default"
+    submit_report_to_db(now(), scan_id, log_in_file, events_num, 0 if verbose_level is 0 else 1, api_flag, report_type,
+                        graph_flag, category, profile, scan_method, language, scan_cmd, ports)
+    if api_flag is 0:
+        info(messages(language, 170))
+    for log in JSON_Data:
+        submit_logs_to_db(language, api_flag, log)
     return True
 
 

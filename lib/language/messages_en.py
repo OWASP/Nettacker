@@ -181,6 +181,8 @@ def all_messages():
             "165": "your browser session is valid",
             "166": "your browser session killed",
             "167": "updating the database...",
-            "168": "could not connect to database!"
+            "168": "could not connect to the database!",
+            "169": "inserting report to the database",
+            "170": "inserting logs to the database"
 
         }
