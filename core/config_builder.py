@@ -28,7 +28,8 @@ def _api_default_config():
         "api_access_log": {
             "enabled": False,
             "filename": "nettacker_api_access.log"
-        }
+        },
+        "api_db_name": "api/database.sqlite3"
     }
 
 
@@ -74,7 +75,8 @@ def _core_default_config():
         "api_client_white_list": _api_default_config()["api_client_white_list"]["enabled"],
         "api_client_white_list_ips": _api_default_config()["api_client_white_list"]["ips"],
         "api_access_log": _api_default_config()["api_access_log"]["enabled"],
-        "api_access_log_filename": _api_default_config()["api_access_log"]["filename"]
+        "api_access_log_filename": _api_default_config()["api_access_log"]["filename"],
+        "api_db_name": _api_default_config()["api_db_name"]
     }
 
 
