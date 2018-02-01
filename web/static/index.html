@@ -49,7 +49,6 @@
                     <ul class="nav navbar-nav js-nav-add-active-class">
                         <a class="navbar-brand" action="javascript:home()" id="home_btn" href="#">OWASP Nettacker</a>
                     </ul>
-
                     <ul id="set_session" class="nav navbar-nav navbar-right hidden">
                         <form id="api_key_form" class="navbar-form navbar-left" action="javascript:check_api_session()">
                             <div class="form-group">
@@ -71,7 +70,17 @@
                             </a>
                         </form>
                     </ul>
+
                     <button id="new_scan_btn" class="btn btn-warning navbar-btn navbar-right ">New Scan</button>
+
+                    <ul id="results_btn" class="nav navbar-nav navbar-right">
+                        <form class="navbar-form navbar-left" action="javascript:do_results()">
+                            <a type="submit" action="javascript:results()"
+                               class="btn btn-success"
+                               am-latosans="bold">Results
+                            </a>
+                        </form>
+                    </ul>
                 </div><!-- /.navbar-collapse -->
             </div>
         </nav>
@@ -262,7 +271,20 @@
         </div>
         <br><br>
     </div>
+    <div id="get_results" class="hidden">
+        <div id="login_first" class="hidden">
+            <img id="rtlogo" class="img-responsive" alt="Logo" src="/img/owasp-nettacker.png"/>
+            <h1><span id="logintext"
+                      class="text-justify center-block text-center bold label label-danger animated pulse infinite">Please login first!!</span>
+            </h1>
+        </div>
+        <br><br><br>
+        <div class="list-group hidden">
+            <div id="scan_results"></div>
+        </div>
+    </div>
     </body>
+    <br><br>
 </div>
 
 </html>

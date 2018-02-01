@@ -2,8 +2,8 @@ body {
     background: url("/img/background.jpeg")
 }
 
-#new_scan {
-    background: #FFF;
+#new_scan,#home,#get_results {
+    background: #FEFCFF;
     padding: 20px;
     border-radius: 30px;
 }
@@ -73,3 +73,31 @@ Relevant styles below
     text-shadow: 0 -1px 0 rgba(31, 31, 31, 0.29);
     -webkit-font-smoothing: antialiased;
 }
+
+
+#rtlogo {
+    max-width:30%;
+    max-height:30%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    transform-origin:50% 50%;
+    animation:2s rotateRight infinite linear;
+}
+
+@keyframes rotateRight{
+    100%{ transform:rotate(360deg); }
+}
+
+.lb-sm {
+    font-size: 24px;
+}
+
+.lb-md {
+    font-size: 32px;
+}
+
+.lb-lg {
+    font-size: 40px;
+}
+

@@ -74,17 +74,24 @@ $(document).ready(function () {
 
     $("#home_btn").click(function () {
         $("#new_scan").addClass("hidden");
+        $("#get_results").addClass("hidden");
         $("#home").removeClass("hidden");
-
     });
 
     $("#new_scan_btn").click(function () {
         $("#home").addClass("hidden");
+        $("#get_results").addClass("hidden");
         $("#new_scan").removeClass("hidden");
-
-
     });
-    
+
+    $("#results_btn").click(function () {
+        $("#home").addClass("hidden");
+        $("#new_scan").addClass("hidden");
+        $("#get_results").removeClass("hidden");
+    });
+
+
+
 
     $("#submit_new_scan").click(function () {
 
@@ -197,4 +204,29 @@ $(document).ready(function () {
 
     });
 
+
+    $("#results_btn").click(function () {
+        $.ajax({
+            type: "GET",
+            url: "/results/get",
+            dataType: "text"
+        }).done(function (res) {
+            $("#login_first").addClass("hidden");
+            $("#scan_results").removeClass("hidden");
+            document.getElementById('success_msg').innerHTML = res;
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            $("#login_first").removeClass("hidden");
+            $("#scan_results").addClass("hidden");
+        });
+    });
+// <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
+//         <div class="d-flex w-100 justify-content-between">
+//         <h4 class="mb-1">List group item heading</h4>
+//     <small>3 days ago</small>
+//     </div>
+//     <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius
+//     blandit.</p>
+//     <small>Donec id elit non mi porta.</small>
+//     </a>
 });
+

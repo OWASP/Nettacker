@@ -40,6 +40,10 @@ app = Flask(__name__, template_folder=template_dir)
 app.config.from_object(__name__)
 
 
+def __language(app=app):
+    return app.config["OWASP_NETTACKER_CONFIG"]["language"]
+
+
 @app.errorhandler(400)
 def error_400(error):
     return jsonify(__structure(status="error", msg=error.description)), 400
@@ -63,11 +67,10 @@ def error_404(error):
 
 @app.before_request
 def limit_remote_addr():
-    language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
     # IP Limitation
     if app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list"]:
         if flask_request.remote_addr not in app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list_ips"]:
-            abort(403, messages(language, 161))
+            abort(403, messages(__language(), 161))
 
 
 @app.after_request
@@ -97,28 +100,26 @@ def get_statics(path):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
     filename = "results/results_{0}_{1}.html".format(now(model="%Y_%m_%d_%H_%M_%S"),
                                                      "".join(random.choice(string.ascii_lowercase) for x in
                                                              range(10)))
     return render_template("index.html", scan_method=__scan_methods(), profile=__profiles(),
                            graphs=__graphs(), languages=__languages(), filename=filename,
-                           method_args_list=load_all_method_args(language, API=True))
+                           method_args_list=load_all_method_args(__language(), API=True))
 
 
 @app.route("/new/scan", methods=["GET", "POST"])
 def new_scan():
     _start_scan_config = {}
-    language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
-    __api_key_check(app, flask_request, language)
+    __api_key_check(app, flask_request, __language())
     for key in _core_default_config():
         if __get_value(flask_request, key) is not None:
             _start_scan_config[key] = __get_value(flask_request, key)
     _start_scan_config = __rules(__remove_non_api_keys(_builder(_start_scan_config,
                                                                 _builder(_core_config(), _core_default_config()))),
-                                 _core_default_config(), language)
+                                 _core_default_config(), __language())
     scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
-    scan_cmd = messages(language, 158)
+    scan_cmd = messages(__language(), 158)
     _start_scan_config["scan_id"] = scan_id
     p = multiprocessing.Process(target=__scan, args=[_start_scan_config, scan_id, scan_cmd])
     p.start()
@@ -126,31 +127,34 @@ def new_scan():
     _start_scan_config["methods_args"] = {
         "as_user_set": "set_successfully"
     }
-    return jsonify(_start_scan_config)
+    return jsonify(_start_scan_config), 200
 
 
 @app.route("/session/check", methods=["GET"])
 def __session_check():
-    language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
-    __api_key_check(app, flask_request, language)
-    return jsonify(__structure(status="ok", msg=messages(language, 165))), 200
+    __api_key_check(app, flask_request, __language())
+    return jsonify(__structure(status="ok", msg=messages(__language(), 165))), 200
 
 
 @app.route("/session/set", methods=["GET"])
 def __session_set():
-    language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
-    __api_key_check(app, flask_request, language)
-    res = make_response(jsonify(__structure(status="ok", msg=messages(language, 165))))
+    __api_key_check(app, flask_request, __language())
+    res = make_response(jsonify(__structure(status="ok", msg=messages(__language(), 165))))
     res.set_cookie("key", value=app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"])
     return res
 
 
 @app.route("/session/kill", methods=["GET"])
 def __session_kill():
-    language = app.config["OWASP_NETTACKER_CONFIG"]["language"]
-    res = make_response(jsonify(__structure(status="ok", msg=messages(language, 166))))
+    res = make_response(jsonify(__structure(status="ok", msg=messages(__language(), 166))))
     res.set_cookie("key", value="expired")
     return res
+
+
+@app.route("/results/get", methods=["GET"])
+def __get_results():
+    __api_key_check(app, flask_request, __language())
+    return jsonify(__structure(status="ok", msg="results....")), 200
 
 
 def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
