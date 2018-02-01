@@ -179,6 +179,8 @@ def all_messages():
             "163": "subdomain_scan: no subdomain founded!",
             "164": "viewdns_reverse_ip_lookup_scan: no domain found!",
             "165": "your browser session is valid",
-            "166": "your browser session killed"
+            "166": "your browser session killed",
+            "167": "updating the database...",
+            "168": "could not connect to database!"
 
         }
