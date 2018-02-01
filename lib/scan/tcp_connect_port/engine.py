@@ -100,8 +100,8 @@ def extra_requirements_dict():
     }
 
 
-def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_cmd,
-            scan_id):
+def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
+            scan_cmd):
     time.sleep(time_sleep)
     try:
         if socks_proxy is not None:
@@ -131,9 +131,9 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
             s.connect((host, port))
         s.close()
         info(messages(language, 80).format(host, port))
-        data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'tcp_connect_port_scan', 
-            'DESCRIPTION': messages(language, 79), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 
-            'SCAN_CMD': scan_cmd}) + '\n'
+        data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'tcp_connect_port_scan',
+                           'DESCRIPTION': messages(language, 79), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                           'SCAN_CMD': scan_cmd}) + '\n'
         __log_into_file(log_in_file, 'a', data)
         __log_into_file(thread_tmp_filename, 'w', '0')
         return True
@@ -217,9 +217,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'tcp_connect_port_scan', 
-                'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan", 
-                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
+            data = json.dumps(
+                {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'tcp_connect_port_scan',
+                 'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan",
+                 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data)
         os.remove(thread_tmp_filename)
 
