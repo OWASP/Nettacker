@@ -49,7 +49,7 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     _TIME = messages(language, 115)
     events_num = 0
     report_type = ""
-    JSON_Data = sorted(json.loads('[' + _get_log_values(log_in_file) + ']'))
+    JSON_Data = sorted(json.loads('[' + _get_log_values(log_in_file) + ']'), key=sorted)
     if compatible.version() is 2:
         import sys
         reload(sys)
