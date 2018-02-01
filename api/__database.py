@@ -44,6 +44,5 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api
         conn.close()
     except:
         warn(messages(language, 168))
-        print 2
         return False
     return True
