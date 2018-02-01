@@ -184,7 +184,7 @@ def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_
         "api_access_log_filename": api_access_log_filename,
         "language": language
     }
-    app.run(host=api_host, port=api_port, debug=api_debug_mode)
+    app.run(host=api_host, port=api_port, debug=api_debug_mode, threaded=True)
 
 
 def _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
