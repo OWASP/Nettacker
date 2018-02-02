@@ -92,9 +92,9 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
                              [value['HOST'], value['USERNAME'], value['PASSWORD'], value['PORT'], value['TYPE'],
                               value['DESCRIPTION'], value['TYPE']]])
             events_num += 1
-        data = _table.draw().encode('utf8') + '\n\n'
-        + messages(language, 93).format(compatible.__version__, compatible.__code_name__,
-                                        now()).encode('utf8')
+        data = _table.draw().encode('utf8') + '\n\n' + messages(language, 93).format(compatible.__version__, compatible.__code_name__,now()).encode('utf8')
+
+                                      
         __log_into_file(log_in_file, 'wb', data, final=True)
     if api_flag is 0:
         info(messages(language, 167))
