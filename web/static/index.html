@@ -59,7 +59,7 @@
                             <a id="send_session" type="submit" action="javascript:check_api_session()"
                                class="btn btn-danger"
                                am-latosans="bold">Set Session
-                            </a>
+                            </a>&nbsp;&nbsp;&nbsp;
                         </form>
                     </ul>
                     <ul id="logout_btn" class="nav navbar-nav navbar-right hidden">
@@ -271,6 +271,9 @@
         </div>
         <br><br>
     </div>
+    <script>
+        var page = 1;
+    </script>
     <div id="get_results" class="hidden">
         <div id="login_first" class="hidden">
             <img id="rtlogo" class="img-responsive" alt="Logo" src="/img/owasp-nettacker.png"/>
@@ -278,8 +281,20 @@
                       class="text-justify center-block bold label label-danger">Please login first!</span>
             </h1>
         </div>
+        <div id="refresh_btn" class="hidden">
+            <div class="row">
+                &nbsp;&nbsp;&nbsp;&nbsp;<a id="refresh_btn_update" class="btn btn-info"><span class="glyphicon glyphicon-refresh"></span> last updates</a>
+                <a id="refresh_btn_page" class="btn btn-success"><span class="glyphicon glyphicon-refresh"></span> reload current page</a>
+
+            </div>
+            <br><br>
+        </div>
         <div id="scan_results" class="list-group hidden">
         </div>
+        <ul id="nxt_prv_btn" class="pager hidden">
+            <li id="previous_btn" class="previous"><a href="javascript:previous_page()">Previous</a></li>
+            <li id="next_btn" class="next"><a href="javascript:next_page()">Next</a></li>
+        </ul>
         <br><br><br>
     </div>
     </body>

@@ -160,7 +160,7 @@ def __get_results():
     try:
         page = int(__get_value(flask_request, "page"))
     except:
-        page = 0
+        page = 1
     return jsonify(__select_results(__language(), page, 1)), 200
 
 

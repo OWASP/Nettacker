@@ -91,8 +91,6 @@ $(document).ready(function () {
     });
 
 
-
-
     $("#submit_new_scan").click(function () {
 
         // set variables
@@ -204,10 +202,40 @@ $(document).ready(function () {
 
     });
 
-    
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : sParameterName[1];
+            }
+        }
+    };
+
+
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : sParameterName[1];
+            }
+        }
+    };
+
     function show_scans(res) {
         res = JSON.parse(res);
-        var HTMLData= "";
+        var HTMLData = "";
         var i;
         var id;
         var date;
@@ -225,7 +253,7 @@ $(document).ready(function () {
         var scan_cmd;
         var ports;
 
-        for(i=0; i < res.length; i++){
+        for (i = 0; i < res.length; i++) {
             id = res[i]["id"];
             date = res[i]["date"];
             scan_id = res[i]["scan_id"];
@@ -244,7 +272,7 @@ $(document).ready(function () {
             HTMLData += "<a target='_blank' href=\"/results/get?id=" + id + "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
                 "                        <div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
                 "                            <h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
-                "                      class=\"bold label label-primary\">" + id +"</span>&nbsp;&nbsp;&nbsp;<small class=\"label label-info\">" + date + "</small></h3>\n" +
+                "                      class=\"bold label label-primary\">" + id + "</span>&nbsp;&nbsp;&nbsp;<small class=\"label label-info\">" + date + "</small></h3>\n" +
                 "                        </div></div>\n" + "<p class=\"mb-1\"> " +
                 "<p class='mb-1  bold label label-danger'>scan_id:" + scan_id + "</p>&nbsp;&nbsp;&nbsp;<br>" +
                 "<p class='mb-1  bold label label-info'>report_filename:" + report_filename + "</p>&nbsp;&nbsp;&nbsp;<br>" +
@@ -266,20 +294,57 @@ $(document).ready(function () {
 
     }
 
-    $("#results_btn").click(function () {
+
+    function get_results_list(page) {
         $.ajax({
             type: "GET",
-            url: "/results/get_list",
+            url: "/results/get_list?page=" + page,
             dataType: "text"
         }).done(function (res) {
             $("#login_first").addClass("hidden");
             $("#scan_results").removeClass("hidden");
+            $("#refresh_btn").removeClass("hidden");
+            $("#nxt_prv_btn").removeClass("hidden");
             show_scans(res);
         }).fail(function (jqXHR, textStatus, errorThrown) {
-            $("#login_first").removeClass("hidden");
-            $("#scan_results").addClass("hidden");
+            if (errorThrown == "UNAUTHORIZED") {
+                $("#login_first").removeClass("hidden");
+                $("#scan_results").addClass("hidden");
+                $("#refresh_btn").addClass("hidden");
+                $("#nxt_prv_btn").addClass("hidden");
+            }
+            else {
+                $("#login_first").addClass("hidden");
+                $("#scan_results").removeClass("hidden");
+                $("#refresh_btn").removeClass("hidden");
+                $("#nxt_prv_btn").removeClass("hidden");
+            }
         });
+    }
+
+
+    $("#results_btn").click(function () {
+        page = 1;
+        get_results_list(page);
+    });
+
+    $("#refresh_btn_update").click(function () {
+        page = 1;
+        get_results_list(page);
+    });
+
+    $("#refresh_btn_page").click(function () {
+        get_results_list(page);
+    });
+
+    $("#previous_btn").click(function () {
+        page = page - 1;
+        get_results_list(page);
+    });
+
+    $("#next_btn").click(function () {
+        page = page + 1;
+        get_results_list(page);
     });
 
 });
-

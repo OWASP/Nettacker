@@ -82,7 +82,8 @@ def submit_logs_to_db(language, api_flag, log):
 def __select_results(language, page, api_flag):
     conn = create_connection(language, api_flag)
     log = ""
-    page = page * 10 if page > 0 else page * -10
+    page = int(page * 10 if page > 0 else page * -10) - 10
+
     data_structure = {"id": "", "date": "", "scan_id": "", "report_filename": "",
                       "events_num": "", "verbose": "", "api_flag": "", "report_type": "",
                       "graph_flag": "", "category": "", "profile": "", "scan_method": "",
