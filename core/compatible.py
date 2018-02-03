@@ -6,19 +6,11 @@ import os
 from core.alert import *
 from core._die import __die_failure
 
-try:
-    version_info = open('version').read().rsplit()
-    __version__ = version_info[0]
-    __code_name__ = ' '.join(version_info[1:])
-except:
-    __version__ = 'UNKNOWN'
-    __code_name__ = 'UNKNOWN'
-
+__version__ = '0.0.1'
+__code_name__ = 'SAME'
 
 def _version_info():
-    version_info = open('version').read().rsplit()
-    return [version_info[0], ' '.join(version_info[1:])]
-
+    return [__version__, __code_name__]
 
 def logo():
     from core.alert import write_to_api_console
