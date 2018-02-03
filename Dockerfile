@@ -1,7 +1,7 @@
 FROM python:2.7-alpine
 RUN apk add --no-cache python pkgconfig python-dev openssl-dev libffi-dev musl-dev make gcc git
-WORKDIR /usr/src/app
+WORKDIR /usr/src/owaspnettacker
 RUN git clone https://github.com/viraintel/OWASP-Nettacker.git .
 RUN pip install --no-cache-dir -r requirements.txt
 RUN apk del --purge musl-dev gcc make git
-CMD [ "python", "./nettacker.py", "--help" ]
+CMD [ "python", "./nettacker.py" ]
