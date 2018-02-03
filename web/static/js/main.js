@@ -252,6 +252,28 @@ $(document).ready(function () {
         var language;
         var scan_cmd;
         var ports;
+        var flags = {
+            "el": "gr",
+            "fr": "fr",
+            "en": "us",
+            "nl": "nl",
+            "ps": "ps",
+            "tr": "tr",
+            "de": "de",
+            "ko": "kr",
+            "it": "it",
+            "ja": "jp",
+            "fa": "ir",
+            "hy": "am",
+            "ar": "sa",
+            "zh-cn": "cn",
+            "vi": "vi",
+            "ru": "ru",
+            "hi": "in",
+            "ur": "pk",
+            "id": "id",
+            "es": "es"
+        };
 
         for (i = 0; i < res.length; i++) {
             id = res[i]["id"];
@@ -274,19 +296,19 @@ $(document).ready(function () {
                 "                            <h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
                 "                      class=\"bold label label-primary\">" + id + "</span>&nbsp;&nbsp;&nbsp;<small class=\"label label-info\">" + date + "</small></h3>\n" +
                 "                        </div></div>\n" + "<p class=\"mb-1\"> " +
-                "<p class='mb-1  bold label label-danger'>scan_id:" + scan_id + "</p>&nbsp;&nbsp;&nbsp;<br>" +
-                "<p class='mb-1  bold label label-info'>report_filename:" + report_filename + "</p>&nbsp;&nbsp;&nbsp;<br>" +
-                "<p class='mb-1 bold label label-success'>events_num:" + events_num + "</p>&nbsp;&nbsp;&nbsp;" +
-                "<p class='mb-1 bold label label-danger'>ports:" + ports + "</p>&nbsp;&nbsp;&nbsp;<br>" +
-                "<p class='mb-1 bold label label-info'>category:" + category + "</p>&nbsp;&nbsp;&nbsp;<br>" +
-                "<p class='mb-1 bold label label-success'>profile:" + profile + "</p>&nbsp;&nbsp;&nbsp;<br>" +
-                "<p class='mb-1 bold label label-warning'>scan_method:" + scan_method + "</p>&nbsp;&nbsp;&nbsp;<br>" +
-                "<p class='mb-1 bold  label label-primary'>api_flag:" + api_flag + "</p>&nbsp;&nbsp;&nbsp;" +
-                "<p class='mb-1 bold label label-warning'>verbose:" + verbose + "</p>&nbsp;&nbsp;&nbsp;" +
-                "<p class='mb-1 bold label label-info'>report_type:" + report_type + "</p>&nbsp;&nbsp;&nbsp;" +
-                "<p class='mb-1 bold label label-primary'>graph_flag:" + graph_flag + "</p>&nbsp;&nbsp;&nbsp;" +
-                "<p class='mb-1 bold label label-success'>language:" + language + "</p>&nbsp;&nbsp;&nbsp;<br>" +
-                "<p class='mb-1 bold label label-default'>scan_cmd:" + scan_cmd + "</p>&nbsp;&nbsp;&nbsp;" +
+                "<p class='mb-1  bold label label-default'>scan_id:" + scan_id + "</p><br>" +
+                "<p class='mb-1  bold label label-info'>report_filename:" + report_filename + "</p><br>" +
+                "<p class='mb-1 bold label label-success'>events_num:" + events_num + "</p><br>" +
+                "<p class='mb-1 bold label label-danger'>ports:" + ports + "</p><br>" +
+                "<p class='mb-1 bold label label-info'>category:" + category + "</p><br>" +
+                "<p class='mb-1 bold label label-success'>profile:" + profile + "</p><br>" +
+                "<p class='mb-1 bold label label-warning'>scan_method:" + scan_method + "</p><br>" +
+                "<p class='mb-1 bold  label label-primary'>api_flag:" + api_flag + "</p><br>" +
+                "<p class='mb-1 bold label label-warning'>verbose:" + verbose + "</p><br>" +
+                "<p class='mb-1 bold label label-info'>report_type:" + report_type + "</p><br>" +
+                "<p class='mb-1 bold label label-primary'>graph_flag:" + graph_flag + "</p><br>" +
+                "<p class='mb-1 bold label label-success'>language:" + language + "</p>&nbsp;&nbsp;&nbsp;<span class='flag-icon flag-icon-" + flags[language] + "'></span><br>" +
+                "<p class='mb-1 bold label label-default'>scan_cmd:" + scan_cmd + "</p>&nbsp;&nbsp;&nbsp;<br>" +
 
                 "                   </p>\n </a>";
         }
