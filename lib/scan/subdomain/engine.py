@@ -403,7 +403,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
     trying = 0
     threads = []
     filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    thread_tmp_filename = '{}/tmp/thread_tmp_'.format(filepath) + ''.join(
+    thread_tmp_filename = '{}/../../tmp/thread_tmp_'.format(filepath) + ''.join(
         random.choice(string.ascii_letters + string.digits) for _ in range(20))
     for key in extra_requirements:
         if extra_requirements[key][0] == 'True':
