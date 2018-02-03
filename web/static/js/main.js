@@ -347,4 +347,15 @@ $(document).ready(function () {
         get_results_list(page);
     });
 
+    $("#advance").click(function () {
+        $("#basic_options").addClass("hidden");
+        $("#advance_options").removeClass("hidden");
+    });
+
+    $("#basic").click(function () {
+        $("#advance_options").addClass("hidden");
+        $("#basic_options").removeClass("hidden");
+    });
+
+
 });
