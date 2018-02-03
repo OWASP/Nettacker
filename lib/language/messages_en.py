@@ -183,6 +183,7 @@ def all_messages():
             "167": "updating the database...",
             "168": "could not connect to the database!",
             "169": "inserting report to the database",
-            "170": "inserting logs to the database"
+            "170": "inserting logs to the database",
+            "171": "removing old logs from db"
 
         }

@@ -34,6 +34,7 @@ from api.api_core import __rules
 from api.api_core import __api_key_check
 from api.__database import __select_results
 from api.__database import __get_result
+from api.__database import __last_host_logs
 from api.__start_scan import __scan
 from core._time import now
 
@@ -172,6 +173,16 @@ def __get_result_content():
     except:
         return jsonify(__structure(status="error", msg="your scan id is not valid!")), 400
     return __get_result(__language(), id, 1)
+
+
+@app.route("/logs/get_list", methods=["GET"])
+def __get_last_host_logs():
+    __api_key_check(app, flask_request, __language())
+    try:
+        page = int(__get_value(flask_request, "page"))
+    except:
+        page = 1
+    return jsonify(__last_host_logs(__language(), page, 1)), 200
 
 
 def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,

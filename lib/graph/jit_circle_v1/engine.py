@@ -50,6 +50,7 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
             }
         }
         add_flag = True
+        # fix later, slow speed
         __position = 0
         try:
             for method in dgraph["children"]:

@@ -55,6 +55,21 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api
     return True
 
 
+def remove_old_logs(host, type, scan_id, language, api_flag):
+    conn = create_connection(language, api_flag)
+    try:
+        c = conn.cursor()
+        c.execute("""delete from hosts_log where host="{0}" and type="{1}" and scan_id!="{2}" """
+                  .format(host, type, scan_id))
+        conn.commit()
+        conn.close()
+    except:
+        if api_flag is 0:
+            warn(messages(language, 168))
+        return False
+    return True
+
+
 def submit_logs_to_db(language, api_flag, log):
     conn = create_connection(language, api_flag)
     try:
@@ -84,15 +99,27 @@ def __select_results(language, page, api_flag):
     log = ""
     page = int(page * 10 if page > 0 else page * -10) - 10
 
-    data_structure = {"id": "", "date": "", "scan_id": "", "report_filename": "",
-                      "events_num": "", "verbose": "", "api_flag": "", "report_type": "",
-                      "graph_flag": "", "category": "", "profile": "", "scan_method": "",
-                      "language": "", "scan_cmd": "", "ports": ""}
     selected = []
     try:
         c = conn.cursor()
         for data in c.execute("""select * from reports where 1 order by id desc limit {0},10""".format(page)):
-            tmp = dict(data_structure)
+            tmp = { # fix later, junks
+                "id": "",
+                "date": "",
+                "scan_id": "",
+                "report_filename": "",
+                "events_num": "",
+                "verbose": "",
+                "api_flag": "",
+                "report_type": "",
+                "graph_flag": "",
+                "category": "",
+                "profile": "",
+                "scan_method": "",
+                "language": "",
+                "scan_cmd": "",
+                "ports": ""
+            }
             tmp["id"] = data[0]
             tmp["date"] = data[1]
             tmp["scan_id"] = data[2]
@@ -127,3 +154,66 @@ def __get_result(language, id, api_flag):
             return jsonify(__structure(status="error", msg="cannot find the file!")), 400
     except:
         return jsonify(__structure(status="error", msg="database error!")), 200
+
+
+def __last_host_logs(language, page, api_flag):
+    conn = create_connection(language, api_flag)
+    page = int(page * 10 if page > 0 else page * -10) - 10
+    data_structure = {
+        "host": "",
+        "info": {
+            "open_ports": [],
+            "scan_methods": [],
+            "category": [],
+            "descriptions": []
+        }
+    }
+    selected = []
+    # try:
+    if True:
+        c = conn.cursor()
+        d = conn.cursor()
+
+        for host in c.execute(
+                """select host from hosts_log where 1 group by host order by id desc limit {0},10""".format(page)):
+            d = conn.cursor()
+            for data in d.execute(
+                    """select host,port,type,category,description from hosts_log where host="{0}" group by type,port,username,""" \
+                    """password,description order by id desc""".format(host[0])):
+                n = 0
+                capture = None
+                for selected_data in selected:
+                    if selected_data["host"] == host[0]:
+                        capture = n
+                    n += 1
+                if capture is None:
+                    tmp = { #fix later, junks
+                        "host": "",
+                        "info": {
+                            "open_ports": [],
+                            "scan_methods": [],
+                            "category": [],
+                            "descriptions": []
+                        }
+                    }
+                    tmp["host"] = data[0]
+                    selected.append(tmp)
+                    n = 0
+                    for selected_data in selected:
+                        if selected_data["host"] == host[0]:
+                            capture = n
+                        n += 1
+                if data[0] == selected[capture]["host"]:
+                    if data[1] not in selected[capture]["info"]["open_ports"]:
+                        selected[capture]["info"]["open_ports"].append(data[1])
+                    if data[2] not in selected[capture]["info"]["scan_methods"]:
+                        selected[capture]["info"]["scan_methods"].append(data[2])
+                    if data[3] not in selected[capture]["info"]["category"]:
+                        selected[capture]["info"]["category"].append(data[3])
+                    if data[4] not in selected[capture]["info"]["descriptions"]:
+                        selected[capture]["info"]["descriptions"].append(data[4])
+
+        conn.close()
+    # except:
+    #     return __structure(status="error", msg="database error!")
+    return selected

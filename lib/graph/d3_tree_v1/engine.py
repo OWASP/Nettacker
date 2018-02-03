@@ -113,6 +113,7 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
         "name": "Started Attack",
         "children": [],
     }
+    # fix later, slow speed
     for d3_level1 in dgraph["children"]:
         for d3_level2 in d3_level1:
             _to_modify = {
