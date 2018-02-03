@@ -118,7 +118,7 @@ def load():
         os.remove(range_temp)
     except:
         pass
-    range_temp = "{}/tmp/ranges_".formt(filepath) + suff
+    range_temp = "{}/tmp/ranges_".format(filepath) + suff
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
                        language, verbose_level, retries, socks_proxy, False)
     trying = 0
