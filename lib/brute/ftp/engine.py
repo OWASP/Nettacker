@@ -219,9 +219,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         max = thread_number
         total_req = len(users) * len(passwds) * len(ports)
         filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-        thread_tmp_filename = '{}/tmp/thread_tmp_'.format(filepath) + ''.join(
+        thread_tmp_filename = '{}/../../tmp/thread_tmp_'.format(filepath) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
-        ports_tmp_filename = '{}/tmp/ports_tmp_'.format(filepath) + ''.join(
+        ports_tmp_filename = '{}/../../tmp/ports_tmp_'.format(filepath) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1')
         __log_into_file(ports_tmp_filename, 'w', '')
