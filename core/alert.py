@@ -22,12 +22,11 @@ def messages(language, msg_id):
                          if langs != 'readme.md' and langs.rsplit('_')[1].rsplit('.')[0] != '']))
     # Importing messages
     try:
-        all_messages = getattr(__import__('lib.language.messages_{0}'.format(language), fromlist=['all_messages']),
-                               'all_messages')
+        msgs = getattr(__import__('lib.language.messages_{0}'.format(language), fromlist=['all_messages']),
+                               'all_messages')()[str(msg_id)]
     except:
-        all_messages = getattr(__import__('lib.language.messages_en'.format(language), fromlist=['all_messages']),
-                               'all_messages')
-    msgs = all_messages()[str(msg_id)]
+        msgs = getattr(__import__('lib.language.messages_en'.format(language), fromlist=['all_messages']),
+                               'all_messages')()[str(msg_id)]
     if version() is 2:
         return msgs.decode('utf8')
     return msgs
