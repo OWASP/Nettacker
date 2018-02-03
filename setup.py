@@ -12,7 +12,7 @@ setup(
               'lib.scan.viewdns_reverse_ip_lookup', 'lib.vuln', 'lib.vuln.heartbleed', 'lib.brute', 'lib.brute.ftp',
               'lib.brute.ssh', 'lib.brute.smtp', 'lib.graph', 'lib.graph.d3_tree_v1', 'lib.graph.d3_tree_v2',
               'lib.graph.jit_circle_v1', 'lib.argparse', 'lib.argparse.v2', 'lib.argparse.v3', 'lib.html_log',
-              'lib.language', 'lib.socks_resolver', 'core'],
+              'lib.language', 'lib.socks_resolver', 'core', 'tmp', 'results'],
     url="https://github.com/viraintel/OWASP-Nettacker",
     license="Apache-2.0",
     author="Ali Razmjoo",
