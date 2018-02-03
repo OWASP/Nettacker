@@ -3,6 +3,7 @@
 
 import random
 import string
+import os
 from core._time import now
 
 
@@ -34,12 +35,14 @@ def _api_default_config():
 
 
 def _core_default_config():
+    
+    filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     return {
         "language": "en",
         "verbose_level": 0,
         "show_version": False,
         "check_update": False,
-        "log_in_file": "results/results_{0}_{1}.html".format(now(model="%Y_%m_%d_%H_%M_%S"),
+        "log_in_file": "{0}/results/results_{1}_{2}.html".format(filepath, now(model="%Y_%m_%d_%H_%M_%S"),
                                                              "".join(random.choice(string.ascii_lowercase) for x in
                                                                      range(10))),
         "graph_flag": "d3_tree_v2_graph",
