@@ -6,16 +6,11 @@
 
 #setup
 build/*
+dist/*
 *egg-info*
 
 #tmp files
 *.py~
-tmp/ranges_*
-tmp/subs_temp_*
-tmp/thread_*
-tmp/ports_*
-results*.*
-results/*.html
 user.txt
 pass.txt
 logs.txt
