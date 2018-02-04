@@ -71,7 +71,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             if timeout_sec is not None:
-                ssh.connect(hostname=target, username=user, password=passwd, port=int(port), timeout=timeout_sec)
+                ssh.connect(hostname=target, username=user, password=passwd, port=int(port), timeout=int(timeout_sec))
             else:
                 ssh.connect(hostname=target, username=user, password=passwd, port=int(port))
             info(messages(language, 70).format(user, passwd, target, port))
@@ -120,8 +120,8 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
             exit = 0
             break
         except paramiko.ssh_exception.AuthenticationException as ssherr:
-            if 'Authentication failed.' in ssherr:
-                break
+            if 'Authentication failed.' in str(ssherr):
+                return
             else:
                 exit += 1
                 if exit is retries:
