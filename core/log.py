@@ -15,6 +15,9 @@ from api.__database import submit_report_to_db
 from api.__database import submit_logs_to_db
 from api.__database import remove_old_logs
 from api.__database import __logs_to_report
+from core.config_builder import default_paths
+from core.config import _paths
+from core.config_builder import _builder
 
 
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
@@ -126,7 +129,7 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
 
 
 def __log_into_file(filename, mode, data, language, final=False):
-    if 'tmp/' in filename:
+    if _builder(_paths(), default_paths())["tmp_path"] in filename:
         if not final:
             flock = lockfile.FileLock(filename)
             flock.acquire()
