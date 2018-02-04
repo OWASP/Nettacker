@@ -81,3 +81,7 @@ def __check_external_modules():
         except:
             __die_failure("pip install -r requirements.txt ---> " + module + " not installed!")
     return True
+
+def load_file_path():
+
+    return os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
