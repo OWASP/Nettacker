@@ -36,8 +36,7 @@ def _api_config():
 
 
 def _core_config():
-    
-    filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
     return {  # OWASP Nettacker Default Configuration
         "language": "en",
         "verbose_level": 0,
