@@ -4,8 +4,17 @@
 import random
 import string
 import os
-from core.load_modules import load_file_path
+import inspect
+import api
 from core._time import now
+
+
+def _paths():
+    return {
+        "home_path": os.path.expanduser('~/.owasp-nettacker'),
+        "tmp_path": os.path.expanduser('~/.owasp-nettacker/tmp'),
+        "results_path": os.path.expanduser('~/.owasp-nettacker/results')
+    }
 
 
 def _profiles():
@@ -31,7 +40,7 @@ def _api_config():
             "enabled": False,
             "filename": "nettacker_api_access.log"
         },
-        "api_db_name": "api/database.sqlite3"
+        "api_db_name": _paths()["home_path"] + "/database.sqlite3"
     }
 
 
@@ -41,9 +50,9 @@ def _core_config():
         "verbose_level": 0,
         "show_version": False,
         "check_update": False,
-        "log_in_file": "{0}/results/results_{1}_{2}.html".format(load_file_path(), now(model="%Y_%m_%d_%H_%M_%S"),
-                                                                 "".join(random.choice(string.ascii_lowercase) for x in
-                                                                         range(10))),
+        "log_in_file": "{0}/results_{1}_{2}.html".format(_paths()["results_path"], now(model="%Y_%m_%d_%H_%M_%S"),
+                                                         "".join(random.choice(string.ascii_lowercase) for x in
+                                                                 range(10))),
         "graph_flag": "d3_tree_v2_graph",
         "help_menu_flag": False,
         "targets": None,
@@ -78,6 +87,9 @@ def _core_config():
         "api_client_white_list_ips": _api_config()["api_client_white_list"]["ips"],
         "api_access_log": _api_config()["api_access_log"]["enabled"],
         "api_access_log_filename": _api_config()["api_access_log"]["filename"],
-        "api_db_name": _api_config()["api_db_name"]
+        "api_db_name": _api_config()["api_db_name"],
+        "home_path": _paths()["home_path"],
+        "tmp_path": _paths()["tmp_path"],
+        "results_path": _paths()["results_path"]
 
     }

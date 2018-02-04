@@ -187,6 +187,7 @@ def all_messages():
             "171": "removing old logs from db",
             "172": "{0} subdomain(s) found!",
             "173": "{0} domain(s) found!",
-            "174": "not any phpmyadmin dir found!"
+            "174": "not any phpmyadmin dir found!",
+            "175": "cannot access the file/directory! ({0})"
 
         }
