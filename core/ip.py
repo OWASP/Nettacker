@@ -8,6 +8,7 @@ from core.alert import *
 from core.compatible import version
 from netaddr import iprange_to_cidrs
 from netaddr import IPNetwork
+from core.log import __log_into_file
 
 
 def getIPRange(IP):
@@ -39,9 +40,7 @@ def isIP(IP):
 def IPRange(Range, range_temp, language):
     myranges_now = open(range_temp).read().rsplit()
     if Range not in myranges_now:
-        r_f = open(range_temp, 'a')
-        r_f.write(Range + '\n')
-        r_f.close()
+        __log_into_file(range_temp, 'a', Range + '\n', language)
         if len(Range.rsplit('.')) is 7 and '-' in Range and '/' not in Range:
             if len(Range.rsplit('-')) is 2:
                 start_ip, stop_ip = Range.rsplit('-')

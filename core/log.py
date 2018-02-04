@@ -126,7 +126,6 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
 
 
 def __log_into_file(filename, mode, data, language, final=False):
-    # fix later, slow sleep + bug
     if 'tmp/' in filename:
         if not final:
             flock = lockfile.FileLock(filename)

@@ -8,6 +8,7 @@ from core.ip import *
 from core.alert import *
 from core._die import __die_failure
 from lib.scan.subdomain.engine import __get_subs
+from core.log import __log_into_file
 
 
 def target_to_host(target):
@@ -43,12 +44,8 @@ def target_type(target):
 
 def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
              language, verbose_level, retries, socks_proxy, enumerate_flag):
-    tmp = open(range_temp, 'a')
-    tmp.write('')
-    tmp.close()
-    tmp = open(subs_temp, 'a')
-    tmp.write('')
-    tmp.close()
+    __log_into_file(range_temp, 'a', '', language)
+    __log_into_file(subs_temp, 'a', '', language)
 
     for target in targets:
         if target_type(target) == 'SINGLE_IPv4':
@@ -86,9 +83,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                     sub_domains = json.loads(open(subs_temp).read()) if len(open(subs_temp).read()) > 0 else \
                         __get_subs(target, 3, '', 0, language, 0, socks_proxy, 3, 0, 0)
                     if len(open(subs_temp).read()) is 0:
-                        f = open(subs_temp, 'a')
-                        f.write(json.dumps(sub_domains))
-                        f.close()
+                        __log_into_file(subs_temp, 'a', json.dumps(sub_domains), language)
                     if target not in sub_domains:
                         sub_domains.append(target)
                     for target in sub_domains:
@@ -124,9 +119,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                     sub_domains = json.loads(open(subs_temp).read()) if len(open(subs_temp).read()) > 0 else \
                         __get_subs(target, 3, '', 0, language, 0, socks_proxy, 3, 0, 0)
                     if len(open(subs_temp).read()) is 0:
-                        f = open(subs_temp, 'a')
-                        f.write(json.dumps(sub_domains))
-                        f.close()
+                        __log_into_file(subs_temp, 'a', json.dumps(sub_domains), language)
                     if target not in sub_domains:
                         sub_domains.append(target)
                     for target in sub_domains:
