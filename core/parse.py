@@ -105,7 +105,6 @@ def load():
     info(messages(language, 96).format(len(load_all_modules()) - 1 + len(load_all_graphs())))
     suff = now(model="%Y_%m_%d_%H_%M_%S") + "".join(random.choice(string.ascii_lowercase) for x in
                                                     range(10))
-    filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     subs_temp = "{}/tmp/subs_temp_".format(load_file_path()) + suff
     range_temp = "{}/tmp/ranges_".format(load_file_path()) + suff
     total_targets = -1
