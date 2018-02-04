@@ -14,7 +14,7 @@ from core._die import __die_failure
 from api.__database import submit_report_to_db
 from api.__database import submit_logs_to_db
 from api.__database import remove_old_logs
-from api.__database import submit_tmp_logs_to_db
+from api.__database import __logs_to_report
 
 
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
@@ -51,7 +51,8 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     _TIME = messages(language, 115)
     events_num = 0
     report_type = ""
-    JSON_Data = sorted(json.loads('[' + _get_log_values(log_in_file) + ']'), key=sorted)
+    JSON_FROM_DB = __logs_to_report(scan_id, language)
+    JSON_Data = sorted(JSON_FROM_DB, key=sorted)
     if compatible.version() is 2:
         import sys
         reload(sys)
@@ -59,7 +60,7 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     if (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
             len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
         report_type = "HTML"
-        data = sorted(json.loads('[' + _get_log_values(log_in_file) + ']'), key=lambda x: sorted(x.keys()))
+        data = sorted(JSON_FROM_DB, key=lambda x: sorted(x.keys()))
         # if user want a graph
         _graph = ''
         if graph_flag is not None:
@@ -86,13 +87,13 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     else:
         graph_flag = ""
         report_type = "TEXT"
-        data = sorted(json.loads('[' + _get_log_values(log_in_file) + ']'))
+        data = sorted(JSON_FROM_DB)
         _table = texttable.Texttable()
         _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _TIME]])
         for value in data:
             _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _TIME],
                              [value['HOST'], value['USERNAME'], value['PASSWORD'], value['PORT'], value['TYPE'],
-                              value['DESCRIPTION'], value['TYPE']]])
+                              value['DESCRIPTION'], value['TIME']]])
             events_num += 1
         data = _table.draw().encode('utf8') + '\n\n' + messages(language, 93).format(compatible.__version__,
                                                                                      compatible.__code_name__,
@@ -118,19 +119,25 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     for host in hosts:
         for sm in scan_method.rsplit(','):
             remove_old_logs(host, sm, scan_id, language)
-    info(messages(language, 170))
-    for log in JSON_Data:
-        submit_logs_to_db(language, log)
+    # info(messages(language, 170))
+    # for log in JSON_Data:
+    #     submit_logs_to_db(language, log)
     return True
 
 
 def __log_into_file(filename, mode, data, language, final=False):
     # fix later, slow sleep + bug
-    if not final:
-        flock = lockfile.FileLock(filename)
-        flock.acquire()
-    with open(filename, mode) as save:
-        save.write(data + '\n')
-    if not final:
-        flock.release()
-    # submit_tmp_logs_to_db()
+    if 'tmp/' in filename:
+        if not final:
+            flock = lockfile.FileLock(filename)
+            flock.acquire()
+        with open(filename, mode) as save:
+            save.write(data + '\n')
+        if not final:
+            flock.release()
+    else:
+        if final:
+            with open(filename, mode) as save:
+                save.write(data + '\n')
+        else:
+            submit_logs_to_db(language, data)

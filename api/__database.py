@@ -3,6 +3,7 @@
 
 import sqlite3
 import os
+import json
 from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
@@ -68,6 +69,8 @@ def remove_old_logs(host, type, scan_id, language):
 
 def submit_logs_to_db(language, log):
     conn = create_connection(language)
+    if type(log) == str:
+        log = json.loads(log)
     try:
         c = conn.cursor()
         c.execute("""
@@ -99,37 +102,22 @@ def __select_results(language, page):
         c = conn.cursor()
         for data in c.execute("""select * from reports where 1 order by id desc limit {0},10""".format(page)):
             tmp = {  # fix later, junks
-                "id": "",
-                "date": "",
-                "scan_id": "",
-                "report_filename": "",
-                "events_num": "",
-                "verbose": "",
-                "api_flag": "",
-                "report_type": "",
-                "graph_flag": "",
-                "category": "",
-                "profile": "",
-                "scan_method": "",
-                "language": "",
-                "scan_cmd": "",
-                "ports": ""
+                "id": data[0],
+                "date": data[1],
+                "scan_id": data[2],
+                "report_filename": data[3],
+                "events_num": data[4],
+                "verbose": data[5],
+                "api_flag": data[6],
+                "report_type": data[7],
+                "graph_flag": data[8],
+                "category": data[9],
+                "profile": data[10],
+                "scan_method": data[11],
+                "language": data[12],
+                "scan_cmd": data[13],
+                "ports": data[14]
             }
-            tmp["id"] = data[0]
-            tmp["date"] = data[1]
-            tmp["scan_id"] = data[2]
-            tmp["report_filename"] = data[3]
-            tmp["events_num"] = data[4]
-            tmp["verbose"] = data[5]
-            tmp["api_flag"] = data[6]
-            tmp["report_type"] = data[7]
-            tmp["graph_flag"] = data[8]
-            tmp["category"] = data[9]
-            tmp["profile"] = data[10]
-            tmp["scan_method"] = data[11]
-            tmp["language"] = data[12]
-            tmp["scan_cmd"] = data[13]
-            tmp["ports"] = data[14]
             selected.append(tmp)
         conn.close()
     except:
@@ -180,7 +168,7 @@ def __last_host_logs(language, page):
                     n += 1
                 if capture is None:
                     tmp = {  # fix later, junks
-                        "host": "",
+                        "host": data[0],
                         "info": {
                             "open_ports": [],
                             "scan_methods": [],
@@ -188,7 +176,6 @@ def __last_host_logs(language, page):
                             "descriptions": []
                         }
                     }
-                    tmp["host"] = data[0]
                     selected.append(tmp)
                     n = 0
                     for selected_data in selected:
@@ -209,3 +196,27 @@ def __last_host_logs(language, page):
     except:
         return __structure(status="error", msg="database error!")
     return selected
+
+
+def __logs_to_report(scan_id, language):
+    conn = create_connection(language)
+    try:
+        c = conn.cursor()
+        logs = []
+        for log in c.execute(
+                "select host,username,password,port,type,date,description from hosts_log where scan_id=\"{0}\"".format(
+                    scan_id)):
+            data = {
+                "SCAN_ID": scan_id,
+                "HOST": log[0],
+                "USERNAME": log[1],
+                "PASSWORD": log[2],
+                "PORT": log[3],
+                "TYPE": log[4],
+                "TIME": log[5],
+                "DESCRIPTION": log[6]
+            }
+            logs.append(data)
+        return logs
+    except:
+        return []
