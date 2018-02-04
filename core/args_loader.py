@@ -73,7 +73,7 @@ def load_all_args(module_names, graph_names):
     engineOpt.add_argument("-L", "--language", action="store",
                            dest="language", default=default_config["language"],
                            help=messages(language, 6).format(language_list))
-    engineOpt.add_argument("-v", "--verbose", action="store",
+    engineOpt.add_argument("-v", "--verbose", action="store", type=int,
                            dest="verbose_level", default=default_config["verbose_level"],
                            help=messages(language, 59))
     engineOpt.add_argument("-V", "--version", action="store_true",
