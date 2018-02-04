@@ -14,6 +14,7 @@ from core._die import __die_failure
 from api.__database import submit_report_to_db
 from api.__database import submit_logs_to_db
 from api.__database import remove_old_logs
+from api.__database import submit_tmp_logs_to_db
 
 
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
@@ -75,13 +76,13 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
             events_num += 1
         _table += _log_data.table_end + '<p class="footer">' + messages(language, 93) \
             .format(compatible.__version__, compatible.__code_name__, now()) + '</p>'
-        __log_into_file(log_in_file, 'w' if type(_table) == str else 'wb', _table, final=True)
+        __log_into_file(log_in_file, 'w' if type(_table) == str else 'wb', _table, language, final=True)
     elif len(log_in_file) >= 5 and log_in_file[-5:] == '.json':
         graph_flag = ""
         report_type = "JSON"
         data = json.dumps(JSON_Data)
         events_num = len(JSON_Data)
-        __log_into_file(log_in_file, 'wb', data, final=True)
+        __log_into_file(log_in_file, 'wb', data, language, final=True)
     else:
         graph_flag = ""
         report_type = "TEXT"
@@ -93,10 +94,11 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
                              [value['HOST'], value['USERNAME'], value['PASSWORD'], value['PORT'], value['TYPE'],
                               value['DESCRIPTION'], value['TYPE']]])
             events_num += 1
-        data = _table.draw().encode('utf8') + '\n\n' + messages(language, 93).format(compatible.__version__, compatible.__code_name__,now()).encode('utf8')
+        data = _table.draw().encode('utf8') + '\n\n' + messages(language, 93).format(compatible.__version__,
+                                                                                     compatible.__code_name__,
+                                                                                     now()).encode('utf8')
 
-                                      
-        __log_into_file(log_in_file, 'wb', data, final=True)
+        __log_into_file(log_in_file, 'wb', data, language, final=True)
     info(messages(language, 167))
     category = []
     for sm in scan_method:
@@ -122,7 +124,7 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     return True
 
 
-def __log_into_file(filename, mode, data, final=False):
+def __log_into_file(filename, mode, data, language, final=False):
     # fix later, slow sleep + bug
     if not final:
         flock = lockfile.FileLock(filename)
@@ -131,3 +133,4 @@ def __log_into_file(filename, mode, data, final=False):
         save.write(data + '\n')
     if not final:
         flock.release()
+    # submit_tmp_logs_to_db()

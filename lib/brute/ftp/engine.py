@@ -78,13 +78,13 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             info(messages(language, 70).format(user, passwd, target, port))
             data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ftp_brute', 
                 'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
-            __log_into_file(log_in_file, 'a', data)
+            __log_into_file(log_in_file, 'a', data, language)
         except:
             info(messages(language, 70).format(user, passwd, target, port) + ' ' + messages(language, 71))
             data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'FTP', 
                 'DESCRIPTION': messages(language, 67), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
-            __log_into_file(log_in_file, 'a', data)
-        __log_into_file(thread_tmp_filename, 'w', '0')
+            __log_into_file(log_in_file, 'a', data, language)
+        __log_into_file(thread_tmp_filename, 'w', '0', language)
     else:
         pass
     return flag
@@ -122,7 +122,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
             if exit is retries:
                 error(messages(language, 68).format(target, port, str(num), str(total)))
                 try:
-                    __log_into_file(ports_tmp_filename, 'a', str(port))
+                    __log_into_file(ports_tmp_filename, 'a', str(port), language)
                 except:
                     pass
                 break
@@ -223,8 +223,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         ports_tmp_filename = '{}/tmp/ports_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
-        __log_into_file(thread_tmp_filename, 'w', '1')
-        __log_into_file(ports_tmp_filename, 'w', '')
+        __log_into_file(thread_tmp_filename, 'w', '1', language)
+        __log_into_file(ports_tmp_filename, 'w', '', language)
         trying = 0
         ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
                            thread_number, total_req, verbose_level, socks_proxy)
@@ -266,7 +266,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ftp_brute', 
                 'DESCRIPTION': messages(language, 95), 'TIME': now(), 'CATEGORY': "brute", 
                 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
-            __log_into_file(log_in_file, 'a', data)
+            __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
     else:
         warn(messages(language, 69).format('ftp_brute', target))

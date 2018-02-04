@@ -102,12 +102,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 
                     'TYPE': 'viewdns_reverse_ip_lookup_scan', 'DESCRIPTION': domain, 
                     'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
-                __log_into_file(log_in_file, 'a', data)
+                __log_into_file(log_in_file, 'a', data, language)
         if verbose_level is not 0:
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'viewdns_reverse_ip_lookup_scan', 
                 'DESCRIPTION': messages(language, 114).format(len(_values), ", ".join(_values) if len(
                     _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 
                 'SCAN_CMD': scan_cmd}) + "\n"
-            __log_into_file(log_in_file, 'a', data)
+            __log_into_file(log_in_file, 'a', data, language)
     else:
         warn(messages(language, 69).format('viewdns_reverse_ip_lookup_scan', target))

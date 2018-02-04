@@ -135,8 +135,8 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'tcp_connect_port_scan',
                            'DESCRIPTION': messages(language, 79), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
                            'SCAN_CMD': scan_cmd}) + '\n'
-        __log_into_file(log_in_file, 'a', data)
-        __log_into_file(thread_tmp_filename, 'w', '0')
+        __log_into_file(log_in_file, 'a', data, language)
+        __log_into_file(thread_tmp_filename, 'w', '0', language)
         return True
     except:
         return False
@@ -183,7 +183,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         total_req = len(ports)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
-        __log_into_file(thread_tmp_filename, 'w', '1')
+        __log_into_file(thread_tmp_filename, 'w', '1', language)
         trying = 0
         for port in ports:
             t = threading.Thread(target=connect,
@@ -222,7 +222,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'tcp_connect_port_scan',
                  'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan",
                  'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
-            __log_into_file(log_in_file, 'a', data)
+            __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:

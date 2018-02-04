@@ -191,11 +191,11 @@ def __heartbleed(target, port, timeout_sec, log_in_file, language, time_sleep,
     if bleed(target, port, timeout_sec, log_in_file, language, time_sleep,
              thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, 140).format(target, port, 'heartbleed'))
-        __log_into_file(thread_tmp_filename, 'w', '0')
+        __log_into_file(thread_tmp_filename, 'w', '0', language)
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'heartbleed_vuln', 
             'DESCRIPTION': messages(language, 139).format('heartbleed'), 'TIME': now(), 'CATEGORY': "vuln", 
             'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-        __log_into_file(log_in_file, 'a', data)
+        __log_into_file(log_in_file, 'a', data, language)
         return True
     else:
         return False
@@ -241,7 +241,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         total_req = len(ports)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
-        __log_into_file(thread_tmp_filename, 'w', '1')
+        __log_into_file(thread_tmp_filename, 'w', '1', language)
         trying = 0
 
         for port in ports:
@@ -281,7 +281,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'heartbleed_vuln', 
                 'DESCRIPTION': messages(language, 141).format('heartbleed'), 'TIME': now(), 
                 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-            __log_into_file(log_in_file, 'a', data)
+            __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:

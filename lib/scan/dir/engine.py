@@ -83,12 +83,12 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
             content = content.decode('utf8')
         if r.status_code in status_codes:
             info(messages(language, 38).format(target, r.status_code, r.reason))
-            __log_into_file(thread_tmp_filename, 'w', '0')
+            __log_into_file(thread_tmp_filename, 'w', '0', language)
             data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 
                 'PORT': int(target.rsplit(':')[2].rsplit('/')[0]), 'TYPE': 'dir_scan', 
                 'DESCRIPTION': messages(language, 38).format(target, r.status_code, r.reason), 
                 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-            __log_into_file(log_in_file, 'a', data)
+            __log_into_file(log_in_file, 'a', data, language)
             if r.status_code is 200:
                 for dlmsg in directory_listing_msgs:
                     if dlmsg in content:
@@ -97,7 +97,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                             'PORT': int(target.rsplit(':')[1].rsplit('/')[0]), 'TYPE': 'dir_scan', 
                             'DESCRIPTION': messages(language, 104).format(target), 'TIME': now(), 
                             'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-                        __log_into_file(log_in_file, 'a', data)
+                        __log_into_file(log_in_file, 'a', data, language)
                         break
         return True
     except:
@@ -204,7 +204,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
-        __log_into_file(thread_tmp_filename, 'w', '1')
+        __log_into_file(thread_tmp_filename, 'w', '1', language)
         trying = 0
         for port in ports:
             port = int(port)
@@ -272,7 +272,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'dir_scan', 
                     'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan", 
                     'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-                __log_into_file(log_in_file, 'a', data)
+                __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
     else:
         warn(messages(language, 69).format('dir_scan', target))

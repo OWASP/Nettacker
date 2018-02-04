@@ -96,15 +96,13 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                     return 1
         if r.status_code in status_codes:
             info(messages(language, 38).format(target, r.status_code, r.reason))
-            thread_write = open(thread_tmp_filename, 'w')
-            thread_write.write('0')
-            thread_write.close()
+            __log_into_file(thread_tmp_filename, 'w', '0', language)
             __log_into_file(log_in_file, 'a',
                             json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
                                         'PORT': int(target.rsplit(':')[2].rsplit('/')[0]), 'TYPE': 'pma_scan',
                                         'DESCRIPTION': messages(language, 38).format(target, r.status_code, r.reason),
                                         'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                                        'SCAN_CMD': scan_cmd}) + '\n')
+                                        'SCAN_CMD': scan_cmd}) + '\n', language)
         return True
     except:
         return False
@@ -210,9 +208,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         total_req = len(extra_requirements["pma_scan_list"]) * len(ports)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
-        thread_write = open(thread_tmp_filename, 'w')
-        thread_write.write('1')
-        thread_write.close()
+        __log_into_file(thread_tmp_filename, 'w', '1', language)
         trying = 0
         for port in ports:
             port = int(port)
@@ -282,11 +278,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if thread_write is 1:
             info(messages(language, 108).format(target, ",".join(map(str, ports))))
             if verbose_level is not 0:
-                save = open(log_in_file, 'a')
-                save.write(json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'pma_scan',
-                                       'DESCRIPTION': messages(language, 174), 'TIME': now(), 'CATEGORY': "scan",
-                                       'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
-                save.close()
+                __log_into_file(log_in_file, 'a', json.dumps(
+                    {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'pma_scan',
+                     'DESCRIPTION': messages(language, 174), 'TIME': now(), 'CATEGORY': "scan",
+                     'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n', language)
         os.remove(thread_tmp_filename)
     else:
         warn(messages(language, 69).format('pma_scan', target))
