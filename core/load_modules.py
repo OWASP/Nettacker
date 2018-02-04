@@ -10,11 +10,10 @@ from core._die import __die_failure
 
 
 def load_all_graphs():
-    filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     graph_names = []
     for lib in glob(
             'lib/graph/*/engine.py' if sys.platform == 'win32' or sys.platform == 'win64' else '{}/lib/graph/*/engine.py'.format(
-                filepath)):
+                load_file_path())):
         lib = lib.rsplit('\\' if sys.platform == 'win32' or sys.platform == 'win64' else '/')[-2]
         if lib + '_graph' not in graph_names:
             graph_names.append(lib + '_graph')
@@ -23,12 +22,10 @@ def load_all_graphs():
 
 def load_all_modules():
     # Search for Modules
-
-    filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     module_names = []
     for lib in glob(
             'lib/*/*/engine.py' if sys.platform == 'win32' or sys.platform == 'win64' else '{}/lib/*/*/engine.py'.format(
-                filepath)):
+                load_file_path())):
 
         libname = lib.rsplit('\\' if sys.platform == 'win32' or sys.platform == 'win64' else '/')[-2]
         category = lib.rsplit('\\' if sys.platform == 'win32' or sys.platform == 'win64' else '/')[-3]
@@ -40,13 +37,12 @@ def load_all_modules():
 
 
 def load_all_method_args(language, API=False):
-    filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     module_names = []
     modules_args = {}
     # get module names
     for lib in glob(
             'lib/*/*/engine.py' if sys.platform == 'win32' or sys.platform == 'win64' else '{}/lib/*/*/engine.py'.format(
-                    filepath)):
+                    load_file_path())):
         lib = lib.replace('/', '.').replace('\\', '.').rsplit('.py')[0]
         if lib.rsplit('.')[1] != 'graph' and lib not in module_names:
             module_names.append(lib)
