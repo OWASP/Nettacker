@@ -278,13 +278,20 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                 passwds, timeout_sec, ports, verbose_level,
                 socks_proxy, retries, load_all_graphs(), language
             )
+    # Check the target(s)
+    if targets is None and targets_list is None:
+        parser.print_help()
+        write("\n")
+        __die_failure(messages(language, 26))
     # Select a Profile
+    if scan_method is None and profile is None:
+        __die_failure(messages(language, 41))
     if profile is not None:
-        _all_profiles = _builder(_profiles(), default_profiles())
         if scan_method is None:
             scan_method = ""
         else:
             scan_method += ","
+        _all_profiles = _builder(_profiles(), default_profiles())
         if "all" in profile.rsplit(","):
             profile = ",".join(_all_profiles)
         tmp_sm = scan_method
@@ -334,11 +341,6 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         from core.update import _update
         _update(compatible.__version__, compatible.__code_name__, language, socks_proxy)
         __die_success()
-    # Check the target(s)
-    if targets is None and targets_list is None:
-        parser.print_help()
-        write("\n")
-        __die_failure(messages(language, 26))
     else:
         if targets is not None:
             targets = list(set(targets.rsplit(",")))

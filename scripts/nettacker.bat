@@ -1,2 +1,2 @@
 @echo off
-python %~dp0/nettacker.py %*
+python -c "import nettacker; nettacker.__check_external_modules();nettacker.load()" %*
