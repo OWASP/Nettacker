@@ -13,6 +13,7 @@ import os
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
+from core.load_modules import load_file_path
 from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
@@ -225,10 +226,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             len(users) * len(passwds) * len(ports) * len(extra_requirements["smtp_brute_split_user_set_pass_prefix"])) \
             if extra_requirements["smtp_brute_split_user_set_pass"][0] == "False" \
             else int(len(users) * len(ports) * len(extra_requirements["smtp_brute_split_user_set_pass_prefix"]))
-        filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-        thread_tmp_filename = '{}/../../tmp/thread_tmp_'.format(filepath) + ''.join(
+        thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
-        ports_tmp_filename = '{}/../../tmp/ports_tmp_'.format(filepath) + ''.join(
+        ports_tmp_filename = '{}/tmp/ports_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1')
         __log_into_file(ports_tmp_filename, 'w', '')
