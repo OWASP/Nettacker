@@ -42,7 +42,7 @@ def load_all_method_args(language, API=False):
     # get module names
     for lib in glob(
             'lib/*/*/engine.py' if sys.platform == 'win32' or sys.platform == 'win64' else '{}/lib/*/*/engine.py'.format(
-                    load_file_path())):
+                load_file_path())):
         lib = lib.replace('/', '.').replace('\\', '.').rsplit('.py')[0]
         if lib.rsplit('.')[1] != 'graph' and lib not in module_names:
             module_names.append(lib)
@@ -78,6 +78,6 @@ def __check_external_modules():
             __die_failure("pip install -r requirements.txt ---> " + module + " not installed!")
     return True
 
-def load_file_path():
 
+def load_file_path():
     return os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
