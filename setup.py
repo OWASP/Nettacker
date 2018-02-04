@@ -2,14 +2,25 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import os
 from setuptools import setup
 from setuptools import find_packages
+
+
+def package_files(directory):
+    paths = []
+    for (path, directories, filenames) in os.walk(directory):
+        for filename in filenames:
+            paths.append(os.path.join('..', path, filename))
+    return paths
+
 
 setup(
     name="OWASP-Nettacker",
     version='0.0.1',
     description='OWASP Nettacker - Automated Penetration Testing Framework',
     packages=find_packages(),
+    package_data={"": package_files("web")},
     include_package_data=True,
     install_requires=open("requirements.txt").read().rsplit(),
     url="https://github.com/viraintel/OWASP-Nettacker",
@@ -24,7 +35,6 @@ setup(
                      " unique method in OWASP Nettacker for discovering protected services and devices such"
                      " as SCADA. It would make a competitive edge compared to other scanner making it one of"
                      " the bests.",
-    package_data={"": ["*.txt", "*.md", "*.css", "*.js", "*.html", "*.htm", ".png"]},
     scripts=["scripts/nettacker.bat" if sys.platform == "win32" or sys.platform == "win64"
              else "scripts/nettacker", "nettacker.py"]
 )

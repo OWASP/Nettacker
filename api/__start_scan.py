@@ -15,6 +15,7 @@ from core.alert import write
 from core.targets import analysis
 from core.log import sort_logs
 from core.color import finish
+from core.load_modules import load_file_path
 
 
 def __scan(config, scan_id, scan_cmd):
@@ -43,8 +44,8 @@ def __scan(config, scan_id, scan_cmd):
 
     suff = now(model="%Y_%m_%d_%H_%M_%S") + "".join(random.choice(string.ascii_lowercase) for x in
                                                     range(10))
-    subs_temp = "tmp/subs_temp_" + suff
-    range_temp = "tmp/ranges_" + suff
+    subs_temp = "{}/tmp/subs_temp_".format(load_file_path()) + suff
+    range_temp = "{}/tmp/ranges_".format(load_file_path()) + suff
     total_targets = -1
     for total_targets, _ in enumerate(
             analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
@@ -56,7 +57,7 @@ def __scan(config, scan_id, scan_cmd):
         os.remove(range_temp)
     except:
         pass
-    range_temp = "tmp/ranges_" + suff
+    range_temp = "{}/tmp/ranges_".format(load_file_path()) + suff
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
                        language, verbose_level, retries, socks_proxy, False)
     trying = 0
@@ -102,7 +103,8 @@ def __scan(config, scan_id, scan_cmd):
     os.remove(subs_temp)
     os.remove(range_temp)
     info(messages(language, 43))
-    sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_level, 1, profile, scan_method, backup_ports)
+    sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_level, 1, profile, scan_method,
+              backup_ports)
     info(messages(language, 44))
     finish()
     return True

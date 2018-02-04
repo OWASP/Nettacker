@@ -103,9 +103,7 @@ def get_statics(path):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    filename = "results/results_{0}_{1}.html".format(now(model="%Y_%m_%d_%H_%M_%S"),
-                                                     "".join(random.choice(string.ascii_lowercase) for x in
-                                                             range(10)))
+    filename = _builder(_core_config(), _core_default_config())["log_in_file"]
     return render_template("index.html", scan_method=__scan_methods(), profile=__profiles(),
                            graphs=__graphs(), languages=__languages(), filename=filename,
                            method_args_list=load_all_method_args(__language(), API=True))
@@ -162,7 +160,7 @@ def __get_results():
         page = int(__get_value(flask_request, "page"))
     except:
         page = 1
-    return jsonify(__select_results(__language(), page, 1)), 200
+    return jsonify(__select_results(__language(), page)), 200
 
 
 @app.route("/results/get", methods=["GET"])
@@ -172,7 +170,7 @@ def __get_result_content():
         id = int(__get_value(flask_request, "id"))
     except:
         return jsonify(__structure(status="error", msg="your scan id is not valid!")), 400
-    return __get_result(__language(), id, 1)
+    return __get_result(__language(), id)
 
 
 @app.route("/logs/get_list", methods=["GET"])
