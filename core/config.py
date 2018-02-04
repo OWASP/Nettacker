@@ -4,6 +4,7 @@
 import random
 import string
 import os
+from core.load_modules import load_file_path
 from core._time import now
 
 
@@ -42,7 +43,7 @@ def _core_config():
         "verbose_level": 0,
         "show_version": False,
         "check_update": False,
-        "log_in_file": "{0}/results/results_{1}_{2}.html".format(filepath, now(model="%Y_%m_%d_%H_%M_%S"),
+        "log_in_file": "{0}/results/results_{1}_{2}.html".format(load_file_path(), now(model="%Y_%m_%d_%H_%M_%S"),
                                                              "".join(random.choice(string.ascii_lowercase) for x in
                                                                      range(10))),
         "graph_flag": "d3_tree_v2_graph",
