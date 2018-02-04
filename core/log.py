@@ -97,8 +97,7 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
 
                                       
         __log_into_file(log_in_file, 'wb', data, final=True)
-    if api_flag is 0:
-        info(messages(language, 167))
+    info(messages(language, 167))
     category = []
     for sm in scan_method:
         if sm.rsplit("_")[-1] not in category:
@@ -109,19 +108,17 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
         ports = "default"
     submit_report_to_db(now(), scan_id, log_in_file, events_num, 0 if verbose_level is 0 else 1, api_flag, report_type,
                         graph_flag, category, profile, scan_method, language, scan_cmd, ports)
-    if api_flag is 0:
-        info(messages(language, 171))
+    info(messages(language, 171))
     hosts = []
     for log in JSON_Data:
         if log["HOST"] not in hosts:
             hosts.append(log["HOST"])
     for host in hosts:
         for sm in scan_method.rsplit(','):
-            remove_old_logs(host, sm, scan_id, language, api_flag)
-    if api_flag is 0:
-        info(messages(language, 170))
+            remove_old_logs(host, sm, scan_id, language)
+    info(messages(language, 170))
     for log in JSON_Data:
-        submit_logs_to_db(language, api_flag, log)
+        submit_logs_to_db(language, log)
     return True
 
 

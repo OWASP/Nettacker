@@ -10,8 +10,7 @@ from core.compatible import version
 def is_not_run_from_api():
     if '--start-api' in sys.argv:
         return False
-    else:
-        return True
+    return True
 
 
 def messages(language, msg_id):
