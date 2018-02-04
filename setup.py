@@ -5,13 +5,11 @@ import sys
 from setuptools import setup
 from setuptools import find_packages
 
-founded = find_packages()
-
 setup(
     name="OWASP-Nettacker",
     version='0.0.1',
     description='OWASP Nettacker - Automated Penetration Testing Framework',
-    packages=founded,
+    packages=find_packages(),
     include_package_data=True,
     install_requires=open("requirements.txt").read().rsplit(),
     url="https://github.com/viraintel/OWASP-Nettacker",

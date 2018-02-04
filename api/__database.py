@@ -13,24 +13,22 @@ from api.api_core import __structure
 from flask import jsonify
 
 
-def create_connection(language, api_flag):
+def create_connection(language):
     try:
         return sqlite3.connect(os.path.join(os.path.dirname(os.path.dirname(__file__)),
                                             _builder(_core_config(), _core_default_config())["api_db_name"]))
     except:
-        if api_flag is 0:
-            warn(messages(language, 168))
+        warn(messages(language, 168))
         return False
 
 
 def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api_flag, report_type, graph_flag,
                         category, profile, scan_method, language, scan_cmd, ports):
-    conn = create_connection(language, api_flag)
+    conn = create_connection(language)
     if not conn:
         return False
     try:
-        if api_flag is 0:
-            info(messages(language, 169))
+        info(messages(language, 169))
         c = conn.cursor()
         c.execute("""
         INSERT INTO reports (
@@ -49,14 +47,13 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api
         conn.commit()
         conn.close()
     except:
-        if api_flag is 0:
-            warn(messages(language, 168))
+        warn(messages(language, 168))
         return False
     return True
 
 
-def remove_old_logs(host, type, scan_id, language, api_flag):
-    conn = create_connection(language, api_flag)
+def remove_old_logs(host, type, scan_id, language):
+    conn = create_connection(language)
     try:
         c = conn.cursor()
         c.execute("""delete from hosts_log where host="{0}" and type="{1}" and scan_id!="{2}" """
@@ -64,14 +61,13 @@ def remove_old_logs(host, type, scan_id, language, api_flag):
         conn.commit()
         conn.close()
     except:
-        if api_flag is 0:
-            warn(messages(language, 168))
+        warn(messages(language, 168))
         return False
     return True
 
 
-def submit_logs_to_db(language, api_flag, log):
-    conn = create_connection(language, api_flag)
+def submit_logs_to_db(language, log):
+    conn = create_connection(language)
     try:
         c = conn.cursor()
         c.execute("""
@@ -88,14 +84,13 @@ def submit_logs_to_db(language, api_flag, log):
         conn.commit()
         conn.close()
     except:
-        if api_flag is 0:
-            warn(messages(language, 168))
+        warn(messages(language, 168))
         return False
     return True
 
 
-def __select_results(language, page, api_flag):
-    conn = create_connection(language, api_flag)
+def __select_results(language, page):
+    conn = create_connection(language)
     log = ""
     page = int(page * 10 if page > 0 else page * -10) - 10
 
@@ -103,7 +98,7 @@ def __select_results(language, page, api_flag):
     try:
         c = conn.cursor()
         for data in c.execute("""select * from reports where 1 order by id desc limit {0},10""".format(page)):
-            tmp = { # fix later, junks
+            tmp = {  # fix later, junks
                 "id": "",
                 "date": "",
                 "scan_id": "",
@@ -142,8 +137,8 @@ def __select_results(language, page, api_flag):
     return selected
 
 
-def __get_result(language, id, api_flag):
-    conn = create_connection(language, api_flag)
+def __get_result(language, id):
+    conn = create_connection(language)
     try:
         c = conn.cursor()
         c.execute("""select report_filename from reports where id={0}""".format(id))
@@ -156,8 +151,8 @@ def __get_result(language, id, api_flag):
         return jsonify(__structure(status="error", msg="database error!")), 200
 
 
-def __last_host_logs(language, page, api_flag):
-    conn = create_connection(language, api_flag)
+def __last_host_logs(language, page):
+    conn = create_connection(language)
     page = int(page * 10 if page > 0 else page * -10) - 10
     data_structure = {
         "host": "",
@@ -169,11 +164,8 @@ def __last_host_logs(language, page, api_flag):
         }
     }
     selected = []
-    # try:
-    if True:
+    try:
         c = conn.cursor()
-        d = conn.cursor()
-
         for host in c.execute(
                 """select host from hosts_log where 1 group by host order by id desc limit {0},10""".format(page)):
             d = conn.cursor()
@@ -187,7 +179,7 @@ def __last_host_logs(language, page, api_flag):
                         capture = n
                     n += 1
                 if capture is None:
-                    tmp = { #fix later, junks
+                    tmp = {  # fix later, junks
                         "host": "",
                         "info": {
                             "open_ports": [],
@@ -214,6 +206,6 @@ def __last_host_logs(language, page, api_flag):
                         selected[capture]["info"]["descriptions"].append(data[4])
 
         conn.close()
-    # except:
-    #     return __structure(status="error", msg="database error!")
+    except:
+        return __structure(status="error", msg="database error!")
     return selected
