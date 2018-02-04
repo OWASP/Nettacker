@@ -9,8 +9,10 @@ from core._die import __die_failure
 __version__ = '0.0.1'
 __code_name__ = 'SAME'
 
+
 def _version_info():
     return [__version__, __code_name__]
+
 
 def logo():
     from core.alert import write_to_api_console
@@ -66,3 +68,9 @@ def check(language):
 
 def os_name():
     return sys.platform
+
+
+def is_windows():
+    if 'win32' == os_name() or 'win64' == os_name():
+        return True
+    return False
