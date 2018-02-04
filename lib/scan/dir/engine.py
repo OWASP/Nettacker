@@ -105,7 +105,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
 
 def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, verbose_level, trying, total_req, total,
          num, port, language):
-    if verbose_level is not 0:
+    if verbose_level > 3:
         info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port,
                                            'dir_scan'))
     if socks_proxy is not None:
@@ -238,7 +238,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     threads.append(t)
                     t.start()
                     trying += 1
-                    if verbose_level is not 0:
+                    if verbose_level > 3:
                         info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port,
                                                            'dir_scan'))
                     while 1:

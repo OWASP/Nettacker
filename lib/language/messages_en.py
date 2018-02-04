@@ -184,6 +184,9 @@ def all_messages():
             "168": "could not connect to the database!",
             "169": "inserting report to the database",
             "170": "inserting logs to the database",
-            "171": "removing old logs from db"
+            "171": "removing old logs from db",
+            "172": "{0} subdomain(s) found!",
+            "173": "{0} domain(s) found!",
+            "174": "not any phpmyadmin dir found!"
 
         }

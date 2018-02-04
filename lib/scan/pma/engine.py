@@ -93,8 +93,6 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                 if n is retries:
                     warn(messages(language, 106).format(target))
                     return 1
-        if version() is 3:
-            content = content.decode('utf8')
         if r.status_code in status_codes:
             info(messages(language, 38).format(target, r.status_code, r.reason))
             thread_write = open(thread_tmp_filename, 'w')
@@ -106,19 +104,6 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                                         'DESCRIPTION': messages(language, 38).format(target, r.status_code, r.reason),
                                         'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
                                         'SCAN_CMD': scan_cmd}) + '\n')
-            if r.status_code is 200:
-                for dlmsg in directory_listing_msgs:
-                    if dlmsg in content:
-                        info(messages(language, 104).format(target))
-                        __log_into_file(log_in_file, 'a',
-                                        json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
-                                                    'PORT': int(target.rsplit(':')[1].rsplit('/')[0]),
-                                                    'TYPE': 'pma_scan',
-                                                    'DESCRIPTION': messages(language, 104).format(target),
-                                                    'TIME': now(),
-                                                    'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                                                    'SCAN_CMD': scan_cmd}) + '\n')
-                        break
         return True
     except:
         return False
@@ -126,7 +111,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
 
 def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, verbose_level, trying, total_req, total,
          num, port, language):
-    if verbose_level is not 0:
+    if verbose_level > 3:
         info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port,
                                            'pma_scan'))
     if socks_proxy is not None:
@@ -267,7 +252,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     threads.append(t)
                     t.start()
                     trying += 1
-                    if verbose_level is not 0:
+                    if verbose_level > 3:
                         info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port,
                                                            'pma_scan'))
                     while 1:
@@ -299,7 +284,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             if verbose_level is not 0:
                 save = open(log_in_file, 'a')
                 save.write(json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'pma_scan',
-                                       'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan",
+                                       'DESCRIPTION': messages(language, 174), 'TIME': now(), 'CATEGORY': "scan",
                                        'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n')
                 save.close()
         os.remove(thread_tmp_filename)

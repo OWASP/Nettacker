@@ -95,8 +95,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if len(_values) is 0:
             info(messages(language, 164))
         if len(_values) > 0:
+            info(messages(language, 173).format(len(_values)))
             for domain in _values:
-                info(messages(language, 114).format(domain))
+                if verbose_level > 3:
+                    info(messages(language, 114).format(domain))
                 data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 
                     'TYPE': 'viewdns_reverse_ip_lookup_scan', 'DESCRIPTION': domain, 
                     'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"

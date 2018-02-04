@@ -410,7 +410,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
             total_req += 1
     if extra_requirements['subdomain_scan_use_netcraft'][0] == 'True':
         trying += 1
-        if verbose_level is not 0:
+        if verbose_level > 3:
             info(messages(language, 113).format(trying, total_req, num, total, target,
                                                 '(subdomain_scan - netcraft)'))
         t = threading.Thread(target=__netcraft,
@@ -421,7 +421,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         threads.append(t)
     if extra_requirements['subdomain_scan_use_ptrarchive'][0] == 'True':
         trying += 1
-        if verbose_level is not 0:
+        if verbose_level > 3:
             info(messages(language, 113).format(trying, total_req, num, total, target, 'subdomain_scan - ptrarchive'))
         t = threading.Thread(target=__ptrarchive,
                              args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
@@ -431,7 +431,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         threads.append(t)
     if extra_requirements['subdomain_scan_use_threatcrowd'][0] == 'True':
         trying += 1
-        if verbose_level is not 0:
+        if verbose_level > 3:
             info(
                 messages(language, 113).format(trying, total_req, num, total, target, 'subdomain_scan - threatcrowd'))
         t = threading.Thread(target=__threatcrowd,
@@ -442,7 +442,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         threads.append(t)
     if extra_requirements['subdomain_scan_use_virustotal'][0] == 'True':
         trying += 1
-        if verbose_level is not 0:
+        if verbose_level > 3:
             info(messages(language, 113).format(trying, total_req, num, total, target, 'subdomain_scan - virustotal'))
         t = threading.Thread(target=__virustotal,
                              args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
@@ -452,7 +452,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         threads.append(t)
     if extra_requirements['subdomain_scan_use_comodo_crt'][0] == 'True':
         trying += 1
-        if verbose_level is not 0:
+        if verbose_level > 3:
             info(messages(language, 113).format(trying, total_req, num, total, target, 'subdomain_scan - comodo crt'))
         t = threading.Thread(target=__comodo_crt,
                              args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
@@ -462,7 +462,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         threads.append(t)
     if extra_requirements['subdomain_scan_use_dnsdumpster'][0] == 'True':
         trying += 1
-        if verbose_level is not 0:
+        if verbose_level > 3:
             info(messages(language, 113).format(trying, total_req, num,
                                                 total, target, 'subdomain_scan - dnsdumpster'))
         t = threading.Thread(target=__dnsdumpster,
@@ -473,7 +473,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         threads.append(t)
     if extra_requirements['subdomain_scan_use_google_dig'][0] == 'True':
         trying += 1
-        if verbose_level is not 0:
+        if verbose_level > 3:
             info(messages(language, 113).format(trying, total_req, num, total, target,
                                                 '(subdomain_scan - google dig)'))
         t = threading.Thread(target=__google_dig,
@@ -484,7 +484,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         threads.append(t)
     if extra_requirements['subdomain_scan_use_cert_spotter'][0] == 'True':
         trying += 1
-        if verbose_level is not 0:
+        if verbose_level > 3:
             info(messages(language, 113).format(trying, total_req, num, total, target,
                                                 '(subdomain_scan - cert spotter)'))
         t = threading.Thread(target=__cert_spotter,
@@ -557,8 +557,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if len(subs) is 0:
             info(messages(language, 163))
         if len(subs) is not 0:
+            info(messages(language, 172).format(len(subs)))
             for sub in subs:
-                info(messages(language, 135).format(sub))
+                if verbose_level > 2:
+                    info(messages(language, 135).format(sub))
                 data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
                                    'DESCRIPTION': sub, 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
                                    'SCAN_CMD': scan_cmd}) + "\n"

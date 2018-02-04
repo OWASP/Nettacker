@@ -252,7 +252,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             threads.append(t)
             t.start()
             trying += 1
-            if verbose_level is not 0:
+            if verbose_level > 3:
                 info(
                     messages(language, 72).format(trying, total_req, num, total, target, port, 'heartbleed_vuln'))
             while 1:
