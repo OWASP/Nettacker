@@ -17,6 +17,7 @@ from core.alert import messages
 from core.log import sort_logs
 from core.load_modules import load_all_modules
 from core.load_modules import load_all_graphs
+from core.load_modules import load_file_path
 from core.args_loader import load_all_args
 from core.args_loader import check_all_required
 from core.update import _check
@@ -104,9 +105,8 @@ def load():
     info(messages(language, 96).format(len(load_all_modules()) - 1 + len(load_all_graphs())))
     suff = now(model="%Y_%m_%d_%H_%M_%S") + "".join(random.choice(string.ascii_lowercase) for x in
                                                     range(10))
-    filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    subs_temp = "{}/tmp/subs_temp_".format(filepath) + suff
-    range_temp = "{}/tmp/ranges_".format(filepath) + suff
+    subs_temp = "{}/tmp/subs_temp_".format(load_file_path()) + suff
+    range_temp = "{}/tmp/ranges_".format(load_file_path()) + suff
     total_targets = -1
     for total_targets, _ in enumerate(
             analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
@@ -118,7 +118,7 @@ def load():
         os.remove(range_temp)
     except:
         pass
-    range_temp = "{}/tmp/ranges_".format(filepath) + suff
+    range_temp = "{}/tmp/ranges_".format(load_file_path()) + suff
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
                        language, verbose_level, retries, socks_proxy, False)
     trying = 0

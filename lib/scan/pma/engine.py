@@ -14,6 +14,7 @@ import os
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
+from core.load_modules import load_file_path
 from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
@@ -207,8 +208,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         threads = []
         max = thread_number
         total_req = len(extra_requirements["pma_scan_list"]) * len(ports)
-        filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-        thread_tmp_filename = '{}/../../tmp/thread_tmp_'.format(filepath) + ''.join(
+        thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         thread_write = open(thread_tmp_filename, 'w')
         thread_write.write('1')
