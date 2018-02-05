@@ -19,7 +19,7 @@ def _paths():
 
 def _profiles():
     return {
-        "information_gathering": ["tcp_connect_port_scan"],
+        "information_gathering": ["port_scan"],
         "vulnerability": ["*_vuln"],
         "scan": ["*_scan"],
         "brute": ["*_brute"]
