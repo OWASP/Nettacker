@@ -253,7 +253,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1:
-            info(messages(language, 108).format(target, ",".join(map(str, ports))))
+            info(messages(language, 141).format("wordpress_dos_cve_2018_6389_vuln"))
             if verbose_level is not 0:
                 data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
                                    'TYPE': 'wordpress_dos_cve_2018_6389_vuln',
