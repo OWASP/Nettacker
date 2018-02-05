@@ -18,6 +18,12 @@ python:
 os:
  - "linux"
 
+# Install requirements
+install:
+ - "pip install --upgrade setuptools"
+ - "pip install --upgrade -r requirements.txt"
+ - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then pip install scapy; else pip install scapy-python3; fi
+
 # Run
 script:
 - "python scripts/__travis_test__.py"
