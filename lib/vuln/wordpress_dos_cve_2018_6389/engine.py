@@ -226,7 +226,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                                                    'wordpress_dos_cve_2018_6389_vuln'))
             try:
                 if int(open(thread_tmp_filename).read().rsplit()[0]) is 0:
-                    break
+                    if limit is not -1:
+                        break
             except:
                 pass
             while 1:
