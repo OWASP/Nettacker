@@ -64,7 +64,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                                             int(socks_proxy.rsplit(':')[1]))
                     socket.socket = socks.socksocket
                     socket.getaddrinfo = getaddrinfo
-            warn(messages(language, 100).format(target, 'heartbleed_vuln'))
+            warn(messages(language, 100).format(target, 'viewdns_reverse_ip_lookup_scan'))
             if do_one_ping(target, timeout_sec, 8) is None:
                 return None
         total_req = 1

@@ -89,8 +89,8 @@ def all_messages():
             "76": "ssh connection to {0}:{1} timeout, skipping {2}:{3}",
             "77": "ssh connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step",
             "78": "ssh connection to %s:%s failed, skipping whole step [process %s of %s]! going to next step",
-            "79": "OPEN PORT",
-            "80": "host: {0} port: {1} found!",
+            "79": "{0}/{1}",
+            "80": "host: {0} port: {1} ({2}) found!",
             "81": "target {0} submitted!",
             "82": "cannot open proxies list file: {0}",
             "83": "cannot find proxies list file: {0}",
@@ -188,6 +188,7 @@ def all_messages():
             "172": "{0} subdomain(s) found!",
             "173": "{0} domain(s) found!",
             "174": "not any phpmyadmin dir found!",
-            "175": "cannot access the file/directory! ({0})"
+            "175": "cannot access the file/directory! ({0})",
+            "176": "\"{0}\" mode not in list {1}, TCP selected!"
 
         }

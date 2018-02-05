@@ -180,7 +180,7 @@ def __get_last_host_logs():
         page = int(__get_value(flask_request, "page"))
     except:
         page = 1
-    return jsonify(__last_host_logs(__language(), page, 1)), 200
+    return jsonify(__last_host_logs(__language(), page)), 200
 
 
 def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
