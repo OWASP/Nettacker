@@ -224,8 +224,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             if verbose_level > 3:
                 info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port,
                                                    'wordpress_dos_cve_2018_6389_vuln'))
-            if int(open(thread_tmp_filename).read().rsplit()[0]) is 0:
-                break
+            try:
+                if int(open(thread_tmp_filename).read().rsplit()[0]) is 0:
+                    break
+            except:
+                pass
             while 1:
                 try:
                     if threading.activeCount() >= max:
