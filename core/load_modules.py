@@ -73,7 +73,7 @@ def load_all_method_args(language, API=False):
 
 def __check_external_modules():
     external_modules = ["argparse", "netaddr", "requests", "paramiko", "texttable", "socks", "win_inet_pton",
-                        "flask", "sqlite3", "scapy"]
+                        "flask", "sqlite3"]
     for module in external_modules:
         try:
             __import__(module)

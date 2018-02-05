@@ -9,6 +9,7 @@ import threading
 import string
 import random
 import os
+import logging
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
@@ -17,12 +18,11 @@ from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-import logging
 
 logging.getLogger("scapy.runtime").setLevel(logging.DEBUG)
 from scapy.all import *
 
-conf.verb = 0  # enable verbose mode - Is this actually working?
+conf.verb = 0
 conf.nofilter = 1
 
 
@@ -164,7 +164,8 @@ def extra_requirements_dict():
 
 def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
             scan_cmd, stealth_flag):
-    try:
+    # try:
+    if True:
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
             socks_proxy = socks_proxy.rsplit('://')[1]
@@ -230,13 +231,12 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
                     # "CHECK"
                     pass
         return True
-    except:
-        return False
+    # except:
+    #     return False
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
-          verbose_level, socks_proxy, retries, ping_flag, methods_args, scan_id,
-          scan_cmd):  # Main function
+          verbose_level, socks_proxy, retries, ping_flag, methods_args, scan_id, scan_cmd):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
             target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
         # requirements check

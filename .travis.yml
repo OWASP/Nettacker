@@ -18,11 +18,6 @@ python:
 os:
  - "linux"
 
-# Install requirements
-install:
- - "pip install --upgrade setuptools"
- - "pip install --upgrade -r requirements.txt"
-
 # Run
 script:
 - "python scripts/__travis_test__.py"

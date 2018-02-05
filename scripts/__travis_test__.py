@@ -4,6 +4,10 @@
 import os
 import sys
 
+# install requirements
+os.system("pip install --upgrade setuptools")
+os.system("pip install --upgrade -r requirements.txt")
+
 # Test help menu command
 os.system("time python nettacker.py --help")
 os.system("time python nettacker.py --help -L fa")

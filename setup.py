@@ -15,6 +15,12 @@ def package_files(directory):
     return paths
 
 
+requirements = open("requirements.txt").read().rsplit()
+if int(sys.version_info[0]) is 2:
+    requirements.append("scapy")
+else:
+    requirements.append("scapy-python3")
+
 setup(
     name="OWASP-Nettacker",
     version='0.0.1',
@@ -22,7 +28,7 @@ setup(
     packages=find_packages(),
     package_data={"": package_files("web")},
     include_package_data=True,
-    install_requires=open("requirements.txt").read().rsplit(),
+    install_requires=requirements,
     url="https://github.com/viraintel/OWASP-Nettacker",
     license="Apache-2.0",
     author="Ali Razmjoo",
