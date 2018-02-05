@@ -20,15 +20,11 @@ from core._time import now
 from core.log import __log_into_file
 
 logging.getLogger("scapy.runtime").setLevel(logging.DEBUG)
-from scapy.all import *
-
-conf.verb = 0
-conf.nofilter = 1
 
 
 def extra_requirements_dict():
     return {  # 1000 common ports used by nmap scanner
-        "port_scan_stealth": ["True"],
+        "port_scan_stealth": ["False"],
         "port_scan_ports": [1, 3, 4, 6, 7, 9, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32, 33, 37, 42,
                             43, 49, 53, 70, 79, 80, 81, 82, 83, 84, 85, 88, 89, 90, 99, 100, 106, 109, 110,
                             111, 113, 119, 125, 135, 139, 143, 144, 146, 161, 163, 179, 199, 211, 212, 222,
@@ -108,64 +104,17 @@ def extra_requirements_dict():
                             60443, 61532, 61900, 62078, 63331, 64623, 64680, 65000, 65129, 65389]
     }
 
+# fix later
+if "--method-args" in sys.argv and "port_scan_stealth=true" in " ".join(sys.argv).lower():
+    from scapy.all import *
 
-#
-# def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
-#             scan_cmd):
-#     # try:
-#     if True:
-#         if socks_proxy is not None:
-#             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
-#             socks_proxy = socks_proxy.rsplit('://')[1]
-#             if '@' in socks_proxy:
-#                 socks_username = socks_proxy.rsplit(':')[0]
-#                 socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
-#                 socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
-#                                         int(socks_proxy.rsplit(':')[-1]), username=socks_username,
-#                                         password=socks_password)
-#                 socket.socket = socks.socksocket
-#                 socket.getaddrinfo = getaddrinfo
-#             else:
-#                 socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
-#                 socket.socket = socks.socksocket
-#                 socket.getaddrinfo = getaddrinfo
-#
-#         src_port = RandShort()
-#         stealth_scan_resp = sr1(IP(dst=host) / TCP(sport=src_port, dport=port, flags="S"), timeout=timeout_sec)
-#         if (str(type(stealth_scan_resp)) == "<type 'NoneType'>"):
-#             # "Filtered"
-#             pass
-#         elif (stealth_scan_resp.haslayer(TCP)):
-#             print port
-#             if (stealth_scan_resp.getlayer(TCP).flags == 0x12):
-#                 # send_rst = sr(IP(dst=host) / TCP(sport=src_port, dport=port, flags="R"), timeout=timeout_sec)
-#                 info(messages(language, 80).format(host, port, "STEALTH"))
-#                 data = json.dumps(
-#                     {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'tcp_connect_port_scan',
-#                      'DESCRIPTION': messages(language, 79), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-#                      'SCAN_CMD': scan_cmd}) + '\n'
-#                 __log_into_file(log_in_file, 'a', data, language)
-#                 __log_into_file(thread_tmp_filename, 'w', '0', language)
-#             elif (stealth_scan_resp.getlayer(TCP).flags == 0x14):
-#                 # "Closed"
-#                 pass
-#         elif (stealth_scan_resp.haslayer(ICMP)):
-#             if (int(stealth_scan_resp.getlayer(ICMP).type) == 3
-#                     and int(stealth_scan_resp.getlayer(ICMP).code) in [1, 2, 3, 9, 10, 13]):
-#                 # "Filtered"
-#                 pass
-#         else:
-#             # "CHECK"
-#             pass
-#         return True
-#     # except:
-#     #     return False
+    conf.verb = 0
+    conf.nofilter = 1
 
 
 def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
             scan_cmd, stealth_flag):
-    # try:
-    if True:
+    try:
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
             socks_proxy = socks_proxy.rsplit('://')[1]
@@ -231,8 +180,8 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
                     # "CHECK"
                     pass
         return True
-    # except:
-    #     return False
+    except:
+        return False
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
