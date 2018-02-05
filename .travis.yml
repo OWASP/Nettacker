@@ -25,5 +25,6 @@ install:
  - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then pip install scapy; else pip install scapy-python3; fi
 
 # Run
+sudo: required
 script:
 - "python scripts/__travis_test__.py"
