@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# references
+# https://www.youtube.com/watch?v=nNDsGTalXS0
+# https://baraktawily.blogspot.nl/2018/02/how-to-dos-29-of-world-wide-websites.html
+# https://github.com/viraintel/OWASP-Nettacker/blob/master/lib/vuln/wordpress_dos_cve_2018_6389/engine.py
+
 import socket
 import socks
 import time
@@ -24,6 +29,7 @@ from core._die import __die_failure
 
 def extra_requirements_dict():
     return {
+
         "wordpress_dos_cve_2018_6389_vuln_random_agent": ["True"],
         "wordpress_dos_cve_2018_6389_vuln_no_limit": ["False"],
     }
