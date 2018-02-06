@@ -86,7 +86,7 @@ def send_dos(target, user_agent, timeout_sec, log_in_file, language, time_sleep,
                 socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
-        r = requests.get(target + payload, timeout=timeout_sec, headers=user_agent, verify=True).content
+        r = requests.get(target + payload, timeout=timeout_sec, headers=user_agent).content
         return True
     except:
         return False
@@ -115,7 +115,7 @@ def test(target, retries, timeout_sec, user_agent, socks_proxy, verbose_level, t
     n = 0
     while 1:
         try:
-            r = requests.get(target, timeout=timeout_sec, headers=user_agent, verify=True).content
+            r = requests.get(target, timeout=timeout_sec, headers=user_agent).content
             return 0
         except:
             n += 1
@@ -210,6 +210,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 language, False, log_in_file, scan_id, scan_cmd, thread_tmp_filename) is not 0:
             warn(messages(language, 109).format(url))
             return
+        info(messages(language, 177).format(target))
         n = 0
         t = threading.Thread(target=test,
                              args=(
