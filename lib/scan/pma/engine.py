@@ -84,9 +84,9 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
         while 1:
             try:
                 if http_method == "GET":
-                    r = requests.get(target, timeout=timeout_sec, headers=user_agent, verify=True)
+                    r = requests.get(target, timeout=timeout_sec, headers=user_agent)
                 elif http_method == "HEAD":
-                    r = requests.head(target, timeout=timeout_sec, headers=user_agent, verify=True)
+                    r = requests.head(target, timeout=timeout_sec, headers=user_agent)
                 content = r.content
                 break
             except:
@@ -132,9 +132,9 @@ def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, ver
     while 1:
         try:
             if http_method == "GET":
-                r = requests.get(target, timeout=timeout_sec, headers=user_agent, verify=True)
+                r = requests.get(target, timeout=timeout_sec, headers=user_agent)
             elif http_method == "HEAD":
-                r = requests.head(target, timeout=timeout_sec, headers=user_agent, verify=True)
+                r = requests.head(target, timeout=timeout_sec, headers=user_agent)
             return 0
         except:
             n += 1
