@@ -19,7 +19,7 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 
-logging.getLogger("scapy.runtime").setLevel(logging.DEBUG)
+logging.getLogger("scapy.runtime").setLevel(logging.CRITICAL)
 
 
 def extra_requirements_dict():
