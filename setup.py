@@ -26,7 +26,7 @@ setup(
     version='0.0.1',
     description='OWASP Nettacker - Automated Penetration Testing Framework',
     packages=find_packages(),
-    package_data={"": package_files("web")},
+    package_data={"": package_files("web") + ["../api/database.sqlite3"]},
     include_package_data=True,
     install_requires=requirements,
     url="https://github.com/viraintel/OWASP-Nettacker",
