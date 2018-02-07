@@ -51,6 +51,24 @@ def send_submit_query(query, language):
     return True
 
 
+def send_read_query(query, language):
+    conn = create_connection(language)
+    if not conn:
+        return False
+    try:
+        for i in range(1, 100):
+            try:
+                c = conn.cursor()
+                return c.execute(query)
+            except:
+                pass
+                time.sleep(0.01)
+    except:
+        warn(messages(language, 168))
+        return False
+    return True
+
+
 def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api_flag, report_type, graph_flag,
                         category, profile, scan_method, language, scan_cmd, ports):
     info(messages(language, 169))
@@ -96,14 +114,11 @@ def submit_logs_to_db(language, log):
 
 
 def __select_results(language, page):
-    conn = create_connection(language)
-    log = ""
     page = int(page * 10 if page > 0 else page * -10) - 10
-
     selected = []
     try:
-        c = conn.cursor()
-        for data in c.execute("""select * from reports where 1 order by id desc limit {0},10""".format(page)):
+        for data in send_read_query("""select * from reports where 1 order by id desc limit {0},10""".format(page),
+                                    language):
             tmp = {  # fix later, junks
                 "id": data[0],
                 "date": data[1],
@@ -122,19 +137,16 @@ def __select_results(language, page):
                 "ports": data[14]
             }
             selected.append(tmp)
-        conn.close()
     except:
         return __structure(status="error", msg="database error!")
     return selected
 
 
 def __get_result(language, id):
-    conn = create_connection(language)
     try:
-        c = conn.cursor()
-        c.execute("""select report_filename from reports where id={0}""".format(id))
         try:
-            filename = c.fetchone()[0]
+            filename = send_read_query("""select report_filename from reports where id={0}""".format(id),
+                                       language).fetchone()[0]
             return open(filename, 'rb').read(), 200
         except:
             return jsonify(__structure(status="error", msg="cannot find the file!")), 400
@@ -143,7 +155,6 @@ def __get_result(language, id):
 
 
 def __last_host_logs(language, page):
-    conn = create_connection(language)
     page = int(page * 10 if page > 0 else page * -10) - 10
     data_structure = {
         "host": "",
@@ -156,13 +167,12 @@ def __last_host_logs(language, page):
     }
     selected = []
     try:
-        c = conn.cursor()
-        for host in c.execute(
-                """select host from hosts_log where 1 group by host order by id desc limit {0},10""".format(page)):
-            d = conn.cursor()
-            for data in d.execute(
+        for host in send_read_query(
+                """select host from hosts_log where 1 group by host order by id desc limit {0},10""".format(page),
+                language):
+            for data in send_read_query(
                     """select host,port,type,category,description from hosts_log where host="{0}" group by type,port,username,""" \
-                    """password,description order by id desc""".format(host[0])):
+                    """password,description order by id desc""".format(host[0]), language):
                 n = 0
                 capture = None
                 for selected_data in selected:
@@ -194,21 +204,17 @@ def __last_host_logs(language, page):
                         selected[capture]["info"]["category"].append(data[3])
                     if data[4] not in selected[capture]["info"]["descriptions"]:
                         selected[capture]["info"]["descriptions"].append(data[4])
-
-        conn.close()
     except:
         return __structure(status="error", msg="database error!")
     return selected
 
 
 def __logs_to_report(scan_id, language):
-    conn = create_connection(language)
     try:
-        c = conn.cursor()
         logs = []
-        for log in c.execute(
+        for log in send_read_query(
                 "select host,username,password,port,type,date,description from hosts_log where scan_id=\"{0}\"".format(
-                    scan_id)):
+                    scan_id), language):
             data = {
                 "SCAN_ID": scan_id,
                 "HOST": log[0],
