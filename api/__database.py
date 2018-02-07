@@ -24,84 +24,74 @@ def create_connection(language):
                                                     _builder(_core_config(), _core_default_config())["api_db_name"]))
             except:
                 pass
-            time.sleep(0.01)
+                time.sleep(0.01)
     except:
         warn(messages(language, 168))
         return False
 
 
-def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api_flag, report_type, graph_flag,
-                        category, profile, scan_method, language, scan_cmd, ports):
+def send_submit_query(query, language):
     conn = create_connection(language)
     if not conn:
         return False
     try:
-        info(messages(language, 169))
-        c = conn.cursor()
-        c.execute("""
-        INSERT INTO reports (
-          date, scan_id, report_filename, events_num, verbose, 
-          api_flag, report_type, graph_flag, category, profile, 
-          scan_method, language, scan_cmd, ports     
-        )
-        VALUES (
-          '{0}', '{1}', '{2}', '{3}', '{4}',
-          '{5}', '{6}', '{7}', '{8}', '{9}',
-          '{10}', '{11}', '{12}', '{13}'
-        );
-        """.format(date, scan_id, report_filename, events_num, verbose,
-                   api_flag, report_type, graph_flag, category, profile,
-                   scan_method, language, scan_cmd, ports))
-        conn.commit()
-        conn.close()
+        for i in range(1, 100):
+            try:
+                c = conn.cursor()
+                c.execute(query)
+                conn.commit()
+                conn.close()
+                break
+            except:
+                pass
+                time.sleep(0.01)
     except:
         warn(messages(language, 168))
         return False
+    return True
+
+
+def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api_flag, report_type, graph_flag,
+                        category, profile, scan_method, language, scan_cmd, ports):
+    info(messages(language, 169))
+    send_submit_query("""
+    INSERT INTO reports (
+      date, scan_id, report_filename, events_num, verbose, 
+      api_flag, report_type, graph_flag, category, profile, 
+      scan_method, language, scan_cmd, ports     
+    )
+    VALUES (
+      '{0}', '{1}', '{2}', '{3}', '{4}',
+      '{5}', '{6}', '{7}', '{8}', '{9}',
+      '{10}', '{11}', '{12}', '{13}'
+    );
+    """.format(date, scan_id, report_filename, events_num, verbose,
+               api_flag, report_type, graph_flag, category, profile,
+               scan_method, language, scan_cmd, ports), language)
     return True
 
 
 def remove_old_logs(host, type, scan_id, language):
-    conn = create_connection(language)
-    try:
-        c = conn.cursor()
-        c.execute("""delete from hosts_log where host="{0}" and type="{1}" and scan_id!="{2}" """
-                  .format(host, type, scan_id))
-        conn.commit()
-        conn.close()
-    except:
-        warn(messages(language, 168))
-        return False
+    send_submit_query("""delete from hosts_log where host="{0}" and type="{1}" and scan_id!="{2}" """
+                      .format(host, type, scan_id), language)
     return True
 
 
 def submit_logs_to_db(language, log):
-    conn = create_connection(language)
     if type(log) == str:
         log = json.loads(log)
-    try:
-        # retries
-        for i in range(0, 100):
-            try:
-                c = conn.cursor()
-                c.execute("""
-                INSERT INTO hosts_log (
-                  host, date, port, type, category,
-                  description, username, password, scan_id, scan_cmd    
-                )
-                VALUES (
-                  '{0}', '{1}', '{2}', '{3}', '{4}',
-                  '{5}', '{6}', '{7}', '{8}', '{9}'
-                );
-                """.format(log["HOST"], log["TIME"], log["PORT"], log["TYPE"], log["CATEGORY"],
-                           log["DESCRIPTION"], log["USERNAME"], log["PASSWORD"], log["SCAN_ID"], log["SCAN_CMD"]))
-                conn.commit()
-            except:
-                pass
-            time.sleep(0.01)
-        conn.close()
-    except:
-        warn(messages(language, 168))
-        return False
+    send_submit_query("""
+                    INSERT INTO hosts_log (
+                      host, date, port, type, category,
+                      description, username, password, scan_id, scan_cmd    
+                    )
+                    VALUES (
+                      '{0}', '{1}', '{2}', '{3}', '{4}',
+                      '{5}', '{6}', '{7}', '{8}', '{9}'
+                    );
+                    """.format(log["HOST"], log["TIME"], log["PORT"], log["TYPE"], log["CATEGORY"],
+                               log["DESCRIPTION"], log["USERNAME"], log["PASSWORD"], log["SCAN_ID"], log["SCAN_CMD"]),
+                      language)
     return True
 
 
