@@ -120,10 +120,7 @@ def new_scan():
     _start_scan_config = __rules(__remove_non_api_keys(_builder(_start_scan_config,
                                                                 _builder(_core_config(), _core_default_config()))),
                                  _core_default_config(), __language())
-    scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
-    scan_cmd = messages(__language(), 158)
-    _start_scan_config["scan_id"] = scan_id
-    p = multiprocessing.Process(target=__scan, args=[_start_scan_config, scan_id, scan_cmd])
+    p = multiprocessing.Process(target=__scan, args=[_start_scan_config])
     p.start()
     # Sometimes method_args is too big!
     _start_scan_config["methods_args"] = {

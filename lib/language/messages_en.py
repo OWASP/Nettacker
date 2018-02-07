@@ -190,6 +190,7 @@ def all_messages():
             "174": "not any phpmyadmin dir found!",
             "175": "cannot access the file/directory! ({0})",
             "176": "\"{0}\" mode not in list {1}, TCP selected!",
-            "177": "sending DoS packets to {0}"
+            "177": "sending DoS packets to {0}",
+            "178": "use multi process engine"
 
         }

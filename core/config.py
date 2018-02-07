@@ -90,6 +90,7 @@ def _core_config():
         "api_db_name": _api_config()["api_db_name"],
         "home_path": _paths()["home_path"],
         "tmp_path": _paths()["tmp_path"],
-        "results_path": _paths()["results_path"]
+        "results_path": _paths()["results_path"],
+        "multi_process_engine": False
 
     }
