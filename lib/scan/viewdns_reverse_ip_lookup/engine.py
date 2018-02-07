@@ -21,7 +21,7 @@ def extra_requirements_dict():
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
-          verbose_level, socks_proxy, retries, ping_flag, methods_args, scan_id,
+          verbose_level, socks_proxy, retries, methods_args, scan_id,
           scan_cmd):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP' or target_type !='SINGLE_IPv6':
         # output format
@@ -46,27 +46,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                    "Accept": "text/javascript, text/html, application/xml, text/xml, */*",
                    "Accept-Language": "en-US,en;q=0.5"
                    }
-        # timeout check
-        if ping_flag:
-            if socks_proxy is not None:
-                socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
-                socks_proxy = socks_proxy.rsplit('://')[1]
-                if '@' in socks_proxy:
-                    socks_username = socks_proxy.rsplit(':')[0]
-                    socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
-                    socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
-                                            int(socks_proxy.rsplit(':')[-1]), username=socks_username,
-                                            password=socks_password)
-                    socket.socket = socks.socksocket
-                    socket.getaddrinfo = getaddrinfo
-                else:
-                    socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]),
-                                            int(socks_proxy.rsplit(':')[1]))
-                    socket.socket = socks.socksocket
-                    socket.getaddrinfo = getaddrinfo
-            warn(messages(language, 100).format(target, 'viewdns_reverse_ip_lookup_scan'))
-            if do_one_ping(target, timeout_sec, 8) is None:
-                return None
         total_req = 1
         trying = 1
         info(messages(language, 113).format(trying, total_req, num, total, target, 'viewdns ip lookup'))
