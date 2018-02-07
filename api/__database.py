@@ -13,6 +13,7 @@ from core.alert import info
 from core.alert import messages
 from api.api_core import __structure
 from flask import jsonify
+from core.compatible import version
 
 
 def create_connection(language):
@@ -108,7 +109,8 @@ def submit_logs_to_db(language, log):
                       '{5}', '{6}', '{7}', '{8}', '{9}'
                     );
                     """.format(log["HOST"], log["TIME"], log["PORT"], log["TYPE"], log["CATEGORY"],
-                               log["DESCRIPTION"], log["USERNAME"], log["PASSWORD"], log["SCAN_ID"], log["SCAN_CMD"]),
+                               log["DESCRIPTION"].encode('utf8') if version() is 2 else log["DESCRIPTION"],
+                               log["USERNAME"], log["PASSWORD"], log["SCAN_ID"], log["SCAN_CMD"]),
                       language)
     return True
 
