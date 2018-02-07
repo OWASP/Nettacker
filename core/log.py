@@ -20,6 +20,7 @@ from core.config import _paths
 from core.config_builder import _builder
 from core.compatible import version
 
+
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
     info(messages(language, 88))
     try:
@@ -129,39 +130,36 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
 
 
 def __log_into_file(filename, mode, data, language, final=False):
-
     if version() is 2:
-    
-      if _builder(_paths(), default_paths())["tmp_path"] in filename:
-          if not final:
-              flock = lockfile.FileLock(filename)
-              flock.acquire()
-          with open(filename, mode) as save:
-              save.write(data + '\n')
-          if not final:
-              flock.release()
-      else:
-          if final:
-              with open(filename, mode) as save:
-                  save.write(data + '\n')
-          else:
-              submit_logs_to_db(language, data)
+
+        if _builder(_paths(), default_paths())["tmp_path"] in filename:
+            if not final:
+                flock = lockfile.FileLock(filename)
+                flock.acquire()
+            with open(filename, mode) as save:
+                save.write(data + '\n')
+            if not final:
+                flock.release()
+        else:
+            if final:
+                with open(filename, mode) as save:
+                    save.write(data + '\n')
+            else:
+                submit_logs_to_db(language, data)
 
     else:
 
-      if _builder(_paths(), default_paths())["tmp_path"] in filename:
-          if not final:
-              flock = lockfile.FileLock(filename)
-              flock.acquire()
-          with open(filename, mode, encoding='utf-8') as save:
-              save.write(data + '\n')
-          if not final:
-              flock.release()
-      else:
-          if final:
-              with open(filename, mode, encoding='utf-8') as save:
-                  save.write(data + '\n')
-          else:
-              submit_logs_to_db(language, data)
-
-              
+        if _builder(_paths(), default_paths())["tmp_path"] in filename:
+            if not final:
+                flock = lockfile.FileLock(filename)
+                flock.acquire()
+            with open(filename, mode, encoding='utf-8') as save:
+                save.write(data + '\n')
+            if not final:
+                flock.release()
+        else:
+            if final:
+                with open(filename, mode, encoding='utf-8') as save:
+                    save.write(data + '\n')
+            else:
+                submit_logs_to_db(language, data)
