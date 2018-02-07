@@ -4,6 +4,7 @@
 import sqlite3
 import os
 import json
+import time
 from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
@@ -16,8 +17,14 @@ from flask import jsonify
 
 def create_connection(language):
     try:
-        return sqlite3.connect(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                                            _builder(_core_config(), _core_default_config())["api_db_name"]))
+        # retries
+        for i in range(0, 100):
+            try:
+                return sqlite3.connect(os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                                                    _builder(_core_config(), _core_default_config())["api_db_name"]))
+            except:
+                pass
+            time.sleep(0.01)
     except:
         warn(messages(language, 168))
         return False
@@ -72,19 +79,25 @@ def submit_logs_to_db(language, log):
     if type(log) == str:
         log = json.loads(log)
     try:
-        c = conn.cursor()
-        c.execute("""
-        INSERT INTO hosts_log (
-          host, date, port, type, category,
-          description, username, password, scan_id, scan_cmd    
-        )
-        VALUES (
-          '{0}', '{1}', '{2}', '{3}', '{4}',
-          '{5}', '{6}', '{7}', '{8}', '{9}'
-        );
-        """.format(log["HOST"], log["TIME"], log["PORT"], log["TYPE"], log["CATEGORY"],
-                   log["DESCRIPTION"], log["USERNAME"], log["PASSWORD"], log["SCAN_ID"], log["SCAN_CMD"]))
-        conn.commit()
+        # retries
+        for i in range(0, 100):
+            try:
+                c = conn.cursor()
+                c.execute("""
+                INSERT INTO hosts_log (
+                  host, date, port, type, category,
+                  description, username, password, scan_id, scan_cmd    
+                )
+                VALUES (
+                  '{0}', '{1}', '{2}', '{3}', '{4}',
+                  '{5}', '{6}', '{7}', '{8}', '{9}'
+                );
+                """.format(log["HOST"], log["TIME"], log["PORT"], log["TYPE"], log["CATEGORY"],
+                           log["DESCRIPTION"], log["USERNAME"], log["PASSWORD"], log["SCAN_ID"], log["SCAN_CMD"]))
+                conn.commit()
+            except:
+                pass
+            time.sleep(0.01)
         conn.close()
     except:
         warn(messages(language, 168))
