@@ -86,7 +86,7 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
         report_type = "JSON"
         data = json.dumps(JSON_Data)
         events_num = len(JSON_Data)
-        __log_into_file(log_in_file, 'wb', data, language, final=True)
+        __log_into_file(log_in_file, 'w', data, language, final=True)
     else:
         graph_flag = ""
         report_type = "TEXT"
@@ -133,13 +133,13 @@ def __log_into_file(filename, mode, data, language, final=False):
         if not final:
             flock = lockfile.FileLock(filename)
             flock.acquire()
-        with open(filename, mode) as save:
+        with open(filename, mode, encoding='utf-8') as save:
             save.write(data + '\n')
         if not final:
             flock.release()
     else:
         if final:
-            with open(filename, mode) as save:
+            with open(filename, mode, encoding='utf-8') as save:
                 save.write(data + '\n')
         else:
             submit_logs_to_db(language, data)
