@@ -116,7 +116,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                                         yield IPn
                 else:
                     if enumerate_flag: info(messages(language, 52).format(target))
-                    sub_domains = json.loads(open(subs_temp).read()) if len(open(subs_temp).read()) > 0 else \
+                    sub_domains = json.loads(open(subs_temp).read()) if len(open(subs_temp).read()) > 2 else \
                         __get_subs(target, 3, '', 0, language, 0, socks_proxy, 3, 0, 0)
                     if len(open(subs_temp).read()) is 0:
                         __log_into_file(subs_temp, 'a', json.dumps(sub_domains), language)
