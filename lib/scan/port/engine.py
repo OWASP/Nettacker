@@ -105,7 +105,6 @@ def extra_requirements_dict():
     }
 
 
-# fix later
 if "--method-args" in sys.argv and "port_scan_stealth=true" in " ".join(sys.argv).lower():
     from scapy.all import *
 
@@ -225,7 +224,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         extra_requirements = new_extra_requirements
         if ports is None:
             ports = extra_requirements["port_scan_ports"]
-        if extra_requirements["port_scan_stealth"][0] == "True":
+        if extra_requirements["port_scan_stealth"][0].lower() == "true":
             stealth_flag = True
         else:
             stealth_flag = False
