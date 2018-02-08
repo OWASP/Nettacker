@@ -18,6 +18,7 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 from core.compatible import is_windows
+from lib import threads_counter
 
 logging.getLogger("scapy.runtime").setLevel(logging.CRITICAL)
 
@@ -122,6 +123,7 @@ if "--method-args" in sys.argv and "port_scan_stealth=true" in " ".join(sys.argv
 def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
             scan_cmd, stealth_flag):
     try:
+        threads_counter.active_threads[thread_tmp_filename] += 1
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
             socks_proxy = socks_proxy.rsplit('://')[1]
@@ -164,14 +166,17 @@ def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         else:
             # "CHECK"
             pass
+        threads_counter.active_threads[thread_tmp_filename] -= 1
         return True
     except:
+        threads_counter.active_threads[thread_tmp_filename] -= 1
         return False
 
 
 def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
             scan_cmd, stealth_flag):
     try:
+        threads_counter.active_threads[thread_tmp_filename] += 1
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
             socks_proxy = socks_proxy.rsplit('://')[1]
@@ -206,8 +211,10 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         __log_into_file(log_in_file, 'a', data, language)
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         s.close()
+        threads_counter.active_threads[thread_tmp_filename] -= 1
         return True
     except:
+        threads_counter.active_threads[thread_tmp_filename] -= 1
         return False
 
 
@@ -215,6 +222,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
           verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
             target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
+        global active_threads
+        active_threads = 0
         # requirements check
         new_extra_requirements = extra_requirements_dict()
         if methods_args is not None:
@@ -230,18 +239,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             stealth_flag = False
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
-        threads = []
         max = thread_number
         total_req = len(ports)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1', language)
+        threads_counter.active_threads[thread_tmp_filename] = 0
         trying = 0
         for port in ports:
             t = threading.Thread(target=stealth if stealth_flag else connect,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd, stealth_flag))
-            threads.append(t)
             t.start()
             time.sleep(time_sleep)
             trying += 1
@@ -250,7 +258,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     messages(language, 72).format(trying, total_req, num, total, target, port, 'port_scan'))
             while 1:
                 try:
-                    if threading.activeCount() >= max:
+                    if threads_counter.active_threads[thread_tmp_filename] >= max:
                         time.sleep(0.01)
                     else:
                         break
@@ -265,10 +273,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threads_counter.active_threads[thread_tmp_filename] is 0 or kill_switch is kill_time:
                     break
             except KeyboardInterrupt:
                 break
+        threads_counter.active_threads.pop(thread_tmp_filename)
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             data = json.dumps(
