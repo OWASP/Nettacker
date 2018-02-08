@@ -3,5 +3,6 @@ RUN apk add --no-cache python pkgconfig python-dev openssl-dev libffi-dev musl-d
 WORKDIR /usr/src/owaspnettacker
 RUN git clone https://github.com/viraintel/OWASP-Nettacker.git .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install scapy
 RUN apk del --purge musl-dev gcc make git
 CMD [ "python", "./nettacker.py" ]
