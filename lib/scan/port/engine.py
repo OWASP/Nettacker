@@ -17,6 +17,7 @@ from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
+from core.compatible import is_windows
 
 logging.getLogger("scapy.runtime").setLevel(logging.CRITICAL)
 
@@ -103,12 +104,70 @@ def extra_requirements_dict():
                             60443, 61532, 61900, 62078, 63331, 64623, 64680, 65000, 65129, 65389]
     }
 
+
 # fix later
 if "--method-args" in sys.argv and "port_scan_stealth=true" in " ".join(sys.argv).lower():
     from scapy.all import *
 
+    if is_windows():  # fix later
+        from scapy.base_classes import Gen, SetGen
+        import scapy.plist as plist
+        from scapy.utils import PcapReader
+        from scapy.data import MTU, ETH_P_ARP
+        import os, re, sys, socket, time, itertools
+    WINDOWS = True
     conf.verb = 0
     conf.nofilter = 1
+
+
+def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
+            scan_cmd, stealth_flag):
+    try:
+        if socks_proxy is not None:
+            socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+            socks_proxy = socks_proxy.rsplit('://')[1]
+            if '@' in socks_proxy:
+                socks_username = socks_proxy.rsplit(':')[0]
+                socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
+                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
+                                        int(socks_proxy.rsplit(':')[-1]), username=socks_username,
+                                        password=socks_password)
+                socket.socket = socks.socksocket
+                socket.getaddrinfo = getaddrinfo
+            else:
+                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+                socket.socket = socks.socksocket
+        src_port = RandShort()
+
+        stealth_scan_resp = sr1(IP(dst=host) / TCP(sport=src_port, dport=port, flags="S"), timeout=int(timeout_sec))
+        if (str(type(stealth_scan_resp)) == "<type 'NoneType'>"):
+            # "Filtered"
+            pass
+        elif (stealth_scan_resp.haslayer(TCP)):
+            if (stealth_scan_resp.getlayer(TCP).flags == 0x12):
+                # send_rst = sr(IP(dst=host) / TCP(sport=src_port, dport=port, flags="R"), timeout=timeout_sec)
+                info(messages(language, 80).format(host, port, "STEALTH"))
+                data = json.dumps(
+                    {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
+                     'DESCRIPTION': messages(language, 79).format(port, "STEALTH"), 'TIME': now(),
+                     'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                     'SCAN_CMD': scan_cmd}) + '\n'
+                __log_into_file(log_in_file, 'a', data, language)
+                __log_into_file(thread_tmp_filename, 'w', '0', language)
+            elif (stealth_scan_resp.getlayer(TCP).flags == 0x14):
+                # "Closed"
+                pass
+        elif (stealth_scan_resp.haslayer(ICMP)):
+            if (int(stealth_scan_resp.getlayer(ICMP).type) == 3
+                    and int(stealth_scan_resp.getlayer(ICMP).code) in [1, 2, 3, 9, 10, 13]):
+                # "Filtered"
+                pass
+        else:
+            # "CHECK"
+            pass
+        return True
+    except:
+        return False
 
 
 def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
@@ -135,49 +194,19 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if timeout_sec is not None:
             s.settimeout(timeout_sec)
-        try:
-            if target_type(host) == "SINGLE_IPv6":
-                s.connect((host, port, 0, 0))
-            else:
-                s.connect((host, port))
-            info(messages(language, 80).format(host, port, "TCP_CONNECT"))
-            data = json.dumps(
-                {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-                 'DESCRIPTION': messages(language, 79).format(port, "TCP_CONNECT"), 'TIME': now(), 'CATEGORY': "scan",
-                 'SCAN_ID': scan_id,
-                 'SCAN_CMD': scan_cmd}) + '\n'
-            __log_into_file(log_in_file, 'a', data, language)
-            __log_into_file(thread_tmp_filename, 'w', '0', language)
-            s.close()
-        except:
-            if stealth_flag:
-                src_port = RandShort()
-                stealth_scan_resp = sr1(IP(dst=host) / TCP(sport=src_port, dport=port, flags="S"), timeout=timeout_sec)
-                if (str(type(stealth_scan_resp)) == "<type 'NoneType'>"):
-                    # "Filtered"
-                    pass
-                elif (stealth_scan_resp.haslayer(TCP)):
-                    if (stealth_scan_resp.getlayer(TCP).flags == 0x12):
-                        # send_rst = sr(IP(dst=host) / TCP(sport=src_port, dport=port, flags="R"), timeout=timeout_sec)
-                        info(messages(language, 80).format(host, port, "STEALTH"))
-                        data = json.dumps(
-                            {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-                             'DESCRIPTION': messages(language, 79).format(port, "STEALTH"), 'TIME': now(),
-                             'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                             'SCAN_CMD': scan_cmd}) + '\n'
-                        __log_into_file(log_in_file, 'a', data, language)
-                        __log_into_file(thread_tmp_filename, 'w', '0', language)
-                    elif (stealth_scan_resp.getlayer(TCP).flags == 0x14):
-                        # "Closed"
-                        pass
-                elif (stealth_scan_resp.haslayer(ICMP)):
-                    if (int(stealth_scan_resp.getlayer(ICMP).type) == 3
-                            and int(stealth_scan_resp.getlayer(ICMP).code) in [1, 2, 3, 9, 10, 13]):
-                        # "Filtered"
-                        pass
-                else:
-                    # "CHECK"
-                    pass
+        if target_type(host) == "SINGLE_IPv6":
+            s.connect((host, port, 0, 0))
+        else:
+            s.connect((host, port))
+        info(messages(language, 80).format(host, port, "TCP_CONNECT"))
+        data = json.dumps(
+            {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
+             'DESCRIPTION': messages(language, 79).format(port, "TCP_CONNECT"), 'TIME': now(), 'CATEGORY': "scan",
+             'SCAN_ID': scan_id,
+             'SCAN_CMD': scan_cmd}) + '\n'
+        __log_into_file(log_in_file, 'a', data, language)
+        __log_into_file(thread_tmp_filename, 'w', '0', language)
+        s.close()
         return True
     except:
         return False
@@ -210,7 +239,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         __log_into_file(thread_tmp_filename, 'w', '1', language)
         trying = 0
         for port in ports:
-            t = threading.Thread(target=connect,
+            t = threading.Thread(target=stealth if stealth_flag else connect,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd, stealth_flag))
             threads.append(t)
