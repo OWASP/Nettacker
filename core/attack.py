@@ -24,6 +24,85 @@ from lib.socks_resolver.engine import getaddrinfo
 from core.alert import warn
 
 
+def multi_thread_open(targets, scan_method, total_targets, users, passwds, timeout_sec, thread_number, ports,
+                      log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args,
+                      scan_id, scan_cmd, thread_number_host):
+    trying = 0
+    threading.local()
+    for target in targets:
+        for sm in scan_method:
+            trying += 1
+            threading.Thread(target=start_attack, args=(
+                str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
+                ports, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args,
+                scan_id, scan_cmd), name=str(target) + "->" + sm).start()
+            while 1:
+                try:
+                    if threading.activeCount() < thread_number_host:
+                        break
+                    time.sleep(0.01)
+                except KeyboardInterrupt:
+                    for t in threading.enumerate():
+                        t._Thread__stop()
+                    return
+    _waiting_for = 0
+    while 1:
+        try:
+            exitflag = True
+            if threading.activeCount() is not 1:
+                exitflag = False
+                _waiting_for += 1
+            if _waiting_for > 3000:
+                _waiting_for = 0
+                info(messages(language, 138).format(", ".join([t.name for t in threading.enumerate()])))
+            time.sleep(0.01)
+            if exitflag:
+                break
+        except KeyboardInterrupt:
+            for t in threading.enumerate():
+                t._Thread__stop()
+            return
+
+
+def multi_process_open(targets, scan_method, total_targets, users, passwds, timeout_sec, thread_number, ports,
+                       log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args,
+                       scan_id, scan_cmd, thread_number_host):
+    trying = 0
+    for target in targets:
+        for sm in scan_method:
+            trying += 1
+            multiprocessing.Process(target=start_attack, args=(
+                str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
+                ports, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args,
+                scan_id, scan_cmd), name=str(target) + "->" + sm).start()
+            while 1:
+                try:
+                    if len(multiprocessing.active_children()) < thread_number_host:
+                        break
+                    time.sleep(0.01)
+                except KeyboardInterrupt:
+                    for process in multiprocessing.active_children():
+                        process.terminate()
+                    break
+    _waiting_for = 0
+    while 1:
+        try:
+            exitflag = True
+            if len(multiprocessing.active_children()) is not 0:
+                exitflag = False
+                _waiting_for += 1
+            if _waiting_for > 3000:
+                _waiting_for = 0
+                info(messages(language, 138).format(", ".join([p.name for p in multiprocessing.active_children()])))
+            time.sleep(0.01)
+            if exitflag:
+                break
+        except KeyboardInterrupt:
+            for process in multiprocessing.active_children():
+                process.terminate()
+            break
+
+
 def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, thread_number, ports, log_in_file,
                  time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args, scan_id, scan_cmd):
     if verbose_level >= 1:
@@ -83,47 +162,16 @@ def __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_
     range_temp = "{}/tmp/ranges_".format(load_file_path()) + suff
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
                        language, verbose_level, retries, socks_proxy, False)
-    trying = 0
     scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
     scan_cmd = messages(language, 158) if api_flag else " ".join(sys.argv)
-    for target in targets:
-        for sm in scan_method:
-            trying += 1
-            p = multiprocessing.Process(target=start_attack, args=(
-                str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
-                ports, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args,
-                scan_id, scan_cmd))
-            p.name = str(target) + "->" + sm
-            p.start()
-            while 1:
-                n = 0
-                processes = multiprocessing.active_children()
-                for process in processes:
-                    if process.is_alive():
-                        n += 1
-                    else:
-                        processes.remove(process)
-                if n >= thread_number_host:
-                    time.sleep(0.01)
-                else:
-                    break
-    _waiting_for = 0
-    while 1:
-        try:
-            exitflag = True
-            if len(multiprocessing.active_children()) is not 0:
-                exitflag = False
-                _waiting_for += 1
-            if _waiting_for > 3000:
-                _waiting_for = 0
-                info(messages(language, 138).format(", ".join([p.name for p in multiprocessing.active_children()])))
-            time.sleep(0.01)
-            if exitflag:
-                break
-        except KeyboardInterrupt:
-            for process in multiprocessing.active_children():
-                process.terminate()
-            break
+    if multi_process_engine:
+        multi_process_open(targets, scan_method, total_targets, users, passwds, timeout_sec, thread_number, ports,
+                           log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, ping_flag,
+                           methods_args, scan_id, scan_cmd, thread_number_host)
+    else:
+        multi_thread_open(targets, scan_method, total_targets, users, passwds, timeout_sec, thread_number, ports,
+                          log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, ping_flag,
+                          methods_args, scan_id, scan_cmd, thread_number_host)
     info(messages(language, 42))
     os.remove(subs_temp)
     os.remove(range_temp)
