@@ -26,7 +26,7 @@ logging.getLogger("scapy.runtime").setLevel(logging.CRITICAL)
 def extra_requirements_dict():
     """
     You must return the default values for your module in case user does not enter anything through the command line or
-     API. if you does not have any default values you must return empty dict "{ }".
+     API. if you does not have any default values you must return empty dict "{}".
     :return: return your default values in dict type. your dict keys must start with your module name. (e.g. "mu_module_
     name_my_key").
     """
