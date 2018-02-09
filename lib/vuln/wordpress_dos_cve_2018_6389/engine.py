@@ -207,6 +207,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if test(url, retries, timeout_sec, user_agent, socks_proxy, verbose_level, trying, total_req, total, num,
                 language, False, log_in_file, scan_id, scan_cmd, thread_tmp_filename) is not 0:
             warn(messages(language, 109).format(url))
+            threads_counter.active_threads[b_target + '->' + 'wordpress_dos_cve_2018_6389_vuln'] -= 1
             return
         info(messages(language, 177).format(target))
         n = 0
@@ -256,6 +257,15 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             try:
                 if threads_counter.active_threads[b_target + '->' + 'wordpress_dos_cve_2018_6389_vuln'] is 0 \
                         or kill_switch is kill_time:
+                    try:
+                        dec = threads_counter.active_threads[target + '->' + 'wordpress_dos_cve_2018_6389_vuln']
+                        threads_counter.active_threads.pop(target + '->' + 'wordpress_dos_cve_2018_6389_vuln')
+                    except:
+                        pass
+                    try:
+                        threads_counter.active_threads[target] -= dec
+                    except:
+                        pass
                     break
             except KeyboardInterrupt:
                 break

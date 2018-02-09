@@ -148,8 +148,6 @@ def stealth(target, host, port, timeout_sec, log_in_file, language, time_sleep, 
     :return: it returns True if port is open otherwise is False.
     """
     try:
-        # inc the thread number
-        threads_counter.active_threads[thread_tmp_filename] += 1
         # set the socks proxy if it's not None
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -199,10 +197,6 @@ def stealth(target, host, port, timeout_sec, log_in_file, language, time_sleep, 
         # dec the thread numbers, using try and pass to prevent the error, if they take more than defined timeout
         # they will be force remove
         try:
-            threads_counter.active_threads[thread_tmp_filename] -= 1
-        except:
-            pass
-        try:
             threads_counter.active_threads[target] -= 1
         except:
             pass
@@ -214,10 +208,6 @@ def stealth(target, host, port, timeout_sec, log_in_file, language, time_sleep, 
     except:
         # dec the thread numbers, using try and pass to prevent the error, if they take more than defined timeout
         # they will be force remove
-        try:
-            threads_counter.active_threads[thread_tmp_filename] -= 1
-        except:
-            pass
         try:
             threads_counter.active_threads[target] -= 1
         except:
@@ -244,8 +234,6 @@ def connect(target, host, port, timeout_sec, log_in_file, language, time_sleep, 
     :return: it returns True if port is open otherwise is False.
     """
     try:
-        # inc the thread number
-        threads_counter.active_threads[thread_tmp_filename] += 1
         # set the socks proxy if it's not None
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -290,10 +278,6 @@ def connect(target, host, port, timeout_sec, log_in_file, language, time_sleep, 
         s.close()
         # dec the thread numbers, using try and pass to prevent the error, if they take more than defined timeout
         # they will be force remove
-        try:
-            threads_counter.active_threads[thread_tmp_filename] -= 1
-        except:
-            pass
         try:
             threads_counter.active_threads[target] -= 1
         except:
@@ -385,9 +369,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1', language)
-        # creating a counter to for thread_tmp_filename. it's useful to know if all threads all dead to finish the
-        # the module faster than defined timeout.
-        threads_counter.active_threads[thread_tmp_filename] = 0
         # trying is a counter of my request, each port scan request counted as one trying request
         # my total request in my module is len(ports)
         trying = 0
@@ -438,13 +419,19 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threads_counter.active_threads[thread_tmp_filename] is 0 or kill_switch is kill_time:
+                if threads_counter.active_threads[target + '->' + 'port_scan'] is 0 or kill_switch is kill_time:
+                    try:
+                        dec = threads_counter.active_threads[target + '->' + 'port_scan']
+                        threads_counter.active_threads.pop(target + '->' + 'port_scan')
+                    except:
+                        pass
+                    try:
+                        threads_counter.active_threads[target] -= dec
+                    except:
+                        pass
                     break
             except KeyboardInterrupt:
                 break
-        # I remove the thread_tmp_filename key to prevent using much space in the dict. the module doesn't need it
-        # anymore and it's not need to be kept anymore.
-        threads_counter.active_threads.pop(thread_tmp_filename)
         # check if port scan found any open port, if it's not and verbose level value is more than 0
         # it's warn user and log it in log_in_file that port_scan was not found anything on this target
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])

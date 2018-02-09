@@ -250,6 +250,15 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             kill_switch += 1
             try:
                 if threads_counter.active_threads[target + '->' + 'ftp_brute'] is 0 or kill_switch is kill_time:
+                    try:
+                        dec = threads_counter.active_threads[target + '->' + 'ftp_brute']
+                        threads_counter.active_threads.pop(target + '->' + 'ftp_brute')
+                    except:
+                        pass
+                    try:
+                        threads_counter.active_threads[target] -= dec
+                    except:
+                        pass
                     break
             except KeyboardInterrupt:
                 break
