@@ -12,8 +12,8 @@ from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
 from core.log import __log_into_file
-from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
+from lib import threads_counter
 
 
 def extra_requirements_dict():
@@ -23,7 +23,10 @@ def extra_requirements_dict():
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
           verbose_level, socks_proxy, retries, methods_args, scan_id,
           scan_cmd):  # Main function
-    if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP' or target_type !='SINGLE_IPv6':
+    if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
+            target) != 'HTTP' or target_type != 'SINGLE_IPv6':
+        threads_counter.active_threads[target] += 1
+        threads_counter.active_threads[target + '->' + 'viewdns_reverse_ip_lookup_scan'] += 1
         # output format
         time.sleep(time_sleep)
         if socks_proxy is not None:
@@ -48,11 +51,15 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                    }
         total_req = 1
         trying = 1
-        info(messages(language, 113).format(trying, total_req, num, total, target, 'viewdns ip lookup'))
+        info(messages(language, 113).format(trying, total_req, num, total, target, 'viewdns_reverse_ip_lookup_scan'))
+        if target_type(target) == 'HTTP':
+            host = target_to_host(target)
+        else:
+            host = target
         n = 0
         while 1:
             try:
-                res = requests.get('http://viewdns.info/reverseip/?host={0}&t=1'.format(target), timeout=timeout_sec,
+                res = requests.get('http://viewdns.info/reverseip/?host={0}&t=1'.format(host), timeout=timeout_sec,
                                    headers=headers, verify=True).text
                 break
             except:
@@ -78,15 +85,24 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             for domain in _values:
                 if verbose_level > 3:
                     info(messages(language, 114).format(domain))
-                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 
-                    'TYPE': 'viewdns_reverse_ip_lookup_scan', 'DESCRIPTION': domain, 
-                    'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
+                data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
+                                   'TYPE': 'viewdns_reverse_ip_lookup_scan', 'DESCRIPTION': domain,
+                                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
                 __log_into_file(log_in_file, 'a', data, language)
         if verbose_level is not 0:
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'viewdns_reverse_ip_lookup_scan', 
-                'DESCRIPTION': messages(language, 114).format(len(_values), ", ".join(_values) if len(
-                    _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 
-                'SCAN_CMD': scan_cmd}) + "\n"
+            data = json.dumps(
+                {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'viewdns_reverse_ip_lookup_scan',
+                 'DESCRIPTION': messages(language, 114).format(len(_values), ", ".join(_values) if len(
+                     _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
+        try:
+            threads_counter.active_threads[target] -= 1
+        except:
+            pass
+        try:
+            threads_counter.active_threads[target + '->' + 'viewdns_reverse_ip_lookup_scan'] -= 1
+        except:
+            pass
     else:
         warn(messages(language, 69).format('viewdns_reverse_ip_lookup_scan', target))

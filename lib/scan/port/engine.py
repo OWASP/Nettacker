@@ -20,6 +20,8 @@ from core.log import __log_into_file
 from core.compatible import is_windows
 from lib import threads_counter
 
+
+#prevent display warnings in console
 logging.getLogger("scapy.runtime").setLevel(logging.CRITICAL)
 
 
