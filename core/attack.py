@@ -31,6 +31,7 @@ def remove_finish_threads():
         time.sleep(0.1)
         from lib import threads_counter
         threads = dict(threads_counter.active_threads)
+        print threads_counter.active_threads, kill_threads
         for t in threads:
             try:
                 if '->' in t and threads_counter.active_threads[t] is 0:
@@ -100,7 +101,6 @@ def multi_thread_open(targets, scan_method, total_targets, users, passwds, timeo
                     ", ".join([t for t in threads_counter.active_threads if '->' in t]))
                 if len(msg) > 70:
                     msg = msg[0:70] + '...'
-                    pass
                 info(msg)
             time.sleep(0.01)
         except KeyboardInterrupt:
