@@ -13,10 +13,10 @@ import re
 import requests
 from core.load_modules import load_file_path
 from core.alert import *
-from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
+from lib import threads_counter
 
 
 def extra_requirements_dict():
@@ -416,7 +416,6 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         t = threading.Thread(target=__netcraft,
                              args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                    socks_proxy, retries, headers, thread_tmp_filename))
-        threads.append(t)
         t.start()
         threads.append(t)
     if extra_requirements['subdomain_scan_use_ptrarchive'][0] == 'True':
@@ -426,7 +425,6 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         t = threading.Thread(target=__ptrarchive,
                              args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                    socks_proxy, retries, headers, thread_tmp_filename))
-        threads.append(t)
         t.start()
         threads.append(t)
     if extra_requirements['subdomain_scan_use_threatcrowd'][0] == 'True':
@@ -437,7 +435,6 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         t = threading.Thread(target=__threatcrowd,
                              args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                    socks_proxy, retries, headers, thread_tmp_filename))
-        threads.append(t)
         t.start()
         threads.append(t)
     if extra_requirements['subdomain_scan_use_virustotal'][0] == 'True':
@@ -447,7 +444,6 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         t = threading.Thread(target=__virustotal,
                              args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                    socks_proxy, retries, headers, thread_tmp_filename))
-        threads.append(t)
         t.start()
         threads.append(t)
     if extra_requirements['subdomain_scan_use_comodo_crt'][0] == 'True':
@@ -457,7 +453,6 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         t = threading.Thread(target=__comodo_crt,
                              args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                    socks_proxy, retries, headers, thread_tmp_filename))
-        threads.append(t)
         t.start()
         threads.append(t)
     if extra_requirements['subdomain_scan_use_dnsdumpster'][0] == 'True':
@@ -468,7 +463,6 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         t = threading.Thread(target=__dnsdumpster,
                              args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                    socks_proxy, retries, headers, thread_tmp_filename))
-        threads.append(t)
         t.start()
         threads.append(t)
     if extra_requirements['subdomain_scan_use_google_dig'][0] == 'True':
@@ -479,7 +473,6 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         t = threading.Thread(target=__google_dig,
                              args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                    socks_proxy, retries, headers, thread_tmp_filename))
-        threads.append(t)
         t.start()
         threads.append(t)
     if extra_requirements['subdomain_scan_use_cert_spotter'][0] == 'True':
@@ -490,7 +483,6 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         t = threading.Thread(target=__cert_spotter,
                              args=(target, timeout_sec, log_in_file, time_sleep, language, verbose_level,
                                    socks_proxy, retries, headers, thread_tmp_filename))
-        threads.append(t)
         t.start()
         threads.append(t)
     # wait for threads
@@ -504,7 +496,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         time.sleep(0.1)
         kill_switch += 1
         try:
-            if threading.activeCount() is 1 or (kill_time is not -1 and kill_switch is kill_time):
+            if len([t for t in threads if t.isAlive()]) is 0 or (kill_time is not -1 and kill_switch is kill_time):
                 break
         except KeyboardInterrupt:
             break
@@ -523,6 +515,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
     from core.targets import target_to_host
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
             target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
+        threads_counter.active_threads[target] += 1
+        threads_counter.active_threads[target + '->' + 'subdomain_scan'] += 1
         # requirements check
         new_extra_requirements = extra_requirements_dict()
         if methods_args is not None:
@@ -531,8 +525,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     new_extra_requirements[extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if target_type(target) == 'HTTP':
-            target = target_to_host(target)
-        subs = __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries,
+            host = target_to_host(target)
+        else:
+            host = target
+        subs = __get_subs(host, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries,
                           num, total, extra_requirements=extra_requirements)
         if len(subs) is 0:
             info(messages(language, 163))
@@ -541,16 +537,18 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             for sub in subs:
                 if verbose_level > 2:
                     info(messages(language, 135).format(sub))
-                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
+                data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
                                    'DESCRIPTION': sub, 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
                                    'SCAN_CMD': scan_cmd}) + "\n"
                 __log_into_file(log_in_file, 'a', data, language)
         if len(subs) is 0 and verbose_level is not 0:
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
+            data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
                                'DESCRIPTION': messages(language, 135).format(len(subs), ', '.join(subs)
                                if len(subs) > 0 else 'None'), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
                                'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
+        threads_counter.active_threads[target] -= 1
+        threads_counter.active_threads[target + '->' + 'subdomain_scan'] -= 1
         return subs
     else:
         warn(messages(language, 69).format('subdomain_scan', target))
