@@ -38,7 +38,6 @@ def remove_finish_threads():
                         if kill_threads[t] is 3:
                             threads_counter.active_threads.pop(t)
                             kill_threads.pop(t)
-                            print t
                         else:
                             kill_threads[t] += 1
                     except:
