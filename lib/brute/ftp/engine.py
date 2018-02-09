@@ -32,8 +32,8 @@ def extra_requirements_dict():
     }
 
 
-def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename,
-          socks_proxy, scan_id, scan_cmd):
+def login(target, user, passwd, host, port, timeout_sec, log_in_file, language, retries, time_sleep,
+          thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     exit = 0
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -56,7 +56,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                 my_ftp = FTP(timeout=timeout_sec)
             else:
                 my_ftp = FTP()
-            my_ftp.connect(target, port)
+            my_ftp.connect(host, port)
             exit = 0
             break
         except:
@@ -84,13 +84,13 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             tmpl = []
             tmp = my_ftp.retrlines('LIST', tmpl.append)
             info(messages(language, 70).format(user, passwd, target, port))
-            data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ftp_brute',
+            data = json.dumps({'HOST': host, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ftp_brute',
                                'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute", "SCAN_ID":
                                    scan_id, "SCAN_CMD": scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
         except:
             info(messages(language, 70).format(user, passwd, target, port) + ' ' + messages(language, 71))
-            data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'FTP',
+            data = json.dumps({'HOST': host, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'FTP',
                                'DESCRIPTION': messages(language, 67), 'TIME': now(), 'CATEGORY': "brute", "SCAN_ID":
                                    scan_id, "SCAN_CMD": scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
@@ -226,7 +226,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 for passwd in passwds:
                     t = threading.Thread(target=login,
                                          args=(
-                                             user, passwd, host, port, timeout_sec, log_in_file, language,
+                                             target, user, passwd, host, port, timeout_sec, log_in_file, language,
                                              retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
                     threads.append(t)
                     t.start()
