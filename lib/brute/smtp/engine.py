@@ -14,10 +14,10 @@ from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
 from core.load_modules import load_file_path
-from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
+from lib import threads_counter
 
 
 def extra_requirements_dict():
@@ -34,8 +34,8 @@ def extra_requirements_dict():
     }
 
 
-def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename,
-          socks_proxy, scan_id, scan_cmd):
+def login(target, user, passwd, host, port, timeout_sec, log_in_file, language, retries, time_sleep,
+          thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     exit = 0
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -55,9 +55,9 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     while 1:
         try:
             if timeout_sec is not None:
-                server = smtplib.SMTP(target, int(port), timeout=timeout_sec)
+                server = smtplib.SMTP(host, int(port), timeout=timeout_sec)
             else:
-                server = smtplib.SMTP(target, int(port))
+                server = smtplib.SMTP(host, int(port))
             server.starttls()
             exit = 0
             break
@@ -65,6 +65,14 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             exit += 1
             if exit is retries:
                 warn(messages(language, 73).format(target, port, user, passwd))
+                try:
+                    threads_counter.active_threads[target] -= 1
+                except:
+                    pass
+                try:
+                    threads_counter.active_threads[target + '->' + 'smtp_brute'] -= 1
+                except:
+                    pass
                 return 1
         time.sleep(time_sleep)
     flag = 1
@@ -84,6 +92,14 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         pass
     try:
         server.quit()
+    except:
+        pass
+    try:
+        threads_counter.active_threads[target] -= 1
+    except:
+        pass
+    try:
+        threads_counter.active_threads[target + '->' + 'smtp_brute'] -= 1
     except:
         pass
     return flag
@@ -115,6 +131,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
             else:
                 server = smtplib.SMTP(target, int(port))
             server.starttls()
+            __log_into_file(ports_tmp_filename, 'a', str(port) + "\n", language)
             server.quit()
             exit = 0
             break
@@ -122,10 +139,6 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
             exit += 1
             if exit is retries:
                 error(messages(language, 74).format(target, port, str(num), str(total)))
-                try:
-                    __log_into_file(ports_tmp_filename, 'a', str(port), language)
-                except:
-                    pass
                 break
         time.sleep(time_sleep)
 
@@ -167,21 +180,15 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         if n:
             break
     _ports = list(set(open(ports_tmp_filename).read().rsplit()))
-    for port in _ports:
-        try:
-            ports.remove(int(port))
-        except:
-            try:
-                ports.remove(port)
-            except:
-                pass
     os.remove(ports_tmp_filename)
-    return ports
+    return _ports
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
           language, verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP':
+        threads_counter.active_threads[target] += 1
+        threads_counter.active_threads[target + '->' + 'smtp_brute'] += 1
         # requirements check
         new_extra_requirements = extra_requirements_dict()
         if methods_args is not None:
@@ -198,9 +205,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if extra_requirements["smtp_brute_split_user_set_pass"][0] not in ["False", "True"]:
             extra_requirements["smtp_brute_split_user_set_pass"][0] = "False"
         if target_type(target) == 'HTTP':
-            target = target_to_host(target)
-        threads = []
-        max = thread_number
+            host = target_to_host(target)
+        else:
+            host = target
         total_req = int(
             len(users) * len(passwds) * len(ports) * len(extra_requirements["smtp_brute_split_user_set_pass_prefix"])) \
             if extra_requirements["smtp_brute_split_user_set_pass"][0] == "False" \
@@ -211,53 +218,52 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1', language)
         __log_into_file(ports_tmp_filename, 'w', '', language)
-        ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
+        ports = test_ports(ports, timeout_sec, host, retries, language, num, total, time_sleep, ports_tmp_filename,
                            thread_number, total_req, verbose_level, socks_proxy)
+        threads_counter.active_threads[target] -= 1
+        threads_counter.active_threads[target + '->' + 'smtp_brute'] -= 1
         trying = 0
         if extra_requirements["smtp_brute_split_user_set_pass"][0] == "False":
             for port in ports:
                 for user in users:
                     for passwd in passwds:
                         t = threading.Thread(target=login, args=(
-                            user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep,
-                            thread_tmp_filename, socks_proxy,
-                            scan_id, scan_cmd))
-                        threads.append(t)
+                            target, user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep,
+                            thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
                         t.start()
                         trying += 1
-                        if verbose_level > 3:
-                            info(messages(language, 72).format(trying, total_req, num, total, target, port,
-                                                               'smtp_brute'))
-                        while 1:
-                            n = 0
-                            for thread in threads:
-                                if thread.isAlive():
-                                    n += 1
-                                else:
-                                    threads.remove(thread)
-                            if n >= max:
-                                time.sleep(0.01)
-                            else:
-                                break
-        else:
-            for port in ports:
-                for user in users:
-                    for prefix in extra_requirements["smtp_brute_split_user_set_pass_prefix"]:
-                        t = threading.Thread(target=login, args=(user, user.rsplit('@')[0] + prefix, target, port,
-                                                                 timeout_sec, log_in_file, language,
-                                                                 retries, time_sleep, thread_tmp_filename))
-                        threads.append(t)
-                        t.start()
-                        trying += 1
+                        threads_counter.active_threads[target] += 1
+                        threads_counter.active_threads[target + '->' + 'smtp_brute'] += 1
                         if verbose_level > 3:
                             info(messages(language, 72).format(trying, total_req, num, total, target, port,
                                                                'smtp_brute'))
                         while 1:
                             try:
-                                if threading.activeCount() >= max:
-                                    time.sleep(0.01)
-                                else:
+                                if threads_counter.active_threads[target] <= thread_number:
                                     break
+                                time.sleep(0.01)
+                            except KeyboardInterrupt:
+                                break
+                                break
+        else:
+            for port in ports:
+                for user in users:
+                    for prefix in extra_requirements["smtp_brute_split_user_set_pass_prefix"]:
+                        t = threading.Thread(target=login, args=(target, user, user.rsplit('@')[0] + prefix, target,
+                                                                 port, timeout_sec, log_in_file, language,
+                                                                 retries, time_sleep, thread_tmp_filename))
+                        t.start()
+                        trying += 1
+                        threads_counter.active_threads[target] += 1
+                        threads_counter.active_threads[target + '->' + 'smtp_brute'] += 1
+                        if verbose_level > 3:
+                            info(messages(language, 72).format(trying, total_req, num, total, target, port,
+                                                               'smtp_brute'))
+                        while 1:
+                            try:
+                                if threads_counter.active_threads[target] <= thread_number:
+                                    break
+                                time.sleep(0.01)
                             except KeyboardInterrupt:
                                 break
                                 break
@@ -269,7 +275,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threads_counter.active_threads[target + '->' + 'smtp_brute'] is 0 or kill_switch is kill_time:
                     break
             except KeyboardInterrupt:
                 break
