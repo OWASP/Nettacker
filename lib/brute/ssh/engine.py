@@ -15,10 +15,10 @@ from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
 from core.load_modules import load_file_path
-from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
+from lib import threads_counter
 
 
 def extra_requirements_dict():
@@ -33,10 +33,9 @@ def extra_requirements_dict():
     }
 
 
-def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep,
+def login(target, user, passwd, host, port, timeout_sec, log_in_file, language, retries, time_sleep,
           thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     exit = 0
-    flag = 1
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.rsplit('://')[1]
@@ -54,7 +53,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             socket.getaddrinfo = getaddrinfo
     while 1:
         try:
-            paramiko.Transport((target, int(port)))
+            paramiko.Transport((host, int(port)))
             paramiko_logger = logging.getLogger("paramiko.transport")
             paramiko_logger.disabled = True
             flag = 0
@@ -63,7 +62,15 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         except:
             exit += 1
             if exit is retries:
-                warn(messages(language, 76).format(target, str(port), user, passwd))
+                warn(messages(language, 76).format(host, str(port), user, passwd))
+                try:
+                    threads_counter.active_threads[target] -= 1
+                except:
+                    pass
+                try:
+                    threads_counter.active_threads[target + '->' + 'ssh_brute'] -= 1
+                except:
+                    pass
                 return 1
         time.sleep(time_sleep)
     if flag is 0:
@@ -71,12 +78,11 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             if timeout_sec is not None:
-                ssh.connect(hostname=target, username=user, password=passwd, port=int(port), timeout=int(timeout_sec))
+                ssh.connect(hostname=host, username=user, password=passwd, port=int(port), timeout=int(timeout_sec))
             else:
-                ssh.connect(hostname=target, username=user, password=passwd, port=int(port))
+                ssh.connect(hostname=host, username=user, password=passwd, port=int(port))
             info(messages(language, 70).format(user, passwd, target, port))
-            save = open(log_in_file, 'a')
-            data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ssh_brute',
+            data = json.dumps({'HOST': host, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ssh_brute',
                                'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute",
                                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
@@ -84,6 +90,14 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         except:
             pass
     else:
+        pass
+    try:
+        threads_counter.active_threads[target] -= 1
+    except:
+        pass
+    try:
+        threads_counter.active_threads[target + '->' + 'ssh_brute'] -= 1
+    except:
         pass
     return flag
 
@@ -121,24 +135,17 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
             break
         except paramiko.ssh_exception.AuthenticationException as ssherr:
             if 'Authentication failed.' in str(ssherr):
+                __log_into_file(ports_tmp_filename, 'a', str(port) + "\n", language)
                 return
             else:
                 exit += 1
                 if exit is retries:
                     error(messages(language, 77).format(target, port, str(num), str(total)))
-                    try:
-                        __log_into_file(ports_tmp_filename, 'a', str(port), language)
-                    except:
-                        pass
                     break
         except:
             exit += 1
             if exit is 3:
                 error(messages(language, 77).format(target, port, str(num), str(total)))
-                try:
-                    __log_into_file(ports_tmp_filename, 'a', str(port), language)
-                except:
-                    pass
                 break
         time.sleep(time_sleep)
 
@@ -171,7 +178,7 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         t.start()
         trying += 1
         if verbose_level is not 0:
-            info(messages(language, 72).format(trying, total_req, num, total, target, port, 'smtp_brute'))
+            info(messages(language, 72).format(trying, total_req, num, total, target, port, 'ssh_brute'))
         while 1:
             n = 0
             for thread in threads:
@@ -192,21 +199,15 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         if n:
             break
     _ports = list(set(open(ports_tmp_filename).read().rsplit()))
-    for port in _ports:
-        try:
-            ports.remove(int(port))
-        except:
-            try:
-                ports.remove(port)
-            except:
-                pass
     os.remove(ports_tmp_filename)
-    return ports
+    return _ports
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
           language, verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) == 'HTTP':
+        threads_counter.active_threads[target] += 1
+        threads_counter.active_threads[target + '->' + 'ssh_brute'] += 1
         # requirements check
         new_extra_requirements = extra_requirements_dict()
         if methods_args is not None:
@@ -221,9 +222,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if ports is None:
             ports = extra_requirements["ssh_brute_ports"]
         if target_type(target) == 'HTTP':
-            target = target_to_host(target)
+            host = target_to_host(target)
+        else:
+            host = target
         threads = []
-        max = thread_number
         total_req = len(users) * len(passwds)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
@@ -232,27 +234,29 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         __log_into_file(thread_tmp_filename, 'w', '1', language)
         __log_into_file(ports_tmp_filename, 'w', '', language)
         trying = 0
-        ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
+        ports = test_ports(ports, timeout_sec, host, retries, language, num, total, time_sleep, ports_tmp_filename,
                            thread_number, total_req, verbose_level, socks_proxy)
+        threads_counter.active_threads[target] -= 1
+        threads_counter.active_threads[target + '->' + 'ssh_brute'] -= 1
         for port in ports:
             # test ssh
-            portflag = True
-            exit = 0
             port = int(port)
             for user in users:
                 for passwd in passwds:
                     t = threading.Thread(target=login,
-                                         args=(user, passwd, target, port, timeout_sec, log_in_file, language,
+                                         args=(target, user, passwd, host, port, timeout_sec, log_in_file, language,
                                                retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
                                                scan_cmd))
                     threads.append(t)
                     t.start()
                     trying += 1
+                    threads_counter.active_threads[target] += 1
+                    threads_counter.active_threads[target + '->' + 'ssh_brute'] += 1
                     if verbose_level > 3:
-                        info(messages(language, 72).format(trying, total_req, num, total, target, port, 'smtp_brute'))
+                        info(messages(language, 72).format(trying, total_req, num, total, target, port, 'ssh_brute'))
                     while 1:
                         try:
-                            if threading.activeCount() >= max:
+                            if threads_counter.active_threads[target] >= thread_number:
                                 time.sleep(0.01)
                             else:
                                 break
@@ -266,7 +270,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threads_counter.active_threads[target + '->' + 'ssh_brute'] is 0 or kill_switch is kill_time:
                     break
             except KeyboardInterrupt:
                 break
