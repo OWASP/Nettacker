@@ -19,11 +19,11 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 from core._die import __die_failure
+from lib import threads_counter
 
 
 def extra_requirements_dict():
     return {
-        "dir_scan_ports": ["80"],
         "dir_scan_http_method": ["GET"],
         "dir_scan_random_agent": ["True"],
         "dir_scan_list": ["~adm", "~admin", "~administrator", "~amanda", "~apache", "~bin", "~ftp", "~guest", "~http",
@@ -41,7 +41,7 @@ def extra_requirements_dict():
     }
 
 
-def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
+def check(target, idir, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
           http_method, socks_proxy, scan_id, scan_cmd):
     status_codes = [200, 401, 403]
     directory_listing_msgs = ["<title>Index of /", "<a href=\"\\?C=N;O=D\">Name</a>", "Directory Listing for",
@@ -65,48 +65,65 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
         n = 0
+        url = '{0}/{1}'.format(target, idir)
         while 1:
             try:
                 if http_method == "GET":
-                    r = requests.get(target, timeout=timeout_sec, headers=user_agent)
+                    r = requests.get(url, timeout=timeout_sec, headers=user_agent)
                 elif http_method == "HEAD":
-                    r = requests.head(target, timeout=timeout_sec, headers=user_agent)
+                    r = requests.head(url, timeout=timeout_sec, headers=user_agent)
                 content = r.content
                 break
             except:
                 n += 1
                 if n is retries:
-                    warn(messages(language, 106).format(target))
+                    warn(messages(language, 106).format(url))
                     return 1
         if version() is 3:
             content = content.decode('utf8')
         if r.status_code in status_codes:
-            info(messages(language, 38).format(target, r.status_code, r.reason))
+            info(messages(language, 38).format(url, r.status_code, r.reason))
             __log_into_file(thread_tmp_filename, 'w', '0', language)
-            data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 
-                'PORT': int(target.rsplit(':')[2].rsplit('/')[0]), 'TYPE': 'dir_scan', 
-                'DESCRIPTION': messages(language, 38).format(target, r.status_code, r.reason), 
-                'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            data = json.dumps({'HOST': target_to_host(url), 'USERNAME': '', 'PASSWORD': '',
+                               'PORT': "", 'TYPE': 'dir_scan',
+                               'DESCRIPTION': messages(language, 38).format(url, r.status_code, r.reason),
+                               'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
             if r.status_code is 200:
                 for dlmsg in directory_listing_msgs:
                     if dlmsg in content:
-                        info(messages(language, 104).format(target))
-                        data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 
-                            'PORT': int(target.rsplit(':')[1].rsplit('/')[0]), 'TYPE': 'dir_scan', 
-                            'DESCRIPTION': messages(language, 104).format(target), 'TIME': now(), 
-                            'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                        info(messages(language, 104).format(url))
+                        data = json.dumps({'HOST': target_to_host(url), 'USERNAME': '', 'PASSWORD': '',
+                                           'PORT': "", 'TYPE': 'dir_scan',
+                                           'DESCRIPTION': messages(language, 104).format(url), 'TIME': now(),
+                                           'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
                         __log_into_file(log_in_file, 'a', data, language)
                         break
+        try:
+            threads_counter.active_threads[target] -= 1
+        except:
+            pass
+        try:
+            threads_counter.active_threads[target + '->' + 'dir_scan'] -= 1
+        except:
+            pass
         return True
     except:
+        try:
+            threads_counter.active_threads[target] -= 1
+        except:
+            pass
+        try:
+            threads_counter.active_threads[target + '->' + 'dir_scan'] -= 1
+        except:
+            pass
         return False
 
 
 def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, verbose_level, trying, total_req, total,
-         num, port, language):
+         num, language):
     if verbose_level > 3:
-        info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port,
+        info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), "default_port",
                                            'dir_scan'))
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -139,7 +156,10 @@ def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, ver
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
           verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
-    if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
+    if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
+            target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
+        threads_counter.active_threads[target] += 1
+        threads_counter.active_threads[target + '->' + 'dir_scan'] += 1
         # rand useragent
         user_agent_list = [
             "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
@@ -172,66 +192,48 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if extra_requirements["dir_scan_http_method"][0] not in http_methods:
             warn(messages(language, 110))
             extra_requirements["dir_scan_http_method"] = ["GET"]
-        if ports is None:
-            ports = extra_requirements["dir_scan_ports"]
         random_agent_flag = True
         if extra_requirements["dir_scan_random_agent"][0] == "False":
             random_agent_flag = False
         threads = []
-        max = thread_number
-        total_req = len(extra_requirements["dir_scan_list"]) * len(ports)
+        total_req = len(extra_requirements["dir_scan_list"])
         filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1', language)
         trying = 0
-        for port in ports:
-            port = int(port)
-            if target_type(target) == 'SINGLE_IPv4' or target_type(target) == 'DOMAIN':
-                url = 'http://{0}:{1}/'.format(target, str(port))
-            else:
-                if target.count(':') > 1:
-                    __die_failure(messages(language, 105))
-                http = target.rsplit('://')[0]
-                host = target_to_host(target)
-                path = "/".join(target.replace('http://', '').replace('https://', '').rsplit('/')[1:])
-                url = http + '://' + host + ':' + str(port) + '/' + path
-            if test(url, retries, timeout_sec, user_agent, extra_requirements["dir_scan_http_method"][0],
-                    socks_proxy, verbose_level, trying, total_req, total, num, port, language) is 0:
-                for idir in extra_requirements["dir_scan_list"]:
-                    # check target type
-                    if target_type(target) == 'SINGLE_IPv4' or target_type(target) == 'DOMAIN':
-                        url = 'http://{0}:{1}/{2}'.format(target, str(port), idir)
-                    else:
-                        http = target.rsplit('://')[0]
-                        host = target_to_host(target)
-                        path = "/".join(target.replace('http://', '').replace('https://', '').rsplit('/')[1:])
-                        url = http + '://' + host + ':' + str(port) + '/' + path + '/' + idir
-
-                    if random_agent_flag:
-                        user_agent = {'User-agent': random.choice(user_agent_list)}
-                    t = threading.Thread(target=check,
-                                         args=(url, user_agent, timeout_sec, log_in_file, language, time_sleep,
-                                               thread_tmp_filename, retries,
-                                               extra_requirements["dir_scan_http_method"][0], socks_proxy, scan_id,
-                                               scan_cmd))
-                    threads.append(t)
-                    t.start()
-                    trying += 1
-                    if verbose_level > 3:
-                        info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port,
-                                                           'dir_scan'))
-                    while 1:
-                        try:
-                            if threading.activeCount() >= max:
-                                time.sleep(0.01)
-                            else:
-                                break
-                        except KeyboardInterrupt:
+        if test(target, retries, timeout_sec, user_agent, extra_requirements["dir_scan_http_method"][0],
+                socks_proxy, verbose_level, trying, total_req, total, num, language) is 0:
+            for idir in extra_requirements["dir_scan_list"]:
+                if random_agent_flag:
+                    user_agent = {'User-agent': random.choice(user_agent_list)}
+                t = threading.Thread(target=check,
+                                     args=(target, idir, user_agent, timeout_sec, log_in_file, language, time_sleep,
+                                           thread_tmp_filename, retries, extra_requirements["dir_scan_http_method"][0],
+                                           socks_proxy, scan_id, scan_cmd))
+                threads.append(t)
+                t.start()
+                trying += 1
+                if trying is not 1:
+                    threads_counter.active_threads[target] += 1
+                    threads_counter.active_threads[target + '->' + 'dir_scan'] += 1
+                if verbose_level > 3:
+                    info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target),
+                                                       "default_port",
+                                                       'dir_scan'))
+                while 1:
+                    try:
+                        if threads_counter.active_threads[target] >= thread_number:
+                            time.sleep(0.01)
+                        else:
                             break
-                            break
-            else:
-                warn(messages(language, 109).format(url))
+                    except KeyboardInterrupt:
+                        break
+                        break
+        else:
+            threads_counter.active_threads[target] -= 1
+            threads_counter.active_threads[target + '->' + 'dir_scan'] -= 1
+            warn(messages(language, 109).format(target))
 
         # wait for threads
         kill_switch = 0
@@ -240,17 +242,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threads_counter.active_threads[target + '->' + 'dir_scan'] is 0 or kill_switch is kill_time:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1:
-            info(messages(language, 108).format(target, ",".join(map(str, ports))))
+            info(messages(language, 108).format(target, "default_port"))
             if verbose_level is not 0:
-                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'dir_scan', 
-                    'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan", 
-                    'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
+                                   'TYPE': 'dir_scan', 'DESCRIPTION': messages(language, 94), 'TIME': now(),
+                                   'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
                 __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
     else:
