@@ -218,9 +218,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         trying = 0
         ports = test_ports(ports, timeout_sec, host, retries, language, num, total, time_sleep,
                            ports_tmp_filename, thread_number, total_req, verbose_level, socks_proxy)
-        if len(ports) is 0:
-            threads_counter.active_threads[target] -= 1
-            threads_counter.active_threads[target + '->' + 'ftp_brute'] -= 1
+        threads_counter.active_threads[target] -= 1
+        threads_counter.active_threads[target + '->' + 'ftp_brute'] -= 1
         for port in ports:
             for user in users:
                 for passwd in passwds:
