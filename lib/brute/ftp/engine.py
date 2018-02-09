@@ -236,10 +236,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         info(messages(language, 72).format(trying, total_req, num, total, target, port, 'ftp_brute'))
                     while 1:
                         try:
-                            if threads_counter.active_threads[target] >= thread_number:
-                                time.sleep(0.01)
-                            else:
+                            if threads_counter.active_threads[target] <= thread_number:
                                 break
+                            time.sleep(0.01)
                         except KeyboardInterrupt:
                             break
                             break
