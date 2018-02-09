@@ -31,7 +31,6 @@ def remove_finish_threads():
         time.sleep(0.1)
         from lib import threads_counter
         threads = dict(threads_counter.active_threads)
-        print threads_counter.active_threads, kill_threads
         for t in threads:
             try:
                 if '->' in t and threads_counter.active_threads[t] is 0:
@@ -95,12 +94,20 @@ def multi_thread_open(targets, scan_method, total_targets, users, passwds, timeo
                 except:
                     pass
                 return
+            if len([t for t in threads_counter.active_threads if '->' in t]) is 0:
+                for t in threading.enumerate():
+                    t._Thread__stop()
+                return
             if _waiting_for > 3000:
                 _waiting_for = 0
                 msg = messages(language, 138).format(
                     ", ".join([t for t in threads_counter.active_threads if '->' in t]))
                 if len(msg) > 70:
                     msg = msg[0:70] + '...'
+                if len([t for t in threads_counter.active_threads if '->' in t]) is 0:
+                    for t in threading.enumerate():
+                        t._Thread__stop()
+                    return
                 info(msg)
             time.sleep(0.01)
         except KeyboardInterrupt:
@@ -112,37 +119,44 @@ def multi_thread_open(targets, scan_method, total_targets, users, passwds, timeo
 def multi_process_open(targets, scan_method, total_targets, users, passwds, timeout_sec, thread_number, ports,
                        log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args,
                        scan_id, scan_cmd, thread_number_host):
-    trying = 0
-    for target in targets:
-        for sm in scan_method:
-            trying += 1
-            multiprocessing.Process(target=start_attack, args=(
-                str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
-                ports, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args,
-                scan_id, scan_cmd), name=str(target) + "->" + sm).start()
-            while 1:
-                try:
-                    if len(multiprocessing.active_children()) < thread_number_host:
-                        break
-                    time.sleep(0.01)
-                except KeyboardInterrupt:
-                    for process in multiprocessing.active_children():
-                        process.terminate()
-                    break
-    _waiting_for = 0
-    while 1:
-        try:
-            _waiting_for += 1
-            if len(multiprocessing.active_children()) is 0:
-                break
-            if _waiting_for > 3000:
-                _waiting_for = 0
-                info(messages(language, 138).format(", ".join([p.name for p in multiprocessing.active_children()])))
-            time.sleep(0.01)
-        except KeyboardInterrupt:
-            for process in multiprocessing.active_children():
-                process.terminate()
-            break
+    multi_thread_open(targets, scan_method, total_targets, users, passwds, timeout_sec, thread_number, ports,
+                      log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args,
+                      scan_id, scan_cmd, thread_number_host)
+    # trying = 0
+    # for target in targets:
+    #     for sm in scan_method:
+    #         try:
+    #             threads_counter.active_threads[target + '->' + sm]
+    #         except:
+    #             threads_counter.active_threads[target + '->' + sm] = 0
+    #         trying += 1
+    #         multiprocessing.Process(target=start_attack, args=(
+    #            str(target).rsplit()[0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
+    #            ports, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args,
+    #            scan_id, scan_cmd), name=str(target) + "->" + sm).start()
+    #         while 1:
+    #             try:
+    #                 if len(multiprocessing.active_children()) < thread_number_host:
+    #                     break
+    #                 time.sleep(0.01)
+    #             except KeyboardInterrupt:
+    #                 for process in multiprocessing.active_children():
+    #                     process.terminate()
+    #                 break
+    # _waiting_for = 0
+    # while 1:
+    #     try:
+    #         _waiting_for += 1
+    #         if len(multiprocessing.active_children()) is 0:
+    #             break
+    #         if _waiting_for > 3000:
+    #             _waiting_for = 0
+    #             info(messages(language, 138).format(", ".join([p.name for p in multiprocessing.active_children()])))
+    #         time.sleep(0.01)
+    #     except KeyboardInterrupt:
+    #         for process in multiprocessing.active_children():
+    #             process.terminate()
+    #         break
 
 
 def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, thread_number, ports, log_in_file,
