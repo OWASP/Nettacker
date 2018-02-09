@@ -24,6 +24,12 @@ logging.getLogger("scapy.runtime").setLevel(logging.CRITICAL)
 
 
 def extra_requirements_dict():
+    """
+    You must return the default values for your module in case user does not enter anything through the command line or
+     API. if you does not have any default values you must return empty dict "{ }".
+    :return: return your default values in dict type. your dict keys must start with your module name. (e.g. "mu_module_
+    name_my_key").
+    """
     return {  # 1000 common ports used by nmap scanner
         "port_scan_stealth": ["False"],
         "port_scan_ports": [1, 3, 4, 6, 7, 9, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32, 33, 37, 42,
@@ -107,21 +113,37 @@ def extra_requirements_dict():
 
 
 if "--method-args" in sys.argv and "port_scan_stealth=true" in " ".join(sys.argv).lower():
+    # probably importing scapy take 1 sec time to import, and it could not be import in module level
+    # for now we use this simple trick and we need fix it later.
     from scapy.all import *
 
-    if is_windows():  # fix later
+    if is_windows():
+        # scapy in windows needs something more to prevent the errors.
+        # so we'd import them.
         from scapy.base_classes import Gen, SetGen
         import scapy.plist as plist
         from scapy.utils import PcapReader
         from scapy.data import MTU, ETH_P_ARP
         import os, re, sys, socket, time, itertools
-    WINDOWS = True
+        WINDOWS = True
     conf.verb = 0
     conf.nofilter = 1
 
 
 def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
             scan_cmd, stealth_flag):
+    """
+    connect() is STEALTH (Syn/ACK) scan mode function. it saves the open ports in log_in_data filename with defined
+    structure. socks_proxy, timeout_sec and other variables are applied too.
+    defined structure:
+    data = json.dumps(
+                    {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
+                     'DESCRIPTION': messages(language, 79).format(port, "STEALTH"), 'TIME': now(),
+                     'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                     'SCAN_CMD': scan_cmd}) + '\n'
+
+    :return: it returns True if port is open otherwise is False.
+    """
     try:
         threads_counter.active_threads[thread_tmp_filename] += 1
         if socks_proxy is not None:
@@ -175,6 +197,18 @@ def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
 
 def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
             scan_cmd, stealth_flag):
+    """
+    connect() is TCP_Connect scan mode function. it saves the open ports in log_in_data filename with defined structure.
+     socks_proxy, timeout_sec and other variables are applied too.
+    defined structure:
+    data = json.dumps(
+            {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
+             'DESCRIPTION': messages(language, 79).format(port, "TCP_CONNECT"), 'TIME': now(), 'CATEGORY': "scan",
+             'SCAN_ID': scan_id,
+             'SCAN_CMD': scan_cmd}) + '\n'
+
+    :return: it returns True if port is open otherwise is False.
+    """
     try:
         threads_counter.active_threads[thread_tmp_filename] += 1
         if socks_proxy is not None:
@@ -225,7 +259,33 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
-          verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
+          verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):
+    """
+    start is the entry function for every module in all categories.
+    :param target: contains the target with one of SINGLE_IPv4, DOMAIN, HTTP, SINGLE_IPv6 type.
+    :param users: contains usernames in an array if user define it through the API or command line. otherwise it's None
+     and if you need it you must call for your default values on extra_requirements_dict() in your module.
+    :param passwds: contains passwords in an array if user define it through the API or command line. otherwise it's None
+     and if you need it you must call for your default values on extra_requirements_dict() in your module.
+    :param ports: contains passwords in an array or generator if user define it through the API or command line.
+     otherwise it's None and if you need it you must call for your default values on extra_requirements_dict()
+     in your module.
+    :param timeout_sec: timeout value in float type.
+    :param thread_number: maximum thread number in int type.
+    :param num: number of your process in int type.
+    :param total: number of total existing process in int type.
+    :param log_in_file: the filename for log the data in str type.
+    :param time_sleep: time_sleep value between each connection in float type. the default value is set to "0.0".
+    :param language: language value in str type. (e.g. "en", "fa", "ru" ...) you can use it in messages() function.
+    :param verbose_level: value of verbose level in int type.
+    :param socks_proxy: socks_proxy value in str type. the default value is None.
+    :param retries: number of retries if connection goes timeout in int type.
+    :param methods_args: values of method_args in dict type. you must replace your values extra_requirements_dict()
+     with methods_args values. the default value is None.
+    :param scan_id: your scan hash id in str type.
+    :param scan_cmd: your scan command line in str type. in case user using API it's contains "run through the API" in str.
+    :return: None.
+    """
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
             target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
         threads_counter.active_threads[target] += 1
