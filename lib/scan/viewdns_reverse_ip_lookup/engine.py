@@ -96,13 +96,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                      _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
                  'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
-        try:
-            threads_counter.active_threads[target] -= 1
-        except:
-            pass
-        try:
-            threads_counter.active_threads[target + '->' + 'viewdns_reverse_ip_lookup_scan'] -= 1
-        except:
-            pass
+        threads_counter.active_threads[target] -= 1
+        threads_counter.active_threads[target + '->' + 'viewdns_reverse_ip_lookup_scan'] -= 1
     else:
         warn(messages(language, 69).format('viewdns_reverse_ip_lookup_scan', target))
