@@ -211,10 +211,16 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         __log_into_file(log_in_file, 'a', data, language)
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         s.close()
-        threads_counter.active_threads[thread_tmp_filename] -= 1
+        try:
+            threads_counter.active_threads[thread_tmp_filename] -= 1
+        except:
+            pass
         return True
     except:
-        threads_counter.active_threads[thread_tmp_filename] -= 1
+        try:
+            threads_counter.active_threads[thread_tmp_filename] -= 1
+        except:
+            pass
         return False
 
 
@@ -222,8 +228,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
           verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
             target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
-        global active_threads
-        active_threads = 0
+        threads_counter.active_threads[target] += 1
+        threads_counter.active_threads[target + '->' + 'port_scan'] += 1
         # requirements check
         new_extra_requirements = extra_requirements_dict()
         if methods_args is not None:
@@ -277,6 +283,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     break
             except KeyboardInterrupt:
                 break
+
         threads_counter.active_threads.pop(thread_tmp_filename)
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
@@ -286,6 +293,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                  'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
-
+        threads_counter.active_threads[target] -= 1
+        threads_counter.active_threads[target + '->' + 'port_scan'] -= 1
     else:
         warn(messages(language, 69).format('port_scan', target))
