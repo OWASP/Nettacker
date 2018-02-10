@@ -170,7 +170,7 @@ def all_messages():
             "154": "API port must be an integer!",
             "155": "unknown input type, accepted types are SINGLE_IPv4, RANGE_IPv4, CIDR_IPv4",
             "156": " * API Key: {0}\n",
-            "157": "ports must be integers! (e.g. 80 || 80,1080 || 80,1080-1300,9000,12000-15000",
+            "157": "ports must be integers! (e.g. 80 || 80,1080 || 80,1080-1300,9000,12000-15000)",
             "158": "Through the OWASP Nettacker API",
             "159": "please read documentations https://github.com/viraintel/OWASP-Nettacker/wiki",  # remove
             "160": "invalid API key",
@@ -190,7 +190,6 @@ def all_messages():
             "174": "not any phpmyadmin dir found!",
             "175": "cannot access the file/directory! ({0})",
             "176": "\"{0}\" mode not in list {1}, TCP selected!",
-            "177": "sending DoS packets to {0}",
-            "178": "use multi process engine"
+            "177": "sending DoS packets to {0}"
 
         }

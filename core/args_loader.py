@@ -150,8 +150,6 @@ def load_all_args(module_names, graph_names):
     method.add_argument("-M", "--thread-hostscan", action="store",
                         default=default_config["thread_number_host"], type=int,
                         dest="thread_number_host", help=messages(language, 10))
-    method.add_argument("--multi-process", action="store_true", dest="multi_process_engine",
-                        default=default_config["multi_process_engine"], help=messages(language, 178))
     method.add_argument("-R", "--socks-proxy", action="store",
                         dest="socks_proxy", default=default_config["socks_proxy"],
                         help=messages(language, 62))
