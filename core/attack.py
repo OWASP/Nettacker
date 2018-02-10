@@ -63,7 +63,7 @@ def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, t
 
 def __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_sleep, language, verbose_level, retries,
                      socks_proxy, users, passwds, timeout_sec, thread_number, ports, ping_flag, methods_args,
-                     multi_process_engine, backup_ports, scan_method, thread_number_host, graph_flag, profile,
+                     backup_ports, scan_method, thread_number_host, graph_flag, profile,
                      api_flag):
     suff = now(model="%Y_%m_%d_%H_%M_%S") + "".join(random.choice(string.ascii_lowercase) for x in
                                                     range(10))

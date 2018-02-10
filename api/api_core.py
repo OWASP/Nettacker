@@ -210,9 +210,6 @@ def __rules(config, defaults, language):
     config["graph_flag"] = config["graph_flag"] if config["graph_flag"] in load_all_graphs() else None
     # Check Language
     config["language"] = config["language"] if config["language"] in [lang for lang in messages(-1, 0)] else "en"
-    # multi processing
-    config["multi_process_engine"] = True if config["multi_process_engine"] is True else True if str(
-        config["multi_process_engine"]).lower() == "true" else False
     # Check Targets
     if config["targets"] is not None:
         config["targets"] = list(set(config["targets"].rsplit(",")))

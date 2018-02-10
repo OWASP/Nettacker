@@ -91,8 +91,7 @@ def _core_default_config():
         "api_db_name": _api_default_config()["api_db_name"],
         "home_path": default_paths()["home_path"],
         "tmp_path": default_paths()["tmp_path"],
-        "results_path": default_paths()["results_path"],
-        "multi_process_engine": False
+        "results_path": default_paths()["results_path"]
     }
 
 

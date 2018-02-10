@@ -67,7 +67,6 @@ def load():
     api_client_white_list_ips = options.api_client_white_list_ips
     api_access_log = options.api_access_log
     api_access_log_filename = options.api_access_log_filename
-    multi_process_engine = options.multi_process_engine
     backup_ports = ports
 
     # Checking Requirements
@@ -95,4 +94,4 @@ def load():
     info(messages(language, 96).format(len(load_all_modules()) - 1 + len(load_all_graphs())))
     __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_sleep, language, verbose_level, retries,
                      socks_proxy, users, passwds, timeout_sec, thread_number, ports, ping_flag, methods_args,
-                     multi_process_engine, backup_ports, scan_method, thread_number_host, graph_flag, profile, False)
+                     backup_ports, scan_method, thread_number_host, graph_flag, profile, False)
