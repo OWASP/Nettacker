@@ -200,7 +200,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
-        max = thread_number
         total_req = int(
             len(users) * len(passwds) * len(ports) * len(extra_requirements["smtp_brute_split_user_set_pass_prefix"])) \
             if extra_requirements["smtp_brute_split_user_set_pass"][0] == "False" \
@@ -235,7 +234,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                                     n += 1
                                 else:
                                     threads.remove(thread)
-                            if n >= max:
+                            if n >= thread_number:
                                 time.sleep(0.01)
                             else:
                                 break
@@ -254,7 +253,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                                                                'smtp_brute'))
                         while 1:
                             try:
-                                if threading.activeCount() >= max:
+                                if threading.activeCount() >= thread_number:
                                     time.sleep(0.01)
                                 else:
                                     break

@@ -178,7 +178,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if extra_requirements["pma_scan_random_agent"][0] == "False":
             random_agent_flag = False
         threads = []
-        max = thread_number
         total_req = len(extra_requirements["pma_scan_list"])
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
@@ -204,7 +203,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                                                        "default_port", 'pma_scan'))
                 while 1:
                     try:
-                        if threading.activeCount() >= max:
+                        if threading.activeCount() >= thread_number:
                             time.sleep(0.01)
                         else:
                             break

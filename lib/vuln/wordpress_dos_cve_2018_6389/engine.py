@@ -170,7 +170,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if extra_requirements["wordpress_dos_cve_2018_6389_vuln_no_limit"][0] != "False":
             limit = -1
         threads = []
-        max = thread_number
         total_req = limit
         filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
@@ -219,7 +218,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 pass
             while 1:
                 try:
-                    if threading.activeCount() >= max:
+                    if threading.activeCount() >= thread_number:
                         time.sleep(0.01)
                     else:
                         break

@@ -231,7 +231,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
-        max = thread_number
         total_req = len(ports)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
@@ -250,7 +249,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     messages(language, 72).format(trying, total_req, num, total, target, port, 'port_scan'))
             while 1:
                 try:
-                    if threading.activeCount() >= max:
+                    if threading.activeCount() >= thread_number:
                         time.sleep(0.01)
                     else:
                         break
