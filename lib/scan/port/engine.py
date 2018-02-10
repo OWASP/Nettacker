@@ -18,20 +18,11 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 from core.compatible import is_windows
-from lib import threads_counter
 
-
-#prevent display warnings in console
 logging.getLogger("scapy.runtime").setLevel(logging.CRITICAL)
 
 
 def extra_requirements_dict():
-    """
-    You must return the default values for your module in case user does not enter anything through the command line or
-     API. if you does not have any default values you must return empty dict "{}".
-    :return: return your default values in dict type. your dict keys must start with your module name. (e.g. "mu_module_
-    name_my_key").
-    """
     return {  # 1000 common ports used by nmap scanner
         "port_scan_stealth": ["False"],
         "port_scan_ports": [1, 3, 4, 6, 7, 9, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32, 33, 37, 42,
@@ -115,44 +106,25 @@ def extra_requirements_dict():
 
 
 if "--method-args" in sys.argv and "port_scan_stealth=true" in " ".join(sys.argv).lower():
-    # probably importing scapy take 1 sec time to import, and it could not be import in module level
-    # for now we use this simple trick and we need fix it later.
     from scapy.all import *
 
-    if is_windows():
-        # scapy in windows needs something more to prevent the errors.
-        # so we'd import them.
+    if is_windows():  # fix later
         from scapy.base_classes import Gen, SetGen
         import scapy.plist as plist
         from scapy.utils import PcapReader
         from scapy.data import MTU, ETH_P_ARP
         import os, re, sys, socket, time, itertools
-
-        WINDOWS = True
+    WINDOWS = True
     conf.verb = 0
     conf.nofilter = 1
 
 
-def stealth(target, host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy,
-            scan_id, scan_cmd, stealth_flag):
-    """
-    connect() is STEALTH (Syn/ACK) scan mode function. it saves the open ports in log_in_data filename with defined
-    structure. socks_proxy, timeout_sec and other variables are applied too.
-    defined structure:
-    data = json.dumps(
-                    {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-                     'DESCRIPTION': messages(language, 79).format(port, "STEALTH"), 'TIME': now(),
-                     'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                     'SCAN_CMD': scan_cmd}) + '\n'
-
-    :return: it returns True if port is open otherwise is False.
-    """
+def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
+            scan_cmd, stealth_flag):
     try:
-        # set the socks proxy if it's not None
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
             socks_proxy = socks_proxy.rsplit('://')[1]
-            # check if socks_proxy has credentials
             if '@' in socks_proxy:
                 socks_username = socks_proxy.rsplit(':')[0]
                 socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
@@ -164,8 +136,8 @@ def stealth(target, host, port, timeout_sec, log_in_file, language, time_sleep, 
             else:
                 socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
                 socket.socket = socks.socksocket
-        # choose a random src port
         src_port = RandShort()
+
         stealth_scan_resp = sr1(IP(dst=host) / TCP(sport=src_port, dport=port, flags="S"), timeout=int(timeout_sec))
         if (str(type(stealth_scan_resp)) == "<type 'NoneType'>"):
             # "Filtered"
@@ -173,9 +145,7 @@ def stealth(target, host, port, timeout_sec, log_in_file, language, time_sleep, 
         elif (stealth_scan_resp.haslayer(TCP)):
             if (stealth_scan_resp.getlayer(TCP).flags == 0x12):
                 # send_rst = sr(IP(dst=host) / TCP(sport=src_port, dport=port, flags="R"), timeout=timeout_sec)
-                # alert users if port is open
                 info(messages(language, 80).format(host, port, "STEALTH"))
-                # save the logs in log_in_file with defined structure in log_in_file.
                 data = json.dumps(
                     {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
                      'DESCRIPTION': messages(language, 79).format(port, "STEALTH"), 'TIME': now(),
@@ -194,51 +164,17 @@ def stealth(target, host, port, timeout_sec, log_in_file, language, time_sleep, 
         else:
             # "CHECK"
             pass
-        # dec the thread numbers, using try and pass to prevent the error, if they take more than defined timeout
-        # they will be force remove
-        try:
-            threads_counter.active_threads[target] -= 1
-        except:
-            pass
-        try:
-            threads_counter.active_threads[target + '->' + 'port_scan'] -= 1
-        except:
-            pass
         return True
     except:
-        # dec the thread numbers, using try and pass to prevent the error, if they take more than defined timeout
-        # they will be force remove
-        try:
-            threads_counter.active_threads[target] -= 1
-        except:
-            pass
-        try:
-            threads_counter.active_threads[target + '->' + 'port_scan'] -= 1
-        except:
-            pass
         return False
 
 
-def connect(target, host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy,
-            scan_id, scan_cmd, stealth_flag):
-    """
-    connect() is TCP_Connect scan mode function. it saves the open ports in log_in_data filename with defined structure.
-     socks_proxy, timeout_sec and other variables are applied too.
-    defined structure:
-    data = json.dumps(
-            {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-             'DESCRIPTION': messages(language, 79).format(port, "TCP_CONNECT"), 'TIME': now(), 'CATEGORY': "scan",
-             'SCAN_ID': scan_id,
-             'SCAN_CMD': scan_cmd}) + '\n'
-
-    :return: it returns True if port is open otherwise is False.
-    """
+def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
+            scan_cmd, stealth_flag):
     try:
-        # set the socks proxy if it's not None
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
             socks_proxy = socks_proxy.rsplit('://')[1]
-            # check if socks_proxy has credentials
             if '@' in socks_proxy:
                 socks_username = socks_proxy.rsplit(':')[0]
                 socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
@@ -251,23 +187,17 @@ def connect(target, host, port, timeout_sec, log_in_file, language, time_sleep, 
                 socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
-        # check if host type is SINGLE_IPv6
         if target_type(host) == "SINGLE_IPv6":
             s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0)
         else:
-            # else host type is SINGLE_IPv6
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # set defined timeout
-        s.settimeout(timeout_sec)
-        # check if host type is SINGLE_IPv6 to connect
+        if timeout_sec is not None:
+            s.settimeout(timeout_sec)
         if target_type(host) == "SINGLE_IPv6":
             s.connect((host, port, 0, 0))
         else:
-            # check if host type is SINGLE_IPv4 to connect
             s.connect((host, port))
-        # alert if open is open, otherwise it will goes to "except" section
         info(messages(language, 80).format(host, port, "TCP_CONNECT"))
-        # save the logs in log_in_file with defined structure in log_in_file.
         data = json.dumps(
             {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
              'DESCRIPTION': messages(language, 79).format(port, "TCP_CONNECT"), 'TIME': now(), 'CATEGORY': "scan",
@@ -276,132 +206,51 @@ def connect(target, host, port, timeout_sec, log_in_file, language, time_sleep, 
         __log_into_file(log_in_file, 'a', data, language)
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         s.close()
-        # dec the thread numbers, using try and pass to prevent the error, if they take more than defined timeout
-        # they will be force remove
-        try:
-            threads_counter.active_threads[target] -= 1
-        except:
-            pass
-        try:
-            threads_counter.active_threads[target + '->' + 'port_scan'] -= 1
-        except:
-            pass
         return True
-
     except:
-        # dec the thread numbers, using try and pass to prevent the error, if they take more than defined timeout
-        # they will be force remove
-        try:
-            threads_counter.active_threads[thread_tmp_filename] -= 1
-        except:
-            pass
-        try:
-            threads_counter.active_threads[target] -= 1
-        except:
-            pass
-        try:
-            threads_counter.active_threads[target + '->' + 'port_scan'] -= 1
-        except:
-            pass
         return False
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
-          verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):
-    """
-    start is the entry function for every module in all categories.
-    :param target: contains the target with one of SINGLE_IPv4, DOMAIN, HTTP, SINGLE_IPv6 type.
-    :param users: contains usernames in an array if user define it through the API or command line. otherwise it's None
-     and if you need it you must call for your default values on extra_requirements_dict() in your module.
-    :param passwds: contains passwords in an array if user define it through the API or command line. otherwise it's None
-     and if you need it you must call for your default values on extra_requirements_dict() in your module.
-    :param ports: contains passwords in an array or generator if user define it through the API or command line.
-     otherwise it's None and if you need it you must call for your default values on extra_requirements_dict()
-     in your module.
-    :param timeout_sec: timeout value in float type.
-    :param thread_number: maximum thread number in int type.
-    :param num: number of your process in int type.
-    :param total: number of total existing process in int type.
-    :param log_in_file: the filename for log the data in str type.
-    :param time_sleep: time_sleep value between each connection in float type. the default value is set to "0.0".
-    :param language: language value in str type. (e.g. "en", "fa", "ru" ...) you can use it in messages() function.
-    :param verbose_level: value of verbose level in int type.
-    :param socks_proxy: socks_proxy value in str type. the default value is None.
-    :param retries: number of retries if connection goes timeout in int type.
-    :param methods_args: values of method_args in dict type. you must replace your values extra_requirements_dict()
-     with methods_args values. the default value is None.
-    :param scan_id: your scan hash id in str type.
-    :param scan_cmd: your scan command line in str type. in case user using API it's contains "run through the API" in str.
-    :return: None.
-    """
-    # check if target type is compatible for this module
+          verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
             target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
-        # requirements check and replace
+        # requirements check
         new_extra_requirements = extra_requirements_dict()
         if methods_args is not None:
             for extra_requirement in extra_requirements_dict():
                 if extra_requirement in methods_args:
                     new_extra_requirements[extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
-        # use default requirements if user not set any!
         if ports is None:
             ports = extra_requirements["port_scan_ports"]
         if extra_requirements["port_scan_stealth"][0].lower() == "true":
             stealth_flag = True
         else:
             stealth_flag = False
-        # convert HTTP target type to host type, it's necessary for port_scan module
         if target_type(target) == 'HTTP':
-            host = target_to_host(target)
-        else:
-            host = target
-        # generating thread tmp filename, I used this trick to know if any port was open.
-        # 1- create a thread tmp filename with random suffix
-        # 2- write "1" in the filename
-        # 3- during my port_scan request if any port was open, I will replace "1" with "0"
-        # 4- at the end of port scan, if verbose mode level was more than 0 I will notice user
-        # if the port scan not found any open ports with using a simple condition (if thread_write is 1 and verbose
-        #  level is not 0).
-        # 5- skip if verbose mode is 0, not matter it found or not found any open ports
-        # 6- if any open port founds it will skip too, each founded port sent through a info() alert to user and logged
-        # in log_in_file already
+            target = target_to_host(target)
+        threads = []
+        max = thread_number
+        total_req = len(ports)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1', language)
-        # trying is a counter of my request, each port scan request counted as one trying request
-        # my total request in my module is len(ports)
         trying = 0
-        # for port exist in ports array we may send a request in a thread
         for port in ports:
-            # check if stealth scan requested or default tcp connect and choose the function for thread.
-            # I used host + "_" + "port_scan" + "_" + str(port) for my thread name. and the started it.
-            # the reason I passed the target and host in module it's because "target" will use in active threads
-            # and "host" will use in connecting to the target
             t = threading.Thread(target=stealth if stealth_flag else connect,
-                                 args=(target, host, int(port), timeout_sec, log_in_file, language, time_sleep,
-                                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd, stealth_flag),
-                                 name=host + "_" + "port_scan" + "_" + str(port))
+                                 args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
+                                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd, stealth_flag))
+            threads.append(t)
             t.start()
-            # set +1 to thread number of the host
-            threads_counter.active_threads[target] += 1
-            # set +1 to thread number of the host for defined module name
-            threads_counter.active_threads[target + '->' + 'port_scan'] += 1
-            # I used time_sleep for delay between each request, the default value is 0 so it's will not effect anything
-            # if the user leave it to default. otherwise it will apply the delay.
             time.sleep(time_sleep)
-            # inc trying for the next request.
             trying += 1
-            # if verbose mode level value is more than 3, I will alert user for each started thread.
             if verbose_level > 3:
                 info(
-                    messages(language, 72).format(trying, len(ports), num, total, target, port, 'port_scan'))
-            # I control the maximum thread number for each host in all scan_method (modules)
-            # connections will not be more than defined or default value for each host.
-            # because this is a while True, I may add the KeyboardInterrupt to this to let it kill by ctrl + c
+                    messages(language, 72).format(trying, total_req, num, total, target, port, 'port_scan'))
             while 1:
                 try:
-                    if threads_counter.active_threads[target] >= thread_number:
+                    if threading.activeCount() >= max:
                         time.sleep(0.01)
                     else:
                         break
@@ -409,31 +258,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     break
                     break
 
-        # after module send all the request, we need to wait for them to be done
-        # kill_time will control the module to not take time more than defined timeout
-        # if they not finished before the timeout_sec, they will be force killed.
-        # the KeyboardInterrupt is also applied in this while True too.
+        # wait for threads
         kill_switch = 0
         kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threads_counter.active_threads[target + '->' + 'port_scan'] is 0 or kill_switch is kill_time:
-                    try:
-                        dec = threads_counter.active_threads[target + '->' + 'port_scan']
-                        threads_counter.active_threads.pop(target + '->' + 'port_scan')
-                    except:
-                        pass
-                    try:
-                        threads_counter.active_threads[target] -= dec
-                    except:
-                        pass
+                if threading.activeCount() is 1 or kill_switch is kill_time:
                     break
             except KeyboardInterrupt:
                 break
-        # check if port scan found any open port, if it's not and verbose level value is more than 0
-        # it's warn user and log it in log_in_file that port_scan was not found anything on this target
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             data = json.dumps(
@@ -441,8 +276,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                  'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan",
                  'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
-        # remove thread_tmp_fiename tmp file
         os.remove(thread_tmp_filename)
+
     else:
-        # warn if target time is not compatible with this module
         warn(messages(language, 69).format('port_scan', target))

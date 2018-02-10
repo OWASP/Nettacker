@@ -20,10 +20,10 @@ from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
 from core.load_modules import load_file_path
+from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-from lib import threads_counter
 
 
 def extra_requirements_dict():
@@ -206,8 +206,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
           verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP':
         # requirements check
-        threads_counter.active_threads[target] += 1
-        threads_counter.active_threads[target + '->' + 'heartbleed_vuln'] += 1
         new_extra_requirements = extra_requirements_dict()
         if methods_args is not None:
             for extra_requirement in extra_requirements_dict():
@@ -265,7 +263,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
-        threads_counter.active_threads[target] -= 1
-        threads_counter.active_threads[target + '->' + 'heartbleed_vuln'] -= 1
+
     else:
         warn(messages(language, 69).format('heartbleed_vuln', target))

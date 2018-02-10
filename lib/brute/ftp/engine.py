@@ -14,10 +14,10 @@ from ftplib import FTP
 from core.targets import target_type
 from core.targets import target_to_host
 from core.load_modules import load_file_path
+from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-from lib import threads_counter
 
 
 def extra_requirements_dict():
@@ -32,8 +32,8 @@ def extra_requirements_dict():
     }
 
 
-def login(target, user, passwd, host, port, timeout_sec, log_in_file, language, retries, time_sleep,
-          thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename,
+          socks_proxy):
     exit = 0
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -56,21 +56,13 @@ def login(target, user, passwd, host, port, timeout_sec, log_in_file, language, 
                 my_ftp = FTP(timeout=timeout_sec)
             else:
                 my_ftp = FTP()
-            my_ftp.connect(host, port)
+            my_ftp.connect(target, port)
             exit = 0
             break
         except:
             exit += 1
             if exit is retries:
                 warn(messages(language, 65).format(target, port, user, passwd))
-                try:
-                    threads_counter.active_threads[target] -= 1
-                except:
-                    pass
-                try:
-                    threads_counter.active_threads[target + '->' + 'ftp_brute'] -= 1
-                except:
-                    pass
                 return 1
         time.sleep(time_sleep)
     flag = 1
@@ -84,26 +76,16 @@ def login(target, user, passwd, host, port, timeout_sec, log_in_file, language, 
             tmpl = []
             tmp = my_ftp.retrlines('LIST', tmpl.append)
             info(messages(language, 70).format(user, passwd, target, port))
-            data = json.dumps({'HOST': host, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ftp_brute',
-                               'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute", "SCAN_ID":
-                                   scan_id, "SCAN_CMD": scan_cmd}) + "\n"
+            data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ftp_brute',
+                               'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
         except:
             info(messages(language, 70).format(user, passwd, target, port) + ' ' + messages(language, 71))
-            data = json.dumps({'HOST': host, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'FTP',
-                               'DESCRIPTION': messages(language, 67), 'TIME': now(), 'CATEGORY': "brute", "SCAN_ID":
-                                   scan_id, "SCAN_CMD": scan_cmd}) + "\n"
+            data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'FTP',
+                               'DESCRIPTION': messages(language, 67), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
         __log_into_file(thread_tmp_filename, 'w', '0', language)
     else:
-        pass
-    try:
-        threads_counter.active_threads[target] -= 1
-    except:
-        pass
-    try:
-        threads_counter.active_threads[target + '->' + 'ftp_brute'] -= 1
-    except:
         pass
     return flag
 
@@ -133,13 +115,16 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
             else:
                 my_ftp = FTP()
             my_ftp.connect(target, int(port))
-            __log_into_file(ports_tmp_filename, 'a', str(port) + "\n", language)
             exit = 0
             break
         except:
             exit += 1
             if exit is retries:
                 error(messages(language, 68).format(target, port, str(num), str(total)))
+                try:
+                    __log_into_file(ports_tmp_filename, 'a', str(port), language)
+                except:
+                    pass
                 break
         time.sleep(time_sleep)
 
@@ -149,7 +134,6 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
     _ports = ports[:]
     threads = []
     trying = 0
-
     for port in _ports:
         # test ftp
         t = threading.Thread(target=__connect_to_port,
@@ -181,15 +165,21 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         if n:
             break
     _ports = list(set(open(ports_tmp_filename).read().rsplit()))
+    for port in _ports:
+        try:
+            ports.remove(int(port))
+        except:
+            try:
+                ports.remove(port)
+            except:
+                pass
     os.remove(ports_tmp_filename)
-    return _ports
+    return ports
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
           language, verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP':
-        threads_counter.active_threads[target] += 1
-        threads_counter.active_threads[target + '->' + 'ftp_brute'] += 1
         # requirements check
         new_extra_requirements = extra_requirements_dict()
         if methods_args is not None:
@@ -204,10 +194,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if ports is None:
             ports = extra_requirements["ftp_brute_ports"]
         if target_type(target) == 'HTTP':
-            host = target_to_host(target)
-        else:
-            host = target
+            target = target_to_host(target)
         threads = []
+        max = thread_number
         total_req = len(users) * len(passwds) * len(ports)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
@@ -216,29 +205,27 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         __log_into_file(thread_tmp_filename, 'w', '1', language)
         __log_into_file(ports_tmp_filename, 'w', '', language)
         trying = 0
-        ports = test_ports(ports, timeout_sec, host, retries, language, num, total, time_sleep,
-                           ports_tmp_filename, thread_number, total_req, verbose_level, socks_proxy)
-        threads_counter.active_threads[target] -= 1
-        threads_counter.active_threads[target + '->' + 'ftp_brute'] -= 1
+        ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
+                           thread_number, total_req, verbose_level, socks_proxy)
+
         for port in ports:
             for user in users:
                 for passwd in passwds:
                     t = threading.Thread(target=login,
                                          args=(
-                                             target, user, passwd, host, port, timeout_sec, log_in_file, language,
-                                             retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
+                                             user, passwd, target, port, timeout_sec, log_in_file, language,
+                                             retries, time_sleep, thread_tmp_filename, socks_proxy))
                     threads.append(t)
                     t.start()
                     trying += 1
-                    threads_counter.active_threads[target] += 1
-                    threads_counter.active_threads[target + '->' + 'ftp_brute'] += 1
                     if verbose_level > 3:
                         info(messages(language, 72).format(trying, total_req, num, total, target, port, 'ftp_brute'))
                     while 1:
                         try:
-                            if threads_counter.active_threads[target] <= thread_number:
+                            if threading.activeCount() >= max:
+                                time.sleep(0.01)
+                            else:
                                 break
-                            time.sleep(0.01)
                         except KeyboardInterrupt:
                             break
                             break
@@ -249,22 +236,13 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threads_counter.active_threads[target + '->' + 'ftp_brute'] is 0 or kill_switch is kill_time:
-                    try:
-                        dec = threads_counter.active_threads[target + '->' + 'ftp_brute']
-                        threads_counter.active_threads.pop(target + '->' + 'ftp_brute')
-                    except:
-                        pass
-                    try:
-                        threads_counter.active_threads[target] -= dec
-                    except:
-                        pass
+                if threading.activeCount() is 1 or kill_switch is kill_time:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ftp_brute',
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ftp_brute',
                                'DESCRIPTION': messages(language, 95), 'TIME': now(), 'CATEGORY': "brute",
                                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
