@@ -171,7 +171,7 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         t.start()
         trying += 1
         if verbose_level is not 0:
-            info(messages(language, 72).format(trying, total_req, num, total, target, port, 'smtp_brute'))
+            info(messages(language, 72).format(trying, total_req, num, total, target, port, 'ssh_brute'))
         while 1:
             n = 0
             for thread in threads:
@@ -249,7 +249,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     t.start()
                     trying += 1
                     if verbose_level > 3:
-                        info(messages(language, 72).format(trying, total_req, num, total, target, port, 'smtp_brute'))
+                        info(messages(language, 72).format(trying, total_req, num, total, target, port, 'ssh_brute'))
                     while 1:
                         try:
                             if threading.activeCount() >= max:
