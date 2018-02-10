@@ -23,7 +23,6 @@ from core.log import __log_into_file
 
 def extra_requirements_dict():
     return {
-        "pma_scan_ports": ["80"],
         "pma_scan_http_method": ["GET"],
         "pma_scan_random_agent": ["True"],
         "pma_scan_list": ['/admin/', '/accounts/login/', '/admin1.php/', '/admin.php/',
@@ -60,9 +59,6 @@ def extra_requirements_dict():
 def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
           http_method, socks_proxy, scan_id, scan_cmd):
     status_codes = [200, 401, 403]
-    directory_listing_msgs = ["<title>Index of /", "<a href=\"\\?C=N;O=D\">Name</a>", "Directory Listing for",
-                              "Parent Directory</a>", "Last modified</a>", "<TITLE>Folder Listing.",
-                              "- Browsing directory "]
     time.sleep(time_sleep)
     try:
         if socks_proxy is not None:
@@ -99,7 +95,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
             __log_into_file(thread_tmp_filename, 'w', '0', language)
             __log_into_file(log_in_file, 'a',
                             json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
-                                        'PORT': int(target.rsplit(':')[2].rsplit('/')[0]), 'TYPE': 'pma_scan',
+                                        'PORT': "", 'TYPE': 'pma_scan',
                                         'DESCRIPTION': messages(language, 38).format(target, r.status_code, r.reason),
                                         'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
                                         'SCAN_CMD': scan_cmd}) + '\n', language)
@@ -109,9 +105,9 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
 
 
 def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, verbose_level, trying, total_req, total,
-         num, port, language):
+         num, language):
     if verbose_level > 3:
-        info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port,
+        info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), "default_port",
                                            'pma_scan'))
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -178,70 +174,45 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if extra_requirements["pma_scan_http_method"][0] not in http_methods:
             warn(messages(language, 110))
             extra_requirements["pma_scan_http_method"] = ["GET"]
-        if ports is None:
-            ports = extra_requirements["pma_scan_ports"]
         random_agent_flag = True
         if extra_requirements["pma_scan_random_agent"][0] == "False":
             random_agent_flag = False
         threads = []
         max = thread_number
-        total_req = len(extra_requirements["pma_scan_list"]) * len(ports)
+        total_req = len(extra_requirements["pma_scan_list"])
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1', language)
         trying = 0
-        for port in ports:
-            port = int(port)
-            if target_type(target) == 'SINGLE_IPv4' or target_type(target) == 'DOMAIN' or target_type(
-                    target) == 'SINGLE_IPv6':
-                url = 'http://{0}:{1}/'.format(target, str(port))
-            else:
-                if target.count(':') > 1:
-                    error(messages(language, 105))
-                    from core.color import finish
-                    finish()
-                    sys.exit(1)
-                http = target.rsplit('://')[0]
-                host = target_to_host(target)
-                path = "/".join(target.replace('http://', '').replace('https://', '').rsplit('/')[1:])
-                url = http + '://' + host + ':' + str(port) + '/' + path
-            if test(url, retries, timeout_sec, user_agent, extra_requirements["pma_scan_http_method"][0],
-                    socks_proxy, verbose_level, trying, total_req, total, num, port, language) is 0:
-                for idir in extra_requirements["pma_scan_list"]:
-                    # check target type
-                    if target_type(target) == 'SINGLE_IPv4' or target_type(target) == 'DOMAIN' or target_type(
-                            target) == 'SINGLE_IPv6':
-                        url = 'http://{0}:{1}/{2}'.format(target, str(port), idir)
-                    else:
-                        http = target.rsplit('://')[0]
-                        host = target_to_host(target)
-                        path = "/".join(target.replace('http://', '').replace('https://', '').rsplit('/')[1:])
-                        url = http + '://' + host + ':' + str(port) + '/' + path + '/' + idir
-
-                    if random_agent_flag:
-                        user_agent = {'User-agent': random.choice(user_agent_list)}
-                    t = threading.Thread(target=check,
-                                         args=(url, user_agent, timeout_sec, log_in_file, language, time_sleep,
-                                               thread_tmp_filename, retries,
-                                               extra_requirements["pma_scan_http_method"][0], socks_proxy, scan_id,
-                                               scan_cmd))
-                    threads.append(t)
-                    t.start()
-                    trying += 1
-                    if verbose_level > 3:
-                        info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), port,
-                                                           'pma_scan'))
-                    while 1:
-                        try:
-                            if threading.activeCount() >= max:
-                                time.sleep(0.01)
-                            else:
-                                break
-                        except KeyboardInterrupt:
+        if target_type(target) != "HTTP":
+            target = 'http://' + target
+        if test(target, retries, timeout_sec, user_agent, extra_requirements["pma_scan_http_method"][0],
+                socks_proxy, verbose_level, trying, total_req, total, num, language) is 0:
+            for idir in extra_requirements["pma_scan_list"]:
+                if random_agent_flag:
+                    user_agent = {'User-agent': random.choice(user_agent_list)}
+                t = threading.Thread(target=check,
+                                     args=(
+                                         target + '/' + idir, user_agent, timeout_sec, log_in_file, language,
+                                         time_sleep, thread_tmp_filename, retries,
+                                         extra_requirements["pma_scan_http_method"][0], socks_proxy, scan_id, scan_cmd))
+                threads.append(t)
+                t.start()
+                trying += 1
+                if verbose_level > 3:
+                    info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target),
+                                                       "default_port", 'pma_scan'))
+                while 1:
+                    try:
+                        if threading.activeCount() >= max:
+                            time.sleep(0.01)
+                        else:
                             break
-                            break
-            else:
-                warn(messages(language, 109).format(url))
+                    except KeyboardInterrupt:
+                        break
+                        break
+        else:
+            warn(messages(language, 109).format(target))
 
         # wait for threads
         kill_switch = 0
@@ -256,10 +227,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1:
-            info(messages(language, 108).format(target, ",".join(map(str, ports))))
+            info(messages(language, 108).format(target, "default_port"))
             if verbose_level is not 0:
                 __log_into_file(log_in_file, 'a', json.dumps(
-                    {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'pma_scan',
+                    {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'pma_scan',
                      'DESCRIPTION': messages(language, 174), 'TIME': now(), 'CATEGORY': "scan",
                      'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n', language)
         os.remove(thread_tmp_filename)
