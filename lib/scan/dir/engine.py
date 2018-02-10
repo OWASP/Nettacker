@@ -182,6 +182,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1', language)
         trying = 0
+        if target_type(target) != "HTTP":
+            target = 'http://' + target
         if test(str(target), retries, timeout_sec, user_agent, extra_requirements["dir_scan_http_method"][0],
                 socks_proxy, verbose_level, trying, total_req, total, num, language) is 0:
             for idir in extra_requirements["dir_scan_list"]:
