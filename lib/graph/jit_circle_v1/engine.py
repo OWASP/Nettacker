@@ -8,106 +8,42 @@ from core.compatible import version
 
 
 def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
+    # define  a normalised_json
+    normalisedjson = {
+        "name": "Started attack",
+        "children": {}
+    }
+    # get data for normalised_json
+    for each_scan in data:
+
+        if each_scan['HOST'] not in normalisedjson['children']:
+            normalisedjson['children'].update({each_scan['HOST']: {}})
+            normalisedjson['children'][each_scan['HOST']].update({each_scan['TYPE']: []})
+
+        if each_scan['TYPE'] not in normalisedjson['children'][each_scan['HOST']]:
+            normalisedjson['children'][each_scan['HOST']].update({each_scan['TYPE']: []})
+
+        normalisedjson['children'][each_scan['HOST']][each_scan['TYPE']].append("HOST: \"%s\", PORT:\"%s\", DESCRIPTION:\"%s\", USERNAME:\"%s\", PASSWORD:\"%s\"" % (
+            each_scan['HOST'], each_scan['PORT'], each_scan['DESCRIPTION'], each_scan['USERNAME'], each_scan['PASSWORD']))
+
+    # define a dgraph_json
     dgraph = {
         "id": "0",
-        "name": "Start Attacking",
-        "children": [],
         "data": [],
-        "relation": ""
+        "relation": "",
+        "name": "Start Attacking",
+        "children": []
     }
-    n = 1
-    for data_graph in data:
-        position = len(dgraph["children"])
-        _to_modify = {
-            "id": str(n),
-            "name": data_graph[_HOST],
-            "data": {},
-            "children": [],
-            "data": {
-                "relation": "Start Attacking"
-            }
-        }
-        add_flag = True
-        _position = None
-        m = 0
-        for host in dgraph["children"]:
-            if data_graph[_HOST] == host["name"]:
-                add_flag = False
-                _position = m
-            m += 1
-        if add_flag:
-            dgraph["children"].append(_to_modify)
-        _to_modify = {
-            "children": [],
-            "id": ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(20)),
-            "name": data_graph[_TYPE],
-            "data": {
-                "band": data_graph[_DESCRIPTION],
-                "relation": [[_PORT + ': "' + str(data_graph[_PORT]) + '"',
-                              _DESCRIPTION + ': "' + data_graph[_DESCRIPTION] + '"',
-                              _USERNAME + ': "' + data_graph[_USERNAME] + '"',
-                              _PASSWORD + ': "' + data_graph[_PASSWORD] + '"']]
-            }
-        }
-        add_flag = True
-        # fix later, slow speed
-        __position = 0
-        try:
-            for method in dgraph["children"]:
-                if data_graph[_HOST] == method["name"]:
-                    for imethod in method["children"]:
-                        __position += 1
-                        if data_graph[_TYPE] == imethod["name"]:
-                            __position -= 1
-                            add_flag = False
-        except:
-            pass
-        if add_flag:
-            if _position is not None:
-                dgraph["children"][_position]["children"].append(_to_modify)
-            else:
-                dgraph["children"][position]["children"].append(_to_modify)
-        else:
-            if _position is not None:
-                if dgraph["children"][_position]["children"][__position]["data"]["relation"] \
-                        [0] != _PORT + ': "' + str(data_graph[_PORT]) + '"':
-                    dgraph["children"][_position]["children"][__position]["data"]["relation"].append(
-                        [_PORT + ': "' + str(data_graph[_PORT]) + '"',
-                         _DESCRIPTION + ': "' + data_graph[_DESCRIPTION] + '"',
-                         _USERNAME + ': "' + data_graph[_USERNAME] + '"',
-                         _PASSWORD + ': "' + data_graph[_PASSWORD] + '"'])
-            else:
-                if dgraph["children"][position]["children"][__position]["data"]["relation"] \
-                        [0] != _PORT + ': "' + str(data_graph[_PORT]) + '"':
-                    dgraph["children"][position]["children"][__position]["data"]["relation"].append(
-                        [_PORT + ': "' + str(data_graph[_PORT]) + '"',
-                         _DESCRIPTION + ': "' + data_graph[_DESCRIPTION] + '"',
-                         _USERNAME + ': "' + data_graph[_USERNAME] + '"',
-                         _PASSWORD + ': "' + data_graph[_PASSWORD] + '"'])
-        n += 1
-    backup_dgraph = json.loads(json.dumps(dgraph))
 
-    for b in range(0, len(backup_dgraph["children"])):
-        for c in range(0, len(backup_dgraph["children"][b])):
-            for d in range(0, len(backup_dgraph["children"][b]["children"])):
-                for a in backup_dgraph["children"][b]["children"][d]["data"]["relation"]:
-                    a = json.loads(json.dumps(a))
-                    _to_modify = {
-                        "children": [],
-                        "id": ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(20)),
-                        "name": a[0].rsplit()[-1].replace('\"', ''),
-                        "data": {
-                            "band": a[1],
-                            "relation": [a]
-                        }
-                    }
-                    add_flag = True
-                    for e in dgraph["children"][b]["children"][d]["children"]:
-                        if _to_modify["name"] == e["name"] and _to_modify["data"]["band"] \
-                                == e["data"]["band"]:
-                            add_flag = False
-                    if add_flag:
-                        dgraph["children"][b]["children"][d]["children"].append(_to_modify)
+    # get data for dgraph_json
+    n = 1
+    for host in normalisedjson['children']:
+
+        dgraph['children'].append({"id": str(n), "name": host, "data": {"relation": "Start Attacking"}, "children": [{"id": ''.join(random.choice(
+            string.ascii_letters + string.digits) for _ in range(20)), "name": otype, "data": {"band": [description.split(', ')[2].lstrip("DESCRIPTION: ").strip("\"") for description in normalisedjson['children'][host][otype]][0], "relation": [description.split(', ')[1:] for description in normalisedjson['children'][host][otype]]}, "children": [{"children": [], "data":{"band": description.split(', ')[2], "relation": description.split(', ')[1:]}, "id": ''.join(random.choice(
+                string.ascii_letters + string.digits) for _ in range(20)), "name": description.split(', ')[1].lstrip("PORT: ").strip("\"")} for description in normalisedjson['children'][host][otype]]} for otype in normalisedjson['children'][host]]})
+        n += 1
+
     data = '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!-- THIS SAMPLE COPIED AND MODIFIED FROM http://philogb.github.io/jit/static/v20/Jit/Examples/Hypertree/example1.html -->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -155,8 +91,8 @@ a {
     position:relative;
 }
 
-#left-container, 
-#right-container, 
+#left-container,
+#right-container,
 #center-container {
     height:600px;
     position:absolute;
@@ -178,7 +114,7 @@ a {
     background-image:url(\'col2.png\');
     background-position:center right;
     border-left:1px solid #ddd;
-    
+
 }
 
 #right-container {
@@ -14698,7 +14634,7 @@ var labelType, useGradients, nativeTextSupport, animate;
       iStuff = ua.match(/iPhone/i) || ua.match(/iPad/i),
       typeOfCanvas = typeof HTMLCanvasElement,
       nativeCanvasSupport = (typeOfCanvas == \'object\' || typeOfCanvas == \'function\'),
-      textSupport = nativeCanvasSupport 
+      textSupport = nativeCanvasSupport
         && (typeof document.createElement(\'canvas\').getContext(\'2d\').fillText == \'function\');
   //I\'m setting this based on the fact that ExCanvas provides text support for IE
   //and that as of today iPhone/iPad current text support is lame
@@ -14711,7 +14647,7 @@ var labelType, useGradients, nativeTextSupport, animate;
 var Log = {
   elem: false,
   write: function(text){
-    if (!this.elem) 
+    if (!this.elem)
       this.elem = document.getElementById(\'log\');
     this.elem.innerHTML = text;
     this.elem.style.left = (500 - this.elem.offsetWidth / 2) + \'px\';
@@ -14725,7 +14661,7 @@ function init(){
     //end
     var infovis = document.getElementById(\'infovis\');
     var w = infovis.offsetWidth - 50, h = infovis.offsetHeight - 50;
-    
+
     //init Hypertree
     var ht = new $jit.Hypertree({
       //id of the visualization container
@@ -14781,12 +14717,12 @@ function init(){
           var w = domElement.offsetWidth;
           style.left = (left - w / 2) + \'px\';
       },
-      
+
       onComplete: function(){
           Log.write("Network Map");
-          
+
           //Build the right column relations list.
-          //This is done by collecting the information (stored in the data property) 
+          //This is done by collecting the information (stored in the data property)
           //for all the nodes adjacent to the centered node.
           var node = ht.graph.getClosestNodeToOrigin("current");
           var html = "<h4>" + node.name + "</h4><b>Connections:</b>";
@@ -14822,9 +14758,9 @@ function init(){
         <div class="text">
         <h4>
 __title_to_replace__
-        </h4> 
+        </h4>
 <h5>__description_to_replace__</h5>
-           
+
         </div>
 
         <div id="id-list"></div>
@@ -14834,7 +14770,7 @@ __title_to_replace__
 </div>
 
 <div id="center-container">
-    <div id="infovis"></div>    
+    <div id="infovis"></div>
 </div>
 
 <div id="right-container">
