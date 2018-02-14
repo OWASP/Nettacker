@@ -86,3 +86,4 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
     else:
         warn(messages(language, 69).format('icmp_scan', target))
+        
