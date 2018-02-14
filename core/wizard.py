@@ -22,9 +22,17 @@ def __wizard(targets, thread_number, thread_number_host,
                       default_config["targets"])
     thread_number = __input(messages(language, 118).format(messages(language, 121), default_config["thread_number"]),
                             default_config["thread_number"])
+    try:
+        thread_number = int(thread_number)
+    except:
+        thread_number = default_config["thread_number"]
     thread_number_host = __input(messages(language, 118)
                                  .format(messages(language, 122), default_config["thread_number_host"]),
                                  default_config["thread_number_host"])
+    try:
+        thread_number_host = int(thread_number_host)
+    except:
+        thread_number_host = default_config["thread_number_host"]
     log_in_file = __input(messages(language, 118).format(messages(language, 123), default_config["log_in_file"]),
                           default_config["log_in_file"])
     scan_method = __input(messages(language, 119)
@@ -40,6 +48,10 @@ def __wizard(targets, thread_number, thread_number_host,
                       default_config["passwds"])
     timeout_sec = __input(messages(language, 118).format(messages(language, 128), default_config["timeout_sec"]),
                           default_config["timeout_sec"])
+    try:
+        timeout_sec = int(timeout_sec)
+    except:
+        timeout_sec = default_config["timeout_sec"]
     ports = __input(messages(language, 118).format(messages(language, 129), default_config["ports"]),
                     default_config["ports"])
     verbose_level = __input(messages(language, 118).format(messages(language, 130), default_config["verbose_level"]),
@@ -48,6 +60,10 @@ def __wizard(targets, thread_number, thread_number_host,
                           default_config["socks_proxy"])
     retries = __input(messages(language, 118).format(messages(language, 132), default_config["retries"]),
                       default_config["retries"])
+    try:
+        retries = int(retries)
+    except:
+        retries = default_config["retries"]
     graph_flag = __input(messages(language, 119)
                          .format(messages(language, 133), ', '.join(graph_flag), default_config["graph_flag"]),
                          default_config["graph_flag"])
