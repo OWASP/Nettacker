@@ -208,7 +208,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                             break
                     except KeyboardInterrupt:
                         break
-                        break
         else:
             warn(messages(language, 109).format(target))
 
