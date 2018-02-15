@@ -210,7 +210,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     except KeyboardInterrupt:
                         keyboard_interrupt_flag = 1
                         break
-                if keyboard_interrupt_flag == 0:
+                if keyboard_interrupt_flag == 1:
                     break
                 else:
                     continue
