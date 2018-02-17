@@ -7,7 +7,6 @@ import time
 import json
 import threading
 import string
-import random
 import requests
 import random
 import os
@@ -188,6 +187,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if test(target, retries, timeout_sec, user_agent, extra_requirements["pma_scan_http_method"][0],
                 socks_proxy, verbose_level, trying, total_req, total, num, language) is 0:
             for idir in extra_requirements["pma_scan_list"]:
+                keyboard_interrupt_flag = 0
                 if random_agent_flag:
                     user_agent = {'User-agent': random.choice(user_agent_list)}
                 t = threading.Thread(target=check,
@@ -208,8 +208,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         else:
                             break
                     except KeyboardInterrupt:
+                        keyboard_interrupt_flag = 1
                         break
-                        break
+                if keyboard_interrupt_flag == 1:
+                    break
+                else:
+                    continue
         else:
             warn(messages(language, 109).format(target))
 
