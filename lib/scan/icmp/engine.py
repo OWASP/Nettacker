@@ -64,13 +64,15 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             if r is None:
                 n = n + 1
                 if n == retries:
-                    warn(messages(language, 179).format(target))
-                    data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
-                                       'TYPE': 'icmp scan',
-                                       'DESCRIPTION': messages(language, 179).format(target),
-                                       'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                                       'SCAN_CMD': scan_cmd}) + "\n"
-                    __log_into_file(log_in_file, 'a', data, language)
+                    if verbose_level > 3:
+                        warn(messages(language, 179).format(target))
+                    if verbose_level is not 0:
+                        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
+                                           'TYPE': 'icmp scan',
+                                           'DESCRIPTION': messages(language, 179).format(target),
+                                           'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                                           'SCAN_CMD': scan_cmd}) + "\n"
+                        __log_into_file(log_in_file, 'a', data, language)
                     break
                 else:
                     pass
@@ -86,4 +88,3 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
     else:
         warn(messages(language, 69).format('icmp_scan', target))
-        
