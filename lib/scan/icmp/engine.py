@@ -58,7 +58,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
         n = 0
-        warn(messages(language, 180))
+        # warning for each target make the screen so messy in IP ranges
+        # warn(messages(language, 180))
         while 1:
             r = do_one_ping(target, timeout_sec, 84)
             if r is None:
