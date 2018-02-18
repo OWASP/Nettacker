@@ -29,6 +29,8 @@ def __get_value(flask_request, _key):
                 key = flask_request.cookies[_key]
             except:
                 key = None
+    if key is not None:
+        key = key.replace("\"", "")
     return key
 
 
