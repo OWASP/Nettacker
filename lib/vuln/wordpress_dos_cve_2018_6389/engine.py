@@ -196,6 +196,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                                  url, retries, timeout_sec, user_agent, socks_proxy, verbose_level, trying, total_req,
                                  total, num, language, True, log_in_file, scan_id, scan_cmd, thread_tmp_filename))
         t.start()
+        keyboard_interrupt_flag = False
         while (n != limit):
             n += 1
             if random_agent_flag:
@@ -223,9 +224,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     else:
                         break
                 except KeyboardInterrupt:
+                    keyboard_interrupt_flag = True
                     break
-                    break
-
+            if keyboard_interrupt_flag:
+                break
         # wait for threads
         kill_switch = 0
         kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
