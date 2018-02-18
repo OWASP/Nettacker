@@ -198,7 +198,7 @@ def __last_host_logs(language, page):
                             capture = n
                         n += 1
                 if data[0] == selected[capture]["host"]:
-                    if data[1] not in selected[capture]["info"]["open_ports"]:
+                    if data[1] not in selected[capture]["info"]["open_ports"] and type(data[1]) is int:
                         selected[capture]["info"]["open_ports"].append(data[1])
                     if data[2] not in selected[capture]["info"]["scan_methods"]:
                         selected[capture]["info"]["scan_methods"].append(data[2])
@@ -219,6 +219,28 @@ def __logs_to_report(scan_id, language):
                     scan_id), language):
             data = {
                 "SCAN_ID": scan_id,
+                "HOST": log[0],
+                "USERNAME": log[1],
+                "PASSWORD": log[2],
+                "PORT": log[3],
+                "TYPE": log[4],
+                "TIME": log[5],
+                "DESCRIPTION": log[6]
+            }
+            logs.append(data)
+        return logs
+    except:
+        return []
+
+
+def __logs_by_host(host, language):
+    try:
+        logs = []
+        for log in send_read_query(
+                "select host,username,password,port,type,date,description from hosts_log where host=\"{0}\"".format(
+                    host), language):
+            data = {
+                "SCAN_ID": host,
                 "HOST": log[0],
                 "USERNAME": log[1],
                 "PASSWORD": log[2],

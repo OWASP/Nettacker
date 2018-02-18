@@ -35,6 +35,7 @@ from api.api_core import __api_key_check
 from api.__database import __select_results
 from api.__database import __get_result
 from api.__database import __last_host_logs
+from api.__database import __logs_by_host
 from api.__start_scan import __scan
 from core._time import now
 
@@ -178,6 +179,16 @@ def __get_last_host_logs():
     except:
         page = 1
     return jsonify(__last_host_logs(__language(), page)), 200
+
+
+@app.route("/logs/get", methods=["GET"])
+def __get_logs():
+    __api_key_check(app, flask_request, __language())
+    try:
+        host = __get_value(flask_request, "host")
+    except:
+        host = ""
+    return jsonify(__logs_by_host(host, __language())), 200
 
 
 def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
