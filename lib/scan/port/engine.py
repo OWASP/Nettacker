@@ -236,6 +236,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1', language)
         trying = 0
+        keyboard_interrupt_flag = False
         for port in ports:
             t = threading.Thread(target=stealth if stealth_flag else connect,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
@@ -254,8 +255,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     else:
                         break
                 except KeyboardInterrupt:
+                    keyboard_interrupt_flag = True
                     break
-                    break
+            if keyboard_interrupt_flag:
+                break
 
         # wait for threads
         kill_switch = 0

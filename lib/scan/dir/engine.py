@@ -7,7 +7,6 @@ import time
 import json
 import threading
 import string
-import random
 import requests
 import random
 import os
@@ -185,6 +184,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             target = 'http://' + target
         if test(str(target), retries, timeout_sec, user_agent, extra_requirements["dir_scan_http_method"][0],
                 socks_proxy, verbose_level, trying, total_req, total, num, language) is 0:
+            keyboard_interrupt_flag = False
             for idir in extra_requirements["dir_scan_list"]:
                 if random_agent_flag:
                     user_agent = {'User-agent': random.choice(user_agent_list)}
@@ -207,8 +207,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         else:
                             break
                     except KeyboardInterrupt:
+                        keyboard_interrupt_flag = True
                         break
-                        break
+                if keyboard_interrupt_flag:
+                    break
+
         else:
             warn(messages(language, 109).format(target))
 

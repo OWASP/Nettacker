@@ -153,7 +153,8 @@ def __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
                     n += 1
                     if n is 3:
                         break
-                        break
+            if n is 3:
+                break
             if results.status_code is 200:
                 for l in re.compile('<a href="http://toolbar.netcraft.com/site_report\?url=(.*)">').findall(
                         results.content):

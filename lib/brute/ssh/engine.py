@@ -233,6 +233,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         trying = 0
         ports = test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
                            thread_number, total_req, verbose_level, socks_proxy)
+        keyboard_interrupt_flag = False
         for port in ports:
             # test ssh
             portflag = True
@@ -256,8 +257,15 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                             else:
                                 break
                         except KeyboardInterrupt:
+                            keyboard_interrupt_flag = True
                             break
-                            break
+                    if keyboard_interrupt_flag:
+                        break
+                else:
+                    break
+            else:
+                break
+
         # wait for threads
         kill_switch = 0
         kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1

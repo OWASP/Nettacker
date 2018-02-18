@@ -239,6 +239,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                             else:
                                 break
         else:
+            keyboard_interrupt_flag = False
             for port in ports:
                 for user in users:
                     for prefix in extra_requirements["smtp_brute_split_user_set_pass_prefix"]:
@@ -258,8 +259,14 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                                 else:
                                     break
                             except KeyboardInterrupt:
+                                keyboard_interrupt_flag = True
                                 break
-                                break
+                        if keyboard_interrupt_flag:
+                            break
+                    else:
+                        break
+                else:
+                    break
 
         # wait for threads
         kill_switch = 0
