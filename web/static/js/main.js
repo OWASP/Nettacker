@@ -75,19 +75,43 @@ $(document).ready(function () {
     $("#home_btn").click(function () {
         $("#new_scan").addClass("hidden");
         $("#get_results").addClass("hidden");
+        $("#crawler_area").addClass("hidden")
         $("#home").removeClass("hidden");
     });
 
     $("#new_scan_btn").click(function () {
-        $("#home").addClass("hidden");
-        $("#get_results").addClass("hidden");
-        $("#new_scan").removeClass("hidden");
+
+        $.ajax({
+            type: "GET",
+            url: "/session/check",
+            dataType: "text"
+        }).done(function (res) {
+            $("#home").addClass("hidden");
+            $("#get_results").addClass("hidden");
+            $("#crawler_area").addClass("hidden");
+            $("#login_first").addClass("hidden");
+            $("#new_scan").removeClass("hidden");
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            $("#home").addClass("hidden");
+            $("#get_results").addClass("hidden");
+            $("#crawler_area").addClass("hidden");
+            $("#new_scan").addClass("hidden");
+            $("#login_first").removeClass("hidden");
+        });
     });
 
     $("#results_btn").click(function () {
         $("#home").addClass("hidden");
         $("#new_scan").addClass("hidden");
+        $("#crawler_area").addClass("hidden");
         $("#get_results").removeClass("hidden");
+    });
+
+    $("#crawler_btn").click(function () {
+        $("#home").addClass("hidden");
+        $("#new_scan").addClass("hidden");
+        $("#get_results").addClass("hidden");
+        $("#crawler_area").removeClass("hidden");
     });
 
 
@@ -163,7 +187,7 @@ $(document).ready(function () {
             socks_proxy: $("#socks_proxy").val(),
             users: $("#users").val(),
             passwds: $("#passwds").val(),
-            methods_args: $("#methods_args").val().replaceAll("\n", "&"),
+            methods_args: $("#methods_args").val().replaceAll("\n", "&")
 
         };
 
@@ -317,10 +341,10 @@ $(document).ready(function () {
     }
 
 
-    function get_results_list(page) {
+    function get_results_list(result_page) {
         $.ajax({
             type: "GET",
-            url: "/results/get_list?page=" + page,
+            url: "/results/get_list?page=" + result_page,
             dataType: "text"
         }).done(function (res) {
             $("#login_first").addClass("hidden");
@@ -346,27 +370,27 @@ $(document).ready(function () {
 
 
     $("#results_btn").click(function () {
-        page = 1;
-        get_results_list(page);
+        result_page = 1;
+        get_results_list(result_page);
     });
 
     $("#refresh_btn_update").click(function () {
-        page = 1;
-        get_results_list(page);
+        result_page = 1;
+        get_results_list(result_page);
     });
 
     $("#refresh_btn_page").click(function () {
-        get_results_list(page);
+        get_results_list(result_page);
     });
 
     $("#previous_btn").click(function () {
-        page = page - 1;
-        get_results_list(page);
+        result_page = result_page - 1;
+        get_results_list(result_page);
     });
 
     $("#next_btn").click(function () {
-        page = page + 1;
-        get_results_list(page);
+        result_page = result_page + 1;
+        get_results_list(result_page);
     });
 
     $("#advance").click(function () {
@@ -379,5 +403,124 @@ $(document).ready(function () {
         $("#basic_options").removeClass("hidden");
     });
 
+
+    function show_crawler(res) {
+        res = JSON.parse(res);
+        var HTMLData = "";
+        var host;
+        var category;
+        var html_categories;
+        var description;
+        var html_description;
+        var open_ports;
+        var html_open_ports;
+        var scan_methods;
+        var html_scan_methods;
+        var j;
+
+        for (i = 0; i < res.length; i++) {
+            host = res[i]["host"];
+            description = res[i]["info"]["descriptions"];
+            open_ports = res[i]["info"]["open_ports"];
+            scan_methods = res[i]["info"]["scan_methods"];
+            category = res[i]["info"]["category"];
+            html_categories = "";
+            html_scan_methods = "";
+            html_open_ports = "";
+            html_description = "";
+            for (j = 0; j < open_ports.length; j++) {
+                html_open_ports += "<p class='mb-1 bold label label-warning'>open_port:" + open_ports[j] + "</p> ";
+                if (j == 10){
+                    html_open_ports += "<p class='mb-1 bold label label-warning'>open_port: click to see more.</p> ";
+                    break;
+                }
+            }
+            for (j = 0; j < category.length; j++) {
+                html_categories += "<p class='mb-1 bold label label-info'>category:" + category[j] + "</p> ";
+                if (j == 10){
+                    html_categories += "<p class='mb-1 bold label label-info'>category: click to see more.</p> ";
+                    break;
+                }
+            }
+            html_scan_methods = "";
+            for (j = 0; j < scan_methods.length; j++) {
+                html_scan_methods += "<p class='mb-1 bold label label-primary'>scan_method:" + scan_methods[j] + "</p> ";
+                if (j == 10){
+                    html_scan_methods += "<p class='mb-1 bold label label-primary'>scan_method: click to see more.</p> ";
+                    break;
+                }
+            }
+            for (j = 0; j < description.length; j++) {
+                html_description += "<p class='mb-1 bold label label-success'>description:" + description[j] + "</p> ";
+                if (j == 10){
+                    html_description += "<p class='mb-1 bold label label-success'>description: click to see more.</p> ";
+                    break;
+                }
+            }
+
+            HTMLData += "<a target='_blank' href=\"/logs/get?host=" + host + "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
+                "                        <div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
+                "                            <h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
+                "                      class=\"bold label label-danger\">" + host + "</span></h3>\n" +
+                "                        </div></div>\n" + "<p class=\"mb-1\"> " + html_categories + html_scan_methods +
+                html_open_ports + html_description +
+                "                   </p>\n </a>";
+        }
+        document.getElementById('crawl_results').innerHTML = HTMLData;
+
+    }
+
+
+    function get_crawler_list(crawler_page) {
+        $.ajax({
+            type: "GET",
+            url: "/logs/get_list?page=" + crawler_page,
+            dataType: "text"
+        }).done(function (res) {
+            $("#login_first").addClass("hidden");
+            $("#crawl_results").removeClass("hidden");
+            $("#crw_refresh_btn").removeClass("hidden");
+            $("#crw_nxt_prv_btn").removeClass("hidden");
+            show_crawler(res);
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            if (errorThrown == "UNAUTHORIZED") {
+                $("#login_first").removeClass("hidden");
+                $("#crawl_results").addClass("hidden");
+                $("#crw_refresh_btn").addClass("hidden");
+                $("#crw_nxt_prv_btn").addClass("hidden");
+            }
+            else {
+                $("#login_first").addClass("hidden");
+                $("#crawl_results").removeClass("hidden");
+                $("#crw_refresh_btn").removeClass("hidden");
+                $("#crw_nxt_prv_btn").removeClass("hidden");
+            }
+        });
+    }
+
+
+    $("#crawler_btn").click(function () {
+        crawler_page = 1;
+        get_crawler_list(crawler_page);
+    });
+
+    $("#crw_refresh_btn_update").click(function () {
+        crawler_page = 1;
+        get_crawler_list(crawler_page);
+    });
+
+    $("#crw_refresh_btn_page").click(function () {
+        get_crawler_list(crawler_page);
+    });
+
+    $("#crw_previous_btn").click(function () {
+        crawler_page = crawler_page - 1;
+        get_crawler_list(crawler_page);
+    });
+
+    $("#crw_next_btn").click(function () {
+        crawler_page = crawler_page + 1;
+        get_crawler_list(crawler_page);
+    });
 
 });
