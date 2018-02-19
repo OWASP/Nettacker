@@ -14,7 +14,7 @@ from core._die import __die_failure
 from api.__database import submit_report_to_db
 from api.__database import submit_logs_to_db
 from api.__database import remove_old_logs
-from api.__database import __logs_to_report
+from api.__database import __logs_by_scan_id
 from core.config_builder import default_paths
 from core.config import _paths
 from core.config_builder import _builder
@@ -55,7 +55,7 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     _TIME = messages(language, 115)
     events_num = 0
     report_type = ""
-    JSON_FROM_DB = __logs_to_report(scan_id, language)
+    JSON_FROM_DB = __logs_by_scan_id(scan_id, language)
     JSON_Data = sorted(JSON_FROM_DB, key=sorted)
     if compatible.version() is 2:
         import sys

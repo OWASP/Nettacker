@@ -458,7 +458,7 @@ $(document).ready(function () {
                 }
             }
 
-            HTMLData += "<a target='_blank' href=\"/logs/get?host=" + host + "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
+            HTMLData += "<a target='_blank' href=\"/logs/get_html?host=" + host + "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
                 "                        <div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
                 "                            <h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
                 "                      class=\"bold label label-danger\">" + host + "</span></h3>\n" +

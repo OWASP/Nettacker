@@ -14,6 +14,8 @@ from core.alert import messages
 from api.api_core import __structure
 from flask import jsonify
 from core.compatible import version
+from core._time import now
+from core import compatible
 
 
 def create_connection(language):
@@ -211,7 +213,7 @@ def __last_host_logs(language, page):
     return selected
 
 
-def __logs_to_report(scan_id, language):
+def __logs_by_scan_id(scan_id, language):
     try:
         logs = []
         for log in send_read_query(
@@ -233,7 +235,29 @@ def __logs_to_report(scan_id, language):
         return []
 
 
-def __logs_by_host(host, language):
+def __logs_to_report_json(host, language):
+    try:
+        logs = []
+        for log in send_read_query(
+                "select scan_id,username,password,port,type,date,description from hosts_log where host=\"{0}\"".format(
+                    host), language):
+            data = {
+                "SCAN_ID": log[0],
+                "HOST": host,
+                "USERNAME": log[1],
+                "PASSWORD": log[2],
+                "PORT": log[3],
+                "TYPE": log[4],
+                "TIME": log[5],
+                "DESCRIPTION": log[6]
+            }
+            logs.append(data)
+        return logs
+    except:
+        return []
+
+
+def __logs_to_report_html(host, language):
     try:
         logs = []
         for log in send_read_query(
@@ -250,9 +274,25 @@ def __logs_by_host(host, language):
                 "DESCRIPTION": log[6]
             }
             logs.append(data)
-        return logs
+        from core.log import build_graph
+        if compatible.version() is 2:
+            import sys
+            reload(sys)
+            sys.setdefaultencoding('utf8')
+        _graph = build_graph("d3_tree_v2_graph", "en", logs, 'HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE',
+                             'DESCRIPTION')
+        from lib.html_log import _log_data
+        _table = _log_data.table_title.format(_graph, _log_data.css_1, 'HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE',
+                                              'DESCRIPTION', 'TIME')
+        for value in logs:
+            _table += _log_data.table_items.format(value['HOST'], value['USERNAME'], value['PASSWORD'],
+                                                   value['PORT'], value['TYPE'], value['DESCRIPTION'],
+                                                   value['TIME'])
+        _table += _log_data.table_end + '<p class="footer">' + messages("en", 93) \
+            .format(compatible.__version__, compatible.__code_name__, now()) + '</p>'
+        return _table
     except:
-        return []
+        return ""
 
 
 def __search_logs(language, page, query):
