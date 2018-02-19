@@ -326,10 +326,11 @@
                             class="glyphicon glyphicon-refresh"></span>
                         reload current page</a>
                 </div>
-                <form action="javascript:search()" class="col-sm-3">
-                    <input class="form-control form-inline" id="search_frm" placeholder="Search">
+
+                <form action="javascript:p_search();" class="col-sm-3">
+                    <input id="search_data" class="form-control form-inline" id="search_frm" placeholder="filter by host">
                 </form>
-                <button action="javascript:search()" type="submit" class="col-sm-1 btn btn-primary">Search</button>
+                <button id="search_btn" type="submit" class="col-sm-1 btn btn-primary">Search</button>
                 <br>
             </div>
             <br><br>

@@ -80,9 +80,9 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api
       scan_method, language, scan_cmd, ports     
     )
     VALUES (
-      '{0}', '{1}', '{2}', '{3}', '{4}',
-      '{5}', '{6}', '{7}', '{8}', '{9}',
-      '{10}', '{11}', '{12}', '{13}'
+      "{0}", "{1}", "{2}", "{3}", "{4}",
+      "{5}", "{6}", "{7}", "{8}", "{9}",
+      "{10}", "{11}", "{12}", "{13}"
     );
     """.format(date, scan_id, report_filename, events_num, verbose,
                api_flag, report_type, graph_flag, category, profile,
@@ -105,8 +105,8 @@ def submit_logs_to_db(language, log):
                       description, username, password, scan_id, scan_cmd    
                     )
                     VALUES (
-                      '{0}', '{1}', '{2}', '{3}', '{4}',
-                      '{5}', '{6}', '{7}', '{8}', '{9}'
+                      "{0}", "{1}", "{2}", "{3}", "{4}",
+                      "{5}", "{6}", "{7}", "{8}", "{9}"
                     );
                     """.format(log["HOST"], log["TIME"], log["PORT"], log["TYPE"], log["CATEGORY"],
                                log["DESCRIPTION"].encode('utf8') if version() is 2 else log["DESCRIPTION"],
@@ -147,7 +147,7 @@ def __select_results(language, page):
 def __get_result(language, id):
     try:
         try:
-            filename = send_read_query("""select report_filename from reports where id={0}""".format(id),
+            filename = send_read_query("""select report_filename from reports where id=\"{0}\";""".format(id),
                                        language).fetchone()[0]
             return open(filename, 'rb').read(), 200
         except:
@@ -253,3 +253,58 @@ def __logs_by_host(host, language):
         return logs
     except:
         return []
+
+
+def __search_logs(language, page, query):
+    page = int(page * 10 if page > 0 else page * -10) - 10
+    data_structure = {
+        "host": "",
+        "info": {
+            "open_ports": [],
+            "scan_methods": [],
+            "category": [],
+            "descriptions": []
+        }
+    }
+    selected = []
+    try:
+        for host in send_read_query(
+                """select host from hosts_log where host like \"%%{0}%%\" group by host order by id desc limit {1},10""".format(
+                    query, page), language):
+            for data in send_read_query(
+                    """select host,port,type,category,description from hosts_log where host="{0}" group by type,port,username,""" \
+                    """password,description order by id desc""".format(host[0]), language):
+                n = 0
+                capture = None
+                for selected_data in selected:
+                    if selected_data["host"] == host[0]:
+                        capture = n
+                    n += 1
+                if capture is None:
+                    tmp = {  # fix later, junks
+                        "host": data[0],
+                        "info": {
+                            "open_ports": [],
+                            "scan_methods": [],
+                            "category": [],
+                            "descriptions": []
+                        }
+                    }
+                    selected.append(tmp)
+                    n = 0
+                    for selected_data in selected:
+                        if selected_data["host"] == host[0]:
+                            capture = n
+                        n += 1
+                if data[0] == selected[capture]["host"]:
+                    if data[1] not in selected[capture]["info"]["open_ports"] and type(data[1]) is int:
+                        selected[capture]["info"]["open_ports"].append(data[1])
+                    if data[2] not in selected[capture]["info"]["scan_methods"]:
+                        selected[capture]["info"]["scan_methods"].append(data[2])
+                    if data[3] not in selected[capture]["info"]["category"]:
+                        selected[capture]["info"]["category"].append(data[3])
+                    if data[4] not in selected[capture]["info"]["descriptions"]:
+                        selected[capture]["info"]["descriptions"].append(data[4])
+    except:
+        return __structure(status="error", msg="database error!")
+    return selected

@@ -30,7 +30,7 @@ def __get_value(flask_request, _key):
             except:
                 key = None
     if key is not None:
-        key = key.replace("\"", "")
+        key = key.replace("\"", "").replace("'", "")
     return key
 
 

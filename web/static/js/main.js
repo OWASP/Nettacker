@@ -430,14 +430,14 @@ $(document).ready(function () {
             html_description = "";
             for (j = 0; j < open_ports.length; j++) {
                 html_open_ports += "<p class='mb-1 bold label label-warning'>open_port:" + open_ports[j] + "</p> ";
-                if (j == 10){
+                if (j == 10) {
                     html_open_ports += "<p class='mb-1 bold label label-warning'>open_port: click to see more.</p> ";
                     break;
                 }
             }
             for (j = 0; j < category.length; j++) {
                 html_categories += "<p class='mb-1 bold label label-info'>category:" + category[j] + "</p> ";
-                if (j == 10){
+                if (j == 10) {
                     html_categories += "<p class='mb-1 bold label label-info'>category: click to see more.</p> ";
                     break;
                 }
@@ -445,14 +445,14 @@ $(document).ready(function () {
             html_scan_methods = "";
             for (j = 0; j < scan_methods.length; j++) {
                 html_scan_methods += "<p class='mb-1 bold label label-primary'>scan_method:" + scan_methods[j] + "</p> ";
-                if (j == 10){
+                if (j == 10) {
                     html_scan_methods += "<p class='mb-1 bold label label-primary'>scan_method: click to see more.</p> ";
                     break;
                 }
             }
             for (j = 0; j < description.length; j++) {
                 html_description += "<p class='mb-1 bold label label-success'>description:" + description[j] + "</p> ";
-                if (j == 10){
+                if (j == 10) {
                     html_description += "<p class='mb-1 bold label label-success'>description: click to see more.</p> ";
                     break;
                 }
@@ -521,6 +521,46 @@ $(document).ready(function () {
     $("#crw_next_btn").click(function () {
         crawler_page = crawler_page + 1;
         get_crawler_list(crawler_page);
+    });
+
+
+    function _query_search() {
+
+        $.ajax({
+            type: "GET",
+            url: "/logs/search?q=" + $("#search_data").val(),
+            dataType: "text"
+        }).done(function (res) {
+            $("#login_first").addClass("hidden");
+            $("#crawl_results").removeClass("hidden");
+            $("#crw_refresh_btn").removeClass("hidden");
+            $("#crw_nxt_prv_btn").removeClass("hidden");
+            show_crawler(res);
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            if (errorThrown == "UNAUTHORIZED") {
+                $("#login_first").removeClass("hidden");
+                $("#crawl_results").addClass("hidden");
+                $("#crw_refresh_btn").addClass("hidden");
+                $("#crw_nxt_prv_btn").addClass("hidden");
+            }
+            else {
+                $("#login_first").addClass("hidden");
+                $("#crawl_results").removeClass("hidden");
+                $("#crw_refresh_btn").removeClass("hidden");
+                $("#crw_nxt_prv_btn").removeClass("hidden");
+            }
+        });
+
+    }
+
+    $("#search_btn").click(function () {
+        _query_search();
+    });
+
+    $("#search_data").keyup(function (event) {
+        if (event.keyCode === 13) {
+            _query_search();
+        }
     });
 
 });

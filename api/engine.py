@@ -36,6 +36,7 @@ from api.__database import __select_results
 from api.__database import __get_result
 from api.__database import __last_host_logs
 from api.__database import __logs_by_host
+from api.__database import __search_logs
 from api.__start_scan import __scan
 from core._time import now
 
@@ -189,6 +190,20 @@ def __get_logs():
     except:
         host = ""
     return jsonify(__logs_by_host(host, __language())), 200
+
+
+@app.route("/logs/search", methods=["GET"])
+def ___go_for_search_logs():
+    __api_key_check(app, flask_request, __language())
+    try:
+        page = int(__get_value(flask_request, "page"))
+    except:
+        page = 1
+    try:
+        query = __get_value(flask_request, "q")
+    except:
+        query = ""
+    return jsonify(__search_logs(__language(), page, query)), 200
 
 
 def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
