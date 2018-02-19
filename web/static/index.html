@@ -319,11 +319,18 @@
     <div id="crawler_area" class="hidden">
         <div id="crw_refresh_btn" class="hidden">
             <div class="row">
-                &nbsp;&nbsp;&nbsp;&nbsp;<a id="crw_refresh_btn_update" class="btn btn-info"><span
-                    class="glyphicon glyphicon-refresh"></span> last updates</a>
-                <a id="crw_refresh_btn_page" class="btn btn-success"><span class="glyphicon glyphicon-refresh"></span>
-                    reload current page</a>
-
+                <div class="col-sm-4"> &nbsp;&nbsp;&nbsp;&nbsp;
+                    <a id="crw_refresh_btn_update" class="btn btn-info"><span
+                            class="glyphicon glyphicon-refresh"></span> last updates</a>
+                    <a id="crw_refresh_btn_page" class="btn btn-success"><span
+                            class="glyphicon glyphicon-refresh"></span>
+                        reload current page</a>
+                </div>
+                <form action="javascript:search()" class="col-sm-3">
+                    <input class="form-control form-inline" id="search_frm" placeholder="Search">
+                </form>
+                <button action="javascript:search()" type="submit" class="col-sm-1 btn btn-primary">Search</button>
+                <br>
             </div>
             <br><br>
         </div>
@@ -335,7 +342,6 @@
         </ul>
         <br><br><br>
     </div>
-
     </body>
     <br><br>
 </div>
