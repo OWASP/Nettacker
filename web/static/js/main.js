@@ -355,9 +355,11 @@ $(document).ready(function () {
         }).fail(function (jqXHR, textStatus, errorThrown) {
             if (errorThrown == "UNAUTHORIZED") {
                 $("#login_first").removeClass("hidden");
-                $("#scan_results").addClass("hidden");
+                $("#get_results").addClass("hidden");
                 $("#refresh_btn").addClass("hidden");
                 $("#nxt_prv_btn").addClass("hidden");
+                $("#home").addClass("hidden");
+                $("#crawler_area").addClass("hidden");
             }
             else {
                 $("#login_first").addClass("hidden");
@@ -488,6 +490,8 @@ $(document).ready(function () {
                 $("#crawl_results").addClass("hidden");
                 $("#crw_refresh_btn").addClass("hidden");
                 $("#crw_nxt_prv_btn").addClass("hidden");
+                $("#home").addClass("hidden");
+                $("#crawler_area").addClass("hidden");
             }
             else {
                 $("#login_first").addClass("hidden");
@@ -542,6 +546,9 @@ $(document).ready(function () {
                 $("#crawl_results").addClass("hidden");
                 $("#crw_refresh_btn").addClass("hidden");
                 $("#crw_nxt_prv_btn").addClass("hidden");
+                $("#home").addClass("hidden");
+                $("#crawler_area").addClass("hidden");
+
             }
             else {
                 $("#login_first").addClass("hidden");
