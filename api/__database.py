@@ -309,8 +309,11 @@ def __search_logs(language, page, query):
     selected = []
     try:
         for host in send_read_query(
-                """select host from hosts_log where host like \"%%{0}%%\" group by host order by id desc limit {1},10""".format(
-                    query, page), language):
+                """select host from hosts_log where host like \"%%{0}%%\" or date like \"%%{0}%%\" or
+                port like \"%%{0}%%\" or type like \"%%{0}%%\" or category like \"%%{0}%%\" 
+                or description like \"%%{0}%%\" or username like \"%%{0}%%\" or password 
+                like \"%%{0}%%\" or scan_id like \"%%{0}%%\" or scan_cmd like \"%%{0}%%\"  
+                group by host order by id desc limit {1},10""".format(query, page), language):
             for data in send_read_query(
                     """select host,port,type,category,description from hosts_log where host="{0}" group by type,port,username,""" \
                     """password,description order by id desc""".format(host[0]), language):
