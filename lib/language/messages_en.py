@@ -194,7 +194,7 @@ def all_messages():
             "178": "{0} is up! Time taken to ping back is {1}",
             "179": "Cannot ping {0}!",
             "180": "this needs to be run as root"
-            "181": "admin_scan_http_method value must be GET or HEAD, set default to GET.",
+            "181": "admin_scan_http_method value must be GET or HEAD, set default to GET."
 
 
         }
