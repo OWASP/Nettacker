@@ -169,7 +169,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     new_extra_requirements[extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if extra_requirements["admin_scan_http_method"][0] not in http_methods:
-            warn(messages(language, 180))
+            warn(messages(language, 181))
             extra_requirements["admin_scan_http_method"] = ["GET"]
         random_agent_flag = True
         if extra_requirements["admin_scan_random_agent"][0] == "False":
