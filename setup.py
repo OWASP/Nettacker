@@ -8,6 +8,11 @@ from setuptools import find_packages
 
 
 def package_files(directory):
+    '''
+    This function was created to crawl the directory and find files (none python files) using os.walk
+    :param directory: path to crawl
+    :return: list of package files in an array
+    '''
     paths = []
     for (path, directories, filenames) in os.walk(directory):
         for filename in filenames:
@@ -15,10 +20,13 @@ def package_files(directory):
     return paths
 
 
+# read requirements from requirements.txt
 requirements = open("requirements.txt").read().rsplit()
 if int(sys.version_info[0]) is 2:
+    # add scapy requirement name for python 2.x
     requirements.append("scapy")
 else:
+    # add scapy requirement name for python 3.x
     requirements.append("scapy-python3")
 
 setup(
@@ -26,7 +34,7 @@ setup(
     version='0.0.1',
     description='OWASP Nettacker - Automated Penetration Testing Framework',
     packages=find_packages(),
-    package_data={"": package_files("web") + ["../api/database.sqlite3"]},
+    package_data={"": package_files("web") + ["../api/database.sqlite3"]},  # package files + database file
     include_package_data=True,
     install_requires=requirements,
     url="https://github.com/viraintel/OWASP-Nettacker",
@@ -42,5 +50,5 @@ setup(
                      " as SCADA. It would make a competitive edge compared to other scanner making it one of"
                      " the bests.",
     scripts=["scripts/nettacker.bat" if sys.platform == "win32" or sys.platform == "win64"
-             else "scripts/nettacker", "nettacker.py"]
+             else "scripts/nettacker", "nettacker.py"]  # script files for windows and other OS
 )

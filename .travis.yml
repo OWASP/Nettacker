@@ -22,6 +22,7 @@ os:
 install:
  - "pip install --upgrade setuptools"
  - "pip install --upgrade -r requirements.txt"
+ # scapy has different name in python 2.x and 3.x
  - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then pip install scapy; else pip install scapy-python3; fi
 
 # Run
