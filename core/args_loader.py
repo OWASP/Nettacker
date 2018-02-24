@@ -34,6 +34,16 @@ else:
 
 
 def load_all_args(module_names, graph_names):
+    """
+    create the ARGS and help menu
+
+    Args:
+        module_names: all module names
+        graph_names: all graph names
+
+    Returns:
+        the parser, the ARGS
+    """
     # Language Options
     # import libs
     default_config = _builder(_core_config(), _core_default_config())
@@ -207,6 +217,50 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                        method_args_list, wizard_mode, profile, start_api, api_host, api_port, api_debug_mode,
                        api_access_key, api_client_white_list, api_client_white_list_ips, api_access_log,
                        api_access_log_filename):
+    """
+    check all rules and requirements for ARGS
+
+    Args:
+        targets: targets from CLI
+        targets_list: targets_list from CLI
+        thread_number: thread numbers from CLI
+        thread_number_host: thread number for hosts from CLI
+        log_in_file: output file from CLI
+        scan_method: modules from CLI
+        exclude_method: exclude modules from CLI
+        users: usernames from CLI
+        users_list: username file from CLI
+        passwds: passwords from CLI
+        passwds_list: passwords file from CLI
+        timeout_sec: timeout seconds from CLI
+        ports: ports from CLI
+        parser: parser (argparse)
+        module_names: all module names
+        language: language from CLI
+        verbose_level: verbose level from CLI
+        show_version: show version flag from CLI
+        check_update: check for update flag from CLI
+        socks_proxy: socks proxy from CLI
+        retries: retries from from CLI
+        graph_flag: graph name from CLI
+        help_menu_flag: help menu flag from CLI
+        methods_args: modules ARGS flag from CLI
+        method_args_list: modules ARGS from CLI
+        wizard_mode: wizard mode flag from CLI
+        profile: profiles from CLI
+        start_api: start API flag from CLI
+        api_host: API host from CLI
+        api_port: API port from CLI
+        api_debug_mode: API debug mode flag from CLI
+        api_access_key: API access key from CLI
+        api_client_white_list: API client white list flag from CLI
+        api_client_white_list_ips: API client white list IPs from CLI
+        api_access_log: API access log log flag from CLI
+        api_access_log_filename: API access log filename from CLI
+
+    Returns:
+        all ARGS with applied rules
+    """
     # Checking Requirements
     # import libs
     from core import compatible
