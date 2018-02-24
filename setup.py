@@ -8,11 +8,15 @@ from setuptools import find_packages
 
 
 def package_files(directory):
-    '''
+    """
     This function was created to crawl the directory and find files (none python files) using os.walk
-    :param directory: path to crawl
-    :return: list of package files in an array
-    '''
+
+    Args:
+        directory: path to crawl
+
+    Returns:
+        list of package files in an array
+    """
     paths = []
     for (path, directories, filenames) in os.walk(directory):
         for filename in filenames:

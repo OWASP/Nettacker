@@ -19,11 +19,15 @@ from core import compatible
 
 
 def create_connection(language):
-    '''
+    """
     a function to create sqlite3 connections to db, it retries 100 times if connection returned an error
-    :param language: language
-    :return: sqlite3 connection if success otherwise False
-    '''
+
+    Args:
+        language: language
+
+    Returns:
+        sqlite3 connection if success otherwise False
+    """
     try:
         # retries
         for i in range(0, 100):
@@ -38,13 +42,17 @@ def create_connection(language):
 
 
 def send_submit_query(query, language):
-    '''
+    """
     a function to send submit based queries to db (such as insert and update or delete), it retries 100 times if
     connection returned an error.
-    :param query: query to execute
-    :param language: language
-    :return: True if submitted success otherwise False
-    '''
+
+    Args:
+        query: query to execute
+        language: language
+
+    Returns:
+        True if submitted success otherwise False
+    """
     conn = create_connection(language)
     if not conn:
         return False
@@ -65,12 +73,16 @@ def send_submit_query(query, language):
 
 
 def send_read_query(query, language):
-    '''
+    """
     a function to send read based queries to db (such as select), it retries 100 times if connection returned an error.
-    :param query: query to execute
-    :param language: language
-    :return: return executed query otherwise False
-    '''
+
+    Args:
+        query: query to execute
+        language: language
+
+    Returns:
+        return executed query otherwise False
+    """
     conn = create_connection(language)
     if not conn:
         return False
@@ -89,24 +101,28 @@ def send_read_query(query, language):
 
 def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api_flag, report_type, graph_flag,
                         category, profile, scan_method, language, scan_cmd, ports):
-    '''
+    """
     this function created to submit the generated reports into db, the files are not stored in db, just the path!
-    :param date: date and time
-    :param scan_id: scan hash id
-    :param report_filename: report full path and filename
-    :param events_num: length of events in the report
-    :param verbose: verbose level used to generated the report
-    :param api_flag: 0 (False) if scan run from CLI and 1 (True) if scan run from API
-    :param report_type: could be TEXT, JSON or HTML
-    :param graph_flag: name of the graph used (if it's HTML type)
-    :param category: category of the modules used in scan (vuln, scan, brute)
-    :param profile: profiles used in scan
-    :param scan_method: modules used in scan
-    :param language: scan report language
-    :param scan_cmd: scan command line if run in CLI otherwise messages(language, 158)
-    :param ports: selected port otherwise None
-    :return: return True if submitted otherwise False
-    '''
+
+    Args:
+        date: date and time
+        scan_id: scan hash id
+        report_filename: report full path and filename
+        events_num: length of events in the report
+        verbose: verbose level used to generated the report
+        api_flag: 0 (False) if scan run from CLI and 1 (True) if scan run from API
+        report_type: could be TEXT, JSON or HTML
+        graph_flag: name of the graph used (if it's HTML type)
+        category: category of the modules used in scan (vuln, scan, brute)
+        profile: profiles used in scan
+        scan_method: modules used in scan
+        language: scan report language
+        scan_cmd: scan command line if run in CLI otherwise messages(language, 158)
+        ports: selected port otherwise None
+
+    Returns:
+        return True if submitted otherwise False
+    """
     info(messages(language, 169))
     return send_submit_query("""
     INSERT INTO reports (
@@ -125,25 +141,33 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api
 
 
 def remove_old_logs(host, type, scan_id, language):
-    '''
+    """
     this function remove old events (and duplicated) from database based on host, module, scan_id
-    :param host: host
-    :param type: module name
-    :param scan_id: scan id hash
-    :param language: language
-    :return: True if success otherwise False
-    '''
+
+    Args:
+        host: host
+        type: module name
+        scan_id: scan id hash
+        language: language
+
+    Returns:
+        True if success otherwise False
+    """
     return send_submit_query("""delete from hosts_log where host="{0}" and type="{1}" and scan_id!="{2}" """
                              .format(host, type, scan_id), language)
 
 
 def submit_logs_to_db(language, log):
-    '''
+    """
     this function created to submit new events into database
-    :param language: language
-    :param log: log event in JSON type
-    :return: True if success otherwise False
-    '''
+
+    Args:
+        language: language
+        log: log event in JSON type
+
+    Returns:
+        True if success otherwise False
+    """
     if type(log) == str:
         log = json.loads(log)
     return send_submit_query("""
@@ -162,13 +186,17 @@ def submit_logs_to_db(language, log):
 
 
 def __select_results(language, page):
-    '''
+    """
     this function created to crawl into submitted results, it shows last 10 results submitted in the database.
     you may change the page (default 1) to go to next/previous page.
-    :param language: language
-    :param page: page number
-    :return: list of events in array and JSON type, otherwise an error in JSON type.
-    '''
+
+    Args:
+        language: language
+        page: page number
+
+    Returns:
+        list of events in array and JSON type, otherwise an error in JSON type.
+    """
     page = int(page * 10 if page > 0 else page * -10) - 10
     selected = []
     try:
@@ -198,12 +226,16 @@ def __select_results(language, page):
 
 
 def __get_result(language, id):
-    '''
+    """
     this function created to download results by the result ID.
-    :param language: language
-    :param id: result id
-    :return: result file content (TEXT, HTML, JSON) if success otherwise and error in JSON type.
-    '''
+
+    Args:
+        language: language
+        id: result id
+
+    Returns:
+        result file content (TEXT, HTML, JSON) if success otherwise and error in JSON type.
+    """
     try:
         try:
             filename = send_read_query("""select report_filename from reports where id=\"{0}\";""".format(id),
@@ -216,12 +248,16 @@ def __get_result(language, id):
 
 
 def __last_host_logs(language, page):
-    '''
+    """
     this function created to select the last 10 events from the database. you can goto next page by changing page value.
-    :param language: language
-    :param page: page number
-    :return: an array of events in JSON type if success otherwise an error in JSON type
-    '''
+
+    Args:
+        language: language
+        page: page number
+
+    Returns:
+        an array of events in JSON type if success otherwise an error in JSON type
+    """
     page = int(page * 10 if page > 0 else page * -10) - 10
     data_structure = {
         "host": "",
@@ -277,12 +313,16 @@ def __last_host_logs(language, page):
 
 
 def __logs_by_scan_id(scan_id, language):
-    '''
+    """
     select all events by scan id hash
-    :param scan_id: scan id hash
-    :param language: language
-    :return: an array with JSON events or an empty array
-    '''
+
+    Args:
+        scan_id: scan id hash
+        language: language
+
+    Returns:
+        an array with JSON events or an empty array
+    """
     try:
         logs = []
         for log in send_read_query(
@@ -305,12 +345,16 @@ def __logs_by_scan_id(scan_id, language):
 
 
 def __logs_to_report_json(host, language):
-    '''
+    """
     select all reports of a host
-    :param host: the host to search
-    :param language: language
-    :return: an array with JSON events or an empty array
-    '''
+
+    Args:
+        host: the host to search
+        language: language
+
+    Returns:
+        an array with JSON events or an empty array
+    """
     try:
         logs = []
         for log in send_read_query(
@@ -333,12 +377,16 @@ def __logs_to_report_json(host, language):
 
 
 def __logs_to_report_html(host, language):
-    '''
+    """
     generate HTML report with d3_tree_v2_graph for a host
-    :param host: the host
-    :param language: language
-    :return: HTML report
-    '''
+
+    Args:
+        host: the host
+        language: language
+
+    Returns:
+        HTML report
+    """
     try:
         logs = []
         for log in send_read_query(
@@ -377,13 +425,17 @@ def __logs_to_report_html(host, language):
 
 
 def __search_logs(language, page, query):
-    '''
+    """
     search in events (host, date, port, module, category, description, username, password, scan_id, scan_cmd)
-    :param language: language
-    :param page: page number
-    :param query: query to search
-    :return: an array with JSON structure of founded events or an empty array
-    '''
+
+    Args:
+        language: language
+        page: page number
+        query: query to search
+
+    Returns:
+        an array with JSON structure of founded events or an empty array
+    """
     page = int(page * 10 if page > 0 else page * -10) - 10
     data_structure = {
         "host": "",

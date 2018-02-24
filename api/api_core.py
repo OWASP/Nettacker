@@ -12,6 +12,16 @@ from flask import abort
 
 
 def __structure(status="", msg=""):
+    """
+    basic JSON message structure
+
+    Args:
+        status: status (ok, failed)
+        msg: the message content
+
+    Returns:
+        a JSON message
+    """
     return {
         "status": status,
         "msg": msg
@@ -19,6 +29,16 @@ def __structure(status="", msg=""):
 
 
 def __get_value(flask_request, _key):
+    """
+    get a value from GET, POST or CCOKIES
+
+    Args:
+        flask_request: the flask request
+        _key: the value name to find
+
+    Returns:
+        the value content if found otherwise None
+    """
     try:
         key = flask_request.args[_key]
     except:
@@ -30,11 +50,21 @@ def __get_value(flask_request, _key):
             except:
                 key = None
     if key is not None:
-        key = key.replace("\"", "").replace("'", "")
+        # fix it later
+        key = key.replace("\\\"", "\"").replace("\\\'", "\'")
     return key
 
 
 def __remove_non_api_keys(config):
+    """
+    a function to remove non-api keys while loading ARGV
+
+    Args:
+        config: all keys in JSON
+
+    Returns:
+        removed non-api keys in all keys in JSON
+    """
     non_api_keys = ["start_api", "api_host", "api_port", "api_debug_mode", "api_access_key", "api_client_white_list",
                     "api_client_white_list_ips", "api_access_log", "api_access_log", "api_access_log_filename",
                     "show_version", "check_update", "help_menu_flag", "targets_list", "users_list", "passwds_list",
@@ -47,12 +77,28 @@ def __remove_non_api_keys(config):
 
 
 def __is_login(app, flask_request):
+    """
+    check if session is valid
+
+    Args:
+        app: flask app
+        flask_request: flask request
+
+    Returns:
+        True if session is valid otherwise False
+    """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] == __get_value(flask_request, "key"):
         return True
     return False
 
 
 def __mime_types():
+    """
+    contains all mime types for HTTP request
+
+    Returns:
+        all mime types in json
+    """
     return {
         ".aac": "audio/aac",
         ".abw": "application/x-abiword",
@@ -126,10 +172,25 @@ def __mime_types():
 
 
 def root_dir():
+    """
+    find the root directory for web static files
+
+    Returns:
+        root path for static files
+    """
     return os.path.join(os.path.join(os.path.dirname(os.path.dirname(__file__)), "web"), "static")
 
 
 def get_file(filename):
+    """
+    open the requested file in HTTP requests
+
+    Args:
+        filename: path and the filename
+
+    Returns:
+        content of the file or abort(404)
+    """
     try:
         src = os.path.join(root_dir(), filename)
         return open(src, 'rb').read()
@@ -138,11 +199,30 @@ def get_file(filename):
 
 
 def __api_key_check(app, flask_request, language):
+    """
+    check the validity of API key
+
+    Args:
+        app: the flask app
+        flask_request: the flask request
+        language: language
+
+    Returns:
+        200 HTTP code if it's valid otherwise 401 error
+
+    """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != __get_value(flask_request, "key"):
         abort(401, messages(language, 160))
+    return
 
 
 def __languages():
+    """
+    define list of languages with country flag for API
+
+    Returns:
+        HTML code for each language with its country flag
+    """
     languages = [lang for lang in messages(-1, 0)]
     res = ""
     flags = {
@@ -174,6 +254,12 @@ def __languages():
 
 
 def __graphs():
+    """
+    all available graphs for API
+
+    Returns:
+        HTML content or available graphs
+    """
     res = """<label><input id="" type="radio" name="graph_flag" value="" class="radio"><a
                             class="label label-default">None</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""
     for graph in load_all_graphs():
@@ -183,6 +269,12 @@ def __graphs():
 
 
 def __profiles():
+    """
+    all available profiles for API
+
+    Returns:
+        HTML content or available profiles
+    """
     profiles = _builder(_profiles(), default_profiles())
     res = ""
     for profile in profiles:
@@ -192,6 +284,12 @@ def __profiles():
 
 
 def __scan_methods():
+    """
+    all available modules for API
+
+    Returns:
+        HTML content or available modules
+    """
     methods = load_all_modules()
     methods.remove("all")
     res = ""
@@ -204,6 +302,17 @@ def __scan_methods():
 
 
 def __rules(config, defaults, language):
+    """
+    Load ARGS from API requests and apply the rules
+
+    Args:
+        config: all user config
+        defaults: default config
+        language: language
+
+    Returns:
+        config with applied rules
+    """
     # Check Ranges
     config["check_ranges"] = True if config["check_ranges"] is not False else False
     # Check Subdomains
