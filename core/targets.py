@@ -12,6 +12,14 @@ from core.log import __log_into_file
 
 
 def target_to_host(target):
+    """
+    convert a target to host, example http://owasp.org to owasp.org or http://127.0.0.1 to 127.0.0.1
+    Args:
+        target: the target
+
+    Returns:
+        the host target
+    """
     if target_type(target) == 'HTTP':
         target = target.lower().replace('http://', '').replace('https://', '').rsplit('/')[0]
         if ':' in target:
@@ -20,6 +28,15 @@ def target_to_host(target):
 
 
 def target_type(target):
+    """
+    define the target type
+
+    Args:
+        target: the target
+
+    Returns:
+        the target type (SINGLE_IPv4, SINGLE_IPv6, RANGE_IPv4, DOMAIN, HTTP, CIDR_IPv4, UNKNOWN)
+    """
     if isIP(target):
         return 'SINGLE_IPv4'
     elif isIP6(target):
@@ -44,6 +61,26 @@ def target_type(target):
 
 def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
              language, verbose_level, retries, socks_proxy, enumerate_flag):
+    """
+    analysis and calulcate targets.
+
+    Args:
+        targets: targets
+        check_ranges: check IP range flag
+        check_subdomains: check subdomain flag
+        subs_temp: subdomain temp filename
+        range_temp: IP range tmp filename
+        log_in_file: output filename
+        time_sleep: time to sleep
+        language: language
+        verbose_level: verbose level number
+        retries: retries number
+        socks_proxy: socks proxy
+        enumerate_flag: enumerate flag
+
+    Returns:
+        a generator
+    """
     __log_into_file(range_temp, 'a', '', language)
     __log_into_file(subs_temp, 'a', '', language)
 

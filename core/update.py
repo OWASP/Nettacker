@@ -14,6 +14,18 @@ url = 'http://nettacker.z3r0d4y.com/version.py'
 
 
 def _update(__version__, __code_name__, language, socks_proxy):
+    """
+    update the framework
+
+    Args:
+        __version__: version number
+        __code_name__: code name
+        language: language
+        socks_proxy: socks proxy
+
+    Returns:
+        True if success otherwise None
+    """
     try:
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -31,10 +43,22 @@ def _update(__version__, __code_name__, language, socks_proxy):
             warn(messages(language, 85))
     except:
         warn(messages(language, 102))
-    return
+    return True
 
 
 def _check(__version__, __code_name__, language, socks_proxy):
+    """
+    check for update
+
+    Args:
+        __version__: version number
+        __code_name__: code name
+        language: language
+        socks_proxy: socks proxy
+
+    Returns:
+        True if success otherwise None
+    """
     try:
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -51,4 +75,4 @@ def _check(__version__, __code_name__, language, socks_proxy):
             warn(messages(language, 101))
     except:
         warn(messages(language, 102))
-    return
+    return True

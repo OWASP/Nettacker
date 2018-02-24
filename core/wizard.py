@@ -13,6 +13,29 @@ def __wizard(targets, thread_number, thread_number_host,
              log_in_file, scan_method, exclude_method, users,
              passwds, timeout_sec, ports, verbose_level,
              socks_proxy, retries, graph_flag, language):
+    """
+    start the framework in wizard mode
+
+    Args:
+        targets: targets (default value)
+        thread_number: thread number (default value)
+        thread_number_host: thread number for hosts (default value)
+        log_in_file: output filename (default value)
+        scan_method: module names (default value)
+        exclude_method: excluded module names (default value)
+        users: usernames (default value)
+        passwds: passwords (default value)
+        timeout_sec: timeout seconds (default value)
+        ports: port numbers (default value)
+        verbose_level: verbose level number (default value)
+        socks_proxy: socks proxy (default value)
+        retries: retries number (default value)
+        graph_flag: graph name (default value)
+        language: language
+
+    Returns:
+        an array with user inputs
+    """
     # default config
     module_name = scan_method[:]
     ex_module_name = scan_method[:]

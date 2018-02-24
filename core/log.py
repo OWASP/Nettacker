@@ -22,6 +22,23 @@ from core.compatible import version
 
 
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
+    """
+    build a graph
+
+    Args:
+        graph_flag: graph name
+        language: language
+        data: events in JSON type
+        _HOST: host key used in JSON
+        _USERNAME: username key used in JSON
+        _PASSWORD: password key used in JSON
+        _PORT: port key used in JSON
+        _TYPE: type key used in JSON
+        _DESCRIPTION: description key used in JSON
+
+    Returns:
+        graph in HTML type
+    """
     info(messages(language, 88))
     try:
         start = getattr(
@@ -35,17 +52,26 @@ def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, 
     return start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION)
 
 
-def _get_log_values(log_in_file):
-    o = open(log_in_file)
-    data = ''
-    for value in o:
-        if value[0] == '{':
-            data += value + ','
-    return data[:-1]
-
-
 def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_level, api_flag, profile, scan_method,
               ports):
+    """
+    sort all events, create log file in HTML/TEXT/JSON and remove old logs
+
+    Args:
+        log_in_file: output filename
+        language: language
+        graph_flag: graph name
+        scan_id: scan hash id
+        scan_cmd: scan cmd
+        verbose_level: verbose level number
+        api_flag: API flag
+        profile: profiles
+        scan_method: module names
+        ports: ports
+
+    Returns:
+        True if success otherwise None
+    """
     _HOST = messages(language, 53)
     _USERNAME = messages(language, 54)
     _PASSWORD = messages(language, 55)
@@ -130,6 +156,20 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
 
 
 def __log_into_file(filename, mode, data, language, final=False):
+    """
+    write a content into a file (support unicode) and submit logs in database. if final=False its writing log in
+    the database.
+
+    Args:
+        filename: the filename
+        mode: writing mode (a, ab, w, wb, etc.)
+        data: content
+        language: language
+        final: True if it's final report otherwise False (default False)
+
+    Returns:
+        True if success otherwise None
+    """
     if version() is 2:
 
         if _builder(_paths(), default_paths())["tmp_path"] in filename:
@@ -163,3 +203,4 @@ def __log_into_file(filename, mode, data, language, final=False):
                     save.write(data + '\n')
             else:
                 submit_logs_to_db(language, data)
+    return True

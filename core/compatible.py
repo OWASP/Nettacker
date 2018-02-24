@@ -11,10 +11,19 @@ __code_name__ = 'SAME'
 
 
 def _version_info():
+    """
+    version information of the framework
+
+    Returns:
+        an array of version and code name
+    """
     return [__version__, __code_name__]
 
 
 def logo():
+    """
+    OWASP Nettacker Logo
+    """
     from core.alert import write_to_api_console
     from core import color
     from core.color import finish
@@ -39,10 +48,24 @@ def logo():
 
 
 def version():
+    """
+    version of python
+
+    Returns:
+        integer version of python (2 or 3)
+    """
     return int(sys.version_info[0])
 
 
 def check(language):
+    """
+    check if framework compatible with the OS
+    Args:
+        language: language
+
+    Returns:
+        True if compatible otherwise None
+    """
     from core.color import finish
     if 'linux' in os_name() or 'darwin' in os_name():
         pass
@@ -63,14 +86,26 @@ def check(language):
     else:
         __die_failure(messages(language, 48))
     logo()
-    return
+    return True
 
 
 def os_name():
+    """
+    OS name
+
+    Returns:
+        OS name in string
+    """
     return sys.platform
 
 
 def is_windows():
+    """
+    check if the framework run in Windows OS
+
+    Returns:
+        True if its running on windows otherwise False
+    """
     if 'win32' == os_name() or 'win64' == os_name():
         return True
     return False

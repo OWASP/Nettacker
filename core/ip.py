@@ -12,6 +12,15 @@ from core.log import __log_into_file
 
 
 def getIPRange(IP):
+    """
+    get IPv4 range from RIPE online database
+
+    Args:
+        IP: IP address
+
+    Returns:
+        IP Range
+    """
     n = 0
     while 1:
         try:
@@ -32,12 +41,32 @@ def getIPRange(IP):
 
 
 def isIP(IP):
+    """
+    to check a value if its IPv4 address
+
+    Args:
+        IP: the value to check if its IPv4
+
+    Returns:
+         True if it's IPv4 otherwise False
+    """
     IP = str(IP)
     ip_flag=netaddr.valid_ipv4(IP)
     return ip_flag
 
 
 def IPRange(Range, range_temp, language):
+    """
+    IP range string to IPNetwork type
+
+    Args:
+        Range: IP range string
+        range_temp: range_temp filename
+        language: language
+
+    Returns:
+        an array of IP range in IPNetwork type
+    """
     myranges_now = open(range_temp).read().rsplit()
     if Range not in myranges_now:
         __log_into_file(range_temp, 'a', Range + '\n', language)
@@ -60,6 +89,15 @@ def IPRange(Range, range_temp, language):
 
 
 def _generate_IPRange(Range):
+    """
+    IP range to CIDR and IPNetwork type
+
+    Args:
+        Range: IP range
+
+    Returns:
+        an array with CIDRs
+    """
     if len(Range.rsplit('.')) is 7 and '-' in Range and '/' not in Range:
         if len(Range.rsplit('-')) is 2:
             start_ip, stop_ip = Range.rsplit('-')
@@ -75,6 +113,15 @@ def _generate_IPRange(Range):
         return []
 
 def isIP6(IP):
+    """
+    to check a value if its IPv6 address
+
+    Args:
+        IP: the value to check if its IPv6
+
+    Returns:
+         True if it's IPv6 otherwise False
+    """
     IP = str(IP)
     ip_flag=netaddr.valid_ipv6(IP)
     return ip_flag

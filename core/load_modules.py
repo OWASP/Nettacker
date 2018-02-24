@@ -18,6 +18,12 @@ from shutil import copyfile
 
 
 def load_all_graphs():
+    """
+    load all available graphs
+
+    Returns:
+        an array of graph names
+    """
     graph_names = []
     for _lib in glob(os.path.dirname(inspect.getfile(lib)) + '/*/*/engine.py'):
         if os.path.dirname(_lib).rsplit('\\' if is_windows() else '/')[
@@ -28,6 +34,12 @@ def load_all_graphs():
 
 
 def load_all_modules():
+    """
+    load all available modules
+
+    Returns:
+        an array of all module names
+    """
     # Search for Modules
     module_names = []
     for _lib in glob(os.path.dirname(inspect.getfile(lib)) + '/*/*/engine.py'):
@@ -40,6 +52,16 @@ def load_all_modules():
 
 
 def load_all_method_args(language, API=False):
+    """
+    load all ARGS method for each module
+
+    Args:
+        language: language
+        API: API Flag (default False)
+
+    Returns:
+        all ARGS method in JSON
+    """
     module_names = []
     modules_args = {}
     # get module names
@@ -72,6 +94,12 @@ def load_all_method_args(language, API=False):
 
 
 def __check_external_modules():
+    """
+    check external libraries if they are installed
+
+    Returns:
+        True if success otherwise None
+    """
     external_modules = ["argparse", "netaddr", "requests", "paramiko", "texttable", "socks", "win_inet_pton",
                         "flask", "sqlite3"]
     for module in external_modules:
@@ -110,4 +138,10 @@ def __check_external_modules():
 
 
 def load_file_path():
+    """
+    load home path
+
+    Returns:
+        value of home path
+    """
     return _builder(_core_config(), _core_default_config())["home_path"]
