@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in ur
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "Nettacker انجن شروع کر دیا ...\n\n",

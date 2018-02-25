@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in ar
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "بدأ تشغيل محرك نيتاكر ...\n\n",

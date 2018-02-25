@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in hi
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "नेटटाकर इंजन शुरू किया ...\n\n",

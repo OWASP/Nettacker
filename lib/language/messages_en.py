@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in en
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "Nettacker engine started ...\n\n",

@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in vi
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "Công cụ Nettacker bắt đầu ...\n\n",

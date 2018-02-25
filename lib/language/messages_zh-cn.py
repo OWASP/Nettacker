@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in zh-cn
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "Nettacker引擎启动...\n\n",

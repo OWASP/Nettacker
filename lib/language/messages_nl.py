@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in nl
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "Nettacker-motor begon ...\n\n",

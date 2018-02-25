@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in ru
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "Начался запуск Nettacker ... \n\n",

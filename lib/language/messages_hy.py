@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in hy
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "Nettacker շարժիչը սկսվեց ...\n\n",

@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in ko
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "Nettacker 엔진이 시작되었습니다 ...\n\n",

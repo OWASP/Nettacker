@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in fa
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "انجین Nettacker شروع به کار کرد...\n\n",
