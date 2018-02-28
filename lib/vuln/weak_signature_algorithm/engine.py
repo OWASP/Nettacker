@@ -16,7 +16,7 @@ import struct
 import re
 import os
 from OpenSSL import crypto
-import ssl,socket
+import ssl
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
@@ -29,7 +29,7 @@ from core.log import __log_into_file
 
 def extra_requirements_dict():
     return {
-        "weak_encryption_vuln_ports": [443]
+        "weak_encryption_vuln_ports": [21, 25, 110, 143, 443, 587, 990, 1080, 8080]
     }
 
 
@@ -64,19 +64,16 @@ def conn(targ, port, timeout_sec, socks_proxy):
 def Algorithm(target, port, timeout_sec, log_in_file, language, time_sleep,
           thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
-
         s = conn(target, port, timeout_sec, socks_proxy)
         if not s:
-        #     # can't connect to port warning
             return False
         else:
             cert = ssl.get_server_certificate((target, port))
             x509 = crypto.load_certificate(crypto.FILETYPE_PEM, cert)
             if(x509.get_signature_algorithm()== 'sha1WithRSAEncryption'):
-                 return True
+                return True
             else:
                 return False
-
     except Exception as e:
         # some error warning
         return False
@@ -89,7 +86,7 @@ def __weak_encryption(target, port, timeout_sec, log_in_file, language, time_sle
         info(messages(language, 140).format(target, port, 'Weak Encryption Algorithm : sha1WithRSAEncryption'))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'weak_encryption_algorithm_vuln',
-                           'DESCRIPTION': messages(language, 139).format('sha1WithRSAEncryption'), 'TIME': now(),
+                           'DESCRIPTION': messages(language, 139).format('Weak Encryption Algorithm : sha1WithRSAEncryption'), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
@@ -121,6 +118,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         keyboard_interrupt_flag = False
         for port in ports:
             port = int(port)
+            #print (port)
             t = threading.Thread(target=__weak_encryption,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
@@ -156,7 +154,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, 141).format('weak'))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'weak_encryption_algorithm_vuln',
-                               'DESCRIPTION': messages(language, 141).format('sha1WithRSAEncryption'), 'TIME': now(),
+                               'DESCRIPTION': messages(language, 141).format('Weak Encryption Algorithm : sha1WithRSAEncryption'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
