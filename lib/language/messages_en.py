@@ -203,5 +203,7 @@ def all_messages():
             "181": "admin_scan_http_method value must be GET or HEAD, set default to GET.",
             "182": "telnet connection to {0}:{1} timeout, skipping {2}:{3}",
             "183": "telnet connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step",
+            "184": "user: {0} pass:{1} host:{2} found!",
+            "185": "http basic auth connection to {0}:{1} timeout, skipping {2}:{3}",
 
-    }
+        }
