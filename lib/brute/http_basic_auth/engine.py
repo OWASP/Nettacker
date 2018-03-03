@@ -28,6 +28,7 @@ def extra_requirements_dict():
                                "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
                                "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
                                "admin123", ""],
+        "http_basic_auth_brute_ports": ["80"],
     }
 
 
@@ -50,29 +51,39 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
     while 1:
-        if timeout_sec is not None:
-            req = requests.get(target, timeout=timeout_sec, auth=(user, passwd))
-        else:
-            req = requests.get(target, auth=(user, passwd))
-        flag = 1
-        if req.status_code != 200:
+        target = str(target)+":"+str(port)
+        try:
+            if timeout_sec is not None:
+                req = requests.get(target, timeout=timeout_sec, auth=(user, passwd))
+            else:
+                req = requests.get(target, auth=(user, passwd))
+            flag = 1
+            if req.status_code != 200:
+                exit += 1
+                if exit is retries:
+                    warn(messages(language, 185).format(target, user, passwd, port))
+                    return 1
+                else:
+                    time.sleep(time_sleep)
+                    continue
+            elif req.status_code == 200:
+                flag = 0
+                if flag is 0:
+                    info(messages(language, 184).format(user, passwd, target, port))
+                    data = json.dumps(
+                        {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port,
+                         'TYPE': 'http_basic_auth_brute', 'DESCRIPTION': messages(language, 66), 'TIME': now(),
+                         'CATEGORY': "brute", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
+                    __log_into_file(log_in_file, 'a', data, language)
+                    __log_into_file(thread_tmp_filename, 'w', '0', language)
+        except:
             exit += 1
             if exit is retries:
-                warn(messages(language, 185).format(target, user, passwd))
+                warn(messages(language, 185).format(target, user, passwd, port))
                 return 1
             else:
                 time.sleep(time_sleep)
                 continue
-        elif req.status_code == 200:
-            flag = 0
-            if flag is 0:
-                info(messages(language, 184).format(user, passwd, target))
-                data = json.dumps(
-                    {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'http_basic_auth_brute',
-                     'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute",
-                     'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
-                __log_into_file(log_in_file, 'a', data, language)
-                __log_into_file(thread_tmp_filename, 'w', '0', language)
         return flag
 
 
@@ -89,6 +100,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             users = extra_requirements["http_basic_auth_brute_users"]
         if passwds is None:
             passwds = extra_requirements["http_basic_auth_brute_passwds"]
+        if ports is None:
+            ports = extra_requirements["http_basic_auth_brute_ports"]
         if target.lower().startswith('http://') or target.lower().startswith('https://'):
             pass
         else:
@@ -100,47 +113,52 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         __log_into_file(thread_tmp_filename, 'w', '1', language)
         trying = 0
         keyboard_interrupt_flag = False
-        for user in users:
-            for passwd in passwds:
-                t = threading.Thread(target=login,
-                                     args=(
-                                         user, passwd, target, ports, timeout_sec, log_in_file, language,
-                                         retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
-                threads.append(t)
-                t.start()
-                trying += 1
-                if verbose_level > 3:
-                    info(messages(language, 72).format(trying, total_req, num, total, target, ports, 'http_basic_auth_brute'))
-                while 1:
-                    try:
-                        if threading.activeCount() >= thread_number:
-                            time.sleep(0.01)
-                        else:
+        for port in ports:
+            for user in users:
+                for passwd in passwds:
+                    t = threading.Thread(target=login,
+                                         args=(
+                                             user, passwd, target, port, timeout_sec, log_in_file, language,
+                                             retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
+                    threads.append(t)
+                    t.start()
+                    trying += 1
+                    if verbose_level > 3:
+                        info(messages(language, 72).format(trying, total_req, num, total,
+                                                           target, port, 'http_basic_auth_brute'))
+                    while 1:
+                        try:
+                            if threading.activeCount() >= thread_number:
+                                time.sleep(0.01)
+                            else:
+                                break
+                        except KeyboardInterrupt:
+                            keyboard_interrupt_flag = True
                             break
-                    except KeyboardInterrupt:
-                        keyboard_interrupt_flag = True
+                    if keyboard_interrupt_flag:
                         break
                 if keyboard_interrupt_flag:
                     break
-            else:
+            if keyboard_interrupt_flag:
                 break
-        # wait for threads
-        kill_switch = 0
-        kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
-        while 1:
-            time.sleep(0.1)
-            kill_switch += 1
-            try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+            # wait for threads
+            kill_switch = 0
+            kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            while 1:
+                time.sleep(0.1)
+                kill_switch += 1
+                try:
+                    if threading.activeCount() is 1 or kill_switch is kill_time:
+                        break
+                except KeyboardInterrupt:
                     break
-            except KeyboardInterrupt:
-                break
-            thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-            if thread_write is 1 and verbose_level is not 0:
-                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'http_basic_auth_brute',
-                                   'DESCRIPTION': messages(language, 95), 'TIME': now(), 'CATEGORY': "brute",
-                                   'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
-                __log_into_file(log_in_file, 'a', data, language)
+                thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
+                if thread_write is 1 and verbose_level is not 0:
+                    data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
+                                       'TYPE': 'http_basic_auth_brute', 'DESCRIPTION': messages(language, 95),
+                                       'TIME': now(), 'CATEGORY': "brute", 'SCAN_ID': scan_id,
+                                       'SCAN_CMD': scan_cmd}) + "\n"
+                    __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
     else:
         warn(messages(language, 69).format('http_basic_auth_brute', target))
