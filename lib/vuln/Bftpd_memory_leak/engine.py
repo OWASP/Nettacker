@@ -67,15 +67,15 @@ def Memory_leak(target, port, timeout_sec, log_in_file, language, time_sleep,
             return False
         else:
             s.send("ehlo")
-            banner=s.recv(100)
-            banner=banner.split(" ")
+            banner = s.recv(100)
+            banner = banner.split(" ")
             if banner[1] == "bftpd":
-                version=banner[2]
-                if re.search("\d.\d.\d",version):
-                    version,sep,tail=version.rpartition(".")
+                version = banner[2]
+                if re.search("\d.\d.\d", version):
+                    version, sep, tail = version.rpartition(".")
                 else:
                     pass
-                if float(version)<4.7:
+                if float(version) < 4.7:
                     return True
                 else:
                     return False

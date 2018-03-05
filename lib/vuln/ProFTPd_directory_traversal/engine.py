@@ -67,10 +67,10 @@ def directory_traversal(target, port, timeout_sec, log_in_file, language, time_s
             return False
         else:
             s.send("ehlo")
-            banner=s.recv(100)
-            banner=banner.split(" ")
+            banner = s.recv(100)
+            banner = banner.split(" ")
             if banner[1] == "Proftpd":
-                vuln_list=["1.2.10rc2","1.2.10rc3","1.2.10","1.3.0rc2","1.3.0rc3","1.3.0rc4","1.3.0rc5","1.3.0","1.3.0rc1","1.3.0a","1.3.1rc1","1.3.1rc2","1.3.1rc3","1.3.1","1.3.2rc3","1.3.2","1.3.2d","1.3.2rc4","1.3.2E","1.3.2rc2","1.3.2rc1","1.3.2b","1.3.2a","1.3.2c","1.3.3","1.3.3a","1.3.3b","1.3.3rc2","1.3.3rc1","1.3.3rc3","1.3.3rc4"]
+                vuln_list = ["1.2.10rc2", "1.2.10rc3", "1.2.10", "1.3.0rc2", "1.3.0rc3", "1.3.0rc4", "1.3.0rc5", "1.3.0", "1.3.0rc1", "1.3.0a", "1.3.1rc1", "1.3.1rc2", "1.3.1rc3", "1.3.1", "1.3.2rc3", "1.3.2", "1.3.2d", "1.3.2rc4", "1.3.2E", "1.3.2rc2", "1.3.2rc1", "1.3.2b", "1.3.2a", "1.3.2c", "1.3.3", "1.3.3a", "1.3.3b", "1.3.3rc2", "1.3.3rc1", "1.3.3rc3", "1.3.3rc4"]
                 if banner[2] in vuln_list:
                     return True
                 else:

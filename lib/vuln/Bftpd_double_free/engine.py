@@ -67,9 +67,9 @@ def Double_free(target, port, timeout_sec, log_in_file, language, time_sleep,
             return False
         else:
             s.send("ehlo")
-            banner=s.recv(100)
-            banner=banner.split(" ")
-            if banner[1] == "bftpd" and banner[2]=="1.6.6":
+            banner = s.recv(100)
+            banner = banner.split(" ")
+            if banner[1] == "bftpd" and banner[2] == "1.6.6":
                 return True
             else:
                 return False

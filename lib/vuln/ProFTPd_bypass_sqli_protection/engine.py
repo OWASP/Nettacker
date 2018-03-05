@@ -67,8 +67,8 @@ def bypass_sqli_protection(target, port, timeout_sec, log_in_file, language, tim
             return False
         else:
             s.send("ehlo")
-            banner=s.recv(100)
-            banner=banner.split(" ")
+            banner = s.recv(100)
+            banner = banner.split(" ")
             if banner[1] == "Proftpd" and banner[2] == "1.3.1":
                 return True
             else:

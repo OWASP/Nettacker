@@ -67,8 +67,8 @@ def Parsecmd_overflow(target, port, timeout_sec, log_in_file, language, time_sle
             return False
         else:
             s.send("ehlo")
-            banner=s.recv(100)
-            banner=banner.split(" ")
+            banner = s.recv(100)
+            banner = banner.split(" ")
             if banner[1] == "bftpd":
                 if "1.6" in banner[2] or "1.7" in banner[2]:
                     return True
