@@ -27,7 +27,7 @@ from core.log import __log_into_file
 
 def extra_requirements_dict():
     return {
-        "bftpd_vuln_ports": [21, 990]
+        "Proftpd_vuln_ports": [21, 990]
     }
 
 
@@ -59,7 +59,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def Parsecmd_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
+def bypass_sqli_protection(target, port, timeout_sec, log_in_file, language, time_sleep,
           thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
@@ -69,11 +69,8 @@ def Parsecmd_overflow(target, port, timeout_sec, log_in_file, language, time_sle
             s.send("ehlo")
             banner=s.recv(100)
             banner=banner.split(" ")
-            if banner[1] == "bftpd":
-                if "1.6" in banner[2] or "1.7" in banner[2]:
-                    return True
-                else:
-                    return False
+            if banner[1] == "Proftpd" and banner[2] == "1.3.1":
+                return True
             else:
                 return False
     except Exception as e:
@@ -81,14 +78,14 @@ def Parsecmd_overflow(target, port, timeout_sec, log_in_file, language, time_sle
         return False
 
 
-def __Parsecmd_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
+def __bypass_sqli_protection(target, port, timeout_sec, log_in_file, language, time_sleep,
                  thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-    if Parsecmd_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
+    if bypass_sqli_protection(target, port, timeout_sec, log_in_file, language, time_sleep,
              thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-        info(messages(language, 140).format(target, port, 'Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'))
+        info(messages(language, 140).format(target, port, 'ProFTPD Server 1.3.1, with NLS support enabled, allows remote attackers to bypass SQL injection protection mechanisms via invalid, encoded multibyte characters, which are not properly handled in (1) mod_sql_mysql and (2) mod_sql_postgres.	CVE-2009-0543'))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'Bftpd_parsecmd_overflow_vuln',
-                           'DESCRIPTION': messages(language, 139).format('Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'), 'TIME': now(),
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'Proftpd_bypass_sqli_protection_vuln',
+                           'DESCRIPTION': messages(language, 139).format('ProFTPD Server 1.3.1, with NLS support enabled, allows remote attackers to bypass SQL injection protection mechanisms via invalid, encoded multibyte characters, which are not properly handled in (1) mod_sql_mysql and (2) mod_sql_postgres.	CVE-2009-0543'), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
@@ -108,7 +105,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     new_extra_requirements[extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["bftpd_vuln_ports"]
+            ports = extra_requirements["Proftpd_vuln_ports"]
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
@@ -120,7 +117,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         keyboard_interrupt_flag = False
         for port in ports:
             port = int(port)
-            t = threading.Thread(target=__Parsecmd_overflow,
+            t = threading.Thread(target=__bypass_sqli_protection,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
@@ -128,7 +125,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, 72).format(trying, total_req, num, total, target, port, 'Bftpd_parsecmd_overflow_vuln'))
+                    messages(language, 72).format(trying, total_req, num, total, target, port, 'Proftpd_bypass_sqli_protection_vuln'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -153,12 +150,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            info(messages(language, 141).format('Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'Bftpd_parsecmd_overflow_vuln',
-                               'DESCRIPTION': messages(language, 141).format('Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'), 'TIME': now(),
+            info(messages(language, 141).format('ProFTPD Server 1.3.1, with NLS support enabled, allows remote attackers to bypass SQL injection protection mechanisms via invalid, encoded multibyte characters, which are not properly handled in (1) mod_sql_mysql and (2) mod_sql_postgres.	CVE-2009-0543'))
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'Proftpd_bypass_sqli_protection_vuln',
+                               'DESCRIPTION': messages(language, 141).format('ProFTPD Server 1.3.1, with NLS support enabled, allows remote attackers to bypass SQL injection protection mechanisms via invalid, encoded multibyte characters, which are not properly handled in (1) mod_sql_mysql and (2) mod_sql_postgres.	CVE-2009-0543'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:
-        warn(messages(language, 69).format('Bftpd_parsecmd_overflow_vuln', target))
+        warn(messages(language, 69).format('Proftpd_bypass_sqli_protection_vuln', target))
