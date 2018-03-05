@@ -59,7 +59,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def Memory_leak(target, port, timeout_sec, log_in_file, language, time_sleep,
+def Parsecmd_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
           thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
@@ -70,12 +70,7 @@ def Memory_leak(target, port, timeout_sec, log_in_file, language, time_sleep,
             banner=s.recv(100)
             banner=banner.split(" ")
             if banner[1] == "bftpd":
-                version=banner[2]
-                if re.search("\d.\d.\d",version):
-                    version,sep,tail=version.rpartition(".")
-                else:
-                    pass
-                if float(version)<4.7:
+                if banner[2] == "1.6" or banner[2] == "1.7":
                     return True
                 else:
                     return False
@@ -86,14 +81,14 @@ def Memory_leak(target, port, timeout_sec, log_in_file, language, time_sleep,
         return False
 
 
-def __Memory_leak(target, port, timeout_sec, log_in_file, language, time_sleep,
+def __Parsecmd_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
                  thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-    if Memory_leak(target, port, timeout_sec, log_in_file, language, time_sleep,
+    if Parsecmd_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
              thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-        info(messages(language, 140).format(target, port, 'FTP server is prone to a memory leak vulnerability in the file rename function. CVE-2017-16892'))
+        info(messages(language, 140).format(target, port, 'Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'Bftpd_memory_leak_vuln',
-                           'DESCRIPTION': messages(language, 139).format('FTP server is prone to a memory leak vulnerability in the file rename function. CVE-2017-16892'), 'TIME': now(),
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'Bftpd_parsecmd_overflow_vuln',
+                           'DESCRIPTION': messages(language, 139).format('Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
@@ -125,7 +120,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         keyboard_interrupt_flag = False
         for port in ports:
             port = int(port)
-            t = threading.Thread(target=__Memory_leak,
+            t = threading.Thread(target=__Parsecmd_overflow,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
@@ -133,7 +128,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, 72).format(trying, total_req, num, total, target, port, 'Bftpd_memory_leak_vuln'))
+                    messages(language, 72).format(trying, total_req, num, total, target, port, 'Bftpd_parsecmd_overflow_vuln'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -158,12 +153,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            info(messages(language, 141).format('FTP server is prone to a memory leak vulnerability in the file rename function. CVE-2017-16892'))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'Bftpd_memory_leak_vuln',
-                               'DESCRIPTION': messages(language, 141).format('FTP server is prone to a memory leak vulnerability in the file rename function. CVE-2017-16892'), 'TIME': now(),
+            info(messages(language, 141).format('Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'))
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'Bftpd_parsecmd_overflow_vuln',
+                               'DESCRIPTION': messages(language, 141).format('Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:
-        warn(messages(language, 69).format('Bftpd_memory_leak_vuln', target))
+        warn(messages(language, 69).format('Bftpd_parsecmd_overflow_vuln', target))
