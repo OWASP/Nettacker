@@ -224,7 +224,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         extra_requirements = new_extra_requirements
         if ports is None:
             ports = extra_requirements["port_scan_ports"]
-        if extra_requirements["port_scan_stealth"][0].lower() == "true":
+        try:
+            if extra_requirements["port_scan_stealth"][0].lower() == "true":
+                stealth_flag = True
+        except:
             stealth_flag = True
         else:
             stealth_flag = False
