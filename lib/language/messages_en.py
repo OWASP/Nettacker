@@ -209,4 +209,7 @@ def all_messages():
             "187": "http form authentication failed to {0}:{3} using {1}:{2}",
             "188": "http ntlm authentication success - host:{2}:{3}, user: {0}, pass:{1} found!",
             "189": "http ntlm authentication failed to {0}:{3} using {1}:{2}",
+            "190": "cannot get response from target",
+            "191": "category: {0}, frameworks: {1} found!",
+            "192": "nothing found on {0} in {1}!"
         }
