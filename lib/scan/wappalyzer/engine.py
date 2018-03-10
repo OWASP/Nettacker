@@ -56,7 +56,7 @@ def _parse_webpage(target,timeout_sec, language, retries, socks_proxy,scan_cmd, 
     except:
         tries += 1
         if tries >= retries:
-            info(messages(language, 184))
+            info(messages(language, 190))
             return
 
 
@@ -170,7 +170,7 @@ def analyze(target, timeout_sec, log_in_file, language,
         inv_map[v] = inv_map.get(v, [])
         inv_map[v].append(k)
     for x in inv_map.items():
-        info(messages(language, 185).format(x[0], ', '.join(x[1])))
+        info(messages(language, 191).format(x[0], ', '.join(x[1])))
         data = json.dumps(
             {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'wappalyzer_scan',
             'DESCRIPTION': x[0] + ': ' + ', '.join(x[1]), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
@@ -223,7 +223,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1:
-            info(messages(language, 186).format(target, "wappalyzer_scan"))
+            info(messages(language, 192).format(target, "wappalyzer_scan"))
             if verbose_level is not 0:
                 data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'wappalyzer_scan',
                      'DESCRIPTION': messages(language, 162), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
