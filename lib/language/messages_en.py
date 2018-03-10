@@ -203,8 +203,13 @@ def all_messages():
             "181": "admin_scan_http_method value must be GET or HEAD, set default to GET.",
             "182": "telnet connection to {0}:{1} timeout, skipping {2}:{3}",
             "183": "telnet connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step",
-            "184": "cannot get response from target",
-            "185": "category: {0}, frameworks: {1} found!",
-            "186": "nothing found on {0} in {1}!"
-
-    }
+            "184": "http basic authentication success - host:{2}:{3}, user: {0}, pass:{1} found!",
+            "185": "http basic authentication failed to {0}:{3} using {1}:{2}",
+            "186": "http form authentication success - host:{2}:{3}, user: {0}, pass:{1} found!",
+            "187": "http form authentication failed to {0}:{3} using {1}:{2}",
+            "188": "http ntlm authentication success - host:{2}:{3}, user: {0}, pass:{1} found!",
+            "189": "http ntlm authentication failed to {0}:{3} using {1}:{2}",
+            "190": "cannot get response from target",
+            "191": "category: {0}, frameworks: {1} found!",
+            "192": "nothing found on {0} in {1}!"
+        }

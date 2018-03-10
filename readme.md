@@ -98,16 +98,19 @@ Method:
   Scan method options
 
   -m SCAN_METHOD, --method SCAN_METHOD
-                        choose scan method ['ftp_brute', 'smtp_brute',
-                        'ssh_brute', 'dir_scan', 'subdomain_scan',
-                        'tcp_connect_port_scan',
-                        'viewdns_reverse_ip_lookup_scan', 'heartbleed_vuln',
-                        'all']
+                        choose scan method ['admin_scan', 'subdomain_scan', 'icmp_scan', 
+                         'pma_scan', 'dir_scan', 'viewdns_reverse_ip_lookup_scan',
+                         'port_scan', 'CCS_injection_vuln', 'ssl_certificate_expired_vuln', 
+                         'heartbleed_vuln', 'weak_signature_algorithm_vuln', 
+                         'wordpress_dos_cve_2018_6389_vuln', 'self_signed_certificate_vuln', 
+                         'smtp_brute', 'ssh_brute', 'ftp_brute', 'telnet_brute', 'all']
   -x EXCLUDE_METHOD, --exclude EXCLUDE_METHOD
-                        choose scan method to exclude ['ftp_brute',
-                        'smtp_brute', 'ssh_brute', 'dir_scan',
-                        'subdomain_scan', 'tcp_connect_port_scan',
-                        'viewdns_reverse_ip_lookup_scan', 'heartbleed_vuln']
+                        choose scan method to exclude ['admin_scan', 'subdomain_scan', 'icmp_scan', 
+                         'pma_scan', 'dir_scan', 'viewdns_reverse_ip_lookup_scan', 
+                         'port_scan', 'CCS_injection_vuln','ssl_certificate_expired_vuln',
+                         'heartbleed_vuln', 'weak_signature_algorithm_vuln',
+                         'wordpress_dos_cve_2018_6389_vuln', 'self_signed_certificate_vuln', 
+                         'smtp_brute', 'ssh_brute', 'ftp_brute', 'telnet_brute']
   -u USERS, --usernames USERS
                         username(s) list, separate with ","
   -U USERS_LIST, --users-list USERS_LIST
