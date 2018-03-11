@@ -102,3 +102,13 @@ Relevant styles below
     font-size: 40px;
 }
 
+.list-group-item{
+    overflow: scroll;
+}
+
+.label{
+    display: inline-block !important;
+    padding: 0.6em .5em 0.6em !important;
+    margin-bottom: 5px;
+    font-size: 78% !important; 
+}
