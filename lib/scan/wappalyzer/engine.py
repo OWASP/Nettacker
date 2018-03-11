@@ -22,11 +22,12 @@ def extra_requirements_dict():
     return {}
 
 
-def _parse_webpage(target,timeout_sec, language, retries, socks_proxy,scan_cmd, scan_id):
-    webpage={}
+def _parse_webpage(target, timeout_sec, language, retries, socks_proxy, scan_cmd, scan_id):
+    webpage = {}
     tries = 0
     if socks_proxy is not None:
-        socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+        socks_version = socks.SOCKS5 if socks_proxy.startswith(
+            'socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.rsplit('://')[1]
         if '@' in socks_proxy:
             socks_username = socks_proxy.rsplit(':')[0]
@@ -37,7 +38,8 @@ def _parse_webpage(target,timeout_sec, language, retries, socks_proxy,scan_cmd, 
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
         else:
-            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socks.set_default_proxy(socks_version, str(
+                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
     try:
@@ -49,14 +51,15 @@ def _parse_webpage(target,timeout_sec, language, retries, socks_proxy,scan_cmd, 
         webpage['headers'] = response.headers
         webpage['response'] = response.text
         webpage['html'] = BeautifulSoup(response.text, 'html.parser')
-        webpage['scripts'] = [script['src'] for script in webpage['html'].findAll('script', src=True)]
+        webpage['scripts'] = [script['src']
+                              for script in webpage['html'].findAll('script', src=True)]
         webpage['metatags'] = {meta['name'].lower(): meta['content']
-                    for meta in webpage['html'].findAll('meta', attrs=dict(name=True, content=True))}
+                               for meta in webpage['html'].findAll('meta', attrs=dict(name=True, content=True))}
         return webpage
     except:
         tries += 1
         if tries >= retries:
-            info(messages(language,"no_response"))
+            info(messages(language, "no_response"))
             return
 
 
@@ -149,9 +152,10 @@ def _get_implied_apps(detected_apps, apps1):
 
 
 def analyze(target, timeout_sec, log_in_file, language,
-                                 time_sleep, thread_tmp_filename, retries,
-                                 socks_proxy, scan_id, scan_cmd):
-    webpage = _parse_webpage(target,timeout_sec, language, retries, socks_proxy,scan_cmd, scan_id)
+            time_sleep, thread_tmp_filename, retries,
+            socks_proxy, scan_id, scan_cmd):
+    webpage = _parse_webpage(
+        target, timeout_sec, language, retries, socks_proxy, scan_cmd, scan_id)
     obj = json.loads(pkg_resources.resource_string(__name__, "apps.json"))
     apps = obj['apps']
     detected = []
@@ -170,11 +174,12 @@ def analyze(target, timeout_sec, log_in_file, language,
         inv_map[v] = inv_map.get(v, [])
         inv_map[v].append(k)
     for x in inv_map.items():
-        info(messages(language,"category_framework").format(x[0], ', '.join(x[1])))
+        info(messages(language, "category_framework").format(
+            x[0], ', '.join(x[1])))
         data = json.dumps(
             {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'wappalyzer_scan',
-            'DESCRIPTION': x[0] + ': ' + ', '.join(x[1]), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-            'SCAN_CMD': scan_cmd})
+             'DESCRIPTION': x[0] + ': ' + ', '.join(x[1]), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+             'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
 
 
@@ -199,8 +204,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         t.start()
         trying += 1
         if verbose_level > 3:
-            info(messages(language,"trying_message").format(trying, total_req, num, total, target_to_host(target),
-                                               "", 'dir_scan'))
+            info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target),
+                                                             "", 'dir_scan'))
         while 1:
             try:
                 if threading.activeCount() >= thread_number:
@@ -212,7 +217,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
 
         # wait for threads
         kill_switch = 0
-        kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+        kill_time = int(
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
@@ -223,12 +229,14 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1:
-            info(messages(language,"nothing_found").format(target, "wappalyzer_scan"))
+            info(messages(language, "nothing_found").format(
+                target, "wappalyzer_scan"))
             if verbose_level is not 0:
                 data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'wappalyzer_scan',
-                     'DESCRIPTION': messages(language,"not_found"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                     'SCAN_CMD': scan_cmd})
+                                   'DESCRIPTION': messages(language, "not_found"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                                   'SCAN_CMD': scan_cmd})
                 __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
     else:
-        warn(messages(language,"input_target_error").format('wappalyzer_scan', target))
+        warn(messages(language, "input_target_error").format(
+            'wappalyzer_scan', target))

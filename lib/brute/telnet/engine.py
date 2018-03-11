@@ -23,10 +23,10 @@ def extra_requirements_dict():
     return {
         "telnet_brute_users": ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
         "telnet_brute_passwds": ["admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
-                              "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
-                              "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
-                              "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
-                              "admin123", ""],
+                                 "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
+                                 "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
+                                 "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
+                                 "admin123", ""],
         "telnet_brute_ports": ["23"]
     }
 
@@ -35,7 +35,8 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
           socks_proxy):
     exit = 0
     if socks_proxy is not None:
-        socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+        socks_version = socks.SOCKS5 if socks_proxy.startswith(
+            'socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.rsplit('://')[1]
         if '@' in socks_proxy:
             socks_username = socks_proxy.rsplit(':')[0]
@@ -46,7 +47,8 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
         else:
-            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socks.set_default_proxy(socks_version, str(
+                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
     while 1:
@@ -60,7 +62,8 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         except:
             exit += 1
             if exit is retries:
-                warn(messages(language,"telnet_connection_timeout").format(target, port, user, passwd))
+                warn(messages(language, "telnet_connection_timeout").format(
+                    target, port, user, passwd))
                 return 1
         time.sleep(time_sleep)
     flag = 1
@@ -69,13 +72,14 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         tn.write(user + "\n")
         tn.read_until("Password: ")
         tn.write(passwd + "\n")
-        flag=0
+        flag = 0
     except:
         pass
     if flag is 0:
-        info(messages(language,"user_pass_found").format(user, passwd, target, port))
+        info(messages(language, "user_pass_found").format(
+            user, passwd, target, port))
         data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'telnet_brute',
-                           'DESCRIPTION': messages(language,"login_successful"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
+                           'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
         __log_into_file(log_in_file, 'a', data, language)
         __log_into_file(thread_tmp_filename, 'w', '0', language)
     else:
@@ -87,7 +91,8 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
                       socks_proxy):
     exit = 0
     if socks_proxy is not None:
-        socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+        socks_version = socks.SOCKS5 if socks_proxy.startswith(
+            'socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.rsplit('://')[1]
         if '@' in socks_proxy:
             socks_username = socks_proxy.rsplit(':')[0]
@@ -98,13 +103,15 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
         else:
-            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socks.set_default_proxy(socks_version, str(
+                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
     while 1:
         try:
             if timeout_sec is not None:
-                tn = telnetlib.Telnet(host=target, port=int(port), timeout=timeout_sec)
+                tn = telnetlib.Telnet(
+                    host=target, port=int(port), timeout=timeout_sec)
             else:
                 tn = telnetlib.Telnet(host=target, port=int(port))
             exit = 0
@@ -112,9 +119,11 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
         except:
             exit += 1
             if exit is retries:
-                error(messages(language,"telnet_connection_failed").format(target, port, str(num), str(total)))
+                error(messages(language, "telnet_connection_failed").format(
+                    target, port, str(num), str(total)))
                 try:
-                    __log_into_file(ports_tmp_filename, 'a', str(port), language)
+                    __log_into_file(ports_tmp_filename, 'a',
+                                    str(port), language)
                 except:
                     pass
                 break
@@ -135,7 +144,8 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         t.start()
         trying += 1
         if verbose_level > 3:
-            info(messages(language,"trying_message").format(trying, total_req, num, total, target, port, 'telnet_brute'))
+            info(messages(language, "trying_message").format(
+                trying, total_req, num, total, target, port, 'telnet_brute'))
         while 1:
             n = 0
             for thread in threads:
@@ -175,7 +185,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if methods_args is not None:
             for extra_requirement in extra_requirements_dict():
                 if extra_requirement in methods_args:
-                    new_extra_requirements[extra_requirement] = methods_args[extra_requirement]
+                    new_extra_requirements[
+                        extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if users is None:
             users = extra_requirements["telnet_brute_users"]
@@ -209,7 +220,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     t.start()
                     trying += 1
                     if verbose_level > 3:
-                        info(messages(language,"trying_message").format(trying, total_req, num, total, target, port, 'telnet_brute'))
+                        info(messages(language, "trying_message").format(
+                            trying, total_req, num, total, target, port, 'telnet_brute'))
                     while 1:
                         try:
                             if threading.activeCount() >= thread_number:
@@ -228,7 +240,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
 
         # wait for threads
         kill_switch = 0
-        kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+        kill_time = int(
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
@@ -240,9 +253,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'telnet_brute',
-                               'DESCRIPTION': messages(language,"no_user_passwords"), 'TIME': now(), 'CATEGORY': "brute",
+                               'DESCRIPTION': messages(language, "no_user_passwords"), 'TIME': now(), 'CATEGORY': "brute",
                                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
     else:
-        warn(messages(language,"input_target_error").format('telnet_brute', target))
+        warn(messages(language, "input_target_error").format('telnet_brute', target))
