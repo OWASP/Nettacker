@@ -62,7 +62,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         except:
             exit += 1
             if exit is retries:
-                warn(messages(language, 65).format(target, port, user, passwd))
+                warn(messages(language,"ftp_connection_timeout").format(target, port, user, passwd))
                 return 1
         time.sleep(time_sleep)
     flag = 1
@@ -75,14 +75,14 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         try:
             tmpl = []
             tmp = my_ftp.retrlines('LIST', tmpl.append)
-            info(messages(language, 70).format(user, passwd, target, port))
+            info(messages(language,"user_pass_found").format(user, passwd, target, port))
             data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ftp_brute',
-                               'DESCRIPTION': messages(language, 66), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
+                               'DESCRIPTION': messages(language,"login_successful"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
         except:
-            info(messages(language, 70).format(user, passwd, target, port) + ' ' + messages(language, 71))
+            info(messages(language,"user_pass_found").format(user, passwd, target, port) + ' ' + messages(language,"file_listing_error"))
             data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'FTP',
-                               'DESCRIPTION': messages(language, 67), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
+                               'DESCRIPTION': messages(language,"login_list_error"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
         __log_into_file(thread_tmp_filename, 'w', '0', language)
     else:
@@ -120,7 +120,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
         except:
             exit += 1
             if exit is retries:
-                error(messages(language, 68).format(target, port, str(num), str(total)))
+                error(messages(language,"ftp_connection_failed").format(target, port, str(num), str(total)))
                 try:
                     __log_into_file(ports_tmp_filename, 'a', str(port), language)
                 except:
@@ -144,7 +144,7 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         t.start()
         trying += 1
         if verbose_level > 3:
-            info(messages(language, 72).format(trying, total_req, num, total, target, port, 'ftp_brute'))
+            info(messages(language,"trying_message").format(trying, total_req, num, total, target, port, 'ftp_brute'))
         while 1:
             n = 0
             for thread in threads:
@@ -219,7 +219,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     t.start()
                     trying += 1
                     if verbose_level > 3:
-                        info(messages(language, 72).format(trying, total_req, num, total, target, port, 'ftp_brute'))
+                        info(messages(language,"trying_message").format(trying, total_req, num, total, target, port, 'ftp_brute'))
                     while 1:
                         try:
                             if threading.activeCount() >= thread_number:
@@ -250,9 +250,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ftp_brute',
-                               'DESCRIPTION': messages(language, 95), 'TIME': now(), 'CATEGORY': "brute",
+                               'DESCRIPTION': messages(language,"no_user_passwords"), 'TIME': now(), 'CATEGORY': "brute",
                                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
     else:
-        warn(messages(language, 69).format('ftp_brute', target))
+        warn(messages(language,"input_target_error").format('ftp_brute', target))
