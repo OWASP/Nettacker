@@ -86,7 +86,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         except:
             exit += 1
             if exit is retries:
-                warn(messages(language, 187).format(target, user, passwd))
+                warn(messages(language, 187).format(target, user, passwd, port))
                 return 1
             else:
                 time.sleep(time_sleep)
