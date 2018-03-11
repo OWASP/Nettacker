@@ -51,12 +51,12 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
     while 1:
-        target = str(target)+":"+str(port)
+        target_host = str(target)+":"+str(port)
         try:
             if timeout_sec is not None:
-                req = requests.get(target, timeout=timeout_sec, auth=(user, passwd))
+                req = requests.get(target_host, timeout=timeout_sec, auth=(user, passwd))
             else:
-                req = requests.get(target, auth=(user, passwd))
+                req = requests.get(target_host, auth=(user, passwd))
             flag = 1
             if req.status_code != 200:
                 exit += 1
