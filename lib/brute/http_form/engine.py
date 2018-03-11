@@ -71,7 +71,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
     while 1:
-        target = str(target)+":"+str(port)
+        target_host = str(target)+":"+str(port)
         flag = 1
         try:
             cookiejar = http.cookiejar.FileCookieJar("cookies")
@@ -93,9 +93,9 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                 continue
         try:
             if timeout_sec is not None:
-                brute_force_response = opener.open(target, data=post_data, timeout=timeout_sec)
+                brute_force_response = opener.open(target_host, data=post_data, timeout=timeout_sec)
             else:
-                brute_force_response = opener.open(target, data=post_data)
+                brute_force_response = opener.open(target_host, data=post_data)
             if brute_force_response.code == 200:
                 flag = 0
                 if flag is 0:
