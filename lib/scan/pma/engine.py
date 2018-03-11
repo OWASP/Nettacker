@@ -61,7 +61,8 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
     time.sleep(time_sleep)
     try:
         if socks_proxy is not None:
-            socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+            socks_version = socks.SOCKS5 if socks_proxy.startswith(
+                'socks5://') else socks.SOCKS4
             socks_proxy = socks_proxy.rsplit('://')[1]
             if '@' in socks_proxy:
                 socks_username = socks_proxy.rsplit(':')[0]
@@ -72,30 +73,34 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
             else:
-                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+                socks.set_default_proxy(socks_version, str(
+                    socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
         n = 0
         while 1:
             try:
                 if http_method == "GET":
-                    r = requests.get(target, timeout=timeout_sec, headers=user_agent)
+                    r = requests.get(
+                        target, timeout=timeout_sec, headers=user_agent)
                 elif http_method == "HEAD":
-                    r = requests.head(target, timeout=timeout_sec, headers=user_agent)
+                    r = requests.head(
+                        target, timeout=timeout_sec, headers=user_agent)
                 content = r.content
                 break
             except:
                 n += 1
                 if n is retries:
-                    warn(messages(language,"http_connection_timeout").format(target))
+                    warn(messages(language, "http_connection_timeout").format(target))
                     return 1
         if r.status_code in status_codes:
-            info(messages(language,"found").format(target, r.status_code, r.reason))
+            info(messages(language, "found").format(
+                target, r.status_code, r.reason))
             __log_into_file(thread_tmp_filename, 'w', '0', language)
             __log_into_file(log_in_file, 'a',
                             json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
                                         'PORT': "", 'TYPE': 'pma_scan',
-                                        'DESCRIPTION': messages(language,"found").format(target, r.status_code, r.reason),
+                                        'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
                                         'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
                                         'SCAN_CMD': scan_cmd}) + '\n', language)
         return True
@@ -106,10 +111,11 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
 def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, verbose_level, trying, total_req, total,
          num, language):
     if verbose_level > 3:
-        info(messages(language,"trying_message").format(trying, total_req, num, total, target_to_host(target), "default_port",
-                                           'pma_scan'))
+        info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target), "default_port",
+                                                         'pma_scan'))
     if socks_proxy is not None:
-        socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+        socks_version = socks.SOCKS5 if socks_proxy.startswith(
+            'socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.rsplit('://')[1]
         if '@' in socks_proxy:
             socks_username = socks_proxy.rsplit(':')[0]
@@ -120,16 +126,19 @@ def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, ver
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
         else:
-            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socks.set_default_proxy(socks_version, str(
+                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
     n = 0
     while 1:
         try:
             if http_method == "GET":
-                r = requests.get(target, timeout=timeout_sec, headers=user_agent)
+                r = requests.get(target, timeout=timeout_sec,
+                                 headers=user_agent)
             elif http_method == "HEAD":
-                r = requests.head(target, timeout=timeout_sec, headers=user_agent)
+                r = requests.head(target, timeout=timeout_sec,
+                                  headers=user_agent)
             return 0
         except:
             n += 1
@@ -168,10 +177,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if methods_args is not None:
             for extra_requirement in extra_requirements_dict():
                 if extra_requirement in methods_args:
-                    new_extra_requirements[extra_requirement] = methods_args[extra_requirement]
+                    new_extra_requirements[
+                        extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if extra_requirements["pma_scan_http_method"][0] not in http_methods:
-            warn(messages(language,"dir_scan_get"))
+            warn(messages(language, "dir_scan_get"))
             extra_requirements["pma_scan_http_method"] = ["GET"]
         random_agent_flag = True
         if extra_requirements["pma_scan_random_agent"][0] == "False":
@@ -199,8 +209,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 t.start()
                 trying += 1
                 if verbose_level > 3:
-                    info(messages(language,"trying_message").format(trying, total_req, num, total, target_to_host(target),
-                                                       "default_port", 'pma_scan'))
+                    info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target),
+                                                                     "default_port", 'pma_scan'))
                 while 1:
                     try:
                         if threading.activeCount() >= thread_number:
@@ -213,11 +223,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 if keyboard_interrupt_flag:
                     break
         else:
-            warn(messages(language,"open_error").format(target))
+            warn(messages(language, "open_error").format(target))
 
         # wait for threads
         kill_switch = 0
-        kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+        kill_time = int(
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
@@ -228,12 +239,13 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1:
-            info(messages(language,"directory_file_404").format(target, "default_port"))
+            info(messages(language, "directory_file_404").format(
+                target, "default_port"))
             if verbose_level is not 0:
                 __log_into_file(log_in_file, 'a', json.dumps(
                     {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'pma_scan',
-                     'DESCRIPTION': messages(language,"phpmyadmin_dir_404"), 'TIME': now(), 'CATEGORY': "scan",
+                     'DESCRIPTION': messages(language, "phpmyadmin_dir_404"), 'TIME': now(), 'CATEGORY': "scan",
                      'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n', language)
         os.remove(thread_tmp_filename)
     else:
-        warn(messages(language,"input_target_error").format('pma_scan', target))
+        warn(messages(language, "input_target_error").format('pma_scan', target))

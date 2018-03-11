@@ -28,7 +28,7 @@ def load_all_graphs():
     graph_names = []
     for _lib in glob(os.path.dirname(inspect.getfile(lib)) + '/*/*/engine.py'):
         if os.path.dirname(_lib).rsplit('\\' if is_windows() else '/')[
-            -2] == "graph" and _lib + '_graph' not in graph_names:
+                -2] == "graph" and _lib + '_graph' not in graph_names:
             _lib = _lib.rsplit('\\' if is_windows() else '/')[-2]
             graph_names.append(_lib + '_graph')
     return graph_names
@@ -88,7 +88,7 @@ def load_all_method_args(language, API=False):
             for imodule_arg in imodule_args:
                 if API:
                     res += imodule_arg + "=" + \
-                           ",".join(map(str, imodule_args[imodule_arg])) + "\n"
+                        ",".join(map(str, imodule_args[imodule_arg])) + "\n"
                 modules_args[imodule].append(imodule_arg)
     if API:
         return res

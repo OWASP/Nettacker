@@ -25,7 +25,6 @@ from core._time import now
 from core.log import __log_into_file
 
 
-
 def extra_requirements_dict():
     return {
         "CCS_injection_vuln_ports": [21, 25, 110, 143, 443, 587, 990, 1080, 8080]
@@ -276,14 +275,15 @@ def getSSLRecords(strBuf):
             while iNextOffset < len(strBuf):
                 iLoopStopper += 1
                 iCount = 0
-                while ((iNextOffset+4) > len(strBuf) and iCount < 5):
+                while ((iNextOffset + 4) > len(strBuf) and iCount < 5):
                     iCount += 1
                     rule.waitForData()
                     if len(rule.buffer) > 0:
                         strBuf += rule.buffer
-                if ((iNextOffset+4) > len(strBuf)):
+                if ((iNextOffset + 4) > len(strBuf)):
                     break
-                iTypeAndLen = struct.unpack(">I", strBuf[iNextOffset:iNextOffset+4])[0]
+                iTypeAndLen = struct.unpack(
+                    ">I", strBuf[iNextOffset:iNextOffset + 4])[0]
                 iRecordLen = iTypeAndLen & (0x00FFFFFF)
                 iType = (iTypeAndLen & (0xFF000000)) >> 24
                 lstRecords.append((iShakeProtocol, iType))
@@ -295,11 +295,12 @@ def getSSLRecords(strBuf):
             lstRecords.append((iShakeProtocol, iType))
             iNextOffset = iRecordLen + 9
             iLoopStopper = 0
-            while iNextOffset+6 < len(strBuf):
+            while iNextOffset + 6 < len(strBuf):
                 iLoopStopper += 1
                 iShakeProtocol = struct.unpack(">B", strBuf[iNextOffset])[0]
-                iRecordLen = struct.unpack(">H", strBuf[iNextOffset+3:iNextOffset+5])[0]
-                iType = struct.unpack(">B", strBuf[iNextOffset+5])[0]
+                iRecordLen = struct.unpack(
+                    ">H", strBuf[iNextOffset + 3:iNextOffset + 5])[0]
+                iType = struct.unpack(">B", strBuf[iNextOffset + 5])[0]
                 lstRecords.append((iShakeProtocol, iType))
                 iNextOffset += iRecordLen + 5
                 if iLoopStopper > 8:
@@ -332,7 +333,7 @@ def makeHello(strSSLVer):
     dLen = 43 + len(strCiphers)
     r += str(struct.pack("!H", dLen))
     h = "\x01"
-    strPlen = struct.pack("!L", dLen-4)
+    strPlen = struct.pack("!L", dLen - 4)
     h += str(strPlen[1:])
     h += dSSL[strSSLVer]
     rand = str(struct.pack("!L", int(time.time())))
@@ -343,13 +344,14 @@ def makeHello(strSSLVer):
     h += str(struct.pack("!H", len(strCiphers)))
     h += strCiphers
     h += "\x01\x00"
-    return r+h
+    return r + h
 
 
 def conn(targ, port, timeout_sec, socks_proxy):
     try:
         if socks_proxy is not None:
-            socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+            socks_version = socks.SOCKS5 if socks_proxy.startswith(
+                'socks5://') else socks.SOCKS4
             socks_proxy = socks_proxy.rsplit('://')[1]
             if '@' in socks_proxy:
                 socks_username = socks_proxy.rsplit(':')[0]
@@ -374,7 +376,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
 
 
 def CCS_injection(target, port, timeout_sec, log_in_file, language, time_sleep,
-          thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                  thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
         if not s:
@@ -443,13 +445,16 @@ def CCS_injection(target, port, timeout_sec, log_in_file, language, time_sleep,
                                     fVuln = False
                                     break
                         try:
-                            if ord(strLastMessage[-7]) == 21:  # Check if an alert was at the end of the last message.
+                            # Check if an alert was at the end of the last
+                            # message.
+                            if ord(strLastMessage[-7]) == 21:
                                 fVuln = False
                         except IndexError:
                             pass
                         if fVuln:
                             try:
-                                s.send('\x15' + dSSL[strVer] + '\x00\x02\x01\x00')
+                                s.send(
+                                    '\x15' + dSSL[strVer] + '\x00\x02\x01\x00')
                                 f = s.recv(1024)
                                 if len(f) == 0:
                                     fVuln = False
@@ -475,13 +480,14 @@ def CCS_injection(target, port, timeout_sec, log_in_file, language, time_sleep,
 
 
 def __CCS_injection(target, port, timeout_sec, log_in_file, language, time_sleep,
-                 thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     if CCS_injection(target, port, timeout_sec, log_in_file, language, time_sleep,
-             thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-        info(messages(language,"target_vulnerable").format(target, port, 'CCS Injection'))
+                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+        info(messages(language, "target_vulnerable").format(
+            target, port, 'CCS Injection'))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'CCS_injection_vuln',
-                           'DESCRIPTION': messages(language,"vulnerable").format('CCS Injection'), 'TIME': now(),
+                           'DESCRIPTION': messages(language, "vulnerable").format('CCS Injection'), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
@@ -498,7 +504,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if methods_args is not None:
             for extra_requirement in extra_requirements_dict():
                 if extra_requirement in methods_args:
-                    new_extra_requirements[extra_requirement] = methods_args[extra_requirement]
+                    new_extra_requirements[
+                        extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if ports is None:
             ports = extra_requirements["CCS_injection_vuln_ports"]
@@ -521,7 +528,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language,"trying_message").format(trying, total_req, num, total, target, port, 'CCS_injection_vuln'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'CCS_injection_vuln'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -534,7 +541,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             if keyboard_interrupt_flag:
                 break
         kill_switch = 0
-        kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+        kill_time = int(
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
@@ -545,12 +553,13 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            info(messages(language,"no_vulnerability_found").format('CCS injection'))
+            info(messages(language, "no_vulnerability_found").format('CCS injection'))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'CCS_injection_vuln',
-                               'DESCRIPTION': messages(language,"no_vulnerability_found").format('CCS injection'), 'TIME': now(),
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('CCS injection'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:
-        warn(messages(language,"input_target_error").format('CCS_injection_vuln', target))
+        warn(messages(language, "input_target_error").format(
+            'CCS_injection_vuln', target))

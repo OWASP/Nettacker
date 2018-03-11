@@ -140,7 +140,8 @@ def checksum_py2(source_string):
     sum = 0
     count_to = (len(source_string) / 2) * 2
     for count in range(0, int(count_to), 2):
-        this = ord(str(source_string[count + 1])) * 256 + ord(str(source_string[count]))
+        this = ord(str(source_string[count + 1])) * \
+            256 + ord(str(source_string[count]))
         sum = sum + this
         sum = sum & 0xffffffff  # Necessary?
     if count_to < len(source_string):
@@ -203,10 +204,12 @@ def send_one_ping(my_socket, dest_addr, id, psize):
     header = struct.pack("bbHHh", ICMP_ECHO_REQUEST, 0, my_checksum, id, 1)
     bytes = struct.calcsize("d")
     data = (psize - bytes) * "Q"
-    data = struct.pack("d", time.time()) + data if version() is 2 else struct.pack("d", time.time()) + data.encode()
+    data = struct.pack("d", time.time(
+    )) + data if version() is 2 else struct.pack("d", time.time()) + data.encode()
 
     # Calculate the checksum on the data and the dummy header.
-    my_checksum = checksum_py2(header + data) if version() is 2 else checksum_py3(header + data)
+    my_checksum = checksum_py2(
+        header + data) if version() is 2 else checksum_py3(header + data)
 
     # Now that we have the right checksum, we put that in. It's just easier
     # to make up a new header than to stuff it into the dummy.
@@ -234,7 +237,6 @@ def do_one(dest_addr, timeout, psize):
 
     my_socket.close()
     return delay
-
 
     # def verbose_ping(dest_addr, timeout = 2, count = 4, psize = 64):
     #     """

