@@ -204,4 +204,3 @@ def all_messages():
             "category_framework": "category: {0}, frameworks: {1} found!",
             "nothing_found": "nothing found on {0} in {1}!"
         }
-

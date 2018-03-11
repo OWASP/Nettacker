@@ -46,15 +46,14 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
         normalisedjson['children'][each_scan['HOST']][each_scan['TYPE']].append("HOST: \"%s\", PORT:\"%s\", DESCRIPTION:\"%s\", USERNAME:\"%s\", PASSWORD:\"%s\"" % (
             each_scan['HOST'], each_scan['PORT'], each_scan['DESCRIPTION'], each_scan['USERNAME'], each_scan['PASSWORD']))
 
-
     # define a d3_structure_json
     d3_structure = {"name": "Starting attack",
-          "children": []}
+                    "children": []}
     # get data for normalised_json
     for host in list(normalisedjson['children'].keys()):
 
         d3_structure["children"].append({"name": host, "children": [{"name": otype, "children": [{"name": description}
-                                                                                       for description in normalisedjson['children'][host][otype]]} for otype in list(normalisedjson['children'][host].keys())]})
+                                                                                                 for description in normalisedjson['children'][host][otype]]} for otype in list(normalisedjson['children'][host].keys())]})
 
     data = '''<!DOCTYPE html>
 <!-- THIS PAGE COPIED AND MODIFIED FROM http://bl.ocks.org/robschmuecker/7880033-->
@@ -11897,9 +11896,9 @@ treeJSON = d3.json("https://github.com/viraintel/OWASP-Nettacker", function(erro
         <div id="tree-container"></div><br>
     </center>
 </body>'''.replace('__data_will_locate_here__', json.dumps(d3_structure)) \
-        .replace('__title_to_replace__', messages(language,"pentest_graphs")) \
-        .replace('__description_to_replace__', messages(language,"graph_message")) \
-        .replace('__html_title_to_replace__', messages(language,"nettacker_report"))
+        .replace('__title_to_replace__', messages(language, "pentest_graphs")) \
+        .replace('__description_to_replace__', messages(language, "graph_message")) \
+        .replace('__html_title_to_replace__', messages(language, "nettacker_report"))
     if version() is 2:
         return data.decode('utf8')
     return data
