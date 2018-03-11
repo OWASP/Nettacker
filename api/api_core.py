@@ -347,7 +347,7 @@ def __rules(config, defaults, language):
                 new_methods_args[imethod_args.rsplit("=")[0]] = imethod_args.rsplit("=")[
                     1].rsplit(",")
             else:
-                new_methods_args[imethod_args.rsplit("=")[0]] = ""
+                new_methods_args[imethod_args] = ["True"]
         methods_args = new_methods_args
     config["methods_args"] = methods_args
 
