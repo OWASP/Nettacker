@@ -4,6 +4,7 @@
 import socket
 import json
 import netaddr.ip
+import re
 from core.ip import *
 from core.alert import *
 from core._die import __die_failure
@@ -46,16 +47,21 @@ def target_type(target):
         start_ip, stop_ip = target.rsplit('-')
         if isIP(start_ip) and isIP(stop_ip):
             return 'RANGE_IPv4'
-        else:
+    elif re.match('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$', target):
             return 'DOMAIN'
-    elif target.lower().startswith('http://') or target.lower().startswith('https://'):
-        return 'HTTP'
+    elif (target.lower().startswith('http://') or target.lower().startswith('https://')):
+        if target.lower().startswith('http://'):
+            t = target.replace('http://', '')
+            if isIP(t) or isIP6(t) or re.match('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$','t'):
+                return 'HTTP'
+        else:
+            t=target.replace('https://','')
+            if isIP(t) or isIP6(t) or re.match('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$','t'):
+                return 'HTTP'
     elif len(target.rsplit('.')) is 4 and '-' not in target and '/' in target:
         IP, CIDR = target.rsplit('/')
         if isIP(IP) and (int(CIDR) >= 0 and int(CIDR) <= 32):
             return 'CIDR_IPv4'
-    elif '.' in target and '/' not in target:
-        return 'DOMAIN'
     else:
         return 'UNKNOWN'
 
