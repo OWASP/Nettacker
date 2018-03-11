@@ -105,7 +105,7 @@ def extra_requirements_dict():
     }
 
 
-if "--method-args" in sys.argv and "port_scan_stealth=true" in " ".join(sys.argv).lower():
+if "--method-args" in sys.argv and "port_scan_stealth" in " ".join(sys.argv).lower():
     from scapy.all import *
 
     if is_windows():  # fix later
@@ -240,8 +240,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             if extra_requirements["port_scan_stealth"][0].lower() == "true":
                 stealth_flag = True
         except:
-            stealth_flag = True
-        else:
             stealth_flag = False
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
