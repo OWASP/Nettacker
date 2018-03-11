@@ -9,6 +9,7 @@ import inspect
 from glob import glob
 from core.alert import messages
 from core.alert import info
+from core.alert import warn
 from core._die import __die_failure
 from core.compatible import is_windows
 from core.config import _core_config
@@ -27,7 +28,7 @@ def load_all_graphs():
     graph_names = []
     for _lib in glob(os.path.dirname(inspect.getfile(lib)) + '/*/*/engine.py'):
         if os.path.dirname(_lib).rsplit('\\' if is_windows() else '/')[
-                -2] == "graph" and _lib + '_graph' not in graph_names:
+            -2] == "graph" and _lib + '_graph' not in graph_names:
             _lib = _lib.rsplit('\\' if is_windows() else '/')[-2]
             graph_names.append(_lib + '_graph')
     return graph_names
@@ -74,19 +75,21 @@ def load_all_method_args(language, API=False):
     # get args
     res = ""
     for imodule in module_names:
+        _ERROR = False
         try:
             extra_requirements_dict = getattr(__import__(imodule, fromlist=['extra_requirements_dict']),
                                               'extra_requirements_dict')
         except:
-            __die_failure(
-                messages(language, "module_args_error").format(imodule))
-        imodule_args = extra_requirements_dict()
-        modules_args[imodule] = []
-        for imodule_arg in imodule_args:
-            if API:
-                res += imodule_arg + "=" + \
-                    ",".join(map(str, imodule_args[imodule_arg])) + "\n"
-            modules_args[imodule].append(imodule_arg)
+            warn(messages(language, "module_args_error").format(imodule))
+            _ERROR = True
+        if not _ERROR:
+            imodule_args = extra_requirements_dict()
+            modules_args[imodule] = []
+            for imodule_arg in imodule_args:
+                if API:
+                    res += imodule_arg + "=" + \
+                           ",".join(map(str, imodule_args[imodule_arg])) + "\n"
+                modules_args[imodule].append(imodule_arg)
     if API:
         return res
     for imodule in modules_args:

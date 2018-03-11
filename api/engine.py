@@ -128,7 +128,7 @@ def limit_remote_addr():
     # IP Limitation
     if app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list"]:
         if flask_request.remote_addr not in app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list_ips"]:
-            abort(403, messages(__language(), 161))
+            abort(403, messages(__language(), "unauthorized_IP"))
     return
 
 
@@ -145,7 +145,7 @@ def access_log(response):
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"]:
         r_log = open(app.config["OWASP_NETTACKER_CONFIG"][
-                     "api_access_log_filename"], "ab")
+                         "api_access_log_filename"], "ab")
         # if you need to log POST data
         # r_log.write(
         #     "{0} [{1}] {2} \"{3} {4}\" {5} {6} {7}\r\n".format(flask_request.remote_addr, now(), flask_request.host,
@@ -225,7 +225,7 @@ def __session_check():
         a JSON message if it's valid otherwise abort(401)
     """
     __api_key_check(app, flask_request, __language())
-    return jsonify(__structure(status="ok", msg=messages(__language(), 165))), 200
+    return jsonify(__structure(status="ok", msg=messages(__language(), "browser_session_valid"))), 200
 
 
 @app.route("/session/set", methods=["GET"])
@@ -238,9 +238,9 @@ def __session_set():
     """
     __api_key_check(app, flask_request, __language())
     res = make_response(
-        jsonify(__structure(status="ok", msg=messages(__language(), 165))))
+        jsonify(__structure(status="ok", msg=messages(__language(), "browser_session_valid"))))
     res.set_cookie("key", value=app.config[
-                   "OWASP_NETTACKER_CONFIG"]["api_access_key"])
+        "OWASP_NETTACKER_CONFIG"]["api_access_key"])
     return res
 
 
@@ -253,7 +253,7 @@ def __session_kill():
         a 200 HTTP response with set-cookie to "expired" to unset the cookie on the browser
     """
     res = make_response(
-        jsonify(__structure(status="ok", msg=messages(__language(), 166))))
+        jsonify(__structure(status="ok", msg=messages(__language(), "browser_session_killed"))))
     res.set_cookie("key", value="expired")
     return res
 
