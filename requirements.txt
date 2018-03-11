@@ -8,3 +8,4 @@ win_inet_pton
 pyOpenSSL
 flask
 lockfile
+bs4
