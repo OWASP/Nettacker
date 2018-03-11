@@ -202,6 +202,7 @@ def all_messages():
             "http_ntlm_failed": "http ntlm authentication failed to {0}:{3} using {1}:{2}",
             "no_response": "cannot get response from target",
             "category_framework": "category: {0}, frameworks: {1} found!",
-            "nothing_found": "nothing found on {0} in {1}!"
+            "nothing_found": "nothing found on {0} in {1}!",
+            "no_auth": "No auth found on {0}:{1}"
         }
 

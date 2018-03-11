@@ -95,6 +95,18 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         return flag
 
 
+def check_auth(target, timeout_sec, language, port):
+    if timeout_sec is not None:
+        req = requests.get((str(target) + str(port)), timeout = timeout_sec)
+    else:
+        req = requests.get(str(target) + str(port))
+    if req.status_code == 200:
+        info(messages(language, 'no_auth').format(target, port))
+        return 1
+    else:
+        return 0
+
+
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
           language, verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP':
@@ -125,6 +137,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         trying = 0
         keyboard_interrupt_flag = False
         for port in ports:
+            if check_auth(target, timeout_sec, language, port):
+                continue
             for user in users:
                 for passwd in passwds:
                     t = threading.Thread(target=login,
