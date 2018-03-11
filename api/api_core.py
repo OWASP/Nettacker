@@ -212,7 +212,7 @@ def __api_key_check(app, flask_request, language):
 
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != __get_value(flask_request, "key"):
-        abort(401, messages(language, 160))
+        abort(401, messages(language,"API_invalid"))
     return
 
 
@@ -325,13 +325,13 @@ def __rules(config, defaults, language):
     if config["targets"] is not None:
         config["targets"] = list(set(config["targets"].rsplit(",")))
     else:
-        abort(400, messages(language, 26))
+        abort(400, messages(language,"error_target"))
     # Check Log File
     try:
         f = open(config["log_in_file"], "a")
         f.close()
     except:
-        abort(400, messages(language, 40).format(config["log_in_file"]))
+        abort(400, messages(language,"file_write_error").format(config["log_in_file"]))
     # Check Method ARGS
     methods_args = config["methods_args"]
     if methods_args is not None:
@@ -364,7 +364,7 @@ def __rules(config, defaults, language):
                         if p not in tmp_ports:
                             tmp_ports.append(p)
             except:
-                abort(400, messages(language, 157))
+                abort(400, messages(language,"ports_int"))
         if len(tmp_ports) is 0:
             ports = None
         else:
@@ -386,7 +386,7 @@ def __rules(config, defaults, language):
                     if sm not in tmp_sm.rsplit(","):
                         tmp_sm += sm + ","
             except:
-                abort(400, messages(language, 137).format(pr))
+                abort(400, messages(language,"profile_404").format(pr))
         if tmp_sm[-1] == ",":
             tmp_sm = tmp_sm[0:-1]
         config["scan_method"] = ",".join(list(set(tmp_sm.rsplit(","))))
@@ -404,7 +404,7 @@ def __rules(config, defaults, language):
         if config["scan_method"] in load_all_modules():
             config["scan_method"] = config["scan_method"].rsplit()
         else:
-            abort(400, messages(language, 30).format(config["scan_method"]))
+            abort(400, messages(language,"scan_module_not_found").format(config["scan_method"]))
     else:
         if config["scan_method"] is not None:
             if config["scan_method"] not in load_all_modules():
@@ -422,7 +422,7 @@ def __rules(config, defaults, language):
                                     scan_method_error = False
                                     found_flag = True
                             if found_flag is False:
-                                abort(400, messages(language, 117).format(sm))
+                                abort(400, messages(language,"module_pattern_404").format(sm))
                         elif sm == "all":
                             config["scan_method"] = load_all_modules()
                             scan_method_error = False
@@ -431,13 +431,13 @@ def __rules(config, defaults, language):
                         elif sm in load_all_modules():
                             scan_method_error = False
                         elif sm not in load_all_modules():
-                            abort(400, messages(language, 30).format(sm))
+                            abort(400, messages(language,"scan_module_not_found").format(sm))
                 else:
                     scan_method_error = True
             if scan_method_error:
-                abort(400, messages(language, 30).format(config["scan_method"]))
+                abort(400, messages(language,"scan_module_not_found").format(config["scan_method"]))
         else:
-            abort(400, messages(language, 41))
+            abort(400, messages(language,"scan_method_select"))
         config["scan_method"] = list(set(config["scan_method"]))
 
     # Check Socks Proxy
@@ -467,7 +467,7 @@ def __rules(config, defaults, language):
         except:
             e = True
         if e:
-            abort(400, messages(language, 63))
+            abort(400, messages(language,"valid_socks_address"))
         if socks_flag is 4:
             socks_proxy = "socks4://" + socks_proxy
         if socks_flag is 5:

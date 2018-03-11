@@ -41,54 +41,54 @@ def __wizard(targets, thread_number, thread_number_host,
     ex_module_name = scan_method[:]
     ex_module_name.remove('all')
     default_config = _builder(_core_config(), _core_default_config())
-    targets = __input(messages(language, 118).format(messages(language, 120), default_config["targets"]),
+    targets = __input(messages(language,"enter_default").format(messages(language,"all_targets"), default_config["targets"]),
                       default_config["targets"])
-    thread_number = __input(messages(language, 118).format(messages(language, 121), default_config["thread_number"]),
+    thread_number = __input(messages(language,"enter_default").format(messages(language,"all_thread_numbers"), default_config["thread_number"]),
                             default_config["thread_number"])
     try:
         thread_number = int(thread_number)
     except:
         thread_number = default_config["thread_number"]
-    thread_number_host = __input(messages(language, 118)
-                                 .format(messages(language, 122), default_config["thread_number_host"]),
+    thread_number_host = __input(messages(language,"enter_default")
+                                 .format(messages(language,"thread_number_hosts_2"), default_config["thread_number_host"]),
                                  default_config["thread_number_host"])
     try:
         thread_number_host = int(thread_number_host)
     except:
         thread_number_host = default_config["thread_number_host"]
-    log_in_file = __input(messages(language, 118).format(messages(language, 123), default_config["log_in_file"]),
+    log_in_file = __input(messages(language,"enter_default").format(messages(language,"out_file"), default_config["log_in_file"]),
                           default_config["log_in_file"])
-    scan_method = __input(messages(language, 119)
-                          .format(messages(language, 124), ', '.join(module_name), default_config["scan_method"]),
+    scan_method = __input(messages(language,"enter_choices_default")
+                          .format(messages(language,"all_scan_methods"), ', '.join(module_name), default_config["scan_method"]),
                           default_config["scan_method"])
-    exclude_method = __input(messages(language, 119)
-                             .format(messages(language, 125), ', '.join(ex_module_name),
+    exclude_method = __input(messages(language,"enter_choices_default")
+                             .format(messages(language,"all_scan_methods_exclude"), ', '.join(ex_module_name),
                                      default_config["exclude_method"]),
                              default_config["exclude_method"])
-    users = __input(messages(language, 118).format(messages(language, 126), default_config["users"]),
+    users = __input(messages(language,"enter_default").format(messages(language,"all_usernames"), default_config["users"]),
                     default_config["users"])
-    passwds = __input(messages(language, 118).format(messages(language, 127), default_config["passwds"]),
+    passwds = __input(messages(language,"enter_default").format(messages(language,"all_passwords"), default_config["passwds"]),
                       default_config["passwds"])
-    timeout_sec = __input(messages(language, 118).format(messages(language, 128), default_config["timeout_sec"]),
+    timeout_sec = __input(messages(language,"enter_default").format(messages(language,"timeout_seconds"), default_config["timeout_sec"]),
                           default_config["timeout_sec"])
     try:
         timeout_sec = int(timeout_sec)
     except:
         timeout_sec = default_config["timeout_sec"]
-    ports = __input(messages(language, 118).format(messages(language, 129), default_config["ports"]),
+    ports = __input(messages(language,"enter_default").format(messages(language,"all_ports"), default_config["ports"]),
                     default_config["ports"])
-    verbose_level = __input(messages(language, 118).format(messages(language, 130), default_config["verbose_level"]),
+    verbose_level = __input(messages(language,"enter_default").format(messages(language,"all_verbose_level"), default_config["verbose_level"]),
                             default_config["verbose_level"])
-    socks_proxy = __input(messages(language, 118).format(messages(language, 131), default_config["socks_proxy"]),
+    socks_proxy = __input(messages(language,"enter_default").format(messages(language,"all_socks_proxy"), default_config["socks_proxy"]),
                           default_config["socks_proxy"])
-    retries = __input(messages(language, 118).format(messages(language, 132), default_config["retries"]),
+    retries = __input(messages(language,"enter_default").format(messages(language,"retries_number"), default_config["retries"]),
                       default_config["retries"])
     try:
         retries = int(retries)
     except:
         retries = default_config["retries"]
-    graph_flag = __input(messages(language, 119)
-                         .format(messages(language, 133), ', '.join(graph_flag), default_config["graph_flag"]),
+    graph_flag = __input(messages(language,"enter_choices_default")
+                         .format(messages(language,"graph"), ', '.join(graph_flag), default_config["graph_flag"]),
                          default_config["graph_flag"])
     return [targets, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users,

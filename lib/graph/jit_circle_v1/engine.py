@@ -14800,9 +14800,9 @@ __title_to_replace__
 </div>
 </body>
 </html>'''.replace('__data_will_locate_here__', json.dumps(dgraph)) \
-        .replace('__title_to_replace__', messages(language, 90)) \
-        .replace('__description_to_replace__', messages(language, 91)) \
-        .replace('__html_title_to_replace__', messages(language, 92))
+        .replace('__title_to_replace__', messages(language,"pentest_graphs")) \
+        .replace('__description_to_replace__', messages(language,"graph_message")) \
+        .replace('__html_title_to_replace__', messages(language,"nettacker_report"))
     if version() is 2:
         return data.decode('utf8')
     return data

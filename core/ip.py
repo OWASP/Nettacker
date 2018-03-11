@@ -84,7 +84,7 @@ def IPRange(Range, range_temp, language):
         else:
             return []
     else:
-        warn(messages(language, 49))
+        warn(messages(language,"skip_duplicate_target"))
         return []
 
 

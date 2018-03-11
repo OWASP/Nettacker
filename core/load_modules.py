@@ -78,7 +78,7 @@ def load_all_method_args(language, API=False):
             extra_requirements_dict = getattr(__import__(imodule, fromlist=['extra_requirements_dict']),
                                               'extra_requirements_dict')
         except:
-            __die_failure(messages(language, 112).format(imodule))
+            __die_failure(messages(language,"module_args_error").format(imodule))
         imodule_args = extra_requirements_dict()
         modules_args[imodule] = []
         for imodule_arg in imodule_args:

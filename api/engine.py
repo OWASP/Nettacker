@@ -113,7 +113,7 @@ def error_404(error):
         404 JSON error
     """
     return jsonify(__structure(status="error",
-                               msg=messages(app.config["OWASP_NETTACKER_CONFIG"]["language"], 162))), 404
+                               msg=messages(app.config["OWASP_NETTACKER_CONFIG"]["language"], "not_found"))), 404
 
 
 @app.before_request
@@ -397,7 +397,7 @@ def _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_wh
         language: language
     """
     # Starting the API
-    write_to_api_console(messages(language, 156).format(api_access_key))
+    write_to_api_console(messages(language,"API_key").format(api_access_key))
     p = multiprocessing.Process(target=__process_it,
                                 args=(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
                                       api_client_white_list_ips, api_access_log, api_access_log_filename, language))

@@ -37,7 +37,7 @@ def create_connection(language):
             except:
                 time.sleep(0.01)
     except:
-        warn(messages(language, 168))
+        warn(messages(language,"database_connect_fail"))
     return False
 
 
@@ -67,7 +67,7 @@ def send_submit_query(query, language):
             except:
                 time.sleep(0.01)
     except:
-        warn(messages(language, 168))
+        warn(messages(language,"database_connect_fail"))
         return False
     return False
 
@@ -94,7 +94,7 @@ def send_read_query(query, language):
             except:
                 time.sleep(0.01)
     except:
-        warn(messages(language, 168))
+        warn(messages(language,"database_connect_fail"))
         return False
     return False
 
@@ -117,13 +117,13 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api
         profile: profiles used in scan
         scan_method: modules used in scan
         language: scan report language
-        scan_cmd: scan command line if run in CLI otherwise messages(language, 158)
+        scan_cmd: scan command line if run in CLI otherwise messages(language,"through_API")
         ports: selected port otherwise None
 
     Returns:
         return True if submitted otherwise False
     """
-    info(messages(language, 169))
+    info(messages(language,"inserting_report_db"))
     return send_submit_query("""
     INSERT INTO reports (
       date, scan_id, report_filename, events_num, verbose, 
@@ -417,7 +417,7 @@ def __logs_to_report_html(host, language):
             _table += _log_data.table_items.format(value['HOST'], value['USERNAME'], value['PASSWORD'],
                                                    value['PORT'], value['TYPE'], value['DESCRIPTION'],
                                                    value['TIME'])
-        _table += _log_data.table_end + '<p class="footer">' + messages("en", 93) \
+        _table += _log_data.table_end + '<p class="footer">' + messages("en", "nettacker_report") \
             .format(compatible.__version__, compatible.__code_name__, now()) + '</p>'
         return _table
     except:
