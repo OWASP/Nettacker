@@ -8,12 +8,28 @@ from core.compatible import version
 
 
 def is_not_run_from_api():
+    """
+    check if framework run from API to prevent any alert
+
+    Returns:
+        True if run from API otherwise False
+    """
     if '--start-api' in sys.argv:
         return False
     return True
 
 
 def messages(language, msg_id):
+    """
+    load a message in the lib/language/*.py
+
+    Args:
+        language: language
+        msg_id: message id
+
+    Returns:
+        the message content in the selected language if message found otherwise return message in English
+    """
     # Returning selected langauge
     if language is -1:
         return list(set([langs.rsplit('_')[1].rsplit('.')[0] for langs in
@@ -32,6 +48,15 @@ def messages(language, msg_id):
 
 
 def __input_msg(content):
+    """
+    build the input message to get input from users
+
+    Args:
+        content: content of the message
+
+    Returns:
+        the message in input structure
+    """
     if version() is 2:
         return color.color('yellow') + '[+] ' + color.color('green') \
                + content.encode('utf8') + color.color('reset')
@@ -41,6 +66,15 @@ def __input_msg(content):
 
 
 def info(content):
+    """
+    build the info message
+
+    Args:
+        content: content of the message
+
+    Returns:
+        the message in info structure - None
+    """
     if is_not_run_from_api():
         if version() is 2:
             sys.stdout.write(color.color('yellow') + '[+] ' + color.color('green') +
@@ -52,6 +86,15 @@ def info(content):
 
 
 def write(content):
+    """
+    simple print a message
+
+    Args:
+        content: content of the message
+
+    Returns:
+        None
+    """
     if is_not_run_from_api():
         if version() is 2:
             sys.stdout.write(content.encode('utf8'))
@@ -61,6 +104,15 @@ def write(content):
 
 
 def warn(content):
+    """
+    build the warn message
+
+    Args:
+        content: content of the message
+
+    Returns:
+        the message in warn structure - None
+    """
     if is_not_run_from_api():
         if version() is 2:
             sys.stdout.write(color.color('blue') + '[!] ' + color.color('yellow') +
@@ -72,6 +124,15 @@ def warn(content):
 
 
 def error(content):
+    """
+    build the error message
+
+    Args:
+        content: content of the message
+
+    Returns:
+        the message in error structure - None
+    """
     if is_not_run_from_api():
         if version() is 2:
             sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
@@ -83,6 +144,15 @@ def error(content):
 
 
 def write_to_api_console(content):
+    """
+    simple print a message in API mode
+
+    Args:
+        content: content of the message
+
+    Returns:
+        None
+    """
     if version() is 2:
         sys.stdout.write(content.encode('utf8'))
     else:

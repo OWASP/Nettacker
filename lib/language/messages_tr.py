@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in tr
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "Nettacker motoru başladı ...\n\n",

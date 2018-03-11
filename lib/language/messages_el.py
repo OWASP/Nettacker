@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in el
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "Ο μηχανισμός Nettacker ξεκίνησε ...\n\n",

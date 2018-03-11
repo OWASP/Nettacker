@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in es
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "El motor Nettacker comenzó ...\n\n",

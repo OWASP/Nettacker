@@ -74,25 +74,25 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
             except:
                 n += 1
                 if n is retries:
-                    warn(messages(language, 106).format(target))
+                    warn(messages(language,"http_connection_timeout").format(target))
                     return 1
         if version() is 3:
             content = content.decode('utf8')
         if r.status_code in status_codes:
-            info(messages(language, 38).format(target, r.status_code, r.reason))
+            info(messages(language,"found").format(target, r.status_code, r.reason))
             __log_into_file(thread_tmp_filename, 'w', '0', language)
             data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
                                'PORT': "", 'TYPE': 'dir_scan',
-                               'DESCRIPTION': messages(language, 38).format(target, r.status_code, r.reason),
+                               'DESCRIPTION': messages(language,"found").format(target, r.status_code, r.reason),
                                'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
             if r.status_code is 200:
                 for dlmsg in directory_listing_msgs:
                     if dlmsg in content:
-                        info(messages(language, 104).format(target))
+                        info(messages(language,"directoy_listing").format(target))
                         data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
                                            'PORT': "", 'TYPE': 'dir_scan',
-                                           'DESCRIPTION': messages(language, 104).format(target), 'TIME': now(),
+                                           'DESCRIPTION': messages(language,"directoy_listing").format(target), 'TIME': now(),
                                            'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
                         __log_into_file(log_in_file, 'a', data, language)
                         break
@@ -104,7 +104,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
 def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, verbose_level, trying, total_req, total,
          num, language):
     if verbose_level > 3:
-        info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target), "default_port",
+        info(messages(language,"trying_message").format(trying, total_req, num, total, target_to_host(target), "default_port",
                                            'dir_scan'))
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -169,7 +169,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     new_extra_requirements[extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if extra_requirements["dir_scan_http_method"][0] not in http_methods:
-            warn(messages(language, 110))
+            warn(messages(language,"dir_scan_get"))
             extra_requirements["dir_scan_http_method"] = ["GET"]
         random_agent_flag = True
         if extra_requirements["dir_scan_random_agent"][0] == "False":
@@ -198,7 +198,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 t.start()
                 trying += 1
                 if verbose_level > 3:
-                    info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target),
+                    info(messages(language,"trying_message").format(trying, total_req, num, total, target_to_host(target),
                                                        "default_port", 'dir_scan'))
                 while 1:
                     try:
@@ -213,7 +213,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     break
 
         else:
-            warn(messages(language, 109).format(target))
+            warn(messages(language,"open_error").format(target))
 
         # wait for threads
         kill_switch = 0
@@ -228,13 +228,13 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1:
-            info(messages(language, 108).format(target, "default_port"))
+            info(messages(language,"directory_file_404").format(target, "default_port"))
             if verbose_level is not 0:
                 data = json.dumps(
                     {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'dir_scan',
-                     'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                     'DESCRIPTION': messages(language,"no_open_ports"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
                      'SCAN_CMD': scan_cmd})
                 __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
     else:
-        warn(messages(language, 69).format('dir_scan', target))
+        warn(messages(language,"input_target_error").format('dir_scan', target))

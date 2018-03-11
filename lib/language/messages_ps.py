@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in ps
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "د نیټیکر انجنیر پیل شو...\n\n",

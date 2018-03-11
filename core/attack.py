@@ -26,8 +26,35 @@ from core.alert import warn
 
 def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, thread_number, ports, log_in_file,
                  time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args, scan_id, scan_cmd):
+    """
+    start new attack for each target
+
+    Args:
+        target: target
+        num: number of process
+        total: number of total processes
+        scan_method: module name
+        users: usernames
+        passwds: passwords
+        timeout_sec: timeout seconds
+        thread_number: thread number
+        ports: port numbers
+        log_in_file: output filename
+        time_sleep: time sleep
+        language: language
+        verbose_level: verbose level number
+        socks_proxy: socks proxy
+        retries: number of retries
+        ping_flag: ping before scan flag
+        methods_args: module name
+        scan_id: scan hash id
+        scan_cmd: scan cmd
+
+    Returns:
+        True of success otherwise None
+    """
     if verbose_level >= 1:
-        info(messages(language, 45).format(str(target), str(num), str(total)))
+        info(messages(language,"start_attack").format(str(target), str(num), str(total)))
     if ping_flag:
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
@@ -47,7 +74,7 @@ def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, t
                 socket.getaddrinfo = getaddrinfo
         if do_one_ping(target, timeout_sec, 8) is None:
             if verbose_level >= 3:
-                warn(messages(language, 100).format(target, scan_method))
+                warn(messages(language,"skipping_target").format(target, scan_method))
             return None
     # Calling Engines
     try:
@@ -55,16 +82,46 @@ def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, t
             __import__('lib.{0}.{1}.engine'.format(scan_method.rsplit('_')[-1], '_'.join(scan_method.rsplit('_')[:-1])),
                        fromlist=['start']), 'start')
     except:
-        __die_failure(messages(language, 46).format(scan_method))
+        __die_failure(messages(language,"module_not_available").format(scan_method))
     start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
           verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd)
-    return 0
+    return True
 
 
 def __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_sleep, language, verbose_level, retries,
                      socks_proxy, users, passwds, timeout_sec, thread_number, ports, ping_flag, methods_args,
                      backup_ports, scan_method, thread_number_host, graph_flag, profile,
                      api_flag):
+    """
+    preparing for attacks and managing multi-processing for host
+
+    Args:
+        targets: list of calculated targets
+        check_ranges: check IP range flag
+        check_subdomains: check subdomain flag
+        log_in_file: output filename
+        time_sleep: time sleep seconds
+        language: language
+        verbose_level: verbose level number
+        retries: retries number
+        socks_proxy: socks proxy address
+        users: usernames
+        passwds: passwords
+        timeout_sec: timeout seconds
+        thread_number: thread numbers
+        ports: port numbers
+        ping_flag: ping before scan flag
+        methods_args: method args for modules
+        backup_ports: port numbers (backup)
+        scan_method: selected module names
+        thread_number_host: threads for hosts scan
+        graph_flag: graph name
+        profile: profile name
+        api_flag: API flag
+
+    Returns:
+        True when it ends
+    """
     suff = now(model="%Y_%m_%d_%H_%M_%S") + "".join(random.choice(string.ascii_lowercase) for x in
                                                     range(10))
     subs_temp = "{}/tmp/subs_temp_".format(load_file_path()) + suff
@@ -85,7 +142,7 @@ def __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_
                        language, verbose_level, retries, socks_proxy, False)
     trying = 0
     scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
-    scan_cmd = messages(language, 158) if api_flag else " ".join(sys.argv)
+    scan_cmd = messages(language,"through_API") if api_flag else " ".join(sys.argv)
     for target in targets:
         for sm in scan_method:
             trying += 1
@@ -116,7 +173,7 @@ def __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_
                 _waiting_for += 1
             if _waiting_for > 3000:
                 _waiting_for = 0
-                info(messages(language, 138).format(", ".join([p.name for p in multiprocessing.active_children()])))
+                info(messages(language,"waiting").format(", ".join([p.name for p in multiprocessing.active_children()])))
             time.sleep(0.01)
             if exitflag:
                 break
@@ -124,14 +181,14 @@ def __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_
             for process in multiprocessing.active_children():
                 process.terminate()
             break
-    info(messages(language, 42))
+    info(messages(language,"remove_temp"))
     os.remove(subs_temp)
     os.remove(range_temp)
-    info(messages(language, 43))
+    info(messages(language,"sorting_results"))
     sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_level, 0, profile, scan_method,
               backup_ports)
     write("\n")
-    info(messages(language, 44))
+    info(messages(language,"done"))
     write("\n\n")
     finish()
     return True

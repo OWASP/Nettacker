@@ -48,7 +48,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                    }
         total_req = 1
         trying = 1
-        info(messages(language, 113).format(trying, total_req, num, total, target, 'viewdns ip lookup'))
+        info(messages(language,"trying_process").format(trying, total_req, num, total, target, 'viewdns ip lookup'))
         n = 0
         while 1:
             try:
@@ -58,7 +58,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             except:
                 n += 1
                 if n is retries:
-                    warn(messages(language, 106).format("viewdns.info"))
+                    warn(messages(language,"http_connection_timeout").format("viewdns.info"))
                     return 1
         _values = []
         try:
@@ -72,21 +72,21 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         except:
             pass
         if len(_values) is 0:
-            info(messages(language, 164))
+            info(messages(language,"viewdns_domain_404"))
         if len(_values) > 0:
-            info(messages(language, 173).format(len(_values)))
+            info(messages(language,"len_domain_found").format(len(_values)))
             for domain in _values:
                 if verbose_level > 3:
-                    info(messages(language, 114).format(domain))
+                    info(messages(language,"domain_found").format(domain))
                 data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 
                     'TYPE': 'viewdns_reverse_ip_lookup_scan', 'DESCRIPTION': domain, 
                     'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
                 __log_into_file(log_in_file, 'a', data, language)
         if verbose_level is not 0:
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'viewdns_reverse_ip_lookup_scan', 
-                'DESCRIPTION': messages(language, 114).format(len(_values), ", ".join(_values) if len(
+                'DESCRIPTION': messages(language,"domain_found").format(len(_values), ", ".join(_values) if len(
                     _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 
                 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
     else:
-        warn(messages(language, 69).format('viewdns_reverse_ip_lookup_scan', target))
+        warn(messages(language,"input_target_error").format('viewdns_reverse_ip_lookup_scan', target))

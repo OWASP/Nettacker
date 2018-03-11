@@ -6,6 +6,16 @@ from core.alert import __input_msg
 
 
 def __input(msg, default):
+    """
+    get input in CLI
+
+    Args:
+        msg: a message to alert
+        default: default value if user entered (empty)
+
+    Returns:
+        user input content
+    """
     if version() is 2:
         try:
             data = raw_input(__input_msg(msg))

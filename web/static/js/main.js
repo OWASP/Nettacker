@@ -1,9 +1,12 @@
-// check for session key
 $(document).ready(function () {
+
+    // a function to replace chars in string
     String.prototype.replaceAll = function (search, replacement) {
         var target = this;
         return target.replace(new RegExp(search, 'g'), replacement);
     };
+
+
     // hide set session key
     $("#set_session").hide();
 
@@ -31,6 +34,8 @@ $(document).ready(function () {
             $("#send_session").click();
         }
     });
+
+    // login
     $("#send_session").click(function () {
         var key = "/session/set?key=" + $("#session_value").val();
         $.ajax({
@@ -52,6 +57,8 @@ $(document).ready(function () {
         });
     });
 
+
+    // logout
     $("#logout_btn").click(function () {
         $.ajax({
             type: "GET",
@@ -71,7 +78,7 @@ $(document).ready(function () {
         });
     });
 
-
+    // home
     $("#home_btn").click(function () {
         $("#new_scan").addClass("hidden");
         $("#get_results").addClass("hidden");
@@ -79,6 +86,8 @@ $(document).ready(function () {
         $("#home").removeClass("hidden");
     });
 
+
+    // new scan
     $("#new_scan_btn").click(function () {
 
         $.ajax({
@@ -100,6 +109,7 @@ $(document).ready(function () {
         });
     });
 
+    // results crawler
     $("#results_btn").click(function () {
         $("#home").addClass("hidden");
         $("#new_scan").addClass("hidden");
@@ -107,6 +117,7 @@ $(document).ready(function () {
         $("#get_results").removeClass("hidden");
     });
 
+    // hosts crawler
     $("#crawler_btn").click(function () {
         $("#home").addClass("hidden");
         $("#new_scan").addClass("hidden");
@@ -114,7 +125,7 @@ $(document).ready(function () {
         $("#crawler_area").removeClass("hidden");
     });
 
-
+    // submit new scan
     $("#submit_new_scan").click(function () {
 
         // set variables
@@ -257,6 +268,7 @@ $(document).ready(function () {
         }
     };
 
+    // show scans in the html
     function show_scans(res) {
         res = JSON.parse(res);
         var HTMLData = "";

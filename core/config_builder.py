@@ -10,6 +10,12 @@ from core._time import now
 
 
 def default_paths():
+    """
+    home path for the framework
+
+    Returns:
+        a JSON contain the working, tmp and results path
+    """
     return {
         "home_path": os.path.expanduser('~/.owasp-nettacker'),
         "tmp_path": os.path.expanduser('~/.owasp-nettacker/tmp'),
@@ -18,6 +24,12 @@ def default_paths():
 
 
 def default_profiles():
+    """
+    a shortcut and users profile to run customize scans
+
+    Returns:
+        a JSON contains profile names and module names for each
+    """
     return {
         "information_gathering": ["port_scan"],
         "vulnerability": ["*_vuln"],
@@ -27,6 +39,12 @@ def default_profiles():
 
 
 def _api_default_config():
+    """
+    API Config
+
+    Returns:
+        a JSON with API configuration
+    """
     return {
         "api_host": "127.0.0.1",
         "api_port": 5000,
@@ -45,6 +63,12 @@ def _api_default_config():
 
 
 def _core_default_config():
+    """
+    core framework default config
+
+    Returns:
+        a JSON with all user default configurations
+    """
     return {
         "language": "en",
         "verbose_level": 0,
@@ -96,6 +120,15 @@ def _core_default_config():
 
 
 def _builder(defaults, keys):
+    """
+
+    Args:
+        defaults:
+        keys:
+
+    Returns:
+
+    """
     for key in keys:
         try:
             defaults[key]

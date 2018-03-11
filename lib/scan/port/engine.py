@@ -145,10 +145,10 @@ def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         elif (stealth_scan_resp.haslayer(TCP)):
             if (stealth_scan_resp.getlayer(TCP).flags == 0x12):
                 # send_rst = sr(IP(dst=host) / TCP(sport=src_port, dport=port, flags="R"), timeout=timeout_sec)
-                info(messages(language, 80).format(host, port, "STEALTH"))
+                info(messages(language,"port_found").format(host, port, "STEALTH"))
                 data = json.dumps(
                     {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-                     'DESCRIPTION': messages(language, 79).format(port, "STEALTH"), 'TIME': now(),
+                     'DESCRIPTION': messages(language,"port/type").format(port, "STEALTH"), 'TIME': now(),
                      'CATEGORY': "scan", 'SCAN_ID': scan_id,
                      'SCAN_CMD': scan_cmd}) + '\n'
                 __log_into_file(log_in_file, 'a', data, language)
@@ -197,10 +197,10 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
             s.connect((host, port, 0, 0))
         else:
             s.connect((host, port))
-        info(messages(language, 80).format(host, port, "TCP_CONNECT"))
+        info(messages(language,"port_found").format(host, port, "TCP_CONNECT"))
         data = json.dumps(
             {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-             'DESCRIPTION': messages(language, 79).format(port, "TCP_CONNECT"), 'TIME': now(), 'CATEGORY': "scan",
+             'DESCRIPTION': messages(language,"port/type").format(port, "TCP_CONNECT"), 'TIME': now(), 'CATEGORY': "scan",
              'SCAN_ID': scan_id,
              'SCAN_CMD': scan_cmd}) + '\n'
         __log_into_file(log_in_file, 'a', data, language)
@@ -250,7 +250,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, 72).format(trying, total_req, num, total, target, port, 'port_scan'))
+                    messages(language,"trying_message").format(trying, total_req, num, total, target, port, 'port_scan'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -278,10 +278,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if thread_write is 1 and verbose_level is not 0:
             data = json.dumps(
                 {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'port_scan',
-                 'DESCRIPTION': messages(language, 94), 'TIME': now(), 'CATEGORY': "scan",
+                 'DESCRIPTION': messages(language,"no_open_ports"), 'TIME': now(), 'CATEGORY': "scan",
                  'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:
-        warn(messages(language, 69).format('port_scan', target))
+        warn(messages(language,"input_target_error").format('port_scan', target))

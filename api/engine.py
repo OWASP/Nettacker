@@ -41,48 +41,111 @@ from api.__database import __logs_to_report_html
 from api.__start_scan import __scan
 from core._time import now
 
-template_dir = os.path.join(os.path.join(os.path.dirname(os.path.dirname(__file__)), "web"), "static")
+template_dir = os.path.join(os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "web"), "static")
 app = Flask(__name__, template_folder=template_dir)
 app.config.from_object(__name__)
 
 
 def __language(app=app):
+    """
+    find the language in config
+
+    Args:
+        app: flask app
+
+    Returns:
+        the language in string
+    """
     return app.config["OWASP_NETTACKER_CONFIG"]["language"]
 
 
 @app.errorhandler(400)
 def error_400(error):
+    """
+    handle the 400 HTTP error
+
+    Args:
+        error: the flask error
+
+    Returns:
+        400 JSON error
+    """
     return jsonify(__structure(status="error", msg=error.description)), 400
 
 
 @app.errorhandler(401)
 def error_401(error):
+    """
+    handle the 401 HTTP error
+
+    Args:
+        error: the flask error
+
+    Returns:
+        401 JSON error
+    """
     return jsonify(__structure(status="error", msg=error.description)), 401
 
 
 @app.errorhandler(403)
 def error_403(error):
+    """
+    handle the 403 HTTP error
+
+    Args:
+        error: the flask error
+
+    Returns:
+        403 JSON error
+    """
     return jsonify(__structure(status="error", msg=error.description)), 403
 
 
 @app.errorhandler(404)
 def error_404(error):
+    """
+    handle the 404 HTTP error
+
+    Args:
+        error: the flask error
+
+    Returns:
+        404 JSON error
+    """
     return jsonify(__structure(status="error",
-                               msg=messages(app.config["OWASP_NETTACKER_CONFIG"]["language"], 162))), 404
+                               msg=messages(app.config["OWASP_NETTACKER_CONFIG"]["language"], "not_found"))), 404
 
 
 @app.before_request
 def limit_remote_addr():
+    """
+    check if IP filtering applied and API address is in whitelist
+
+    Returns:
+        None if it's in whitelist otherwise abort(403)
+    """
     # IP Limitation
     if app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list"]:
         if flask_request.remote_addr not in app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list_ips"]:
-            abort(403, messages(__language(), 161))
+            abort(403, messages(__language(), "unauthorized_IP"))
+    return
 
 
 @app.after_request
 def access_log(response):
+    """
+    if access log enabled, its writing the logs
+
+    Args:
+        response: the flask response
+
+    Returns:
+        the flask response
+    """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"]:
-        r_log = open(app.config["OWASP_NETTACKER_CONFIG"]["api_access_log_filename"], "ab")
+        r_log = open(app.config["OWASP_NETTACKER_CONFIG"][
+                     "api_access_log_filename"], "ab")
         # if you need to log POST data
         # r_log.write(
         #     "{0} [{1}] {2} \"{3} {4}\" {5} {6} {7}\r\n".format(flask_request.remote_addr, now(), flask_request.host,
@@ -99,6 +162,15 @@ def access_log(response):
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def get_statics(path):
+    """
+    getting static files and return content mime types
+
+    Args:
+        path: path and filename
+
+    Returns:
+        file content and content type if file found otherwise abort(404)
+    """
     static_types = __mime_types()
     return Response(get_file(os.path.join(root_dir(), path)),
                     mimetype=static_types.get(os.path.splitext(path)[1], "text/html"))
@@ -106,6 +178,12 @@ def get_statics(path):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    """
+    index page for WebUI
+
+    Returns:
+        rendered HTML page
+    """
     filename = _builder(_core_config(), _core_default_config())["log_in_file"]
     return render_template("index.html", scan_method=__scan_methods(), profile=__profiles(),
                            graphs=__graphs(), languages=__languages(), filename=filename,
@@ -114,6 +192,12 @@ def index():
 
 @app.route("/new/scan", methods=["GET", "POST"])
 def new_scan():
+    """
+    new scan through the API
+
+    Returns:
+        a JSON message with scan details if success otherwise a JSON error
+    """
     _start_scan_config = {}
     __api_key_check(app, flask_request, __language())
     for key in _core_default_config():
@@ -134,27 +218,54 @@ def new_scan():
 
 @app.route("/session/check", methods=["GET"])
 def __session_check():
+    """
+    check the session if it's valid
+
+    Returns:
+        a JSON message if it's valid otherwise abort(401)
+    """
     __api_key_check(app, flask_request, __language())
-    return jsonify(__structure(status="ok", msg=messages(__language(), 165))), 200
+    return jsonify(__structure(status="ok", msg=messages(__language(), "browser_session_valid"))), 200
 
 
 @app.route("/session/set", methods=["GET"])
 def __session_set():
+    """
+    set session on the browser
+
+    Returns:
+        200 HTTP response if session is valid and a set-cookie in the response if success otherwise abort(403)
+    """
     __api_key_check(app, flask_request, __language())
-    res = make_response(jsonify(__structure(status="ok", msg=messages(__language(), 165))))
-    res.set_cookie("key", value=app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"])
+    res = make_response(
+        jsonify(__structure(status="ok", msg=messages(__language(), "browser_session_valid"))))
+    res.set_cookie("key", value=app.config[
+                   "OWASP_NETTACKER_CONFIG"]["api_access_key"])
     return res
 
 
 @app.route("/session/kill", methods=["GET"])
 def __session_kill():
-    res = make_response(jsonify(__structure(status="ok", msg=messages(__language(), 166))))
+    """
+    unset session on the browser
+
+    Returns:
+        a 200 HTTP response with set-cookie to "expired" to unset the cookie on the browser
+    """
+    res = make_response(
+        jsonify(__structure(status="ok", msg=messages(__language(), "browser_session_killed"))))
     res.set_cookie("key", value="expired")
     return res
 
 
 @app.route("/results/get_list", methods=["GET"])
 def __get_results():
+    """
+    get list of scan's results through the API
+
+    Returns:
+        an array of JSON scan's results if success otherwise abort(403)
+    """
     __api_key_check(app, flask_request, __language())
     try:
         page = int(__get_value(flask_request, "page"))
@@ -165,6 +276,12 @@ def __get_results():
 
 @app.route("/results/get", methods=["GET"])
 def __get_result_content():
+    """
+    get a result HTML/TEXT/JSON content
+
+    Returns:
+        content of the scan result
+    """
     __api_key_check(app, flask_request, __language())
     try:
         id = int(__get_value(flask_request, "id"))
@@ -175,6 +292,12 @@ def __get_result_content():
 
 @app.route("/logs/get_list", methods=["GET"])
 def __get_last_host_logs():
+    """
+    get list of logs through the API
+
+    Returns:
+        an array of JSON logs if success otherwise abort(403)
+    """
     __api_key_check(app, flask_request, __language())
     try:
         page = int(__get_value(flask_request, "page"))
@@ -185,6 +308,12 @@ def __get_last_host_logs():
 
 @app.route("/logs/get_html", methods=["GET"])
 def __get_logs_html():
+    """
+    get host's logs through the API in HTML type
+
+    Returns:
+        HTML report
+    """
     __api_key_check(app, flask_request, __language())
     try:
         host = __get_value(flask_request, "host")
@@ -195,6 +324,12 @@ def __get_logs_html():
 
 @app.route("/logs/get_json", methods=["GET"])
 def __get_logs():
+    """
+    get host's logs through the API in JSON type
+
+    Returns:
+        an array with JSON events
+    """
     __api_key_check(app, flask_request, __language())
     try:
         host = __get_value(flask_request, "host")
@@ -205,6 +340,12 @@ def __get_logs():
 
 @app.route("/logs/search", methods=["GET"])
 def ___go_for_search_logs():
+    """
+    search in all events
+
+    Returns:
+        an array with JSON events
+    """
     __api_key_check(app, flask_request, __language())
     try:
         page = int(__get_value(flask_request, "page"))
@@ -219,6 +360,20 @@ def ___go_for_search_logs():
 
 def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
                  api_client_white_list_ips, api_access_log, api_access_log_filename, language):
+    """
+    a function to run flask in a subprocess to make kill signal in a better way!
+
+    Args:
+        api_host: host/IP to bind address
+        api_port: bind port
+        api_debug_mode: debug mode flag
+        api_access_key: API access key
+        api_client_white_list: clients while list flag
+        api_client_white_list_ips: clients white list IPs
+        api_access_log: access log flag
+        api_access_log_filename: access log filename
+        language: language
+    """
     app.config["OWASP_NETTACKER_CONFIG"] = {
         "api_access_key": api_access_key,
         "api_client_white_list": api_client_white_list,
@@ -232,8 +387,22 @@ def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_
 
 def _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
                api_client_white_list_ips, api_access_log, api_access_log_filename, language):
+    """
+    entry point to run the API through the flask
+
+    Args:
+        api_host: host/IP to bind address
+        api_port: bind port
+        api_debug_mode: debug mode
+        api_access_key: API access key
+        api_client_white_list: clients while list flag
+        api_client_white_list_ips: clients white list IPs
+        api_access_log: access log flag
+        api_access_log_filename: access log filename
+        language: language
+    """
     # Starting the API
-    write_to_api_console(messages(language, 156).format(api_access_key))
+    write_to_api_console(messages(language, "API_key").format(api_access_key))
     p = multiprocessing.Process(target=__process_it,
                                 args=(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
                                       api_client_white_list_ips, api_access_log, api_access_log_filename, language))

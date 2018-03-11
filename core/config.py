@@ -10,6 +10,12 @@ from core._time import now
 
 
 def _paths():
+    """
+    home path for the framework (could be modify by user)
+
+    Returns:
+        a JSON contain the working, tmp and results path
+    """
     return {
         "home_path": os.path.expanduser('~/.owasp-nettacker'),
         "tmp_path": os.path.expanduser('~/.owasp-nettacker/tmp'),
@@ -18,6 +24,12 @@ def _paths():
 
 
 def _profiles():
+    """
+    a shortcut and users profile to run customize scans (could be modify by user)
+
+    Returns:
+        a JSON contains profile names and module names for each
+    """
     return {
         "information_gathering": ["port_scan"],
         "vulnerability": ["*_vuln"],
@@ -27,6 +39,12 @@ def _profiles():
 
 
 def _api_config():
+    """
+    API Config (could be modify by user)
+
+    Returns:
+        a JSON with API configuration
+    """
     return {  # OWASP Nettacker API Default Configuration
         "api_host": "127.0.0.1",
         "api_port": 5000,
@@ -45,6 +63,12 @@ def _api_config():
 
 
 def _core_config():
+    """
+    core framework default config (could be modify by user)
+
+    Returns:
+        a JSON with all user default configurations
+    """
     return {  # OWASP Nettacker Default Configuration
         "language": "en",
         "verbose_level": 0,

@@ -3,6 +3,12 @@
 
 
 def all_messages():
+    """
+    keep all messages in id
+
+    Returns:
+        all messages in JSON
+    """
     return \
         {
             "0": "Mesin Nettacker mulai ...\n\n",
