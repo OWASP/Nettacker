@@ -28,21 +28,24 @@ def _update(__version__, __code_name__, language, socks_proxy):
     """
     try:
         if socks_proxy is not None:
-            socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+            socks_version = socks.SOCKS5 if socks_proxy.startswith(
+                'socks5://') else socks.SOCKS4
             socks_proxy = socks_proxy.rsplit('://')[1]
-            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socks.set_default_proxy(socks_version, str(
+                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
-        data = requests.get(url, headers={"User-Agent": "OWASP Nettacker"}).content
+        data = requests.get(
+            url, headers={"User-Agent": "OWASP Nettacker"}).content
         if version() is 3:
             data = data.decode("utf-8")
         if __version__ + ' ' + __code_name__ == data.rsplit('\n')[0]:
-            info(messages(language, 103))
+            info(messages(language, "last_version"))
         else:
-            warn(messages(language, 101))
-            warn(messages(language, 85))
+            warn(messages(language, "not_last_version"))
+            warn(messages(language, "feature_unavailable"))
     except:
-        warn(messages(language, 102))
+        warn(messages(language, "cannot_update"))
     return True
 
 
@@ -61,18 +64,21 @@ def _check(__version__, __code_name__, language, socks_proxy):
     """
     try:
         if socks_proxy is not None:
-            socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+            socks_version = socks.SOCKS5 if socks_proxy.startswith(
+                'socks5://') else socks.SOCKS4
             socks_proxy = socks_proxy.rsplit('://')[1]
-            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socks.set_default_proxy(socks_version, str(
+                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
-        data = requests.get(url, headers={"User-Agent": "OWASP Nettacker"}).content
+        data = requests.get(
+            url, headers={"User-Agent": "OWASP Nettacker"}).content
         if version() is 3:
             data = data.decode("utf-8")
         if __version__ + ' ' + __code_name__ == data.rsplit('\n')[0]:
-            info(messages(language, 103))
+            info(messages(language, "last_version"))
         else:
-            warn(messages(language, 101))
+            warn(messages(language, "not_last_version"))
     except:
-        warn(messages(language, 102))
+        warn(messages(language, "cannot_update"))
     return True

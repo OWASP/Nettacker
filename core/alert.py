@@ -33,15 +33,16 @@ def messages(language, msg_id):
     # Returning selected langauge
     if language is -1:
         return list(set([langs.rsplit('_')[1].rsplit('.')[0] for langs in
-                         os.listdir(os.path.dirname(os.path.abspath(__file__)).replace('\\', '/') + '/../lib/language/')
+                         os.listdir(os.path.dirname(os.path.abspath(__file__)).replace(
+                             '\\', '/') + '/../lib/language/')
                          if langs != 'readme.md' and langs.rsplit('_')[1].rsplit('.')[0] != '']))
     # Importing messages
     try:
         msgs = getattr(__import__('lib.language.messages_{0}'.format(language), fromlist=['all_messages']),
-                               'all_messages')()[str(msg_id)]
+                       'all_messages')()[str(msg_id)]
     except:
         msgs = getattr(__import__('lib.language.messages_en'.format(language), fromlist=['all_messages']),
-                               'all_messages')()[str(msg_id)]
+                       'all_messages')()[str(msg_id)]
     if version() is 2:
         return msgs.decode('utf8')
     return msgs
@@ -59,7 +60,7 @@ def __input_msg(content):
     """
     if version() is 2:
         return color.color('yellow') + '[+] ' + color.color('green') \
-               + content.encode('utf8') + color.color('reset')
+            + content.encode('utf8') + color.color('reset')
     else:
         return bytes(color.color('yellow') + '[+] ' + color.color('green') +
                      content + color.color('reset'), 'utf8')
@@ -138,7 +139,8 @@ def error(content):
             sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
                              content.encode('utf8') + color.color('reset') + '\n')
         else:
-            data = color.color('red') + '[X] ' + color.color('yellow') + content + color.color('reset') + '\n'
+            data = color.color(
+                'red') + '[X] ' + color.color('yellow') + content + color.color('reset') + '\n'
             sys.stdout.buffer.write(data.encode('utf8'))
     return
 

@@ -56,7 +56,7 @@ def _parse_webpage(target,timeout_sec, language, retries, socks_proxy,scan_cmd, 
     except:
         tries += 1
         if tries >= retries:
-            info(messages(language, 190))
+            info(messages(language,"no_response"))
             return
 
 
@@ -170,7 +170,7 @@ def analyze(target, timeout_sec, log_in_file, language,
         inv_map[v] = inv_map.get(v, [])
         inv_map[v].append(k)
     for x in inv_map.items():
-        info(messages(language, 191).format(x[0], ', '.join(x[1])))
+        info(messages(language,"category_framework").format(x[0], ', '.join(x[1])))
         data = json.dumps(
             {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'wappalyzer_scan',
             'DESCRIPTION': x[0] + ': ' + ', '.join(x[1]), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
@@ -199,7 +199,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         t.start()
         trying += 1
         if verbose_level > 3:
-            info(messages(language, 72).format(trying, total_req, num, total, target_to_host(target),
+            info(messages(language,"trying_message").format(trying, total_req, num, total, target_to_host(target),
                                                "", 'dir_scan'))
         while 1:
             try:
@@ -223,12 +223,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1:
-            info(messages(language, 192).format(target, "wappalyzer_scan"))
+            info(messages(language,"nothing_found").format(target, "wappalyzer_scan"))
             if verbose_level is not 0:
                 data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'wappalyzer_scan',
-                     'DESCRIPTION': messages(language, 162), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                     'DESCRIPTION': messages(language,"not_found"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
                      'SCAN_CMD': scan_cmd})
                 __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
     else:
-        warn(messages(language, 69).format('wappalyzer_scan', target))
+        warn(messages(language,"input_target_error").format('wappalyzer_scan', target))

@@ -11897,9 +11897,9 @@ treeJSON = d3.json("https://github.com/viraintel/OWASP-Nettacker", function(erro
         <div id="tree-container"></div><br>
     </center>
 </body>'''.replace('__data_will_locate_here__', json.dumps(d3_structure)) \
-        .replace('__title_to_replace__', messages(language, 90)) \
-        .replace('__description_to_replace__', messages(language, 91)) \
-        .replace('__html_title_to_replace__', messages(language, 92))
+        .replace('__title_to_replace__', messages(language,"pentest_graphs")) \
+        .replace('__description_to_replace__', messages(language,"graph_message")) \
+        .replace('__html_title_to_replace__', messages(language,"nettacker_report"))
     if version() is 2:
         return data.decode('utf8')
     return data

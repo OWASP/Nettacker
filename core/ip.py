@@ -51,7 +51,7 @@ def isIP(IP):
          True if it's IPv4 otherwise False
     """
     IP = str(IP)
-    ip_flag=netaddr.valid_ipv4(IP)
+    ip_flag = netaddr.valid_ipv4(IP)
     return ip_flag
 
 
@@ -84,7 +84,7 @@ def IPRange(Range, range_temp, language):
         else:
             return []
     else:
-        warn(messages(language, 49))
+        warn(messages(language, "skip_duplicate_target"))
         return []
 
 
@@ -112,6 +112,7 @@ def _generate_IPRange(Range):
     else:
         return []
 
+
 def isIP6(IP):
     """
     to check a value if its IPv6 address
@@ -123,6 +124,5 @@ def isIP6(IP):
          True if it's IPv6 otherwise False
     """
     IP = str(IP)
-    ip_flag=netaddr.valid_ipv6(IP)
+    ip_flag = netaddr.valid_ipv6(IP)
     return ip_flag
-

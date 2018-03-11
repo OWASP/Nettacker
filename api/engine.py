@@ -41,7 +41,8 @@ from api.__database import __logs_to_report_html
 from api.__start_scan import __scan
 from core._time import now
 
-template_dir = os.path.join(os.path.join(os.path.dirname(os.path.dirname(__file__)), "web"), "static")
+template_dir = os.path.join(os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "web"), "static")
 app = Flask(__name__, template_folder=template_dir)
 app.config.from_object(__name__)
 
@@ -113,7 +114,7 @@ def error_404(error):
         404 JSON error
     """
     return jsonify(__structure(status="error",
-                               msg=messages(app.config["OWASP_NETTACKER_CONFIG"]["language"], 162))), 404
+                               msg=messages(app.config["OWASP_NETTACKER_CONFIG"]["language"], "not_found"))), 404
 
 
 @app.before_request
@@ -143,7 +144,8 @@ def access_log(response):
         the flask response
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"]:
-        r_log = open(app.config["OWASP_NETTACKER_CONFIG"]["api_access_log_filename"], "ab")
+        r_log = open(app.config["OWASP_NETTACKER_CONFIG"][
+                     "api_access_log_filename"], "ab")
         # if you need to log POST data
         # r_log.write(
         #     "{0} [{1}] {2} \"{3} {4}\" {5} {6} {7}\r\n".format(flask_request.remote_addr, now(), flask_request.host,
@@ -235,8 +237,10 @@ def __session_set():
         200 HTTP response if session is valid and a set-cookie in the response if success otherwise abort(403)
     """
     __api_key_check(app, flask_request, __language())
-    res = make_response(jsonify(__structure(status="ok", msg=messages(__language(), 165))))
-    res.set_cookie("key", value=app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"])
+    res = make_response(
+        jsonify(__structure(status="ok", msg=messages(__language(), 165))))
+    res.set_cookie("key", value=app.config[
+                   "OWASP_NETTACKER_CONFIG"]["api_access_key"])
     return res
 
 
@@ -248,7 +252,8 @@ def __session_kill():
     Returns:
         a 200 HTTP response with set-cookie to "expired" to unset the cookie on the browser
     """
-    res = make_response(jsonify(__structure(status="ok", msg=messages(__language(), 166))))
+    res = make_response(
+        jsonify(__structure(status="ok", msg=messages(__language(), 166))))
     res.set_cookie("key", value="expired")
     return res
 
@@ -397,7 +402,7 @@ def _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_wh
         language: language
     """
     # Starting the API
-    write_to_api_console(messages(language, 156).format(api_access_key))
+    write_to_api_console(messages(language, "API_key").format(api_access_key))
     p = multiprocessing.Process(target=__process_it,
                                 args=(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
                                       api_client_white_list_ips, api_access_log, api_access_log_filename, language))

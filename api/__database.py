@@ -37,7 +37,7 @@ def create_connection(language):
             except:
                 time.sleep(0.01)
     except:
-        warn(messages(language, 168))
+        warn(messages(language, "database_connect_fail"))
     return False
 
 
@@ -67,7 +67,7 @@ def send_submit_query(query, language):
             except:
                 time.sleep(0.01)
     except:
-        warn(messages(language, 168))
+        warn(messages(language, "database_connect_fail"))
         return False
     return False
 
@@ -94,7 +94,7 @@ def send_read_query(query, language):
             except:
                 time.sleep(0.01)
     except:
-        warn(messages(language, 168))
+        warn(messages(language, "database_connect_fail"))
         return False
     return False
 
@@ -117,13 +117,13 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api
         profile: profiles used in scan
         scan_method: modules used in scan
         language: scan report language
-        scan_cmd: scan command line if run in CLI otherwise messages(language, 158)
+        scan_cmd: scan command line if run in CLI otherwise messages(language,"through_API")
         ports: selected port otherwise None
 
     Returns:
         return True if submitted otherwise False
     """
-    info(messages(language, 169))
+    info(messages(language, "inserting_report_db"))
     return send_submit_query("""
     INSERT INTO reports (
       date, scan_id, report_filename, events_num, verbose, 
@@ -180,9 +180,10 @@ def submit_logs_to_db(language, log):
                       "{5}", "{6}", "{7}", "{8}", "{9}"
                     );
                     """.format(log["HOST"], log["TIME"], log["PORT"], log["TYPE"], log["CATEGORY"],
-                               log["DESCRIPTION"].encode('utf8') if version() is 2 else log["DESCRIPTION"],
-                               log["USERNAME"], log["PASSWORD"], log["SCAN_ID"], log["SCAN_CMD"]),
-                             language)
+                               log["DESCRIPTION"].encode('utf8') if version() is 2 else log[
+        "DESCRIPTION"],
+        log["USERNAME"], log["PASSWORD"], log["SCAN_ID"], log["SCAN_CMD"]),
+        language)
 
 
 def __select_results(language, page):
@@ -271,10 +272,11 @@ def __last_host_logs(language, page):
     selected = []
     try:
         for host in send_read_query(
-                """select host from hosts_log where 1 group by host order by id desc limit {0},10""".format(page),
+                """select host from hosts_log where 1 group by host order by id desc limit {0},10""".format(
+                    page),
                 language):
             for data in send_read_query(
-                    """select host,port,type,category,description from hosts_log where host="{0}" group by type,port,username,""" \
+                    """select host,port,type,category,description from hosts_log where host="{0}" group by type,port,username,"""
                     """password,description order by id desc""".format(host[0]), language):
                 n = 0
                 capture = None
@@ -302,11 +304,13 @@ def __last_host_logs(language, page):
                     if data[1] not in selected[capture]["info"]["open_ports"] and type(data[1]) is int:
                         selected[capture]["info"]["open_ports"].append(data[1])
                     if data[2] not in selected[capture]["info"]["scan_methods"]:
-                        selected[capture]["info"]["scan_methods"].append(data[2])
+                        selected[capture]["info"][
+                            "scan_methods"].append(data[2])
                     if data[3] not in selected[capture]["info"]["category"]:
                         selected[capture]["info"]["category"].append(data[3])
                     if data[4] not in selected[capture]["info"]["descriptions"]:
-                        selected[capture]["info"]["descriptions"].append(data[4])
+                        selected[capture]["info"][
+                            "descriptions"].append(data[4])
     except:
         return __structure(status="error", msg="database error!")
     return selected
@@ -415,9 +419,10 @@ def __logs_to_report_html(host, language):
                                               'DESCRIPTION', 'TIME')
         for value in logs:
             _table += _log_data.table_items.format(value['HOST'], value['USERNAME'], value['PASSWORD'],
-                                                   value['PORT'], value['TYPE'], value['DESCRIPTION'],
+                                                   value['PORT'], value[
+                                                       'TYPE'], value['DESCRIPTION'],
                                                    value['TIME'])
-        _table += _log_data.table_end + '<p class="footer">' + messages("en", 93) \
+        _table += _log_data.table_end + '<p class="footer">' + messages("en", "nettacker_report") \
             .format(compatible.__version__, compatible.__code_name__, now()) + '</p>'
         return _table
     except:
@@ -455,7 +460,7 @@ def __search_logs(language, page, query):
                 like \"%%{0}%%\" or scan_id like \"%%{0}%%\" or scan_cmd like \"%%{0}%%\"  
                 group by host order by id desc limit {1},10""".format(query, page), language):
             for data in send_read_query(
-                    """select host,port,type,category,description from hosts_log where host="{0}" group by type,port,username,""" \
+                    """select host,port,type,category,description from hosts_log where host="{0}" group by type,port,username,"""
                     """password,description order by id desc""".format(host[0]), language):
                 n = 0
                 capture = None
@@ -483,11 +488,13 @@ def __search_logs(language, page, query):
                     if data[1] not in selected[capture]["info"]["open_ports"] and type(data[1]) is int:
                         selected[capture]["info"]["open_ports"].append(data[1])
                     if data[2] not in selected[capture]["info"]["scan_methods"]:
-                        selected[capture]["info"]["scan_methods"].append(data[2])
+                        selected[capture]["info"][
+                            "scan_methods"].append(data[2])
                     if data[3] not in selected[capture]["info"]["category"]:
                         selected[capture]["info"]["category"].append(data[3])
                     if data[4] not in selected[capture]["info"]["descriptions"]:
-                        selected[capture]["info"]["descriptions"].append(data[4])
+                        selected[capture]["info"][
+                            "descriptions"].append(data[4])
     except:
         return __structure(status="error", msg="database error!")
     return selected

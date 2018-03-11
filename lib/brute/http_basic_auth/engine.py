@@ -61,7 +61,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             if req.status_code != 200:
                 exit += 1
                 if exit is retries:
-                    warn(messages(language, 185).format(target, user, passwd, port))
+                    warn(messages(language,"http_auth_failed").format(target, user, passwd, port))
                     return 1
                 else:
                     time.sleep(time_sleep)
@@ -69,17 +69,17 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             elif req.status_code == 200:
                 flag = 0
                 if flag is 0:
-                    info(messages(language, 184).format(user, passwd, target, port))
+                    info(messages(language,"http_auth_success").format(user, passwd, target, port))
                     data = json.dumps(
                         {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port,
-                         'TYPE': 'http_basic_auth_brute', 'DESCRIPTION': messages(language, 66), 'TIME': now(),
+                         'TYPE': 'http_basic_auth_brute', 'DESCRIPTION': messages(language,"login_successful"), 'TIME': now(),
                          'CATEGORY': "brute", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
                     __log_into_file(log_in_file, 'a', data, language)
                     __log_into_file(thread_tmp_filename, 'w', '0', language)
         except:
             exit += 1
             if exit is retries:
-                warn(messages(language, 185).format(target, user, passwd, port))
+                warn(messages(language,"http_auth_failed").format(target, user, passwd, port))
                 return 1
             else:
                 time.sleep(time_sleep)
@@ -124,7 +124,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     t.start()
                     trying += 1
                     if verbose_level > 3:
-                        info(messages(language, 72).format(trying, total_req, num, total,
+                        info(messages(language,"trying_message").format(trying, total_req, num, total,
                                                            target, port, 'http_basic_auth_brute'))
                     while 1:
                         try:
@@ -155,10 +155,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
                 if thread_write is 1 and verbose_level is not 0:
                     data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
-                                       'TYPE': 'http_basic_auth_brute', 'DESCRIPTION': messages(language, 95),
+                                       'TYPE': 'http_basic_auth_brute', 'DESCRIPTION': messages(language,"no_user_passwords"),
                                        'TIME': now(), 'CATEGORY': "brute", 'SCAN_ID': scan_id,
                                        'SCAN_CMD': scan_cmd}) + "\n"
                     __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
     else:
-        warn(messages(language, 69).format('http_basic_auth_brute', target))
+        warn(messages(language,"input_target_error").format('http_basic_auth_brute', target))
