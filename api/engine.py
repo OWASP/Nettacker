@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import multiprocessing
@@ -145,7 +145,7 @@ def access_log(response):
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"]:
         r_log = open(app.config["OWASP_NETTACKER_CONFIG"][
-                         "api_access_log_filename"], "ab")
+            "api_access_log_filename"], "ab")
         # if you need to log POST data
         # r_log.write(
         #     "{0} [{1}] {2} \"{3} {4}\" {5} {6} {7}\r\n".format(flask_request.remote_addr, now(), flask_request.host,
