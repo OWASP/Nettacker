@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/css/animate.min.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-tagsinput.css">
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/angular.min.js"></script>
@@ -22,6 +23,8 @@
     <script src="/js/buttons.js"></script>
     <script src="/js/main.js"></script>
     <script src="/js/bootstrap-select.min.js"></script>
+    <script src="/js/bootstrap-tagsinput.min.js"></script>
+    <script src="/js/bootstrap-tagsinput-angular.min.js"></script>
 </head>
 <div class="container">
     <!-- Topper w/ logo -->
@@ -130,12 +133,12 @@
                 <h3>Targets</h3>
                 <div class="input-group col-xs-4">
                     <span class="input-group-addon"><i class="fa fa-space-shuttle"></i></span>
-                    <input id="targets" type="text" class="form-control" placeholder="targets">
+                    <input id="targets" type="text" class="form-control" data-role="tagsinput" placeholder="Add new target" >
                 </div>
                 <h3>Profiles</h3>
                 <div class="form-group">
                     <div id="profile" class="checkbox text-justify">
-                        <label><input id="all" type="checkbox" class="checkbox"><a
+                        <label><input id="checkAll" type="checkbox" class="check"><a
                                 class="label label-info">Select all profiles</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         {% autoescape off %}{{profile}}{% endautoescape %}
                     </div>
@@ -143,7 +146,7 @@
                 <h3>Scan Methods</h3>
                 <div class="form-group">
                     <div id="scan_method" class="checkbox text-justify">
-                        <label><input id="all" type="checkbox" class="checkbox"><a
+                        <label><input id="all" type="checkbox" class="checkbox check-all-scans" ><a
                                 class="label label-info">Select all</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         {% autoescape off %}{{scan_method}}{% endautoescape %}
                     </div>

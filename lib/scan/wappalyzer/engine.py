@@ -108,26 +108,29 @@ def _prepare_pattern(pattern):
 
 
 def _has_app(app, webpage):
-    for regex in app['url']:
-        if regex.search(webpage['url']):
-            return True
-    for name, regex in app['headers'].items():
-        if name in webpage['headers']:
-            content = webpage['headers'][name]
-            if regex.search(content):
+    try:
+        for regex in app['url']:
+            if regex.search(webpage['url']):
                 return True
-    for regex in app['script']:
-        for script in webpage['scripts']:
-            if regex.search(script):
+        for name, regex in app['headers'].items():
+            if name in webpage['headers']:
+                content = webpage['headers'][name]
+                if regex.search(content):
+                    return True
+        for regex in app['script']:
+            for script in webpage['scripts']:
+                if regex.search(script):
+                    return True
+        for name, regex in app['meta'].items():
+            if name in webpage['metatags']:
+                content = webpage['metatags'][name]
+                if regex.search(content):
+                    return True
+        for regex in app['html']:
+            if regex.search(webpage['response']):
                 return True
-    for name, regex in app['meta'].items():
-        if name in webpage['metatags']:
-            content = webpage['metatags'][name]
-            if regex.search(content):
-                return True
-    for regex in app['html']:
-        if regex.search(webpage['response']):
-            return True
+    except:
+        pass
 
 
 def _get_implied_apps(detected_apps, apps1):
