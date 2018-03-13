@@ -9,3 +9,4 @@ pyOpenSSL
 flask
 lockfile
 bs4
+pycurl

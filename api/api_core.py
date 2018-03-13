@@ -278,7 +278,7 @@ def __profiles():
     profiles = _builder(_profiles(), default_profiles())
     res = ""
     for profile in profiles:
-        res += """<label><input id="{0}" type="checkbox" class="checkbox"><a class="label 
+        res += """<label><input id="{0}" type="checkbox" class="checkbox checkbox-{0}"><a class="label 
         label-primary">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(profile)
     return res
 
@@ -296,8 +296,10 @@ def __scan_methods():
     for sm in methods:
         label = "success" if sm.endswith("_scan") else "warning" if sm.endswith("_brute") else "danger" if sm.endswith(
             "_vuln") else "default"
-        res += """<label><input id="{0}" type="checkbox" class="checkbox">
-        <a class="label label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(sm, label)
+        profile = "scan" if sm.endswith("_scan") else "brute" if sm.endswith("_brute") else "vuln" if sm.endswith(
+            "_vuln") else "default"
+        res += """<label><input id="{0}" type="checkbox" class="checkbox checkbox-{2}-module">
+        <a class="label label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(sm, label, profile)
     return res
 
 

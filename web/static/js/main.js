@@ -239,9 +239,9 @@ $(document).ready(function () {
 
     var getUrlParameter = function getUrlParameter(sParam) {
         var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-            sURLVariables = sPageURL.split('&'),
-            sParameterName,
-            i;
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
 
         for (i = 0; i < sURLVariables.length; i++) {
             sParameterName = sURLVariables[i].split('=');
@@ -255,9 +255,9 @@ $(document).ready(function () {
 
     var getUrlParameter = function getUrlParameter(sParam) {
         var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-            sURLVariables = sPageURL.split('&'),
-            sParameterName,
-            i;
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
 
         for (i = 0; i < sURLVariables.length; i++) {
             sParameterName = sURLVariables[i].split('=');
@@ -328,25 +328,24 @@ $(document).ready(function () {
             scan_cmd = res[i]["scan_cmd"];
             ports = res[i]["ports"];
             HTMLData += "<a target='_blank' href=\"/results/get?id=" + id + "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
-                "                        <div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
-                "                            <h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
-                "                      class=\"bold label label-primary\">" + id + "</span>&nbsp;&nbsp;&nbsp;<small class=\"label label-info\">" + date + "</small></h3>\n" +
-                "                        </div></div>\n" + "<p class=\"mb-1\"> " +
-                "<p class='mb-1  bold label label-default'>scan_id:" + scan_id + "</p><br>" +
-                "<p class='mb-1  bold label label-info'>report_filename:" + report_filename + "</p><br>" +
-                "<p class='mb-1 bold label label-success'>events_num:" + events_num + "</p><br>" +
-                "<p class='mb-1 bold label label-danger'>ports:" + ports + "</p><br>" +
-                "<p class='mb-1 bold label label-info'>category:" + category + "</p><br>" +
-                "<p class='mb-1 bold label label-success'>profile:" + profile + "</p><br>" +
-                "<p class='mb-1 bold label label-warning'>scan_method:" + scan_method + "</p><br>" +
-                "<p class='mb-1 bold  label label-primary'>api_flag:" + api_flag + "</p><br>" +
-                "<p class='mb-1 bold label label-warning'>verbose:" + verbose + "</p><br>" +
-                "<p class='mb-1 bold label label-info'>report_type:" + report_type + "</p><br>" +
-                "<p class='mb-1 bold label label-primary'>graph_flag:" + graph_flag + "</p><br>" +
-                "<p class='mb-1 bold label label-success'>language:" + language + "</p>&nbsp;&nbsp;&nbsp;<span class='flag-icon flag-icon-" + flags[language] + "'></span><br>" +
-                "<p class='mb-1 bold label label-default'>scan_cmd:" + scan_cmd + "</p>&nbsp;&nbsp;&nbsp;<br>" +
-
-                "                   </p>\n </a>";
+                        "<div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
+                        "<h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
+                        "class=\"bold label label-primary\">" + id + "</span>&nbsp;&nbsp;&nbsp;<small class=\"label label-info\">" + date + "</small></h3>\n" +
+                        "</div></div>\n" + "<p class=\"mb-1\"> " +
+                        "<p class='mb-1  bold label label-default'>scan_id:" + scan_id + "</p><br>" +
+                        "<p class='mb-1  bold label label-info'>report_filename:" + report_filename + "</p><br>" +
+                        "<p class='mb-1 bold label label-success'>events_num:" + events_num + "</p><br>" +
+                        "<p class='mb-1 bold label label-danger'>ports:" + ports + "</p><br>" +
+                        "<p class='mb-1 bold label label-info'>category:" + category + "</p><br>" +
+                        "<p class='mb-1 bold label label-success'>profile:" + profile + "</p><br>" +
+                        "<p class='mb-1 bold label label-warning'>scan_method:" + scan_method + "</p><br>" +
+                        "<p class='mb-1 bold  label label-primary'>api_flag:" + api_flag + "</p><br>" +
+                        "<p class='mb-1 bold label label-warning'>verbose:" + verbose + "</p><br>" +
+                        "<p class='mb-1 bold label label-info'>report_type:" + report_type + "</p><br>" +
+                        "<p class='mb-1 bold label label-primary'>graph_flag:" + graph_flag + "</p><br>" +
+                        "<p class='mb-1 bold label label-success'>language:" + language + "</p>&nbsp;&nbsp;&nbsp;<span class='flag-icon flag-icon-" +   flags[language] + "'></span><br>" +
+                        "<p class='mb-1 bold label label-default'>scan_cmd:" + scan_cmd + "</p>&nbsp;&nbsp;&nbsp;<br>" +
+                        "</p>\n </a>";
         }
         document.getElementById('scan_results').innerHTML = HTMLData;
 
@@ -400,6 +399,52 @@ $(document).ready(function () {
     $("#previous_btn").click(function () {
         result_page = result_page - 1;
         get_results_list(result_page);
+    });
+
+    $("#checkAll").click(function () {
+        $(".checkbox").prop('checked', $(this).prop('checked'));
+    });
+
+    $(".checkbox-brute").click(function () {
+        $(".checkbox-brute-module").prop('checked', $(this).prop('checked'));
+    });
+
+    $(".checkbox-scan").click(function () {
+        $(".checkbox-scan-module").prop('checked', $(this).prop('checked'));
+    });
+
+    $(".checkbox-vulnerability").click(function () {
+        $(".checkbox-vuln-module").prop('checked', $(this).prop('checked'));
+    });
+
+    $(".check-all-scans").click(function () {
+        $(".checkbox-brute-module").prop('checked', $(this).prop('checked'));
+        $(".checkbox-scan-module").prop('checked', $(this).prop('checked'));
+        $(".checkbox-vuln-module").prop('checked', $(this).prop('checked'));
+    });
+
+    $('.checkbox-vuln-module').click(function(){
+        if (!$(this).is(':checked')) {
+            $('#checkAll').prop('checked', false);
+            $('.checkbox-vulnerability').prop('checked', false);
+            $('.check-all-scans').prop('checked', false);
+        }
+    });
+
+    $('.checkbox-scan-module').click(function(){
+        if (!$(this).is(':checked')) {
+            $('#checkAll').prop('checked', false);
+            $('.checkbox-scan').prop('checked', false);
+            $('.check-all-scans').prop('checked', false);
+        }
+    });
+
+    $('.checkbox-brute-module').click(function(){
+        if (!$(this).is(':checked')) {
+            $('#checkAll').prop('checked', false);
+            $('.checkbox-brute').prop('checked', false);
+            $('.check-all-scans').prop('checked', false);
+        }
     });
 
     $("#next_btn").click(function () {
@@ -473,12 +518,12 @@ $(document).ready(function () {
             }
 
             HTMLData += "<a target='_blank' href=\"/logs/get_html?host=" + host + "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
-                "                        <div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
-                "                            <h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
-                "                      class=\"bold label label-danger\">" + host + "</span></h3>\n" +
-                "                        </div></div>\n" + "<p class=\"mb-1\"> " + html_categories + html_scan_methods +
-                html_open_ports + html_description +
-                "                   </p>\n </a>";
+                        "<div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
+                        "<h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
+                        "class=\"bold label label-danger\">" + host + "</span></h3>\n" +
+                        "</div></div>\n" + "<p class=\"mb-1\"> " + html_categories + html_scan_methods +
+                        html_open_ports + html_description +
+                        "</p>\n </a>";
         }
         document.getElementById('crawl_results').innerHTML = HTMLData;
 
