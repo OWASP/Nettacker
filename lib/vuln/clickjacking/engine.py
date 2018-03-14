@@ -69,12 +69,12 @@ def clickjacking(target, port, timeout_sec, log_in_file, language, time_sleep,
         else:
             if "https" not in target:
                 target = "https://" + target
-                req = requests.get(target)
-                try:
-                    req.headers['x-frame-options']
-                    return False
-                except:
-                    return True
+            req = requests.get(target)
+            try:
+                req.headers['x-frame-options']
+                return False
+            except:
+                return True
     except Exception as e:
         # some error warning
         return False
