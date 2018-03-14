@@ -20,13 +20,13 @@ from core._time import now
 from core.log import __log_into_file
 from core._die import __die_failure
 from lib.scan.wp_theme import themes
+from lib.scan.wp_theme import small_themes
 
 
 def extra_requirements_dict():
     return {
         "wp_theme_scan_http_method": ["GET"],
         "wp_theme_scan_random_agent": ["True"],
-        "wp_theme_scan_list": themes.themes()
     }
 
 
@@ -176,17 +176,25 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if extra_requirements["wp_theme_scan_random_agent"][0] == "False":
             random_agent_flag = False
         threads = []
-        total_req = len(extra_requirements["wp_theme_scan_list"])
+        if verbose_level > 3:
+            total_req = len(themes.themes())
+        else:
+            total_req = len(small_themes.themes())
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1', language)
         trying = 0
         if target_type(target) != "HTTP":
-            target = 'http://' + target
+            target = 'https://' + target
         if test(str(target), retries, timeout_sec, user_agent, extra_requirements["wp_theme_scan_http_method"][0],
                 socks_proxy, verbose_level, trying, total_req, total, num, language) is 0:
             keyboard_interrupt_flag = False
-            for idir in extra_requirements["wp_theme_scan_list"]:
+            if verbose_level > 3:
+                scan_list = themes.themes()
+            else:
+                scan_list = small_themes.themes()
+            for idir in scan_list:
+                idir = "/wp-content/themes/" + idir
                 if random_agent_flag:
                     user_agent = {'User-agent': random.choice(user_agent_list)}
                 t = threading.Thread(target=check,
