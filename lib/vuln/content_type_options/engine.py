@@ -158,9 +158,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format(
-                'The X-Content-Type-Options not set, This header is used to protect against MIME sniffing vulnerabilities. '))
+                'X-Content-Type option configured properly'))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'content_type_options_vuln',
-                               'DESCRIPTION': messages(language, "no_vulnerability_found").format(''), 'TIME': now(),
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('X-Content-Type option configured properly'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)

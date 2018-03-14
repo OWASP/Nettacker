@@ -158,9 +158,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format(
-                'X_XSS_Protection not set properly, This header enables the Cross-site scripting (XSS) filter.'))
+                'X_XSS_Protection set properly'))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'XSS_protection_vuln',
-                               'DESCRIPTION': messages(language, "no_vulnerability_found").format(''), 'TIME': now(),
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('X_XSS_Protection set properly'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)

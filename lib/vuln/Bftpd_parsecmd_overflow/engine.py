@@ -157,9 +157,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format(
-                'Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'))
+                'Bftpd_parsecmd_overflow	CVE-2007-2051'))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'Bftpd_parsecmd_overflow_vuln',
-                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'), 'TIME': now(),
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('Bftpd_parsecmd_overflow	CVE-2007-2051'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
