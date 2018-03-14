@@ -69,14 +69,14 @@ def xss_protection(target, port, timeout_sec, log_in_file, language, time_sleep,
         else:
             if "https" not in target:
                 target = "https://" + target
-                req = requests.get(target)
-                try:
-                    if req.headers['X-XSS-Protection'] == '1; mode=block':
-                        return False
-                    else:
-                        return True
-                except:
+            req = requests.get(target)
+            try:
+                if req.headers['X-XSS-Protection'] == '1; mode=block':
+                    return False
+                else:
                     return True
+            except:
+                return True
     except Exception as e:
         # some error warning
         return False
