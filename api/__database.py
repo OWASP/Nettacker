@@ -313,6 +313,8 @@ def __last_host_logs(language, page):
                             "descriptions"].append(data[4])
     except:
         return __structure(status="error", msg="database error!")
+    if len(selected) == 0:
+        return __structure(status="finished", msg="No more search results")
     return selected
 
 
@@ -497,4 +499,6 @@ def __search_logs(language, page, query):
                             "descriptions"].append(data[4])
     except:
         return __structure(status="error", msg="database error!")
+    if len(selected) == 0:
+        return __structure(status="finished", msg="No more search results")
     return selected

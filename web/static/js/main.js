@@ -331,7 +331,7 @@ $(document).ready(function () {
                         "<div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
                         "<h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
                         "class=\"bold label label-primary\">" + id + "</span>&nbsp;&nbsp;&nbsp;<small class=\"label label-info\">" + date + "</small></h3>\n" +
-                        "</div></div>\n" + "<p class=\"mb-1\"> " +
+                        "</div></div>\n" + "<hr>" +
                         "<p class='mb-1  bold label label-default'>scan_id:" + scan_id + "</p><br>" +
                         "<p class='mb-1  bold label label-info'>report_filename:" + report_filename + "</p><br>" +
                         "<p class='mb-1 bold label label-success'>events_num:" + events_num + "</p><br>" +
@@ -347,6 +347,11 @@ $(document).ready(function () {
                         "<p class='mb-1 bold label label-default'>scan_cmd:" + scan_cmd + "</p>&nbsp;&nbsp;&nbsp;<br>" +
                         "</p>\n </a>";
         }
+
+        if (res["msg"] == "No more search results"){
+            HTMLData = "<p class=\"mb-1\"> No more results to show!!</p>";
+        }
+
         document.getElementById('scan_results').innerHTML = HTMLData;
 
     }
@@ -398,10 +403,16 @@ $(document).ready(function () {
 
     $("#previous_btn").click(function () {
         result_page = result_page - 1;
+        if(result_page == 1){
+            $('#previous_btn').hide();
+        }
+        if(result_page == 2){
+            $('#previous_btn').show();
+        }
         get_results_list(result_page);
     });
 
-    $("#checkAll").click(function () {
+    $(".checkAll").click(function () {
         $(".checkbox").prop('checked', $(this).prop('checked'));
     });
 
@@ -425,7 +436,7 @@ $(document).ready(function () {
 
     $('.checkbox-vuln-module').click(function(){
         if (!$(this).is(':checked')) {
-            $('#checkAll').prop('checked', false);
+            $('.checkAll').prop('checked', false);
             $('.checkbox-vulnerability').prop('checked', false);
             $('.check-all-scans').prop('checked', false);
         }
@@ -433,7 +444,7 @@ $(document).ready(function () {
 
     $('.checkbox-scan-module').click(function(){
         if (!$(this).is(':checked')) {
-            $('#checkAll').prop('checked', false);
+            $('.checkAll').prop('checked', false);
             $('.checkbox-scan').prop('checked', false);
             $('.check-all-scans').prop('checked', false);
         }
@@ -441,7 +452,7 @@ $(document).ready(function () {
 
     $('.checkbox-brute-module').click(function(){
         if (!$(this).is(':checked')) {
-            $('#checkAll').prop('checked', false);
+            $('.checkAll').prop('checked', false);
             $('.checkbox-brute').prop('checked', false);
             $('.check-all-scans').prop('checked', false);
         }
@@ -449,6 +460,12 @@ $(document).ready(function () {
 
     $("#next_btn").click(function () {
         result_page = result_page + 1;
+        if(result_page == 1){
+            $('#previous_btn').hide();
+        }
+        if(result_page == 2){
+            $('#previous_btn').show();
+        }
         get_results_list(result_page);
     });
 
@@ -525,6 +542,11 @@ $(document).ready(function () {
                         html_open_ports + html_description +
                         "</p>\n </a>";
         }
+
+        if (res["msg"] == "No more search results"){
+            HTMLData = "<p class=\"mb-1\"> No more results to show!!</p>";
+        }
+
         document.getElementById('crawl_results').innerHTML = HTMLData;
 
     }
@@ -533,7 +555,7 @@ $(document).ready(function () {
     function get_crawler_list(crawler_page) {
         $.ajax({
             type: "GET",
-            url: "/logs/get_list?page=" + crawler_page,
+            url: "/logs/search?q=" + $("#search_data").val() + "&page=" + crawler_page,
             dataType: "text"
         }).done(function (res) {
             $("#login_first").addClass("hidden");
@@ -576,11 +598,23 @@ $(document).ready(function () {
 
     $("#crw_previous_btn").click(function () {
         crawler_page = crawler_page - 1;
+        if(crawler_page == 1){
+            $('#crw_previous_btn').hide();
+        }
+        if (crawler_page == 2){
+            $('#crw_previous_btn').show();
+        }
         get_crawler_list(crawler_page);
     });
 
     $("#crw_next_btn").click(function () {
         crawler_page = crawler_page + 1;
+        if(crawler_page == 1){
+            $('#crw_previous_btn').hide();
+        }
+        if (crawler_page ==2){
+            $('#crw_previous_btn').show();
+        }
         get_crawler_list(crawler_page);
     });
 

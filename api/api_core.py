@@ -278,8 +278,10 @@ def __profiles():
     profiles = _builder(_profiles(), default_profiles())
     res = ""
     for profile in profiles:
+        label = "success" if(profile == "scan") else "warning" if(profile == "brute") else "danger" if(profile ==
+            "vulnerability") else "default"
         res += """<label><input id="{0}" type="checkbox" class="checkbox checkbox-{0}"><a class="label 
-        label-primary">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(profile)
+        label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(profile, label)
     return res
 
 
