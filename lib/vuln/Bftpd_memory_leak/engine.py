@@ -162,9 +162,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format(
-                'FTP server is prone to a memory leak vulnerability in the file rename function. CVE-2017-16892'))
+                'Bftpd_memory_leak CVE-2017-16892'))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'Bftpd_memory_leak_vuln',
-                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('FTP server is prone to a memory leak vulnerability in the file rename function. CVE-2017-16892'), 'TIME': now(),
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('Bftpd_memory_leak CVE-2017-16892'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)

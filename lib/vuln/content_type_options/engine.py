@@ -23,11 +23,12 @@ from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
+import requests
 
 
 def extra_requirements_dict():
     return {
-        "bftpd_vuln_ports": [21, 990]
+        "cto_vuln_ports": [443]
     }
 
 
@@ -59,37 +60,37 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def Parsecmd_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
-                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+def content_type(target, port, timeout_sec, log_in_file, language, time_sleep,
+                 thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
         if not s:
             return False
         else:
-            s.send("ehlo")
-            banner = s.recv(100)
-            banner = banner.split(" ")
-            if banner[1] == "bftpd":
-                if "1.6" in banner[2] or "1.7" in banner[2]:
-                    return True
-                else:
+            if "https" not in target:
+                target = "https://" + target
+            req = requests.get(target)
+            try:
+                if req.headers['X-Content-Type-Options'] == 'nosniff':
                     return False
-            else:
-                return False
+                else:
+                    return True
+            except:
+                return True
     except Exception as e:
         # some error warning
         return False
 
 
-def __Parsecmd_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
-                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-    if Parsecmd_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
-                         thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+def __content_type(target, port, timeout_sec, log_in_file, language, time_sleep,
+                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+    if content_type(target, port, timeout_sec, log_in_file, language, time_sleep,
+                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "target_vulnerable").format(target, port,
-                                                            'Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'))
+                                                            'The X-Content-Type-Options not set, This header is used to protect against MIME sniffing vulnerabilities. '))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'Bftpd_parsecmd_overflow_vuln',
-                           'DESCRIPTION': messages(language, "vulnerable").format('Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'), 'TIME': now(),
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'content_type_options_vuln',
+                           'DESCRIPTION': messages(language, "vulnerable").format(''), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
@@ -110,7 +111,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["bftpd_vuln_ports"]
+            ports = extra_requirements["cto_vuln_ports"]
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
@@ -122,7 +123,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         keyboard_interrupt_flag = False
         for port in ports:
             port = int(port)
-            t = threading.Thread(target=__Parsecmd_overflow,
+            t = threading.Thread(target=__content_type,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
@@ -130,7 +131,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'Bftpd_parsecmd_overflow_vuln'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'content_type_options_vuln'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -157,13 +158,13 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format(
-                'Bftpd_parsecmd_overflow	CVE-2007-2051'))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'Bftpd_parsecmd_overflow_vuln',
-                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('Bftpd_parsecmd_overflow	CVE-2007-2051'), 'TIME': now(),
+                'X-Content-Type option configured properly'))
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'content_type_options_vuln',
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('X-Content-Type option configured properly'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:
         warn(messages(language, "input_target_error").format(
-            'Bftpd_parsecmd_overflow_vuln', target))
+            'content_type_options_vuln', target))

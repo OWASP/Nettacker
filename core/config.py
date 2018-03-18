@@ -32,7 +32,9 @@ def _profiles():
     """
     return {
         "information_gathering": ["port_scan"],
+        "info": ["port_scan"],
         "vulnerability": ["*_vuln"],
+        "vuln":["*_vuln"],
         "scan": ["*_scan"],
         "brute": ["*_brute"]
     }

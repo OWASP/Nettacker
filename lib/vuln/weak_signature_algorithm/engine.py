@@ -154,9 +154,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            info(messages(language, "no_vulnerability_found").format('weak'))
+            info(messages(language, "no_vulnerability_found").format('Weak Signature Algorithm'))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'weak_encryption_algorithm_vuln',
-                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('Weak Encryption Algorithm : sha1WithRSAEncryption'), 'TIME': now(),
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('Weak Encryption Algorithm'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)

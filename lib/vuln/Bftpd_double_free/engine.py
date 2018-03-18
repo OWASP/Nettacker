@@ -154,9 +154,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format(
-                'Double free vulnerability in bftpd before 1.8 allows remote authenticated users to cause a denial of service (daemon crash) via a (1) get or (2) mget command.	 CVE-2007-2010'))
+                'Bftpd_double_free	 CVE-2007-2010'))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'Bftpd_double_free_vuln',
-                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('Double free vulnerability in bftpd before 1.8 allows remote authenticated users to cause a denial of service (daemon crash) via a (1) get or (2) mget command.	 CVE-2007-2010'), 'TIME': now(),
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('Bftpd_double_free       CVE-2007-2010'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
