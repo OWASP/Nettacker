@@ -138,7 +138,7 @@
                 <h3>Profiles</h3>
                 <div class="form-group">
                     <div id="profile" class="checkbox text-justify">
-                        <label><input id="checkAll" type="checkbox" class="check"><a
+                        <label><input id="all" type="checkbox" class="check check-all-scans"><a
                                 class="label label-info">Select all profiles</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         {% autoescape off %}{{profile}}{% endautoescape %}
                     </div>
@@ -261,12 +261,12 @@
                 <div class="form-group col-md-6">
                     <h3>Users</h3>
                     <textarea class="input-mini form-control" rows="8" cols="50" id="users"
-                              placeholder="separate with commas or new line"></textarea>
+                              data-role="tagsinput" placeholder="separate with commas or new line"></textarea>
                 </div>
                 <div class="form-group col-md-6">
                     <h3>Passwords</h3>
                     <textarea class="form-control" rows="8" cols="50" id="passwds"
-                              placeholder="separate with commas or new line"></textarea>
+                               placeholder="separate with commas or new line"></textarea>
                 </div>
                 <br>
                 <h3>Extra Module Options</h3>
