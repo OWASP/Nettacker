@@ -34,6 +34,7 @@ def extra_requirements_dict():
         # Must add later!
         # https://censys.io/certificates?q=domain
         # https://transparencyreport.google.com/https/certificates
+        # https://otx.alienvault.com/indicator/domain/google.com
 
     }
 
