@@ -28,7 +28,7 @@ import requests
 
 def extra_requirements_dict():
     return {
-        "svd_vuln_ports": [443]
+        "xpb_vuln_ports": [443]
     }
 
 
@@ -60,7 +60,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def server_version(target, port, timeout_sec, log_in_file, language, time_sleep,
+def powered_by(target, port, timeout_sec, log_in_file, language, time_sleep,
                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
@@ -72,7 +72,7 @@ def server_version(target, port, timeout_sec, log_in_file, language, time_sleep,
             req = requests.get(target)
             try:
                 global header_server
-                header_server=req.headers['server']
+                header_server=req.headers['x-powered-by']
                 return True
             except:
                 return False
@@ -81,14 +81,14 @@ def server_version(target, port, timeout_sec, log_in_file, language, time_sleep,
         return False
 
 
-def __server_version(target, port, timeout_sec, log_in_file, language, time_sleep,
+def __powered_by(target, port, timeout_sec, log_in_file, language, time_sleep,
                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-    if server_version(target, port, timeout_sec, log_in_file, language, time_sleep,
+    if powered_by(target, port, timeout_sec, log_in_file, language, time_sleep,
                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "target_vulnerable").format(target, port,
-                                                            'Server Version Diclosure in headers - ' + header_server))
+                                                            'X-powered-by disclosure in headers - ' + header_server))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'server_version_vuln',
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'x_powered_by_vuln',
                            'DESCRIPTION': messages(language, "vulnerable").format(''), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
@@ -110,7 +110,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["svd_vuln_ports"]
+            ports = extra_requirements["xpb_vuln_ports"]
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
@@ -122,7 +122,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         keyboard_interrupt_flag = False
         for port in ports:
             port = int(port)
-            t = threading.Thread(target=__server_version,
+            t = threading.Thread(target=__powered_by,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
@@ -130,7 +130,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'server_version_vuln'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'x_powered_by_vuln'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -157,13 +157,13 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format(
-                'Server version not found'))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'server_version_vuln',
-                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('server version not found'), 'TIME': now(),
+                'X_powered_by not found'))
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'x_powered_by_vuln',
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('X-powered-by not found'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:
         warn(messages(language, "input_target_error").format(
-            'server_version_vuln', target))
+            'x_powered_by_vuln', target))
