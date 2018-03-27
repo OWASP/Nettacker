@@ -11,8 +11,7 @@ def join_payload(command):
 
 
 def start(data):
-    command = data[0]
-    command = command.replace('[space]', ' ')
+    command = data.replace('[space]', ' ')
     if int(len(command)) < 5:
         command = str(
             command) + '[space]&&[space]echo[space]1[space]>[space]/dev/null'  # bypass a bug in here, fix later
