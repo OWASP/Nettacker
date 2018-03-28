@@ -6,6 +6,20 @@
 import os
 import sys
 
+#Usage
+
+'''
+if you want to output the generated list in a file:
+
+from lib.payload.password_list_generator import generate
+password_list = generate("word_filename.txt")
+
+if you don't want to output the generated list in a file:
+
+from lib.payload.password_list_generator import generate
+password_list = generate(None)
+'''
+
 #Declarations
 
 if int(sys.version_info[0]) is 2:
@@ -45,7 +59,7 @@ def datepart(date):
         list1.append(year[1:])
       
 def generate(filename):
-    #Usage count=generate("/OWASP-Nettacker/mypasswordlist.txt")
+
     print("[+] Enter User Details")
     fname = input ("Enter First name: ").lower()
     while(len(fname)==0):
