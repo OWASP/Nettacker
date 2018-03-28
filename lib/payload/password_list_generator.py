@@ -126,8 +126,6 @@ def generate(filename):
 
     list1 = list(filter(None, list1)) #removing empty data
 
-    falela= open(filename,"w")
-
     for i in list1:
         password_list.append(i)
         for j in list1:
@@ -175,8 +173,17 @@ def generate(filename):
     list(set(unique_list))
     for i in unique_list:
         if (len(i)>=minm) and (len(i)<=maxm):
-           falela.write(i+ "\n")
-           count+=1
+            pass
+        else:
+            unique_list.remove(i)
+    unique_list = list(set(tuple(unique_list)))
 
-    falela.close()
-    return count
+    if filename is not None:
+        outF = open(filename, "w")
+        print(unique_list)
+        for line in unique_list:
+            outF.write(line)
+            outF.write("\n")
+        outF.close()
+    
+    return unique_list
