@@ -6,25 +6,12 @@
 
 import os
 import sys
-
-# Usage
-
-'''
-if you want to output the generated list in a file:
-
-from lib.payload.password_generator.engine import generate
-password_list = generate(filename="word_filename.txt")
-
-if you don't want to output the generated list in a file:
-
-from lib.payload.password_generator.engine import generate
-password_list = generate()
-'''
+from core.log import __log_into_file
+import json
+from core._time import now
 
 # Declarations
 
-if int(sys.version_info[0]) is 2:
-    input = raw_input
 global monthly
 global list1
 
@@ -61,51 +48,11 @@ def datepart(date):
         list1.append(year[1:])
 
 
-def generate(filename=""):
-    fname = input("Enter First name: ").lower()
-    while(len(fname) == 0):
-        fname = input("Atleast enter the name of the user: ").lower()
-    lname = input("Enter Last name: ").lower()
-    nick = input("Enter Nickname: ").lower()
-    email = input("Enter Email: ").lower()
-    dob = input("Enter Date of birth in the format dd/mm/yyyy: ")
-    while(len(dob) != 0) and (len(dob) != 10):
-        dob = input("Enter dob in correct format dd/mm/yyyy: ")
-    phone = input("Enter Phone number: ")
-    #vehicle = input("Enter Vehicle number: ")
-    partner = input("Enter Partner's name: ").lower()
-    partnick = input("Enter Partner's Nickname: ").lower()
-    partdob = input("Enter Date of birth of partner dd/mm/yyyy: ")
-    while(len(partdob) != 0) and (len(partdob) != 10):
-        partdob = input("Enter dob in correct format dd/mm/yyyy: ")
-    bestf = input("Enter Bestfriend's Name: ").lower()
-    #birthplace = input("Enter birth place: ").lower()
-    #pet = input("Enter pet's name: ").lower()
-    child = input("Enter child's name: ").lower()
-    #childn =input("Enter Child's nick name: ").lower()
-    #childob = input ("Enter Date of birth of child dd/mm/yyyy: ")
-    # while(len(childob)!=0) and (len(childob)!=10):
-    #  childob = input ("Enter dob in correct format dd/mm/yyyy: ")
-    company = input("Enter Comppany's name: ")
-    other = input(
-        "Enter Any other information for password seperate the words by ',' : ").replace(" ", "")
+def generate(filename = "", first_name="", last_name = "", nick= "", email = "", dob = "", phone = "", partner_name = "", partner_dob = "", bestfriend = "", child_name = "", company = "", other = "",  maxm = 8, minm = 16, special_characters = False, leet_speak = False, random_numbers = False, language="en"):
+    random_l=list()
+    other = other.replace(" ", "")
     words2 = other.split(",")
-    try:
-        maxm = int(
-            input("[+] Enter maximum no. of characters for the wordlist( by default 16 ): "))
-    except:
-        maxm = 16
-
-    try:
-        minm = int(
-            input("[+] Enter maximum no. of characters for the wordlist( by default 8 ): "))
-    except:
-        minm = 8
-
-    spycn = input(
-        "[+] Do you want to add special characters in the end of the list? : [y/n] ").lower()
-
-    if spycn == 'y':
+    if special_characters == True:
         special = list()
         for spec1 in charlist:
             special.append(spec1)
@@ -115,18 +62,13 @@ def generate(filename=""):
                     special.append(spec1 + spec2 + spec3)
 
     # 1337 mode can convert the characters to leet speak and hello = h3110
-    leet = input("[+] 1337 mode? (Example:  hello = h3110 ) : [y/n] ").lower()
-    random = input(
-        "[+] Want to add random numbers in the end of the words : [y/n] ").lower()
-
     ################################
 
-    funame = fname.title()
+    funame = first_name.title()
     nuick = nick.title()
-    purtname = partner.title()
-    purtnick = partnick.title()
-    bustf = bestf.title()
-    chld = child.title()
+    purtname = partner_name.title()
+    bustf = bestfriend.title()
+    chld = child_name.title()
     #chldn = childn.title()
     cumpny = company.title()
 
@@ -134,12 +76,12 @@ def generate(filename=""):
 
     emails, sep, tail = email.partition("@")
 
-    list1 = [fname, lname, nick, emails, funame, nuick, phone, partner,
-             partnick, bestf, purtname, purtnick, bustf, child, company, chld, cumpny]
+    list1 = [first_name, last_name, nick, emails, funame, nuick, phone, partner_name,
+            bestfriend, purtname, bustf, child_name, company, chld, cumpny]
     for i in words2:
         list1.append(i)
 
-    datepart(partdob)
+    datepart(partner_dob)
     # datepart(childob)
     datepart(dob)
 
@@ -151,7 +93,7 @@ def generate(filename=""):
             if(i.lower()) != (j.lower()):
                 password_list.append(i + j)
 
-    if leet == 'y':
+    if leet_speak == True:
         for i in password_list:
             i = i.replace('a', '@')
             i = i.replace('t', '7')
@@ -176,32 +118,26 @@ def generate(filename=""):
     # s='5'
     ####################
 
-    if random == 'y':
+    if random_numbers == True:
         for i in password_list:
             for j in random_list:
                 random_l.append(i + j)
     else:
         random_l = password_list
 
-    if spycn == 'y':
+    if special_characters == True:
         for i in random_l:
             for j in special:
                 characters_list.append(i + j)
     count = 0
     unique_list = password_list + random_l + characters_list + leet_list
-    list(set(unique_list))
+    unique_list = list(set(tuple(unique_list)))
     for i in unique_list:
-        if (len(i) >= minm) and (len(i) <= maxm):
+        if minm <= len(i) <= maxm:
             pass
         else:
             unique_list.remove(i)
-    unique_list = list(set(tuple(unique_list)))
-
+    
     if filename is not "":
-        outF = open(filename, "w")
-        for line in unique_list:
-            outF.write(line)
-            outF.write("\n")
-        outF.close()
-
+        __log_into_file(filename, 'w', json.dumps(unique_list), language, final=True)
     return unique_list
