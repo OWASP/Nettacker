@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 import threading
 import time
 import socks
@@ -8,10 +9,14 @@ import socket
 import json
 import string
 import random
-from html.parser import HTMLParser
+if int(sys.version_info[0]) is 3:
+    from html.parser import HTMLParser
+    import http.cookiejar as cookiejar
+else:
+    from HTMLParser import HTMLParser
+    import cookielib as cookiejar
 import urllib
 import urllib2
-import http.cookiejar
 import os
 import requests
 from core.alert import *
@@ -78,7 +83,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         target_host = str(target) + ":" + str(port)
         flag = 1
         try:
-            cookiejar = http.cookiejar.FileCookieJar("cookies")
+            cookiejar = cookiejar.FileCookieJar("cookies")
             opener = urllib2.build_opener(
                 urllib2.HTTPCookieProcessor(cookiejar))
             response = opener.open(target)
