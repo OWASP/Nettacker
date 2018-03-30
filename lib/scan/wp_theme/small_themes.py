@@ -8,4 +8,4 @@ def themes():
             "dandelion", "default", "designfolio-plus", "diary", "dimension", "euclid", "gazette", "highlight",
             "kernel-theme", "limon", "linenity", "livewire-edition", "make_a_statement", "medicate", "oxygen-theme",
             "parallax", "persuasion", "radial-theme", "rayoflight-theme", "reganto-theme", "rockstar-theme", "saico",
-            "striking_r", "switchblade"]
+            "striking_r", "twentysixteen", "switchblade"]
