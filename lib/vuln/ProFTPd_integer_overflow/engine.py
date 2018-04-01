@@ -59,7 +59,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def restriction_bypass(target, port, timeout_sec, log_in_file, language, time_sleep,
+def integer_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
@@ -70,8 +70,16 @@ def restriction_bypass(target, port, timeout_sec, log_in_file, language, time_sl
             banner = s.recv(100)
             banner = banner.split(" ")
             if banner[1] == "Proftpd":
-                vuln_list = ["1.3.1", "1.3.2a", "1.3.2rc1",
-                   "1.3.2rc2", "1.3.2rc4", "1.3.2", "1.3.3rc1"]
+                vuln_list=["1.2.0","1.2.0pre9","1.2.0pre10","1.2.0rc1","1.2.0rc2","1.2.0rc3","1.2.1","1.2.2",
+                "1.2.2rc1","1.2.2rc2","1.2.2rc3","1.2.3","1.2.4","1.2.5",
+                "1.2.5rc1","1.2.5rc2","1.2.5rc3","1.2.6rc1","1.2.6rc2","1.2.6","1.2.7rc2",
+                "1.2.7rc3","1.2.7","1.2.7rc1","1.2.8rc2","1.2.8","1.2.8rc1","1.2.9",
+                "1.2.9rc1","1.2.9rc2","1.2.9rc3","1.2.10rc1","1.2.10rc2","1.2.10rc3","1.2.10","1.3.0a",
+                "1.3.0rc2","1.3.0rc3","1.3.0rc4","1.3.0rc5","1.3.0","1.3.0rc1","1.3.1rc1","1.3.1rc2",
+                "1.3.1rc3","1.3.1","1.3.2","1.3.2rc4","1.3.2rc2","1.3.2rc1",
+                "1.3.2rc3","1.3.3f","1.3.3rc3","1.3.3d","1.3.3rc4","1.3.3C","1.3.3",
+                "1.3.3a","1.3.3rc1","1.3.3rc2","1.3.3b"]
+
                 if banner[2] in vuln_list:
                     return True
                 else:
@@ -83,15 +91,15 @@ def restriction_bypass(target, port, timeout_sec, log_in_file, language, time_sl
         return False
 
 
-def __restriction_bypass(target, port, timeout_sec, log_in_file, language, time_sleep,
+def __integer_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-    if restriction_bypass(target, port, timeout_sec, log_in_file, language, time_sleep,
+    if integer_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "target_vulnerable").format(target, port,
-                                                            'The mod_tls module in ProFTPD before 1.3.2b, and 1.3.3 before 1.3.3rc2, when the dNSNameRequired TLS option is enabled, does not properly handle a \0 character in a domain name in the Subject Alternative Name field of an X.509 client certificate, which allows remote attackers to bypass intended client-hostname restrictions via a crafted certificate issued by a legitimate Certification Authority    CVE-2009-3639'))
+                                                            'Integer overflow in the mod_sftp (aka SFTP) module in ProFTPD 1.3.3d and earlier allows remote attackers to cause a denial of service (memory consumption leading to OOM kill) via a malformed SSH message.     CVE-2011-1137'))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'ProFTPd_restriction_bypass_vuln',
-                           'DESCRIPTION': messages(language, "vulnerable").format('The mod_tls module in ProFTPD before 1.3.2b, and 1.3.3 before 1.3.3rc2, when the dNSNameRequired TLS option is enabled, does not properly handle a \0 character in a domain name in the Subject Alternative Name field of an X.509 client certificate, which allows remote attackers to bypass intended client-hostname restrictions via a crafted certificate issued by a legitimate Certification Authority    CVE-2009-3639'), 'TIME': now(),
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'ProFTPd_integer_overflow_vuln',
+                           'DESCRIPTION': messages(language, "vulnerable").format('Integer overflow in the mod_sftp (aka SFTP) module in ProFTPD 1.3.3d and earlier allows remote attackers to cause a denial of service (memory consumption leading to OOM kill) via a malformed SSH message.   CVE-2011-1137'), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
@@ -124,7 +132,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         keyboard_interrupt_flag = False
         for port in ports:
             port = int(port)
-            t = threading.Thread(target=__restriction_bypass,
+            t = threading.Thread(target=__integer_overflow,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
@@ -132,7 +140,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'ProFTPd_restriction_bypass_vuln'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'ProFTPd_integer_overflow_vuln'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -159,13 +167,13 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format(
-                'ProFTPd_restriction_bypass  CVE-2009-3639'))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ProFTPd_restriction_bypass_vuln',
-                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('ProFTPd_restriction_bypass    CVE-2009-3639'), 'TIME': now(),
+                'ProFTPd_integer_overflow  CVE-2011-1137'))
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ProFTPd_integer_overflow_vuln',
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('ProFTPd_integer_overflow    CVE-2011-1137'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:
         warn(messages(language, "input_target_error").format(
-            'ProFTPd_restriction_bypass_vuln', target))
+            'ProFTPd_integer_overflow_vuln', target))
