@@ -23,12 +23,11 @@ from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-import requests
 
 
 def extra_requirements_dict():
     return {
-        "cms_detection_ports": [80,443]
+        "Proftpd_vuln_ports": [21, 990]
     }
 
 
@@ -60,91 +59,45 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def cms_detection(target, port, timeout_sec, log_in_file, language, time_sleep,
-                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+def heap_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
+                  thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
-        try:
-             s = conn(target, port, timeout_sec, socks_proxy)
-        except Exception as e:
-             print(e)
-        print(target+str(port))
+        s = conn(target, port, timeout_sec, socks_proxy)
         if not s:
-            print("!!")
             return False
         else:
-            user_agent_list = [
-            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
-            "Googlebot/2.1 ( http://www.googlebot.com/bot.html)",
-            "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Ubuntu/10.04"
-            " Chromium/9.0.595.0 Chrome/9.0.595.0 Safari/534.13",
-            "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.2; WOW64; .NET CLR 2.0.50727)",
-            "Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22 Version/10.51",
-            "Mozilla/5.0 (compatible; 008/0.83; http://www.80legs.com/webcrawler.html) Gecko/2008032620",
-            "Debian APT-HTTP/1.3 (0.8.10.3)",
-            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
-            "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
-            "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
-            "YahooSeeker/1.2 (compatible; Mozilla 4.0; MSIE 5.5; yahooseeker at yahoo-inc dot com ; "
-            "http://help.yahoo.com/help/us/shop/merchant/)"]
-            global cms_name
-           # print(port)
-           # if port is 80:
-            target = "http://" + target 
-            #elif port is "443":
-             #   target = "https://" + target 
-            req_url = target + "/N0WH3R3.php"
-            req_joomla_url = target + "/configuration.php"           
-            req_wordpress_url = target + "/wp-config.php"
-            req_drupal_url = target + "/sites/default/settings.php";print("Help")
-            try:
-               user_agent = {'User-agent': random.choice(user_agent_list)}; print("Reached here also")
-               req = requests.get(req_url, timeout=10, headers=user_agent); print ("But can't here")
-               code_for_404 = req.text ; print("Let's see whaat ")
-               user_agent = {'User-agent': random.choice(user_agent_list)}; print("Happens")
-               req_wordpress = requests.get(req_wordpress_url, timeout=10, headers=user_agent) ; print("Here again")
-               user_agent = {'User-agent': random.choice(user_agent_list)}
-               req_joomla = requests.get(req_joomla_url, timeout=10, headers=user_agent)
-               user_agent = {'User-agent': random.choice(user_agent_list)}
-               req_drupal = requests.get(req_drupal_url, timeout=10, headers=user_agent)
-            except requests.exceptions.RequestException as e: 
-               print (e)
-               print("No exception whatsoever")
-               print(e)
-               return False
-            print("Cannot Reach Here")
-            if req_wordpress.text != code_for_404 or req_wordpress.status_code == 403:
-                cms_name = "Wordpress"
-                return True
-            elif req_drupal.status_code != code_for_404 or req_drupal.status_code == 403:
-                cms_name = "Drupal"
-                return True
-            elif req_joomla.status_code != code_for_404 or req_joomla.status_code == 403:
-                cms_name = "Joomla"
-                return True
+            s.send("ehlo")
+            banner = s.recv(100)
+            banner = banner.split(" ")
+            if banner[1] == "Proftpd":
+                vuln_list = ["1.2.0", "1.2.0pre9", "1.2.0pre10", "1.2.0rc1", "1.2.0rc2", "1.2.0rc3", "1.2.1", "1.2.2", "1.2.2rc1", "1.2.2rc2", "1.2.2rc3", "1.2.3", "1.2.4", "1.2.5", "1.2.5rc1", "1.2.5rc2", "1.2.5rc3", "1.2.6rc1", "1.2.6rc2", "1.2.6", "1.2.7rc2", "1.2.7rc3", "1.2.7", "1.2.7rc1", "1.2.8rc2", "1.2.8", "1.2.8rc1", "1.2.9", "1.2.9rc1",
+                             "1.2.9rc2", "1.2.9rc3", "1.2.10rc1", "1.2.10rc2", "1.2.10rc3", "1.2.10", "1.3.0a", "1.3.0rc2", "1.3.0rc3", "1.3.0rc4", "1.3.0rc5", "1.3.0", "1.3.0rc1", "1.3.1rc1", "1.3.1rc2", "1.3.1rc3", "1.3.1", "1.3.2", "1.3.2rc4", "1.3.2rc2", "1.3.2rc1", "1.3.2rc3", "1.3.3rc3", "1.3.3rc4", "1.3.3c", "1.3.3", "1.3.3a", "1.3.3rc1", "1.3.3rc2", "1.3.3b"]
+
+                if banner[2] in vuln_list:
+                    return True
+                else:
+                    return False
             else:
-                print("!")
                 return False
     except Exception as e:
-        print("a")
-        #print(e)
+        # some error warning
         return False
 
 
-def __cms_detection(target, port, timeout_sec, log_in_file, language, time_sleep,
+def __heap_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
+                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+    if heap_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-    if cms_detection(target, port, timeout_sec, log_in_file, language, time_sleep,
-                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-        print("Return True")
-        info(messages(language, "found").format(target, "CMS Name", cms_name))
+        info(messages(language, "target_vulnerable").format(target, port,
+                                                            'Heap-based buffer overflow in the sql_prepare_where function (contrib/mod_sql.c) in ProFTPD before 1.3.3d, when mod_sql is enabled, allows remote attackers to cause a denial of service (crash) and possibly execute arbitrary code via a crafted username containing substitution tags, which are not properly handled during construction of an SQL query.	CVE-2010-4652'))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'cms_detection_scan',
-                           'DESCRIPTION': messages(language, "found").format(target, "CMS Name", cms_name), 'TIME': now(),
-                           'CATEGORY': "scan",
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'Proftpd_heap_overflow_vuln',
+                           'DESCRIPTION': messages(language, "vulnerable").format('Heap-based buffer overflow in the sql_prepare_where function (contrib/mod_sql.c) in ProFTPD before 1.3.3d, when mod_sql is enabled, allows remote attackers to cause a denial of service (crash) and possibly execute arbitrary code via a crafted username containing substitution tags, which are not properly handled during construction of an SQL query.    CVE-2010-4652'), 'TIME': now(),
+                           'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
         return True
     else:
-        print("Return False")
         return False
 
 
@@ -156,10 +109,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if methods_args is not None:
             for extra_requirement in extra_requirements_dict():
                 if extra_requirement in methods_args:
-                    new_extra_requirements[extra_requirement] = methods_args[extra_requirement]
+                    new_extra_requirements[
+                        extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["cms_detection_ports"]
+            ports = extra_requirements["Proftpd_vuln_ports"]
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
@@ -171,7 +125,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         keyboard_interrupt_flag = False
         for port in ports:
             port = int(port)
-            t = threading.Thread(target=__cms_detection,
+            t = threading.Thread(target=__heap_overflow,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
@@ -179,7 +133,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'cms_detection_scan'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'Proftpd_heap_overflow_vuln'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -205,13 +159,14 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            info(messages(language, "not_found"))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'cms_detection_scan',
-                               'DESCRIPTION': messages(language, "not_found"), 'TIME': now(),
+            info(messages(language, "no_vulnerability_found").format(
+                'ProFTPd_heap_overflow  CVE-2010-4652'))
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'Proftpd_heap_overflow_vuln',
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('ProFTPd_heap_overflow    CVE-2010-4652'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:
         warn(messages(language, "input_target_error").format(
-            'cms_detection_scan', target))
+            'Proftpd_heap_overflow_vuln', target))
