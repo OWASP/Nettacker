@@ -68,7 +68,7 @@ def joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
             return False
         else:
             if "http" not in target:
-                target = "http://" + target
+                target = "https://" + target
             req = requests.get(target+'/joomla.xml')
             if req.status_code == 404:
                 req = requests.get(
