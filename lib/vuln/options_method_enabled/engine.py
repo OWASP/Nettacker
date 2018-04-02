@@ -28,7 +28,7 @@ import requests
 
 def extra_requirements_dict():
     return {
-        "joomla_version_ports": [443]
+        "ome_vuln_ports": [80,443]
     }
 
 
@@ -60,7 +60,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
+def options_method(target, port, timeout_sec, log_in_file, language, time_sleep,
                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
@@ -68,34 +68,31 @@ def joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
             return False
         else:
             if "http" not in target:
-                target = "https://" + target
-            req = requests.get(target+'/joomla.xml')
-            if req.status_code == 404:
-                req = requests.get(
-                    target+'/administrator/manifests/files/joomla.xml')
-            try:
-                global version
-                regex = '<version>(.+?)</version>'
-                pattern = re.compile(regex)
-                version = re.findall(pattern, req.text)
-                version = ''.join(version)
-                return True
-            except:
+                target = "http://" + target
+            req = requests.options(target)
+            if req.status_code == 200:
+                try:
+                    global header
+                    header = req.headers['allow']
+                    return True
+                except:
+                    return False
+            else:
                 return False
     except Exception as e:
         # some error warning
         return False
 
 
-def __joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
+def __options_method(target, port, timeout_sec, log_in_file, language, time_sleep,
                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-    if joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
+    if options_method(target, port, timeout_sec, log_in_file, language, time_sleep,
                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-        info(messages(language, "found").format(
-            target, "Joomla Version", version))
+        info(messages(language, "target_vulnerable").format(target, port,
+                                                            'Options Method enabled (Methods Available) - ' + header))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'joomla_version_scan',
-                           'DESCRIPTION': messages(language, "found").format(target, "Joomla Version", version), 'TIME': now(),
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'options_method_enabled_vuln',
+                           'DESCRIPTION': messages(language, "vulnerable").format(''), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
@@ -116,7 +113,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["joomla_version_ports"]
+            ports = extra_requirements["ome_vuln_ports"]
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
@@ -128,7 +125,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         keyboard_interrupt_flag = False
         for port in ports:
             port = int(port)
-            t = threading.Thread(target=__joomla_version,
+            t = threading.Thread(target=__options_method,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
@@ -136,7 +133,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'joomla_version_scan'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'options_method_enabled_vuln'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -162,13 +159,14 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            info(messages(language, "not_found"))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'joomla_version_scan',
-                               'DESCRIPTION': messages(language, "not_found"), 'TIME': now(),
+            info(messages(language, "no_vulnerability_found").format(
+                'Options method not enabled'))
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'options_method_enabled_vuln',
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('Options method not enabled'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:
         warn(messages(language, "input_target_error").format(
-            'joomla_version_scan', target))
+            'options_method_vuln', target))
