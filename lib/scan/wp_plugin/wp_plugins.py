@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Author: Pradeep Jairamani , github.com/pradeepjairamani
+
 def wp_plugins():
     return ["0-errors",
             "001-prime-strategy-translate-accelerator",

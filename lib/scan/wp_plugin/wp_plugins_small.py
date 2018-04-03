@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Author: Pradeep Jairamani , github.com/pradeepjairamani
+
 def wp_plugins():
     return[ "1-flash-gallery",
             "1-jquery-photo-gallery-slideshow-flash",
