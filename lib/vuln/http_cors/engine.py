@@ -28,7 +28,7 @@ import requests
 
 def extra_requirements_dict():
     return {
-        "http_cors_vuln_ports": [443]
+        "http_cors_vuln_ports": [80, 443]
     }
 
 
@@ -61,15 +61,18 @@ def conn(targ, port, timeout_sec, socks_proxy):
 
 
 def http_cors(target, port, timeout_sec, log_in_file, language, time_sleep,
-                 thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+              thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
         if not s:
             return False
         else:
-            if "https" not in target:
-                target = "https://" + target
-            headers = {'Referer' : 'http://example.foo/CORSexample1.html', 'Origin':'http://example.foo', 'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0'}
+            if target_type(target) != "HTTP" and port == 443:
+                target = 'https://' + target
+            if target_type(target) != "HTTP" and port == 80:
+                target = 'http://' + target
+            headers = {'Referer': 'http://example.foo/CORSexample1.html', 'Origin': 'http://example.foo',
+                       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0'}
             req = requests.get(target, headers=headers)
             if req.headers['Access-Control-Allow-Origin'] == "*":
                 return True
@@ -82,9 +85,9 @@ def http_cors(target, port, timeout_sec, log_in_file, language, time_sleep,
 
 
 def __http_cors(target, port, timeout_sec, log_in_file, language, time_sleep,
-                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     if http_cors(target, port, timeout_sec, log_in_file, language, time_sleep,
-                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                 thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "target_vulnerable").format(target, port,
                                                             'Cross Origin Resource Sharing https://www.owasp.org/index.php/Test_Cross_Origin_Resource_Sharing_(OTG-CLIENT-007)'))
         __log_into_file(thread_tmp_filename, 'w', '0', language)

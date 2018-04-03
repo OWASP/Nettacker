@@ -61,7 +61,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
 
 
 def wordpress_version(target, port, timeout_sec, log_in_file, language, time_sleep,
-                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
         if not s:
@@ -78,9 +78,10 @@ def wordpress_version(target, port, timeout_sec, log_in_file, language, time_sle
             try:
                 global version
                 regex = 'ver=.*\d'
-                pattern =  re.compile(regex)
-                version = re.findall(pattern,req.text)
-                version = max(set(version), key=version.count).replace('ver=','')
+                pattern = re.compile(regex)
+                version = re.findall(pattern, req.text)
+                version = max(set(version), key=version.count).replace(
+                    'ver=', '')
                 return True
             except:
                 return False
@@ -90,9 +91,9 @@ def wordpress_version(target, port, timeout_sec, log_in_file, language, time_sle
 
 
 def __wordpress_version(target, port, timeout_sec, log_in_file, language, time_sleep,
-                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     if wordpress_version(target, port, timeout_sec, log_in_file, language, time_sleep,
-                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                         thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "found").format(
             target, "Wordpress Version", version))
         __log_into_file(thread_tmp_filename, 'w', '0', language)

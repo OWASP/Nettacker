@@ -28,7 +28,7 @@ import requests
 
 def extra_requirements_dict():
     return {
-        "xpb_vuln_ports": [443]
+        "xpb_vuln_ports": [80, 443]
     }
 
 
@@ -67,8 +67,10 @@ def powered_by(target, port, timeout_sec, log_in_file, language, time_sleep,
         if not s:
             return False
         else:
-            if "https" not in target:
-                target = "https://" + target
+            if target_type(target) != "HTTP" and port == 443:
+                target = 'https://' + target
+            if target_type(target) != "HTTP" and port == 80:
+                target = 'http://' + target
             req = requests.get(target)
             try:
                 global header_server

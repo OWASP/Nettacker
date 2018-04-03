@@ -28,7 +28,7 @@ import requests
 
 def extra_requirements_dict():
     return {
-        "joomla_version_ports": [443]
+        "joomla_version_ports": [80, 443]
     }
 
 
@@ -67,8 +67,10 @@ def joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
         if not s:
             return False
         else:
-            if "http" not in target:
-                target = "https://" + target
+            if target_type(target) != "HTTP" and port == 443:
+                target = 'https://' + target
+            if target_type(target) != "HTTP" and port == 80:
+                target = 'http://' + target
             req = requests.get(target+'/joomla.xml')
             if req.status_code == 404:
                 req = requests.get(
