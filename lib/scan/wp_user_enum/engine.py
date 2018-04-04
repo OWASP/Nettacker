@@ -28,7 +28,7 @@ import requests
 
 def extra_requirements_dict():
     return {
-        "joomla_version_ports": [80, 443]
+        "wp_user_enum_ports": [80, 443]
     }
 
 
@@ -60,7 +60,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
+def wp_user_enum(target, port, timeout_sec, log_in_file, language, time_sleep,
                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
@@ -71,17 +71,20 @@ def joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
-            req = requests.get(target+'/joomla.xml')
-            if req.status_code == 404:
-                req = requests.get(
-                    target+'/administrator/manifests/files/joomla.xml')
+            r = requests.get(target+'/?feed=rss2', verify = False) 
+            r2 = requests.get(target+'/?author=', verify = False)
             try:
-                global version
-                regex = '<version>(.+?)</version>'
-                pattern = re.compile(regex)
-                version = re.findall(pattern, req.text)
-                version = ''.join(version)
-                return True
+                global wp_users
+                wp_users_feed = re.findall("<dc:creator><!\[CDATA\[(.+?)\]\]></dc:creator>", r.text, re.IGNORECASE)
+                wp_users_admin = re.findall("author author-(.+?) ", r2.text, re.IGNORECASE)
+                wp_users_admin2 = re.findall("/author/(.+?)/feed/", r2.text, re.IGNORECASE)
+                wp_users = wp_users_feed + wp_users_admin + wp_users_admin2
+                wp_users = sorted(set(wp_users))
+                wp_users = ', '.join(wp_users) 
+                if wp_users is not "":
+                    return True
+                else:
+                    return False
             except:
                 return False
     except Exception as e:
@@ -89,15 +92,15 @@ def joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
         return False
 
 
-def __joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
+def __wp_user_enum(target, port, timeout_sec, log_in_file, language, time_sleep,
                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-    if joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
+    if wp_user_enum(target, port, timeout_sec, log_in_file, language, time_sleep,
                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "found").format(
-            target, "Joomla Version", version))
+            target, "Wordpress users found ", wp_users))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'joomla_version_scan',
-                           'DESCRIPTION': messages(language, "found").format(target, "Joomla Version", version), 'TIME': now(),
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'wp_user_enum_scan',
+                           'DESCRIPTION': messages(language, "found").format(target, "Wordpress users found ", wp_users), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
@@ -118,7 +121,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["joomla_version_ports"]
+            ports = extra_requirements["wp_user_enum_ports"]
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
@@ -130,7 +133,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         keyboard_interrupt_flag = False
         for port in ports:
             port = int(port)
-            t = threading.Thread(target=__joomla_version,
+            t = threading.Thread(target=__wp_user_enum,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
@@ -138,7 +141,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'joomla_version_scan'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'wp_user_enum_scan'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -158,14 +161,14 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threading.activeCount() is 1:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "not_found"))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'joomla_version_scan',
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'wp_user_enum_scan',
                                'DESCRIPTION': messages(language, "not_found"), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
@@ -173,4 +176,4 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
 
     else:
         warn(messages(language, "input_target_error").format(
-            'joomla_version_scan', target))
+            'wp_user_enum_scan', target))

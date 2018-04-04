@@ -67,11 +67,10 @@ def apache_struts(target, port, timeout_sec, log_in_file, language, time_sleep,
         if not s:
             return False
         else:
-            if "https" not in target or "http" not in target:
-                if port is 80:
-                    target = "http://" + target
-                if port is 443:
-                    target = "http://" + target
+            if target_type(target) != "HTTP" and port == 443:
+                target = 'https://' + target
+            if target_type(target) != "HTTP" and port == 80:
+                target = 'http://' + target
             random_string = ''.join(random.choice(
                 'abcdefghijklmnopqrstuvwxyz') for i in range(7))
             payload = "%{#context['com.opensymphony.xwork2.dispatcher.HttpServletResponse']."
@@ -84,7 +83,7 @@ def apache_struts(target, port, timeout_sec, log_in_file, language, time_sleep,
             }
             timeout = 3
             resp = requests.get(
-                url, headers=headers, verify=False, timeout=timeout, allow_redirects=False)
+                target, headers=headers, verify=False, timeout=timeout, allow_redirects=False)
             if ((random_string in list(resp.headers.keys())) and (resp.headers[random_string] == random_string)):
                 return True
             else:

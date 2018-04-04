@@ -28,7 +28,7 @@ import requests
 
 def extra_requirements_dict():
     return {
-        "ome_vuln_ports": [80,443]
+        "ome_vuln_ports": [80, 443]
     }
 
 
@@ -67,8 +67,10 @@ def options_method(target, port, timeout_sec, log_in_file, language, time_sleep,
         if not s:
             return False
         else:
-            if "http" not in target:
-                target = "http://" + target
+            if target_type(target) != "HTTP" and port == 443:
+                target = 'https://' + target
+            if target_type(target) != "HTTP" and port == 80:
+                target = 'http://' + target
             req = requests.options(target)
             if req.status_code == 200:
                 try:

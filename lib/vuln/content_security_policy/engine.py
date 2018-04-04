@@ -67,8 +67,10 @@ def content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
         if not s:
             return False
         else:
-            if "https" not in target:
-                target = "https://" + target
+            if target_type(target) != "HTTP" and port == 443:
+                target = 'https://' + target
+            if target_type(target) != "HTTP" and port == 80:
+                target = 'http://' + target
             req = requests.get(target)
             try:
                 req.headers['Content-Security-Policy']

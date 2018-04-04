@@ -28,7 +28,7 @@ import requests
 
 def extra_requirements_dict():
     return {
-        "joomla_version_ports": [80, 443]
+        "xmlrpc_pingback_vuln_ports": [80, 443]
     }
 
 
@@ -60,44 +60,43 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
-                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+def xmlrpc_pingback(target, port, timeout_sec, log_in_file, language, time_sleep,
+                 thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
         if not s:
             return False
         else:
+            headers = {}
             if target_type(target) != "HTTP" and port == 443:
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
-            req = requests.get(target+'/joomla.xml')
-            if req.status_code == 404:
-                req = requests.get(
-                    target+'/administrator/manifests/files/joomla.xml')
-            try:
-                global version
-                regex = '<version>(.+?)</version>'
-                pattern = re.compile(regex)
-                version = re.findall(pattern, req.text)
-                version = ''.join(version)
+            headers['Content-Type'] = 'text/xml'
+            postdata = '''<methodCall><methodName>pingback.ping</methodName><params>
+                    <param><value><string>http://Cannotbehere:22/</string></value></param>
+                    <param><value><string>''' + target + '''</string></value></param>
+                    </params></methodCall>'''
+
+            req = requests.post(target+'/xmlrpc.php',
+                                data=postdata, headers=headers)
+            if re.search('<name>16</name>', req.text):
                 return True
-            except:
+            else:
                 return False
     except Exception as e:
-        # some error warning
         return False
 
 
-def __joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
-                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-    if joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
-                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-        info(messages(language, "found").format(
-            target, "Joomla Version", version))
+def __xmlrpc_pingback(target, port, timeout_sec, log_in_file, language, time_sleep,
+                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+    if xmlrpc_pingback(target, port, timeout_sec, log_in_file, language, time_sleep,
+                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+        info(messages(language, "target_vulnerable").format(target, port,
+                                                            'Wordpress XMLRPC pingback Vulnerability'))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'joomla_version_scan',
-                           'DESCRIPTION': messages(language, "found").format(target, "Joomla Version", version), 'TIME': now(),
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'Wordpress_xmlrpc_pingback_vuln',
+                           'DESCRIPTION': messages(language, "vulnerable").format('Wordpress XMLRPC pingback Vulnerability'), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
@@ -118,7 +117,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["joomla_version_ports"]
+            ports = extra_requirements["xmlrpc_pingback_vuln_ports"]
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
@@ -130,7 +129,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         keyboard_interrupt_flag = False
         for port in ports:
             port = int(port)
-            t = threading.Thread(target=__joomla_version,
+            t = threading.Thread(target=__xmlrpc_pingback,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
@@ -138,7 +137,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'joomla_version_scan'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'xmlrpc_pingback_vuln'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -164,13 +163,14 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            info(messages(language, "not_found"))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'joomla_version_scan',
-                               'DESCRIPTION': messages(language, "not_found"), 'TIME': now(),
+            info(messages(language, "no_vulnerability_found").format(
+                'xmlrpc_pingback'))
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'xmlrpc_pingback_vuln',
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('xmlrpc_pingback'), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:
         warn(messages(language, "input_target_error").format(
-            'joomla_version_scan', target))
+            'xmlrpc_pingback_vuln', target))
