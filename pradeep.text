@@ -1,0 +1,35 @@
+lib/payload/password/generator/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/ProFTPd_heap_overflow/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/ProFTPd_integer_overflow/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/ProFTPd_cpu_consumption/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/Bftpd_parsecmd_overflow/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/http_cors/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/apache_struts/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/ProFTPd_bypass_sqli_protection/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/ProFTPd_memory_leak/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/options_method_enabled/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/clickjacking/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/weak_signature_algorithm/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/ProFTPd_restriction_bypass/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/Bftpd_double_free/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/wp_xmlrpc_bruteforce/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/Bftpd_remote_dos/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/XSS_protection/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/ProFTPd_directory_traversal/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/x_powered_by/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/CCS_injection/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/server_version/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/Bftpd_memory_leak/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/ssl_certificate_expired/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/self_signed_certificate/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/content_type_options/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/wp_xmlrpc_pingback/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/content_security_policy/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/vuln/ProFTPd_exec_arbitary/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/scan/joomla_version/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/scan/wp_user_enum/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/scan/wp_plugin/engine.py:3:# Author Pradeep Jairamani; github.com/pradeepjairamani
+lib/scan/cms_detection/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/scan/wordpress_version/engine.py:3:# Author: Pradeep Jairamani , github.com/pradeepjairamani
+lib/scan/wp_theme/engine.py:3:# Author Pradeep Jairamani; github.com/pradeepjairamani
+lib/brute/wp_xmlrpc/engine.py:3:# Author Pradeep Jairamani; github.com/pradeepjairamani
