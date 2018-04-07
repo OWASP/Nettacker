@@ -279,8 +279,6 @@ def __profiles():
     synonyms = _synonym_profile().keys()
     for synonym in synonyms:
         del(profiles[synonym])
-    print type(profiles)
-    print profiles
     res = ""
     for profile in profiles:
         label = "success" if(profile == "scan") else "warning" if(profile == "brute") else "danger" if(profile ==
