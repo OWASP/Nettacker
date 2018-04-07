@@ -10,3 +10,4 @@ flask
 lockfile
 bs4
 pycurl
+pyspf
