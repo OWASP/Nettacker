@@ -29,9 +29,11 @@ requirements = open("requirements.txt").read().rsplit()
 if int(sys.version_info[0]) is 2:
     # add scapy requirement name for python 2.x
     requirements.append("scapy")
+    requirements.append("pyDNS")
 else:
     # add scapy requirement name for python 3.x
     requirements.append("scapy-python3")
+    requirements.append("py3DNS")
 
 setup(
     name="OWASP-Nettacker",
