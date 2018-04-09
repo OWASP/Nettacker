@@ -6,7 +6,7 @@ from core.load_modules import load_all_modules
 from core.load_modules import load_all_graphs
 from core.alert import messages
 from core.config_builder import default_profiles
-from core.config import _profiles
+from core.config import _profiles, _synonym_profile
 from core.config_builder import _builder
 from flask import abort
 
@@ -276,12 +276,15 @@ def __profiles():
         HTML content or available profiles
     """
     profiles = _builder(_profiles(), default_profiles())
+    synonyms = _synonym_profile().keys()
+    for synonym in synonyms:
+        del(profiles[synonym])
     res = ""
     for profile in profiles:
         label = "success" if(profile == "scan") else "warning" if(profile == "brute") else "danger" if(profile ==
             "vulnerability") else "default"
         res += """<label><input id="{0}" type="checkbox" class="checkbox checkbox-{0}"><a class="label 
-        label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(profile, label)
+            label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(profile, label)
     return res
 
 
@@ -385,6 +388,9 @@ def __rules(config, defaults, language):
     # Check Profiles
     if config["profile"] is not None:
         _all_profiles = _builder(_profiles(), default_profiles())
+        synonyms = _synonym_profile().keys()
+        for synonym in synonyms:
+            del(_all_profiles[synonym])
         if config["scan_method"] is None:
             config["scan_method"] = ""
         else:

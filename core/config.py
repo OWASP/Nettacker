@@ -40,6 +40,13 @@ def _profiles():
     }
 
 
+def _synonym_profile():
+    return {
+        "info": "information_gathering",
+        "vuln": "vulnerability",
+    }
+
+
 def _api_config():
     """
     API Config (could be modify by user)
