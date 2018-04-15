@@ -67,7 +67,7 @@ def apache_struts(target, port, timeout_sec, log_in_file, language, time_sleep,
         if not s:
             return False
         else:
-            if target_type(target) != "HTTP" and port == 443:
+            if target_type(target) != "HTTPS" and port == 443: # type == "HTTPS".
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
