@@ -19,7 +19,6 @@ from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
 from core.load_modules import load_file_path
-from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
@@ -56,7 +55,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         s.settimeout(timeout_sec)
         s.connect((targ, port))
         return s
-    except Exception as e:
+    except:
         return None
 
 
@@ -77,7 +76,7 @@ def clickjacking(target, port, timeout_sec, log_in_file, language, time_sleep,
                 return False
             except:
                 return True
-    except Exception as e:
+    except:
         # some error warning
         return False
 

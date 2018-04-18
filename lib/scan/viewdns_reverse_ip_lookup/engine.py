@@ -12,7 +12,6 @@ from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
 from core.log import __log_into_file
-from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 
 

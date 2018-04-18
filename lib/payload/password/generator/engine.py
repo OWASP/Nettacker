@@ -8,7 +8,6 @@ import os
 import sys
 from core.log import __log_into_file
 import json
-from core._time import now
 
 # Declarations
 

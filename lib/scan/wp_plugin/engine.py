@@ -88,7 +88,8 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                         info(messages(language, "directoy_listing").format(target))
                         data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
                                            'PORT': "", 'TYPE': 'wp_plugin_scan',
-                                           'DESCRIPTION': messages(language, "directoy_listing").format(target), 'TIME': now(),
+                                           'DESCRIPTION': messages(language, "directoy_listing").format(target),
+                                           'TIME': now(),
                                            'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
                         __log_into_file(log_in_file, 'a', data, language)
                         break
@@ -100,7 +101,8 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
 def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, verbose_level, trying, total_req, total,
          num, language):
     if verbose_level > 3:
-        info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target), "default_port",
+        info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target),
+                                                         "default_port",
                                                          'wp_plugin_scan'))
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith(
@@ -123,11 +125,11 @@ def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, ver
     while 1:
         try:
             if http_method == "GET":
-                r = requests.get(target, timeout=timeout_sec,
-                                 headers=user_agent)
+                requests.get(target, timeout=timeout_sec,
+                             headers=user_agent)
             elif http_method == "HEAD":
-                r = requests.head(target, timeout=timeout_sec,
-                                  headers=user_agent)
+                requests.head(target, timeout=timeout_sec,
+                              headers=user_agent)
             return 0
         except:
             n += 1
@@ -208,7 +210,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 t.start()
                 trying += 1
                 if verbose_level > 3:
-                    info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target),
+                    info(messages(language, "trying_message").format(trying, total_req, num, total,
+                                                                     target_to_host(target),
                                                                      "default_port", 'wp_plugin_scan'))
                 while 1:
                     try:
@@ -243,8 +246,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 target, "default_port"))
             if verbose_level is not 0:
                 data = json.dumps(
-                    {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'wp_plugin_scan',
-                     'DESCRIPTION': messages(language, "no_open_ports"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                    {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
+                     'TYPE': 'wp_plugin_scan',
+                     'DESCRIPTION': messages(language, "no_open_ports"), 'TIME': now(), 'CATEGORY': "scan",
+                     'SCAN_ID': scan_id,
                      'SCAN_CMD': scan_cmd})
                 __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)

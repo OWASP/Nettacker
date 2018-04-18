@@ -13,7 +13,6 @@ import re
 import requests
 from core.load_modules import load_file_path
 from core.alert import *
-from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file

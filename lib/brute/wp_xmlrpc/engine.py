@@ -75,7 +75,7 @@ def check(user, passwd, target, port, headers, timeout_sec, log_in_file, languag
                                'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
                     __log_into_file(log_in_file, 'a', data, language)
                 break
-            except Exception as e:
+            except:
                 n += 1
                 if n is retries:
                     warn(messages(language, "http_connection_timeout").format(target))
