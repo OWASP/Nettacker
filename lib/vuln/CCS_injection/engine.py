@@ -398,7 +398,7 @@ def CCS_injection(target, port, timeout_sec, log_in_file, language, time_sleep,
                     iCount += 1
                     try:
                         recv = s.recv(2048)
-                    except:
+                    except Exception:
                         continue
                     lstRecords = getSSLRecords(recv)
                     if lstRecords != None and len(lstRecords) > 0:
@@ -467,7 +467,7 @@ def CCS_injection(target, port, timeout_sec, log_in_file, language, time_sleep,
                     pass
                 try:
                     s.close()
-                except:
+                except Exception:
                     pass
             if iVulnCount > 0:
                 return True

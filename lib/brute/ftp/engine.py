@@ -71,7 +71,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     try:
         my_ftp.login(user, passwd)
         flag = 0
-    except:
+    except Exception:
         pass
     if flag is 0:
         try:

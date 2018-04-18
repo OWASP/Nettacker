@@ -223,7 +223,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 if int(open(thread_tmp_filename).read().rsplit()[0]) is 0:
                     if limit is not -1:
                         break
-            except:
+            except Exception:
                 pass
             while 1:
                 try:

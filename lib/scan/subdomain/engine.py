@@ -308,7 +308,7 @@ def __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose
                 for l in re.compile('<TD>(.*?)</TD>').findall(results.content):
                     if '*' not in l and l.endswith('.' + target) and l not in subs:
                         subs.append(l)
-            except:
+            except Exception:
                 pass
         else:
             # warn 403

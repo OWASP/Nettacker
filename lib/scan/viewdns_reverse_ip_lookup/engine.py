@@ -74,7 +74,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             for row in rows:
                 values = [col.text for col in row]
                 _values.append(dict(zip(headers, values))["Domain"])
-        except:
+        except Exception:
             pass
         if len(_values) is 0:
             info(messages(language, "viewdns_domain_404"))

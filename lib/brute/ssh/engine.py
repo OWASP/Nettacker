@@ -86,7 +86,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
             __log_into_file(thread_tmp_filename, 'w', '0', language)
-        except:
+        except Exception:
             pass
     else:
         pass

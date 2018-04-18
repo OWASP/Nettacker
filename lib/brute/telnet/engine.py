@@ -72,7 +72,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         tn.read_until("Password: ")
         tn.write(passwd + "\n")
         flag = 0
-    except:
+    except Exception:
         pass
     if flag is 0:
         info(messages(language, "user_pass_found").format(
