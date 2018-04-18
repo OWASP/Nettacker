@@ -170,7 +170,7 @@ def bleed(target, port, timeout_sec, log_in_file, language, time_sleep,
                 typ, ver, message = rcv_tls_record(s)
                 if not typ:
                     s.close()
-                    s = conn(target, port, timeout_sec=timeout_sec)
+                    s = conn(target, port, timeout_sec, socks_proxy)
                     break
                 # if typ == 22 and ord(message[0]) == 0x0E:
                 if typ == 22 or ord(message[0]) == 0x0E:
