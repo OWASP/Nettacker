@@ -18,3 +18,7 @@ logs.txt
 results.*
 *.html
 *.htm
+
+#codacy
+.coverage
+coverage.xml
