@@ -41,8 +41,7 @@ def messages(language, msg_id):
         msgs = getattr(__import__('lib.language.messages_{0}'.format(language), fromlist=['all_messages']),
                        'all_messages')()[str(msg_id)]
     except:
-        msgs = getattr(__import__('lib.language.messages_en'.format(language), fromlist=['all_messages']),
-                       'all_messages')()[str(msg_id)]
+        msgs = getattr(__import__('lib.language.messages_en', fromlist=['all_messages']), 'all_messages')()[str(msg_id)]
     if version() is 2:
         return msgs.decode('utf8')
     return msgs
@@ -60,7 +59,7 @@ def __input_msg(content):
     """
     if version() is 2:
         return color.color('yellow') + '[+] ' + color.color('green') \
-            + content.encode('utf8') + color.color('reset')
+               + content.encode('utf8') + color.color('reset')
     else:
         return bytes(color.color('yellow') + '[+] ' + color.color('green') +
                      content + color.color('reset'), 'utf8')

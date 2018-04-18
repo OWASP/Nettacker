@@ -170,7 +170,7 @@ def bleed(target, port, timeout_sec, log_in_file, language, time_sleep,
                 typ, ver, message = rcv_tls_record(s)
                 if not typ:
                     s.close()
-                    s = conn(target, port)
+                    s = conn(target, port, timeout_sec=timeout_sec)
                     break
                 # if typ == 22 and ord(message[0]) == 0x0E:
                 if typ == 22 or ord(message[0]) == 0x0E:
@@ -236,7 +236,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'heartbleed_vuln'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port,
+                                                                'heartbleed_vuln'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -264,7 +265,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format('heartbleed'))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'heartbleed_vuln',
-                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('heartbleed'), 'TIME': now(),
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('heartbleed'),
+                               'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)

@@ -43,7 +43,7 @@ def logo():
                                                
     \n\n'''.format(__version__, __code_name__, color.color('red'), color.color('reset'), color.color('yellow'),
                    color.color('reset'), color.color(
-                       'cyan'), color.color('reset'), color.color('cyan'),
+            'cyan'), color.color('reset'), color.color('cyan'),
                    color.color('reset'), color.color('cyan'), color.color('reset')))
     finish()
 
@@ -67,7 +67,7 @@ def check(language):
     Returns:
         True if compatible otherwise None
     """
-    from core.color import finish
+    # from core.color import finish
     if 'linux' in os_name() or 'darwin' in os_name():
         pass
         # os.system('clear')
