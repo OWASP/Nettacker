@@ -20,7 +20,7 @@ os:
 
 # Install requirements
 install:
- - "pip install --upgrade setuptools codacy-coverage coverage"
+ - "pip install --upgrade setuptools # codacy-coverage coverage"
  - "pip install --upgrade -r requirements.txt"
  # scapy has different name in python 2.x and 3.x
  - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then pip install scapy; else pip install scapy-python3; fi
@@ -28,10 +28,10 @@ install:
 # Run
 script:
 - "python scripts/__travis_test__.py"
-- "coverage run nettacker.py -i 127.0.0.1 -m all -t 1000"
-- "coverage report -m"
-- "coverage xml"
-- "python-codacy-coverage -r coverage.xml"
+# - "coverage run nettacker.py -i 127.0.0.1 -m all -t 1000"
+# - "coverage report -m"
+# - "coverage xml"
+# - "python-codacy-coverage -r coverage.xml"
 
 # Environment Variable - CODACY_PROJECT_TOKEN
 env:
