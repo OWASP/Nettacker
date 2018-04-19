@@ -1,0 +1,13 @@
+argparse
+netaddr
+requests
+paramiko
+texttable
+PySocks
+win_inet_pton
+pyOpenSSL
+flask
+lockfile
+bs4
+pycurl
+pyspf
