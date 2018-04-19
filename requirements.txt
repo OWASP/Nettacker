@@ -10,4 +10,4 @@ flask==0.12.2
 lockfile==0.12.2
 bs4==0.0.1
 pycurl==7.43.0.1
-pyspf==2.0.12
+pyspf==2.0.12t
