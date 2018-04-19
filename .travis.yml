@@ -32,3 +32,8 @@ script:
 - "coverage report -m"
 - "coverage xml"
 - "python-codacy-coverage -r coverage.xml"
+
+# Environment Variable - CODACY_PROJECT_TOKEN
+env:
+  matrix:
+    secure: FLW00Tb89qPcv3EITRTtj2wzgmhAco/xB8gXN8VXAMbMVRCBxupzxhFip6uvdxIxPWi83ygdQ4ozBMsMuCLv0pSetUi/WIgqZVdU5DiVrRp34XAJSjTq7hiTujE7uHtrScoAXWP6+bY1/7kTb+Jbqg+H4RDNGOckAXrggZjo4kpxwqMyXOEfIuMQTmdIrN2yS+/TBgse0x46QowCkXoXQbXFZE95wibcCiKTcM2vHhPLf9OqGAEUVJoE1TcfeUsHTKlTmAn6jDhMo2KIFuE86Uz4J2xGY7fJ7k6ACRjtt9v3XnCSNbttuN7pSYlMsCVv+kLyKgPATa0mop+xUO1AvKJDyBrcWNfEYkS6xV9d07gCpVz+vm0WUsHM9hRIt9mPZ5EU0LQTuflGso767RWhiE0vwG/g39ZPEA7MCbq+PXs5aCSYR/jggfazXJUJDKfI2m3CvTR7LpaofFf74iT6Zn+RnmP4sgy7jGDUWfaoVHZyW3ytUmpyoALDFDr47/EI5JH/MKCBfIt2qr/ppJDEsKLDL0+KMbgfdmFWg4RD/oZUHGpTjePiVpC9gg2nP1wN7w9bGiutW6C7GfbtOHXuPeZLg0CNAT3Rv9qoCBsRxQvfsxWzzjOsqvDcrUvpor0PB9iLphyLaGsZK8NkBMncPK5beNZ70yP0/1rk4kNczsU=
