@@ -292,9 +292,10 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     # Check version
     if show_version:
         from core import color
-        info(messages(language, "current_version").format(color.color("yellow"), compatible.__version__, color.color("reset"),
+        info(messages(language, "current_version").format(color.color("yellow"), compatible.__version__,
+                                                          color.color("reset"),
                                                           color.color("cyan"), compatible.__code_name__, color.color(
-                                                              "reset"),
+                "reset"),
                                                           color.color("green")))
         __die_success()
     # API mode
@@ -348,7 +349,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                 log_in_file, module_names, exclude_method, users,
                 passwds, timeout_sec, ports, verbose_level,
                 socks_proxy, retries, load_all_graphs(), language
-        )
+            )
     # Check the target(s)
     if targets is None and targets_list is None:
         parser.print_help()
@@ -432,7 +433,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
     if scan_method is not None and "all" in scan_method.rsplit(","):
         scan_method = module_names
         scan_method.remove("all")
-    elif len(scan_method.rsplit(",")) is 1 and "*_" not in scan_method:
+    elif scan_method is not None and len(scan_method.rsplit(",")) is 1 and "*_" not in scan_method:
         if scan_method in module_names:
             scan_method = scan_method.rsplit()
         else:

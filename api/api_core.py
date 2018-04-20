@@ -278,11 +278,11 @@ def __profiles():
     profiles = _builder(_profiles(), default_profiles())
     synonyms = _synonym_profile().keys()
     for synonym in synonyms:
-        del(profiles[synonym])
+        del (profiles[synonym])
     res = ""
     for profile in profiles:
-        label = "success" if(profile == "scan") else "warning" if(profile == "brute") else "danger" if(profile ==
-            "vulnerability") else "default"
+        label = "success" if (profile == "scan") else "warning" if (profile == "brute") else "danger" if (profile ==
+                                                                                                          "vulnerability") else "default"
         res += """<label><input id="{0}" type="checkbox" class="checkbox checkbox-{0}"><a class="label 
             label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(profile, label)
     return res
@@ -322,16 +322,16 @@ def __rules(config, defaults, language):
     """
     # Check Ranges
     config["check_ranges"] = True if config[
-        "check_ranges"] is not False else False
+                                         "check_ranges"] is not False else False
     # Check Subdomains
     config["check_subdomains"] = True if config[
-        "check_subdomains"] is not False else False
+                                             "check_subdomains"] is not False else False
     # Check Graph
     config["graph_flag"] = config["graph_flag"] if config[
-        "graph_flag"] in load_all_graphs() else None
+                                                       "graph_flag"] in load_all_graphs() else None
     # Check Language
     config["language"] = config["language"] if config[
-        "language"] in [lang for lang in messages(-1, 0)] else "en"
+                                                   "language"] in [lang for lang in messages(-1, 0)] else "en"
     # Check Targets
     if config["targets"] is not None:
         config["targets"] = list(set(config["targets"].rsplit(",")))
@@ -390,7 +390,7 @@ def __rules(config, defaults, language):
         _all_profiles = _builder(_profiles(), default_profiles())
         synonyms = _synonym_profile().keys()
         for synonym in synonyms:
-            del(_all_profiles[synonym])
+            del (_all_profiles[synonym])
         if config["scan_method"] is None:
             config["scan_method"] = ""
         else:
@@ -408,7 +408,6 @@ def __rules(config, defaults, language):
         if tmp_sm[-1] == ",":
             tmp_sm = tmp_sm[0:-1]
         config["scan_method"] = ",".join(list(set(tmp_sm.rsplit(","))))
-
     # Check retries
     try:
         config["retries"] = int(config["retries"])
@@ -418,7 +417,8 @@ def __rules(config, defaults, language):
     if config["scan_method"] is not None and "all" in config["scan_method"].rsplit(","):
         config["scan_method"] = load_all_modules()
         config["scan_method"].remove("all")
-    elif len(config["scan_method"].rsplit(",")) is 1 and "*_" not in config["scan_method"]:
+    elif config["scan_method"] is not None and len(config["scan_method"].rsplit(",")) is 1 and "*_" not in config[
+        "scan_method"]:
         if config["scan_method"] in load_all_modules():
             config["scan_method"] = config["scan_method"].rsplit()
         else:
