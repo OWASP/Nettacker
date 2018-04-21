@@ -106,7 +106,7 @@ def check_auth(target, timeout_sec, language, port):
         else:
             req = requests.get(str(target) + str(port))
         if req.status_code == 200:
-            info(messages(language, 'no_auth').format(target, port))
+            info(messages(language, "no_auth").format(target, port))
             return 1
         else:
             return 0

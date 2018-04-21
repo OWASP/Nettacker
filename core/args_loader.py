@@ -154,7 +154,7 @@ def load_all_args(module_names, graph_names):
                         help=messages(language, "port_seperator"))
     method.add_argument("-T", "--timeout", action="store",
                         dest="timeout_sec", default=default_config["timeout_sec"], type=float,
-                        help=messages(language, "read_passwords_2"))
+                        help=messages(language, "read_passwords"))
     method.add_argument("-w", "--time-sleep", action="store",
                         dest="time_sleep", default=default_config["time_sleep"], type=float,
                         help=messages(language, "time_to_sleep"))
@@ -487,7 +487,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                     scan_method.remove(exm)
                     if len(scan_method) is 0:
                         __die_failure(
-                            messages(language, "error_exclude_all_2"))
+                            messages(language, "error_exclude_all"))
             else:
                 __die_failure(
                     messages(language, "exclude_module_error").format(exm))
