@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import socket
 import socks
 import time
@@ -9,6 +6,7 @@ import threading
 import string
 import random
 import os
+from scapy.all import *
 import logging
 from core.alert import *
 from core.targets import target_type
@@ -123,6 +121,22 @@ if "--method-args" in sys.argv and "port_scan_stealth" in " ".join(sys.argv).low
     conf.verb = 0
     conf.nofilter = 1
 
+def filter_port(ip,port):
+    s=sr1(IP(dst=str(ip))/TCP(dport=port,flags='S'),timeout=2,verbose=0)
+    try:
+        if s!='SA':
+            try:
+                if s[0][1].seq==0:
+                    pass
+            except:
+                s = sr1(IP(dst=ip)/TCP(dport=0,flags='S'),timeout=2,verbose=0)
+                if s==None:
+                    return None
+                else:
+                    return 'port '+str(port)+' is FILTERED '
+    except:
+        pass
+
 
 def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
             scan_cmd, stealth_flag):
@@ -153,8 +167,6 @@ def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         elif (stealth_scan_resp.haslayer(TCP)):
             if (stealth_scan_resp.getlayer(TCP).flags == 0x12):
                 # send_rst = sr(IP(dst=host) / TCP(sport=src_port, dport=port, flags="R"), timeout=timeout_sec)
-                info(messages(language, "port_found").format(
-                    host, port, "STEALTH"))
                 data = json.dumps(
                     {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
                      'DESCRIPTION': messages(language, "port/type").format(port, "STEALTH"), 'TIME': now(),
@@ -168,7 +180,6 @@ def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         elif (stealth_scan_resp.haslayer(ICMP)):
             if (int(stealth_scan_resp.getlayer(ICMP).type) == 3
                     and int(stealth_scan_resp.getlayer(ICMP).code) in [1, 2, 3, 9, 10, 13]):
-                # "Filtered"
                 pass
         else:
             # "CHECK"
@@ -218,9 +229,13 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         s.close()
         return True
+    except socket.timeout:
+        try:
+            info(filter_port(host,port))
+        except:
+            pass
     except:
         return False
-
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
           verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
