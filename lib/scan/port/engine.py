@@ -13,12 +13,12 @@ from scapy.all import *
 import logging
 from core.alert import *
 from core.targets import target_type
-#from core.targets import target_to_host
+from core.targets import target_to_host
 from core.load_modules import load_file_path
-#from lib.socks_resolver.engine import getaddrinfo
-#from core._time import now
+from lib.socks_resolver.engine import getaddrinfo
+from core._time import now
 from core.log import __log_into_file
-#from core.compatible import is_windows
+from core.compatible import is_windows
 
 logging.getLogger("scapy.runtime").setLevel(logging.CRITICAL)
 
