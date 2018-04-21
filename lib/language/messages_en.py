@@ -35,18 +35,16 @@ def all_messages():
             "password_seperator": "password(s) list, separate with \",\"",
             "read_passwords": "read password(s) from file",
             "port_seperator": "port(s) list, separate with \",\"",
-            "read_passwords_2": "read passwords(s) from file",
             "time_to_sleep": "time to sleep between each request",
             "error_target": "Cannot specify the target(s)",
             "error_target_file": "Cannot specify the target(s), unable to open file: {0}",
             "thread_number_warning": "it's better to use thread number lower than 100, BTW we are continuing...",
             "set_timeout": "set timeout to {0} seconds, it is too big, isn't it ? by the way we are continuing...",
             "scan_module_not_found": "this scan module [{0}] not found!",
-            "scan_module_not_found_2": "this scan module [{0}] not found!",
             "error_exclude_all": "you cannot exclude all scan methods",
-            "error_exclude_all_2": "you cannot exclude all scan methods",
             "exclude_module_error": "the {0} module you selected to exclude not found!",
-            "method_inputs": "enter methods inputs, example: ftp_brute_users=test,admin&ftp_brute_passwds=read_from_file:/tmp/pass.txt&ftp_brute_port=21",
+            "method_inputs": "enter methods inputs, example: ftp_brute_users=test,admin&ftp_brute_passwds="
+                             "read_from_file:/tmp/pass.txt&ftp_brute_port=21",
             "error_reading_file": "cannot reading file {0}",
             "error_username": "Cannot specify the username(s), unable to open file: {0}",
             "found": "{0} found! ({1}:{2})",
@@ -73,36 +71,47 @@ def all_messages():
             "verbose_level": "verbose mode level (0-5) (default 0)",
             "software_version": "show software version",
             "check_updates": "check for update",
-            "outgoing_proxy": "outgoing connections proxy (socks). example socks5: 127.0.0.1:9050, socks://127.0.0.1:9050 socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050, authentication: socks://username: password@127.0.0.1, socks4://username:password@127.0.0.1, socks5://username:password@127.0.0.1",
-            "valid_socks_address": "please enter valid socks address and port. example socks5: 127.0.0.1:9050, socks://127.0.0.1:9050, socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050, authentication: socks://username:password@127.0.0.1, socks4://username:password@127.0.0.1, socks5://username:password@127.0.0.1",
+            "outgoing_proxy": "outgoing connections proxy (socks). example socks5: 127.0.0.1:9050, "
+                              "socks://127.0.0.1:9050 socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050,"
+                              " authentication: socks://username: password@127.0.0.1, socks4://username:password@"
+                              "127.0.0.1, socks5://username:password@127.0.0.1",
+            "valid_socks_address": "please enter valid socks address and port. example socks5:"
+                                   " 127.0.0.1:9050, socks://127.0.0.1:9050, socks5://127.0.0.1:9050 "
+                                   "or socks4: socks4://127.0.0.1:9050, authentication: socks://username:password"
+                                   "@127.0.0.1, socks4://username:password@127.0.0.1, "
+                                   "socks5://username:password@127.0.0.1",
             "connection_retries": "Retries when the connection timeout (default 3)",
             "ftp_connection_timeout": "ftp connection to {0}:{1} timeout, skipping {2}:{3}",
             "login_successful": "LOGGED IN SUCCESSFULLY!",
             "login_list_error": "LOGGED IN SUCCESSFULLY, PERMISSION DENIED FOR LIST COMMAND!",
-            "ftp_connection_failed": "ftp connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step",
+            "ftp_connection_failed": "ftp connection to {0}:{1} failed, skipping whole step "
+                                     "[process {2} of {3}]! going to next step",
             "input_target_error": "input target for {0} module must be DOMAIN, HTTP or SINGLE_IPv4, skipping {1}",
             "user_pass_found": "user: {0} pass:{1} host:{2} port:{3} found!",
             "file_listing_error": "(NO PERMISSION FOR LIST FILES)",
             "trying_message": "trying {0} of {1} in process {2} of {3} {4}:{5} ({6})",
             "smtp_connection_timeout": "smtp connection to {0}:{1} timeout, skipping {2}:{3}",
-            "smtp_connection_failed": "smtp connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step",
-            "input_target_http_error": "input target for {0} module must be HTTP, skipping {1}",
+            "smtp_connection_failed": "smtp connection to {0}:{1} failed, skipping whole step "
+                                      "[process {2} of {3}]! going to next step",
             "ssh_connection_timeout": "ssh connection to {0}:{1} timeout, skipping {2}:{3}",
-            "ssh_connection_failed": "ssh connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step",
-            "ssh_connection_failed_2": "ssh connection to %s:%s failed, skipping whole step [process %s of %s]! going to next step",
+            "ssh_connection_failed": "ssh connection to {0}:{1} failed, skipping whole step"
+                                     " [process {2} of {3}]! going to next step",
             "port/type": "{0}/{1}",
             "port_found": "host: {0} port: {1} ({2}) found!",
             "target_submitted": "target {0} submitted!",
-            "proxy_file_error": "cannot open proxies list file: {0}",
-            "proxy_file_404": "cannot find proxies list file: {0}",
             "current_version": "you are running OWASP Nettacker version {0}{1}{2}{6} with code name {3}{4}{5}",
-            "feature_unavailable": "this feature is not available yet! please run \"git clone https://github.com/viraintel/OWASP-Nettacker.git or pip install -U OWASP-Nettacker to get the last version.",
-            "available_graph": "build a graph of all activities and information, you must use HTML output. available graphs: {0}",
+            "feature_unavailable": "this feature is not available yet! please run \"git clone "
+                                   "https://github.com/viraintel/OWASP-Nettacker.git or pip install"
+                                   " -U OWASP-Nettacker to get the last version.",
+            "available_graph": "build a graph of all activities and information, you must"
+                               " use HTML output. available graphs: {0}",
             "graph_output": "to use graph feature your output filename must end with \".html\" or \".htm\"!",
             "build_graph": "building graph ...",
             "finish_build_graph": "finish building graph!",
             "pentest_graphs": "Penetration Testing Graphs",
-            "graph_message": "This graph created by OWASP Nettacker. Graph contains all modules activities, network map and sensitive information, Please don't share this file with anyone if it's not reliable.",
+            "graph_message": "This graph created by OWASP Nettacker. Graph contains all"
+                             " modules activities, network map and sensitive information,"
+                             " Please don't share this file with anyone if it's not reliable.",
             "nettacker_report": "OWASP Nettacker Report",
             "nettacker_version_details": "Software Details: OWASP Nettacker version {0} [{1}] in {2}",
             "no_open_ports": "no open ports found!",
@@ -111,7 +120,8 @@ def all_messages():
             "graph_module_404": "this graph module not found: {0}",
             "graph_module_unavailable": "this graph module \"{0}\" is not available",
             "ping_before_scan": "ping before scan the host",
-            "skipping_target": "skipping whole target {0} and scanning method {1} because of --ping-before-scan is true and it didn't response!",
+            "skipping_target": "skipping whole target {0} and scanning method {1} because of "
+                               "--ping-before-scan is true and it didn't response!",
             "not_last_version": "you are not using the last version of OWASP Nettacker, please update.",
             "cannot_update": "cannot check for update, please check your internet connection.",
             "last_version": "You are using the last version of OWASP Nettacker ...",
@@ -127,13 +137,12 @@ def all_messages():
             "trying_process": "trying {0} of {1} in process {2} of {3} on {4} ({5})",
             "domain_found": "domain found: {0}",
             "TIME": "TIME",
-            "CATEGORY": "CATEGORY",
+            "CATEGORY": "CATEGORY",  # not used
             "module_pattern_404": "cannot find any module with {0} pattern!",
             "enter_default": "please enter {0} | Default[{1}] > ",
             "enter_choices_default": "please enter {0} | choices[{1}] | Default[{2}] > ",
             "all_targets": "the targets",
             "all_thread_numbers": "the thread number",
-            "thread_number_hosts_2": "the thread numbers for scan hosts",
             "out_file": "the output filename",
             "all_scan_methods": "the scan methods",
             "all_scan_methods_exclude": "the scan methods to exclude",
@@ -161,7 +170,8 @@ def all_messages():
             "API_debug": "API debug mode",
             "API_access_key": "API access key",
             "white_list_API": "just allow white list hosts to connect to the API",
-            "define_whie_list": "define white list hosts, separate with , (examples: 127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)",
+            "define_whie_list": "define white list hosts, separate with , (examples: "
+                                "127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)",
             "gen_API_access_log": "generate API access log",
             "API_access_log_file": "API access log filename",
             "API_port_int": "API port must be an integer!",
@@ -169,7 +179,6 @@ def all_messages():
             "API_key": " * API Key: {0}\n",
             "ports_int": "ports must be integers! (e.g. 80 || 80,1080 || 80,1080-1300,9000,12000-15000)",
             "through_API": "Through the OWASP Nettacker API",
-            "documentations": "please read documentations https://github.com/viraintel/OWASP-Nettacker/wiki",  # remove
             "API_invalid": "invalid API key",
             "unauthorized_IP": "your IP not authorized",
             "not_found": "Not Found!",
@@ -185,15 +194,14 @@ def all_messages():
             "len_subdomain_found": "{0} subdomain(s) found!",
             "len_domain_found": "{0} domain(s) found!",
             "phpmyadmin_dir_404": "not any phpmyadmin dir found!",
-            "file_access_fail": "cannot access the file/directory! ({0})",
-            "no_mode_TCP_selected": "\"{0}\" mode not in list {1}, TCP selected!",
             "DOS_send": "sending DoS packets to {0}",
             "host_up": "{0} is up! Time taken to ping back is {1}",
             "host_down": "Cannot ping {0}!",
             "root_required": "this needs to be run as root",
             "admin_scan_get": "admin_scan_http_method value must be GET or HEAD, set default to GET.",
             "telnet_connection_timeout": "telnet connection to {0}:{1} timeout, skipping {2}:{3}",
-            "telnet_connection_failed": "telnet connection to {0}:{1} failed, skipping whole step [process {2} of {3}]! going to next step",
+            "telnet_connection_failed": "telnet connection to {0}:{1} failed, "
+                                        "skipping whole step [process {2} of {3}]! going to next step",
             "http_auth_success": "http basic authentication success - host:{2}:{3}, user: {0}, pass:{1} found!",
             "http_auth_failed": "http basic authentication failed to {0}:{3} using {1}:{2}",
             "http_form_auth_success": "http form authentication success - host:{2}:{3}, user: {0}, pass:{1} found!",
