@@ -121,19 +121,20 @@ if "--method-args" in sys.argv and "port_scan_stealth" in " ".join(sys.argv).low
     conf.verb = 0
     conf.nofilter = 1
 
-def filter_port(ip,port):
-    s=sr1(IP(dst=str(ip))/TCP(dport=port,flags='S'),timeout=2,verbose=0)
+
+def filter_port(ip, port):
+    s = sr1(IP(dst=str(ip)) / TCP(dport=port, flags='S'), timeout=2, verbose=0)
     try:
-        if s!='SA':
+        if s != 'SA':
             try:
-                if s[0][1].seq==0:
+                if s[0][1].seq == 0:
                     pass
             except:
-                s = sr1(IP(dst=ip)/TCP(dport=0,flags='S'),timeout=2,verbose=0)
-                if s==None:
+                s = sr1(IP(dst=ip) / TCP(dport=0, flags='S'), timeout=2, verbose=0)
+                if s == None:
                     return None
                 else:
-                    return 'port '+str(port)+' is FILTERED '
+                    return True
     except:
         pass
 
@@ -222,7 +223,8 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         info(messages(language, "port_found").format(host, port, "TCP_CONNECT"))
         data = json.dumps(
             {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-             'DESCRIPTION': messages(language, "port/type").format(port, "TCP_CONNECT"), 'TIME': now(), 'CATEGORY': "scan",
+             'DESCRIPTION': messages(language, "port/type").format(port, "TCP_CONNECT"), 'TIME': now(),
+             'CATEGORY': "scan",
              'SCAN_ID': scan_id,
              'SCAN_CMD': scan_cmd}) + '\n'
         __log_into_file(log_in_file, 'a', data, language)
@@ -231,11 +233,18 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         return True
     except socket.timeout:
         try:
-            info(filter_port(host,port))
+            if filter_port(host, port):
+                info(messages(language, "port_found").format(host, port, "STEALTH"))
+                data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
+                                   'DESCRIPTION': messages(language, "port/type").format(port, "STEALTH"),
+                                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n'
+                __log_into_file(log_in_file, 'a', data, language)
+                __log_into_file(thread_tmp_filename, 'w', '0', language)
         except:
             pass
     except:
         return False
+
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
           verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
@@ -277,7 +286,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'port_scan'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port,
+                                                                'port_scan'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
