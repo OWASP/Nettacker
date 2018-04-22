@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import socket
 import socks
 import time
@@ -6,7 +9,6 @@ import threading
 import string
 import random
 import os
-from scapy.all import *
 import logging
 from core.alert import *
 from core.targets import target_type
@@ -111,11 +113,8 @@ if "--method-args" in sys.argv and "port_scan_stealth" in " ".join(sys.argv).low
         import scapy.plist as plist
         from scapy.utils import PcapReader
         from scapy.data import MTU, ETH_P_ARP
-        import os
         import re
         import sys
-        import socket
-        import time
         import itertools
     WINDOWS = True
     conf.verb = 0
