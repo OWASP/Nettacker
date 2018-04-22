@@ -245,7 +245,8 @@ def __languages():
         "hi": "in",
         "ur": "pk",
         "id": "id",
-        "es": "es"
+        "es": "es",
+        "iw": "il"
     }
     for lang in languages:
         res += """<option {2} id="{0}" data-content='<span class="flag-icon flag-icon-{1}" value="{0}"></span> {0}'></option>""" \
