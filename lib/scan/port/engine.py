@@ -128,10 +128,10 @@ def check_closed(ip):
             return i
 
 
-global closed_port
 
 
 def filter_port(ip, port):
+    global closed_port
     closed_port = check_closed(ip)
     s = sr1(IP(dst=str(ip)) / TCP(dport=port, flags='S'), timeout=2, verbose=0)
     try:
