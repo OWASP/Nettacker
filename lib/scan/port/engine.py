@@ -119,9 +119,16 @@ if "--method-args" in sys.argv and "port_scan_stealth" in " ".join(sys.argv).low
     WINDOWS = True
     conf.verb = 0
     conf.nofilter = 1
+def check_closed(ip):
+    for i in range(1,10):
+        s = sr1(IP(dst=ip)/TCP(dport=i),timeout=2,verbose=0)
+        if s!='SA' and s!=None:
+            return i
 
+global closed_port
 
 def filter_port(ip, port):
+    closed_port=check_closed(ip)
     s = sr1(IP(dst=str(ip)) / TCP(dport=port, flags='S'), timeout=2, verbose=0)
     try:
         if s != 'SA':
@@ -129,14 +136,13 @@ def filter_port(ip, port):
                 if s[0][1].seq == 0:
                     pass
             except:
-                s = sr1(IP(dst=ip) / TCP(dport=0, flags='S'), timeout=2, verbose=0)
+                s = sr1(IP(dst=ip) / TCP(dport=closed_port, flags='S'), timeout=2, verbose=0)
                 if s == None:
                     return None
                 else:
                     return True
     except:
         pass
-
 
 def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
             scan_cmd, stealth_flag):
