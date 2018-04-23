@@ -124,10 +124,9 @@ if "--method-args" in sys.argv and "port_scan_stealth" in " ".join(sys.argv).low
 def check_closed(ip):
     for i in range(1, 10):
         s = sr1(IP(dst=ip) / TCP(dport=i), timeout=2, verbose=0)
-        if s != 'SA' and s != None:
+        if s != 'SA' and s is not None:
             return i
-        if i==9:
-            return 0
+    return 0
 
 
 def filter_port(ip, port):
