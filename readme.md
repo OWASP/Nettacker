@@ -46,3 +46,7 @@ _____________
 *	HTML, JSON and Text Outputs
 *  API & WebUI
 *	This project is at the moment in research and development phase and most of results/codes are not published yet.
+
+
+<img src="https://betanews.com/wp-content/uploads/2016/03/vertical-GSoC-logo.jpg" width="200"></img>
+
