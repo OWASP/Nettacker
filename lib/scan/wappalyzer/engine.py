@@ -16,6 +16,7 @@ from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
+from core.compatible import version
 
 
 def extra_requirements_dict():
@@ -159,7 +160,8 @@ def analyze(target, timeout_sec, log_in_file, language,
             socks_proxy, scan_id, scan_cmd):
     webpage = _parse_webpage(
         target, timeout_sec, language, retries, socks_proxy, scan_cmd, scan_id)
-    obj = json.loads(pkg_resources.resource_string(__name__, "apps.json"))
+    obj = json.loads(pkg_resources.resource_string(__name__, "apps.json").decode()
+                     if version() is 3 else pkg_resources.resource_string(__name__, "apps.json"))
     apps = obj['apps']
     detected = []
     for app_name, app in apps.items():
@@ -173,7 +175,7 @@ def analyze(target, timeout_sec, log_in_file, language,
         for cat in cats:
             category_wise[app_name] = obj['categories'][str(cat)]['name']
     inv_map = {}
-    for k, v in category_wise.iteritems():
+    for k, v in category_wise.items():
         inv_map[v] = inv_map.get(v, [])
         inv_map[v].append(k)
     for x in inv_map.items():
