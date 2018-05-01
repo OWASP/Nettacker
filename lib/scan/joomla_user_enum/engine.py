@@ -10,7 +10,6 @@ import threading
 import string
 import random
 import sys
-import struct
 import re
 import os
 from core.alert import *
@@ -21,7 +20,6 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
-
 
 def extra_requirements_dict():
     return {
@@ -53,9 +51,8 @@ def conn(targ, port, timeout_sec, socks_proxy):
         s.settimeout(timeout_sec)
         s.connect((targ, port))
         return s
-    except Exception as e:
+    except Exception:
         return None
-
 
 def joomla_user_enum(target, port, timeout_sec, log_in_file, language, time_sleep,
                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
@@ -68,30 +65,26 @@ def joomla_user_enum(target, port, timeout_sec, log_in_file, language, time_slee
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
-            r = requests.get(target + '/?format=feed') 
-            try:
-                global joomla_users
-                joomla_users = list(set(re.findall("<author>(.+?) \((.+?)\)</author>", r.text, re.IGNORECASE)))
-                temp_var = []
-                for user in joomla_users:
-                    temp_var.append(user[0] + " " + user[1])
-                joomla_users = ', '.join(temp_var) 
-                if joomla_users is not "":
-
-                    return True
-                else:
-                    return False
-            except:
+            r = requests.get(target + '/?format=feed')
+            joomla_users = list(set(re.findall("<author>(.+?) \((.+?)\)</author>", r.text, re.IGNORECASE)))
+            temp_var = []
+            for user in joomla_users:
+                temp_var.append(user[0] + " " + user[1])
+            joomla_users = ', '.join(temp_var)
+            if joomla_users is not "":
+                return joomla_users
+            else:
                 return False
-    except Exception as e:
+    except Exception:
         # some error warning
         return False
 
 
 def __joomla_user_enum(target, port, timeout_sec, log_in_file, language, time_sleep,
                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-    if joomla_user_enum(target, port, timeout_sec, log_in_file, language, time_sleep,
-                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+    joomla_users = joomla_user_enum(target, port, timeout_sec, log_in_file, language, time_sleep,
+                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd)
+    if joomla_users:
         info(messages(language, "found").format(
             target, "Joomla users found ", joomla_users))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
@@ -151,8 +144,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         # wait for threads
         kill_switch = 0
-        kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+    #    kill_time = int(
+     #       timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
