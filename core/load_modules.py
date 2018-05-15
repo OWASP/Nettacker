@@ -15,6 +15,7 @@ from core.compatible import is_windows
 from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
+from database.config import DB
 from shutil import copyfile
 
 
@@ -115,6 +116,14 @@ def __check_external_modules():
                           module + " not installed!")
 
     default_config = _builder(_core_config(), _core_default_config())
+
+    if DB == 'sqlite':
+        from database import sqlite_create
+        sqlite_create.create_tables()
+    elif DB == 'mysql':
+        from database import mysql_create
+        mysql_create.create_database()
+        mysql_create.create_tables()
 
     if not os.path.exists(default_config["home_path"]):
         try:
