@@ -1,12 +1,5 @@
-from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, Text
-
-from database.config import USER, PASSWORD, HOST, PORT, DATABASE
-
-engine = create_engine('mysql://{0}:{1}@{2}:{3}'.format(USER, PASSWORD, HOST, PORT))
-engine.execute("CREATE DATABASE IF NOT EXISTS {0} ".format(DATABASE))
-db_engine = create_engine('mysql://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE))
 
 Base = declarative_base()
 
@@ -45,12 +38,9 @@ class HostsLog(Base):
     username = Column(Text)
     password = Column(Text)
     description = Column(Text)
-    port = Column(Integer)
+    port = Column(Text)
     category = Column(Text)
     type = Column(Text)
 
     def __repr__(self):
         return "<HostsLog(id='%s', host='%s', date='%s')>" % (self.id, self.host, self.date)
-
-
-Base.metadata.create_all(db_engine)

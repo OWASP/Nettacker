@@ -6,10 +6,9 @@ import time
 
 from flask import jsonify
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
-from database.create import HostsLog, Report
+from database import mysql_create, sqlite_create
+from database.models import HostsLog, Report
 from core.alert import warn
 from core.alert import info
 from core.alert import messages
@@ -17,7 +16,7 @@ from core.compatible import version
 from core._time import now
 from core import compatible
 from api.api_core import __structure
-from database.config import USER, PASSWORD, HOST, PORT, DATABASE
+from database.config import DB
 
 
 def create_connection(language):
@@ -30,19 +29,13 @@ def create_connection(language):
     Returns:
         connection if success otherwise False
     """
-    try:
-        # retries
-        for i in range(0, 100):
-            try:
-                db_engine = create_engine('mysql://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE))
-                Session = sessionmaker(bind=db_engine)
-                session = Session()
-                return session
-            except:
-                time.sleep(0.01)
-    except:
-        warn(messages(language, "database_connect_fail"))
-    return False
+    if DB == "mysql":
+        return mysql_create.create_connection(language)
+    elif DB == "sqlite":
+        return sqlite_create.create_connection(language)
+    else:
+        warn(messages(language, "invalid_database"))
+        return False
 
 
 def send_submit_query(session, language):
@@ -62,9 +55,10 @@ def send_submit_query(session, language):
             try:
                 session.commit()
                 return True
-            except:
+            except Exception as e:
+                print e
                 time.sleep(0.01)
-    except:
+    except Exception as c:
         warn(messages(language, "database_connect_fail"))
         return False
     return False
@@ -138,7 +132,6 @@ def submit_logs_to_db(language, log):
         log = json.loads(log)
 
     session = create_connection(language)
-    print "Submitting Data"
     session.add(HostsLog(
         host=log["HOST"], date=log["TIME"], port=log["PORT"], type=log["TYPE"], category=log["CATEGORY"],
         description=log["DESCRIPTION"].encode('utf8') if version() is 2 else log["DESCRIPTION"],
@@ -291,24 +284,24 @@ def __logs_by_scan_id(scan_id, language):
         an array with JSON events or an empty array
     """
     session = create_connection(language)
-    try:
-        return_logs = []
-        logs = session.query(HostsLog).filter(HostsLog.scan_id==scan_id).all()
-        for log in logs:
-            data = {
-                "SCAN_ID": scan_id,
-                "HOST": log.host,
-                "USERNAME": log.username,
-                "PASSWORD": log.password,
-                "PORT": log.port,
-                "TYPE": log.type,
-                "TIME": log.date,
-                "DESCRIPTION": log.description
-            }
-            return_logs.append(data)
-        return return_logs
-    except:
-        return []
+    # try:
+    return_logs = []
+    logs = session.query(HostsLog).filter(HostsLog.scan_id==scan_id).all()
+    for log in logs:
+        data = {
+            "SCAN_ID": scan_id,
+            "HOST": log.host,
+            "USERNAME": log.username,
+            "PASSWORD": log.password,
+            "PORT": log.port,
+            "TYPE": log.type,
+            "TIME": log.date,
+            "DESCRIPTION": log.description
+        }
+        return_logs.append(data)
+    return return_logs
+    # except:
+    #     return []
 
 
 def __logs_to_report_json(host, language):
