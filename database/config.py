@@ -1,0 +1,6 @@
+DB = ''
+USER = ''
+PASSWORD = ''
+HOST = ''
+PORT = ''
+DATABASE = ''

@@ -1,39 +1,43 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sqlite3
-import os
 import json
 import time
-from core.config import _core_config
-from core.config_builder import _core_default_config
-from core.config_builder import _builder
+
+from flask import jsonify
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from database.create import HostsLog, Report
 from core.alert import warn
 from core.alert import info
 from core.alert import messages
-from api.api_core import __structure
-from flask import jsonify
 from core.compatible import version
 from core._time import now
 from core import compatible
+from api.api_core import __structure
+from database.config import USER, PASSWORD, HOST, PORT, DATABASE
 
 
 def create_connection(language):
     """
-    a function to create sqlite3 connections to db, it retries 100 times if connection returned an error
+    a function to create connections to db, it retries 100 times if connection returned an error
 
     Args:
         language: language
 
     Returns:
-        sqlite3 connection if success otherwise False
+        connection if success otherwise False
     """
     try:
         # retries
         for i in range(0, 100):
             try:
-                return sqlite3.connect(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                                                    _builder(_core_config(), _core_default_config())["api_db_name"]))
+                db_engine = create_engine('mysql://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE))
+                Session = sessionmaker(bind=db_engine)
+                session = Session()
+                return session
             except:
                 time.sleep(0.01)
     except:
@@ -41,56 +45,23 @@ def create_connection(language):
     return False
 
 
-def send_submit_query(query, language):
+def send_submit_query(session, language):
     """
     a function to send submit based queries to db (such as insert and update or delete), it retries 100 times if
     connection returned an error.
 
     Args:
-        query: query to execute
+        session: session to commit
         language: language
 
     Returns:
         True if submitted success otherwise False
     """
-    conn = create_connection(language)
-    if not conn:
-        return False
     try:
         for i in range(1, 100):
             try:
-                c = conn.cursor()
-                c.execute(query)
-                conn.commit()
-                conn.close()
+                session.commit()
                 return True
-            except:
-                time.sleep(0.01)
-    except:
-        warn(messages(language, "database_connect_fail"))
-        return False
-    return False
-
-
-def send_read_query(query, language):
-    """
-    a function to send read based queries to db (such as select), it retries 100 times if connection returned an error.
-
-    Args:
-        query: query to execute
-        language: language
-
-    Returns:
-        return executed query otherwise False
-    """
-    conn = create_connection(language)
-    if not conn:
-        return False
-    try:
-        for i in range(1, 100):
-            try:
-                c = conn.cursor()
-                return c.execute(query)
             except:
                 time.sleep(0.01)
     except:
@@ -124,20 +95,13 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api
         return True if submitted otherwise False
     """
     info(messages(language, "inserting_report_db"))
-    return send_submit_query("""
-    INSERT INTO reports (
-      date, scan_id, report_filename, events_num, verbose, 
-      api_flag, report_type, graph_flag, category, profile, 
-      scan_method, language, scan_cmd, ports     
-    )
-    VALUES (
-      "{0}", "{1}", "{2}", "{3}", "{4}",
-      "{5}", "{6}", "{7}", "{8}", "{9}",
-      "{10}", "{11}", "{12}", "{13}"
-    );
-    """.format(date, scan_id, report_filename, events_num, verbose,
-               api_flag, report_type, graph_flag, category, profile,
-               scan_method, language, scan_cmd, ports), language)
+    session = create_connection(language)
+    session.add(Report(
+        date=date, scan_id=scan_id, report_filename=report_filename, events_num=events_num, verbose=verbose,
+        api_flag=api_flag, report_type=report_type, graph_flag=graph_flag, category=category, profile=profile,
+        scan_method=scan_method, language=language, scan_cmd=scan_cmd, ports=ports
+    ))
+    return send_submit_query(session, language)
 
 
 def remove_old_logs(host, type, scan_id, language):
@@ -153,8 +117,10 @@ def remove_old_logs(host, type, scan_id, language):
     Returns:
         True if success otherwise False
     """
-    return send_submit_query("""delete from hosts_log where host="{0}" and type="{1}" and scan_id!="{2}" """
-                             .format(host, type, scan_id), language)
+    session = create_connection(language)
+    old_logs = session.query(HostsLog).filter(HostsLog.host == host, HostsLog.type == type, HostsLog.scan_id != scan_id)
+    old_logs.delete(synchronize_session=False)
+    return send_submit_query(session, language)
 
 
 def submit_logs_to_db(language, log):
@@ -170,20 +136,15 @@ def submit_logs_to_db(language, log):
     """
     if type(log) == str:
         log = json.loads(log)
-    return send_submit_query("""
-                    INSERT INTO hosts_log (
-                      host, date, port, type, category,
-                      description, username, password, scan_id, scan_cmd    
-                    )
-                    VALUES (
-                      "{0}", "{1}", "{2}", "{3}", "{4}",
-                      "{5}", "{6}", "{7}", "{8}", "{9}"
-                    );
-                    """.format(log["HOST"], log["TIME"], log["PORT"], log["TYPE"], log["CATEGORY"],
-                               log["DESCRIPTION"].encode('utf8') if version() is 2 else log[
-        "DESCRIPTION"],
-        log["USERNAME"], log["PASSWORD"], log["SCAN_ID"], log["SCAN_CMD"]),
-        language)
+
+    session = create_connection(language)
+    print "Submitting Data"
+    session.add(HostsLog(
+        host=log["HOST"], date=log["TIME"], port=log["PORT"], type=log["TYPE"], category=log["CATEGORY"],
+        description=log["DESCRIPTION"].encode('utf8') if version() is 2 else log["DESCRIPTION"],
+        username=log["USERNAME"], password=log["PASSWORD"], scan_id=log["SCAN_ID"], scan_cmd=log["SCAN_CMD"]
+    ))
+    return send_submit_query(session, language)
 
 
 def __select_results(language, page):
@@ -200,25 +161,26 @@ def __select_results(language, page):
     """
     page = int(page * 10 if page > 0 else page * -10) - 10
     selected = []
+    session = create_connection(language)
     try:
-        for data in send_read_query("""select * from reports where 1 order by id desc limit {0},10""".format(page),
-                                    language):
+        search_data = session.query(Report).order_by(Report.id.desc())[page:page + 11]
+        for data in search_data:
             tmp = {  # fix later, junks
-                "id": data[0],
-                "date": data[1],
-                "scan_id": data[2],
-                "report_filename": data[3],
-                "events_num": data[4],
-                "verbose": data[5],
-                "api_flag": data[6],
-                "report_type": data[7],
-                "graph_flag": data[8],
-                "category": data[9],
-                "profile": data[10],
-                "scan_method": data[11],
-                "language": data[12],
-                "scan_cmd": data[13],
-                "ports": data[14]
+                "id": data.id,
+                "date": data.date,
+                "scan_id": data.scan_id,
+                "report_filename": data.report_filename,
+                "events_num": data.events_num,
+                "verbose": data.verbose,
+                "api_flag": data.api_flag,
+                "report_type": data.report_type,
+                "graph_flag": data.graph_flag,
+                "category": data.category,
+                "profile": data.profile,
+                "scan_method": data.scan_method,
+                "language": data.language,
+                "scan_cmd": data.scan_cmd,
+                "ports": data.ports
             }
             selected.append(tmp)
     except:
@@ -237,10 +199,11 @@ def __get_result(language, id):
     Returns:
         result file content (TEXT, HTML, JSON) if success otherwise and error in JSON type.
     """
+    session = create_connection(language)
     try:
         try:
-            filename = send_read_query("""select report_filename from reports where id=\"{0}\";""".format(id),
-                                       language).fetchone()[0]
+            file = session.query(Report).filter_by(id=id).first()
+            filename = file.report_filename
             return open(filename, 'rb').read(), 200
         except:
             return jsonify(__structure(status="error", msg="cannot find the file!")), 400
@@ -259,6 +222,7 @@ def __last_host_logs(language, page):
     Returns:
         an array of events in JSON type if success otherwise an error in JSON type
     """
+    session = create_connection(language)
     page = int(page * 10 if page > 0 else page * -10) - 10
     data_structure = {
         "host": "",
@@ -271,22 +235,19 @@ def __last_host_logs(language, page):
     }
     selected = []
     try:
-        for host in send_read_query(
-                """select host from hosts_log where 1 group by host order by id desc limit {0},10""".format(
-                    page),
-                language):
-            for data in send_read_query(
-                    """select host,port,type,category,description from hosts_log where host="{0}" group by type,port,username,"""
-                    """password,description order by id desc""".format(host[0]), language):
+        for host in session.query(HostsLog).group_by(HostsLog.host).order_by(HostsLog.id.desc())[page:page+11]:
+            for data in session.query(HostsLog).filter(HostsLog.host==host).group_by(HostsLog.type, HostsLog.port,
+                                                    HostsLog.username, HostsLog.password, HostsLog.description).order_by(
+                                                    HostsLog.id.desc()):
                 n = 0
                 capture = None
                 for selected_data in selected:
-                    if selected_data["host"] == host[0]:
+                    if selected_data["host"] == host.host:
                         capture = n
                     n += 1
                 if capture is None:
                     tmp = {  # fix later, junks
-                        "host": data[0],
+                        "host": data.host,
                         "info": {
                             "open_ports": [],
                             "scan_methods": [],
@@ -297,20 +258,20 @@ def __last_host_logs(language, page):
                     selected.append(tmp)
                     n = 0
                     for selected_data in selected:
-                        if selected_data["host"] == host[0]:
+                        if selected_data["host"] == host.host:
                             capture = n
                         n += 1
-                if data[0] == selected[capture]["host"]:
-                    if data[1] not in selected[capture]["info"]["open_ports"] and type(data[1]) is int:
-                        selected[capture]["info"]["open_ports"].append(data[1])
-                    if data[2] not in selected[capture]["info"]["scan_methods"]:
+                if data.host == selected[capture]["host"]:
+                    if data.port not in selected[capture]["info"]["open_ports"] and type(data.port) is int:
+                        selected[capture]["info"]["open_ports"].append(data.port)
+                    if data.type not in selected[capture]["info"]["scan_methods"]:
                         selected[capture]["info"][
-                            "scan_methods"].append(data[2])
-                    if data[3] not in selected[capture]["info"]["category"]:
-                        selected[capture]["info"]["category"].append(data[3])
-                    if data[4] not in selected[capture]["info"]["descriptions"]:
+                            "scan_methods"].append(data.type)
+                    if data.category not in selected[capture]["info"]["category"]:
+                        selected[capture]["info"]["category"].append(data.category)
+                    if data.description not in selected[capture]["info"]["descriptions"]:
                         selected[capture]["info"][
-                            "descriptions"].append(data[4])
+                            "descriptions"].append(data.description)
     except:
         return __structure(status="error", msg="database error!")
     if len(selected) == 0:
@@ -329,23 +290,23 @@ def __logs_by_scan_id(scan_id, language):
     Returns:
         an array with JSON events or an empty array
     """
+    session = create_connection(language)
     try:
-        logs = []
-        for log in send_read_query(
-                "select host,username,password,port,type,date,description from hosts_log where scan_id=\"{0}\"".format(
-                    scan_id), language):
+        return_logs = []
+        logs = session.query(HostsLog).filter(HostsLog.scan_id==scan_id).all()
+        for log in logs:
             data = {
                 "SCAN_ID": scan_id,
-                "HOST": log[0],
-                "USERNAME": log[1],
-                "PASSWORD": log[2],
-                "PORT": log[3],
-                "TYPE": log[4],
-                "TIME": log[5],
-                "DESCRIPTION": log[6]
+                "HOST": log.host,
+                "USERNAME": log.username,
+                "PASSWORD": log.password,
+                "PORT": log.port,
+                "TYPE": log.type,
+                "TIME": log.date,
+                "DESCRIPTION": log.description
             }
-            logs.append(data)
-        return logs
+            return_logs.append(data)
+        return return_logs
     except:
         return []
 
@@ -362,22 +323,22 @@ def __logs_to_report_json(host, language):
         an array with JSON events or an empty array
     """
     try:
-        logs = []
-        for log in send_read_query(
-                "select scan_id,username,password,port,type,date,description from hosts_log where host=\"{0}\"".format(
-                    host), language):
+        session = create_connection(language)
+        return_logs = []
+        logs = session.query(HostsLog).filter(HostsLog.host == host)
+        for log in logs:
             data = {
-                "SCAN_ID": log[0],
+                "SCAN_ID": log.scan_id,
                 "HOST": host,
-                "USERNAME": log[1],
-                "PASSWORD": log[2],
-                "PORT": log[3],
-                "TYPE": log[4],
-                "TIME": log[5],
-                "DESCRIPTION": log[6]
+                "USERNAME": log.usernamr,
+                "PASSWORD": log.password,
+                "PORT": log.port,
+                "TYPE": log.type,
+                "TIME": log.date,
+                "DESCRIPTION": log.description
             }
-            logs.append(data)
-        return logs
+            return_logs.append(data)
+        return return_logs
     except:
         return []
 
@@ -393,20 +354,20 @@ def __logs_to_report_html(host, language):
     Returns:
         HTML report
     """
+    session = create_connection(language)
     try:
         logs = []
-        for log in send_read_query(
-                "select host,username,password,port,type,date,description from hosts_log where host=\"{0}\"".format(
-                    host), language):
+        logs_data = session.query(HostsLog).filter(HostsLog.host == host).all()
+        for log in logs_data:
             data = {
-                "SCAN_ID": host,
-                "HOST": log[0],
-                "USERNAME": log[1],
-                "PASSWORD": log[2],
-                "PORT": log[3],
-                "TYPE": log[4],
-                "TIME": log[5],
-                "DESCRIPTION": log[6]
+                "SCAN_ID": log.scan_id,
+                "HOST": host,
+                "USERNAME": log.username,
+                "PASSWORD": log.password,
+                "PORT": log.port,
+                "TYPE": log.type,
+                "TIME": log.date,
+                "DESCRIPTION": log.description
             }
             logs.append(data)
         from core.log import build_graph
@@ -421,9 +382,7 @@ def __logs_to_report_html(host, language):
                                               'DESCRIPTION', 'TIME')
         for value in logs:
             _table += _log_data.table_items.format(value['HOST'], value['USERNAME'], value['PASSWORD'],
-                                                   value['PORT'], value[
-                                                       'TYPE'], value['DESCRIPTION'],
-                                                   value['TIME'])
+                                                value['PORT'], value['TYPE'], value['DESCRIPTION'], value['TIME'])
         _table += _log_data.table_end + '<p class="footer">' + messages("en", "nettacker_report") \
             .format(compatible.__version__, compatible.__code_name__, now()) + '</p>'
         return _table
@@ -443,6 +402,7 @@ def __search_logs(language, page, query):
     Returns:
         an array with JSON structure of founded events or an empty array
     """
+    session = create_connection(language)
     page = int(page * 10 if page > 0 else page * -10) - 10
     data_structure = {
         "host": "",
@@ -455,24 +415,30 @@ def __search_logs(language, page, query):
     }
     selected = []
     try:
-        for host in send_read_query(
-                """select host from hosts_log where host like \"%%{0}%%\" or date like \"%%{0}%%\" or
-                port like \"%%{0}%%\" or type like \"%%{0}%%\" or category like \"%%{0}%%\" 
-                or description like \"%%{0}%%\" or username like \"%%{0}%%\" or password 
-                like \"%%{0}%%\" or scan_id like \"%%{0}%%\" or scan_cmd like \"%%{0}%%\"  
-                group by host order by id desc limit {1},10""".format(query, page), language):
-            for data in send_read_query(
-                    """select host,port,type,category,description from hosts_log where host="{0}" group by type,port,username,"""
-                    """password,description order by id desc""".format(host[0]), language):
+        for host in session.query(HostsLog).filter(
+                (HostsLog.host.like("%"+str(query)+"%"))
+                | (HostsLog.date.like("%"+str(query)+"%"))
+                | (HostsLog.port.like("%"+str(query)+"%"))
+                | (HostsLog.type.like("%"+str(query)+"%"))
+                | (HostsLog.category.like("%"+str(query)+"%"))
+                | (HostsLog.description.like("%"+str(query)+"%"))
+                | (HostsLog.username.like("%"+str(query)+"%"))
+                | (HostsLog.password.like("%" + str(query) + "%"))
+                | (HostsLog.scan_id.like("%" + str(query) + "%"))
+                | (HostsLog.scan_cmd.like("%" + str(query) + "%"))
+        ).group_by(HostsLog.host).order_by(HostsLog.id.desc())[page:page+11]:
+            for data in session.query(HostsLog).filter(HostsLog.host==str(host.host)).group_by(HostsLog.type, HostsLog.port,
+                                                    HostsLog.username, HostsLog.password, HostsLog.description).order_by(
+                                                    HostsLog.id.desc()).all():
                 n = 0
                 capture = None
                 for selected_data in selected:
-                    if selected_data["host"] == host[0]:
+                    if selected_data["host"] == host.host:
                         capture = n
                     n += 1
                 if capture is None:
                     tmp = {  # fix later, junks
-                        "host": data[0],
+                        "host": data.host,
                         "info": {
                             "open_ports": [],
                             "scan_methods": [],
@@ -483,20 +449,20 @@ def __search_logs(language, page, query):
                     selected.append(tmp)
                     n = 0
                     for selected_data in selected:
-                        if selected_data["host"] == host[0]:
+                        if selected_data["host"] == host.host:
                             capture = n
                         n += 1
-                if data[0] == selected[capture]["host"]:
-                    if data[1] not in selected[capture]["info"]["open_ports"] and type(data[1]) is int:
-                        selected[capture]["info"]["open_ports"].append(data[1])
-                    if data[2] not in selected[capture]["info"]["scan_methods"]:
+                if data.host == selected[capture]["host"]:
+                    if data.port not in selected[capture]["info"]["open_ports"] and type(data.port) is int:
+                        selected[capture]["info"]["open_ports"].append(data.port)
+                    if data.type not in selected[capture]["info"]["scan_methods"]:
                         selected[capture]["info"][
-                            "scan_methods"].append(data[2])
-                    if data[3] not in selected[capture]["info"]["category"]:
-                        selected[capture]["info"]["category"].append(data[3])
-                    if data[4] not in selected[capture]["info"]["descriptions"]:
+                            "scan_methods"].append(data.type)
+                    if data.category not in selected[capture]["info"]["category"]:
+                        selected[capture]["info"]["category"].append(data.category)
+                    if data.description not in selected[capture]["info"]["descriptions"]:
                         selected[capture]["info"][
-                            "descriptions"].append(data[4])
+                            "descriptions"].append(data.description)
     except:
         return __structure(status="error", msg="database error!")
     if len(selected) == 0:
