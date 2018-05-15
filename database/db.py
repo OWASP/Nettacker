@@ -7,7 +7,6 @@ import time
 from flask import jsonify
 
 
-from database import mysql_create, sqlite_create
 from database.models import HostsLog, Report
 from core.alert import warn
 from core.alert import info
@@ -30,8 +29,10 @@ def create_connection(language):
         connection if success otherwise False
     """
     if DB == "mysql":
+        from database import mysql_create
         return mysql_create.create_connection(language)
     elif DB == "sqlite":
+        from database import sqlite_create
         return sqlite_create.create_connection(language)
     else:
         warn(messages(language, "invalid_database"))
