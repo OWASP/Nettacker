@@ -11,6 +11,7 @@ lockfile==0.12.2
 bs4==0.0.1
 pycurl==7.43.0.1
 pyspf==2.0.12t
+sqlalchemy==1.2.6
 py3DNS; python_version > '3'
 scapy-python3; python_version > '3'
 pyDNS; python_version < '3'

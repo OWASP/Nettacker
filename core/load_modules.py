@@ -106,7 +106,7 @@ def __check_external_modules():
         True if success otherwise None
     """
     external_modules = ["argparse", "netaddr", "requests", "paramiko", "texttable", "socks", "win_inet_pton",
-                        "flask", "sqlite3"]
+                        "flask", "sqlalchemy"]
     for module in external_modules:
         try:
             __import__(module)
