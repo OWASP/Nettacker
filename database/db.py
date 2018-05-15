@@ -55,10 +55,9 @@ def send_submit_query(session, language):
             try:
                 session.commit()
                 return True
-            except Exception as e:
-                print e
+            except:
                 time.sleep(0.01)
-    except Exception as c:
+    except:
         warn(messages(language, "database_connect_fail"))
         return False
     return False
@@ -195,8 +194,8 @@ def __get_result(language, id):
     session = create_connection(language)
     try:
         try:
-            file = session.query(Report).filter_by(id=id).first()
-            filename = file.report_filename
+            file_obj = session.query(Report).filter_by(id=id).first()
+            filename = file_obj.report_filename
             return open(filename, 'rb').read(), 200
         except:
             return jsonify(__structure(status="error", msg="cannot find the file!")), 400
