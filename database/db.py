@@ -15,12 +15,15 @@ from core.compatible import version
 from core._time import now
 from core import compatible
 from api.api_core import __structure
-from database.config import DB
+from core.config import _database_config
 
+
+DB = _database_config()["DB"]
 
 def create_connection(language):
     """
-    a function to create connections to db, it retries 100 times if connection returned an error
+    a function to determine the type of database the user wants to work with and
+    selects the corresponding connection to the db
 
     Args:
         language: language

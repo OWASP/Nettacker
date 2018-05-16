@@ -1,6 +1,0 @@
-DB = 'sqlite'
-#USER = ''
-#PASSWORD = ''
-#HOST = ''
-#PORT = ''
-DATABASE = 'nettacker.db'

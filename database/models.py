@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, Text
 
@@ -5,6 +8,9 @@ Base = declarative_base()
 
 
 class Report(Base):
+    """
+    This class defines the table schema of the reports table. Any changes to the reports table need to be done here.
+    """
     __tablename__ = 'reports'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -28,6 +34,9 @@ class Report(Base):
 
 
 class HostsLog(Base):
+    """
+    This class defines the table schema of the hosts_log table. Any changes to the reports hosts_log need to be done here.
+    """
     __tablename__ = 'hosts_log'
 
     id = Column(Integer, primary_key=True, autoincrement=True)

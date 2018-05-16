@@ -15,7 +15,6 @@ from core.compatible import is_windows
 from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
-from database.config import DB
 from shutil import copyfile
 
 
@@ -117,14 +116,6 @@ def __check_external_modules():
 
     default_config = _builder(_core_config(), _core_default_config())
 
-    if DB == 'sqlite':
-        from database import sqlite_create
-        sqlite_create.create_tables()
-    elif DB == 'mysql':
-        from database import mysql_create
-        mysql_create.create_database()
-        mysql_create.create_tables()
-
     if not os.path.exists(default_config["home_path"]):
         try:
             os.mkdir(default_config["home_path"])
@@ -145,16 +136,25 @@ def __check_external_modules():
         except:
             __die_failure("cannot access the directory {0}".format(
                 default_config["results_path"]))
-    if not os.path.isfile(default_config["api_db_name"]):
+    if default_config["database_type"] == "sqlite":
         try:
-            copyfile(os.path.dirname(inspect.getfile(api)) +
-                     '/database.sqlite3', default_config["api_db_name"])
-            if not os.path.isfile(default_config["api_db_name"]):
-                __die_failure("cannot access the directory {0}".format(
-                    default_config["api_db_name"]))
+            if os.path.isfile(default_config["home_path"]+"/"+default_config["database_name"]):
+                pass
+            else:
+                from database.sqlite_create import create_tables
+                create_tables()
         except:
             __die_failure("cannot access the directory {0}".format(
-                default_config["api_db_name"]))
+                default_config["home_path"]))
+    elif default_config["database_type"] == "mysql":
+        try:
+            from database.mysql_create import create_tables, create_database
+            create_database()
+            create_tables()
+        except:
+            __die_failure("cannot access the db")
+    else:
+        __die_failure("invalid db selected")
     return True
 
 
