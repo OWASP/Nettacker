@@ -178,7 +178,7 @@ def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
                 # send_rst = sr(IP(dst=host) / TCP(sport=src_port, dport=port, flags="R"), timeout=timeout_sec)
                 data = json.dumps(
                     {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-                     'DESCRIPTION': messages(language, "port/type").format(port, "STEALTH"), 'TIME': now(),
+                     'DESCRIPTION': messages(language, "port/type").format(port, socket.getservbyport(port)), 'TIME': now(),
                      'CATEGORY': "scan", 'SCAN_ID': scan_id,
                      'SCAN_CMD': scan_cmd}) + '\n'
                 __log_into_file(log_in_file, 'a', data, language)
@@ -228,10 +228,10 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
             s.connect((host, port, 0, 0))
         else:
             s.connect((host, port))
-        info(messages(language, "port_found").format(host, port, "TCP_CONNECT"))
+        info(messages(language, "port_found").format(host, port, socket.getservbyport(port)))
         data = json.dumps(
             {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-             'DESCRIPTION': messages(language, "port/type").format(port, "TCP_CONNECT"), 'TIME': now(),
+             'DESCRIPTION': messages(language, "port/type").format(port, socket.getservbyport(port)), 'TIME': now(),
              'CATEGORY': "scan",
              'SCAN_ID': scan_id,
              'SCAN_CMD': scan_cmd}) + '\n'
@@ -242,9 +242,9 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
     except socket.timeout:
         try:
             if filter_port(host, port):
-                info(messages(language, "port_found").format(host, port, "STEALTH"))
+                info(messages(language, "port_found").format(host, port, socket.getservbyport(port)))
                 data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-                                   'DESCRIPTION': messages(language, "port/type").format(port, "STEALTH"),
+                                   'DESCRIPTION': messages(language, "port/type").format(port, socket.getservbyport(port)),
                                    'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n'
                 __log_into_file(log_in_file, 'a', data, language)
                 __log_into_file(thread_tmp_filename, 'w', '0', language)
