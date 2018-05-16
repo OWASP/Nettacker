@@ -1,8 +1,9 @@
-import time
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
+import time
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
 from database.config import HOST, USER, PASSWORD, PORT, DATABASE
 from database.models import Base
 from core.alert import warn
