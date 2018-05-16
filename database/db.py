@@ -3,10 +3,7 @@
 
 import json
 import time
-
 from flask import jsonify
-
-
 from database.models import HostsLog, Report
 from core.alert import warn
 from core.alert import info
