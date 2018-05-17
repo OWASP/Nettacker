@@ -37,7 +37,7 @@ def create_database():
         if DATABASE not in existing_databases:
             engine.execute("CREATE DATABASE {0} ".format(DATABASE))
         return True
-    except:
+    except Exception as _:
         return False
 
 
@@ -56,7 +56,7 @@ def create_tables():
         db_engine = create_engine('mysql://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE))
         Base.metadata.create_all(db_engine)
         return True
-    except:
+    except Exception as _:
         return False
 
 
@@ -77,8 +77,8 @@ def create_connection(language):
                 Session = sessionmaker(bind=db_engine)
                 session = Session()
                 return session
-            except:
+            except Exception as _:
                 time.sleep(0.01)
-    except:
+    except Exception as _:
         warn(messages(language, "database_connect_fail"))
     return False
