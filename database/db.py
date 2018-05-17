@@ -56,9 +56,9 @@ def send_submit_query(session, language):
             try:
                 session.commit()
                 return True
-            except:
+            except Exception as _:
                 time.sleep(0.01)
-    except:
+    except Exception as _:
         warn(messages(language, "database_connect_fail"))
         return False
     return False
@@ -176,7 +176,7 @@ def __select_results(language, page):
                 "ports": data.ports
             }
             selected.append(tmp)
-    except:
+    except Exception as _:
         return __structure(status="error", msg="database error!")
     return selected
 
@@ -198,9 +198,9 @@ def __get_result(language, id):
             file_obj = session.query(Report).filter_by(id=id).first()
             filename = file_obj.report_filename
             return open(filename, 'rb').read(), 200
-        except:
+        except Exception as _:
             return jsonify(__structure(status="error", msg="cannot find the file!")), 400
-    except:
+    except Exception as _:
         return jsonify(__structure(status="error", msg="database error!")), 200
 
 
@@ -265,7 +265,7 @@ def __last_host_logs(language, page):
                     if data.description not in selected[capture]["info"]["descriptions"]:
                         selected[capture]["info"][
                             "descriptions"].append(data.description)
-    except:
+    except Exception as _:
         return __structure(status="error", msg="database error!")
     if len(selected) == 0:
         return __structure(status="finished", msg="No more search results")
@@ -332,7 +332,7 @@ def __logs_to_report_json(host, language):
             }
             return_logs.append(data)
         return return_logs
-    except:
+    except Exception as _:
         return []
 
 
@@ -379,7 +379,7 @@ def __logs_to_report_html(host, language):
         _table += _log_data.table_end + '<p class="footer">' + messages("en", "nettacker_report") \
             .format(compatible.__version__, compatible.__code_name__, now()) + '</p>'
         return _table
-    except:
+    except Exception as _:
         return ""
 
 
@@ -456,7 +456,7 @@ def __search_logs(language, page, query):
                     if data.description not in selected[capture]["info"]["descriptions"]:
                         selected[capture]["info"][
                             "descriptions"].append(data.description)
-    except:
+    except Exception as _:
         return __structure(status="error", msg="database error!")
     if len(selected) == 0:
         return __structure(status="finished", msg="No more search results")
