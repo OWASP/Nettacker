@@ -29,7 +29,7 @@ def create_tables():
         db_engine = create_engine('sqlite:///{0}'.format(DATABASE))
         Base.metadata.create_all(db_engine)
         return True
-    except:
+    except Exception as _:
         return False
 
 
@@ -50,8 +50,8 @@ def create_connection(language):
                 Session = sessionmaker(bind=db_engine)
                 session = Session()
                 return session
-            except:
+            except Exception as _:
                 time.sleep(0.01)
-    except:
+    except Exception as _:
         warn(messages(language, "database_connect_fail"))
     return False
