@@ -212,6 +212,6 @@ def all_messages():
             "category_framework": "category: {0}, frameworks: {1} found!",
             "nothing_found": "nothing found on {0} in {1}!",
             "no_auth": "No auth found on {0}:{1}",
-            "invalid_database":"Please select from mysql or sqlite in the configuration file",
-            "database_connection_failed":"Connection to the selected db failed",
+            "invalid_database": "Please select from mysql or sqlite in the configuration file",
+            "database_connection_failed": "Connection to the selected db failed"
         }
