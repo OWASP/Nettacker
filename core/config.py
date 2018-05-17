@@ -87,11 +87,12 @@ def _database_config():
     """
     return {
         "DB": "sqlite",
-        "DATABASE": "nettacker.db",
+        # "DB":"mysql",
+        "DATABASE":  _paths()["home_path"] + "/nettacker.db",  # Name of the database
         "USERNAME": "",
         "PASSWORD": "",
         "HOST": "",
-        "PORT":""
+        "PORT": ""
     }
 
 

@@ -30,7 +30,10 @@ class Report(Base):
     ports = Column(Text)
 
     def __repr__(self):
-        return "<Report(id='%s', scan_id='%s', date='%s')>" % (self.id, self.scan_id, self.date)
+        """
+        returns a printable representation of the object of the class Report
+        """
+        return "<Report(id={0}, scan_id={1}, date={2})>".format(self.id, self.scan_id, self.date)
 
 
 class HostsLog(Base):
@@ -52,4 +55,7 @@ class HostsLog(Base):
     type = Column(Text)
 
     def __repr__(self):
-        return "<HostsLog(id='%s', host='%s', date='%s')>" % (self.id, self.host, self.date)
+        """
+        returns a printable representation of the object of the class HostsLog
+        """
+        return "<HostsLog(id={0}, host={1}, date={2})>".format(self.id, self.host, self.date)

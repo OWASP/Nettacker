@@ -4,6 +4,8 @@
 import json
 import time
 from flask import jsonify
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from database.models import HostsLog, Report
 from core.alert import warn
 from core.alert import info
@@ -16,11 +18,33 @@ from core.config import _database_config
 
 
 DB = _database_config()["DB"]
+USER = _database_config()["USERNAME"]
+PASSWORD = _database_config()["PASSWORD"]
+HOST = _database_config()["HOST"]
+PORT = _database_config()["PORT"]
+DATABASE = _database_config()["DATABASE"]
+
+
+def db_inputs(connection_type):
+    """
+        a function to determine the type of database the user wants to work with and
+        selects the corresponding connection to the db
+
+        Args:
+            connection_type: type of db we are working with
+
+        Returns:
+            corresponding command to connect to the db
+        """
+    return {
+        "mysql": 'mysql://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE),
+        "sqlite": 'sqlite:///{0}'.format(DATABASE)
+    }[connection_type]
+
 
 def create_connection(language):
     """
-    a function to determine the type of database the user wants to work with and
-    selects the corresponding connection to the db
+    a function to create connections to db, it retries 100 times if connection returned an error
 
     Args:
         language: language
@@ -28,15 +52,18 @@ def create_connection(language):
     Returns:
         connection if success otherwise False
     """
-    if DB == "mysql":
-        from database import mysql_create
-        return mysql_create.create_connection(language)
-    elif DB == "sqlite":
-        from database import sqlite_create
-        return sqlite_create.create_connection(language)
-    else:
-        warn(messages(language, "invalid_database"))
-        return False
+    try:
+        for i in range(0, 100):
+            try:
+                db_engine = create_engine(db_inputs(DB))
+                Session = sessionmaker(bind=db_engine)
+                session = Session()
+                return session
+            except:
+                time.sleep(0.01)
+    except:
+        warn(messages(language, "database_connect_fail"))
+    return False
 
 
 def send_submit_query(session, language):

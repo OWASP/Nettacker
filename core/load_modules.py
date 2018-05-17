@@ -141,20 +141,20 @@ def __check_external_modules():
             if os.path.isfile(default_config["home_path"]+"/"+default_config["database_name"]):
                 pass
             else:
-                from database.sqlite_create import create_tables
-                create_tables()
+                from database.sqlite_create import sqlite_create_tables
+                sqlite_create_tables()
         except:
             __die_failure("cannot access the directory {0}".format(
                 default_config["home_path"]))
     elif default_config["database_type"] == "mysql":
         try:
-            from database.mysql_create import create_tables, create_database
-            create_database()
-            create_tables()
+            from database.mysql_create import mysql_create_tables, mysql_create_database
+            mysql_create_database()
+            mysql_create_tables()
         except:
-            __die_failure("cannot access the db")
+            __die_failure(messages("en", "database_connection_failed"))
     else:
-        __die_failure("invalid db selected")
+        __die_failure(messages("en", "invalid_database"))
     return True
 
 

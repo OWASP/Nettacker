@@ -70,12 +70,13 @@ def _database_default_config():
         """
     return {
         "DB": "sqlite",
-        "DATABASE": "nettacker.db",
+        "DATABASE": default_paths()["home_path"] + "/nettacker.db",
         "USERNAME": "",
         "PASSWORD": "",
         "HOST": "",
         "PORT": ""
     }
+
 
 def _core_default_config():
     """
