@@ -71,7 +71,7 @@ def create_connection(language):
             connection if success otherwise False
     """
     try:
-        for i in range(0, 100):
+        for _ in range(0, 100):
             try:
                 db_engine = create_engine('mysql://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE))
                 Session = sessionmaker(bind=db_engine)
