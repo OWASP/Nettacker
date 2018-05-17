@@ -67,7 +67,32 @@ def _api_config():
             "enabled": False,
             "filename": "nettacker_api_access.log"
         },
-        "api_db_name": _paths()["home_path"] + "/database.sqlite3"
+    }
+
+
+def _database_config():
+    """
+    Database Config (could be modified by user)
+    For sqlite database:
+        fill the name of the DB as sqlite,
+        DATABASE as the name of the db user wants
+        other details can be left empty
+    For mysql users:
+        fill the name of the DB as mysql
+        DATABASE as the name of the database you want to create
+        USERNAME, PASSWORD, HOST and the PORT of the MySQL server need to be filled respectively
+
+    Returns:
+        a JSON with Database configuration
+    """
+    return {
+        "DB": "sqlite",
+        # "DB":"mysql",
+        "DATABASE":  _paths()["home_path"] + "/nettacker.db",  # Name of the database
+        "USERNAME": "",
+        "PASSWORD": "",
+        "HOST": "",
+        "PORT": ""
     }
 
 
@@ -120,7 +145,12 @@ def _core_config():
         "api_client_white_list_ips": _api_config()["api_client_white_list"]["ips"],
         "api_access_log": _api_config()["api_access_log"]["enabled"],
         "api_access_log_filename": _api_config()["api_access_log"]["filename"],
-        "api_db_name": _api_config()["api_db_name"],
+        "database_type": _database_config()["DB"],
+        "database_name": _database_config()["DATABASE"],
+        "database_username": _database_config()["USERNAME"],
+        "database_password": _database_config()["PASSWORD"],
+        "database_host": _database_config()["HOST"],
+        "database_port": _database_config()["PORT"],
         "home_path": _paths()["home_path"],
         "tmp_path": _paths()["tmp_path"],
         "results_path": _paths()["results_path"]

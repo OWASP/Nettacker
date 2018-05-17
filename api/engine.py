@@ -32,12 +32,12 @@ from core.config_builder import _builder
 from api.api_core import __remove_non_api_keys
 from api.api_core import __rules
 from api.api_core import __api_key_check
-from api.__database import __select_results
-from api.__database import __get_result
-from api.__database import __last_host_logs
-from api.__database import __logs_to_report_json
-from api.__database import __search_logs
-from api.__database import __logs_to_report_html
+from database.db import __select_results
+from database.db import __get_result
+from database.db import __last_host_logs
+from database.db import __logs_to_report_json
+from database.db import __search_logs
+from database.db import __logs_to_report_html
 from api.__start_scan import __scan
 from core._time import now
 

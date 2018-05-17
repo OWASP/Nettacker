@@ -11,10 +11,10 @@ from core.alert import error
 from core import compatible
 from core._time import now
 from core._die import __die_failure
-from api.__database import submit_report_to_db
-from api.__database import submit_logs_to_db
-from api.__database import remove_old_logs
-from api.__database import __logs_by_scan_id
+from database.db import submit_report_to_db
+from database.db import submit_logs_to_db
+from database.db import remove_old_logs
+from database.db import __logs_by_scan_id
 from core.config_builder import default_paths
 from core.config import _paths
 from core.config_builder import _builder

@@ -106,7 +106,7 @@ def __check_external_modules():
         True if success otherwise None
     """
     external_modules = ["argparse", "netaddr", "requests", "paramiko", "texttable", "socks", "win_inet_pton",
-                        "flask", "sqlite3"]
+                        "flask", "sqlalchemy"]
     for module in external_modules:
         try:
             __import__(module)
@@ -136,16 +136,25 @@ def __check_external_modules():
         except:
             __die_failure("cannot access the directory {0}".format(
                 default_config["results_path"]))
-    if not os.path.isfile(default_config["api_db_name"]):
+    if default_config["database_type"] == "sqlite":
         try:
-            copyfile(os.path.dirname(inspect.getfile(api)) +
-                     '/database.sqlite3', default_config["api_db_name"])
-            if not os.path.isfile(default_config["api_db_name"]):
-                __die_failure("cannot access the directory {0}".format(
-                    default_config["api_db_name"]))
+            if os.path.isfile(default_config["home_path"]+"/"+default_config["database_name"]):
+                pass
+            else:
+                from database.sqlite_create import sqlite_create_tables
+                sqlite_create_tables()
         except:
             __die_failure("cannot access the directory {0}".format(
-                default_config["api_db_name"]))
+                default_config["home_path"]))
+    elif default_config["database_type"] == "mysql":
+        try:
+            from database.mysql_create import mysql_create_tables, mysql_create_database
+            mysql_create_database()
+            mysql_create_tables()
+        except:
+            __die_failure(messages("en", "database_connection_failed"))
+    else:
+        __die_failure(messages("en", "invalid_database"))
     return True
 
 

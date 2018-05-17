@@ -58,7 +58,23 @@ def _api_default_config():
             "enabled": False,
             "filename": "nettacker_api_access.log"
         },
-        "api_db_name": default_paths()["home_path"] + "/database.sqlite3"
+    }
+
+
+def _database_default_config():
+    """
+        Default database Config
+
+        Returns:
+            a JSON with Database configuration
+        """
+    return {
+        "DB": "sqlite",
+        "DATABASE": default_paths()["home_path"] + "/nettacker.db",
+        "USERNAME": "",
+        "PASSWORD": "",
+        "HOST": "",
+        "PORT": ""
     }
 
 
@@ -112,7 +128,12 @@ def _core_default_config():
         "api_client_white_list_ips": _api_default_config()["api_client_white_list"]["ips"],
         "api_access_log": _api_default_config()["api_access_log"]["enabled"],
         "api_access_log_filename": _api_default_config()["api_access_log"]["filename"],
-        "api_db_name": _api_default_config()["api_db_name"],
+        "database_type": _database_default_config()["DB"],
+        "database_name": _database_default_config()["DATABASE"],
+        "database_username": _database_default_config()["USERNAME"],
+        "database_password": _database_default_config()["PASSWORD"],
+        "database_host": _database_default_config()["HOST"],
+        "database_port": _database_default_config()["PORT"],
         "home_path": default_paths()["home_path"],
         "tmp_path": default_paths()["tmp_path"],
         "results_path": default_paths()["results_path"]
