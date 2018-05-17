@@ -52,7 +52,7 @@ def send_submit_query(session, language):
         True if submitted success otherwise False
     """
     try:
-        for i in range(1, 100):
+        for _ in range(1, 100):
             try:
                 session.commit()
                 return True
