@@ -25,5 +25,6 @@ def sqlite_create_tables():
         db_engine = create_engine('sqlite:///{0}'.format(DATABASE))
         Base.metadata.create_all(db_engine)
         return True
-    except:
+    except Exception as _:
         return False
+

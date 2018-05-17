@@ -32,7 +32,7 @@ def mysql_create_database():
         if DATABASE not in existing_databases:
             engine.execute("CREATE DATABASE {0} ".format(DATABASE))
         return True
-    except:
+    except Exception as _:
         return False
 
 
@@ -51,5 +51,6 @@ def mysql_create_tables():
         db_engine = create_engine('mysql://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE))
         Base.metadata.create_all(db_engine)
         return True
-    except:
+    except Exception as _:
         return False
+

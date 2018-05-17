@@ -79,13 +79,13 @@ def send_submit_query(session, language):
         True if submitted success otherwise False
     """
     try:
-        for i in range(1, 100):
+        for _ in range(1, 100):
             try:
                 session.commit()
                 return True
-            except:
+            except Exception as _:
                 time.sleep(0.01)
-    except:
+    except Exception as _:
         warn(messages(language, "database_connect_fail"))
         return False
     return False
@@ -155,7 +155,7 @@ def submit_logs_to_db(language, log):
     Returns:
         True if success otherwise False
     """
-    if type(log) == str:
+    if isinstance(log, str):
         log = json.loads(log)
 
     session = create_connection(language)
@@ -203,7 +203,7 @@ def __select_results(language, page):
                 "ports": data.ports
             }
             selected.append(tmp)
-    except:
+    except Exception as _:
         return __structure(status="error", msg="database error!")
     return selected
 
@@ -225,9 +225,9 @@ def __get_result(language, id):
             file_obj = session.query(Report).filter_by(id=id).first()
             filename = file_obj.report_filename
             return open(filename, 'rb').read(), 200
-        except:
+        except Exception as _:
             return jsonify(__structure(status="error", msg="cannot find the file!")), 400
-    except:
+    except Exception as _:
         return jsonify(__structure(status="error", msg="database error!")), 200
 
 
@@ -282,7 +282,7 @@ def __last_host_logs(language, page):
                             capture = n
                         n += 1
                 if data.host == selected[capture]["host"]:
-                    if data.port not in selected[capture]["info"]["open_ports"] and type(data.port) is int:
+                    if data.port not in selected[capture]["info"]["open_ports"] and isinstance(data.port, int):
                         selected[capture]["info"]["open_ports"].append(data.port)
                     if data.type not in selected[capture]["info"]["scan_methods"]:
                         selected[capture]["info"][
@@ -292,7 +292,7 @@ def __last_host_logs(language, page):
                     if data.description not in selected[capture]["info"]["descriptions"]:
                         selected[capture]["info"][
                             "descriptions"].append(data.description)
-    except:
+    except Exception as _:
         return __structure(status="error", msg="database error!")
     if len(selected) == 0:
         return __structure(status="finished", msg="No more search results")
@@ -359,7 +359,7 @@ def __logs_to_report_json(host, language):
             }
             return_logs.append(data)
         return return_logs
-    except:
+    except Exception as _:
         return []
 
 
@@ -406,7 +406,7 @@ def __logs_to_report_html(host, language):
         _table += _log_data.table_end + '<p class="footer">' + messages("en", "nettacker_report") \
             .format(compatible.__version__, compatible.__code_name__, now()) + '</p>'
         return _table
-    except:
+    except Exception as _:
         return ""
 
 
@@ -473,7 +473,7 @@ def __search_logs(language, page, query):
                             capture = n
                         n += 1
                 if data.host == selected[capture]["host"]:
-                    if data.port not in selected[capture]["info"]["open_ports"] and type(data.port) is int:
+                    if data.port not in selected[capture]["info"]["open_ports"] and isinstance(data.port, int):
                         selected[capture]["info"]["open_ports"].append(data.port)
                     if data.type not in selected[capture]["info"]["scan_methods"]:
                         selected[capture]["info"][
@@ -483,7 +483,7 @@ def __search_logs(language, page, query):
                     if data.description not in selected[capture]["info"]["descriptions"]:
                         selected[capture]["info"][
                             "descriptions"].append(data.description)
-    except:
+    except Exception as _:
         return __structure(status="error", msg="database error!")
     if len(selected) == 0:
         return __structure(status="finished", msg="No more search results")
