@@ -176,9 +176,13 @@ def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         elif (stealth_scan_resp.haslayer(TCP)):
             if (stealth_scan_resp.getlayer(TCP).flags == 0x12):
                 # send_rst = sr(IP(dst=host) / TCP(sport=src_port, dport=port, flags="R"), timeout=timeout_sec)
+                try:
+                    service_name = "/" + socket.getservbyport(port)
+                except Exception:
+                    service_name = ""
                 data = json.dumps(
                     {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-                     'DESCRIPTION': messages(language, "port/type").format(port, "STEALTH"), 'TIME': now(),
+                     'DESCRIPTION': messages(language, "port/type").format(str(port) + service_name, "STEALTH"), 'TIME': now(),
                      'CATEGORY': "scan", 'SCAN_ID': scan_id,
                      'SCAN_CMD': scan_cmd}) + '\n'
                 __log_into_file(log_in_file, 'a', data, language)
@@ -224,14 +228,18 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if timeout_sec is not None:
             s.settimeout(timeout_sec)
+        try:
+            service_name = "/" + socket.getservbyport(port)
+        except Exception:
+            service_name = ""
         if target_type(host) == "SINGLE_IPv6":
             s.connect((host, port, 0, 0))
         else:
             s.connect((host, port))
-        info(messages(language, "port_found").format(host, port, "TCP_CONNECT"))
+        info(messages(language, "port_found").format(host, str(port) + service_name, "TCP_CONNECT"))
         data = json.dumps(
             {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-             'DESCRIPTION': messages(language, "port/type").format(port, "TCP_CONNECT"), 'TIME': now(),
+             'DESCRIPTION': messages(language, "port/type").format(str(port) + service_name, "TCP_CONNECT"), 'TIME': now(),
              'CATEGORY': "scan",
              'SCAN_ID': scan_id,
              'SCAN_CMD': scan_cmd}) + '\n'
@@ -242,9 +250,9 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
     except socket.timeout:
         try:
             if filter_port(host, port):
-                info(messages(language, "port_found").format(host, port, "STEALTH"))
+                info(messages(language, "port_found").format(host, str(port) + service_name, "TCP_CONNECT"))
                 data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-                                   'DESCRIPTION': messages(language, "port/type").format(port, "STEALTH"),
+                                   'DESCRIPTION': messages(language, "port/type").format(str(port) + service_name, "TCP_CONNECT"),
                                    'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n'
                 __log_into_file(log_in_file, 'a', data, language)
                 __log_into_file(thread_tmp_filename, 'w', '0', language)
