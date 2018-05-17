@@ -44,7 +44,7 @@ def create_connection(language):
             connection if success otherwise False
     """
     try:
-        for i in range(0, 100):
+        for _ in range(0, 100):
             try:
                 db_engine = create_engine('sqlite:///{0}'.format(DATABASE))
                 Session = sessionmaker(bind=db_engine)
