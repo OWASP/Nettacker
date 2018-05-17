@@ -128,7 +128,7 @@ def submit_logs_to_db(language, log):
     Returns:
         True if success otherwise False
     """
-    if type(log) == str:
+    if isinstance(log, str):
         log = json.loads(log)
 
     session = create_connection(language)
@@ -255,7 +255,7 @@ def __last_host_logs(language, page):
                             capture = n
                         n += 1
                 if data.host == selected[capture]["host"]:
-                    if data.port not in selected[capture]["info"]["open_ports"] and type(data.port) is int:
+                    if data.port not in selected[capture]["info"]["open_ports"] and isinstance(data.port, int):
                         selected[capture]["info"]["open_ports"].append(data.port)
                     if data.type not in selected[capture]["info"]["scan_methods"]:
                         selected[capture]["info"][
@@ -446,7 +446,7 @@ def __search_logs(language, page, query):
                             capture = n
                         n += 1
                 if data.host == selected[capture]["host"]:
-                    if data.port not in selected[capture]["info"]["open_ports"] and type(data.port) is int:
+                    if data.port not in selected[capture]["info"]["open_ports"] and isinstance(data.port, int):
                         selected[capture]["info"]["open_ports"].append(data.port)
                     if data.type not in selected[capture]["info"]["scan_methods"]:
                         selected[capture]["info"][
