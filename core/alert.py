@@ -3,6 +3,7 @@
 
 import os
 import sys
+import json
 from core import color
 from core.compatible import version
 
@@ -21,7 +22,7 @@ def is_not_run_from_api():
 
 def messages(language, msg_id):
     """
-    load a message in the lib/language/*.py
+    load a message from message library with specified language
 
     Args:
         language: language
@@ -65,23 +66,33 @@ def __input_msg(content):
                      content + color.color('reset'), 'utf8')
 
 
-def info(content):
+def info(content, log_in_file=None, mode=None, event=None, language=None, thread_tmp_filename=None):
     """
-    build the info message
+    build the info message, log the message in database if requested, rewrite the thread temporary file
 
     Args:
         content: content of the message
+        log_in_file: log filename name
+        mode: write mode, [w, w+, wb, a, ab, ...]
+        event: standard event in JSON structure
+        language: the language
+        thread_tmp_filename: thread temporary filename
 
     Returns:
-        the message in info structure - None
+        None
     """
-    if is_not_run_from_api():
+    if is_not_run_from_api():  # prevent to stdout if run from API
         if version() is 2:
             sys.stdout.write(color.color('yellow') + '[+] ' + color.color('green') +
                              content.encode('utf8') + color.color('reset') + '\n')
         else:
             sys.stdout.buffer.write(bytes(color.color('yellow') + '[+] ' + color.color('green') +
                                           content + color.color('reset') + '\n', 'utf8'))
+    if event:  # if an event is present log it
+        from core.log import __log_into_file
+        __log_into_file(log_in_file, mode, json.dumps(event), language)
+        if thread_tmp_filename:  # if thread temporary filename present, rewrite it
+            __log_into_file(thread_tmp_filename, "w", "0", language)
     return
 
 
