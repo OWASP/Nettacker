@@ -23,3 +23,4 @@
 * `animate`: MIT License
 * `flag-icon`: MIT License
 * `jit`: https://github.com/philogb/jit/blob/master/LICENSE
+* `sqlalchemy`: MIT License
