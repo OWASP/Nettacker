@@ -332,6 +332,7 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
         info(counter_message)
         if verbose_level is not 0:
             sample_event['DESCRIPTION'] = counter_message
-            event_parser(message='', sample_event=sample_event, response=None, payload=None, log_in_file=log_in_file)
+            event_parser(message='', sample_event=sample_event, response=None, payload=None, log_in_file=log_in_file,
+                         language=language)
     os.remove(thread_tmp_filename)
 
