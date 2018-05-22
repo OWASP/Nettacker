@@ -91,7 +91,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if target_type(target) != "HTTP":
             target = 'http://' + target
 
-        request = """{0} {1}:8000{{0}} HTTP/1.1
+        request = """{0} {1}{{0}} HTTP/1.1
         User-Agent: {2}
         """.format(extra_requirements["pma_scan_http_method"][0], target, user_agent)
         parameters = list()
