@@ -118,7 +118,7 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
     return r
 
 
-def prepare_post_request(post_request, content_type, req_type, retries, time_sleep, timeout_sec, payload, rule_type,
+def prepare_post_request(post_request, content_type, req_type, retries, time_sleep, timeout_sec, payload,
                          condition, output):
     """
     this function extracts the data, headers and url for the POST type request which is to be sent to
@@ -129,7 +129,6 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
         req_type: GET, POST, PUT, DELETE or PATCH
         content_type: application/json or application/x-www-form-urlencoded
         payload: the payload corresponding to which the request is made
-        rule_type: the type of parameter you want to check conditions on. eg: status_code, json, etc.
         condition: the condition to be evaluated. eg: response.status_code == 200
         other args: retries, time_sleep, timeout_sec
 
@@ -139,7 +138,7 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
                 {
                     "payload": payload,
                     "condition": condition,
-                    "result": rule_evaluator(response, rule_type, condition),
+                    "result": rule_evaluator(response, condition),
                     "response": response
                 },......
             ]
@@ -163,13 +162,13 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
     output.append({
         "payload": payload,
         "condition": condition,
-        "result": rule_evaluator(response, rule_type, condition),
+        "result": rule_evaluator(response, condition),
         "response": response
     })
     return output
 
 
-def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, rule_type, condition, output):
+def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, condition, output):
     """
     this function extracts the data, headers and url for the requests other than POST type which is to be sent to
     the __http_request_maker function
@@ -178,7 +177,6 @@ def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, 
         request: the returned data from __http_requests_generator function
         req_type: GET, POST, PUT, DELETE or PATCH
         payload: the payload corresponding to which the request is made
-        rule_type: the type of parameter you want to check conditions on. eg: status_code, json, etc.
         condition: the condition to be evaluated. eg: response.status_code == 200
         other args: retries, time_sleep, timeout_sec
 
@@ -188,7 +186,7 @@ def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, 
                 {
                     "payload": payload1,
                     "condition": condition1,
-                    "result": rule_evaluator(response, rule_type, condition),
+                    "result": rule_evaluator(response, condition),
                     "response": response1
                 },......
             ]
@@ -204,19 +202,18 @@ def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, 
     output.append({
         "payload": payload,
         "condition": condition,
-        "result": rule_evaluator(response, rule_type, condition),
+        "result": rule_evaluator(response, condition),
         "response": response
     })
     return output
 
 
-def rule_evaluator(response, rule_type, condition):
+def rule_evaluator(response, condition):
     """
     this function evaluates conditions according to which it returns true or false
 
     Args:
         response:  output from __http_request_maker function
-        rule_type: the type of parameter you want to check conditions on. eg: status_code, json, etc.
         condition: the condition to be evaluated. eg: response.status_code == 200
 
     Returns:
@@ -227,7 +224,7 @@ def rule_evaluator(response, rule_type, condition):
 
 
 def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_file, time_sleep, language,
-                   verbose_level, socks_proxy, retries, scan_id, scan_cmd, rule_type, condition):
+                   verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition):
     """
     this function is the main repeater functions which determines the type of request, the content type and calls the
     appropriate funtion
@@ -235,7 +232,6 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
     Args:
         request_template: the sample template of the request(to be supplied by the module)
         parameters: the payload in form of [[1,2,3], [1,2,3],...]
-        rule_type: the type of parameter you want to check conditions on. eg: status_code, json, etc.
         condition: the condition to be evaluated. eg: response.status_code == 200
         other args: retries, time_sleep, timeout_sec, thread_number, log_in_file, time_sleep, language,
                    verbose_level, socks_proxy, scan_id, scan_cmd
@@ -262,11 +258,11 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
         if request_type == "POST":
             t = threading.Thread(target=prepare_post_request,
                                  args=(request[0], content_type, req_type, retries,
-                                       time_sleep, timeout_sec, request[1], rule_type, condition, output))
+                                       time_sleep, timeout_sec, request[1], condition, output))
         elif request_type == "GET":
             t = threading.Thread(target=other_request,
                                  args=(request[0], req_type, retries, time_sleep, timeout_sec, request[1],
-                                       rule_type, condition, output))
+                                        condition, output))
         threads.append(t)
         t.start()
         time.sleep(time_sleep)
