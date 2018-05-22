@@ -42,12 +42,13 @@ def discover(host, port):
         print (data)
         if "ssh" in data or "SSH" in data:
             data = data.split()
-            if data[1]!="" or data[1]!=None:
+            try:
                 return "Version: " + data[0] + " Operating System: " + data[1]
-            elif data[0]!="" or data[0]!=None:
-                return "Version: " + data[0]
-            else:
-                return None
+            except Exception:
+                try:
+                    return "Version: " + data[0]
+                except:
+                    return None
         elif "ftp" in data or "FTP" in data:
             data = data.split()
             return data
