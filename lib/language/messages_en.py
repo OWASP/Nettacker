@@ -213,5 +213,6 @@ def all_messages():
             "nothing_found": "nothing found on {0} in {1}!",
             "no_auth": "No auth found on {0}:{1}",
             "invalid_database": "Please select from mysql or sqlite in the configuration file",
-            "database_connection_failed": "Connection to the selected db failed"
+            "database_connection_failed": "Connection to the selected db failed",
+            "fuzzer_no_response": "The http fuzzer did not find any output for {0}",
         }

@@ -3,7 +3,7 @@
 
 import string
 import random
-import os
+
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
@@ -91,37 +91,30 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if target_type(target) != "HTTP":
             target = 'http://' + target
 
-        request = """{0} {1}{{0}} HTTP/1.1
+        request = """{0} {1}:8000{{0}} HTTP/1.1
         User-Agent: {2}
         """.format(extra_requirements["pma_scan_http_method"][0], target, user_agent)
         parameters = list()
         parameters.append(extra_requirements["pma_scan_list"])
         status_codes = [200, 401, 403]
         condition = "response.status_code in {0}".format(status_codes)
-        output = __repeater(request, parameters, timeout_sec, thread_number, log_in_file, time_sleep, language,
-                            verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition)
-        for x in output:
-            if x['result']:
-                info(messages(language, "found").format(
-                    x['response'].url, x['response'].status_code, x['response'].reason))
-                __log_into_file(thread_tmp_filename, 'w', '0', language)
-                __log_into_file(log_in_file, 'a',
-                                json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
-                                            'PORT': "", 'TYPE': 'pma_scan',
-                                            'DESCRIPTION': messages(language, "found").format(x['response'].url,
-                                                                    x['response'].status_code , x['response'].reason),
-                                            'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                                            'SCAN_CMD': scan_cmd}) + '\n', language)
-
-        thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1:
-            info(messages(language, "directory_file_404").format(
-                target, "default_port"))
-            if verbose_level is not 0:
-                __log_into_file(log_in_file, 'a', json.dumps(
-                    {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'pma_scan',
-                     'DESCRIPTION': messages(language, "phpmyadmin_dir_404"), 'TIME': now(), 'CATEGORY': "scan",
-                     'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n', language)
-        os.remove(thread_tmp_filename)
+        message = messages(language, 'found')
+        sample_message = "\"" + message + "\""+""".format(response.url, response.status_code, response.reason)"""
+        sample_event = {
+            'HOST': target_to_host(target),
+            'USERNAME': '',
+            'PASSWORD': '',
+            'PORT': '',
+            'TYPE': 'pma_scan',
+            'DESCRIPTION': sample_message,
+            'TIME': now(),
+            'CATEGORY': "scan",
+            'SCAN_ID': scan_id,
+            'SCAN_CMD': scan_cmd
+        }
+        counter_message = messages(language, "phpmyadmin_dir_404")
+        __repeater(request, parameters, timeout_sec, thread_number, log_in_file, time_sleep, language,
+                            verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition, thread_tmp_filename,
+                            sample_event, sample_message, counter_message)
     else:
         warn(messages(language, "input_target_error").format('pma_scan', target))

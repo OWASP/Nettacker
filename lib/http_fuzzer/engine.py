@@ -8,7 +8,10 @@ import itertools
 import threading
 from mimetools import Message
 from StringIO import StringIO
+
 from core.alert import *
+from core.log import __log_into_file
+
 
 
 def post_data_parser(post_data):
@@ -119,7 +122,7 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
 
 
 def prepare_post_request(post_request, content_type, req_type, retries, time_sleep, timeout_sec, payload,
-                         condition, output):
+                         condition, output, sample_event, message, log_in_file, thread_tmp_filename, language):
     """
     this function extracts the data, headers and url for the POST type request which is to be sent to
     the __http_request_maker function
@@ -159,6 +162,9 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
     headers.pop("Content-Length", None)
     response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec,
                                     post_data_format, content_type)
+    if rule_evaluator(response, condition):
+        __log_into_file(thread_tmp_filename, 'w', '0', language)
+        event_parser(message, sample_event, response, payload, log_in_file, language)
     output.append({
         "payload": payload,
         "condition": condition,
@@ -168,7 +174,8 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
     return output
 
 
-def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, condition, output):
+def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, condition, output, sample_event,
+                  message, log_in_file, thread_tmp_filename, language):
     """
     this function extracts the data, headers and url for the requests other than POST type which is to be sent to
     the __http_request_maker function
@@ -199,6 +206,9 @@ def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, 
     url = request_line.strip().split(' ')[1]
     headers.pop("Content-Length", None)
     response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec)
+    if rule_evaluator(response, condition):
+        __log_into_file(thread_tmp_filename, 'w', '0', language)
+        event_parser(message, sample_event, response, payload, log_in_file, language)
     output.append({
         "payload": payload,
         "condition": condition,
@@ -223,8 +233,29 @@ def rule_evaluator(response, condition):
     return eval(condition)
 
 
+def sample_event_key_evaluator(response, payload, value):
+    try:
+        if value != '':
+            exec("value = "+value)
+        return value
+    except:
+        return value
+
+
+def event_parser(message, sample_event, response, payload, log_in_file, language):
+    event = {}
+    message = sample_event_key_evaluator(response, payload, message)
+    for key, value in sample_event.items():
+        event[key] = sample_event_key_evaluator(response, payload, value)
+    if message != '':
+        info(message)
+    __log_into_file(log_in_file, 'a', json.dumps(event), language)
+    return 1
+
+
 def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_file, time_sleep, language,
-                   verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition):
+                verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition, thread_tmp_filename,
+                sample_event, message, counter_message = None):
     """
     this function is the main repeater functions which determines the type of request, the content type and calls the
     appropriate funtion
@@ -240,6 +271,9 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
          1
 
     """
+    if counter_message is None:
+        counter_message = messages(language, "fuzzer_no_response").format(sample_event['TYPE'])
+    __log_into_file(thread_tmp_filename, 'w', '1', language)
     output = []
     request_text = request_template.replace("\r", "").replace("\n", "\r\n")
     content_type = ""
@@ -258,11 +292,13 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
         if request_type == "POST":
             t = threading.Thread(target=prepare_post_request,
                                  args=(request[0], content_type, req_type, retries,
-                                       time_sleep, timeout_sec, request[1], condition, output))
+                                       time_sleep, timeout_sec, request[1], condition, output, sample_event, message,
+                                       log_in_file, thread_tmp_filename, language))
         elif request_type == "GET":
             t = threading.Thread(target=other_request,
                                  args=(request[0], req_type, retries, time_sleep, timeout_sec, request[1],
-                                        condition, output))
+                                       condition, output, sample_event, message, log_in_file, thread_tmp_filename,
+                                       language))
         threads.append(t)
         t.start()
         time.sleep(time_sleep)
@@ -291,4 +327,11 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
                 break
         except KeyboardInterrupt:
             break
-    return output
+    thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
+    if thread_write is 1:
+        info(counter_message)
+        if verbose_level is not 0:
+            sample_event['DESCRIPTION'] = counter_message
+            event_parser(message='', sample_event=sample_event, response=None, payload=None, log_in_file=log_in_file)
+    os.remove(thread_tmp_filename)
+
