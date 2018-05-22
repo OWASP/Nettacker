@@ -223,7 +223,8 @@ def rule_evaluator(response, rule_type, condition):
          true or false based on the condition
 
     """
-    return eval(condition)
+    exec("condition = " + condition)
+    return condition
 
 
 def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_file, time_sleep, language,
