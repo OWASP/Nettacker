@@ -8,8 +8,7 @@ import itertools
 import threading
 from mimetools import Message
 from StringIO import StringIO
-
-output = {}
+from core.alert import *
 
 
 def post_data_parser(post_data):
@@ -43,7 +42,7 @@ def __http_requests_generator(request_template, parameters):
 
     """
     for payload in itertools.product(*parameters):
-        yield request_template.format(*payload),payload
+        yield request_template.format(*payload), payload
 
 
 def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec=None, data=None, content_type=None):
@@ -60,8 +59,8 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
          the response of the request made otherwise 0
 
     """
-    exit = 0
-    r=None
+    exits = 0
+    r = None
     while True:
         try:
             if timeout_sec is None:
@@ -110,17 +109,17 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
                     r = requests.delete(url=url, headers=headers, timeout=timeout_sec)
             break
         except Exception as _:
-            exit += 1
-            if exit is retries:
+            exits += 1
+            if exits is retries:
                 return 0
-                break
             else:
                 time.sleep(time_sleep)
                 continue
     return r
 
 
-def prepare_post_request(post_request, content_type, req_type, retries, time_sleep, timeout_sec, payload, rule_type, condition):
+def prepare_post_request(post_request, content_type, req_type, retries, time_sleep, timeout_sec, payload, rule_type,
+                         condition, output):
     """
     this function extracts the data, headers and url for the POST type request which is to be sent to
     the __http_request_maker function
@@ -135,15 +134,22 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
         other args: retries, time_sleep, timeout_sec
 
     Returns:
-         the dictionary of outputs in the format
-            {
-                payload1: corresponding output,
-                ...
-            }
+         the list of outputs in the format
+            [
+                {
+                    "payload": payload,
+                    "condition": condition,
+                    "result": rule_evaluator(response, rule_type, condition),
+                    "response": response
+                },......
+            ]
 
     """
+    post_data_format = ""
     request_line, headers_alone = post_request.split('\r\n', 1)
     headers = Message(StringIO(headers_alone)).dict
+    clean_headers = {x.strip(): y for x, y in headers.items()}
+    headers = clean_headers
     url = request_line.strip().split(' ')[1]
     if "content-type" in headers:
         content_type = headers['content-type']
@@ -153,12 +159,17 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
             post_data_format = json.loads(post_request[post_request.find('{'):post_request.find('}') + 1])
     headers.pop("Content-Length", None)
     response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec,
-                                   post_data_format, content_type)
-    output[payload] = rule_evaluator(response, rule_type, condition)
+                                    post_data_format, content_type)
+    output.append({
+        "payload": payload,
+        "condition": condition,
+        "result": rule_evaluator(response, rule_type, condition),
+        "response": response
+    })
     return output
 
 
-def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, rule_type, condition):
+def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, rule_type, condition, output):
     """
     this function extracts the data, headers and url for the requests other than POST type which is to be sent to
     the __http_request_maker function
@@ -172,19 +183,30 @@ def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, 
         other args: retries, time_sleep, timeout_sec
 
     Returns:
-         the dictionary of outputs in the format
-            {
-                payload1: corresponding output,
-                ...
-            }
+         the list of outputs in the format
+            [
+                {
+                    "payload": payload1,
+                    "condition": condition1,
+                    "result": rule_evaluator(response, rule_type, condition),
+                    "response": response1
+                },......
+            ]
 
     """
     request_line, headers_alone = request.split('\r\n', 1)
     headers = Message(StringIO(headers_alone)).dict
+    clean_headers = {x.strip():y for x, y in headers.items()}
+    headers = clean_headers
     url = request_line.strip().split(' ')[1]
     headers.pop("Content-Length", None)
     response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec)
-    output[payload] = rule_evaluator(response, rule_type, condition)
+    output.append({
+        "payload": payload,
+        "condition": condition,
+        "result": rule_evaluator(response, rule_type, condition),
+        "response": response
+    })
     return output
 
 
@@ -222,6 +244,7 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
          1
 
     """
+    output = []
     request_text = request_template.replace("\r", "").replace("\n", "\r\n")
     content_type = ""
     request_type = ""
@@ -229,7 +252,7 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
             request_text.rsplit()[0] == "PATCH":
         request_type = "POST"
     elif request_text.rsplit()[0] == "GET" or request_text.rsplit()[0] == "HEAD" or \
-         request_text.rsplit()[0] == "DELETE":
+            request_text.rsplit()[0] == "DELETE":
         request_type = "GET"
     req_type = request_text.rsplit()[0]
     threads = []
@@ -239,11 +262,11 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
         if request_type == "POST":
             t = threading.Thread(target=prepare_post_request,
                                  args=(request[0], content_type, req_type, retries,
-                                       time_sleep, timeout_sec, request[1], rule_type, condition))
+                                       time_sleep, timeout_sec, request[1], rule_type, condition, output))
         elif request_type == "GET":
             t = threading.Thread(target=other_request,
                                  args=(request[0], req_type, retries, time_sleep, timeout_sec, request[1],
-                                       rule_type, condition))
+                                       rule_type, condition, output))
         threads.append(t)
         t.start()
         time.sleep(time_sleep)
@@ -272,4 +295,4 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
                 break
         except KeyboardInterrupt:
             break
-    return 1
+    return output
