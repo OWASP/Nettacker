@@ -133,7 +133,8 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
         content_type: application/json or application/x-www-form-urlencoded
         payload: the payload corresponding to which the request is made
         condition: the condition to be evaluated. eg: response.status_code == 200
-        other args: retries, time_sleep, timeout_sec
+        other args: retries, time_sleep, timeout_sec, output, sample_event, message, log_in_file,
+        thread_tmp_filename, language
 
     Returns:
          the list of outputs in the format
@@ -185,7 +186,8 @@ def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, 
         req_type: GET, POST, PUT, DELETE or PATCH
         payload: the payload corresponding to which the request is made
         condition: the condition to be evaluated. eg: response.status_code == 200
-        other args: retries, time_sleep, timeout_sec
+        other args: retries, time_sleep, timeout_sec, output, sample_event,
+                  message, log_in_file, thread_tmp_filename, language
 
     Returns:
          the list of outputs in the format
@@ -234,6 +236,17 @@ def rule_evaluator(response, condition):
 
 
 def sample_event_key_evaluator(response, payload, value):
+    """
+    this function returns the appropriate value for expressions in sample event by executing them
+
+    Args:
+    response: output from __http_request_maker function
+    payload: the payload corresponding to the output
+    value: the expression that needs to be evaluated
+
+    Returns:
+        the corresponding value by executing the expression
+    """
     try:
         if value != '':
             exec("value = "+value)
@@ -243,13 +256,22 @@ def sample_event_key_evaluator(response, payload, value):
 
 
 def event_parser(message, sample_event, response, payload, log_in_file, language):
+    """
+    this function is reponsible for logging events into the database and showing messages in the terminal
+
+    Args:
+        message: the sample message to be displayed in case of condition returning true
+        sample_event: the sample event which is to be logged into the database
+        other args: response, payload,log_in_file,language
+
+    Returns:
+        1
+    """
     event = {}
     message = sample_event_key_evaluator(response, payload, message)
     for key, value in sample_event.items():
         event[key] = sample_event_key_evaluator(response, payload, value)
-    if message != '':
-        info(message)
-    __log_into_file(log_in_file, 'a', json.dumps(event), language)
+    info(message, log_in_file, 'a', event, language)
     return 1
 
 
@@ -264,11 +286,14 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
         request_template: the sample template of the request(to be supplied by the module)
         parameters: the payload in form of [[1,2,3], [1,2,3],...]
         condition: the condition to be evaluated. eg: response.status_code == 200
+        sample_event: the template for the event that will be logged into the db
+        message: the message that you want to display in the terminal when success
+        counter_message: the message that you want to display if nothing is found
         other args: retries, time_sleep, timeout_sec, thread_number, log_in_file, time_sleep, language,
-                   verbose_level, socks_proxy, scan_id, scan_cmd
+                    verbose_level, socks_proxy, scan_id, scan_cmd, thread_tmp_filename
 
     Returns:
-         1
+         Nothing
 
     """
     if counter_message is None:
@@ -328,11 +353,9 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
         except KeyboardInterrupt:
             break
     thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-    if thread_write is 1:
-        info(counter_message)
-        if verbose_level is not 0:
-            sample_event['DESCRIPTION'] = counter_message
-            event_parser(message='', sample_event=sample_event, response=None, payload=None, log_in_file=log_in_file,
-                         language=language)
+    if thread_write is 1 and verbose_level is not 0:
+        sample_event['DESCRIPTION'] = counter_message
+        event_parser(message=counter_message, sample_event=sample_event, response=None, payload=None,
+                     log_in_file=log_in_file, language=language)
     os.remove(thread_tmp_filename)
 
