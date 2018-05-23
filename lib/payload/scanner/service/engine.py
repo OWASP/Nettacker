@@ -19,6 +19,8 @@ def recv_all(s):
             break
     return response
 
+ports_services = {"Content-Length" : "HTTP/HTTPS", "HTTP" : "HTTP/HTTPS", "FTP" : "FTP", "ftp" : "FTP", "SMTP": "SMTP", "smtp" : "SMTP", "mail" : "SMTP" , "Telnet" : "Telnet", "telnet": "Telnet", "SSH": "SSH", "ssh" : "SSH"}
+
 def discover(host, port):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -39,9 +41,10 @@ def discover(host, port):
     data1 = (recv_all(sock))
     sock.send(b"ABC\x00\r\n"*10)
     data2 = (recv_all(sock))
-    print(data2)
+    #print data1
+    #print data2
     name = socket.getservbyport(port)
-
-    if name.upper() in data1 or name.upper() in data2:
-        return socket.getservbyport(port)
+    for key in ports_services.keys():
+        if key in data1 or key in data2:
+            return ports_services[key]
 
