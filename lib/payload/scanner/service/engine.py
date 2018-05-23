@@ -6,6 +6,16 @@
 import socket
 import ssl
 
+ports_services_and_condition = {
+    "HTTP/HTTPS": ["\r\nContent-Length: ", ["HTTP/0.9", "HTTP/1.0", "HTTP/1.1", "HTTP/2.0"], "\r\n\r\n"],
+}
+
+ports_services_or_condition = {
+    "FTP": [ ["Pure-FTPd", "----------\r\n"], "\r\n220-You are user number", ["orks FTP server", "VxWorks VxWorks"], "530 USER and PASS required", "Server ready.\r\n5", "Invalid command: try being more creative"],
+    "SSH": ["-OpenSSH_", "\r\nProtocol mism", "_sshlib GlobalSCAPE\r\n", "\x00\x1aversion info line too long"],
+}
+
+
 def recv_all(s):
     response = ""
     while len(response) < 4196:
@@ -19,7 +29,6 @@ def recv_all(s):
             break
     return response
 
-ports_services = {"Content-Length" : "HTTP/HTTPS", "HTTP" : "HTTP/HTTPS", "FTP" : "FTP", "ftp" : "FTP", "SMTP": "SMTP", "smtp" : "SMTP", "mail" : "SMTP" , "Telnet" : "Telnet", "telnet": "Telnet", "SSH": "SSH", "ssh" : "SSH"}
 
 def discover(host, port):
     try:
@@ -38,13 +47,49 @@ def discover(host, port):
             sock.connect((host, port))
         except:
             return None
-    data1 = (recv_all(sock))
+    data1 = recv_all(sock)
     sock.send(b"ABC\x00\r\n"*10)
-    data2 = (recv_all(sock))
+    final_data = recv_all(sock) + data1
     #print data1
     #print data2
-    name = socket.getservbyport(port)
-    for key in ports_services.keys():
-        if key in data1 or key in data2:
-            return ports_services[key]
+    final_data = "abcdefgh"
+    service_name = "unknown"
+    for service in ports_services_and_condition:
+        FLAG = True
+        c = 0
+        for signature in ports_services_and_condition[service]:
+            if isinstance(signature, list):
+                OFLAG = True
+                for s in ports_services_and_condition[service][c]:
+                    if s in final_data:
+                        OFLAG = False
+                if OFLAG:
+                    FLAG = False
+            else:
+                if signature not in final_data:
+                    FLAG = False
+        if FLAG:
+            service_name = service
+            break
+        c += 1
+
+    for service in ports_services_or_condition:
+        FLAG = False
+        c = 0
+        for signature in ports_services_and_condition[service]:
+            if isinstance(signature, list):
+                OFLAG = True
+                for s in ports_services_and_condition[service][c]:
+                    if s not in final_data:
+                        OFLAG = False
+                if OFLAG:
+                    FLAG = True
+            else:
+                if signature in final_data:
+                    FLAG = True
+        if FLAG:
+            service_name = service
+            break
+        c += 1
+    return service_name
 
