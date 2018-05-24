@@ -3,8 +3,12 @@
 # Author: Pradeep Jairamani , github.com/pradeepjairamani
 # Service Scanner (Product and Version Detection)
 
+import threading
 import socket
 import ssl
+import time
+
+result_dict = {}
 
 ports_services_and_condition = {
     "HTTP/HTTPS": ["Content-Length:", ["HTTP/0.9", "HTTP/1.0", "HTTP/1.1", "HTTP/2.0"]],
@@ -15,6 +19,7 @@ ports_services_and_condition = {
 }
 
 ports_services_or_condition = {
+    "HTTP/HTTPS" : ["400 Bad Request", "HTML"],
     "FTP": [ ["Pure-FTPd", "----------\r\n"], "\r\n220-You are user number", ["orks FTP server", "VxWorks VxWorks"], "530 USER and PASS required", "Server ready.\r\n5", "Invalid command: try being more creative"],
     "SSH": ["-OpenSSH_", "\r\nProtocol mism", "_sshlib GlobalSCAPE\r\n", "\x00\x1aversion info line too long"],
     "Telnet" : ["Welcome to Microsoft Telnet Service", "no decompiling or reverse-engineering shall be allowed", "is not a secure protocol", "recommended to use Stelnet", "Login authentication"],
@@ -55,8 +60,6 @@ def discover(host, port):
     data1 = recv_all(sock)
     sock.send(b"ABC\x00\r\n"*10)
     final_data = recv_all(sock) + data1
-    #print final_data
-    service_name = ""
     for service in ports_services_and_condition:
         FLAG = True
         c = 0
@@ -72,8 +75,8 @@ def discover(host, port):
                 if signature not in final_data:
                     FLAG = False
         if FLAG:
-            return service
-            break
+            result_dict[port] = service
+            return
         c += 1
 
     for service in ports_services_or_condition:
@@ -91,11 +94,30 @@ def discover(host, port):
                 if signature in final_data:
                     FLAG = True
         if FLAG:
-            return service #= service
-            break
+            result_dict[port] = service; print("or Break")
+            return
         c += 1
-    #if service_name is not "":
-     #   return service_name
-    #else:
-     #   return None
 
+
+def discovery(target, port=""):
+    if port != "":
+        discover(target, port)
+        return result_dict
+    else:
+        threads = []
+        ports = [80, 443, 25, 587, 23, 22, 21, 990]
+        thread_number = len(ports)
+        for port in ports:
+            t = threading.Thread(target=discover, args=(target, int(port)))
+            threads.append(t)
+            t.start()
+            while 1:
+                try:
+                    if threading.activeCount() >= thread_number:
+                        time.sleep(1)
+                    else:
+                        break
+                except KeyboardInterrupt:
+                    keyboard_interrupt_flag = True
+                    break
+        return result_dict
