@@ -7,16 +7,19 @@ import socket
 import ssl
 
 ports_services_and_condition = {
-    "HTTP/HTTPS": ["\r\nContent-Length: ", ["HTTP/0.9", "HTTP/1.0", "HTTP/1.1", "HTTP/2.0"], "\r\n\r\n"],
-    "FTP" : ["FTP"],
+    "HTTP/HTTPS": ["Content-Length:", ["HTTP/0.9", "HTTP/1.0", "HTTP/1.1", "HTTP/2.0"]],
+    "FTP" : ["FTP", ["214", "220", "530", "230", "502", "500"]],
     "SSH" : ["SSH"],
+    "Telnet" : ["Telnet"],
+    "SMTP" : ["SMTP", ["220", "554", "250"]]
 }
 
 ports_services_or_condition = {
     "FTP": [ ["Pure-FTPd", "----------\r\n"], "\r\n220-You are user number", ["orks FTP server", "VxWorks VxWorks"], "530 USER and PASS required", "Server ready.\r\n5", "Invalid command: try being more creative"],
     "SSH": ["-OpenSSH_", "\r\nProtocol mism", "_sshlib GlobalSCAPE\r\n", "\x00\x1aversion info line too long"],
+    "Telnet" : ["Welcome to Microsoft Telnet Service", "no decompiling or reverse-engineering shall be allowed", "is not a secure protocol", "recommended to use Stelnet", "Login authentication"],
+    "SMTP" : ["Server ready", "SMTP synchronization error", "220-Greetings", "ESMTP Arnet Email Security", "SMTP 2.0", "Fidelix Fx2020"]
 }
-
 
 def recv_all(s):
     response = ""
@@ -53,8 +56,6 @@ def discover(host, port):
     sock.send(b"ABC\x00\r\n"*10)
     final_data = recv_all(sock) + data1
     #print final_data
-    #print data2
-#    final_data = "abcdefgh"
     service_name = ""
     for service in ports_services_and_condition:
         FLAG = True
@@ -71,7 +72,7 @@ def discover(host, port):
                 if signature not in final_data:
                     FLAG = False
         if FLAG:
-            service_name = service
+            return service
             break
         c += 1
 
@@ -90,8 +91,11 @@ def discover(host, port):
                 if signature in final_data:
                     FLAG = True
         if FLAG:
-            service_name = service
+            return service #= service
             break
         c += 1
-    return service_name
+    #if service_name is not "":
+     #   return service_name
+    #else:
+     #   return None
 
