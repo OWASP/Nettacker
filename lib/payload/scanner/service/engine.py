@@ -8,6 +8,8 @@ import ssl
 
 ports_services_and_condition = {
     "HTTP/HTTPS": ["\r\nContent-Length: ", ["HTTP/0.9", "HTTP/1.0", "HTTP/1.1", "HTTP/2.0"], "\r\n\r\n"],
+    "FTP" : ["FTP"],
+    "SSH" : ["SSH"],
 }
 
 ports_services_or_condition = {
@@ -50,10 +52,10 @@ def discover(host, port):
     data1 = recv_all(sock)
     sock.send(b"ABC\x00\r\n"*10)
     final_data = recv_all(sock) + data1
-    #print data1
+    #print final_data
     #print data2
-    final_data = "abcdefgh"
-    service_name = "unknown"
+#    final_data = "abcdefgh"
+    service_name = ""
     for service in ports_services_and_condition:
         FLAG = True
         c = 0
