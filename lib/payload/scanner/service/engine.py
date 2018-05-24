@@ -118,6 +118,5 @@ def discovery(target, port=""):
                     else:
                         break
                 except KeyboardInterrupt:
-                    keyboard_interrupt_flag = True
                     break
         return result_dict
