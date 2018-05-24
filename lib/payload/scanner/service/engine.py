@@ -47,7 +47,7 @@ def discover(host, port):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(3)
             sock.connect((host, port))
-        except:
+        except Exception:
             return None
     data1 = recv_all(sock)
     sock.send(b"ABC\x00\r\n"*10)
