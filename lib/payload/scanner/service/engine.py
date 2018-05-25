@@ -16,7 +16,10 @@ ports_services_and_condition = {
     "FTP" : ["FTP", ["214", "220", "530", "230", "502", "500"]],
     "SSH" : ["SSH"],
     "Telnet" : ["Telnet"],
-    "SMTP" : ["SMTP", ["220", "554", "250"]]
+    "SMTP" : ["SMTP", ["220", "554", "250"]],
+    "IMAP" : ["IMAP"],
+    "MariaDB" : ["MariaDB"],
+    "MYSQL" : ["MySQL"],
 }
 
 ports_services_or_condition = {
@@ -24,7 +27,10 @@ ports_services_or_condition = {
     "FTP": [ ["Pure-FTPd", "----------\r\n"], "\r\n220-You are user number", ["orks FTP server", "VxWorks VxWorks"], "530 USER and PASS required", "Server ready.\r\n5", "Invalid command: try being more creative"],
     "SSH": ["-OpenSSH_", "\r\nProtocol mism", "_sshlib GlobalSCAPE\r\n", "\x00\x1aversion info line too long"],
     "Telnet" : ["Welcome to Microsoft Telnet Service", "no decompiling or reverse-engineering shall be allowed", "is not a secure protocol", "recommended to use Stelnet", "Login authentication"],
-    "SMTP" : ["Server ready", "SMTP synchronization error", "220-Greetings", "ESMTP Arnet Email Security", "SMTP 2.0", "Fidelix Fx2020"]
+    "SMTP" : ["Server ready", "SMTP synchronization error", "220-Greetings", "ESMTP Arnet Email Security", "SMTP 2.0", "Fidelix Fx2020"],
+    "IMAP" : ["BAD Error in IMAP command received by server", "IMAP4rev1 SASL-IR", "OK [CAPABILITY IMAP4rev1", "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE NAMESPACE AUTH=PLAIN AUTH=LOGIN]", "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN AUTH=LOGIN AUTH=DIGEST-MD5 AUTH=CRAM-MD5]"],
+    "MariaDB" : ["is not allowed to connect to this MariaDB server", "5.5.52-MariaDB", "5.5.5-10.0.34-MariaDB"],
+    "MYSQL" : ["is not allowed to connect to this MySQL server"]
 }
 
 def recv_all(s):
@@ -62,8 +68,12 @@ def discover(host, port):
     try:
         sock.send(b"ABC\x00\r\n"*10)
     except Exception:
-        pass 
-    final_data = recv_all(sock) + data1
+        pass
+    final_data = recv_all(sock) + data1 #print( "PORT : " + str(port) +final_data)
+    if "STARTTLS" in final_data:
+        ssl_flag = 1
+    else:
+        ssl_flag = 0
     for service in ports_services_and_condition:
         FLAG = True
         c = 0
@@ -79,7 +89,10 @@ def discover(host, port):
                 if signature not in final_data:
                     FLAG = False
         if FLAG:
-            result_dict[port] = service
+            if ssl_flag == 1:
+                result_dict[port] = service + "/SSL"
+            else:
+                result_dict[port] = service
             return
         c += 1
 
@@ -98,7 +111,10 @@ def discover(host, port):
                 if signature in final_data:
                     FLAG = True
         if FLAG:
-            result_dict[port] = service
+            if ssl_flag == 1:
+                result_dict[port] = service + "/SSL"
+            else:
+                result_dict[port] = service
             return
         c += 1
 
