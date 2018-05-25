@@ -92,14 +92,12 @@ def __joomla_version(target, port, timeout_sec, log_in_file, language, time_slee
                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     if joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-        info(messages(language, "found").format(
-            target, "Joomla Version", version))
-        __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'joomla_version_scan',
-                           'DESCRIPTION': messages(language, "found").format(target, "Joomla Version", version), 'TIME': now(),
-                           'CATEGORY': "vuln",
-                           'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-        __log_into_file(log_in_file, 'a', data, language)
+
+        info(messages(language, "found").format(target, "Joomla Version", version), log_in_file,
+             "a", {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'joomla_version_scan',
+                   'DESCRIPTION': messages(language, "found").format(target, "Joomla Version", version),
+                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language,
+             thread_tmp_filename)
         return True
     else:
         return False
@@ -163,11 +161,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
-            info(messages(language, "not_found"))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'joomla_version_scan',
-                               'DESCRIPTION': messages(language, "not_found"), 'TIME': now(),
-                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-            __log_into_file(log_in_file, 'a', data, language)
+            info(messages(language, "not_found"), log_in_file,
+             "a", {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': , 'TYPE': 'joomla_version_scan',
+                   'DESCRIPTION': messages(language, "not_found"),
+                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language,
+             thread_tmp_filename)
         os.remove(thread_tmp_filename)
 
     else:

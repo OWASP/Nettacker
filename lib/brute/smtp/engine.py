@@ -77,12 +77,11 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         pass
     if flag is 0:
         info(messages(language, "user_pass_found").format(
-            user, passwd, target, port))
-        data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'smtp_brute',
-                           'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute",
-                           'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
-        __log_into_file(log_in_file, 'a', data, language)
-        __log_into_file(thread_tmp_filename, 'w', '0', language)
+            user, passwd, target, port), log_in_file, "a",
+             {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'smtp_brute',
+              'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute",
+              'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd} + "\n", language,
+             thread_tmp_filename)
     else:
         pass
     try:

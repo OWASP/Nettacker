@@ -85,13 +85,10 @@ def __memory_leak(target, port, timeout_sec, log_in_file, language, time_sleep,
     if memory_leak(target, port, timeout_sec, log_in_file, language, time_sleep,
                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "target_vulnerable").format(target, port,
-                                                            'Memory leak in ProFTPd 1.2.0rc2 allows remote attackers to cause a denial of service via a series of USER commands, and possibly SIZE commands if the server has been improperly installed.    CVE-2001-0136'))
-        __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'ProFTPd_memory_leak_vuln',
+                                                            'Memory leak in ProFTPd 1.2.0rc2 allows remote attackers to cause a denial of service via a series of USER commands, and possibly SIZE commands if the server has been improperly installed.    CVE-2001-0136'), log_in_file, "a", {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'ProFTPd_memory_leak_vuln',
                            'DESCRIPTION': messages(language, "vulnerable").format('Memory leak in ProFTPd 1.2.0rc2 allows remote attackers to cause a denial of service via a series of USER commands, and possibly SIZE commands if the server has been improperly installed.  CVE-2001-0136'), 'TIME': now(),
                            'CATEGORY': "vuln",
-                           'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-        __log_into_file(log_in_file, 'a', data, language)
+                           'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
         return True
     else:
         return False
@@ -156,11 +153,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format(
-                'ProFTPd_memory_leak  CVE-2001-0136'))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ProFTPd_memory_leak_vuln',
+                'ProFTPd_memory_leak  CVE-2001-0136'), log_in_file, "a", {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ProFTPd_memory_leak_vuln',
                                'DESCRIPTION': messages(language, "no_vulnerability_found").format('ProFTPd_memory_leak    CVE-2001-0136'), 'TIME': now(),
-                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-            __log_into_file(log_in_file, 'a', data, language)
+                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
         os.remove(thread_tmp_filename)
 
     else:

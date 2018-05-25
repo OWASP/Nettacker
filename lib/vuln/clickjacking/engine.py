@@ -86,13 +86,10 @@ def __clickjacking(target, port, timeout_sec, log_in_file, language, time_sleep,
     if clickjacking(target, port, timeout_sec, log_in_file, language, time_sleep,
                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "target_vulnerable").format(target, port,
-                                                            'Header x-frame-options not set, ClickJacking attack is possible. Clickjacking, also known as a "UI redress attack", is when an attacker uses multiple transparent or opaque layers to trick a user into clicking on a button or link on another page when they were intending to click on the the top level page. '))
-        __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'clickjacking_vuln',
+                                                            'Header x-frame-options not set, ClickJacking attack is possible. Clickjacking, also known as a "UI redress attack", is when an attacker uses multiple transparent or opaque layers to trick a user into clicking on a button or link on another page when they were intending to click on the the top level page. '), log_in_file, "a", 'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'clickjacking_vuln',
                            'DESCRIPTION': messages(language, "vulnerable").format('Header x-frame-options not set, ClickJacking attack is possible. Clickjacking, also known as a "UI redress attack", is when an attacker uses multiple transparent or opaque layers to trick a user into clicking on a button or link on another page when they were intending to click on the the top level page. '), 'TIME': now(),
                            'CATEGORY': "vuln",
-                           'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-        __log_into_file(log_in_file, 'a', data, language)
+                           'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
         return True
     else:
         return False
@@ -157,11 +154,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format(
-                'ClickJacking'))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'clickjacking_vuln',
+                'ClickJacking'), log_in_file, "a", {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'clickjacking_vuln',
                                'DESCRIPTION': messages(language, "no_vulnerability_found").format('ClickJacking'), 'TIME': now(),
-                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-            __log_into_file(log_in_file, 'a', data, language)
+                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
         os.remove(thread_tmp_filename)
 
     else:

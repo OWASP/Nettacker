@@ -246,12 +246,12 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
     except socket.timeout:
         try:
             if filter_port(host, port):
-                info(messages(language, "port_found").format(host, str(port) + service_name, "TCP_CONNECT"))
-                data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-                                   'DESCRIPTION': messages(language, "port/type").format(str(port) + service_name, "TCP_CONNECT"),
-                                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n'
-                __log_into_file(log_in_file, 'a', data, language)
-                __log_into_file(thread_tmp_filename, 'w', '0', language)
+                info(messages(language, "port_found").format(host, str(port) + service_name, "TCP_CONNECT"), log_in_file,
+                     "a", {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
+                           'DESCRIPTION': messages(language, "port/type").format(str(port) + service_name, "TCP_CONNECT"),
+                           'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language,
+                     thread_tmp_filename)
+                
         except:
             pass
     except:

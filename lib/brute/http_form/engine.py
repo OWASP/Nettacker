@@ -111,13 +111,10 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                 flag = 0
                 if flag is 0:
                     info(messages(language, "http_form_auth_success").format(
-                        user, passwd, target, port))
-                    data = json.dumps(
-                        {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'http_form_brute',
+                        user, passwd, target, port), log_in_file, "a",
+                         {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'http_form_brute',
                          'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute",
-                         'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
-                    __log_into_file(log_in_file, 'a', data, language)
-                    __log_into_file(thread_tmp_filename, 'w', '0', language)
+                         'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd} + "\n", language, thread_tmp_filename)
             return flag
         except:
             exit += 1

@@ -70,10 +70,9 @@ def check(user, passwd, target, port, headers, timeout_sec, log_in_file, languag
                         target, timeout = timeout_sec, headers = headers, data = postdata)
                 if "incorrect" not in r.text.lower() and user in r.text.lower():
                     info(messages(language, "user_pass_found").format(
-                                    user, passwd, target, port))
-                    data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'wp_xmlrpc_brute',
-                               'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
-                    __log_into_file(log_in_file, 'a', data, language)
+                                    user, passwd, target, port), log_in_file, "a",
+                         {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'wp_xmlrpc_brute',
+                          'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute"} + "\n", language, thread_tmp_file)
                 break
             except:
                 n += 1
