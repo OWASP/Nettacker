@@ -88,12 +88,13 @@ def __http_cors(target, port, timeout_sec, log_in_file, language, time_sleep,
     if http_cors(target, port, timeout_sec, log_in_file, language, time_sleep,
                  thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "target_vulnerable").format(target, port,
-                                                            'Cross Origin Resource Sharing https://www.owasp.org/index.php/Test_Cross_Origin_Resource_Sharing_(OTG-CLIENT-007)')), log_in_file, "a",
-        {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'http_cors_vuln',
-         'DESCRIPTION': messages(language, "vulnerable").format('Cross Origin Resource Sharing https://www.owasp.org/index.php/Test_Cross_Origin_Resource_Sharing_(OTG-CLIENT-007)'), 'TIME': now(),
-         'CATEGORY': "vuln",
-         'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language,
-        thread_tmp_filename)
+                                                            'Cross Origin Resource Sharing https://www.owasp.org/index.php/Test_Cross_Origin_Resource_Sharing_(OTG-CLIENT-007)'))
+        __log_into_file(thread_tmp_filename, 'w', '0', language)
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'http_cors_vuln',
+                           'DESCRIPTION': messages(language, "vulnerable").format('Cross Origin Resource Sharing https://www.owasp.org/index.php/Test_Cross_Origin_Resource_Sharing_(OTG-CLIENT-007)'), 'TIME': now(),
+                           'CATEGORY': "vuln",
+                           'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+        __log_into_file(log_in_file, 'a', data, language)
         return True
     else:
         return False
@@ -158,9 +159,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format(
-                'Cross Origin Resource Sharing'), log_in_file, "a", {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'http_cors_vuln',
+                'Cross Origin Resource Sharing'))
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'http_cors_vuln',
                                'DESCRIPTION': messages(language, "no_vulnerability_found").format('Cross Origin Resource Sharing'), 'TIME': now(),
-                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
+                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:

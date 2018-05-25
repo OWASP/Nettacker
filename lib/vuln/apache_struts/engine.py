@@ -97,12 +97,13 @@ def __apache_struts(target, port, timeout_sec, log_in_file, language, time_sleep
     if apache_struts(target, port, timeout_sec, log_in_file, language, time_sleep,
                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "target_vulnerable").format(target, port,
-                                                            'The Jakarta Multipart parser in Apache Struts 2 2.3.x before 2.3.32 and 2.5.x before 2.5.10.1 has incorrect exception handling and error-message generation during file-upload attempts, which allows remote attackers to execute arbitrary commands via a crafted Content-Type, Content-Disposition, or Content-Length HTTP header, as exploited in the wild in March 2017 with a Content-Type header containing a #cmd= string. CVE-2017-5638'), log_in_file, "a",
-             {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'apache_struts_vuln',
-              'DESCRIPTION': messages(language, "vulnerable").format(''), 'TIME': now(),
-              'CATEGORY': "vuln",
-              'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language,
-             thread_tmp_filename)
+                                                            'The Jakarta Multipart parser in Apache Struts 2 2.3.x before 2.3.32 and 2.5.x before 2.5.10.1 has incorrect exception handling and error-message generation during file-upload attempts, which allows remote attackers to execute arbitrary commands via a crafted Content-Type, Content-Disposition, or Content-Length HTTP header, as exploited in the wild in March 2017 with a Content-Type header containing a #cmd= string. CVE-2017-5638'))
+        __log_into_file(thread_tmp_filename, 'w', '0', language)
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'apache_struts_vuln',
+                           'DESCRIPTION': messages(language, "vulnerable").format(''), 'TIME': now(),
+                           'CATEGORY': "vuln",
+                           'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+        __log_into_file(log_in_file, 'a', data, language)
         return True
     else:
         return False
@@ -167,11 +168,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format(
-                'Apache Struts CVE-2017-5638'), log_in_file, "a"
-                 {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'apache_struts_vuln',
-                  'DESCRIPTION': messages(language, "no_vulnerability_found").format('Apache Struts CVE-2017-5638'), 'TIME': now(),
-                  'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language,
-                 thread_tmp_filename)
+                'Apache Struts CVE-2017-5638'))
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'apache_struts_vuln',
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('Apache Struts CVE-2017-5638'), 'TIME': now(),
+                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:

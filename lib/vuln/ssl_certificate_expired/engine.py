@@ -82,11 +82,13 @@ def __ssl_certificate(target, port, timeout_sec, log_in_file, language, time_sle
     if Expired(target, port, timeout_sec, log_in_file, language, time_sleep,
                thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "target_vulnerable").format(
-            target, port, 'SSL Certificate has Expired'), log_in_file, "a",
-             {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'ssl_certificate_expired_vuln',
-              'DESCRIPTION': messages(language, "vulnerable").format('SSL Certificate has Expired'), 'TIME': now(),
-              'CATEGORY': "vuln", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language,
-             thread_tmp_filename)
+            target, port, 'SSL Certificate has Expired'))
+        __log_into_file(thread_tmp_filename, 'w', '0', language)
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'ssl_certificate_expired_vuln',
+                           'DESCRIPTION': messages(language, "vulnerable").format('SSL Certificate has Expired'), 'TIME': now(),
+                           'CATEGORY': "vuln",
+                           'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+        __log_into_file(log_in_file, 'a', data, language)
         return True
     else:
         return False
@@ -151,11 +153,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format(
-                'SSL Certificate is not Expired'), log_in_file, "a",
-                 {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ssl_certificate_expired_vuln',
-                  'DESCRIPTION': messages(language, "no_vulnerability_found").format('SSL Certificate is not Expired'), 'TIME': now(),
-                  'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language,
-                 thread_tmp_filename)
+                'SSL Certificate is not Expired'))
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ssl_certificate_expired_vuln',
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('SSL Certificate is not Expired'), 'TIME': now(),
+                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:

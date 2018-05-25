@@ -84,19 +84,22 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
             content = content.decode('utf8')
         if r.status_code in status_codes:
             info(messages(language, "found").format(
-                target, r.status_code, r.reason), log_in_file, "a",
-                 {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
-                  'PORT': "", 'TYPE': 'dir_scan',
-                  'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
-                  'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
+                target, r.status_code, r.reason))
+            __log_into_file(thread_tmp_filename, 'w', '0', language)
+            data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                               'PORT': "", 'TYPE': 'dir_scan',
+                               'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
+                               'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            __log_into_file(log_in_file, 'a', data, language)
             if r.status_code is 200:
                 for dlmsg in directory_listing_msgs:
                     if dlmsg in content:
-                        info(messages(language, "directory_listing").format(target), log_in_file, "a",
-                             {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
-                              'PORT': "", 'TYPE': 'dir_scan',
-                              'DESCRIPTION': messages(language, "directory_listing").format(target), 'TIME': now(),
-                              'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
+                        info(messages(language, "directoy_listing").format(target))
+                        data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                                           'PORT': "", 'TYPE': 'dir_scan',
+                                           'DESCRIPTION': messages(language, "directoy_listing").format(target), 'TIME': now(),
+                                           'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                        __log_into_file(log_in_file, 'a', data, language)
                         break
         return True
     except:
@@ -240,10 +243,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             info(messages(language, "directory_file_404").format(
                 target, "default_port"))
             if verbose_level is not 0:
-                info(messages(language, "no_open_ports"), log_in_file, "a",
+                data = json.dumps(
                     {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'dir_scan',
                      'DESCRIPTION': messages(language, "no_open_ports"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                     'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
+                     'SCAN_CMD': scan_cmd})
+                __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
     else:
         warn(messages(language, "input_target_error").format('dir_scan', target))

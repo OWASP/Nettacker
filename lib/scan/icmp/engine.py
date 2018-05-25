@@ -70,21 +70,25 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     if verbose_level > 3:
                         warn(messages(language, "host_down").format(target))
                     if verbose_level is not 0:
-                        info(messages(language, "host_down").format(target), log_in_file,
-                             "a", {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': , 'TYPE': 'icmp scan',
-                                   'DESCRIPTION': messages(language, "host_down").format(target),
-                                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language,
-                             thread_tmp_filename)
+                        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
+                                           'TYPE': 'icmp scan',
+                                           'DESCRIPTION': messages(language, "host_down").format(target),
+                                           'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                                           'SCAN_CMD': scan_cmd}) + "\n"
+                        __log_into_file(log_in_file, 'a', data, language)
                     break
                 else:
                     pass
             else:
                 info(messages(language, "host_up").format(
-                    target, str(round(r * 1000, 2)) + "ms")), log_in_file,
-                             "a", {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': , 'TYPE': 'icmp scan',
-                                   'DESCRIPTION': messages(language, "host_up").format(target, str(round(r * 1000, 2)) + "ms"),
-                                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language,
-                             thread_tmp_filename)
+                    target, str(round(r * 1000, 2)) + "ms"))
+                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
+                                   'TYPE': 'icmp scan',
+                                   'DESCRIPTION': messages(language, "host_up").format(target,
+                                                                                       str(round(r * 1000, 2)) + "ms"),
+                                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                                   'SCAN_CMD': scan_cmd}) + "\n"
+                __log_into_file(log_in_file, 'a', data, language)
                 break
     else:
         warn(messages(language, "input_target_error").format('icmp_scan', target))

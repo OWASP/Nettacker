@@ -566,14 +566,18 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if len(subs) is not 0:
             info(messages(language, "len_subdomain_found").format(len(subs)))
             for sub in subs:
-                    info(messages(language, "subdomain_found").format(sub), log_in_file, "a", {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
+                if verbose_level > 2:
+                    info(messages(language, "subdomain_found").format(sub))
+                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
                                    'DESCRIPTION': sub, 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                                   'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
+                                   'SCAN_CMD': scan_cmd}) + "\n"
+                __log_into_file(log_in_file, 'a', data, language)
         if len(subs) is 0 and verbose_level is not 0:
-            info(messages(language, "subdomain_found").format(sub), log_in_file, "a", {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
                                'DESCRIPTION': messages(language, "subdomain_found").format(len(subs), ', '.join(subs)
                                                                                            if len(subs) > 0 else 'None'), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                               'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
+                               'SCAN_CMD': scan_cmd}) + "\n"
+            __log_into_file(log_in_file, 'a', data, language)
         return subs
     else:
         warn(messages(language, "input_target_error").format(

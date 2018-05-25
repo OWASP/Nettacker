@@ -94,12 +94,14 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                     return 1
         if r.status_code in status_codes:
             info(messages(language, "found").format(
-                target, r.status_code, r.reason), log_into_file, "a",
-                 {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
-                  'PORT': "", 'TYPE': 'pma_scan',
-                  'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
-                  'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                  'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
+                target, r.status_code, r.reason))
+            __log_into_file(thread_tmp_filename, 'w', '0', language)
+            __log_into_file(log_in_file, 'a',
+                            json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                                        'PORT': "", 'TYPE': 'pma_scan',
+                                        'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
+                                        'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                                        'SCAN_CMD': scan_cmd}) + '\n', language)
         return True
     except:
         return False
@@ -236,15 +238,13 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1:
-            if verbose_level is 0:
-                info(messages(language, "directory_file_404").format(
-                    target, "default_port"))
-            else:
-                info(messages(language, "directory_file_404").format(
-                    target, "default_port"), log_in_file, "a",
+            info(messages(language, "directory_file_404").format(
+                target, "default_port"))
+            if verbose_level is not 0:
+                __log_into_file(log_in_file, 'a', json.dumps(
                     {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'pma_scan',
                      'DESCRIPTION': messages(language, "phpmyadmin_dir_404"), 'TIME': now(), 'CATEGORY': "scan",
-                     'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
+                     'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n', language)
         os.remove(thread_tmp_filename)
     else:
         warn(messages(language, "input_target_error").format('pma_scan', target))

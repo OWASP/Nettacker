@@ -78,16 +78,17 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             tmpl = []
             tmp = my_ftp.retrlines('LIST', tmpl.append)
             info(messages(language, "user_pass_found").format(
-                user, passwd, target, port), log_in_file, "a",
-                 {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ftp_brute',
-                 'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute"}, language,
-            thread_tmp_filename)
+                user, passwd, target, port))
+            data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ftp_brute',
+                               'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
+            __log_into_file(log_in_file, 'a', data, language)
         except:
             info(messages(language, "user_pass_found").format(user, passwd,
-                                                              target, port) + ' ' + messages(language, "file_listing_error"), log_in_file, "a",
-                 {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'FTP',
-                  'DESCRIPTION': messages(language, "login_list_error"), 'TIME': now(), 'CATEGORY': "brute"}+ "\n", language,
-            thread_tmp_filename)
+                                                              target, port) + ' ' + messages(language, "file_listing_error"))
+            data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'FTP',
+                               'DESCRIPTION': messages(language, "login_list_error"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
+            __log_into_file(log_in_file, 'a', data, language)
+        __log_into_file(thread_tmp_filename, 'w', '0', language)
     else:
         pass
     return flag

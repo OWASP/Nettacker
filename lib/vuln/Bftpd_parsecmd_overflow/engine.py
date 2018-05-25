@@ -85,10 +85,13 @@ def __Parsecmd_overflow(target, port, timeout_sec, log_in_file, language, time_s
     if Parsecmd_overflow(target, port, timeout_sec, log_in_file, language, time_sleep,
                          thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "target_vulnerable").format(target, port,
-                                                            'Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'), log_in_file, "a", {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'Bftpd_parsecmd_overflow_vuln',
+                                                            'Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'))
+        __log_into_file(thread_tmp_filename, 'w', '0', language)
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'Bftpd_parsecmd_overflow_vuln',
                            'DESCRIPTION': messages(language, "vulnerable").format('Buffer overflow in the parsecmd function in bftpd before 1.8 has unknown impact and attack vectors related to the confstr variable.	CVE-2007-2051'), 'TIME': now(),
                            'CATEGORY': "vuln",
-                           'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
+                           'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+        __log_into_file(log_in_file, 'a', data, language)
         return True
     else:
         return False
@@ -153,9 +156,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "no_vulnerability_found").format(
-                'Bftpd_parsecmd_overflow	CVE-2007-2051'), log_in_file, "a", {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'Bftpd_parsecmd_overflow_vuln',
+                'Bftpd_parsecmd_overflow	CVE-2007-2051'))
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'Bftpd_parsecmd_overflow_vuln',
                                'DESCRIPTION': messages(language, "no_vulnerability_found").format('Bftpd_parsecmd_overflow	CVE-2007-2051'), 'TIME': now(),
-                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
+                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:
