@@ -18,6 +18,8 @@ logs.txt
 results.*
 *.html
 *.htm
+*.DS_Store
+*.swp
 
 #codacy
 .coverage
