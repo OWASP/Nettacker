@@ -7,6 +7,7 @@ import threading
 import socket
 import ssl
 import time
+from lib.scan.port.engine import extra_requirements_dict as port_scanner_default_ports
 
 result_dict = {}
 
@@ -58,7 +59,10 @@ def discover(host, port):
         except Exception:
             return None
     data1 = recv_all(sock)
-    sock.send(b"ABC\x00\r\n"*10)
+    try:
+        sock.send(b"ABC\x00\r\n"*10)
+    except Exception:
+        pass 
     final_data = recv_all(sock) + data1
     for service in ports_services_and_condition:
         FLAG = True
@@ -94,18 +98,15 @@ def discover(host, port):
                 if signature in final_data:
                     FLAG = True
         if FLAG:
-            result_dict[port] = service; print("or Break")
+            result_dict[port] = service
             return
         c += 1
 
 
-def discovery(target, port=""):
-    if port != "":
-        discover(target, port)
-        return result_dict
-    else:
+def discovery(target, ports=[]):
         threads = []
-        ports = [80, 443, 25, 587, 23, 22, 21, 990]
+        if not ports:
+            ports = port_scanner_default_ports()["port_scan_ports"]
         thread_number = len(ports)
         for port in ports:
             t = threading.Thread(target=discover, args=(target, int(port)))
@@ -119,4 +120,12 @@ def discovery(target, port=""):
                         break
                 except KeyboardInterrupt:
                     break
+        while 1:
+            time.sleep(0.1)
+            #kill_switch += 1
+            try:
+                if threading.activeCount() is 1: # or kill_switch is kill_time:
+                    break
+            except KeyboardInterrupt:
+                break
         return result_dict
