@@ -6,14 +6,14 @@ paramiko==2.4.1
 texttable==1.2.1
 PySocks==1.6.8
 win_inet_pton==1.0.1
-pyOpenSSL==17.5.0
-flask==0.12.2
+pyOpenSSL==18.0.0
+flask==1.0.2
 lockfile==0.12.2
 bs4==0.0.1
 pycurl==7.43.0.1
-pyspf==2.0.12t
+pyspf==2.0.12
 sqlalchemy==1.2.6
-py3DNS; python_version > '3'
-scapy-python3; python_version > '3'
-pyDNS; python_version < '3'
-scapy; python_version < '3'
+py3DNS==3.1.1; python_version > '3'
+scapy-python3==0.23; python_version > '3'
+pyDNS==2.3.6; python_version < '3'
+scapy==2.4.0; python_version < '3'
