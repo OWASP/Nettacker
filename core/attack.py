@@ -84,13 +84,13 @@ def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, t
                     target, scan_method))
             return None
     # Calling Engines
-    try:
-        start = getattr(
+#    try:
+    start = getattr(
             __import__('lib.{0}.{1}.engine'.format(scan_method.rsplit('_')[-1], '_'.join(scan_method.rsplit('_')[:-1])),
                        fromlist=['start']), 'start')
-    except:
-        __die_failure(
-            messages(language, "module_not_available").format(scan_method))
+ #   except:
+  #      __die_failure(
+   #         messages(language, "module_not_available").format(scan_method))
     start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
           verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd)
     return True
