@@ -210,10 +210,12 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
     url_sample = request_line.strip().split(' ')[1]
     for target in targets:
         url = url_sample.replace('target', str(target))
+        port = url[url.find(':', 7) + 1:url.find('/', 7)]
         response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec,
                                         post_data_format, content_type)
         if rule_evaluator(response, condition):
             __log_into_file(thread_tmp_filename, 'w', '0', language)
+            sample_event['PORT'] = port
             event_parser(message, sample_event, response, payload, log_in_file, language)
         output.append({
             "payload": payload,
@@ -259,9 +261,11 @@ def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, 
     url_sample = request_line.strip().split(' ')[1]
     for target in targets:
         url = url_sample.replace('target', str(target))
+        port = url[url.find(':', 7)+1:url.find('/', 7)]
         response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec)
         if rule_evaluator(response, condition):
             __log_into_file(thread_tmp_filename, 'w', '0', language)
+            sample_event['PORT'] = port
             event_parser(message, sample_event, response, payload, log_in_file, language)
         output.append({
             "payload": payload,
@@ -341,7 +345,7 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
         sample_event: the template for the event that will be logged into the db
         message: the message that you want to display in the terminal when success
         counter_message: the message that you want to display if nothing is found
-        target: the target to be atacked
+        target: the target to be attacked
         ports: the ports to be fuzzed
         default_ports: if user doesn't supply ports, these are to be fuzzed
         other args: retries, time_sleep, timeout_sec, thread_number, log_in_file, time_sleep, language,

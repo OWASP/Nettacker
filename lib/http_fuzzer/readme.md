@@ -11,6 +11,9 @@ The `__repeater()` function in http_fuzzer library taken in the following inputs
 - `sample_event`: the template for the event that will be logged into the db
 - `message`: the message that you want to display in the terminal when success
 - `counter_message`: the message that you want to display if nothing is found
+- `target`: the target to be attacked
+- `ports`: the ports to be fuzzed
+- `default_ports`: if user doesn't supply ports, these are to be fuzzed
 - other args: `retries`, `time_sleep`, `timeout_sec`, `thread_number`, `log_in_file`, `time_sleep`, `language`,
                     `verbose_level`, `socks_proxy`, `scan_id`, `scan_cmd`, `thread_tmp_filename`
                     
@@ -23,9 +26,10 @@ and will evaluate the given condition. These are the variables that will be used
 \
 Here is an example of pma_scan:
 ```
-    request = """{0} {1}{{0}} HTTP/1.1
-        User-Agent: {2}
-        """.format(extra_requirements["pma_scan_http_method"][0], target, user_agent)
+    default_ports = [80, 443]
+    request = """{0} target{{0}} HTTP/1.1
+    User-Agent: {1}
+    """.format(extra_requirements["pma_scan_http_method"][0], user_agent)
     parameters = list()
     parameters.append(extra_requirements["pma_scan_list"])
     status_codes = [200, 401, 403]
@@ -36,7 +40,7 @@ Here is an example of pma_scan:
         'HOST': target_to_host(target),
         'USERNAME': '',
         'PASSWORD': '',
-        'PORT': '',
+        'PORT': port,
         'TYPE': 'pma_scan',
         'DESCRIPTION': sample_message,
         'TIME': now(),
@@ -46,6 +50,8 @@ Here is an example of pma_scan:
     }
     counter_message = messages(language, "phpmyadmin_dir_404")
     __repeater(request, parameters, timeout_sec, thread_number, log_in_file, time_sleep, language,
-                        verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition, thread_tmp_filename,
-                        sample_event, sample_message, counter_message)
+                            verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition, thread_tmp_filename,
+                            sample_event, sample_message, target, ports, default_ports, counter_message)
 ```
+In the sample request, you must specify the target as target as shown in the above example. You will
+need to form sample message and 
