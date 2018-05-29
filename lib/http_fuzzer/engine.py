@@ -18,13 +18,13 @@ def simple_test_open_url(url):
     """
 
     Args:
-        url:
+        url
 
     Returns:
-
+        True if response avaliable, False if not avaliable
     """
     try:
-        requests.get(url).content
+        _ = requests.get(url).status_code
         return True
     except:
         return False
@@ -40,30 +40,22 @@ def target_builder(target, ports, default_ports):
         default_ports: default ports in case user not entered, in array type
 
     Returns:
-        None if cannot open URL, otherwise valid URL
+        [] if cannot open URL, otherwise a list of valid URLs
     """
     methods = ["http", "https"]
     if not ports:
         ports = default_ports
-    URL = None
+    URL = []
     if target_type(target) != "HTTP":
-        http_found = False
-        break_flag = False
         for port in ports:
             for method in methods:
-                if simple_test_open_url(method + "://" + target + ":" + str(port) + "/"):  # change here
-                    URL = method + "://" + target + ":" + str(port) + "/"
-                    http_found = True
-                    break_flag = True
+                if simple_test_open_url(method + "://" + target + ":" + str(port) + "/"):
+                    URL.append(method + "://" + target + ":" + str(port))
                     break
-            if break_flag:
-                break
-    if not http_found:
-        return None
     else:
         if not simple_test_open_url(target):
-            return None
-        URL = target
+            return []
+        URL.append(target)
     return URL
 
 
@@ -175,7 +167,8 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
 
 
 def prepare_post_request(post_request, content_type, req_type, retries, time_sleep, timeout_sec, payload,
-                         condition, output, sample_event, message, log_in_file, thread_tmp_filename, language):
+                         condition, output, sample_event, message, log_in_file, thread_tmp_filename, language,
+                         target, ports, default_ports):
     """
     this function extracts the data, headers and url for the POST type request which is to be sent to
     the __http_request_maker function
@@ -206,7 +199,6 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
     headers = Message(StringIO(headers_alone)).dict
     clean_headers = {x.strip(): y for x, y in headers.items()}
     headers = clean_headers
-    url = request_line.strip().split(' ')[1]
     if "content-type" in headers:
         content_type = headers['content-type']
         if content_type == 'application/x-www-form-urlencoded':
@@ -214,22 +206,26 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
         elif content_type == 'application/json':
             post_data_format = json.loads(post_request[post_request.find('{'):post_request.find('}') + 1])
     headers.pop("Content-Length", None)
-    response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec,
-                                    post_data_format, content_type)
-    if rule_evaluator(response, condition):
-        __log_into_file(thread_tmp_filename, 'w', '0', language)
-        event_parser(message, sample_event, response, payload, log_in_file, language)
-    output.append({
-        "payload": payload,
-        "condition": condition,
-        "result": rule_evaluator(response, condition),
-        "response": response
-    })
+    targets = target_builder(target, ports, default_ports)
+    url_sample = request_line.strip().split(' ')[1]
+    for target in targets:
+        url = url_sample.replace('target', str(target))
+        response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec,
+                                        post_data_format, content_type)
+        if rule_evaluator(response, condition):
+            __log_into_file(thread_tmp_filename, 'w', '0', language)
+            event_parser(message, sample_event, response, payload, log_in_file, language)
+        output.append({
+            "payload": payload,
+            "condition": condition,
+            "result": rule_evaluator(response, condition),
+            "response": response
+        })
     return output
 
 
 def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, condition, output, sample_event,
-                  message, log_in_file, thread_tmp_filename, language):
+                  message, log_in_file, thread_tmp_filename, language, target, ports, default_ports):
     """
     this function extracts the data, headers and url for the requests other than POST type which is to be sent to
     the __http_request_maker function
@@ -258,18 +254,21 @@ def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, 
     headers = Message(StringIO(headers_alone)).dict
     clean_headers = {x.strip(): y for x, y in headers.items()}
     headers = clean_headers
-    url = request_line.strip().split(' ')[1]
     headers.pop("Content-Length", None)
-    response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec)
-    if rule_evaluator(response, condition):
-        __log_into_file(thread_tmp_filename, 'w', '0', language)
-        event_parser(message, sample_event, response, payload, log_in_file, language)
-    output.append({
-        "payload": payload,
-        "condition": condition,
-        "result": rule_evaluator(response, condition),
-        "response": response
-    })
+    targets = target_builder(target, ports, default_ports)
+    url_sample = request_line.strip().split(' ')[1]
+    for target in targets:
+        url = url_sample.replace('target', str(target))
+        response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec)
+        if rule_evaluator(response, condition):
+            __log_into_file(thread_tmp_filename, 'w', '0', language)
+            event_parser(message, sample_event, response, payload, log_in_file, language)
+        output.append({
+            "payload": payload,
+            "condition": condition,
+            "result": rule_evaluator(response, condition),
+            "response": response
+        })
     return output
 
 
@@ -330,7 +329,7 @@ def event_parser(message, sample_event, response, payload, log_in_file, language
 
 def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_file, time_sleep, language,
                verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition, thread_tmp_filename,
-               sample_event, message, counter_message=None):
+               sample_event, message, target, ports, default_ports, counter_message=None):
     """
     this function is the main repeater functions which determines the type of request, the content type and calls the
     appropriate funtion
@@ -342,6 +341,9 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
         sample_event: the template for the event that will be logged into the db
         message: the message that you want to display in the terminal when success
         counter_message: the message that you want to display if nothing is found
+        target: the target to be atacked
+        ports: the ports to be fuzzed
+        default_ports: if user doesn't supply ports, these are to be fuzzed
         other args: retries, time_sleep, timeout_sec, thread_number, log_in_file, time_sleep, language,
                     verbose_level, socks_proxy, scan_id, scan_cmd, thread_tmp_filename
 
@@ -371,12 +373,12 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
             t = threading.Thread(target=prepare_post_request,
                                  args=(request[0], content_type, req_type, retries,
                                        time_sleep, timeout_sec, request[1], condition, output, sample_event, message,
-                                       log_in_file, thread_tmp_filename, language))
+                                       log_in_file, thread_tmp_filename, language, target, ports, default_ports))
         elif request_type == "GET":
             t = threading.Thread(target=other_request,
                                  args=(request[0], req_type, retries, time_sleep, timeout_sec, request[1],
                                        condition, output, sample_event, message, log_in_file, thread_tmp_filename,
-                                       language))
+                                       language, target, ports, default_ports,))
         threads.append(t)
         t.start()
         time.sleep(time_sleep)

@@ -88,12 +88,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1', language)
-        if target_type(target) != "HTTP":
-            target = 'http://' + target
-
-        request = """{0} {1}{{0}} HTTP/1.1
-        User-Agent: {2}
-        """.format(extra_requirements["pma_scan_http_method"][0], target, user_agent)
+        default_ports = [80, 443]
+        request = """{0} target{{0}} HTTP/1.1
+        User-Agent: {1}
+        """.format(extra_requirements["pma_scan_http_method"][0], user_agent)
         parameters = list()
         parameters.append(extra_requirements["pma_scan_list"])
         status_codes = [200, 401, 403]
@@ -115,6 +113,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         counter_message = messages(language, "phpmyadmin_dir_404")
         __repeater(request, parameters, timeout_sec, thread_number, log_in_file, time_sleep, language,
                             verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition, thread_tmp_filename,
-                            sample_event, sample_message, counter_message)
+                            sample_event, sample_message, target, ports, default_ports, counter_message)
     else:
         warn(messages(language, "input_target_error").format('pma_scan', target))
