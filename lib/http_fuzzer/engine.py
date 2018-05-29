@@ -11,7 +11,60 @@ from StringIO import StringIO
 
 from core.alert import *
 from core.log import __log_into_file
+from core.targets import target_type
 
+
+def simple_test_open_url(url):
+    """
+
+    Args:
+        url:
+
+    Returns:
+
+    """
+    try:
+        requests.get(url).content
+        return True
+    except:
+        return False
+
+
+def target_builder(target, ports, default_ports):
+    """
+    build HTTP target type from host or any!
+
+    Args:
+        target: raw target
+        ports: ports array
+        default_ports: default ports in case user not entered, in array type
+
+    Returns:
+        None if cannot open URL, otherwise valid URL
+    """
+    methods = ["http", "https"]
+    if not ports:
+        ports = default_ports
+    URL = None
+    if target_type(target) != "HTTP":
+        http_found = False
+        break_flag = False
+        for port in ports:
+            for method in methods:
+                if simple_test_open_url(method + "://" + target + ":" + str(port) + "/"):  # change here
+                    URL = method + "://" + target + ":" + str(port) + "/"
+                    http_found = True
+                    break_flag = True
+                    break
+            if break_flag:
+                break
+    if not http_found:
+        return None
+    else:
+        if not simple_test_open_url(target):
+            return None
+        URL = target
+    return URL
 
 
 def post_data_parser(post_data):
@@ -203,7 +256,7 @@ def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, 
     """
     request_line, headers_alone = request.split('\r\n', 1)
     headers = Message(StringIO(headers_alone)).dict
-    clean_headers = {x.strip():y for x, y in headers.items()}
+    clean_headers = {x.strip(): y for x, y in headers.items()}
     headers = clean_headers
     url = request_line.strip().split(' ')[1]
     headers.pop("Content-Length", None)
@@ -249,7 +302,7 @@ def sample_event_key_evaluator(response, payload, value):
     """
     try:
         if value != '':
-            exec("value = "+value)
+            exec ("value = " + value)
         return value
     except:
         return value
@@ -276,8 +329,8 @@ def event_parser(message, sample_event, response, payload, log_in_file, language
 
 
 def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_file, time_sleep, language,
-                verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition, thread_tmp_filename,
-                sample_event, message, counter_message = None):
+               verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition, thread_tmp_filename,
+               sample_event, message, counter_message=None):
     """
     this function is the main repeater functions which determines the type of request, the content type and calls the
     appropriate funtion
@@ -358,4 +411,3 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
         event_parser(message=counter_message, sample_event=sample_event, response=None, payload=None,
                      log_in_file=log_in_file, language=language)
     os.remove(thread_tmp_filename)
-
