@@ -3,6 +3,8 @@
 
 import time
 import json
+import socket
+import socks
 import requests
 import itertools
 import threading
@@ -12,6 +14,7 @@ from StringIO import StringIO
 from core.alert import *
 from core.log import __log_into_file
 from core.targets import target_type
+from lib.socks_resolver.engine import getaddrinfo
 
 
 def user_agents_list():
@@ -46,7 +49,7 @@ def simple_test_open_url(url):
     Simply open a URL using GET request.
 
     Args:
-        url
+        url: url to open
 
     Returns:
         True if response available, otherwise False
@@ -91,7 +94,7 @@ def post_data_parser(post_data):
     the post request parameters to a json dictionary that can be passed to requests library as data
 
     Args:
-        post_data
+        post_data: post data to do the progress
 
     Returns:
          a dictionary that can be passed to requests library as data
@@ -119,7 +122,8 @@ def __http_requests_generator(request_template, parameters):
         yield request_template.format(*payload), payload
 
 
-def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec=None, data=None, content_type=None):
+def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec=None, data=None, content_type=None,
+                         socks_proxy=None):
     """
     this function performs the actual requests using the requests library according to the given type
     Supported types are GET, POST, PUT, DELETE, PATCH
@@ -133,6 +137,23 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
          the response of the request made otherwise 0
 
     """
+    if socks_proxy is not None:
+        socks_version = socks.SOCKS5 if socks_proxy.startswith(
+            'socks5://') else socks.SOCKS4
+        socks_proxy = socks_proxy.rsplit('://')[1]
+        if '@' in socks_proxy:
+            socks_username = socks_proxy.rsplit(':')[0]
+            socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
+            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
+                                    int(socks_proxy.rsplit(':')[-1]), username=socks_username,
+                                    password=socks_password)
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
+        else:
+            socks.set_default_proxy(socks_version, str(
+                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
     exits = 0
     r = None
     while True:
@@ -194,7 +215,7 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
 
 def request_with_data(post_request, content_type, req_type, retries, time_sleep, timeout_sec, payload,
                       condition, output, sample_event, message, log_in_file, thread_tmp_filename, language,
-                      targets, ports, default_ports):
+                      targets, ports, default_ports, socks_proxy):
     """
     this function extracts the data, headers and url for the POST type request which is to be sent to
     the __http_request_maker function
@@ -237,7 +258,7 @@ def request_with_data(post_request, content_type, req_type, retries, time_sleep,
         url = url_sample.replace('__target_locat_here__', str(target))
         port = url[url.find(':', 7) + 1:url.find('/', 7)]
         response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec,
-                                        post_data_format, content_type)
+                                        post_data_format, content_type, socks_proxy)
         if rule_evaluator(response, condition):
             __log_into_file(thread_tmp_filename, 'w', '0', language)
             sample_event['PORT'] = port
@@ -252,7 +273,8 @@ def request_with_data(post_request, content_type, req_type, retries, time_sleep,
 
 
 def request_without_data(request, req_type, retries, time_sleep, timeout_sec, payload, condition, output, sample_event,
-                         message, log_in_file, thread_tmp_filename, language, targets, ports, default_ports):
+                         message, log_in_file, thread_tmp_filename, language, targets, ports, default_ports,
+                         socks_proxy):
     """
     this function extracts the data, headers and url for the requests other than POST type which is to be sent to
     the __http_request_maker function
@@ -400,14 +422,15 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
     for request in requests_list:
         if request_type == "POST":
             t = threading.Thread(target=request_with_data,
-                                 args=(request[0], content_type, req_type, retries,
-                                       time_sleep, timeout_sec, request[1], condition, output, sample_event, message,
-                                       log_in_file, thread_tmp_filename, language, targets, ports, default_ports))
+                                 args=(request[0], content_type, req_type, retries, time_sleep, timeout_sec, request[1],
+                                       condition, output, sample_event, message, log_in_file, thread_tmp_filename,
+                                       language, targets, ports, default_ports, socks_proxy))
         elif request_type == "GET":
             t = threading.Thread(target=request_without_data,
-                                 args=(request[0], req_type, retries, time_sleep, timeout_sec, request[1],
-                                       condition, output, sample_event, message, log_in_file, thread_tmp_filename,
-                                       language, targets, ports, default_ports))
+                                 args=(
+                                     request[0], req_type, retries, time_sleep, timeout_sec, request[1], condition,
+                                     output, sample_event, message, log_in_file, thread_tmp_filename, language, targets,
+                                     ports, default_ports, socks_proxy))
         threads.append(t)
         t.start()
         time.sleep(time_sleep)
