@@ -79,7 +79,6 @@ def target_builder(target, ports, default_ports):
             for method in methods:
                 if simple_test_open_url(method + "://" + target + ":" + str(port) + "/"):
                     URL.append(method + "://" + target + ":" + str(port))
-                    break
     else:
         if not simple_test_open_url(target):
             return []
@@ -194,9 +193,9 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
     return r
 
 
-def prepare_post_request(post_request, content_type, req_type, retries, time_sleep, timeout_sec, payload,
-                         condition, output, sample_event, message, log_in_file, thread_tmp_filename, language,
-                         target, ports, default_ports):
+def request_with_data(post_request, content_type, req_type, retries, time_sleep, timeout_sec, payload,
+                      condition, output, sample_event, message, log_in_file, thread_tmp_filename, language,
+                      targets, ports, default_ports):
     """
     this function extracts the data, headers and url for the POST type request which is to be sent to
     the __http_request_maker function
@@ -234,10 +233,9 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
         elif content_type == 'application/json':
             post_data_format = json.loads(post_request[post_request.find('{'):post_request.find('}') + 1])
     headers.pop("Content-Length", None)
-    targets = target_builder(target, ports, default_ports)
     url_sample = request_line.strip().split(' ')[1]
     for target in targets:
-        url = url_sample.replace('target', str(target))
+        url = url_sample.replace('__target_locat_here__', str(target))
         port = url[url.find(':', 7) + 1:url.find('/', 7)]
         response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec,
                                         post_data_format, content_type)
@@ -254,8 +252,8 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
     return output
 
 
-def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, condition, output, sample_event,
-                  message, log_in_file, thread_tmp_filename, language, target, ports, default_ports):
+def request_without_data(request, req_type, retries, time_sleep, timeout_sec, payload, condition, output, sample_event,
+                         message, log_in_file, thread_tmp_filename, language, targets, ports, default_ports):
     """
     this function extracts the data, headers and url for the requests other than POST type which is to be sent to
     the __http_request_maker function
@@ -285,10 +283,9 @@ def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, 
     clean_headers = {x.strip(): y for x, y in headers.items()}
     headers = clean_headers
     headers.pop("Content-Length", None)
-    targets = target_builder(target, ports, default_ports)
     url_sample = request_line.strip().split(' ')[1]
     for target in targets:
-        url = url_sample.replace('target', str(target))
+        url = url_sample.replace('__target_locat_here__', str(target))
         port = url[url.find(':', 7) + 1:url.find('/', 7)]
         response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec)
         if rule_evaluator(response, condition):
@@ -400,17 +397,18 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
     threads = []
     keyboard_interrupt_flag = False
     requests_list = __http_requests_generator(request_text, parameters)
+    targets = target_builder(target, ports, default_ports)
     for request in requests_list:
         if request_type == "POST":
-            t = threading.Thread(target=prepare_post_request,
+            t = threading.Thread(target=request_with_data,
                                  args=(request[0], content_type, req_type, retries,
                                        time_sleep, timeout_sec, request[1], condition, output, sample_event, message,
-                                       log_in_file, thread_tmp_filename, language, target, ports, default_ports))
+                                       log_in_file, thread_tmp_filename, language, targets, ports, default_ports))
         elif request_type == "GET":
-            t = threading.Thread(target=other_request,
+            t = threading.Thread(target=request_without_data,
                                  args=(request[0], req_type, retries, time_sleep, timeout_sec, request[1],
                                        condition, output, sample_event, message, log_in_file, thread_tmp_filename,
-                                       language, target, ports, default_ports,))
+                                       language, targets, ports, default_ports))
         threads.append(t)
         t.start()
         time.sleep(time_sleep)

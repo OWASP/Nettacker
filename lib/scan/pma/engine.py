@@ -71,12 +71,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1', language)
         default_ports = [80, 443]
-        request = """{0} target{{0}} HTTP/1.1
-        User-Agent: {1}
-        """.format(extra_requirements["pma_scan_http_method"][0],
-                   random.choice(user_agents_list())
-                   if extra_requirements["pma_scan_random_agent"][0].lower() == "true" else
-                   "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5")
+        request = """{0} __target_locat_here__{{0}} HTTP/1.1\nUser-Agent: {1}\n\n""".format(
+            extra_requirements["pma_scan_http_method"][0], random.choice(user_agents_list())
+            if extra_requirements["pma_scan_random_agent"][0].lower() == "true" else
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5")
         status_codes = [200, 401, 403]
         condition = "response.status_code in {0}".format(status_codes)
         message = messages(language, 'found')
@@ -94,8 +92,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             'SCAN_CMD': scan_cmd
         }
         counter_message = messages(language, "phpmyadmin_dir_404")
-        __repeater(request, extra_requirements["pma_scan_list"], timeout_sec, thread_number, log_in_file, time_sleep, language,
-                   verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition, thread_tmp_filename,
+        __repeater(request, [extra_requirements["pma_scan_list"]], timeout_sec, thread_number, log_in_file, time_sleep,
+                   language, verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition, thread_tmp_filename,
                    sample_event, sample_message, target, ports, default_ports, counter_message)
     else:
         warn(messages(language, "input_target_error").format('pma_scan', target))
