@@ -27,7 +27,7 @@ and will evaluate the given condition. These are the variables that will be used
 Here is an example of pma_scan:
 ```
     default_ports = [80, 443]
-    request = """{0} target{{0}} HTTP/1.1
+    request = """{0} __target_locat_here__{{0}} HTTP/1.1
     User-Agent: {1}
     """.format(extra_requirements["pma_scan_http_method"][0], user_agent)
     parameters = list()
@@ -53,5 +53,6 @@ Here is an example of pma_scan:
                             verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition, thread_tmp_filename,
                             sample_event, sample_message, target, ports, default_ports, counter_message)
 ```
-In the sample request, you must specify the target as target as shown in the above example. You will
-need to form sample message and 
+In the sample request, you must specify the target as `__target_locat_here__` as shown in the above example. You will
+need to form sample message and sample request in such a way that they can be executed in the framework. More details can be 
+found in the Developers wiki section.
