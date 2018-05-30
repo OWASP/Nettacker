@@ -5,6 +5,7 @@
 
 import threading
 import socket
+import socks
 import ssl
 import time
 from lib.scan.port.engine import extra_requirements_dict as port_scanner_default_ports
@@ -61,17 +62,20 @@ def recv_all(s):
     return response
 
 
-def discover(host, port, timeout):
+def discover_by_port(host, port, timeout, send_data, socks_proxy):
     """
 
     Args:
         host:
         port:
         timeout:
+        send_data:
+        socks_proxy:
 
     Returns:
 
     """
+
     ssl_flag = False
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -92,7 +96,7 @@ def discover(host, port, timeout):
             return None
     data1 = recv_all(sock)
     try:
-        sock.send(b"ABC\x00\r\n" * 10)
+        sock.send(send_data)
     except Exception as _:
         pass
     final_data = recv_all(sock) + data1  # print( "PORT : " + str(port) +final_data)
@@ -146,7 +150,7 @@ def discover(host, port, timeout):
             result_dict[port] = "UNKNOWN"
 
 
-def discovery(target, ports=list(), timeout=3, thread_number=1000):
+def discovery(target, ports=list(), timeout=3, thread_number=1000, send_data=None, time_sleep=0, socks_proxy=None):
     """
 
     Args:
@@ -154,17 +158,24 @@ def discovery(target, ports=list(), timeout=3, thread_number=1000):
         ports:
         timeout:
         thread_number:
+        send_data:
+        time_sleep:
+        socks_proxy:
 
     Returns:
 
     """
+
     threads = []
+    if not send_data:
+        send_data = b"ABC\x00\r\n" * 10
     if not ports:
         ports = port_scanner_default_ports()["port_scan_ports"]
     for port in ports:
-        t = threading.Thread(target=discover, args=(target, int(port), int(timeout)))
+        t = threading.Thread(target=discover_by_port, args=(target, int(port), int(timeout), send_data, socks_proxy))
         threads.append(t)
         t.start()
+        time.sleep(time_sleep)
         while 1:
             try:
                 if threading.activeCount() >= thread_number:
