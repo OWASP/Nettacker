@@ -16,12 +16,13 @@ from core.targets import target_type
 
 def simple_test_open_url(url):
     """
+    Simply open a URL using GET request.
 
     Args:
         url
 
     Returns:
-        True if response avaliable, False if not avaliable
+        True if response available, otherwise False
     """
     try:
         _ = requests.get(url).status_code
