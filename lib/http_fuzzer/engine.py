@@ -332,7 +332,7 @@ def sample_event_key_evaluator(response, payload, value):
         if value != '':
             exec ("value = " + value)
         return value
-    except:
+    except Exception as _:
         return value
 
 
