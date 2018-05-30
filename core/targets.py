@@ -50,22 +50,14 @@ def target_type(target):
     elif re.match('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$', target):
         return 'DOMAIN'
     elif (target.lower().startswith('http://') or target.lower().startswith('https://')):
-        if target.lower().startswith('http://'):
-            t = target.replace('http://', '')
-            t = t.rsplit('/')[0]
-            if isIP(t) or isIP6(t) or re.match('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$', t):
-                return 'HTTP'
-        else:
-            t = target.replace('https://', '')
-            t = t.rsplit('/')[0]
-            if isIP(t) or isIP6(t) or re.match('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$', t):
-                return 'HTTP'
+        t = target.rsplit("://")[1].rsplit("/")[0].rsplit(":")[0]
+        if isIP(t) or isIP6(t) or re.match('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$', t):
+            return 'HTTP'
     elif len(target.rsplit('.')) is 4 and '-' not in target and '/' in target:
         IP, CIDR = target.rsplit('/')
         if isIP(IP) and (int(CIDR) >= 0 and int(CIDR) <= 32):
             return 'CIDR_IPv4'
-    else:
-        return 'UNKNOWN'
+    return 'UNKNOWN'
 
 
 def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
