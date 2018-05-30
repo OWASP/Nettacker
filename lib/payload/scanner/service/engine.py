@@ -146,7 +146,7 @@ def discover(host, port, timeout):
             result_dict[port] = "UNKNOWN"
 
 
-def discovery(target, ports=[], timeout=3, thread_number=1000):
+def discovery(target, ports=list(), timeout=3, thread_number=1000):
     """
 
     Args:
