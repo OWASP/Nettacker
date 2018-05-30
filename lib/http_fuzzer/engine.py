@@ -14,19 +14,47 @@ from core.log import __log_into_file
 from core.targets import target_type
 
 
+def user_agents_list():
+    """
+    List of available user agents
+
+    Returns:
+        array of user agents
+    """
+    return [
+        "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
+        "Googlebot/2.1 ( http://www.googlebot.com/bot.html)",
+        "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Ubuntu/10.04"
+        " Chromium/9.0.595.0 Chrome/9.0.595.0 Safari/534.13",
+        "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.2; WOW64; .NET CLR 2.0.50727)",
+        "Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22 Version/10.51",
+        "Mozilla/5.0 (compatible; 008/0.83; http://www.80legs.com/webcrawler.html) Gecko/2008032620",
+        "Debian APT-HTTP/1.3 (0.8.10.3)",
+        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
+        "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
+        "YahooSeeker/1.2 (compatible; Mozilla 4.0; MSIE 5.5; yahooseeker at yahoo-inc dot com ; "
+        "http://help.yahoo.com/help/us/shop/merchant/)",
+        "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)",
+        "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",
+        "msnbot/1.1 (+http://search.msn.com/msnbot.htm)"
+    ]
+
+
 def simple_test_open_url(url):
     """
+    Simply open a URL using GET request.
 
     Args:
         url
 
     Returns:
-        True if response avaliable, False if not avaliable
+        True if response available, otherwise False
     """
     try:
-        _ = requests.get(url).status_code
+        _ = requests.get(url, verify=False).status_code
         return True
-    except:
+    except Exception as _:
         return False
 
 
@@ -51,7 +79,6 @@ def target_builder(target, ports, default_ports):
             for method in methods:
                 if simple_test_open_url(method + "://" + target + ":" + str(port) + "/"):
                     URL.append(method + "://" + target + ":" + str(port))
-                    break
     else:
         if not simple_test_open_url(target):
             return []
@@ -114,47 +141,47 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
             if timeout_sec is None:
                 if req_type == "POST":
                     if content_type == 'application/data':
-                        r = requests.post(url=url, headers=headers, data=data)
+                        r = requests.post(url=url, headers=headers, data=data, verify=False)
                     elif content_type == 'application/json':
-                        r = requests.post(url=url, headers=headers, json=data)
+                        r = requests.post(url=url, headers=headers, json=data, verify=False)
                 elif req_type == "PUT":
                     if content_type == 'application/data':
-                        r = requests.put(url=url, headers=headers, data=data)
+                        r = requests.put(url=url, headers=headers, data=data, verify=False)
                     elif content_type == 'application/json':
-                        r = requests.put(url=url, headers=headers, json=json)
+                        r = requests.put(url=url, headers=headers, json=json, verify=False)
                 elif req_type == "PATCH":
                     if content_type == 'application/data':
-                        r = requests.patch(url=url, headers=headers, data=data)
+                        r = requests.patch(url=url, headers=headers, data=data, verify=False)
                     elif content_type == 'application/json':
-                        r = requests.patch(url=url, headers=headers, json=data)
+                        r = requests.patch(url=url, headers=headers, json=data, verify=False)
                 elif req_type == "GET":
-                    r = requests.get(url=url, headers=headers)
+                    r = requests.get(url=url, headers=headers, verify=False)
                 elif req_type == "HEAD":
-                    r = requests.head(url=url, headers=headers)
+                    r = requests.head(url=url, headers=headers, verify=False)
                 elif req_type == "DELETE":
-                    r = requests.delete(url=url, headers=headers)
+                    r = requests.delete(url=url, headers=headers, verify=False)
             else:
                 if req_type == "POST":
                     if content_type == 'application/data':
-                        r = requests.post(url=url, headers=headers, data=data, timeout=timeout_sec)
+                        r = requests.post(url=url, headers=headers, data=data, timeout=timeout_sec, verify=False)
                     elif content_type == 'application/json':
-                        r = requests.post(url=url, headers=headers, json=data, timeout=timeout_sec)
+                        r = requests.post(url=url, headers=headers, json=data, timeout=timeout_sec, verify=False)
                 elif req_type == "PUT":
                     if content_type == 'application/data':
-                        r = requests.put(url=url, headers=headers, data=data, timeout=timeout_sec)
+                        r = requests.put(url=url, headers=headers, data=data, timeout=timeout_sec, verify=False)
                     elif content_type == 'application/json':
-                        r = requests.put(url=url, headers=headers, json=data, timeout=timeout_sec)
+                        r = requests.put(url=url, headers=headers, json=data, timeout=timeout_sec, verify=False)
                 elif req_type == "PATCH":
                     if content_type == 'application/data':
-                        r = requests.patch(url=url, headers=headers, data=data, timeout=timeout_sec)
+                        r = requests.patch(url=url, headers=headers, data=data, timeout=timeout_sec, verify=False)
                     elif content_type == 'application/json':
-                        r = requests.patch(url=url, headers=headers, json=data, timeout=timeout_sec)
+                        r = requests.patch(url=url, headers=headers, json=data, timeout=timeout_sec, verify=False)
                 elif req_type == "GET":
-                    r = requests.get(url=url, headers=headers, timeout=timeout_sec)
+                    r = requests.get(url=url, headers=headers, timeout=timeout_sec, verify=False)
                 elif req_type == "HEAD":
-                    r = requests.head(url=url, headers=headers, timeout=timeout_sec)
+                    r = requests.head(url=url, headers=headers, timeout=timeout_sec, verify=False)
                 elif req_type == "DELETE":
-                    r = requests.delete(url=url, headers=headers, timeout=timeout_sec)
+                    r = requests.delete(url=url, headers=headers, timeout=timeout_sec, verify=False)
             break
         except Exception as _:
             exits += 1
@@ -166,9 +193,9 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
     return r
 
 
-def prepare_post_request(post_request, content_type, req_type, retries, time_sleep, timeout_sec, payload,
-                         condition, output, sample_event, message, log_in_file, thread_tmp_filename, language,
-                         target, ports, default_ports):
+def request_with_data(post_request, content_type, req_type, retries, time_sleep, timeout_sec, payload,
+                      condition, output, sample_event, message, log_in_file, thread_tmp_filename, language,
+                      targets, ports, default_ports):
     """
     this function extracts the data, headers and url for the POST type request which is to be sent to
     the __http_request_maker function
@@ -206,10 +233,9 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
         elif content_type == 'application/json':
             post_data_format = json.loads(post_request[post_request.find('{'):post_request.find('}') + 1])
     headers.pop("Content-Length", None)
-    targets = target_builder(target, ports, default_ports)
     url_sample = request_line.strip().split(' ')[1]
     for target in targets:
-        url = url_sample.replace('target', str(target))
+        url = url_sample.replace('__target_locat_here__', str(target))
         port = url[url.find(':', 7) + 1:url.find('/', 7)]
         response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec,
                                         post_data_format, content_type)
@@ -226,8 +252,8 @@ def prepare_post_request(post_request, content_type, req_type, retries, time_sle
     return output
 
 
-def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, condition, output, sample_event,
-                  message, log_in_file, thread_tmp_filename, language, target, ports, default_ports):
+def request_without_data(request, req_type, retries, time_sleep, timeout_sec, payload, condition, output, sample_event,
+                         message, log_in_file, thread_tmp_filename, language, targets, ports, default_ports):
     """
     this function extracts the data, headers and url for the requests other than POST type which is to be sent to
     the __http_request_maker function
@@ -257,11 +283,10 @@ def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, 
     clean_headers = {x.strip(): y for x, y in headers.items()}
     headers = clean_headers
     headers.pop("Content-Length", None)
-    targets = target_builder(target, ports, default_ports)
     url_sample = request_line.strip().split(' ')[1]
     for target in targets:
-        url = url_sample.replace('target', str(target))
-        port = url[url.find(':', 7)+1:url.find('/', 7)]
+        url = url_sample.replace('__target_locat_here__', str(target))
+        port = url[url.find(':', 7) + 1:url.find('/', 7)]
         response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec)
         if rule_evaluator(response, condition):
             __log_into_file(thread_tmp_filename, 'w', '0', language)
@@ -372,17 +397,18 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
     threads = []
     keyboard_interrupt_flag = False
     requests_list = __http_requests_generator(request_text, parameters)
+    targets = target_builder(target, ports, default_ports)
     for request in requests_list:
         if request_type == "POST":
-            t = threading.Thread(target=prepare_post_request,
+            t = threading.Thread(target=request_with_data,
                                  args=(request[0], content_type, req_type, retries,
                                        time_sleep, timeout_sec, request[1], condition, output, sample_event, message,
-                                       log_in_file, thread_tmp_filename, language, target, ports, default_ports))
+                                       log_in_file, thread_tmp_filename, language, targets, ports, default_ports))
         elif request_type == "GET":
-            t = threading.Thread(target=other_request,
+            t = threading.Thread(target=request_without_data,
                                  args=(request[0], req_type, retries, time_sleep, timeout_sec, request[1],
                                        condition, output, sample_event, message, log_in_file, thread_tmp_filename,
-                                       language, target, ports, default_ports,))
+                                       language, targets, ports, default_ports))
         threads.append(t)
         t.start()
         time.sleep(time_sleep)
