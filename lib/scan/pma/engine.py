@@ -11,6 +11,7 @@ from core.load_modules import load_file_path
 from core._time import now
 from core.log import __log_into_file
 from lib.http_fuzzer.engine import __repeater
+from lib.http_fuzzer.engine import user_agents_list
 
 
 def extra_requirements_dict():
@@ -53,26 +54,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
             target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
         # rand useragent
-        user_agent_list = [
-            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
-            "Googlebot/2.1 ( http://www.googlebot.com/bot.html)",
-            "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Ubuntu/10.04"
-            " Chromium/9.0.595.0 Chrome/9.0.595.0 Safari/534.13",
-            "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.2; WOW64; .NET CLR 2.0.50727)",
-            "Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22 Version/10.51",
-            "Mozilla/5.0 (compatible; 008/0.83; http://www.80legs.com/webcrawler.html) Gecko/2008032620",
-            "Debian APT-HTTP/1.3 (0.8.10.3)",
-            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
-            "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
-            "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
-            "YahooSeeker/1.2 (compatible; Mozilla 4.0; MSIE 5.5; yahooseeker at yahoo-inc dot com ; "
-            "http://help.yahoo.com/help/us/shop/merchant/)",
-            "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)",
-            "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",
-            "msnbot/1.1 (+http://search.msn.com/msnbot.htm)"
-        ]
         http_methods = ["GET", "HEAD"]
-        user_agent = random.choice(user_agent_list)
 
         # requirements check
         new_extra_requirements = extra_requirements_dict()
@@ -91,13 +73,14 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         default_ports = [80, 443]
         request = """{0} target{{0}} HTTP/1.1
         User-Agent: {1}
-        """.format(extra_requirements["pma_scan_http_method"][0], user_agent)
-        parameters = list()
-        parameters.append(extra_requirements["pma_scan_list"])
+        """.format(extra_requirements["pma_scan_http_method"][0],
+                   random.choice(user_agents_list())
+                   if extra_requirements["pma_scan_random_agent"][0].lower() == "true" else
+                   "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5")
         status_codes = [200, 401, 403]
         condition = "response.status_code in {0}".format(status_codes)
         message = messages(language, 'found')
-        sample_message = "\"" + message + "\""+""".format(response.url, response.status_code, response.reason)"""
+        sample_message = "\"" + message + "\"" + """.format(response.url, response.status_code, response.reason)"""
         sample_event = {
             'HOST': target_to_host(target),
             'USERNAME': '',
@@ -111,8 +94,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             'SCAN_CMD': scan_cmd
         }
         counter_message = messages(language, "phpmyadmin_dir_404")
-        __repeater(request, parameters, timeout_sec, thread_number, log_in_file, time_sleep, language,
-                            verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition, thread_tmp_filename,
-                            sample_event, sample_message, target, ports, default_ports, counter_message)
+        __repeater(request, extra_requirements["pma_scan_list"], timeout_sec, thread_number, log_in_file, time_sleep, language,
+                   verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition, thread_tmp_filename,
+                   sample_event, sample_message, target, ports, default_ports, counter_message)
     else:
         warn(messages(language, "input_target_error").format('pma_scan', target))
