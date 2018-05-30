@@ -52,8 +52,7 @@ def simple_test_open_url(url):
         True if response available, otherwise False
     """
     try:
-        _ = requests.get(url, verify=False).status_code
-        return True
+        return requests.get(url, headers={"User-Agent": user_agents_list()[0]}, verify=False).status_code
     except Exception as _:
         return False
 
