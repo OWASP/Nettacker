@@ -25,9 +25,9 @@ def simple_test_open_url(url):
         True if response available, otherwise False
     """
     try:
-        _ = requests.get(url).status_code
+        _ = requests.get(url, verify=False).status_code
         return True
-    except:
+    except Exception as _:
         return False
 
 
@@ -115,47 +115,47 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
             if timeout_sec is None:
                 if req_type == "POST":
                     if content_type == 'application/data':
-                        r = requests.post(url=url, headers=headers, data=data)
+                        r = requests.post(url=url, headers=headers, data=data, verify=False)
                     elif content_type == 'application/json':
-                        r = requests.post(url=url, headers=headers, json=data)
+                        r = requests.post(url=url, headers=headers, json=data, verify=False)
                 elif req_type == "PUT":
                     if content_type == 'application/data':
-                        r = requests.put(url=url, headers=headers, data=data)
+                        r = requests.put(url=url, headers=headers, data=data, verify=False)
                     elif content_type == 'application/json':
-                        r = requests.put(url=url, headers=headers, json=json)
+                        r = requests.put(url=url, headers=headers, json=json, verify=False)
                 elif req_type == "PATCH":
                     if content_type == 'application/data':
-                        r = requests.patch(url=url, headers=headers, data=data)
+                        r = requests.patch(url=url, headers=headers, data=data, verify=False)
                     elif content_type == 'application/json':
-                        r = requests.patch(url=url, headers=headers, json=data)
+                        r = requests.patch(url=url, headers=headers, json=data, verify=False)
                 elif req_type == "GET":
-                    r = requests.get(url=url, headers=headers)
+                    r = requests.get(url=url, headers=headers, verify=False)
                 elif req_type == "HEAD":
-                    r = requests.head(url=url, headers=headers)
+                    r = requests.head(url=url, headers=headers, verify=False)
                 elif req_type == "DELETE":
-                    r = requests.delete(url=url, headers=headers)
+                    r = requests.delete(url=url, headers=headers, verify=False)
             else:
                 if req_type == "POST":
                     if content_type == 'application/data':
-                        r = requests.post(url=url, headers=headers, data=data, timeout=timeout_sec)
+                        r = requests.post(url=url, headers=headers, data=data, timeout=timeout_sec, verify=False)
                     elif content_type == 'application/json':
-                        r = requests.post(url=url, headers=headers, json=data, timeout=timeout_sec)
+                        r = requests.post(url=url, headers=headers, json=data, timeout=timeout_sec, verify=False)
                 elif req_type == "PUT":
                     if content_type == 'application/data':
-                        r = requests.put(url=url, headers=headers, data=data, timeout=timeout_sec)
+                        r = requests.put(url=url, headers=headers, data=data, timeout=timeout_sec, verify=False)
                     elif content_type == 'application/json':
-                        r = requests.put(url=url, headers=headers, json=data, timeout=timeout_sec)
+                        r = requests.put(url=url, headers=headers, json=data, timeout=timeout_sec, verify=False)
                 elif req_type == "PATCH":
                     if content_type == 'application/data':
-                        r = requests.patch(url=url, headers=headers, data=data, timeout=timeout_sec)
+                        r = requests.patch(url=url, headers=headers, data=data, timeout=timeout_sec, verify=False)
                     elif content_type == 'application/json':
-                        r = requests.patch(url=url, headers=headers, json=data, timeout=timeout_sec)
+                        r = requests.patch(url=url, headers=headers, json=data, timeout=timeout_sec, verify=False)
                 elif req_type == "GET":
-                    r = requests.get(url=url, headers=headers, timeout=timeout_sec)
+                    r = requests.get(url=url, headers=headers, timeout=timeout_sec, verify=False)
                 elif req_type == "HEAD":
-                    r = requests.head(url=url, headers=headers, timeout=timeout_sec)
+                    r = requests.head(url=url, headers=headers, timeout=timeout_sec, verify=False)
                 elif req_type == "DELETE":
-                    r = requests.delete(url=url, headers=headers, timeout=timeout_sec)
+                    r = requests.delete(url=url, headers=headers, timeout=timeout_sec, verify=False)
             break
         except Exception as _:
             exits += 1
@@ -262,7 +262,7 @@ def other_request(request, req_type, retries, time_sleep, timeout_sec, payload, 
     url_sample = request_line.strip().split(' ')[1]
     for target in targets:
         url = url_sample.replace('target', str(target))
-        port = url[url.find(':', 7)+1:url.find('/', 7)]
+        port = url[url.find(':', 7) + 1:url.find('/', 7)]
         response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec)
         if rule_evaluator(response, condition):
             __log_into_file(thread_tmp_filename, 'w', '0', language)
