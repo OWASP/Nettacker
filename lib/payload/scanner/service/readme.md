@@ -40,3 +40,18 @@ def discovery(target, ports=None, timeout=3, thread_number=1000, send_data=None,
         discovered services and ports in JSON dict
     """
 ```
+
+if you need to use it with single port from different function than `discoery`, here is a great example for it!
+
+```python
+try:
+    service_name = "/" + discover_by_port(host, port, timeout_sec, b"ABC\x00\r\n" * 10, socks_proxy,
+                                          external_run=True)
+except Exception as _:
+    service_name = None
+if not service_name or service_name == "/UNKNOWN":
+    try:
+        service_name = "/" + socket.getservbyport(port)
+    except Exception:
+        service_name = ""
+```
