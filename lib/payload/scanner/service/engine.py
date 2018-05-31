@@ -15,6 +15,7 @@ import json
 from core.config_builder import _builder
 from core.config_builder import _core_default_config
 from core.config import _core_config
+from lib.socks_resolver.engine import getaddrinfo
 
 result_dict = {}
 external_run_values = []
@@ -66,12 +67,13 @@ def send_service_scan_diagnostics(services):
 
 def recv_all(s):
     """
+    receive all data from a socket
 
     Args:
-        s:
+        s: python socket
 
     Returns:
-
+        response or b""
     """
     response = ""
     while len(response) < 4196:
@@ -88,19 +90,36 @@ def recv_all(s):
 
 def discover_by_port(host, port, timeout, send_data, socks_proxy, external_run=False):
     """
+    request a port to scan and check for existing signatures to discover the service
 
     Args:
-        host:
-        port:
-        timeout:
-        send_data:
-        socks_proxy:
+        host: host to scan
+        port: port to scan
+        timeout: timeout second
+        send_data: data to send to port
+        socks_proxy: socks proxy
 
     Returns:
-
+        discovered services and ports in JSON dict
     """
 
     ssl_flag = False
+    if socks_proxy is not None:
+        socks_version = socks.SOCKS5 if socks_proxy.startswith(
+            'socks5://') else socks.SOCKS4
+        socks_proxy = socks_proxy.rsplit('://')[1]
+        if '@' in socks_proxy:
+            socks_username = socks_proxy.rsplit(':')[0]
+            socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
+            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
+                                    int(socks_proxy.rsplit(':')[-1]), username=socks_username,
+                                    password=socks_password)
+            socket.socket = socks.socksocket
+            socket.getaddrinfo = getaddrinfo
+        else:
+            socks.set_default_proxy(socks_version, str(
+                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socket.socket = socks.socksocket
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(timeout)
@@ -178,18 +197,19 @@ def discover_by_port(host, port, timeout, send_data, socks_proxy, external_run=F
 
 def discovery(target, ports=None, timeout=3, thread_number=1000, send_data=None, time_sleep=0, socks_proxy=None):
     """
+    Discover the service run on the port, it can detect real service names when users change default port number
 
     Args:
-        target:
-        ports:
-        timeout:
-        thread_number:
-        send_data:
-        time_sleep:
-        socks_proxy:
+        target: target to scan
+        ports: ports in array, or if None it will test 1000 common ports
+        timeout: timeout seconds
+        thread_number: thread numbers
+        send_data: data to send by socket, if None it will send b"ABC\x00\r\n" * 10 by default
+        time_sleep: time to sleep between requests
+        socks_proxy: socks proxy
 
     Returns:
-
+        discovered services and ports in JSON dict
     """
 
     threads = []
