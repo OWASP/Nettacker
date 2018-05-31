@@ -223,5 +223,6 @@ def discovery(target, ports=None, timeout=3, thread_number=1000, send_data=None,
         diagnostics_data["timeout"] = timeout
         diagnostics_data["thread_number"] = thread_number
         diagnostics_data["send_data"] = binascii.b2a_base64(send_data)
+        diagnostics_data["target"] = target
         send_service_scan_diagnostics(diagnostics_data)
     return result_dict
