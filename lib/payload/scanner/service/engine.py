@@ -98,6 +98,8 @@ def discover_by_port(host, port, timeout, send_data, socks_proxy, external_run=F
         timeout: timeout second
         send_data: data to send to port
         socks_proxy: socks proxy
+        external_run: if you run this from other module or not calling it from discovery function, you must set
+        external_run as True
 
     Returns:
         discovered services and ports in JSON dict
