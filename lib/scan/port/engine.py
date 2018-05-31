@@ -18,6 +18,7 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 from core.compatible import is_windows
+from lib.payload.scanner.service.engine import discover_by_port
 
 logging.getLogger("scapy.runtime").setLevel(logging.CRITICAL)
 
@@ -182,7 +183,8 @@ def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
                     service_name = ""
                 data = json.dumps(
                     {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-                     'DESCRIPTION': messages(language, "port/type").format(str(port) + service_name, "STEALTH"), 'TIME': now(),
+                     'DESCRIPTION': messages(language, "port/type").format(str(port) + service_name, "STEALTH"),
+                     'TIME': now(),
                      'CATEGORY': "scan", 'SCAN_ID': scan_id,
                      'SCAN_CMD': scan_cmd}) + '\n'
                 __log_into_file(log_in_file, 'a', data, language)
@@ -228,14 +230,20 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if timeout_sec is not None:
             s.settimeout(timeout_sec)
-        try:
-            service_name = "/" + socket.getservbyport(port)
-        except Exception:
-            service_name = ""
         if target_type(host) == "SINGLE_IPv6":
             s.connect((host, port, 0, 0))
         else:
             s.connect((host, port))
+        try:
+            service_name = "/" + discover_by_port(host, port, timeout_sec, b"ABC\x00\r\n" * 10, socks_proxy,
+                                                  external_run=True)
+        except Exception as _:
+            service_name = None
+        if not service_name or service_name == "/UNKNOWN":
+            try:
+                service_name = "/" + socket.getservbyport(port)
+            except Exception:
+                service_name = ""
         info(messages(language, "port_found").format(host, str(port) + service_name, "TCP_CONNECT"), log_in_file,
              "a", {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
                    'DESCRIPTION': messages(language, "port/type").format(str(port) + service_name, "TCP_CONNECT"),
@@ -248,7 +256,8 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
             if filter_port(host, port):
                 info(messages(language, "port_found").format(host, str(port) + service_name, "TCP_CONNECT"))
                 data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
-                                   'DESCRIPTION': messages(language, "port/type").format(str(port) + service_name, "TCP_CONNECT"),
+                                   'DESCRIPTION': messages(language, "port/type").format(str(port) + service_name,
+                                                                                         "TCP_CONNECT"),
                                    'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n'
                 __log_into_file(log_in_file, 'a', data, language)
                 __log_into_file(thread_tmp_filename, 'w', '0', language)
@@ -315,7 +324,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) * (5 + timeout_sec) * 10 if int(timeout_sec / 0.1) is not 0 else 2
         while 1:
             time.sleep(0.1)
             kill_switch += 1

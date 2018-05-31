@@ -15,35 +15,35 @@ import json
 from core.config_builder import _builder
 from core.config_builder import _core_default_config
 from core.config import _core_config
-from lib.scan.port.engine import extra_requirements_dict as port_scanner_default_ports
 
 result_dict = {}
+external_run_values = []
 
 ports_services_and_condition = {
-    "HTTP": ["Content-Length:", ["HTTP/0.9", "HTTP/1.0", "HTTP/1.1", "HTTP/2.0"]],
-    "FTP": ["FTP", ["214", "220", "530", "230", "502", "500"]],
-    "SSH": ["SSH"],
-    "Telnet": ["Telnet"],
-    "SMTP": ["SMTP", ["220", "554", "250"]],
-    "IMAP": ["IMAP"],
-    "MariaDB": ["MariaDB"],
-    "MYSQL": ["MySQL"],
+    "http": ["Content-Length:", ["HTTP/0.9", "HTTP/1.0", "HTTP/1.1", "HTTP/2.0"]],
+    "ftp": ["FTP", ["214", "220", "530", "230", "502", "500"]],
+    "ssh": ["SSH"],
+    "telnet": ["Telnet"],
+    "smtp": ["SMTP", ["220", "554", "250"]],
+    "imap": ["IMAP"],
+    "mariadb": ["MariaDB"],
+    "mysql": ["MySQL"],
 }
 
 ports_services_or_condition = {
-    "HTTP": ["400 Bad Request", "HTML"],
-    "FTP": [["Pure-FTPd", "----------\r\n"], "\r\n220-You are user number", ["orks FTP server", "VxWorks VxWorks"],
+    "http": ["400 Bad Request", "HTML"],
+    "ftp": [["Pure-FTPd", "----------\r\n"], "\r\n220-You are user number", ["orks FTP server", "VxWorks VxWorks"],
             "530 USER and PASS required", "Server ready.\r\n5", "Invalid command: try being more creative"],
-    "SSH": ["-OpenSSH_", "\r\nProtocol mism", "_sshlib GlobalSCAPE\r\n", "\x00\x1aversion info line too long"],
-    "Telnet": ["Welcome to Microsoft Telnet Service", "no decompiling or reverse-engineering shall be allowed",
+    "ssh": ["-OpenSSH_", "\r\nProtocol mism", "_sshlib GlobalSCAPE\r\n", "\x00\x1aversion info line too long"],
+    "telnet": ["Welcome to Microsoft Telnet Service", "no decompiling or reverse-engineering shall be allowed",
                "is not a secure protocol", "recommended to use Stelnet", "Login authentication"],
-    "SMTP": ["Server ready", "SMTP synchronization error", "220-Greetings", "ESMTP Arnet Email Security", "SMTP 2.0",
+    "smtp": ["Server ready", "SMTP synchronization error", "220-Greetings", "ESMTP Arnet Email Security", "SMTP 2.0",
              "Fidelix Fx2020"],
-    "IMAP": ["BAD Error in IMAP command received by server", "IMAP4rev1 SASL-IR", "OK [CAPABILITY IMAP4rev1",
+    "imap": ["BAD Error in IMAP command received by server", "IMAP4rev1 SASL-IR", "OK [CAPABILITY IMAP4rev1",
              "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE NAMESPACE AUTH=PLAIN AUTH=LOGIN]",
              "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN AUTH=LOGIN AUTH=DIGEST-MD5 AUTH=CRAM-MD5]"],
-    "MariaDB": ["is not allowed to connect to this MariaDB server", "5.5.52-MariaDB", "5.5.5-10.0.34-MariaDB"],
-    "MYSQL": ["is not allowed to connect to this MySQL server"]
+    "mariadb": ["is not allowed to connect to this MariaDB server", "5.5.52-MariaDB", "5.5.5-10.0.34-MariaDB"],
+    "mysql": ["is not allowed to connect to this MySQL server"]
 }
 
 
@@ -86,7 +86,7 @@ def recv_all(s):
     return response
 
 
-def discover_by_port(host, port, timeout, send_data, socks_proxy):
+def discover_by_port(host, port, timeout, send_data, socks_proxy, external_run=False):
     """
 
     Args:
@@ -140,12 +140,10 @@ def discover_by_port(host, port, timeout, send_data, socks_proxy):
                     FLAG = False
         if FLAG:
             if ssl_flag:
-                result_dict[port] = service + "/SSL"
+                result_dict[port] = service + "/ssl"
             else:
                 result_dict[port] = service
-            return
         c += 1
-
     for service in ports_services_or_condition:
         FLAG = False
         c = 0
@@ -162,16 +160,20 @@ def discover_by_port(host, port, timeout, send_data, socks_proxy):
                     FLAG = True
         if FLAG:
             if ssl_flag:
-                result_dict[port] = service + "/SSL"
+                result_dict[port] = service + "/ssl"
             else:
                 result_dict[port] = service
-            return
         c += 1
-    if len(final_data):
-        try:
-            result_dict[port]
-        except Exception as _:
-            result_dict[port] = "UNKNOWN"
+    try:
+        result_dict[port]
+    except Exception as _:
+        result_dict[port] = "UNKNOWN"
+    if external_run and port not in external_run_values:
+        external_run_values.append(port)
+        send_service_scan_diagnostics(
+            {"services": "{" + str(port) + ": \"" + result_dict[port] + "\"}", "timeout": timeout,
+             "thread_number": 1, "send_data": binascii.b2a_base64(send_data), "target": host})
+    return result_dict[port]
 
 
 def discovery(target, ports=None, timeout=3, thread_number=1000, send_data=None, time_sleep=0, socks_proxy=None):
@@ -194,26 +196,27 @@ def discovery(target, ports=None, timeout=3, thread_number=1000, send_data=None,
     if not send_data:
         send_data = b"ABC\x00\r\n" * 10
     if not ports:
+        from lib.scan.port.engine import extra_requirements_dict as port_scanner_default_ports
         ports = port_scanner_default_ports()["port_scan_ports"]
     for port in ports:
-        t = threading.Thread(target=discover_by_port, args=(target, int(port), int(timeout), send_data, socks_proxy))
+        t = threading.Thread(target=discover_by_port,
+                             args=(target, int(port), int(timeout), send_data, socks_proxy))
         threads.append(t)
         t.start()
         time.sleep(time_sleep)
         while 1:
             try:
-                if threading.activeCount() >= thread_number:
-                    time.sleep(1)
-                else:
+                if threading.activeCount() <= thread_number:
                     break
+                time.sleep(0.01)
             except KeyboardInterrupt:
                 break
     kill_switch = 0
     while 1:
-        time.sleep(0.1)
+        time.sleep(0.01)
         kill_switch += 1
         try:
-            if threading.activeCount() is 1 or int(kill_switch) is int(timeout * 2 * 10):
+            if threading.activeCount() is 1 or int(kill_switch) is int(timeout * 5 * 10):
                 break
         except KeyboardInterrupt:
             break
