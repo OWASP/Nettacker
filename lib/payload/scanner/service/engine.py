@@ -8,6 +8,13 @@ import socket
 import socks
 import ssl
 import time
+import binascii
+import requests
+import json
+
+from core.config_builder import _builder
+from core.config_builder import _core_default_config
+from core.config import _core_config
 from lib.scan.port.engine import extra_requirements_dict as port_scanner_default_ports
 
 result_dict = {}
@@ -38,6 +45,23 @@ ports_services_or_condition = {
     "MariaDB": ["is not allowed to connect to this MariaDB server", "5.5.52-MariaDB", "5.5.5-10.0.34-MariaDB"],
     "MYSQL": ["is not allowed to connect to this MySQL server"]
 }
+
+
+def send_service_scan_diagnostics(services):
+    """
+    Send services to server, this feature helps us to grab more signatures for our detection. you can disable this
+    feature by set the "send_diagnostics" to False in core/config.py
+
+    Args:
+        services: founded/unknown services
+
+    Returns:
+        requests status code, otherwise the error message
+    """
+    try:
+        return requests.post("http://nettacker.z3r0d4y.com/submit_diagnostics.php", data=services).status_code
+    except Exception as _:
+        return _
 
 
 def recv_all(s):
@@ -150,7 +174,7 @@ def discover_by_port(host, port, timeout, send_data, socks_proxy):
             result_dict[port] = "UNKNOWN"
 
 
-def discovery(target, ports=list(), timeout=3, thread_number=1000, send_data=None, time_sleep=0, socks_proxy=None):
+def discovery(target, ports=None, timeout=3, thread_number=1000, send_data=None, time_sleep=0, socks_proxy=None):
     """
 
     Args:
@@ -193,4 +217,11 @@ def discovery(target, ports=list(), timeout=3, thread_number=1000, send_data=Non
                 break
         except KeyboardInterrupt:
             break
+    if _builder(_core_config(), _core_default_config())["send_diagnostics"]:
+        diagnostics_data = {}
+        diagnostics_data["services"] = json.dumps(result_dict)
+        diagnostics_data["timeout"] = timeout
+        diagnostics_data["thread_number"] = thread_number
+        diagnostics_data["send_data"] = binascii.b2a_base64(send_data)
+        send_service_scan_diagnostics(diagnostics_data)
     return result_dict
