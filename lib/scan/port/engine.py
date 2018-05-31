@@ -178,9 +178,15 @@ def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
             if (stealth_scan_resp.getlayer(TCP).flags == 0x12):
                 # send_rst = sr(IP(dst=host) / TCP(sport=src_port, dport=port, flags="R"), timeout=timeout_sec)
                 try:
-                    service_name = "/" + socket.getservbyport(port)
-                except Exception:
-                    service_name = ""
+                    service_name = "/" + discover_by_port(host, port, timeout_sec, b"ABC\x00\r\n" * 10, socks_proxy,
+                                                          external_run=True)
+                except Exception as _:
+                    service_name = None
+                if not service_name or service_name == "/UNKNOWN":
+                    try:
+                        service_name = "/" + socket.getservbyport(port)
+                    except Exception:
+                        service_name = ""
                 data = json.dumps(
                     {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
                      'DESCRIPTION': messages(language, "port/type").format(str(port) + service_name, "STEALTH"),
@@ -252,6 +258,16 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
         s.close()
         return True
     except socket.timeout:
+        try:
+            service_name = "/" + discover_by_port(host, port, timeout_sec, b"ABC\x00\r\n" * 10, socks_proxy,
+                                                  external_run=True)
+        except Exception as _:
+            service_name = None
+        if not service_name or service_name == "/UNKNOWN":
+            try:
+                service_name = "/" + socket.getservbyport(port)
+            except Exception:
+                service_name = ""
         try:
             if filter_port(host, port):
                 info(messages(language, "port_found").format(host, str(port) + service_name, "TCP_CONNECT"))
