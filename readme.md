@@ -14,9 +14,11 @@ OWASP Nettacker
 <img src="https://raw.githubusercontent.com/viraintel/OWASP-Nettacker/master/web/static/img/owasp-nettacker.png" width="200"><img src="https://raw.githubusercontent.com/viraintel/OWASP-Nettacker/master/web/static/img/owasp.png" width="500">
 
 
+**Concerns**
 
-***THIS SOFTWARE WAS CREATED FOR AUTOMATED PENETRATION TESTING AND INFORMATION GATHERING. CONTRIBUTORS WILL NOT BE RESPONSIBLE FOR ANY ILLEGAL USAGE.***
+* ***THIS SOFTWARE WAS CREATED FOR AUTOMATED PENETRATION TESTING AND INFORMATION GATHERING. CONTRIBUTORS WILL NOT BE RESPONSIBLE FOR ANY ILLEGAL USAGE.***
 
+* ***THIS FRAMEWORK SENDS DIAGNOSTICS REPORT TO OUR SERVERS, FOR MORE INFORMATION CLICK [HERE](https://github.com/zdresearch/OWASP-Nettacker/wiki/Developers#diagnostics-reports).***
 
 ![2018-01-19_0-45-07](https://user-images.githubusercontent.com/7676267/35123376-283d5a3e-fcb7-11e7-9b1c-92b78ed4fecc.gif)
 
