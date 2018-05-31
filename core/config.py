@@ -34,9 +34,14 @@ def _profiles():
         "information_gathering": ["port_scan"],
         "info": ["port_scan"],
         "vulnerability": ["*_vuln"],
-        "vuln":["*_vuln"],
+        "vuln": ["*_vuln"],
         "scan": ["*_scan"],
-        "brute": ["*_brute"]
+        "brute": ["*_brute"],
+        "wp": ["wp_plugin_scan", "wp_theme_scan", "wp_timthumbs_scan", "wp_user_enum_scan",
+               "wordpress_dos_cve_2018_6389_vuln", "wp_xmlrpc_bruteforce_vuln", "wp_xmlrpc_pingback_vuln"],
+        "wordpress": ["wp_plugin_scan", "wp_theme_scan", "wp_timthumbs_scan", "wp_user_enum_scan",
+                      "wordpress_dos_cve_2018_6389_vuln", "wp_xmlrpc_bruteforce_vuln", "wp_xmlrpc_pingback_vuln"],
+        "joomla": ["joomla_template_scan", "joomla_user_enum_scan", "joomla_version_scan"]
     }
 
 
@@ -44,6 +49,7 @@ def _synonym_profile():
     return {
         "info": "information_gathering",
         "vuln": "vulnerability",
+        "wp": "wordpress"
     }
 
 
@@ -88,7 +94,7 @@ def _database_config():
     return {
         "DB": "sqlite",
         # "DB":"mysql",
-        "DATABASE":  _paths()["home_path"] + "/nettacker.db",  # Name of the database
+        "DATABASE": _paths()["home_path"] + "/nettacker.db",  # Name of the database
         "USERNAME": "",
         "PASSWORD": "",
         "HOST": "",
@@ -134,6 +140,7 @@ def _core_config():
         "methods_args": None,
         "method_args_list": False,
         "startup_check_for_update": True,
+        "send_diagnostics": True,
         "wizard_mode": False,
         "profile": None,
         "start_api": False,
