@@ -133,7 +133,7 @@ def _core_config():
         "check_ranges": False,
         "check_subdomains": False,
         "thread_number": 100,
-        "thread_number_host": 30,
+        "thread_number_host": 5,
         "socks_proxy": None,
         "retries": 3,
         "ping_flag": False,
