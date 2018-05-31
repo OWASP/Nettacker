@@ -86,7 +86,7 @@ def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, t
     # Calling Engines
     try:
         start = getattr(
-            __import__('lib.{0}.{1}.engine'.format(scan_method.rsplit('_')[-1], '_'.join(scan_method.rsplit('_')[:-1])),
+                __import__('lib.{0}.{1}.engine'.format(scan_method.rsplit('_')[-1], '_'.join(scan_method.rsplit('_')[:-1])),
                        fromlist=['start']), 'start')
     except:
         __die_failure(

@@ -21,7 +21,7 @@ result_dict = {}
 external_run_values = []
 
 ports_services_and_condition = {
-    "http": ["Content-Length:", ["HTTP/0.9", "HTTP/1.0", "HTTP/1.1", "HTTP/2.0"]],
+    "http": [["HTTP/0.9", "HTTP/1.0", "HTTP/1.1", "HTTP/2.0"]],
     "ftp": ["FTP", ["214", "220", "530", "230", "502", "500"]],
     "ssh": ["SSH"],
     "telnet": ["Telnet"],
@@ -32,9 +32,10 @@ ports_services_and_condition = {
 }
 
 ports_services_or_condition = {
-    "http": ["400 Bad Request", "HTML"],
+    "http": ["400 Bad Request", "401 Unauthorized", "302 Found", "Server: cloudflare", "404 Not Found", "HTML", "Content-Length:", "Content-Type:"],
     "ftp": [["Pure-FTPd", "----------\r\n"], "\r\n220-You are user number", ["orks FTP server", "VxWorks VxWorks"],
-            "530 USER and PASS required", "Server ready.\r\n5", "Invalid command: try being more creative"],
+            "530 USER and PASS required", "Server ready.\r\n5", "Invalid command: try being more creative", "220 Hotspot FTP server (MikroTik 6.27) ready", "220 SHARP MX-M264N Ver 01.05.00.0n.16.U FTP server.",
+            "220 Microsoft FTP Service", "220 FTP Server ready.", "220 Microsoft FTP Service", "220 Welcome to virtual FTP service.", "220 DreamHost FTP Server", "220 FRITZ!BoxFonWLAN7360SL(UI) FTP server ready."],
     "ssh": ["-OpenSSH_", "\r\nProtocol mism", "_sshlib GlobalSCAPE\r\n", "\x00\x1aversion info line too long"],
     "telnet": ["Welcome to Microsoft Telnet Service", "no decompiling or reverse-engineering shall be allowed",
                "is not a secure protocol", "recommended to use Stelnet", "Login authentication"],
@@ -144,7 +145,7 @@ def discover_by_port(host, port, timeout, send_data, socks_proxy, external_run=F
         sock.send(send_data)
     except Exception as _:
         pass
-    final_data = recv_all(sock) + data1  # print( "PORT : " + str(port) +final_data)
+    final_data = recv_all(sock) + data1  #print( "PORT : " + str(port) +final_data)
     for service in ports_services_and_condition:
         FLAG = True
         c = 0
