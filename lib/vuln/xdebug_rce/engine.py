@@ -10,11 +10,7 @@ import threading
 import string
 import random
 import sys
-import struct
-import re
 import os
-from OpenSSL import crypto
-import ssl
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
@@ -55,7 +51,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         s.settimeout(timeout_sec)
         s.connect((targ, port))
         return s
-    except:
+    except Exception:
         return None
 
 
@@ -76,9 +72,9 @@ def xdebug(target, port, timeout_sec, log_in_file, language, time_sleep,
                     return True
                 else:
                     return False
-            except:
+            except Exception:
                 return False
-    except:
+    except Exception:
         # some error warning
         return False
 
