@@ -24,7 +24,7 @@ import requests
 
 def extra_requirements_dict():
     return {
-        "drupal_version_ports": [80, 443]
+        "drupal_theme_ports": [80, 443]
     }
 
 
@@ -56,7 +56,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def drupal_version(target, port, timeout_sec, log_in_file, language, time_sleep,
+def drupal_theme(target, port, timeout_sec, log_in_file, language, time_sleep,
                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
@@ -67,13 +67,11 @@ def drupal_version(target, port, timeout_sec, log_in_file, language, time_sleep,
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
-            req = requests.get(target+'/CHANGELOG.txt')
+            req = requests.get(target+'/index.php')
             try:
-                regex = 'Drupal (\d+\.\d+),'
-                pattern = re.compile(regex)
-                version = re.findall(pattern, req.text)
-                if version:
-                    return version[0]
+                theme = re.findall("/themes/(.+?)/", req.text, re.IGNORECASE)
+                if theme:
+                    return theme[0]
                 else:
                     return False
             except Exception:
@@ -83,16 +81,16 @@ def drupal_version(target, port, timeout_sec, log_in_file, language, time_sleep,
         return False
 
 
-def __drupal_version(target, port, timeout_sec, log_in_file, language, time_sleep,
+def __drupal_theme(target, port, timeout_sec, log_in_file, language, time_sleep,
                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-    version = drupal_version(target, port, timeout_sec, log_in_file, language, time_sleep,
+    theme = drupal_theme(target, port, timeout_sec, log_in_file, language, time_sleep,
                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd)
-    if version:
+    if theme:
         info(messages(language, "found").format(
-            target, "drupal Version", version))
+            target, "drupal theme", theme))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE':'drupal_version_scan',
-                           'DESCRIPTION': messages(language, "found").format(target, "drupal Version", version), 'TIME': now(),
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE':'drupal_theme_scan',
+                           'DESCRIPTION': messages(language, "found").format(target, "drupal theme", theme), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
@@ -113,7 +111,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["drupal_version_ports"]
+            ports = extra_requirements["drupal_theme_ports"]
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
@@ -125,7 +123,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         keyboard_interrupt_flag = False
         for port in ports:
             port = int(port)
-            t = threading.Thread(target=__drupal_version,
+            t = threading.Thread(target=__drupal_theme,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
@@ -133,7 +131,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'drupal_version_scan'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'drupal_theme_scan'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -160,7 +158,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "not_found"))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'drupal_version_scan',
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'drupal_theme_scan',
                                'DESCRIPTION': messages(language, "not_found"), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
@@ -168,4 +166,4 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
 
     else:
         warn(messages(language, "input_target_error").format(
-            'drupal_version_scan', target))
+            'drupal_theme_scan', target))
