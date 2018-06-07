@@ -3,7 +3,7 @@ from canari.maltego.transform import Transform
 from canari.framework import EnableDebugWindow
 
 __author__ = 'Shaddy Garg'
-__copyright__ = 'Copyright 2018, nettacker-transform Project'
+__copyright__ = 'Copyright 2018, nettacker_transforms Project'
 __credits__ = []
 
 __license__ = 'GPLv3'

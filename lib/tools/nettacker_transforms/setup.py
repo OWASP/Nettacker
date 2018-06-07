@@ -3,11 +3,11 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='nettacker-transform',
+    name='nettacker_transforms',
     author='Shaddy Garg',
     version='1.0',
     author_email='shaddygarg1@gmail.com',
-    description='This is the maltego transform package for OWASP-Nettacker',
+    description='This contains the maltego transforms for the OWASP Nettacker.',
     license='GPLv3',
     packages=find_packages('src'),
     package_dir={'': 'src'},
