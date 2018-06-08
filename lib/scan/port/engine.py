@@ -26,9 +26,10 @@ logging.getLogger("scapy.runtime").setLevel(logging.CRITICAL)
 def extra_requirements_dict():
     return {  # 1000 common ports used by nmap scanner
         "port_scan_stealth": ["False"],
+        "udp_scan" : ["False"],
         "port_scan_ports": [1, 3, 4, 6, 7, 9, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32, 33, 37, 42,
-                            43, 49, 53, 70, 79, 80, 81, 82, 83, 84, 85, 88, 89, 90, 99, 100, 106, 109, 110,
-                            111, 113, 119, 125, 135, 139, 143, 144, 146, 161, 163, 179, 199, 211, 212, 222,
+                            43, 49, 53, 67, 68, 69, 70, 79, 80, 81, 82, 83, 84, 85, 88, 89, 90, 99, 100, 106, 109, 110,
+                            111, 113, 119, 125, 135, 139, 143, 144, 146, 161, 162, 163, 179, 199, 211, 212, 222,
                             254, 255, 256, 259, 264, 280, 301, 306, 311, 340, 366, 389, 406, 407, 416, 417,
                             425, 427, 443, 444, 445, 458, 464, 465, 481, 497, 500, 512, 513, 514, 515, 524,
                             541, 543, 544, 545, 548, 554, 555, 563, 587, 593, 616, 617, 625, 631, 636, 646,
@@ -121,7 +122,6 @@ if "--method-args" in sys.argv and "port_scan_stealth" in " ".join(sys.argv).low
     conf.verb = 0
     conf.nofilter = 1
 
-
 def check_closed(ip):
     for i in range(1, 10):
         s = sr1(IP(dst=ip) / TCP(dport=i), timeout=2, verbose=0)
@@ -206,6 +206,77 @@ def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
             # "CHECK"
             pass
         return True
+    except:
+        return False
+
+def __udp(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
+            scan_cmd, stealth_flag):
+    try:
+        if socks_proxy is not None:
+            socks_version = socks.SOCKS5 if socks_proxy.startswith(
+                'socks5://') else socks.SOCKS4
+            socks_proxy = socks_proxy.rsplit('://')[1]
+            if '@' in socks_proxy:
+                socks_username = socks_proxy.rsplit(':')[0]
+                socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
+                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
+                                        int(socks_proxy.rsplit(':')[-1]), username=socks_username,
+                                        password=socks_password)
+                socket.socket = socks.socksocket
+                socket.getaddrinfo = getaddrinfo
+            else:
+                socks.set_default_proxy(socks_version, str(
+                    socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+                socket.socket = socks.socksocket
+                socket.getaddrinfo = getaddrinfo
+        data = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        if target_type(host) == "SINGLE_IPv6":
+            s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM, 0)
+        else:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        if timeout_sec is not None:
+            s.settimeout(timeout_sec)
+        if target_type(host) == "SINGLE_IPv6":
+            s.sendto((host, port, 0, 0))
+        else:
+            s.sendto(data,(host,port))
+        try:
+            s.recvfrom(4096)
+        except:
+            return False
+        try:
+            service_name = "/" + socket.getservbyport(port)
+        except Exception:
+            service_name = ""
+        info(messages(language, "port_found").format(host, str(port) + service_name, "UDP"), log_in_file,
+             "a", {'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
+                   'DESCRIPTION': messages(language, "port/type").format(str(port) + service_name, "UDP"),
+                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language,
+             thread_tmp_filename)
+        s.close()
+        return True
+    except socket.timeout:
+        try:
+            service_name = "/" + discover_by_port(host, port, timeout_sec, b"ABC\x00\r\n" * 10, socks_proxy,
+                                                  external_run=True)
+        except Exception as _:
+            service_name = None
+        if not service_name or service_name == "/UNKNOWN":
+            try:
+                service_name = "/" + socket.getservbyport(port)
+            except Exception:
+                service_name = ""
+        try:
+            if filter_port(host, port):
+                info(messages(language, "port_found").format(host, str(port) + service_name, "TCP_CONNECT"))
+                data = json.dumps({'HOST': host, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'port_scan',
+                                   'DESCRIPTION': messages(language, "port/type").format(str(port) + service_name,
+                                                                                         "TCP_CONNECT"),
+                                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n'
+                __log_into_file(log_in_file, 'a', data, language)
+                __log_into_file(thread_tmp_filename, 'w', '0', language)
+        except:
+            pass
     except:
         return False
 
@@ -300,10 +371,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         try:
             if extra_requirements["port_scan_stealth"][0].lower() == "true":
                 stealth_flag = True
+                udp_flag = False
+            elif extra_requirements["udp_scan"][0].lower() == "true":
+                stealth_flag = False
+                udp_flag = True
             else:
                 stealth_flag = False
-        except:
+                udp_flag = False
+        except Exception:
+            udp_flag = False
             stealth_flag = False
+
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
@@ -314,7 +392,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         trying = 0
         keyboard_interrupt_flag = False
         for port in ports:
-            t = threading.Thread(target=stealth if stealth_flag else connect,
+            t = threading.Thread(target = stealth if stealth_flag else (__udp if udp_flag else connect),
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd, stealth_flag))
             threads.append(t)
