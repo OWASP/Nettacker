@@ -34,6 +34,7 @@ ports_services_and_condition = {
     "RTSP" : ["RTSP"],
     "pptp" : [["Firmware:", "Hostname:", "Vendor:", "pptp"]],
     "rsync" : [["rsync", "RSYNC"]],
+    "portmap" : ["Portmap"],
 }
 
 ports_services_or_condition = {
@@ -56,7 +57,8 @@ ports_services_or_condition = {
     "ILC 150 GSM/GPRS|pcworx" : ["PLC Type: ILC 150 GSM/GPRS", "Model Number: 2916545", "Firmware Version: 3.93", "Firmware Version: 3.71", "Firmware Version: 3.70", "Firmware Date:", "Firmware Time:"],
     "RTSP" : ["RTSP/1.0 401 Unauthorized", "RTSP/1.0 200 OK", "WWW-Authenticate:", 'Basic realm="device"', "Server: Dahua Rtsp Server", "Server: Rtsp Server/2.0", "RTSP/1.0 404 Not Found"],
     "pptp" : ["Firmware: 1", "Hostname: pptp server", "Vendor: BRN", "Vendor: Fortinet pptp", "Vendor: AMIT"],
-    "rsync" : ["@RSYNCD: 30.0", "@RSYNCD: EXIT"]
+    "rsync" : ["@RSYNCD: 30.0", "@RSYNCD: EXIT"],
+    "Portmap" : ["Program", "Program	Version	Protocol	Port", "portmapper", "status	1", "nfs	2", "nlockmgr	1"]
 }
 
 
