@@ -32,6 +32,8 @@ ports_services_and_condition = {
     "PostgreSQL" : ["PostgreSQL"],
     "ILC 150 GSM/GPRS|pcworx" : ["ILC 150 GSM/GPRS"],
     "RTSP" : ["RTSP"],
+    "pptp" : [["Firmware:", "Hostname:", "Vendor:", "pptp"]],
+    "rsync" : [["rsync", "RSYNC"]],
 }
 
 ports_services_or_condition = {
@@ -41,7 +43,8 @@ ports_services_or_condition = {
             "220 Microsoft FTP Service", "220 FTP Server ready.", "220 Microsoft FTP Service", "220 Welcome to virtual FTP service.", "220 DreamHost FTP Server", "220 FRITZ!BoxFonWLAN7360SL(UI) FTP server ready."],
     "ssh": ["-OpenSSH_", "\r\nProtocol mism", "_sshlib GlobalSCAPE\r\n", "\x00\x1aversion info line too long"],
     "telnet": ["Welcome to Microsoft Telnet Service", "no decompiling or reverse-engineering shall be allowed",
-               "is not a secure protocol", "recommended to use Stelnet", "Login authentication"],
+               "is not a secure protocol", "recommended to use Stelnet", "Login authentication",
+               "*WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING*"],
     "smtp": ["Server ready", "SMTP synchronization error", "220-Greetings", "ESMTP Arnet Email Security", "SMTP 2.0",
              "Fidelix Fx2020"],
     "imap": ["BAD Error in IMAP command received by server", "IMAP4rev1 SASL-IR", "OK [CAPABILITY IMAP4rev1", "OK IMAPrev1",
@@ -51,7 +54,9 @@ ports_services_or_condition = {
     "mysql": ["is not allowed to connect to this MySQL server"],
     "PostgreSQL": ["fe_sendauth: no password supplied", "no pg_hba.conf entry for host", "received invalid response to SSL negotiation:", "unsupported frontend protocol"],
     "ILC 150 GSM/GPRS|pcworx" : ["PLC Type: ILC 150 GSM/GPRS", "Model Number: 2916545", "Firmware Version: 3.93", "Firmware Version: 3.71", "Firmware Version: 3.70", "Firmware Date:", "Firmware Time:"],
-    "RTSP" : ["RTSP/1.0 401 Unauthorized", "WWW-Authenticate:", 'Basic realm="device"', "Server: Dahua Rtsp Server", "Server: Rtsp Server/2.0", "RTSP/1.0 404 Not Found"],
+    "RTSP" : ["RTSP/1.0 401 Unauthorized", "RTSP/1.0 200 OK", "WWW-Authenticate:", 'Basic realm="device"', "Server: Dahua Rtsp Server", "Server: Rtsp Server/2.0", "RTSP/1.0 404 Not Found"],
+    "pptp" : ["Firmware: 1", "Hostname: pptp server", "Vendor: BRN", "Vendor: Fortinet pptp", "Vendor: AMIT"],
+    "rsync" : ["@RSYNCD: 30.0", "@RSYNCD: EXIT"]
 }
 
 
