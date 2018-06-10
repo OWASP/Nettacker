@@ -31,6 +31,7 @@ ports_services_and_condition = {
     "mysql": ["MySQL"],
     "PostgreSQL" : ["PostgreSQL"],
     "ILC 150 GSM/GPRS|pcworx" : ["ILC 150 GSM/GPRS"],
+    "RTSP" : ["RTSP"],
 }
 
 ports_services_or_condition = {
@@ -43,13 +44,14 @@ ports_services_or_condition = {
                "is not a secure protocol", "recommended to use Stelnet", "Login authentication"],
     "smtp": ["Server ready", "SMTP synchronization error", "220-Greetings", "ESMTP Arnet Email Security", "SMTP 2.0",
              "Fidelix Fx2020"],
-    "imap": ["BAD Error in IMAP command received by server", "IMAP4rev1 SASL-IR", "OK [CAPABILITY IMAP4rev1",
-             "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE NAMESPACE AUTH=PLAIN AUTH=LOGIN]",
+    "imap": ["BAD Error in IMAP command received by server", "IMAP4rev1 SASL-IR", "OK [CAPABILITY IMAP4rev1", "OK IMAPrev1",
+             "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE NAMESPACE AUTH=PLAIN AUTH=LOGIN]", "CAPABILITY completed"
              "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN AUTH=LOGIN AUTH=DIGEST-MD5 AUTH=CRAM-MD5]"],
     "mariadb": ["is not allowed to connect to this MariaDB server", "5.5.52-MariaDB", "5.5.5-10.0.34-MariaDB"],
     "mysql": ["is not allowed to connect to this MySQL server"],
     "PostgreSQL": ["fe_sendauth: no password supplied", "no pg_hba.conf entry for host", "received invalid response to SSL negotiation:", "unsupported frontend protocol"],
-    "ILC 150 GSM/GPRS|pcworx" : ["PLC Type: ILC 150 GSM/GPRS", "Model Number: 2916545", "Firmware Version: 3.93", "Firmware Version: 3.71", "Firmware Version: 3.70"],
+    "ILC 150 GSM/GPRS|pcworx" : ["PLC Type: ILC 150 GSM/GPRS", "Model Number: 2916545", "Firmware Version: 3.93", "Firmware Version: 3.71", "Firmware Version: 3.70", "Firmware Date:", "Firmware Time:"],
+    "RTSP" : ["RTSP/1.0 401 Unauthorized", "WWW-Authenticate:", 'Basic realm="device"', "Server: Dahua Rtsp Server", "Server: Rtsp Server/2.0", "RTSP/1.0 404 Not Found"],
 }
 
 
