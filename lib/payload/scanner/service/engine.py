@@ -29,6 +29,7 @@ ports_services_and_condition = {
     "imap": ["IMAP"],
     "mariadb": ["MariaDB"],
     "mysql": ["MySQL"],
+    "PostgreSQL" : ["PostgreSQL"],
 }
 
 ports_services_or_condition = {
@@ -45,7 +46,8 @@ ports_services_or_condition = {
              "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE NAMESPACE AUTH=PLAIN AUTH=LOGIN]",
              "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN AUTH=LOGIN AUTH=DIGEST-MD5 AUTH=CRAM-MD5]"],
     "mariadb": ["is not allowed to connect to this MariaDB server", "5.5.52-MariaDB", "5.5.5-10.0.34-MariaDB"],
-    "mysql": ["is not allowed to connect to this MySQL server"]
+    "mysql": ["is not allowed to connect to this MySQL server"],
+    "PostgreSQL": ["fe_sendauth: no password supplied", "no pg_hba.conf entry for host", "received invalid response to SSL negotiation:", "unsupported frontend protocol"],
 }
 
 
