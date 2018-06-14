@@ -41,7 +41,8 @@ class WordpressPluginScan(Transform):
         for result in results:
             url = result["DESCRIPTION"].split()[0]
             plugin = result["DESCRIPTION"][result["DESCRIPTION"].find(':')+1, -1]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title=plugin+" Found!")
+            response += URL(url=url, title=result["DESCRIPTION"], short_title=plugin+" Found!",
+                            link_label='wp_plugin_scan')
         return response
 
     def on_terminate(self):

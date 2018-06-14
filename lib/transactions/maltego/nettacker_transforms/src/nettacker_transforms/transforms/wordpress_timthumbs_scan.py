@@ -41,7 +41,8 @@ class WordpressTimthumbsScan(Transform):
         for result in results:
             url = result["DESCRIPTION"].split()[0]
             timthumb = result["DESCRIPTION"][result["DESCRIPTION"].find(':')+1, -1]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title=timthumb+" Found!")
+            response += URL(url=url, title=result["DESCRIPTION"], short_title=timthumb+" Found!",
+                            link_label='wp_timthumbs_scan')
         return response
 
     def on_terminate(self):

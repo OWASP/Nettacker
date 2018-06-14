@@ -41,7 +41,7 @@ class ICMPScan(Transform):
         results = find_log(scan_id, "en")
         for result in results:
             url = result["DESCRIPTION"].split()[0]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title=url+" up!")
+            response += URL(url=url, title=result["DESCRIPTION"], short_title=url+" up!", link_label='icmp_scan')
         return response
 
     def on_terminate(self):

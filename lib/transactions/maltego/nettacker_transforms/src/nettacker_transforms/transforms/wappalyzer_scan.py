@@ -39,7 +39,7 @@ class WappalyzerScan(Transform):
               "Through Maltego")
         results = find_log(scan_id, "en")
         for result in results:
-            response += Phrase(text=result["DESCRIPTION"])
+            response += Phrase(text=result["DESCRIPTION"], link_label='wappalyzer_scan')
         return response
 
     def on_terminate(self):

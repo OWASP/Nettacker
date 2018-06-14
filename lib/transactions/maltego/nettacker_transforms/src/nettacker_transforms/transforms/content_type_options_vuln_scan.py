@@ -1,4 +1,3 @@
-from canari.maltego.entities import Unknown
 import sys
 import random
 sys.path.insert(0, '/home/wizard/OWASP-Nettacker/')
@@ -8,7 +7,7 @@ from canari.maltego.entities import URL
 from canari.framework import EnableDebugWindow
 from common.entities import NettackerScan
 
-from lib.scan.pma.engine import start
+from lib.vuln.content_type_options.engine import start
 
 from database.db import __logs_by_scan_id as find_log
 
@@ -24,7 +23,7 @@ __status__ = 'Development'
 
 
 @EnableDebugWindow
-class PmaScan(Transform):
+class ContentTypeOptionsVulnScan(Transform):
     """TODO: Your transform description."""
 
     # The transform input entity type.
@@ -34,15 +33,16 @@ class PmaScan(Transform):
         # TODO: write your code here.
         scan_request = request.entity
         scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
-        ports = scan_request.ports.split(', ')
-        start(scan_request.host, [], [], ports, scan_request.timeout_sec, scan_request.thread_no,
+        scan_request.ports = scan_request.ports.split(', ') if scan_request.ports is not None else None
+        start(scan_request.host, [], [], scan_request.ports, scan_request.timeout_sec, scan_request.thread_no,
               1, 1, 'abcd', 0, "en", scan_request.verbose, scan_request.socks_proxy, scan_request.retries, [], scan_id,
               "Through Maltego")
         results = find_log(scan_id, "en")
         for result in results:
-            url = result["DESCRIPTION"].split()[0]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title=result["DESCRIPTION"],
-                            link_label='pma_scan')
+            url = result["HOST"] + ":" + result["PORT"]
+            response += URL(url=url, title=result["DESCRIPTION"],
+                            short_title="Content Type Options Vulnerability Found!",
+                            link_label='content_type_options_vuln')
         return response
 
     def on_terminate(self):

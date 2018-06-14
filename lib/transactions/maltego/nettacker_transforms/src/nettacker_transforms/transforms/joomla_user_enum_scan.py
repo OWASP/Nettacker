@@ -41,7 +41,8 @@ class JoomlaUserEnumScan(Transform):
         for result in results:
             url = result["DESCRIPTION"].split()[0]
             users = result["DESCRIPTION"][result["DESCRIPTION"].find(':')+1, -1]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title=users+" Found!")
+            response += URL(url=url, title=result["DESCRIPTION"], short_title=users+" Found!",
+                            link_label='joomla_user_enum_scan')
         return response
 
     def on_terminate(self):

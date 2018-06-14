@@ -41,7 +41,8 @@ class JoomlaTemplatesScan(Transform):
         for result in results:
             url = result["DESCRIPTION"].split()[0]
             template = result["DESCRIPTION"][result["DESCRIPTION"].find(':')+1, -1]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title=template+" Found!")
+            response += URL(url=url, title=result["DESCRIPTION"], short_title=template+" Found!",
+                            link_label='joomla_template_scan')
         return response
 
     def on_terminate(self):

@@ -40,7 +40,7 @@ class DirScan(Transform):
         results = find_log(scan_id, "en")
         for result in results:
             url = result["DESCRIPTION"].split()[0]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title=url)
+            response += URL(url=url, title=result["DESCRIPTION"], short_title=url, link_label='dir_scan')
         return response
 
     def on_terminate(self):

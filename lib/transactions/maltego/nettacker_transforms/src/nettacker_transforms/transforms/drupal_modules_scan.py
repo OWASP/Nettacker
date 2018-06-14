@@ -41,7 +41,8 @@ class DrupalModulesScan(Transform):
         for result in results:
             url = result["DESCRIPTION"].split()[0]
             module = result["DESCRIPTION"][result["DESCRIPTION"].find(':')+1, -1]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title=module+" Found!")
+            response += URL(url=url, title=result["DESCRIPTION"], short_title=module+" Found!",
+                            link_label='drupal_modules_scan')
         return response
 
     def on_terminate(self):

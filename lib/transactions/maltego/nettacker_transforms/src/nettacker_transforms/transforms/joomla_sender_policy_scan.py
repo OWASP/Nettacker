@@ -41,7 +41,8 @@ class JoomlaSenderPolicyScan(Transform):
         for result in results:
             url = result["DESCRIPTION"].split()[0]
             sender_policy = result["DESCRIPTION"][result["DESCRIPTION"].find(':')+1, -1]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title=sender_policy+" Found!")
+            response += URL(url=url, title=result["DESCRIPTION"], short_title=sender_policy+" Found!",
+                            link_label='sender_policy_scan')
         return response
 
     def on_terminate(self):

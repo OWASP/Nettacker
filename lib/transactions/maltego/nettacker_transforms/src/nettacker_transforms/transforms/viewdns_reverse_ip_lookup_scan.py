@@ -42,7 +42,8 @@ class ViewDNSReverseByIPLookupScan(Transform):
             url = result["DESCRIPTION"]
             response += NettackerScan(host=url, ports=result["PORT"], thread_no=request.entity.thread_no,
                                       socks_proxy=request.entity.socks_proxy, timeout_sec=request.entity.timeout_sec,
-                                      verbose=request.entity.verbose, retries=request.entity.retries)
+                                      verbose=request.entity.verbose, retries=request.entity.retries,
+                                      link_label='viewdns_reverse_ip_lookup_scan')
         return response
 
     def on_terminate(self):

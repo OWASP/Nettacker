@@ -38,7 +38,8 @@ class PortScan(Transform):
         results = find_log(scan_id, "en")
         for result in results:
             port = result["PORT"]
-            response += Service(name=result["DESCRIPTION"], ports=port, banner=result["DESCRIPTION"])
+            response += Service(name=result["DESCRIPTION"], ports=port, banner=result["DESCRIPTION"],
+                                link_label='port_scan')
         return response
 
     def on_terminate(self):

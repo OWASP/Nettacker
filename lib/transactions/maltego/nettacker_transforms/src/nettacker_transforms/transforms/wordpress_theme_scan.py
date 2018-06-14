@@ -41,7 +41,8 @@ class WordpressThemeScan(Transform):
         for result in results:
             url = result["DESCRIPTION"].split()[0]
             theme = result["DESCRIPTION"][result["DESCRIPTION"].find(':')+1, -1]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title=theme+" Found!")
+            response += URL(url=url, title=result["DESCRIPTION"], short_title=theme+" Found!",
+                            link_label='wp_theme_scan')
         return response
 
     def on_terminate(self):

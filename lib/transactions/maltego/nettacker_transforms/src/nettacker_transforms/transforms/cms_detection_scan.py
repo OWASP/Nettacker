@@ -41,7 +41,8 @@ class CmsDetectionScan(Transform):
         for result in results:
             url = result["DESCRIPTION"].split()[0]
             cms = result["DESCRIPTION"].split()[-1][result["DESCRIPTION"].split()[-1].find(':')+1:-1]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title=cms+" Found!")
+            response += URL(url=url, title=result["DESCRIPTION"], short_title=cms+" Found!",
+                            link_label='cms_detection_scan')
         return response
 
     def on_terminate(self):

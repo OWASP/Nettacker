@@ -41,7 +41,8 @@ class DrupalVersionScan(Transform):
         for result in results:
             url = result["DESCRIPTION"].split()[0]
             version = result["DESCRIPTION"][result["DESCRIPTION"].find(':')+1, -1]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title="Drupal Version"+version+" Found!")
+            response += URL(url=url, title=result["DESCRIPTION"], short_title="Drupal Version"+version+" Found!",
+                            link_label='drupal_version_scan')
         return response
 
     def on_terminate(self):
