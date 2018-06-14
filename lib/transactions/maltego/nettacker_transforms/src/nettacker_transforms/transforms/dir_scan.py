@@ -7,7 +7,7 @@ from canari.maltego.entities import URL
 from canari.framework import EnableDebugWindow
 from common.entities import NettackerScan
 
-from lib.scan.cms_detection.engine import start
+from lib.scan.dir.engine import start
 
 from database.db import __logs_by_scan_id as find_log
 
@@ -23,7 +23,7 @@ __status__ = 'Development'
 
 
 @EnableDebugWindow
-class CmsDetectionScan(Transform):
+class DirScan(Transform):
     """TODO: Your transform description."""
 
     # The transform input entity type.
@@ -40,8 +40,7 @@ class CmsDetectionScan(Transform):
         results = find_log(scan_id, "en")
         for result in results:
             url = result["DESCRIPTION"].split()[0]
-            cms = result["DESCRIPTION"].split()[-1][result["DESCRIPTION"].split()[-1].find(':')+1:-1]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title=cms+" Found!")
+            response += URL(url=url, title=result["DESCRIPTION"], short_title=url)
         return response
 
     def on_terminate(self):
