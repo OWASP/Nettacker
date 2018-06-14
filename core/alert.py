@@ -15,7 +15,7 @@ def is_not_run_from_api():
     Returns:
         True if run from API otherwise False
     """
-    if '--start-api' in sys.argv:
+    if '--start-api' in sys.argv or (len(sys.argv) == 4 and 'transforms' in sys.argv[1]):
         return False
     return True
 

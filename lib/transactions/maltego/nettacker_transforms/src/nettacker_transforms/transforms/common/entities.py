@@ -26,7 +26,7 @@ class NettackerScan(Entity):
 
 class NettackerBrute(NettackerScan):
     _category_ = 'Nettacker'
-    _namespace_ = 'OWASPNettacker'
+    _namespace_ = 'OWASP-Nettacker'
 
     usernames = StringEntityField('usernames', display_name='Usernames')
     passwords = StringEntityField('passwords', display_name='Passwords')
