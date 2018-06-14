@@ -7,7 +7,7 @@ from canari.maltego.entities import URL
 from canari.framework import EnableDebugWindow
 from common.entities import NettackerScan
 
-from lib.scan.drupal_modules.engine import start
+from lib.scan.wp_user_enum.engine import start
 
 from database.db import __logs_by_scan_id as find_log
 
@@ -23,7 +23,7 @@ __status__ = 'Development'
 
 
 @EnableDebugWindow
-class DrupalModulesScan(Transform):
+class WordpressTimthumbsScan(Transform):
     """TODO: Your transform description."""
 
     # The transform input entity type.
@@ -40,8 +40,8 @@ class DrupalModulesScan(Transform):
         results = find_log(scan_id, "en")
         for result in results:
             url = result["DESCRIPTION"].split()[0]
-            module = result["DESCRIPTION"][result["DESCRIPTION"].find(':')+1, -1]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title=module+" Found!")
+            users = result["DESCRIPTION"][result["DESCRIPTION"].find(':')+1, -1]
+            response += URL(url=url, title=result["DESCRIPTION"], short_title=users+" Found!")
         return response
 
     def on_terminate(self):

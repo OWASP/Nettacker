@@ -4,10 +4,10 @@ sys.path.insert(0, '/home/wizard/OWASP-Nettacker/')
 
 from canari.maltego.transform import Transform
 from canari.maltego.entities import URL
-from canari.framework import EnableDebugWindow
+from canari.framework import EnableDebugWindow, RequireSuperUser
 from common.entities import NettackerScan
 
-from lib.scan.drupal_modules.engine import start
+from lib.scan.icmp.engine import start
 
 from database.db import __logs_by_scan_id as find_log
 
@@ -23,7 +23,8 @@ __status__ = 'Development'
 
 
 @EnableDebugWindow
-class DrupalModulesScan(Transform):
+@RequireSuperUser
+class ICMPScan(Transform):
     """TODO: Your transform description."""
 
     # The transform input entity type.
@@ -40,8 +41,7 @@ class DrupalModulesScan(Transform):
         results = find_log(scan_id, "en")
         for result in results:
             url = result["DESCRIPTION"].split()[0]
-            module = result["DESCRIPTION"][result["DESCRIPTION"].find(':')+1, -1]
-            response += URL(url=url, title=result["DESCRIPTION"], short_title=module+" Found!")
+            response += URL(url=url, title=result["DESCRIPTION"], short_title=url+" up!")
         return response
 
     def on_terminate(self):
