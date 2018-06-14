@@ -1,6 +1,4 @@
-import sys
 import random
-sys.path.insert(0, '/home/wizard/OWASP-Nettacker/')
 
 from canari.maltego.transform import Transform
 from canari.maltego.entities import Service
