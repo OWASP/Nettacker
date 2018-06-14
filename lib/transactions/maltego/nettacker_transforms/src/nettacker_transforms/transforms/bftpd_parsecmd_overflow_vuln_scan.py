@@ -7,7 +7,7 @@ from canari.maltego.entities import URL
 from canari.framework import EnableDebugWindow
 from common.entities import NettackerScan
 
-from lib.vuln.Bftpd_paresecmd_overflow.engine import start
+from lib.vuln.Bftpd_parsecmd_overflow.engine import start
 
 from database.db import __logs_by_scan_id as find_log
 

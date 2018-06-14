@@ -11,14 +11,6 @@ __email__ = 'shaddygarg1@gmail.com'
 __status__ = 'Development'
 
 
-class NettackerVulnerabilityandbrute(Entity):
-    _category_ = 'Nettacker'
-    _namespace_ = 'OWASPNettacker'
-
-    usernames = StringEntityField('usernames', display_name='Usernames')
-    passwords = StringEntityField('passwords', display_name='Passwords')
-
-
 class NettackerScan(Entity):
     _category_ = 'Nettacker'
     _namespace_ = 'OWASPNettacker'
@@ -31,3 +23,10 @@ class NettackerScan(Entity):
     ports = StringEntityField('ports', display_name='Ports')
     thread_no = IntegerEntityField('thread_no', display_name='Thread Number')
 
+
+class NettackerBrute(NettackerScan):
+    _category_ = 'Nettacker'
+    _namespace_ = 'OWASPNettacker'
+
+    usernames = StringEntityField('usernames', display_name='Usernames')
+    passwords = StringEntityField('passwords', display_name='Passwords')
