@@ -31,7 +31,7 @@ class PmaScan(Transform):
         # TODO: write your code here.
         scan_request = request.entity
         scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
-        ports = scan_request.ports.split(', ')
+        scan_request.ports = scan_request.ports.split(', ') if scan_request.ports is not None else None
         start(scan_request.host, [], [], ports, scan_request.timeout_sec, scan_request.thread_no,
               1, 1, 'abcd', 0, "en", scan_request.verbose, scan_request.socks_proxy, scan_request.retries, [], scan_id,
               "Through Maltego")
