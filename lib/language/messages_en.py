@@ -215,4 +215,6 @@ def all_messages():
             "invalid_database": "Please select from mysql or sqlite in the configuration file",
             "database_connection_failed": "Connection to the selected db failed",
             "fuzzer_no_response": "The http fuzzer did not find any output for {0}",
+            "summary_report": "summary report table",
+            "file_saved": "report saved in {0} and database"
         }
