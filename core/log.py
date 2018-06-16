@@ -19,7 +19,6 @@ from core.config import _paths
 from core.config_builder import _builder
 from core.compatible import version
 from core.alert import write
-from core.color import color
 
 
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):

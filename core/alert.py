@@ -110,7 +110,7 @@ def write(content):
         if version() is 2:
             sys.stdout.write(content.encode('utf8'))
         else:
-            sys.stdout.buffer.write(bytes(content, 'utf8') if type(content) == str else content)
+            sys.stdout.buffer.write(bytes(content, 'utf8') if isinstance(content, str) else content)
     return
 
 
