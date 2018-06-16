@@ -1,8 +1,6 @@
 Service Scanner
 ====================================
 
-***THIS FRAMEWORK SENDS DIAGNOSTICS REPORT TO OUR SERVERS, FOR MORE INFORMATION CLICK [HERE](https://github.com/zdresearch/OWASP-Nettacker/wiki/Developers#diagnostics-reports).***
-
 It's able to detect the services on un-default ports by using existing signatures.
 
 ```python

@@ -117,7 +117,6 @@ def _core_default_config():
         "methods_args": None,
         "method_args_list": False,
         "startup_check_for_update": True,
-        "send_diagnostics": True,
         "wizard_mode": False,
         "profile": None,
         "start_api": False,
