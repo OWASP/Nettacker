@@ -216,5 +216,6 @@ def all_messages():
             "database_connection_failed": "Connection to the selected db failed",
             "fuzzer_no_response": "The http fuzzer did not find any output for {0}",
             "summary_report": "summary report table",
-            "file_saved": "report saved in {0} and database"
+            "file_saved": "report saved in {0} and database",
+            "no_event_found": "no event found in this scan"
         }

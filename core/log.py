@@ -177,8 +177,11 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     # info(messages(language,"inserting_logs_db"))
     # for log in JSON_Data:
     #     submit_logs_to_db(language, log)
-    info(messages(language, "summary_report"))
-    write(data)
+    if events_num:
+        info(messages(language, "summary_report"))
+        write(data)
+    else:
+        info(messages(language, "no_event_found"))
     info(messages(language, "file_saved").format(log_in_file))
     return True
 
