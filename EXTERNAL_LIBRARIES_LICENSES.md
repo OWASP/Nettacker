@@ -24,3 +24,4 @@
 * `flag-icon`: MIT License
 * `jit`: https://github.com/philogb/jit/blob/master/LICENSE
 * `sqlalchemy`: MIT License
+* `canari`: GNU General Public License v3.0
