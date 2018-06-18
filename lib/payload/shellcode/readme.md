@@ -1,4 +1,4 @@
-OWASP Nettacker Shellcodes
+OWASP ZSC Shellcodes
 =====================================
 
 OWASP Nettacker shellcodes are located in here
