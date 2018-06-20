@@ -23,6 +23,10 @@ def package_files(directory):
             paths.append(os.path.join('..', path, filename))
     return paths
 
+if sys.version[0] == '2':
+    os.system("pip install -r requirements.txt")
+else:
+    os.system("pip3 install -r requirements.txt")
 
 setup(
     name="OWASP-Nettacker",
