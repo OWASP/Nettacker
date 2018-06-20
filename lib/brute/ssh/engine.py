@@ -153,6 +153,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
                     pass
                 break
         time.sleep(time_sleep)
+        print "here"
 
 
 def test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
@@ -278,10 +279,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                             break
                     if keyboard_interrupt_flag:
                         break
-                else:
-                    break
-            else:
-                break
 
         # wait for threads
         kill_switch = 0

@@ -36,9 +36,9 @@ def logo():
   \____/   \/  \/_/    \_\_____/|_|     {4}{1}{5}
                           _   _      _   _             _            
                          | \ | |    | | | |           | |            
-  {6}github.com/viraintel{7}   |  \| | ___| |_| |_ __ _  ___| | _____ _ __ 
+  {6}github.com/zdresearch{7}  |  \| | ___| |_| |_ __ _  ___| | _____ _ __ 
   {8}owasp.org{9}              | . ` |/ _ \ __| __/ _` |/ __| |/ / _ \ '__|
-  {10}viraintel.com{11}          | |\  |  __/ |_| || (_| | (__|   <  __/ |   
+  {10}zdresearch.com{11}         | |\  |  __/ |_| || (_| | (__|   <  __/ |   
                          |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|   
                                                
     \n\n'''.format(__version__, __code_name__, color.color('red'), color.color('reset'), color.color('yellow'),
