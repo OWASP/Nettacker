@@ -6,8 +6,40 @@ import os
 from setuptools import setup
 from setuptools import find_packages
 
+if os.path.isdir("build"):
+    sys.exit("please remove the build folder first!")
 
-def package_files(directory):
+
+def requirements():
+    """
+    Grab requirements list based on python version from requirements.txt if you already didn't install it
+
+    Returns:
+        list of requirements in array
+    """
+    requirements_list = []
+    for requirement in open("requirements.txt").read().rsplit("\n"):
+        if "python_version" in requirement:
+            if "> '3'" in requirement and int(sys.version_info[0]) is 3:
+                try:
+                    __import__(requirement.rsplit('==')[0])
+                except:
+                    requirements_list.append(requirement.rsplit(';')[0])
+            elif "< '3'" in requirement and int(sys.version_info[0]) is 2:
+                try:
+                    __import__(requirement.rsplit('==')[0])
+                except:
+                    requirements_list.append(requirement.rsplit(';')[0])
+        else:
+            if requirement != "":
+                try:
+                    __import__(requirement.rsplit('==')[0])
+                except:
+                    requirements_list.append(requirement.rsplit(';')[0])
+    return list(set(requirements_list))
+
+
+def package_files(directory="."):
     """
     This function was created to crawl the directory and find files (none python files) using os.walk
 
@@ -20,13 +52,10 @@ def package_files(directory):
     paths = []
     for (path, directories, filenames) in os.walk(directory):
         for filename in filenames:
-            paths.append(os.path.join('..', path, filename))
+            if filename.rsplit('.')[-1] not in [".py", ".pyc"] and ".git" not in path:
+                paths.append(os.path.join('..', path, filename))
     return paths
 
-if sys.version[0] == '2':
-    os.system("pip install -r requirements.txt")
-else:
-    os.system("pip3 install -r requirements.txt")
 
 setup(
     name="OWASP-Nettacker",
@@ -34,9 +63,9 @@ setup(
     description='OWASP Nettacker - Automated Penetration Testing Framework',
     packages=find_packages(),
     # package files + database file
-    package_data={"": package_files("web") + ["../api/database.sqlite3"]},
+    package_data={"": package_files()},
     include_package_data=True,
-    install_requires=requirements,
+    install_requires=requirements(),
     url="https://github.com/viraintel/OWASP-Nettacker",
     license="Apache-2.0",
     author="Ali Razmjoo",
