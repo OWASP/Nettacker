@@ -149,7 +149,6 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
                     pass
                 break
         time.sleep(time_sleep)
-        print "here"
 
 
 def test_ports(ports, timeout_sec, target, retries, language, num, total, time_sleep, ports_tmp_filename,
