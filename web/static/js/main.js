@@ -125,6 +125,97 @@ $(document).ready(function () {
         $("#crawler_area").removeClass("hidden");
     });
 
+    // start tutorial
+    $("#tutorial_btn").click(function () {
+        if($('#logout_btn').is(':hidden')){
+            var intro = introJs();
+            intro.addSteps([
+                {
+                element: document.querySelectorAll('#session_value')[0],
+                intro: "Please enter your API Key to proceed and click set session to proceed.",
+                position: 'right'
+                }
+            ]);
+            intro.start();
+        }
+        else{
+            var intro = introJs();
+            intro.addSteps([
+                {
+                intro: "Welcome to the OWASP Nettacker Web View Tutorial!",
+                },
+                {
+                element: document.querySelectorAll('#new_scan_btn')[0],
+                intro: "Click this button and select Next.",
+                position: 'right'
+                },
+                {
+                intro: "This is the area where you can perform new scans.",
+                },
+                {
+                element: document.querySelectorAll('#targets-entry')[0],
+                intro: "Enter your targets here. You enter a target and then press enter to enter a new target.",
+                position: 'right'
+                },
+                {
+                element: document.querySelectorAll('#scan_options_combined')[0],
+                intro: "Select the scans or brute forces you want to perform on your target.",
+                position: 'right'
+                },
+                {
+                element: document.querySelectorAll('#graph_flags')[0],
+                intro: "Select the output type of graph. The default is d3_tree_v2_graph.",
+                position: 'right'
+                },
+                {
+                element: document.querySelectorAll('#languages-entry')[0],
+                intro: "Select the language in which you want report in. We support a number of languages.",
+                position: 'right'
+                },
+                {
+                element: document.querySelectorAll('#log_in_file')[0],
+                intro: "Enter the location of the file you want your output in or leave it to the default value.",
+                position: 'right'
+                },
+                {
+                element: document.querySelectorAll('#advance')[0],
+                intro: "Click here to see some of the more advanced options.",
+                position: 'right'
+                },
+                {
+                element: document.querySelectorAll('#advance_options')[0],
+                intro: "These are some of the advanced options you can fiddle with.",
+                position: 'right'
+                },
+                {
+                element: document.querySelectorAll('#submit_new_scan')[0],
+                intro: "Click here to scan the targets with the selected options",
+                position: 'right'
+                },
+                {
+                element: document.querySelectorAll('#results_btn')[0],
+                intro: "Click here to view all the results sorted by the time they were performed.",
+                position: 'right'
+                },
+                {
+                element: document.querySelectorAll('#crawler_btn')[0],
+                intro: "Click here to view all the results sorted by the target on which it was performed.",
+                position: 'right'
+                },
+                {
+                element: document.querySelectorAll('#logout_btn')[0],
+                intro: "Click here to destroy your session.",
+                position: 'right'
+                },
+                {
+                intro: "This is the end of tutorial. If you have any questions, suggestions or " +
+                "feedback please contact us on Github. Thank you."
+                }
+            ]);
+            intro.setOption('showProgress', true).setOption('showBullets', false).start();
+        }
+    });
+
     // submit new scan
     $("#submit_new_scan").click(function () {
 
