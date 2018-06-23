@@ -1,7 +1,7 @@
 ### ICS Detector
 ##### Research Credits: [Mohammad Reza Zamiri](mailto:mr.zamiri@ieee.org) & Ali Razmjoo Qalaei
 
-
++ **This section is under develop to be more flexible with framework, for now you can use it following these steps...**
 + First, run `ics.py` with an IP list or masscan XML output. 
   * `python ics.py -i list.txt` or `python ics.py -i massscan.xml -o real1.json`
 + Second, run scan again after a few hours/moment, save it to other file (e.g. `real2.json`)
