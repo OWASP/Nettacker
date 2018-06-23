@@ -8,6 +8,7 @@ import time
 import socket
 import xmltodict
 import json
+from lib.payload.scanner.service.engine import recv_all
 
 COMMANDS = [
     {
@@ -49,20 +50,6 @@ def sort_output(output, target_length):
     f.close()
 
 
-def recv_all(s):
-    response = ""
-    while 1:
-        try:
-            r = s.recv(1)
-            if r != "":
-                response += r
-            else:
-                break
-        except Exception as _:
-            break
-    return response
-
-
 def first_ics_connect(target, port, timeout, output):
     __JSON_STRUCTURE = {"host": target}
     response = ""
@@ -73,7 +60,7 @@ def first_ics_connect(target, port, timeout, output):
                 s.settimeout(timeout)
                 s.connect((target, port))
                 s.send(CMD_NAME)
-                response = recv_all(s)
+                response = recv_all(s, limit=1000000)
                 FLAG = True
                 for RES in CMD[CMD_NAME]:
                     if RES not in response:

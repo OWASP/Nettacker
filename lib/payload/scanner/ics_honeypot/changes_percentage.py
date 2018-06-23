@@ -44,4 +44,5 @@ if __name__ == "__main__":
                 PERCENTAGE = percentage(target_selected["I20100_RESPONSE"], target_find["I20100_RESPONSE"])
                 print("HOST:{0}\tCHANGE PERCENTAGE:{1}%\tDEFAULT CONFIG:{2}\tI30100 TRAP:{3}".format(
                     target_selected["host"], PERCENTAGE, target_selected["DEFAULT_SIGNATURES"] or
-                    target_selected["DEFAULT_PRODUCTS"], target_selected["\x01I30100\n"]))
+                                                         target_selected["DEFAULT_PRODUCTS"],
+                    target_selected["\x01I30100\n"]))
