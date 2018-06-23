@@ -1,5 +1,5 @@
 ### ICS Detector
-##### Research Credits: Mohammad Reza Zamiri & Ali Razmjoo Qalaei
+##### Research Credits: [Mohammad Reza Zamiri](mailto:mr.zamiri@ieee.org) & Ali Razmjoo Qalaei
 
 
 + First, run `ics.py` with an IP list or masscan XML output. 
