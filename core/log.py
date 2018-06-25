@@ -203,7 +203,16 @@ def __log_into_file(filename, mode, data, language, final=False):
     """
     if version() is 2:
 
-        if _builder(_paths(), default_paths())["tmp_path"] in filename:
+        if isinstance(data, str):
+            log = json.loads(data)
+
+        if isinstance(log, dict):
+            if final:
+                with open(filename, mode) as save:
+                    save.write(data + '\n')
+            else:
+                submit_logs_to_db(language, data)
+        else:
             if not final:
                 flock = lockfile.FileLock(filename)
                 flock.acquire()
@@ -211,16 +220,18 @@ def __log_into_file(filename, mode, data, language, final=False):
                 save.write(data + '\n')
             if not final:
                 flock.release()
-        else:
+    else:
+
+        if isinstance(data, str):
+            log = json.loads(data)
+
+        if isinstance(log, dict):
             if final:
-                with open(filename, mode) as save:
+                with open(filename, mode, encoding='utf-8') as save:
                     save.write(data + '\n')
             else:
                 submit_logs_to_db(language, data)
-
-    else:
-
-        if _builder(_paths(), default_paths())["tmp_path"] in filename:
+        else:
             if not final:
                 flock = lockfile.FileLock(filename)
                 flock.acquire()
@@ -228,10 +239,4 @@ def __log_into_file(filename, mode, data, language, final=False):
                 save.write(data + '\n')
             if not final:
                 flock.release()
-        else:
-            if final:
-                with open(filename, mode, encoding='utf-8') as save:
-                    save.write(data + '\n')
-            else:
-                submit_logs_to_db(language, data)
     return True
