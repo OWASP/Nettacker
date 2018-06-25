@@ -201,10 +201,13 @@ def __log_into_file(filename, mode, data, language, final=False):
     Returns:
         True if success otherwise None
     """
+    log = ''
     if version() is 2:
-
         if isinstance(data, str):
-            log = json.loads(data)
+            try:
+                log = json.loads(data)
+            except ValueError:
+                log = ''
 
         if isinstance(log, dict):
             if final:
@@ -223,7 +226,10 @@ def __log_into_file(filename, mode, data, language, final=False):
     else:
 
         if isinstance(data, str):
-            log = json.loads(data)
+            try:
+                log = json.loads(data)
+            except ValueError:
+                log = ''
 
         if isinstance(log, dict):
             if final:
