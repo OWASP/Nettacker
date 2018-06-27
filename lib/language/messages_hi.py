@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "नेटटेकर इंजन शुरू हुआ ...",
             "options": "पायथन nettacker.py [विकल्प]",
             "help_menu": "नेटटेकर सहायता मेनू दिखाएं",
-            "license": "कृपया लाइसेंस और समझौते https://github.com/viraintel/OWASP-Nettacker पढ़ें",
+            "license": "कृपया लाइसेंस और समझौते https://github.com/zdresearch/OWASP-Nettacker पढ़ें",
             "engine": "इंजन",
             "engine_input": "इंजन इनपुट विकल्प",
             "select_language": "एक भाषा का चयन करें {0}",
@@ -100,7 +100,7 @@ def all_messages():
             "target_submitted": "लक्ष्य {0} जमा!",
             "current_version": "आप OWASP Nettacker संस्करण {0} {1} {2} {6} कोड नाम {3} {4} {5} के साथ चल रहे हैं",
             "feature_unavailable": "यह सुविधा अभी तक उपलब्ध नहीं है! अंतिम संस्करण प्राप्त करने के लिए कृपया \"गिट क्लोन "
-                                   "https://github.com/viraintel/OWASP-Nettacker.git या पाइप इंस्टॉल -यू"
+                                   "https://github.com/zdresearch/OWASP-Nettacker.git या पाइप इंस्टॉल -यू"
                                    " OWASP-Nettacker चलाएं।",
             "available_graph": "सभी गतिविधियों और जानकारी का एक ग्राफ बनाएं, आपको HTML आउटपुट का उपयोग करना होगा।"
                                " उपलब्ध ग्राफ: {0}",

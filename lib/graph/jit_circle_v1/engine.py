@@ -203,7 +203,7 @@ a {
 }
 
 </style>
-<a target="_blank" href="https://github.com/viraintel/OWASP-Nettacker"><h2>OWASP Nettacker</h2></a>
+<a target="_blank" href="https://github.com/zdresearch/OWASP-Nettacker"><h2>OWASP Nettacker</h2></a>
 <!--[if IE]><script language="javascript" type="text/javascript" src="../../Extras/excanvas.js"></script><![endif]-->
 
 <!-- JIT Library File -->
