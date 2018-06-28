@@ -260,16 +260,17 @@ def request_with_data(post_request, content_type, req_type, retries, time_sleep,
         port = url[url.find(':', 7) + 1:url.find('/', 7)]
         response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec,
                                         post_data_format, content_type, socks_proxy)
-        if rule_evaluator(response, condition):
-            __log_into_file(thread_tmp_filename, 'w', '0', language)
-            sample_event['PORT'] = port
-            event_parser(message, sample_event, response, payload, log_in_file, language)
-        output.append({
-            "payload": payload,
-            "condition": condition,
-            "result": rule_evaluator(response, condition),
-            "response": response
-        })
+        if isinstance(response, requests.models.Response):
+            if rule_evaluator(response, condition):
+                __log_into_file(thread_tmp_filename, 'w', '0', language)
+                sample_event['PORT'] = port
+                event_parser(message, sample_event, response, payload, log_in_file, language)
+            output.append({
+                "payload": payload,
+                "condition": condition,
+                "result": rule_evaluator(response, condition),
+                "response": response
+            })
     return output
 
 
@@ -310,16 +311,17 @@ def request_without_data(request, req_type, retries, time_sleep, timeout_sec, pa
         url = url_sample.replace('__target_locat_here__', str(target))
         port = url[url.find(':', 7) + 1:url.find('/', 7)]
         response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec)
-        if rule_evaluator(response, condition):
-            __log_into_file(thread_tmp_filename, 'w', '0', language)
-            sample_event['PORT'] = port
-            event_parser(message, sample_event, response, payload, log_in_file, language)
-        output.append({
-            "payload": payload,
-            "condition": condition,
-            "result": rule_evaluator(response, condition),
-            "response": response
-        })
+        if isinstance(response, requests.models.Response):
+            if rule_evaluator(response, condition):
+                __log_into_file(thread_tmp_filename, 'w', '0', language)
+                sample_event['PORT'] = port
+                event_parser(message, sample_event, response, payload, log_in_file, language)
+            output.append({
+                "payload": payload,
+                "condition": condition,
+                "result": rule_evaluator(response, condition),
+                "response": response
+            })
     return output
 
 
