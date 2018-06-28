@@ -210,7 +210,6 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
             else:
                 time.sleep(time_sleep)
                 continue
-    pass
     return r
 
 
