@@ -8,7 +8,8 @@ import time
 import socket
 import xmltodict
 import json
-from lib.payload.scanner.service.engine import recv_all
+
+# from lib.payload.scanner.service.engine import recv_all
 
 COMMANDS = [
     {
@@ -28,6 +29,30 @@ DEFAULT_SIGNATURES = [
     "ROMPETROL STATION", "PETRON STATION", "CIRCLE K STATION", "LUK OIL", "MURPHY OIL"]
 
 DEFAULT_PRODUCTS = ["SUPER", "UNLEAD", "DIESEL", "PREMIUM"]
+
+
+def recv_all(s, limit=4196):
+    """
+    receive all data from a socket
+
+    Args:
+        s: python socket
+        limit: limit size to get response
+
+    Returns:
+        response or b""
+    """
+    response = ""
+    while len(response) < limit:
+        try:
+            r = s.recv(1)
+            if r != b"":
+                response += r.decode()
+            else:
+                break
+        except Exception as _:
+            break
+    return response
 
 
 def info(msg, response=None, output=None):
@@ -174,6 +199,7 @@ def start():
     info("clearning cache")
     clear_threads(threads)
     info("cache cleaned")
+    time.sleep(args.timeout + 1)
     sort_output(args.output, len(targets))
     sys.exit(0)
 
