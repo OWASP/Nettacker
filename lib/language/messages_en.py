@@ -217,5 +217,7 @@ def all_messages():
             "fuzzer_no_response": "The http fuzzer did not find any output for {0}",
             "summary_report": "summary report table",
             "file_saved": "report saved in {0} and database",
-            "no_event_found": "no event found in this scan"
+            "no_event_found": "no event found in this scan",
+            "invalid_json_type_to_db": "Invalid type of JSON data for the database. Skipping the submission to database"
+                                       ". Data:{0}"
         }

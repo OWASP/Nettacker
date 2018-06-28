@@ -125,6 +125,97 @@ $(document).ready(function () {
         $("#crawler_area").removeClass("hidden");
     });
 
+    // start tutorial
+    $("#tutorial_btn").click(function () {
+        if ($('#logout_btn').is(':hidden')) {
+            var intro = introJs();
+            intro.addSteps([
+                {
+                    element: document.querySelectorAll('#session_value')[0],
+                    intro: "Please enter your API Key to proceed and click set session to proceed.",
+                    position: 'right'
+                }
+            ]);
+            intro.start();
+        }
+        else {
+            var intro = introJs();
+            intro.addSteps([
+                {
+                    intro: "Welcome to the OWASP Nettacker Web View Tutorial!",
+                },
+                {
+                    element: document.querySelectorAll('#new_scan_btn')[0],
+                    intro: "Click this button and select Next.",
+                    position: 'right'
+                },
+                {
+                    intro: "This is the area where you can perform new scans.",
+                },
+                {
+                    element: document.querySelectorAll('#targets-entry')[0],
+                    intro: "Enter your targets here. You enter a target and then press enter to enter a new target.",
+                    position: 'right'
+                },
+                {
+                    element: document.querySelectorAll('#scan_options_combined')[0],
+                    intro: "Select the scans or brute forces you want to perform on your target.",
+                    position: 'right'
+                },
+                {
+                    element: document.querySelectorAll('#graph_flags')[0],
+                    intro: "Select the output type of graph. The default is d3_tree_v2_graph.",
+                    position: 'right'
+                },
+                {
+                    element: document.querySelectorAll('#languages-entry')[0],
+                    intro: "Select the language in which you want report in. We support a number of languages.",
+                    position: 'right'
+                },
+                {
+                    element: document.querySelectorAll('#log_in_file')[0],
+                    intro: "Enter the location of the file you want your output in or leave it to the default value.",
+                    position: 'right'
+                },
+                {
+                    element: document.querySelectorAll('#advance')[0],
+                    intro: "Click here to see some of the more advanced options.",
+                    position: 'right'
+                },
+                {
+                    element: document.querySelectorAll('#advance_options')[0],
+                    intro: "These are some of the advanced options you can fiddle with.",
+                    position: 'right'
+                },
+                {
+                    element: document.querySelectorAll('#submit_new_scan')[0],
+                    intro: "Click here to scan the targets with the selected options",
+                    position: 'right'
+                },
+                {
+                    element: document.querySelectorAll('#results_btn')[0],
+                    intro: "Click here to view all the results sorted by the time they were performed.",
+                    position: 'right'
+                },
+                {
+                    element: document.querySelectorAll('#crawler_btn')[0],
+                    intro: "Click here to view all the results sorted by the target on which it was performed.",
+                    position: 'right'
+                },
+                {
+                    element: document.querySelectorAll('#logout_btn')[0],
+                    intro: "Click here to destroy your session.",
+                    position: 'right'
+                },
+                {
+                    intro: "This is the end of tutorial. If you have any questions, suggestions or " +
+                    "feedback please contact us on Github. Thank you."
+                }
+            ]);
+            intro.setOption('showProgress', true).setOption('showBullets', false).start();
+        }
+    });
+
     // submit new scan
     $("#submit_new_scan").click(function () {
 
@@ -239,9 +330,9 @@ $(document).ready(function () {
 
     var getUrlParameter = function getUrlParameter(sParam) {
         var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-        sURLVariables = sPageURL.split('&'),
-        sParameterName,
-        i;
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
 
         for (i = 0; i < sURLVariables.length; i++) {
             sParameterName = sURLVariables[i].split('=');
@@ -255,9 +346,9 @@ $(document).ready(function () {
 
     var getUrlParameter = function getUrlParameter(sParam) {
         var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-        sURLVariables = sPageURL.split('&'),
-        sParameterName,
-        i;
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
 
         for (i = 0; i < sURLVariables.length; i++) {
             sParameterName = sURLVariables[i].split('=');
@@ -328,27 +419,27 @@ $(document).ready(function () {
             scan_cmd = res[i]["scan_cmd"];
             ports = res[i]["ports"];
             HTMLData += "<a target='_blank' href=\"/results/get?id=" + id + "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
-                        "<div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
-                        "<h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
-                        "class=\"bold label label-primary\">" + id + "</span>&nbsp;&nbsp;&nbsp;<small class=\"label label-info\">" + date + "</small></h3>\n" +
-                        "</div></div>\n" + "<hr>" +
-                        "<p class='mb-1  bold label label-default'>scan_id:" + scan_id + "</p><br>" +
-                        "<p class='mb-1  bold label label-info'>report_filename:" + report_filename + "</p><br>" +
-                        "<p class='mb-1 bold label label-success'>events_num:" + events_num + "</p><br>" +
-                        "<p class='mb-1 bold label label-danger'>ports:" + ports + "</p><br>" +
-                        "<p class='mb-1 bold label label-info'>category:" + category + "</p><br>" +
-                        "<p class='mb-1 bold label label-success'>profile:" + profile + "</p><br>" +
-                        "<p class='mb-1 bold label label-warning'>scan_method:" + scan_method + "</p><br>" +
-                        "<p class='mb-1 bold  label label-primary'>api_flag:" + api_flag + "</p><br>" +
-                        "<p class='mb-1 bold label label-warning'>verbose:" + verbose + "</p><br>" +
-                        "<p class='mb-1 bold label label-info'>report_type:" + report_type + "</p><br>" +
-                        "<p class='mb-1 bold label label-primary'>graph_flag:" + graph_flag + "</p><br>" +
-                        "<p class='mb-1 bold label label-success'>language:" + language + "</p>&nbsp;&nbsp;&nbsp;<span class='flag-icon flag-icon-" +   flags[language] + "'></span><br>" +
-                        "<p class='mb-1 bold label label-default'>scan_cmd:" + scan_cmd + "</p>&nbsp;&nbsp;&nbsp;<br>" +
-                        "</p>\n </a>";
+                "<div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
+                "<h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
+                "class=\"bold label label-primary\">" + id + "</span>&nbsp;&nbsp;&nbsp;<small class=\"label label-info\">" + date + "</small></h3>\n" +
+                "</div></div>\n" + "<hr>" +
+                "<p class='mb-1  bold label label-default'>scan_id:" + scan_id + "</p><br>" +
+                "<p class='mb-1  bold label label-info'>report_filename:" + report_filename + "</p><br>" +
+                "<p class='mb-1 bold label label-success'>events_num:" + events_num + "</p><br>" +
+                "<p class='mb-1 bold label label-danger'>ports:" + ports + "</p><br>" +
+                "<p class='mb-1 bold label label-info'>category:" + category + "</p><br>" +
+                "<p class='mb-1 bold label label-success'>profile:" + profile + "</p><br>" +
+                "<p class='mb-1 bold label label-warning'>scan_method:" + scan_method + "</p><br>" +
+                "<p class='mb-1 bold  label label-primary'>api_flag:" + api_flag + "</p><br>" +
+                "<p class='mb-1 bold label label-warning'>verbose:" + verbose + "</p><br>" +
+                "<p class='mb-1 bold label label-info'>report_type:" + report_type + "</p><br>" +
+                "<p class='mb-1 bold label label-primary'>graph_flag:" + graph_flag + "</p><br>" +
+                "<p class='mb-1 bold label label-success'>language:" + language + "</p>&nbsp;&nbsp;&nbsp;<span class='flag-icon flag-icon-" + flags[language] + "'></span><br>" +
+                "<p class='mb-1 bold label label-default'>scan_cmd:" + scan_cmd + "</p>&nbsp;&nbsp;&nbsp;<br>" +
+                "</p>\n </a>";
         }
 
-        if (res["msg"] == "No more search results"){
+        if (res["msg"] == "No more search results") {
             HTMLData = "<p class=\"mb-1\"> No more results to show!!</p>";
         }
 
@@ -403,10 +494,10 @@ $(document).ready(function () {
 
     $("#previous_btn").click(function () {
         result_page = result_page - 1;
-        if(result_page == 1){
+        if (result_page == 1) {
             $('#previous_btn').hide();
         }
-        if(result_page == 2){
+        if (result_page == 2) {
             $('#previous_btn').show();
         }
         get_results_list(result_page);
@@ -434,7 +525,7 @@ $(document).ready(function () {
         $(".checkbox-vuln-module").prop('checked', $(this).prop('checked'));
     });
 
-    $('.checkbox-vuln-module').click(function(){
+    $('.checkbox-vuln-module').click(function () {
         if (!$(this).is(':checked')) {
             $('.checkAll').prop('checked', false);
             $('.checkbox-vulnerability').prop('checked', false);
@@ -442,7 +533,7 @@ $(document).ready(function () {
         }
     });
 
-    $('.checkbox-scan-module').click(function(){
+    $('.checkbox-scan-module').click(function () {
         if (!$(this).is(':checked')) {
             $('.checkAll').prop('checked', false);
             $('.checkbox-scan').prop('checked', false);
@@ -450,7 +541,7 @@ $(document).ready(function () {
         }
     });
 
-    $('.checkbox-brute-module').click(function(){
+    $('.checkbox-brute-module').click(function () {
         if (!$(this).is(':checked')) {
             $('.checkAll').prop('checked', false);
             $('.checkbox-brute').prop('checked', false);
@@ -460,10 +551,10 @@ $(document).ready(function () {
 
     $("#next_btn").click(function () {
         result_page = result_page + 1;
-        if(result_page == 1){
+        if (result_page == 1) {
             $('#previous_btn').hide();
         }
-        if(result_page == 2){
+        if (result_page == 2) {
             $('#previous_btn').show();
         }
         get_results_list(result_page);
@@ -535,15 +626,15 @@ $(document).ready(function () {
             }
 
             HTMLData += "<a target='_blank' href=\"/logs/get_html?host=" + host + "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
-                        "<div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
-                        "<h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
-                        "class=\"bold label label-danger\">" + host + "</span></h3>\n" +
-                        "</div></div>\n" + "<p class=\"mb-1\"> " + html_categories + html_scan_methods +
-                        html_open_ports + html_description +
-                        "</p>\n </a>";
+                "<div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
+                "<h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
+                "class=\"bold label label-danger\">" + host + "</span></h3>\n" +
+                "</div></div>\n" + "<p class=\"mb-1\"> " + html_categories + html_scan_methods +
+                html_open_ports + html_description +
+                "</p>\n </a>";
         }
 
-        if (res["msg"] == "No more search results"){
+        if (res["msg"] == "No more search results") {
             HTMLData = "<p class=\"mb-1\"> No more results to show!!</p>";
         }
 
@@ -598,10 +689,10 @@ $(document).ready(function () {
 
     $("#crw_previous_btn").click(function () {
         crawler_page = crawler_page - 1;
-        if(crawler_page == 1){
+        if (crawler_page == 1) {
             $('#crw_previous_btn').hide();
         }
-        if (crawler_page == 2){
+        if (crawler_page == 2) {
             $('#crw_previous_btn').show();
         }
         get_crawler_list(crawler_page);
@@ -609,10 +700,10 @@ $(document).ready(function () {
 
     $("#crw_next_btn").click(function () {
         crawler_page = crawler_page + 1;
-        if(crawler_page == 1){
+        if (crawler_page == 1) {
             $('#crw_previous_btn').hide();
         }
-        if (crawler_page ==2){
+        if (crawler_page == 2) {
             $('#crw_previous_btn').show();
         }
         get_crawler_list(crawler_page);
