@@ -4,7 +4,7 @@
 # references
 # https://www.youtube.com/watch?v=nNDsGTalXS0
 # https://baraktawily.blogspot.nl/2018/02/how-to-dos-29-of-world-wide-websites.html
-# https://github.com/viraintel/OWASP-Nettacker/blob/master/lib/vuln/wordpress_dos_cve_2018_6389/engine.py
+# https://github.com/zdresearch/OWASP-Nettacker/blob/master/lib/vuln/wordpress_dos_cve_2018_6389/engine.py
 
 import socket
 import socks

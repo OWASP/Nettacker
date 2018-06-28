@@ -4,14 +4,14 @@ OWASP Nettacker
 [![Donate US](https://img.shields.io/badge/Donate-OWASP-green.svg)](https://www.owasp.org/index.php/OWASP_Nettacker)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/04ca57d1b996435d8a42c767add84859)](https://www.codacy.com/app/zdresearch/OWASP-Nettacker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=zdresearch/OWASP-Nettacker&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/04ca57d1b996435d8a42c767add84859)](https://www.codacy.com/app/zdresearch/OWASP-Nettacker?utm_source=github.com&utm_medium=referral&utm_content=zdresearch/OWASP-Nettacker&utm_campaign=Badge_Coverage)
-[![Python 2.x](https://img.shields.io/badge/python-2.x-blue.svg)](https://travis-ci.org/viraintel/OWASP-Nettacker)
-[![Python 3.x](https://img.shields.io/badge/python-3.x-blue.svg)](https://travis-ci.org/viraintel/OWASP-Nettacker)
-[![Apache License](https://img.shields.io/badge/License-Apache%20v2-green.svg)](https://github.com/viraintel/OWASP-Nettacker/blob/master/LICENSE)
-[![Executed](http://nettacker.z3r0d4y.com/update_counter.py)](https://github.com/viraintel/OWASP-Nettacker/)
+[![Python 2.x](https://img.shields.io/badge/python-2.x-blue.svg)](https://travis-ci.org/zdresearch/OWASP-Nettacker)
+[![Python 3.x](https://img.shields.io/badge/python-3.x-blue.svg)](https://travis-ci.org/zdresearch/OWASP-Nettacker)
+[![Apache License](https://img.shields.io/badge/License-Apache%20v2-green.svg)](https://github.com/zdresearch/OWASP-Nettacker/blob/master/LICENSE)
+[![Executed](http://nettacker.z3r0d4y.com/update_counter.py)](https://github.com/zdresearch/OWASP-Nettacker/)
 [![Twitter](https://img.shields.io/badge/Twitter-@iotscan-blue.svg)](https://twitter.com/iotscan)
 
 
-<img src="https://raw.githubusercontent.com/viraintel/OWASP-Nettacker/master/web/static/img/owasp-nettacker.png" width="200"><img src="https://raw.githubusercontent.com/viraintel/OWASP-Nettacker/master/web/static/img/owasp.png" width="500">
+<img src="https://raw.githubusercontent.com/zdresearch/OWASP-Nettacker/master/web/static/img/owasp-nettacker.png" width="200"><img src="https://raw.githubusercontent.com/zdresearch/OWASP-Nettacker/master/web/static/img/owasp.png" width="500">
 
 
 **Concerns**

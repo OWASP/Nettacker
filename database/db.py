@@ -158,14 +158,17 @@ def submit_logs_to_db(language, log):
     if isinstance(log, str):
         log = json.loads(log)
 
-    session = create_connection(language)
-    session.add(HostsLog(
-        host=log["HOST"], date=log["TIME"], port=log["PORT"], type=log["TYPE"], category=log["CATEGORY"],
-        description=log["DESCRIPTION"].encode('utf8') if version() is 2 else log["DESCRIPTION"],
-        username=log["USERNAME"], password=log["PASSWORD"], scan_id=log["SCAN_ID"], scan_cmd=log["SCAN_CMD"]
-    ))
-    return send_submit_query(session, language)
-
+    if isinstance(log, dict):
+        session = create_connection(language)
+        session.add(HostsLog(
+            host=log["HOST"], date=log["TIME"], port=log["PORT"], type=log["TYPE"], category=log["CATEGORY"],
+            description=log["DESCRIPTION"].encode('utf8') if version() is 2 else log["DESCRIPTION"],
+            username=log["USERNAME"], password=log["PASSWORD"], scan_id=log["SCAN_ID"], scan_cmd=log["SCAN_CMD"]
+        ))
+        return send_submit_query(session, language)
+    else:
+        warn(messages(language, "invalid_json_type_to_db").format(log))
+        return False
 
 def __select_results(language, page):
     """

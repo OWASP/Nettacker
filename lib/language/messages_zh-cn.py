@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "Nettacker引擎启动...",
             "options": "python nettacker.py [选项]",
             "help_menu": "显示Nettacker帮助菜单",
-            "license": "请阅读许可证和协议https://github.com/viraintel/OWASP-Nettacker",
+            "license": "请阅读许可证和协议https://github.com/zdresearch/OWASP-Nettacker",
             "engine": "发动机",
             "engine_input": "引擎输入选项",
             "select_language": "选择一种语言{0}",
@@ -96,7 +96,7 @@ def all_messages():
             "port_found": "主机：{0}端口：{1}（{2}）找到了！",
             "target_submitted": "目标{0}已提交！",
             "current_version": "您正在运行代码为{3} {4} {5}的OWASP Nettacker版本{0} {1} {2} {6}",
-            "feature_unavailable": "此功能尚未提供！请运行“git clone https://github.com/viraintel/OWASP-Nettacker.git"
+            "feature_unavailable": "此功能尚未提供！请运行“git clone https://github.com/zdresearch/OWASP-Nettacker.git"
                                    "或pip install -U OWASP-Nettacker来获取最新版本。",
             "available_graph": "建立所有活动和信息的图表，您必须使用HTML输出。可用图表：{0}",
             "graph_output": "要使用图形功能，您的输出文件名必须以“.html”或“.htm”结尾！",

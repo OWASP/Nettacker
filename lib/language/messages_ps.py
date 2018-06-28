@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "د نیټیکر انجنیر پیل شو",
             "options": "پیډون nettacker.py [اختیارونه]",
             "help_menu": "د Nettacker د مرستې مینو ښودل",
-            "license": "مهرباني وکړئ لايسنس او ​​تړونونه وګورئ https://github.com/viraintel/OWASP-Nettacker",
+            "license": "مهرباني وکړئ لايسنس او ​​تړونونه وګورئ https://github.com/zdresearch/OWASP-Nettacker",
             "engine": "انجن",
             "engine_input": "د انجن د وسیلو اختیارونه",
             "select_language": "یوه ژبه وټاکئ {0}",
@@ -100,7 +100,7 @@ def all_messages():
             "target_submitted": "هدف {0} ورکړل شوی!",
             "current_version": "تاسو د OWASP نټیکریر نسخه چلول {0} {1} {2} {6} د کوډ نوم {3} {4} {5}",
             "feature_unavailable": "دا فیچر لا تر اوسه شتون"
-                                   " نلري! مهرباني وکړئ \"ګټ کلون https://github.com/viraintel/OWASP-Nettacker.git\""
+                                   " نلري! مهرباني وکړئ \"ګټ کلون https://github.com/zdresearch/OWASP-Nettacker.git\""
                                    " یا \"پایپ لاین\" نصب کړئ - د OWASP-Nettacker وروستی نسخه ترلاسه کولو لپاره.",
             "available_graph": "د ټولو فعالیتونو او معلوماتو گراف"
                                " جوړ کړئ، تاسو باید د HTML محصول کاروئ. موجود ګرافونه: {0}",
