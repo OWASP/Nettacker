@@ -1,9 +1,9 @@
 argparse==1.4.0
 netaddr==0.7.19
 ipaddr==2.2.0
-requests==2.18.4
+requests==2.19.1
 paramiko==2.4.1
-texttable==1.2.1
+texttable==1.4.0
 PySocks==1.6.8
 win_inet_pton==1.0.1
 pyOpenSSL==18.0.0
@@ -12,9 +12,9 @@ lockfile==0.12.2
 bs4==0.0.1
 pycurl==7.43.0.1
 pyspf
-sqlalchemy==1.2.8
+sqlalchemy==1.2.9
 canari==3.2.2
-py3DNS==3.1.0; python_version > '3'
-scapy-python3==0.23; python_version > '3'
+py3DNS==3.1.1; python_version > '3'
+scapy-python3==0.25; python_version > '3'
 pyDNS==2.3.6; python_version < '3'
 scapy==2.4.0; python_version < '3'
