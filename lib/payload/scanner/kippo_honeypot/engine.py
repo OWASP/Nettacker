@@ -64,15 +64,18 @@ def conn(targ, port, timeout_sec, socks_proxy):
     except Exception:
         return None
 
-def kippo_detect(host, port, timeout, socks_proxy):
+def kippo_detect(host, port, timeout= None, socks_proxy = None):
     try:
         s = conn(host, port, timeout, socks_proxy)
-        banner = recv_all(s)
-        s.send(banner + spacer)
-        response = recv_all(s)
-        if ('Protocol mismatch' in response or 'bad packet length' in response):
-            return True
+        if s is not None:
+            banner = recv_all(s)
+            s.send(banner + spacer)
+            response = recv_all(s)
+            if ('Protocol mismatch' in response or 'bad packet length' in response):
+                return True
+            else:
+                return False
         else:
             return False
     except Exception as e:
-        print e
+        return False
