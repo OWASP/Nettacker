@@ -77,5 +77,5 @@ def kippo_detect(host, port, timeout= None, socks_proxy = None):
                 return False
         else:
             return False
-    except Exception as e:
+    except Exception:
         return False
