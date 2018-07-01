@@ -30,6 +30,7 @@ ports_services_and_condition = {
     "rsync": [["rsync", "RSYNC"]],
     "portmap": ["Portmap"],
     "pop3" : [["POP3", "pop3"]],
+    "xmpp" : [["xmpp", "xmlns"]],
 }
 
 ports_services_or_condition = {
@@ -65,6 +66,7 @@ ports_services_or_condition = {
                 "nlockmgr	1"],
     "pop3": ["The Microsoft Exchange POP3 service is ready", "Welcome to MailEnable", "POP3 ready", "Capability list follows",
              "CAPA list follows", "Invalid command in current state.", "MDaemon 11.0.0 ready", "Winmail Mail Server","Welcome to coremail Mail"],
+    "xmpp": ["<stream", "<?xml", "xmpp-tls", "<starttls", "jabber:client", "<stream:error>", "<invalid-namespace", "</invalid-namespace>"],
 }
 
 
