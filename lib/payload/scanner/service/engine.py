@@ -29,6 +29,7 @@ ports_services_and_condition = {
     "pptp": [["Firmware:", "Hostname:", "Vendor:", "pptp"]],
     "rsync": [["rsync", "RSYNC"]],
     "portmap": ["Portmap"],
+    "pop3" : [["POP3", "pop3"]],
 }
 
 ports_services_or_condition = {
@@ -61,7 +62,9 @@ ports_services_or_condition = {
     "pptp": ["Firmware: 1", "Hostname: pptp server", "Vendor: BRN", "Vendor: Fortinet pptp", "Vendor: AMIT"],
     "rsync": ["@RSYNCD: 30.0", "@RSYNCD: EXIT"],
     "Portmap": ["Program", "Program	Version	Protocol	Port", "portmapper", "status	1", "nfs	2",
-                "nlockmgr	1"]
+                "nlockmgr	1"],
+    "pop3": ["The Microsoft Exchange POP3 service is ready", "Welcome to MailEnable", "POP3 ready", "Capability list follows",
+             "CAPA list follows", "Invalid command in current state.", "MDaemon 11.0.0 ready", "Winmail Mail Server","Welcome to coremail Mail"],
 }
 
 
