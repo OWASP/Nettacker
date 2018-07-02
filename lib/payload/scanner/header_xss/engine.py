@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import sys
 import requests
 
 def header_xss(host, payloads_xss = None, headers_xss = None):
