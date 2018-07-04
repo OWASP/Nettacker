@@ -86,7 +86,6 @@ def send_submit_query(session, language):
             except Exception as _:
                 time.sleep(0.01)
     except Exception as _:
-        print _
         warn(messages(language, "database_connect_fail"))
         return False
     return False
