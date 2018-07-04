@@ -9,21 +9,24 @@ from core.alert import warn
 from core.alert import messages
 from core.compatible import version
 from lib.socks_resolver.engine import getaddrinfo
+from database.db import get_update_log
+from database.db import save_update_log
+from datetime import timedelta
+from datetime import datetime
 
 url = 'http://nettacker.z3r0d4y.com/version.py'
-
 
 def _update(__version__, __code_name__, language, socks_proxy):
     """
     update the framework
 
-    Args:
+    Args/:
         __version__: version number
         __code_name__: code name
         language: language
         socks_proxy: socks proxy
 
-    Returns:
+     Returns:
         True if success otherwise None
     """
     try:
@@ -48,6 +51,18 @@ def _update(__version__, __code_name__, language, socks_proxy):
         warn(messages(language, "cannot_update"))
     return True
 
+def _update_check(language):
+    try:
+        logs = (get_update_log(language))
+    except Exception:
+        save_update_log(language)
+        logs = (get_update_log(language))
+    logs2 = (logs[len(logs)-2].last_update_time)
+    if datetime.now() > datetime.strptime(logs2, "%Y-%m-%d %H:%M:%S.%f") + timedelta(days=1):
+        save_update_log(language)
+        return False
+    else:
+        return True
 
 def _check(__version__, __code_name__, language, socks_proxy):
     """
@@ -62,6 +77,7 @@ def _check(__version__, __code_name__, language, socks_proxy):
     Returns:
         True if success otherwise None
     """
+#    print(save_update_log(language))
     try:
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith(

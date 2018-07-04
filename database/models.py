@@ -6,6 +6,10 @@ from sqlalchemy import Column, Integer, Text
 
 Base = declarative_base()
 
+class Update_Log(Base):
+    __tablename__ = 'update'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    last_update_time = Column(Text)
 
 class Report(Base):
     """

@@ -6,7 +6,7 @@ import time
 from flask import jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database.models import HostsLog, Report
+from database.models import HostsLog, Report, Update_Log
 from core.alert import warn
 from core.alert import info
 from core.alert import messages
@@ -15,7 +15,7 @@ from core._time import now
 from core import compatible
 from api.api_core import __structure
 from core.config import _database_config
-
+from datetime import datetime
 
 DB = _database_config()["DB"]
 USER = _database_config()["USERNAME"]
@@ -86,6 +86,7 @@ def send_submit_query(session, language):
             except Exception as _:
                 time.sleep(0.01)
     except Exception as _:
+        print _
         warn(messages(language, "database_connect_fail"))
         return False
     return False
@@ -124,6 +125,16 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api
     ))
     return send_submit_query(session, language)
 
+def save_update_log(language):
+    session = create_connection(language)
+    date_time = str(datetime.now())
+    session.add(Update_Log(last_update_time=date_time))
+    return send_submit_query(session, language)
+
+def get_update_log(language):
+    session = create_connection(language)
+    logs = session.query(Update_Log).all()
+    return logs
 
 def remove_old_logs(host, type, scan_id, language):
     """

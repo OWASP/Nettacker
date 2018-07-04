@@ -139,7 +139,7 @@ def _core_config():
         "ping_flag": False,
         "methods_args": None,
         "method_args_list": False,
-        "startup_check_for_update": False,
+        "startup_check_for_update": True,
         "wizard_mode": False,
         "profile": None,
         "start_api": False,
