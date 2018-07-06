@@ -52,17 +52,25 @@ def _update(__version__, __code_name__, language, socks_proxy):
     return True
 
 def _update_check(language):
+    """
+    This Function checks if an Update has happened in the previous day and if not, it checks for update
+
+    Args:
+        Language
+    Return:
+        True or False depending on if update should happen or not
+    """
     try:
         logs = (get_update_log(language))
     except Exception:
         save_update_log(language)
         logs = (get_update_log(language))
-    logs2 = (logs[len(logs)-2].last_update_time)
+    logs2 = (logs[len(logs)-1].last_update_time)
     if datetime.now() > datetime.strptime(logs2, "%Y-%m-%d %H:%M:%S.%f") + timedelta(days=1):
         save_update_log(language)
-        return False
-    else:
         return True
+    else:
+        return False
 
 def _check(__version__, __code_name__, language, socks_proxy):
     """

@@ -125,12 +125,28 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api
     return send_submit_query(session, language)
 
 def save_update_log(language):
+    """
+    This Function Saves date of previous time the Nettacker Update happened
+
+    Args:
+        Language
+    Return:
+        True or False if the data got saved in the db or not
+    """
     session = create_connection(language)
     date_time = str(datetime.now())
     session.add(Update_Log(last_update_time=date_time))
     return send_submit_query(session, language)
 
 def get_update_log(language):
+    """
+    This function Fetches last update time
+
+    Args:
+        Language
+    Return:
+        Return date in string format
+    """
     session = create_connection(language)
     logs = session.query(Update_Log).all()
     return logs

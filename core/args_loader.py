@@ -22,6 +22,7 @@ from core.config_builder import _core_default_config
 from core.config_builder import default_profiles
 from core.config import _profiles
 from core.alert import write_to_api_console
+from core.update import _update_check
 
 # temporary use fixed version of argparse
 if os_name() == "win32" or os_name() == "win64":
