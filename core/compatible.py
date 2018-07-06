@@ -68,10 +68,10 @@ def check(language):
         True if compatible otherwise None
     """
     # from core.color import finish
-    if 'linux' in os_name() or 'darwin' in os_name():
+    if os_name() in ['linux','darwin']:
         pass
         # os.system('clear')
-    elif 'win32' == os_name() or 'win64' == os_name():
+    elif os_name() in ['win32','win64']:
         # if language != 'en':
         #    from core.color import finish
         #    from core.alert import error
@@ -107,6 +107,7 @@ def is_windows():
     Returns:
         True if its running on windows otherwise False
     """
-    if 'win32' == os_name() or 'win64' == os_name():
+    
+    if os_name() in ['win32','win64']:
         return True
     return False
