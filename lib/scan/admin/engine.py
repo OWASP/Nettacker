@@ -93,7 +93,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
             if r.status_code is 200:
                 for dlmsg in directory_listing_msgs:
                     if dlmsg in content:
-                        info(messages(language, "directoy_listing").format(target), log_in_file, "a"
+                        info(messages(language, "directory_listing").format(target), log_in_file, "a"
                                            ,{'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
                                            'PORT': "", 'TYPE': 'admin_scan',
                                            'DESCRIPTION': messages(language, "directoy_listing").format(target), 'TIME': now(),
