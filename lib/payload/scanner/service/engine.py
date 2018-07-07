@@ -8,6 +8,7 @@ import socket
 import socks
 import ssl
 import time
+import re
 
 from lib.socks_resolver.engine import getaddrinfo
 
@@ -15,7 +16,12 @@ result_dict = {}
 external_run_values = []
 
 ports_services_and_condition = {
-    "http": [["HTTP/0.9", "HTTP/1.0", "HTTP/1.1", "HTTP/2.0"]],
+    "http": ["HTTP", ["OK", "CREATED", "No Content", "Moved Permanently", "Found", "Not Modified", "Permanent Redirect"
+                      "Bad Request", "Unauthorized", "Payment Required", "Forbidden", "Not Found", "Method Not Allowed",
+                      "Not Acceptable", "Request Timeout", "Unsupported Media Type", "Too Many Requests",
+                      "Internal Server Error", "Bad Gateway", "Service Unavailable", "Gateway Timeout",
+                      "444 No Response"],
+             ],
     "ftp": ["FTP", ["214", "220", "530", "230", "502", "500"]],
     "ssh": ["SSH"],
     "telnet": ["Telnet"],
@@ -32,28 +38,39 @@ ports_services_and_condition = {
 }
 
 ports_services_or_condition = {
-    "http": ["400 Bad Request", "401 Unauthorized", "302 Found", "Server: cloudflare", "404 Not Found", "HTML",
-             "Content-Length:", "Content-Type:"],
+    "http": ["400 Bad Request", "401 Unauthorized", "302 Found", "Server: cloudflare", "Server: nginx",
+             "Content-Length:", "Content-Type:", "text/html", "application/json", "multipart/form-data",
+             "Access-Control-Request-Headers", "Forwarded: for=", "Proxy-Authorization:", "User-Agent:",
+             "X-Forwarded-Host", "Content-MD5", ["HTTP", "Authorization"], "Access-Control-Request-Method",
+             "Accept-Language", "HTTP", "404 Not Found", "HTML", "Apache"],
     "ftp": [["Pure-FTPd", "----------\r\n"], "\r\n220-You are user number", ["orks FTP server", "VxWorks VxWorks"],
             "530 USER and PASS required", "Server ready.\r\n5", "Invalid command: try being more creative",
             "220 Hotspot FTP server (MikroTik 6.27) ready", "220 SHARP MX-M264N Ver 01.05.00.0n.16.U FTP server.",
             "220 Microsoft FTP Service", "220 FTP Server ready.", "220 Microsoft FTP Service",
             "220 Welcome to virtual FTP service.", "220 DreamHost FTP Server",
-            "220 FRITZ!BoxFonWLAN7360SL(UI) FTP server ready."],
-    "ssh": ["-OpenSSH_", "\r\nProtocol mism", "_sshlib GlobalSCAPE\r\n", "\x00\x1aversion info line too long"],
+            "220 FRITZ!BoxFonWLAN7360SL(UI) FTP server ready.", "Directory status",
+            "Service closing control connection", "Requested file action", "Connection closed; transfer aborted",
+            "Requested file action not taken", "Directory not empty"],
+    "ssh": ["openssh", "-OpenSSH_", "\r\nProtocol mism", "_sshlib GlobalSCAPE\r\n",
+            "\x00\x1aversion info line too long","SSH Windows NT Server", "WinNT sshd", "Secure sshd",
+            "sshd", "SSH Secure Shell", "WinSSHD"],
     "telnet": ["Welcome to Microsoft Telnet Service", "no decompiling or reverse-engineering shall be allowed",
                "is not a secure protocol", "recommended to use Stelnet", "Login authentication",
-               "*WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING*"],
+               "*WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING*", "NetportExpress",
+               "Closing Telnet connection due to host problems", "No more connections are allowed to telnet server",
+               "Raptor Firewall Secure Gateway", "Check Point FireWall-1 authenticated Telnet server running on"],
     "smtp": ["Server ready", "SMTP synchronization error", "220-Greetings", "ESMTP Arnet Email Security", "SMTP 2.0",
-             "Fidelix Fx2020"],
+             "Fidelix Fx2020", "ESMTP"],
     "imap": ["BAD Error in IMAP command received by server", "IMAP4rev1 SASL-IR", "OK [CAPABILITY IMAP4rev1",
              "OK IMAPrev1", "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE NAMESPACE AUTH=PLAIN AUTH=LOGIN]",
              "CAPABILITY completed"
-             "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN AUTH=LOGIN AUTH=DIGEST-MD5 AUTH=CRAM-MD5]"],
-    "mariadb": ["is not allowed to connect to this MariaDB server", "5.5.52-MariaDB", "5.5.5-10.0.34-MariaDB"],
+             "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN AUTH=LOGIN AUTH=DIGEST-MD5 AUTH=CRAM-MD5]",
+             "Internet Mail Server", "IMAP4 service", "BYE Hi This is the IMAP SSL Redirect"],
+    "mariadb": ["is not allowed to connect to this MariaDB server"],
     "mysql": ["is not allowed to connect to this MySQL server"],
     "PostgreSQL": ["fe_sendauth: no password supplied", "no pg_hba.conf entry for host",
-                   "received invalid response to SSL negotiation:", "unsupported frontend protocol"],
+                   "received invalid response to SSL negotiation:", "unsupported frontend protocol",
+                   "FATAL 1:  invalid length of startup packet",],
     "ILC 150 GSM/GPRS|pcworx": ["PLC Type: ILC 150 GSM/GPRS", "Model Number: 2916545", "Firmware Version: 3.93",
                                 "Firmware Version: 3.71", "Firmware Version: 3.70", "Firmware Date:", "Firmware Time:"],
     "RTSP": ["RTSP/1.0 401 Unauthorized", "RTSP/1.0 200 OK", "WWW-Authenticate:", 'Basic realm="device"',
@@ -61,7 +78,18 @@ ports_services_or_condition = {
     "pptp": ["Firmware: 1", "Hostname: pptp server", "Vendor: BRN", "Vendor: Fortinet pptp", "Vendor: AMIT"],
     "rsync": ["@RSYNCD: 30.0", "@RSYNCD: EXIT"],
     "Portmap": ["Program", "Program	Version	Protocol	Port", "portmapper", "status	1", "nfs	2",
-                "nlockmgr	1"]
+                "nlockmgr	1"],
+    "antivir": ["Symantec AntiVirus Scan Engine", "antivirus", "NOD32 AntiVirus", "NOD32SS"],
+    "nntp": ["NetWare-News-Server", "NetWare nntpd", "nntp", "Leafnode nntpd", "InterNetNews NNRP server INN"],
+    "pop3": ["POP3", "POP3 gateway ready", "POP3 Server", "Welcome to mpopd", "OK Hello there"],
+}
+
+ports_services_regex = {
+    "http": ["HTTP\/[\d.]+\s+[\d]+", ],  # checks for any pattern of type HTTP/1.0 200 OK, etc.
+    "ftp": ["FTP\/[\d.]+\s+[\d]+"],  # similar to above in HTTP
+    "ssh": ["SSH-([\d.]+)-OpenSSH_([\w._-]+)[ -]{1,2}Debian[ -_](.*ubuntu.*)", ],
+    "mysql": [".\0\0\0\xff..Host .* is not allowed to connect to this MySQL server$", ],
+    "mariadb": ["[\d.]+[\d][\d]-MariaDB", ],
 }
 
 
@@ -186,6 +214,17 @@ def discover_by_port(host, port, timeout, send_data, socks_proxy, external_run=F
             else:
                 result_dict[port] = service
         c += 1
+    for service in ports_services_regex:
+        for signature in ports_services_regex[service]:
+            try:
+                pattern = re.compile(signature)
+                if pattern.match(final_data):
+                    if ssl_flag:
+                        result_dict[port] = service + "/ssl"
+                    else:
+                        result_dict[port] = service
+            except Exception as _:
+                pass
     try:
         result_dict[port]
     except Exception as _:
