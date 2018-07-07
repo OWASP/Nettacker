@@ -107,7 +107,6 @@ def is_windows():
     Returns:
         True if its running on windows otherwise False
     """
-    
     if os_name() in ['win32','win64']:
         return True
     return False
