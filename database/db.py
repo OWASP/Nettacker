@@ -15,8 +15,6 @@ from core._time import now
 from core import compatible
 from api.api_core import __structure
 from core.config import _database_config
-from datetime import datetime
-from core._time import now
 
 DB = _database_config()["DB"]
 USER = _database_config()["USERNAME"]
