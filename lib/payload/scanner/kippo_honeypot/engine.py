@@ -3,29 +3,7 @@
 
 import sys
 import socket
-
-def recv_all(s, limit=4196):
-    """
-    receive all data from a socket
-
-    Args:
-        s: python socket
-        limit: limit size to get response
-
-    Returns:
-        response or b""
-    """
-    response = ""
-    while len(response) < limit:
-        try:
-            r = s.recv(1)
-            if r != b"":
-                response += r.decode()
-            else:
-                break
-        except Exception as _:
-            break
-    return response
+from lib.payload.scanner.service.engine import recv_all
 
 def conn(targ, port, timeout_sec, socks_proxy):
     """

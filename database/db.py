@@ -16,6 +16,7 @@ from core import compatible
 from api.api_core import __structure
 from core.config import _database_config
 from datetime import datetime
+from core._time import now
 
 DB = _database_config()["DB"]
 USER = _database_config()["USERNAME"]
@@ -134,7 +135,7 @@ def save_update_log(language):
         True or False if the data got saved in the db or not
     """
     session = create_connection(language)
-    date_time = str(datetime.now())
+    date_time = now()
     session.add(Update_Log(last_update_time=date_time))
     return send_submit_query(session, language)
 

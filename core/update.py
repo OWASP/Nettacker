@@ -20,7 +20,7 @@ def _update(__version__, __code_name__, language, socks_proxy):
     """
     update the framework
 
-    Args/:
+    Args:
         __version__: version number
         __code_name__: code name
         language: language
