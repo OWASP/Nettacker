@@ -96,11 +96,9 @@ ports_services_regex = {
 def recv_all(s, limit=4196):
     """
     receive all data from a socket
-
     Args:
         s: python socket
         limit: limit size to get response
-
     Returns:
         response or b""
     """
@@ -120,7 +118,6 @@ def recv_all(s, limit=4196):
 def discover_by_port(host, port, timeout, send_data, socks_proxy, external_run=False):
     """
     request a port to scan and check for existing signatures to discover the service
-
     Args:
         host: host to scan
         port: port to scan
@@ -129,7 +126,6 @@ def discover_by_port(host, port, timeout, send_data, socks_proxy, external_run=F
         socks_proxy: socks proxy
         external_run: if you run this from other module or not calling it from discovery function, you must set
         external_run as True
-
     Returns:
         discovered services and ports in JSON dict
     """
@@ -237,7 +233,6 @@ def discover_by_port(host, port, timeout, send_data, socks_proxy, external_run=F
 def discovery(target, ports=None, timeout=3, thread_number=1000, send_data=None, time_sleep=0, socks_proxy=None):
     """
     Discover the service run on the port, it can detect real service names when users change default port number
-
     Args:
         target: target to scan
         ports: ports in array, or if None it will test 1000 common ports
@@ -246,7 +241,6 @@ def discovery(target, ports=None, timeout=3, thread_number=1000, send_data=None,
         send_data: data to send by socket, if None it will send b"ABC\x00\r\n" * 10 by default
         time_sleep: time to sleep between requests
         socks_proxy: socks proxy
-
     Returns:
         discovered services and ports in JSON dict
     """

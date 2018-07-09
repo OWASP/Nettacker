@@ -9,9 +9,12 @@ from core.alert import warn
 from core.alert import messages
 from core.compatible import version
 from lib.socks_resolver.engine import getaddrinfo
+from database.db import get_update_log
+from database.db import save_update_log
+from datetime import timedelta
+from datetime import datetime
 
 url = 'http://nettacker.z3r0d4y.com/version.py'
-
 
 def _update(__version__, __code_name__, language, socks_proxy):
     """
@@ -23,7 +26,7 @@ def _update(__version__, __code_name__, language, socks_proxy):
         language: language
         socks_proxy: socks proxy
 
-    Returns:
+     Returns:
         True if success otherwise None
     """
     try:
@@ -48,6 +51,26 @@ def _update(__version__, __code_name__, language, socks_proxy):
         warn(messages(language, "cannot_update"))
     return True
 
+def _update_check(language):
+    """
+    This Function checks if an Update has happened in the previous day and if not, it checks for update
+
+    Args:
+        Language
+    Return:
+        True or False depending on if update should happen or not
+    """
+    try:
+        logs = (get_update_log(language))
+    except Exception:
+        save_update_log(language)
+        logs = (get_update_log(language))
+    logs2 = (logs[len(logs)-1].last_update_time)
+    if datetime.now() > datetime.strptime(logs2, "%Y-%m-%d %H:%M:%S.%f") + timedelta(days=1):
+        save_update_log(language)
+        return True
+    else:
+        return False
 
 def _check(__version__, __code_name__, language, socks_proxy):
     """
@@ -62,6 +85,7 @@ def _check(__version__, __code_name__, language, socks_proxy):
     Returns:
         True if success otherwise None
     """
+#    print(save_update_log(language))
     try:
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith(

@@ -6,7 +6,7 @@ import time
 from flask import jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database.models import HostsLog, Report
+from database.models import HostsLog, Report, Update_Log
 from core.alert import warn
 from core.alert import info
 from core.alert import messages
@@ -15,7 +15,6 @@ from core._time import now
 from core import compatible
 from api.api_core import __structure
 from core.config import _database_config
-
 
 DB = _database_config()["DB"]
 USER = _database_config()["USERNAME"]
@@ -124,6 +123,32 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api
     ))
     return send_submit_query(session, language)
 
+def save_update_log(language):
+    """
+    This Function Saves date of previous time the Nettacker Update happened
+
+    Args:
+        Language
+    Return:
+        True or False if the data got saved in the db or not
+    """
+    session = create_connection(language)
+    date_time = now()
+    session.add(Update_Log(last_update_time=date_time))
+    return send_submit_query(session, language)
+
+def get_update_log(language):
+    """
+    This function Fetches last update time
+
+    Args:
+        Language
+    Return:
+        Return date in string format
+    """
+    session = create_connection(language)
+    logs = session.query(Update_Log).all()
+    return logs
 
 def remove_old_logs(host, type, scan_id, language):
     """

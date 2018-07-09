@@ -22,6 +22,7 @@ from core.config_builder import _core_default_config
 from core.config_builder import default_profiles
 from core.config import _profiles
 from core.alert import write_to_api_console
+from core.update import _update_check
 
 # temporary use fixed version of argparse
 if os_name() == "win32" or os_name() == "win64":
@@ -409,7 +410,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         if socks_flag is 5:
             socks_proxy = "socks5://" + socks_proxy
     # Check update
-    if check_update:
+    if check_update and _update_check(language):
         from core.update import _update
         _update(compatible.__version__,
                 compatible.__code_name__, language, socks_proxy)
