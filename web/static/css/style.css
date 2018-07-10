@@ -113,6 +113,56 @@ Relevant styles below
     font-size: 78% !important; 
 }
 
-#tutorial_btn{
-    margin-right: 15px;
+.navbar-btn{
+    margin-left: 15px;
+}
+#api_key_form{
+    margin: 0;
+}
+
+#refresh_btn_page{
+    margin-top:5px;
+    margin-left:0;
+}
+
+#refresh_btn_update{
+    margin-top:5px;
+    margin-left:0;
+}
+
+#crw_refresh_btn_update{
+    margin-top:5px;
+    margin-left:0;
+}
+
+#crw_refresh_btn_page{
+    margin-top:5px;
+    margin-left:0;
+}
+
+#crawler-form{
+    margin-top: 5px;
+    margin-left: 0;
+    padding: 0;
+}
+
+#refresh_btn{
+    margin-bottom: 15px;
+}
+
+#search_btn{
+    margin-top: 5px;
+    margin-left:15px;
+}
+
+.card-date{
+    margin-left: 15px;
+}
+
+.card-hr{
+    margin-top: 0;
+}
+
+.card-flag{
+    margin-left: 10px;
 }
