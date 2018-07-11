@@ -418,11 +418,13 @@ $(document).ready(function () {
             language = res[i]["language"];
             scan_cmd = res[i]["scan_cmd"];
             ports = res[i]["ports"];
-            HTMLData += "<a target='_blank' href=\"/results/get?id=" + id + "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
-                "<div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
+            HTMLData += "<a target='_blank' href=\"/results/get?id=" + id +
+                "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
+                "<div class=\"row\" ><div class=\"d-flex w-100\">\n" +
                 "<h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
-                "class=\"bold label label-primary\">" + id + "</span>&nbsp;&nbsp;&nbsp;<small class=\"label label-info\">" + date + "</small></h3>\n" +
-                "</div></div>\n" + "<hr>" +
+                "class=\"bold label label-primary\">" + id + "</span>" +
+                "<small class=\"label label-info card-date\">" + date + "</small></h3>" +
+                "</div></div>" + "<hr class='card-hr'>" +
                 "<p class='mb-1  bold label label-default'>scan_id:" + scan_id + "</p><br>" +
                 "<p class='mb-1  bold label label-info'>report_filename:" + report_filename + "</p><br>" +
                 "<p class='mb-1 bold label label-success'>events_num:" + events_num + "</p><br>" +
@@ -434,8 +436,9 @@ $(document).ready(function () {
                 "<p class='mb-1 bold label label-warning'>verbose:" + verbose + "</p><br>" +
                 "<p class='mb-1 bold label label-info'>report_type:" + report_type + "</p><br>" +
                 "<p class='mb-1 bold label label-primary'>graph_flag:" + graph_flag + "</p><br>" +
-                "<p class='mb-1 bold label label-success'>language:" + language + "</p>&nbsp;&nbsp;&nbsp;<span class='flag-icon flag-icon-" + flags[language] + "'></span><br>" +
-                "<p class='mb-1 bold label label-default'>scan_cmd:" + scan_cmd + "</p>&nbsp;&nbsp;&nbsp;<br>" +
+                "<p class='mb-1 bold label label-success'>language:" + language + "</p>" +
+                "<span class='card-flag flag-icon flag-icon-" + flags[language] + "'></span><br>" +
+                "<p class='mb-1 bold label label-default'>scan_cmd:" + scan_cmd + "</p>" +
                 "</p>\n </a>";
         }
 
