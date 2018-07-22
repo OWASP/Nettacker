@@ -1,4 +1,8 @@
-import sys, os, time
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Author: Pradeep Jairamani (github.com/pradeepjairamani)
+
+import os, time
 import socket
 import struct
 import re
