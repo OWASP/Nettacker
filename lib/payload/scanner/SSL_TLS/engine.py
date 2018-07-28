@@ -6,10 +6,10 @@ import os, time
 import socket
 import struct
 import re
-from sets import Set
+
 
 class TLS:
-    def __init__(self, host = "", port = 0):
+    def __init__(self, host="", port=0):
         self.host = host
         self.port = port
         self.protocols = {}
@@ -556,10 +556,12 @@ def removeFromCipherList(cipherList, cipher):
     cipherList.pop(cipher, None)
     return cipherList
 
+
 def chunks(s, n):
     # chunk generator from string
     for start in range(0, len(s), n):
         yield s[start:start+n]
+
 
 def reachable(host, port): # a quick reachability check
     reachable = True
@@ -568,8 +570,9 @@ def reachable(host, port): # a quick reachability check
         conn.close()
     except:
         reachable = False
-        pass # prevent from dying
+        #prevent from dying
     return reachable
+
 
 def enumProtocols():
     global supportedProtocols
@@ -592,8 +595,9 @@ def enumProtocols():
         tls.closeConnection()
     return supportedProtocols
 
+
 def enumCiphers(protocol):
-    supportedCiphers = Set()
+    supportedCiphers = set()
     if protocol == 'SSLv2':
         cipherList = tls.ssl2Ciphers()
         sock = tls.connect()
@@ -639,6 +643,7 @@ def enumCiphers(protocol):
             tls.closeConnection()
     return supportedCiphers
 
+
 def processTarget(target, internal=False):
     global tls
     SSLdata = dict()
@@ -646,8 +651,8 @@ def processTarget(target, internal=False):
         target = target + ":443"
         #No port specified, setting a default one 443"
     host = target.split(':')
-    if not internal:
-        pass
+   # if not internal:
+    #    pass
         #Processing target
     if reachable(host[0], host[1]):
         tls = TLS(host[0], host[1])
@@ -665,7 +670,7 @@ def processTarget(target, internal=False):
                     ciphers.append(cipherList[c])
                 SSLdata[p] = ciphers
             return SSLdata
-                      #print ("%s" %(cipherList[c])) # Print Cipher
+             #print ("%s" %(cipherList[c])) # Print Cipher
         else:
             return False
             #The service does not appear to be supporting SSL/TLS using current settings
