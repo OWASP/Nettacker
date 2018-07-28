@@ -651,13 +651,9 @@ def processTarget(target, internal=False):
         target = target + ":443"
         #No port specified, setting a default one 443"
     host = target.split(':')
-   # if not internal:
-    #    pass
-        #Processing target
     if reachable(host[0], host[1]):
         tls = TLS(host[0], host[1])
         protocols = enumProtocols()
-    #    print protocols
         if protocols:
             for p in protocols:
                 ciphers = list()
@@ -670,7 +666,6 @@ def processTarget(target, internal=False):
                     ciphers.append(cipherList[c])
                 SSLdata[p] = ciphers
             return SSLdata
-             #print ("%s" %(cipherList[c])) # Print Cipher
         else:
             return False
             #The service does not appear to be supporting SSL/TLS using current settings
