@@ -105,7 +105,7 @@ class TLS:
         cipher['\x00\x45'] = 'TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA'
         cipher['\x00\x46'] = 'TLS_DH_anon_WITH_CAMELLIA_128_CBC_SHA'
         # http://tools.ietf.org/html/draft-ietf-tls-56-bit-ciphersuites-01 (next 5)
-        cipher['\x00\x62'] = 'TLS_RSA_EXPORT1024_WITH_DES_CBC_SHA'     
+        cipher['\x00\x62'] = 'TLS_RSA_EXPORT1024_WITH_DES_CBC_SHA'
         cipher['\x00\x63'] = 'TLS_DHE_DSS_EXPORT1024_WITH_DES_CBC_SHA'
         cipher['\x00\x64'] = 'TLS_RSA_EXPORT1024_WITH_RC4_56_SHA'
         cipher['\x00\x65'] = 'TLS_DHE_DSS_EXPORT1024_WITH_RC4_56_SHA'
@@ -398,11 +398,11 @@ class TLS:
 
         packet = ""
         packet = struct.pack("!H", int(mask,2) + int(bin_plen,2))  # Length of record
-        packet += "\x01" 
+        packet += "\x01"
         packet += "\x00\x02"
         packet += struct.pack("!H", len(cipher_spec))
         packet += "\x00\x00"
-        packet += "\x00\x10" 
+        packet += "\x00\x10"
         packet += cipher_spec
         packet += challenge
         return packet
