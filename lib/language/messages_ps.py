@@ -9,7 +9,7 @@ def all_messages():
     Returns:
         all messages in JSON
     """
-    return \
+    return
         {
             "scan_started": "د نیټیکر انجنیر پیل شو",
             "options": "پیډون nettacker.py [اختیارونه]",
