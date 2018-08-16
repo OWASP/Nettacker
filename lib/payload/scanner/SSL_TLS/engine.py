@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 # Author: Pradeep Jairamani (github.com/pradeepjairamani)
 
-import os, time
+import os
+import time
 import socket
 import struct
 import re
@@ -18,10 +19,11 @@ class TLS:
         self.protocols['TLSv1.0'] = "\x03\x01"
         self.protocols['TLSv1.1'] = "\x03\x02"
         self.protocols['TLSv1.2'] = "\x03\x03"
-        self.protocols['TLSv1.3'] = "\x03\x04" # Assumption
+        self.protocols['TLSv1.3'] = "\x03\x04"  # Assumption
         self.serverHelloDone = "\x0e\x00\x00\x00"
     # Cipher lists retrieved IANA and multiple RFCs
-    def ssl2Ciphers(self): 
+
+    def ssl2Ciphers(self):
         cipher = dict()
         cipher['\x01\x00\x80'] = 'SSL2_RC4_128_WITH_MD5'
         cipher['\x02\x00\x80'] = 'SSL2_RC4_128_EXPORT40_WITH_MD5'
@@ -35,7 +37,8 @@ class TLS:
 
     def tlsCiphers(self):
         cipher = dict()
-        cipher['\x00\x00'] = 'TLS_NULL_WITH_NULL_NULL' # Initial handshake state    
+        # Initial handshake state
+        cipher['\x00\x00'] = 'TLS_NULL_WITH_NULL_NULL'
         cipher['\x00\x01'] = 'TLS_RSA_WITH_NULL_MD5'
         cipher['\x00\x02'] = 'TLS_RSA_WITH_NULL_SHA'
         cipher['\x00\x03'] = 'TLS_RSA_EXPORT_WITH_RC4_40_MD5'
@@ -381,7 +384,7 @@ class TLS:
         rand += os.urandom(28)
         return rand
 
-    def ssl2Hello(self, cipher = 0):
+    def ssl2Hello(self, cipher=0):
         cipher_spec = ""
         if cipher == 0:
             cipher_list = self.ssl2Ciphers()
@@ -393,11 +396,13 @@ class TLS:
         challenge = "\x6a\x61\x6e\x73\x65\x6e\x6f\x66\x6c\x6f\x72\x6b\x65\x65\x72\x73"
         p_len = len(cipher_spec) + len(challenge) + 9
 
-        mask = bin(0x8000) # Most significant bit should be set to indicate no padding
+        # Most significant bit should be set to indicate no padding
+        mask = bin(0x8000)
         bin_plen = bin(p_len)
 
         packet = ""
-        packet = struct.pack("!H", int(mask,2) + int(bin_plen,2))  # Length of record
+        packet = struct.pack("!H", int(mask, 2) +
+                             int(bin_plen, 2))  # Length of record
         packet += "\x01"
         packet += "\x00\x02"
         packet += struct.pack("!H", len(cipher_spec))
@@ -407,8 +412,8 @@ class TLS:
         packet += challenge
         return packet
 
-    def tlsHello(self, protocol, cipher = 0):
-        record = "\x16" # Message Type 22
+    def tlsHello(self, protocol, cipher=0):
+        record = "\x16"  # Message Type 22
         record += self.protocols[protocol]
         cipher_suites = ""
         if cipher == 0:
@@ -422,7 +427,7 @@ class TLS:
             compression = "\x02\x01\x00"
             hp_len = len(cipher_suites) + len(compression) + 41
             record += struct.pack("!H", hp_len)
-            handshake = "\x01" # Client Hello Message
+            handshake = "\x01"  # Client Hello Message
             h_len = struct.pack("!L", hp_len-4)
             handshake += h_len[1:]
             handshake += self.protocols[protocol]
@@ -433,14 +438,14 @@ class TLS:
             handshake += compression
             return record+handshake
         else:
-            #Error in cipher length!
+            # Error in cipher length!
             return False
-            #sys.exit(2)
+            # sys.exit(2)
 
-    def doClientHello(self, protocol, cipher = 0):
+    def doClientHello(self, protocol, cipher=0):
         response = False
         try:
-            if protocol == "SSLv2": # Special case for SSLv2
+            if protocol == "SSLv2":  # Special case for SSLv2
                 helloMsg = self.ssl2Hello(cipher)
                 self.TCP.sendall(helloMsg)
                 buffer = self.TCP.recv(1024)
@@ -459,7 +464,7 @@ class TLS:
                         else:
                             buffer += more
                     response = buffer
-            else: # SSLv3 and all TLS versions
+            else:  # SSLv3 and all TLS versions
                 helloMsg = self.tlsHello(protocol, cipher)
                 self.TCP.sendall(helloMsg)
                 buffer = self.TCP.recv(1024)
@@ -483,10 +488,10 @@ class TLS:
                 response = False
             elif socket.timeout:
                 return False
-                #The connection timed out, due to a missing or unexpected response
+                # The connection timed out, due to a missing or unexpected response
             else:
                 return False
-                #An unexpected error occurred
+                # An unexpected error occurred
         return response
 
     def connect(self):
@@ -494,7 +499,7 @@ class TLS:
             self.TCP = socket.create_connection((self.host, int(self.port)), 5)
             return self.TCP
         except:
-            #Unable to connect to remote host, please check it is up
+            # Unable to connect to remote host, please check it is up
             pass
 
     def closeConnection(self):
@@ -536,7 +541,7 @@ class TLS:
         else:
             return ('not_implemented', 'not_implemented')
 
-    def responseProtocol(self, response): # For SSLv3 and TLS1.#
+    def responseProtocol(self, response):  # For SSLv3 and TLS1.#
         response = bytearray(response)
         protocol = response[1:3]
         for p in self.protocols:
@@ -563,35 +568,36 @@ def chunks(s, n):
         yield s[start:start+n]
 
 
-def reachable(host, port): # a quick reachability check
+def reachable(host, port):  # a quick reachability check
     reachable = True
     try:
         conn = socket.create_connection((host, int(port)), 1)
         conn.close()
     except:
         reachable = False
-        #prevent from dying
+        # prevent from dying
     return reachable
 
 
 def enumProtocols():
     global supportedProtocols
     supportedProtocols = []
-    protocols = ["TLSv1.3", "TLSv1.2", "TLSv1.1", "TLSv1.0", "SSLv3", "SSLv2"] # High to low 
+    protocols = ["TLSv1.3", "TLSv1.2", "TLSv1.1",
+                 "TLSv1.0", "SSLv3", "SSLv2"]  # High to low
     for p in protocols:
-        sock = tls.connect() # first connect
-        response = tls.doClientHello(p) # then send hello
+        sock = tls.connect()  # first connect
+        response = tls.doClientHello(p)  # then send hello
         if response:
             if p == 'SSLv2':
                 if bytearray(response)[2] == 4:
                     supportedProtocols.append(p)
-                    #Remote service supports sslv2
+                    # Remote service supports sslv2
             else:
                 responseProtocol = tls.responseProtocol(response)
                 contentType = tls.contentType(response)
                 if (contentType[0] == 'handshake' and contentType[1] == 'server_hello') and (responseProtocol == p):
                     supportedProtocols.append(p)
-                    #Remote service supports: TLS1, TLS1.1,TLS1.2, SSLV3
+                    # Remote service supports: TLS1, TLS1.1,TLS1.2, SSLV3
         tls.closeConnection()
     return supportedProtocols
 
@@ -611,7 +617,7 @@ def enumCiphers(protocol):
                 supportedCiphers.add(cipher)
         else:
             pass
-            #No server hello received for SSLv2! (check client hello)
+            # No server hello received for SSLv2! (check client hello)
         tls.closeConnection()
     else:
         cipherList = tls.tlsCiphers()
@@ -630,7 +636,8 @@ def enumCiphers(protocol):
                             break
                         else:
                             supportedCiphers.add(helloCipher)
-                            cipherList = removeFromCipherList(cipherList, helloCipher)
+                            cipherList = removeFromCipherList(
+                                cipherList, helloCipher)
                 elif contentType[0] == 'alert' and contentType[1] == 'handshake_failure':
                     serverHelloCipher = 0
                     break
@@ -649,7 +656,7 @@ def processTarget(target, internal=False):
     SSLdata = dict()
     if not re.match(r'^.*[:]+[0-9]{1,5}$', target):
         target = target + ":443"
-        #No port specified, setting a default one 443"
+        # No port specified, setting a default one 443"
     host = target.split(':')
     if reachable(host[0], host[1]):
         tls = TLS(host[0], host[1])
@@ -657,7 +664,7 @@ def processTarget(target, internal=False):
         if protocols:
             for p in protocols:
                 ciphers = list()
-                if p == 'SSLv2': # Special case for SSL2
+                if p == 'SSLv2':  # Special case for SSL2
                     cipherList = tls.ssl2Ciphers()
                 else:
                     cipherList = tls.tlsCiphers()
@@ -668,7 +675,7 @@ def processTarget(target, internal=False):
             return SSLdata
         else:
             return False
-            #The service does not appear to be supporting SSL/TLS using current settings
+            # The service does not appear to be supporting SSL/TLS using current settings
     else:
         return False
-        #An error occurred while connecting, skipping service/target
+        # An error occurred while connecting, skipping service/target

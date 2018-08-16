@@ -1,9 +1,10 @@
 #!/usr/bin/python
 
-import socket, errno
+import socket
+import errno
 import struct
-import codecs
-import os, sys, time
+import os
+import time
 import re
 from core.alert import *
 
@@ -14,6 +15,7 @@ except ImportError:
 
 result = {}
 
+
 class Target(object):
     def __init__(self, host, port):
         self.host = host
@@ -22,7 +24,8 @@ class Target(object):
 
 class TargetParser:
 
-    ipv6_notation_regex = '^\[(.*?)\]:+([0-9]{1,5})$'  # RFC3986 (section 3.2.2)
+    # RFC3986 (section 3.2.2)
+    ipv6_notation_regex = '^\[(.*?)\]:+([0-9]{1,5})$'
     ipv4_hostname_notation_regex = '^(.*)[:]+([0-9]{1,5})$'
 
     def __init__(self, input_string):
@@ -70,7 +73,8 @@ class TargetParser:
             self.host = m.group(1)
             self.port = m.group(2)
         else:
-            raise ValueError("Invalid format for IPv4 or hostname: {0}".format(m.group(1)))
+            raise ValueError(
+                "Invalid format for IPv4 or hostname: {0}".format(m.group(1)))
 
     def get_target(self):
         """
@@ -91,8 +95,9 @@ class TCP(object):
 
     def connect(self):
         try:
-            self.socket = socket.create_connection((self.host, int(self.port)), self.timeout)
-            #return self.socket
+            self.socket = socket.create_connection(
+                (self.host, int(self.port)), self.timeout)
+            # return self.socket
             return self
         except socket.gaierror:
             error("Invalid/unknown host ({0})".format(self.host))
@@ -166,7 +171,6 @@ class Cipher(object):
     def __init__(self, cipher: tuple):
         self.bytes = cipher[0]
         self.name = cipher[1]
-        pass
 
     @property
     def bits(self):  # This covers most usual ciphers
@@ -190,6 +194,7 @@ class Extension(object):
     """
     rfc6066
     """
+
     def __init__(self, extension_type):
         self.extension_type = extension_type
         self.length = 0
@@ -210,10 +215,12 @@ class EllipticCurves(Extension):
     """
     rfc4492
     """
+
     def __init__(self, elliptic_curve_list):
         super(self.__class__, self).__init__(TLS.ExtensionType.elliptic_curves)
         self.elliptic_curve_list = elliptic_curve_list
-        self.length = len(self.curves_bytes) + 2  # include a length field of 2 bytes
+        # include a length field of 2 bytes
+        self.length = len(self.curves_bytes) + 2
 
     @property
     def extension_data(self):
@@ -235,10 +242,13 @@ class ECPointFormats(Extension):
     """
     rfc4492
     """
+
     def __init__(self, ec_point_format_list):
-        super(self.__class__, self).__init__(TLS.ExtensionType.ec_point_formats)
+        super(self.__class__, self).__init__(
+            TLS.ExtensionType.ec_point_formats)
         self.ec_point_format_list = ec_point_format_list
-        self.length = len(self.ec_point_format_list) + 1  # include a length field of 1 byte
+        self.length = len(self.ec_point_format_list) + \
+            1  # include a length field of 1 byte
 
     @property
     def extension_data(self):
@@ -260,10 +270,13 @@ class SignatureAlgorithms(Extension):
     """
     rfc5246
     """
+
     def __init__(self, signature_hash_list):
-        super(self.__class__, self).__init__(TLS.ExtensionType.signature_algorithms)
+        super(self.__class__, self).__init__(
+            TLS.ExtensionType.signature_algorithms)
         self.signature_hash_list = signature_hash_list
-        self.length = len(self.hash_signature_bytes) + 2  # include a length field
+        self.length = len(self.hash_signature_bytes) + \
+            2  # include a length field
 
     @property
     def extension_data(self):
@@ -285,8 +298,10 @@ class SessionTicketTLS(Extension):
     """
     rfc4507
     """
+
     def __init__(self):
-        super(self.__class__, self).__init__(TLS.ExtensionType.session_ticket_tls)
+        super(self.__class__, self).__init__(
+            TLS.ExtensionType.session_ticket_tls)
         self.length = len(self.extension_data)
 
     @property
@@ -316,6 +331,7 @@ class HeartBeat(Extension):
     """
     rfc6520
     """
+
     def __init__(self, allowed):
         super(self.__class__, self).__init__(TLS.ExtensionType.heartbeat)
         if allowed:
@@ -374,27 +390,33 @@ class ClientHello(Record):
         self.extension_list = []
         try:
             if TLS.is_ssl3_tls(version):
-                super(self.__class__, self).__init__((3, 1), TLS.ContentType.handshake)  # Record version set to TLSv1_0
+                super(self.__class__, self).__init__(
+                    (3, 1), TLS.ContentType.handshake)  # Record version set to TLSv1_0
                 self.handshake_version = version
                 self.compression = b'\x00'
-                self.length = len(self.cipher_spec) + len(self.compression) + 42  # 32 random + 4 length + ..
+                # 32 random + 4 length + ..
+                self.length = len(self.cipher_spec) + \
+                    len(self.compression) + 42
                 self.set_tls_hello_body_bytes()
 
             elif TLS.is_ssl2(version):
-                super(self.__class__, self).__init__(version, TLS.HandshakeTypeSsl2.client_hello)
+                super(self.__class__, self).__init__(
+                    version, TLS.HandshakeTypeSsl2.client_hello)
                 self.challenge = b'\x6a\x61\x6e\x73\x65\x6e\x6f\x66\x6c\x6f\x72\x6b\x65\x65\x72\x73'
                 record_length = len(self.cipher_spec) + len(self.challenge) + 9
-                self.length = TLS.get_ssl2_record_len(record_length, True)  # Set MSB (no padding)
+                self.length = TLS.get_ssl2_record_len(
+                    record_length, True)  # Set MSB (no padding)
 
                 self.set_ssl2_hello_body_bytes()
-        except:
+        except Exception:
             error("Failed to craft ClientHello")
 
     def set_tls_hello_body_bytes(self):
         extension_list_bytes = self.get_extension_list_bytes()
         extension_length = b''
         if extension_list_bytes:
-            self.length = len(self.cipher_spec) + len(self.compression) + 42 + len(extension_list_bytes) + 2
+            self.length = len(
+                self.cipher_spec) + len(self.compression) + 42 + len(extension_list_bytes) + 2
             extension_length = struct.pack('!H', len(extension_list_bytes))
         body_len = self.length - 4
         body_parts = [  # Humor?
@@ -428,8 +450,9 @@ class ClientHello(Record):
                 self.extension_list.append(extension)
                 self.set_tls_hello_body_bytes()  # We need to update the hello_body
             except:
-                error("Something went wrong adding extension type: {0}".format(extension.extension_type))
-        #else:
+                error("Something went wrong adding extension type: {0}".format(
+                    extension.extension_type))
+        # else:
          #   sys.exit("Cannot add extension to the protocol!")
 
     def set_compression(self, compression: bytearray):
@@ -465,23 +488,26 @@ class ServerHello(Record):
 
     def __init__(self, version, body):
         if TLS.is_ssl3_tls(version):
-            super(self.__class__, self).__init__(version, TLS.ContentType.handshake)
+            super(self.__class__, self).__init__(
+                version, TLS.ContentType.handshake)
         elif TLS.is_ssl2(version):
-            super(self.__class__, self).__init__(version, TLS.HandshakeTypeSsl2.server_hello)
+            super(self.__class__, self).__init__(
+                version, TLS.HandshakeTypeSsl2.server_hello)
   #      else:
    #         sys.exit("Unsupported protocol")
         self.length = len(body)
         self.body = body
         self.create_server_hello_body()  # Not really useful atm
 
-    def create_server_hello_body(self): # Check if applicable for SSL2
+    def create_server_hello_body(self):  # Check if applicable for SSL2
         self.body_info['type'] = self.body[0]
         #self.body_info['length'] = self.length - 4
 
     @property
     def response_cipher(self):
         # TYPE(1), LENGTH(3), VERSION(2), RANDOM(32), SID_LENGTH(1) <-- 39 Bytes
-        start = struct.unpack('!b', self.body[38:39])[0] + 39  # SID_LENGTH + 39 Bytes
+        start = struct.unpack('!b', self.body[38:39])[
+            0] + 39  # SID_LENGTH + 39 Bytes
         cipher = self.body[start:start+2]
         if cipher in TLS.ciphers_tls:
             return Cipher((cipher, TLS.ciphers_tls[cipher]))
@@ -491,7 +517,8 @@ class ServerHello(Record):
     @property
     def ssl2_response_ciphers(self):  # Add check to see if version is SSLv2
         ciphers = []
-        cert_length = struct.unpack('!H', self.body[4:6])[0]  # Body starts at SessionID
+        cert_length = struct.unpack('!H', self.body[4:6])[
+            0]  # Body starts at SessionID
         cipher_spec_length = struct.unpack('!H', self.body[6:8])[0]
         if cipher_spec_length % 3 == 0:
             start = 10 + cert_length
@@ -629,7 +656,7 @@ class TLS(object):
         b'\x00\x44': 'TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA',
         b'\x00\x45': 'TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA',
         b'\x00\x46': 'TLS_DH_anon_WITH_CAMELLIA_128_CBC_SHA',
-		b'\x00\x60': 'TLS_RSA_EXPORT1024_WITH_RC4_56_MD5',
+        b'\x00\x60': 'TLS_RSA_EXPORT1024_WITH_RC4_56_MD5',
         b'\x00\x61': 'TLS_RSA_EXPORT1024_WITH_RC2_CBC_56_MD5',
         # http://tools.ietf.org/html/draft-ietf-tls-56-bit-ciphersuites-01 (next 5)
         b'\x00\x62': 'TLS_RSA_EXPORT1024_WITH_DES_CBC_SHA',
@@ -900,17 +927,17 @@ class TLS(object):
         b'\xCC\x17': 'TLS_PSK_WITH_CHACHA20_POLY1305_SHA256_NON_IANA',
         b'\xCC\x18': 'TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256_NON_IANA',
         b'\xCC\x19': 'TLS_RSA_PSK_WITH_CHACHA20_POLY1305_SHA256_NON_IANA',
-		# rfc7905
-		b'\xCC\xA8': 'TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256',
-		b'\xCC\xA9': 'TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256',
-		b'\xCC\xAA': 'TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256',
-		b'\xCC\xAB': 'TLS_PSK_WITH_CHACHA20_POLY1305_SHA256',
-		b'\xCC\xAC': 'TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256',
-		b'\xCC\xAD': 'TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256',
-		b'\xCC\xAE': 'TLS_RSA_PSK_WITH_CHACHA20_POLY1305_SHA256',
-		b'\xFF\x01': 'TLS_RSA_WITH_28147_CNT_GOST94',
-		b'\xFF\x02': 'TLS_RSA_GOST89MAC',  # Official name unknow
-		b'\xFF\x03': 'TLS_RSA_GOST89STREAM',  # Official name unknown
+        # rfc7905
+        b'\xCC\xA8': 'TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256',
+        b'\xCC\xA9': 'TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256',
+        b'\xCC\xAA': 'TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256',
+        b'\xCC\xAB': 'TLS_PSK_WITH_CHACHA20_POLY1305_SHA256',
+        b'\xCC\xAC': 'TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256',
+        b'\xCC\xAD': 'TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256',
+        b'\xCC\xAE': 'TLS_RSA_PSK_WITH_CHACHA20_POLY1305_SHA256',
+        b'\xFF\x01': 'TLS_RSA_WITH_28147_CNT_GOST94',
+        b'\xFF\x02': 'TLS_RSA_GOST89MAC',  # Official name unknow
+        b'\xFF\x03': 'TLS_RSA_GOST89STREAM',  # Official name unknown
         # http://www.mozilla.org/projects/security/pki/nss/ssl/fips-ssl-ciphersuites.html
         b'\xFE\xFE': 'SSL_RSA_FIPS_WITH_DES_CBC_SHA',
         b'\xFE\xFF': 'SSL_RSA_FIPS_WITH_3DES_EDE_CBC_SHA',
@@ -921,45 +948,45 @@ class TLS(object):
     }
 
     class NamedCurve(Enum):
-            sect163k1 = 1
-            sect163r1 = 2
-            sect163r2 = 3
-            sect193r1 = 4
-            sect193r2 = 5
-            sect233k1 = 6
-            sect233r1 = 7
-            sect239k1 = 8
-            sect283k1 = 9
-            sect283r1 = 10
-            sect409k1 = 11
-            sect409r1 = 12
-            sect571k1 = 13
-            sect571r1 = 14
-            secp160k1 = 15
-            secp160r1 = 16
-            secp160r2 = 17
-            secp192k1 = 18
-            secp192r1 = 19
-            secp224k1 = 20
-            secp224r1 = 21
-            secp256k1 = 22
-            secp256r1 = 23
-            secp384r1 = 24
-            secp521r1 = 25
-            # rfc7027
-            brainpoolP256r1 = 26
-            brainpoolP384r1 = 27
-            brainpoolP512r1 = 28
-            ecdh_x25519 = 29  # Temp
-            ecdh_x448 = 30  # Temp
-            # rfc7919
-            ffdhe2048 = 256
-            ffdhe3072 = 257
-            ffdhe4096 = 258
-            ffdhe6144 = 259
-            ffdhe8192 = 260
-            arbitrary_explicit_prime_curves = 65281
-            arbitrary_explicit_char2_curves = 65282
+        sect163k1 = 1
+        sect163r1 = 2
+        sect163r2 = 3
+        sect193r1 = 4
+        sect193r2 = 5
+        sect233k1 = 6
+        sect233r1 = 7
+        sect239k1 = 8
+        sect283k1 = 9
+        sect283r1 = 10
+        sect409k1 = 11
+        sect409r1 = 12
+        sect571k1 = 13
+        sect571r1 = 14
+        secp160k1 = 15
+        secp160r1 = 16
+        secp160r2 = 17
+        secp192k1 = 18
+        secp192r1 = 19
+        secp224k1 = 20
+        secp224r1 = 21
+        secp256k1 = 22
+        secp256r1 = 23
+        secp384r1 = 24
+        secp521r1 = 25
+        # rfc7027
+        brainpoolP256r1 = 26
+        brainpoolP384r1 = 27
+        brainpoolP512r1 = 28
+        ecdh_x25519 = 29  # Temp
+        ecdh_x448 = 30  # Temp
+        # rfc7919
+        ffdhe2048 = 256
+        ffdhe3072 = 257
+        ffdhe4096 = 258
+        ffdhe6144 = 259
+        ffdhe8192 = 260
+        arbitrary_explicit_prime_curves = 65281
+        arbitrary_explicit_char2_curves = 65282
 
     class ECPointFormat(Enum):
         uncompressed = 0
@@ -1013,7 +1040,7 @@ class TLS(object):
         # http://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml
         server_name = 0
         elliptic_curves = 10  # rfc4492
-        ec_point_formats = 11 # rfc4492
+        ec_point_formats = 11  # rfc4492
         signature_algorithms = 13  # rfc5246
         heartbeat = 15
         encrypt_then_mac = 22
@@ -1054,12 +1081,15 @@ class TLS(object):
      #   if not isinstance(record_instance, Record):
       #      sys.exit("send_record (TLS) was not passed a Record instance")
         try:
-            self.TCP.send_all(record_instance.get_bytes())  # Sending the byte representation of the object
+            # Sending the byte representation of the object
+            self.TCP.send_all(record_instance.get_bytes())
             if TLS.is_ssl3_tls(record_instance.version):  # TLS/SSL
-                header = self.TCP.receive_buffer(5)  # TYPE(1), VERSION(2), LENGTH(2)
+                # TYPE(1), VERSION(2), LENGTH(2)
+                header = self.TCP.receive_buffer(5)
                 while header:
                     if header and len(header) == 5:
-                        rec = Record(TLS.get_version_from_bytes(header[1:3]), struct.unpack('!B', header[0:1])[0])
+                        rec = Record(TLS.get_version_from_bytes(
+                            header[1:3]), struct.unpack('!B', header[0:1])[0])
                         rec.length = struct.unpack('!H', header[3:5])[0]
                         if 0 < rec.length:
                             response.append(self.get_response_record(rec))
@@ -1072,8 +1102,10 @@ class TLS(object):
             elif TLS.is_ssl2(record_instance.version):
                 header = self.TCP.receive_buffer(3)  # LENGTH(2), TYPE(1)
                 if header and len(header) == 3:
-                    rec = Record(record_instance.version, struct.unpack('!B', header[2:3])[0])  # Version is assumed
-                    rec.length = TLS.get_ssl2_record_len(struct.unpack('!H', header[0:2])[0] - 3)
+                    rec = Record(record_instance.version, struct.unpack(
+                        '!B', header[2:3])[0])  # Version is assumed
+                    rec.length = TLS.get_ssl2_record_len(
+                        struct.unpack('!H', header[0:2])[0] - 3)
                     if 0 < rec.length:
                         response.append(self.get_response_record(rec))
         except socket.error as e:
@@ -1097,11 +1129,12 @@ class TLS(object):
                     response = ServerHello(record.version, record.body)
                # elif record.content_type == TLS.ContentType.alert:
                 #    warn("Received an alert!")
-                #else:
+                # else:
                 #    warn("Unhandled response for TLS request record")
             elif TLS.is_ssl2(record.version):
                 if record.content_type == TLS.HandshakeTypeSsl2.server_hello:  # server hello
-                    version = TLS.get_version_from_bytes(response.body[2:4])  # For SSL2 version is part of the 'body'
+                    # For SSL2 version is part of the 'body'
+                    version = TLS.get_version_from_bytes(response.body[2:4])
                     response = ServerHello(version, record.body)
                     response.length = record.length
                # else:
@@ -1126,13 +1159,17 @@ class Enumerator(object):
         for v in version_list:
             try:
                 with TCP(self.target.host, self.target.port).connect() as tcp:
-                    tls = TLS(tcp)  # Pass a socket object (connection) to start a TLS instance
+                    # Pass a socket object (connection) to start a TLS instance
+                    tls = TLS(tcp)
                     if TLS.is_ssl3_tls(TLS.versions[v]):
-                        client_hello = self.get_ecc_extended_client_hello(TLS.versions[v], TLS.ciphers_tls)
-                        client_hello.set_compression(bytearray(b'\x01\x00'))  # DEFLATE, null
+                        client_hello = self.get_ecc_extended_client_hello(
+                            TLS.versions[v], TLS.ciphers_tls)
+                        client_hello.set_compression(
+                            bytearray(b'\x01\x00'))  # DEFLATE, null
                         response = tls.send_record(client_hello)
                     elif TLS.is_ssl2(TLS.versions[v]):
-                        response = tls.send_record(ClientHello(TLS.versions[v], TLS.ciphers_ssl2))
+                        response = tls.send_record(ClientHello(
+                            TLS.versions[v], TLS.ciphers_ssl2))
                     if len(response) > 0:
                         s_hello = None  # Bug-fix: the ServerHello is not always the first Record received
                         for record in response:
@@ -1143,9 +1180,9 @@ class Enumerator(object):
                             if s_hello.handshake_protocol == TLS.versions[v]:
                                 supported.append(v)
                                 #info("  [+]: {0}".format(v))
-                                #if s_hello.compression_method is not None:
+                                # if s_hello.compression_method is not None:
                                 #    info("      Compression: {0}".format(s_hello.compression_method.name))
-                                    #result[v] = (s_hello.compression_method.name)
+                                #result[v] = (s_hello.compression_method.name)
             except AttributeError:
                 break
             except:
@@ -1167,7 +1204,8 @@ class Enumerator(object):
                     with TCP(self.target.host, self.target.port).connect() as tcp:
                         tls = TLS(tcp)
                         if TLS.is_ssl3_tls(TLS.versions[version]):
-                            response = tls.send_record(self.get_ecc_extended_client_hello(TLS.versions[version], cipher_list))
+                            response = tls.send_record(self.get_ecc_extended_client_hello(
+                                TLS.versions[version], cipher_list))
                             if len(response) > 0:
                                 s_hello = None
                                 for record in response:
@@ -1181,8 +1219,8 @@ class Enumerator(object):
                                         break
                                     elif hello_cipher:
                                         supported.append(hello_cipher)
-                                        #info("  [+] {0} ({1} bits)".format(hello_cipher.name,
-                                         #                                                hello_cipher.bits))
+                                        # info("  [+] {0} ({1} bits)".format(hello_cipher.name,
+                                        #                                                hello_cipher.bits))
                                         cipher_list.remove(hello_cipher.bytes)
                                         retries = 0
                                 else:  # No hello received, could be an alert
@@ -1195,12 +1233,15 @@ class Enumerator(object):
                                     server_hello_cipher = False
                                     break
                         elif TLS.is_ssl2(TLS.versions[version]):
-                            response = tls.send_record(ClientHello(TLS.versions[version], cipher_list))
+                            response = tls.send_record(ClientHello(
+                                TLS.versions[version], cipher_list))
                             if len(response) > 0:
                                 if isinstance(response[0], ServerHello):
-                                    supported = response[0].ssl2_response_ciphers  # ssl2 returns all ciphers at once
+                                    # ssl2 returns all ciphers at once
+                                    supported = response[0].ssl2_response_ciphers
                                     if self.verbose:
-                                        [info("  [+] {0}".format(s[1])) for s in supported]
+                                        [info("  [+] {0}".format(s[1]))
+                                         for s in supported]
                                 server_hello_cipher = False
                                 break
                             else:
@@ -1212,13 +1253,13 @@ class Enumerator(object):
                     raise
         return supported
 
-
     def get_ecc_extended_client_hello(self, version, cipher_list):
         client_hello = ClientHello(version, cipher_list)
         # Extensions required for ECC cipher detection
         client_hello.add_extension(EllipticCurves(TLS.NamedCurve))
         client_hello.add_extension(ECPointFormats(TLS.ECPointFormat))
-        client_hello.add_extension(SignatureAlgorithms(Enumerator.get_hash_sig_list()))
+        client_hello.add_extension(
+            SignatureAlgorithms(Enumerator.get_hash_sig_list()))
         client_hello.add_extension(ServerName(self.target.host))
         client_hello.add_extension(HeartBeat(True))
         return client_hello
@@ -1245,7 +1286,7 @@ def processTarget(host, port=443):
     enum.verbose = True  # Enumerator will print in verbose mode
 
     supported_protocols = enum.get_version_support(versions)
-    #print(supported_protocols)
+    # print(supported_protocols)
     for p in supported_protocols:
         cipher_list = []
         ciphers = enum.get_cipher_support(p)
