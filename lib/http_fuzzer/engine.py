@@ -158,50 +158,17 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
     r = None
     while True:
         try:
-            if timeout_sec is None:
-                if req_type == "POST":
-                    if content_type == 'application/data':
-                        r = requests.post(url=url, headers=headers, data=data, verify=False)
-                    elif content_type == 'application/json':
-                        r = requests.post(url=url, headers=headers, json=data, verify=False)
-                elif req_type == "PUT":
-                    if content_type == 'application/data':
-                        r = requests.put(url=url, headers=headers, data=data, verify=False)
-                    elif content_type == 'application/json':
-                        r = requests.put(url=url, headers=headers, json=json, verify=False)
-                elif req_type == "PATCH":
-                    if content_type == 'application/data':
-                        r = requests.patch(url=url, headers=headers, data=data, verify=False)
-                    elif content_type == 'application/json':
-                        r = requests.patch(url=url, headers=headers, json=data, verify=False)
-                elif req_type == "GET":
-                    r = requests.get(url=url, headers=headers, verify=False)
-                elif req_type == "HEAD":
-                    r = requests.head(url=url, headers=headers, verify=False)
-                elif req_type == "DELETE":
-                    r = requests.delete(url=url, headers=headers, verify=False)
-            else:
-                if req_type == "POST":
-                    if content_type == 'application/data':
-                        r = requests.post(url=url, headers=headers, data=data, timeout=timeout_sec, verify=False)
-                    elif content_type == 'application/json':
-                        r = requests.post(url=url, headers=headers, json=data, timeout=timeout_sec, verify=False)
-                elif req_type == "PUT":
-                    if content_type == 'application/data':
-                        r = requests.put(url=url, headers=headers, data=data, timeout=timeout_sec, verify=False)
-                    elif content_type == 'application/json':
-                        r = requests.put(url=url, headers=headers, json=data, timeout=timeout_sec, verify=False)
-                elif req_type == "PATCH":
-                    if content_type == 'application/data':
-                        r = requests.patch(url=url, headers=headers, data=data, timeout=timeout_sec, verify=False)
-                    elif content_type == 'application/json':
-                        r = requests.patch(url=url, headers=headers, json=data, timeout=timeout_sec, verify=False)
-                elif req_type == "GET":
-                    r = requests.get(url=url, headers=headers, timeout=timeout_sec, verify=False)
-                elif req_type == "HEAD":
-                    r = requests.head(url=url, headers=headers, timeout=timeout_sec, verify=False)
-                elif req_type == "DELETE":
-                    r = requests.delete(url=url, headers=headers, timeout=timeout_sec, verify=False)
+            req_type = req_type.lower()
+            if req_type in ['post', 'put', 'patch']:
+                if content_type == 'application/data':
+                    r = eval('requests.{}(url=url, headers=headers, data=data,\
+                             timeout=timeout_sec, verify=False)'.format(req_type))
+                elif content_type == 'application/json':
+                    r = eval('requests.{}(url=url, headers=headers, json=data,\
+                             timeout=timeout_sec, verify=False)'.format(req_type))
+            elif req_type in ['get', 'head', 'delete']:
+                r = eval('requests.{}(url=url, headers=headers,\
+                         verify=False, timeout=timeout_sec)'.format(req_type))
             break
         except Exception as _:
             exits += 1
