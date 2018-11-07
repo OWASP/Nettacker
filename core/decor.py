@@ -104,8 +104,8 @@ def socks_proxy(func):
                         if args[i] is not None:
                             socks_proxy = args[i]
                             socks_proxy_in_args = True
-                    except:
-                        pass
+                    except IndexError as ie:
+                        print(ie)
                     break
 
         # Check if 'socks_proxy' is passed as kwargs
