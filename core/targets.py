@@ -47,11 +47,11 @@ def target_type(target):
         start_ip, stop_ip = target.rsplit('-')
         if isIP(start_ip) and isIP(stop_ip):
             return 'RANGE_IPv4'
-    elif re.match('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$', target):
+    elif re.match('^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$', target):
         return 'DOMAIN'
     elif (target.lower().startswith('http://') or target.lower().startswith('https://')):
         t = target.rsplit("://")[1].rsplit("/")[0].rsplit(":")[0]
-        if isIP(t) or isIP6(t) or re.match('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$', t):
+        if isIP(t) or isIP6(t) or re.match('^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$', t):
             return 'HTTP'
     elif len(target.rsplit('.')) is 4 and '-' not in target and '/' in target:
         IP, CIDR = target.rsplit('/')
