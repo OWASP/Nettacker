@@ -10,11 +10,7 @@ import threading
 import string
 import random
 import sys
-import struct
-import re
 import os
-from OpenSSL import crypto
-import ssl
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
@@ -71,7 +67,7 @@ def joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
                 host_ip = socket.gethostbyname(target)
                 if version() is 2:
                     host_ip = host_ip.decode("utf-8")
-                result = spf.check2(host_ip,"admin@"+target, target)
+                result = spf.check2(host_ip, "admin@"+target, target)
                 return True
             except:
                 return False
@@ -84,12 +80,12 @@ def __joomla_version(target, port, timeout_sec, log_in_file, language, time_slee
     if joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "found").format(
-            target, "Sender Policy Framework Record : "+ result[0], " " + result[1]))
+            target, "Sender Policy Framework Record : " + result[0], " " + result[1]))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'joomla_version_scan',
-                           'DESCRIPTION': messages(language, "found").format(target, "Sender Policy Framework Record : "+ result[0], " " + result[1]), 'TIME': now(),
-                           'CATEGORY': "scan",
-                           'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                           'DESCRIPTION': messages(language, "found").format(target, "Sender Policy Framework Record : "
+                                                                             + result[0], " " + result[1]),
+                           'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
         return True
     else:
@@ -128,7 +124,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'joomla_version_scan'))
+                    messages(language, "trying_message").format(trying, total_req, num,
+                                                                total, target, port, 'joomla_version_scan'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -155,9 +152,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "not_found"))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'joomla_version_scan',
-                               'DESCRIPTION': messages(language, "not_found"), 'TIME': now(),
-                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
+                               'TYPE': 'joomla_version_scan', 'DESCRIPTION': messages(language, "not_found"),
+                               'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 

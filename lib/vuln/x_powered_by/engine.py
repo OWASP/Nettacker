@@ -10,11 +10,7 @@ import threading
 import string
 import random
 import sys
-import struct
-import re
 import os
-from OpenSSL import crypto
-import ssl
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
@@ -60,7 +56,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
 
 
 def powered_by(target, port, timeout_sec, log_in_file, language, time_sleep,
-                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+               thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
         if not s:
@@ -73,7 +69,7 @@ def powered_by(target, port, timeout_sec, log_in_file, language, time_sleep,
             req = requests.get(target)
             try:
                 global header_server
-                header_server=req.headers['x-powered-by']
+                header_server = req.headers['x-powered-by']
                 return True
             except:
                 return False
@@ -83,9 +79,9 @@ def powered_by(target, port, timeout_sec, log_in_file, language, time_sleep,
 
 
 def __powered_by(target, port, timeout_sec, log_in_file, language, time_sleep,
-                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                 thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     if powered_by(target, port, timeout_sec, log_in_file, language, time_sleep,
-                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                  thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "target_vulnerable").format(target, port,
                                                             'X-powered-by disclosure in headers - ' + header_server))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
@@ -131,7 +127,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'x_powered_by_vuln'))
+                    messages(language, "trying_message").format(trying, total_req, num,
+                                                                total, target, port, 'x_powered_by_vuln'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -160,8 +157,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             info(messages(language, "no_vulnerability_found").format(
                 'X_powered_by not found'))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'x_powered_by_vuln',
-                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('X-powered-by not found'), 'TIME': now(),
-                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                               'DESCRIPTION': messages(language,
+                                                       "no_vulnerability_found").format('X-powered-by not found'),
+                               'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
