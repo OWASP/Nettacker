@@ -272,10 +272,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                                 break
                         if keyboard_interrupt_flag:
                             break
-                    else:
-                        break
-                else:
-                    break
 
         # wait for threads
         kill_switch = 0
