@@ -1,7 +1,7 @@
-FROM python:2.7-alpine
-RUN apk add --no-cache python pkgconfig python-dev openssl-dev libffi-dev musl-dev make gcc git curl-dev librtmp libxml2-dev libxslt-dev
+FROM ubuntu
+RUN apt update
+RUN apt install -y python python-pip python-dev openssl libffi-dev musl-dev make gcc git curl librtmp* libxml2-dev libxslt-dev
 WORKDIR /usr/src/owaspnettacker
 RUN git clone https://github.com/zdresearch/OWASP-Nettacker.git .
-RUN pip install --no-cache-dir -r requirements.txt
-RUN apk del --purge musl-dev gcc make
+RUN cat requirements.txt | xargs -n 1 pip install
 CMD [ "python", "./nettacker.py" ]
