@@ -17,3 +17,5 @@ py3DNS==3.1.1a0; python_version > '3'
 scapy-python3==0.25; python_version > '3'
 pyDNS==2.3.6; python_version < '3'
 scapy==2.4.0; python_version < '3'
+libnfs==1.0.post4
+pysmb==0.4.2
