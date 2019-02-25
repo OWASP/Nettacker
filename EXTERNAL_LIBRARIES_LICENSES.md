@@ -26,3 +26,9 @@
 * `sqlalchemy`: MIT License
 * `canari`: GNU General Public License v3.0
 * `intro.js`: GNU AGPLv3
+* `ssl`: Python (MIT-like)
+* `urrlib2`: The MIT License (MIT)
+* `libnfs`: LGPLv2.1
+* `smb` : zlib/libpng License 
+
+

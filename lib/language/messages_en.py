@@ -219,5 +219,12 @@ def all_messages():
             "file_saved": "report saved in {0} and database",
             "no_event_found": "no event found in this scan",
             "invalid_json_type_to_db": "Invalid type of JSON data for the database. Skipping the submission to database"
-                                       ". Data:{0}"
+                                       ". Data:{0}",
+	    "windows_error": "sorry, this module unfortunately doesn't work in windows",
+	    "showmount_error": "command not found: showmount. please apt-get install nfs-common",
+	    "show_nfs_results": "{}",
+	    "nfs_not_found": "no network share found on target {0} .. {1}",
+	    "show_smb_results": "{}",
+	    "smb_not_found": "no network share found on target {0} .. {1}",
+	    "show_ftp_results": "{}",
         }
