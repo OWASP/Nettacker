@@ -1,17 +1,13 @@
-import re
-import sys
 import json
 import socket
 from smb import smb_structs
 from nmb.NetBIOS import NetBIOS
-from subprocess import Popen, PIPE
 from smb.SMBConnection import SMBConnection
 
 from core.alert import *
 from core._time import now
 from core.targets import target_type
 from core.log import __log_into_file
-from core.targets import target_to_host
 
 smb_structs.SUPPORT_SMB2 = True
 
@@ -29,7 +25,6 @@ def get_bios_name(ip):
 def check(target, language, scan_id, scan_cmd, log_in_file, timeout_sec):
     userID = ''
     password = ''
-    client_machine_name = socket.gethostname()
     tmp = get_bios_name(target)
     if tmp:
         server_name = tmp[0]

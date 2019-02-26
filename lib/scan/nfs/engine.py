@@ -8,7 +8,6 @@ from core._time import now
 from subprocess import Popen, PIPE
 from core.targets import target_type
 from core.log import __log_into_file
-from core.targets import target_to_host
 
 
 def extra_requirements_dict():

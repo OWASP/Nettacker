@@ -1,21 +1,15 @@
-import re
-import sys
 import json
 import threading
 from ftplib import FTP
-
 from core.alert import *
 from core._time import now
 from core.targets import target_type
 from core.log import __log_into_file
-from core.targets import target_to_host
-
 
 PORT = 21
 
 def extra_requirements_dict():
     return {}
-
 
 def check(target, port ,language, scan_id, scan_cmd, log_in_file, timeout_sec):
     try:
@@ -28,7 +22,7 @@ def check(target, port ,language, scan_id, scan_cmd, log_in_file, timeout_sec):
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': str(port),
                            'TYPE': 'ftp_scan', 'DESCRIPTION': str(resp),
                            'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
-    except Exception as e:        
+    except:        
         resp = '[*] ' + str(target) + ' Login Failed on port: ' + str(port)
         warn(messages(language, "show_ftp_results").format(resp))
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': str(port),
@@ -45,8 +39,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             for port in ports:
                 t = threading.Thread(target=check, args=(target, int(port), language, scan_id, scan_cmd, log_in_file, timeout_sec,))
                 threads.append(t)
-                t.start()
-            
+                t.start() 
         else:
             check(target, PORT, language, scan_id, scan_cmd, log_in_file, timeout_sec)
         for t in threads:

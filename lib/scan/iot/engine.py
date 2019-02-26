@@ -10,8 +10,6 @@ from core._time import now
 from subprocess import Popen, PIPE
 from core.targets import target_type
 from core.log import __log_into_file
-from core.targets import target_to_host
-
 
 devs = {};
 ipList = []
@@ -244,7 +242,6 @@ def check_login(ctx, body, port):
                     headers = {"Status":595, "location":url, "Content-Length":len(body)}
             
                 def sub1(body, headers, dev):
-                    status = int(headers['Status'])
                     if dev['auth'][3] == "body":
                         if dev['auth'][4] == "regex":
                             pattern = dev['auth'][5]
@@ -295,12 +292,12 @@ def check_login(ctx, body, port):
             headers = {"Status":res.getcode(), "location":res.geturl(), "Content-Length":len(body)}
             for hdr in res.info():
                 headers.update({hdr:res.info()[hdr]})
-        except urllib2.HTTPError as e:
-            body = e.read()
-            headers = {"Status":e.getcode(), "location":e.geturl(), "Content-Length":len(body)}
-            for hdr in e.info():
-                headers.update({hdr:e.info()[hdr]})
-        except urllib2.URLError as e:
+        except urllib2.HTTPError as err:
+            body = err.read()
+            headers = {"Status":err.getcode(), "location":err.geturl(), "Content-Length":len(body)}
+            for hdr in err.info():
+                headers.update({hdr:err.info()[hdr]})
+        except urllib2.URLError as err:
             body = ''
             headers = {"Status":595, "location":url, "Content-Length":len(body)}
 
@@ -429,7 +426,7 @@ def check(ctx, port):
                     if url != "":
                         ctx.update({"url":url})
                         ctx.update({"stage":"look4LoginPage"})
-                        return check(ctx)
+                        return check(ctx, port)
             elif int(status) == 404:
                 error("canot find dev type for " + ctx['ip'] + " due to 404 response")
                 return
