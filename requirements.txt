@@ -18,4 +18,4 @@ scapy-python3==0.25; python_version > '3'
 pyDNS==2.3.6; python_version < '3'
 scapy==2.4.0; python_version < '3'
 libnfs==1.0.post4
-pysmb==0.4.2
+pysmb==1.1.27
