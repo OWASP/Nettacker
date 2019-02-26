@@ -22,7 +22,7 @@ def check(target, port ,language, scan_id, scan_cmd, log_in_file, timeout_sec):
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': str(port),
                            'TYPE': 'ftp_scan', 'DESCRIPTION': str(resp),
                            'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
-    except:        
+    except:
         resp = '[*] ' + str(target) + ' Login Failed on port: ' + str(port)
         warn(messages(language, "show_ftp_results").format(resp))
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': str(port),
@@ -39,7 +39,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             for port in ports:
                 t = threading.Thread(target=check, args=(target, int(port), language, scan_id, scan_cmd, log_in_file, timeout_sec,))
                 threads.append(t)
-                t.start() 
+                t.start()
         else:
             check(target, PORT, language, scan_id, scan_cmd, log_in_file, timeout_sec)
         for t in threads:

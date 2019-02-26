@@ -1,7 +1,5 @@
-import re
 import sys
 import json
-import socket
 import libnfs
 from core.alert import *
 from core._time import now
