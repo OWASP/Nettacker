@@ -378,7 +378,7 @@ def __logs_to_report_json(host, language):
             data = {
                 "SCAN_ID": log.scan_id,
                 "HOST": host,
-                "USERNAME": log.usernamr,
+                "USERNAME": log.username,
                 "PASSWORD": log.password,
                 "PORT": log.port,
                 "TYPE": log.type,
