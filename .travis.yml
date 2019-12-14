@@ -20,6 +20,7 @@ os:
 
 # Install requirements
 install:
+ - "pip install --upgrade wheel"
  - "pip install --upgrade setuptools codacy-coverage coverage"
  - "pip install --upgrade -r requirements.txt"
  # scapy has different name in python 2.x and 3.x
