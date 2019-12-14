@@ -71,7 +71,7 @@ def wordpress_version(target, port, timeout_sec, log_in_file, language, time_sle
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
             try:
-                req = requests.get(target+'/wp-admin/')
+                req = requests.get(target+'/wp-admin/install.php')
             except:
                 return False
             try:
