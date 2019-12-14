@@ -7,7 +7,7 @@ python:
  - "2.7"
 # - "3.2" texttable is not supporting this version!
 # - "3.3" paramiko not supported
- - "3.4"
+# - "3.4" error due to canari now requiring 3.5: https://travis-ci.org/zdresearch/OWASP-Nettacker/jobs/624877324#L282
  - "3.5"
  - "3.6"
  - "3.6-dev"
