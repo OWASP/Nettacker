@@ -45,7 +45,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # set user agent
         headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0",
                    "Accept": "text/javascript, text/html, application/xml, text/xml, */*",
-                   "Accept-Language": "en-US,en;q=0.5"
+                   "Accept-Language": "en-US,en;q=0.5",
+                   "Referer": "https://viewdns.info/"
                    }
         total_req = 1
         trying = 1
@@ -54,7 +55,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         n = 0
         while 1:
             try:
-                res = requests.get('http://viewdns.info/reverseip/?host={0}&t=1'.format(target), timeout=timeout_sec,
+                res = requests.get('https://viewdns.info/reverseip/?host={0}&t=1'.format(target), timeout=timeout_sec,
                                    headers=headers, verify=True).text
                 break
             except:
