@@ -305,9 +305,10 @@ def __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose
                     break
         if results.status_code is 200:
             try:
-                for l in re.compile('<TD>(.*?)</TD>').findall(results.content):
-                    if '*' not in l and l.endswith('.' + target) and l not in subs:
-                        subs.append(l)
+                for list_of_domains in re.compile('<TD>(.*?)</TD>').findall(results.text):
+                    for domain in list_of_domains.split('<BR>'):
+                        if '*' not in domain and domain.endswith('.' + target) and domain not in subs:
+                            subs.append(domain)
             except Exception:
                 pass
         else:
