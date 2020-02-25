@@ -18,7 +18,7 @@ def extra_requirements_dict():
     return {
         "pma_scan_http_method": ["GET"],
         "pma_scan_random_agent": ["True"],
-        "pma_scan_list": ['/admin/', '/accounts/login/', '/admin1.php/', '/admin.php/', 
+        "pma_scan_list": ['/admin/', '/accounts/login/', '/admin1.php/', '/admin.php/',
                           '/admin.html/', '/admin1.php/', '/admin1.html/', '/login.php/',
                           '/admin/cp.php/', '/cp.php/', '/administrator/index.php/', '/administrator/index.html/',
                           '/administartor/', '/admin.login/', '/administrator/login.php/', '/administrator/login.html/',
