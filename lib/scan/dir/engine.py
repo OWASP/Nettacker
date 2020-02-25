@@ -240,5 +240,4 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         os.remove(thread_tmp_filename)
     else:
         warn(messages(language, "input_target_error").format('dir_scan', target))
-        
 wordListFile.close()
