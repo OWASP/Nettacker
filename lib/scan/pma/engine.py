@@ -57,7 +57,6 @@ def extra_requirements_dict():
                           '/PMA2018/', '/pma2011/', '/pma2012/', '/pma2013/', '/pma2014/', '/pma2015/', '/pma2016/',
                           '/pma2017/', '/pma2018/', '/phpmyadmin2011/', '/phpmyadmin2012/', '/phpmyadmin2013/',
                           '/phpmyadmin2014/', '/phpmyadmin2015/', '/phpmyadmin2016/', '/phpmyadmin2017/', '/phpmyadmin2018/',]
-    
     }
 
 
