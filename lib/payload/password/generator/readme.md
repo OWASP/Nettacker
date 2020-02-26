@@ -13,7 +13,7 @@ password_list = generate(first_name="", last_name = "", nick= "", email = "", do
 
 dob = Date of Birth- Format (DD/MM/YYYY, Eg. 28/05/1996)
 
-other = Add more characters to the password list seperated by , For Eg. "hello,world,my,name,is,pradeep"
+other = Add more characters to the password list separated by , For Eg. "hello,world,my,name,is,pradeep"
 
 minm = Minimum number of characters for the elements in password list (Default - 8)
 
