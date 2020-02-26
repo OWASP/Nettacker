@@ -22,8 +22,14 @@ from core.log import __log_into_file
 
 def extra_requirements_dict():
     return {
-        "ssh_brute_users": ["root",  "user", ],
-        "ssh_brute_passwds": ["root", "user", "1qaz2wsx", "12345678"],
+        "ssh_brute_users": ["administrator", "admin", "manager", "root", "cisco", "apc", "pass", "security", "user", "system", "sys", "wampp", "newuser",
+        "xampp-dav-unsecure", "vagrant", "Debian-exim", "adm", "admin", "administrator", "apache", "at", "backup", "bb", "bin", "cron", "daemon", "db2fenc1",
+        "db2inst1", "ftp", "games", "gdm", "gnats", "guest", "halt", "irc", "list", "lp", "mail", "man", "mysql", "named", "news", "nobody", "ntp", "operator",
+        "oracle", "oracle8", "portage", "postfix", "postgres", "postmaster", "proxy", "public", "root", "rpc", "rwhod", "shutdown", "smmsp", "smmta", "squid",
+        "sshd", "sync", "sys", "system", "test", "toor", "user", "uucp", "websphere", "www-data"],
+        "ssh_brute_passwds": ["root", "user", "1qaz2wsx", "12345678", "toor", "raspberry", "dietpi", "test", "uploader",
+        "password", "admin", "administrator", "marketing", "12345678", "1234", "12345", "qwerty", "webadmin", "webmaster",
+        "maintaince", "techsupport", "letmein", "logon", "Passw@rd"],
         "ssh_brute_ports": ["22"]
     }
 
