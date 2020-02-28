@@ -1,6 +1,5 @@
-FROM ubuntu
-RUN apt update
-RUN apt install -y python python-pip python-dev openssl libffi-dev musl-dev make gcc git curl librtmp* libxml2-dev libxslt-dev
+FROM python:3.6-alpine3.8
+RUN apk --update add --virtual build-dependencies git gcc musl-dev libffi-dev libxml2-dev libxslt-dev openssl-dev make
 WORKDIR /usr/src/owaspnettacker
 RUN git clone https://github.com/zdresearch/OWASP-Nettacker.git .
 RUN pip install -r requirements.txt
