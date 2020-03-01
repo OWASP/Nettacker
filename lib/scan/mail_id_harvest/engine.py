@@ -14,13 +14,12 @@ from lib.socks_resolver.engine import getaddrinfo
 
 def extra_requirement_dict():
     return {}
-    
+
 def search_platform(target,search):
     '''
     Args:
         target = Domain
         search=search engines for parsing query
-    
     Returns:
         the search request url dictionary
     '''
