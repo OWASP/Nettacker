@@ -88,9 +88,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     
                     for item in information:
                         if item.endswith(target) and item not in mails:
-                            mails.append(item)   
+                            mails.append(item)
                             
-        for mail in mails: 
+        for mail in mails:
             try:
                 if verobose_level>3:
                     info(messages(languages,"done"))
@@ -102,7 +102,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
 
         if verbose_level is not 0:
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'mail_id_harvest_scan', 'DESCRIPTION': messages(language, "domain_found").format(len(mails), ", ".join(mails) if len(_values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,'SCAN_CMD': scan_cmd}) + "\n"
-            __log_into_file(log_in_file, 'a', data, language) 
-  
+            __log_into_file(log_in_file, 'a', data, language)
     else:
-        warn(messages(language, "input_target_error").format('mail_id_harvest_scan', target)) 
+        warn(messages(language,"input_target_error").format('mail_id_harvest_scan', target))
