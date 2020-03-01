@@ -23,10 +23,7 @@ def search_platform(target,search):
     
     Returns:
         the search request url dictionary
-    
     '''
-
-
     if search=='google':
         url='https://www.google.com/search?num=50&hl=en&meta=&q='
     return {
@@ -82,7 +79,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     information=mail_pattern.findall(result.text)
                     for item in information:
                         if item.endswith(target) and item not in mails:
-                            mails.append(item)                  
+                            mails.append(item)
         for mail in mails:
             try:
                 if verobose_level>3:
