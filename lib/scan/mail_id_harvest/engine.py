@@ -64,10 +64,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                    "Accept": "text/javascript, text/html, application/xml, text/xml, */*",
                    "Accept-Language": "en-US,en;q=0.5"
                    }
-                   
+        
         #info(messages(language,"done"))
         #main harvest function
-                   
+        
         mails=[]   #mail list empty
         search_engines={'google':'.st'}   #this search engines have class which contain metadata
         
@@ -89,7 +89,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     for item in information:
                         if item.endswith(target) and item not in mails:
                             mails.append(item)
-                            
+        
         for mail in mails:
             try:
                 if verobose_level>3:
