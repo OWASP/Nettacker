@@ -85,11 +85,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         '@' +
                         '[a-zA-Z0-9.-]*' + target)
                     information=mail_pattern.findall(result.text)
+                    
                     for item in information:
                         if item.endswith(target) and item not in mails:
-                            mails.append(item)
-        
-                         
+                            mails.append(item)   
+                            
         for mail in mails: 
             try:
                 if verobose_level>3:
@@ -97,20 +97,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             except Namerror:
                 info(messages(languages,"done"))
             #info(messages(language,"choose_scan_method").format(mail))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
-                                   'TYPE': 'mail_id_harvest_scan', 'DESCRIPTION':mail,
-                                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                                   'SCAN_CMD': scan_cmd}) + "\n"
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'mail_id_harvest_scan', 'DESCRIPTION':mail, 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
-            
-            
+
         if verbose_level is not 0:
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 
-                'TYPE': 'mail_id_harvest_scan',
-                'DESCRIPTION': messages(language, "domain_found").format(len(mails), 
-                ", ".join(mails) if len(_values) > 0 else "None"), 'TIME': now(), 
-                'CATEGORY': "scan", 'SCAN_ID': scan_id,'SCAN_CMD': scan_cmd}) + "\n"
-            __log_into_file(log_in_file, 'a', data, language)
-            
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'mail_id_harvest_scan', 'DESCRIPTION': messages(language, "domain_found").format(len(mails), ", ".join(mails) if len(_values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,'SCAN_CMD': scan_cmd}) + "\n"
+            __log_into_file(log_in_file, 'a', data, language) 
+  
     else:
         warn(messages(language, "input_target_error").format('mail_id_harvest_scan', target)) 
