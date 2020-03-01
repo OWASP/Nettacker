@@ -13,10 +13,22 @@ from core.targets import target_to_host
 from core.log import __log_into_file
 from lib.socks_resolver.engine import getaddrinfo
 
+
 def extra_requirement_dict():
     return {}
     
 def search_platform(target,search):
+    '''
+    Args:
+        target = Domain
+        search=search engines for parsing query
+    
+    Returns:
+        the search request url dictionary
+    
+    '''
+
+
     if search=='google':
         url='https://www.google.com/search?num=50&hl=en&meta=&q='
     return {
@@ -56,16 +68,16 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                    }
                    
         #info(messages(language,"done"))
+        #main harvest function
                    
         mails=[]   #mail list empty
-        search_engines={'google':'.st'}
+        search_engines={'google':'.st'}   #this search engines have class which contain metadata
+        
         for engine in search_engines:
             links=search_platform(target,engine)
             
             for platform in links:
                 scrap=requests.get(links[platform],headers=headers)
-                #info(messages(language,"done"))
-                info(messages(language,"choose_scan_method").format(scrap.status_code))
                 parse=BS(scrap.text,'lxml')
                 results=parse.select(search_engines[engine])
                 
@@ -73,23 +85,22 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     mail_pattern=re.compile(
                         '[a-zA-Z0-9.\-_+#~!$&\',;=:]+' +
                         '@' +
-                        '[a-zA-Z0-9.-]*' + 'indusuni.ac.in')
+                        '[a-zA-Z0-9.-]*' + target)
                     information=mail_pattern.findall(result.text)
                     for item in information:
                         if item.endswith(target) and item not in mails:
                             mails.append(item)
-                            
-        info(messages(language,"choose_scan_method").format(mails))
+        
+        #we get the mails list through search now appending in the database                    
         for mail in mails:
-            info(messages("done"))
             try:
                 if verobose_level>3:
                     info(messages(languages,"done").format(mail))
             except:
                 pass
-            info(messages(language,"choose_scan_method").format(mail))
+            #info(messages(language,"choose_scan_method").format(mail))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
-                                   'TYPE': 'mail_id_harvest_scan', 'DESCRIPTION':domain,
+                                   'TYPE': 'mail_id_harvest_scan', 'DESCRIPTION':mail,
                                    'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
             
