@@ -26,21 +26,25 @@ def search_platform(target, search):
     '''
     if search == 'google':
         url = 'https://www.google.com/search?num=50&hl=en&meta=&q='
-        twitter = 'site%3Atwitter.com%20intitle%3A%22on+Twitter%22%20'
+    elif search == 'bing':
+        url = 'http://www.bing.com/search?count=50&setlang=en-us&q='
+    elif search == 'yahoo':
+        url = 'https://search.yahoo.com/search?&fr=yfp-t-152&n=10&p='
     return {
-        'google_url': url + target,
-        'linkedin_url': url + 'site%3Alinkedin.com/in%20' + target,
-        'twitter_url': url + twitter + target,
-        'github_url': url + 'site%3Agithub.com ' + target
+        'search_'+search: url + target,
+        'linkedin_url': url + 'site:linkedin.com/in' + target,
+        'twitter_url': url + 'site:twitter.com ' + target,
+        'github_url': url + 'site:github.com ' + target
     }
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num,
           total, log_in_file, time_sleep, language, verbose_level, socks_proxy,
           retries, methods_args, scan_id, scan_cmd):  # Main function
-    if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN'
-    or target_type(target) != 'HTTP' or target_type != 'SINGLE_IPv6':
-        # output format
+    if (target_type(target) != 'SINGLE_IPv4' or
+            target_type(target) != 'DOMAIN' or
+            target_type(target) != 'HTTP' or
+            target_type != 'SINGLE_IPv6'):  # output format
         time.sleep(time_sleep)
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith(
@@ -74,12 +78,16 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num,
         # info(messages(language,"done"))
         # main harvest function
         mails = []   # mail list empty
-        search_engines = {'google': '.st'}
+        search_engines = {'google': '.st', 'bing': '.b_caption p',
+                          'yahoo': 'lh-16'}
         # this search engines have class which contain metadata
         for engine in search_engines:
             links = search_platform(target, engine)
+            info(messages(language, "waiting").format(engine))
             for platform in links:
                 scrap = requests.get(links[platform], headers=headers)
+                if scrap.status_code == 200:
+                    info(messages(language, "checking").format(platform))
                 parse = BS(scrap.text, 'lxml')
                 results = parse.select(search_engines[engine])
                 for result in results:
@@ -94,9 +102,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num,
         for mail in mails:
             try:
                 if verobose_level > 3:
-                    info(messages(languages, "done"))
-            except Namerror:
-                info(messages(languages, "done"))
+                    info(messages(language, "done"))
+            except NameError:
+                verbose_level = 0
                 # info(messages(language,"choose_scan_method").format(mail))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '',
                                'PORT': '', 'TYPE': 'mail_id_harvest_scan',
@@ -110,8 +118,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num,
                                'DESCRIPTION':
                                    messages(language, "domain_found")
                                    .format(len(mails), ", ".join(mails)
-                                           if len(_values) >
-                                           else "None"),
+                                           if len(mails) > 0 else "None"),
                                'TIME': now(), 'CATEGORY': "scan",
                                'SCAN_ID': scan_id,
                                'SCAN_CMD': scan_cmd}) + "\n"
