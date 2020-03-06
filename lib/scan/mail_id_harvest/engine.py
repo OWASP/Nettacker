@@ -7,6 +7,7 @@ import re
 from bs4 import BeautifulSoup as BS
 from core._time import now
 from core.alert import *
+from core.targets import target_to_host
 from core.targets import target_type
 from core.log import __log_into_file
 from lib.socks_resolver.engine import getaddrinfo
@@ -81,24 +82,28 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num,
         search_engines = {'google': '.st', 'bing': '.b_caption p',
                           'yahoo': 'lh-16'}
         # this search engines have class which contain metadata
-        for engine in search_engines:
-            links = search_platform(target, engine)
-            info(messages(language, "waiting").format(engine))
-            for platform in links:
-                scrap = requests.get(links[platform], headers=headers)
-                if scrap.status_code == 200:
-                    info(messages(language, "checking").format(platform))
-                parse = BS(scrap.text, 'lxml')
-                results = parse.select(search_engines[engine])
-                for result in results:
-                    mail_pattern = re.compile(
-                        '[a-zA-Z0-9.\-_+#~!$&\',;=:]+' +
-                        '@' +
-                        '[a-zA-Z0-9.-]*' + target)
-                    information = mail_pattern.findall(result.text)
-                    for item in information:
-                        if item.endswith(target) and item not in mails:
-                            mails.append(item)
+        if target_type(target) == 'HTTP':   # changing http target into domain
+            target = target_to_host(target)
+        if target_type(target) == 'DOMAIN':
+            target = target.replace('www.', '')
+            for engine in search_engines:
+                links = search_platform(target, engine)
+                info(messages(language, "waiting").format(engine))
+                for platform in links:
+                    scrap = requests.get(links[platform], headers=headers)
+                    if scrap.status_code == 200:
+                        info(messages(language, "checking").format(platform))
+                    parse = BS(scrap.text, 'lxml')
+                    results = parse.select(search_engines[engine])
+                    for result in results:
+                        mail_pattern = re.compile(
+                            '[a-zA-Z0-9.\-_+#~!$&\',;=:]+' +
+                            '@' +
+                            '[a-zA-Z0-9.-]*' + target)
+                        information = mail_pattern.findall(result.text)
+                        for item in information:
+                            if item.endswith(target) and item not in mails:
+                                mails.append(item)
         for mail in mails:
             try:
                 if verobose_level > 3:
