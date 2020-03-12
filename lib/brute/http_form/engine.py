@@ -9,14 +9,16 @@ import socket
 import json
 import string
 import random
-if int(sys.version_info[0]) is 3:
+try:
     from html.parser import HTMLParser
     import http.cookiejar as cookiejar
-else:
+    import urllib.request as request
+    from urllib.parse import urlencode
+except ImportError:
     from HTMLParser import HTMLParser
     import cookielib as cookiejar
-import urllib
-import urllib2
+    import urllib2 as request
+    from urllib2 import urlencode
 import os
 import requests
 from core.alert import *
@@ -82,16 +84,15 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         target_host = str(target) + ":" + str(port)
         flag = 1
         try:
-            cookiejar = cookiejar.FileCookieJar("cookies")
-            opener = urllib2.build_opener(
-                urllib2.HTTPCookieProcessor(cookiejar))
+            cookie = cookiejar.FileCookieJar("cookies")
+            opener = request.build_opener(request.HTTPCookieProcessor(cookie))
             response = opener.open(target)
             page = response.read()
             parsed_html = BruteParser()
             parsed_html.feed(page)
             parsed_html.parsed_results[username_field] = user
             parsed_html.parsed_results[password_field] = passwd
-            post_data = urllib.urlencode(parsed_html.parsed_results).encode()
+            post_data = urlencode(parsed_html.parsed_results).encode()
         except:
             exit += 1
             if exit is retries:
