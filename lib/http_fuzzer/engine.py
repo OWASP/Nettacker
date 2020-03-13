@@ -219,8 +219,11 @@ def request_with_data(post_request, content_type, req_type, retries, time_sleep,
     post_data_format = ""
     request_line, headers_alone = post_request.split('\r\n', 1)
     headers = dict()
-    for x in headers_alone.split('\r\n'):
-        headers[x.split(':', 1)[0]] = x.split(':', 1)[1]
+    try:
+        for x in headers_alone.split('\r\n'):
+            headers[x.split(':', 1)[0]] = x.split(':', 1)[1]
+    except IndexError:
+        headers[headers_alone.split(':', 1)[0]] = headers_alone.split(':', 1)[1]
     clean_headers = {x.strip(): y for x, y in headers.items()}
     headers = clean_headers
     if "content-type" in headers:
@@ -279,8 +282,11 @@ def request_without_data(request, req_type, retries, time_sleep, timeout_sec, pa
     """
     request_line, headers_alone = request.split('\r\n', 1)
     headers = dict()
-    for x in headers_alone.split('\r\n'):
-        headers[x.split(':', 1)[0]] = x.split(':', 1)[1]
+    try:
+        for x in headers_alone.split('\r\n'):
+            headers[x.split(':', 1)[0]] = x.split(':', 1)[1]
+    except IndexError:
+        headers[headers_alone.split(':', 1)[0]] = headers_alone.split(':', 1)[1]
     clean_headers = {x.strip(): y for x, y in headers.items()}
     headers = clean_headers
     headers.pop("Content-Length", None)
