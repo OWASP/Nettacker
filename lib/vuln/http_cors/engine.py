@@ -75,6 +75,8 @@ def http_cors(target, port, timeout_sec, log_in_file, language, time_sleep,
             req = requests.get(target, headers=headers)
             if req.headers['Access-Control-Allow-Origin'] == "*":
                 return True
+            elif req.headers['Access-Control-Allow-Origin'] == "http://example.foo" and req.headers['Access-Control-Allow-Credentials'] == "true":
+                return True
             else:
                 return False
 
