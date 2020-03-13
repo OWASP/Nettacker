@@ -18,7 +18,7 @@ except ImportError:
     from HTMLParser import HTMLParser
     import cookielib as cookiejar
     import urllib2 as request
-    from urllib2 import urlencode
+    from urllib import urlencode
 import os
 import requests
 from core.alert import *
