@@ -58,6 +58,7 @@ def _api_default_config():
             "enabled": False,
             "filename": "nettacker_api_access.log"
         },
+        "api_cert": "adhoc",
     }
 
 
@@ -128,6 +129,7 @@ def _core_default_config():
         "api_client_white_list_ips": _api_default_config()["api_client_white_list"]["ips"],
         "api_access_log": _api_default_config()["api_access_log"]["enabled"],
         "api_access_log_filename": _api_default_config()["api_access_log"]["filename"],
+         "api_cert": _api_default_config()["api_cert"],
         "database_type": _database_default_config()["DB"],
         "database_name": _database_default_config()["DATABASE"],
         "database_username": _database_default_config()["USERNAME"],
