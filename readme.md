@@ -45,7 +45,7 @@ _____________
 *	HTTP/HTTPS Crawling, Fuzzing, Information Gathering and … 
 *	HTML, JSON and Text Outputs
 *  API & WebUI
-*	This project is at the moment in the research and development phase and most of the results/codes are not published yet.
+*	This project is at the moment in research and development phase and most of the results/codes are not published yet.
 * Thanks to Google Summer of Code Initiative and all the students who contributed to this project during their summer breaks: 
 
 
