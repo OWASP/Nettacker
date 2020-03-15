@@ -359,7 +359,7 @@ def ___go_for_search_logs():
 
 
 def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
-                 api_client_white_list_ips, api_access_log, api_access_log_filename, language):
+                 api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, language):
     """
     a function to run flask in a subprocess to make kill signal in a better way!
 
@@ -380,13 +380,14 @@ def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_
         "api_client_white_list_ips": api_client_white_list_ips,
         "api_access_log": api_access_log,
         "api_access_log_filename": api_access_log_filename,
+        "api_cert": api_cert,
         "language": language
     }
-    app.run(host=api_host, port=api_port, debug=api_debug_mode, threaded=True)
+    app.run(host=api_host, port=api_port, debug=api_debug_mode, ssl_context="adhoc", threaded=True)
 
 
 def _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
-               api_client_white_list_ips, api_access_log, api_access_log_filename, language):
+               api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, language):
     """
     entry point to run the API through the flask
 
@@ -405,7 +406,7 @@ def _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_wh
     write_to_api_console(messages(language, "API_key").format(api_access_key))
     p = multiprocessing.Process(target=__process_it,
                                 args=(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
-                                      api_client_white_list_ips, api_access_log, api_access_log_filename, language))
+                                      api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, language))
     p.start()
     # Sometimes it's take much time to terminate flask with CTRL+C
     # So It's better to use KeyboardInterrupt to terminate!
