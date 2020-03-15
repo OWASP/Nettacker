@@ -83,7 +83,7 @@ def load():
      passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
      check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args, method_args_list, wizard_mode,
      profile, start_api, api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
-     api_client_white_list_ips, api_access_log, api_access_log_filename. api_cert) = \
+     api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert) = \
         check_all_required(
             targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
