@@ -60,6 +60,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
 
 def xss_protection(target, port, timeout_sec, log_in_file, language, time_sleep,
                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+    regex = '1; report='+'https?:\/\/(www\.)?[-a-zA-Z0-9]{1,256}\.[-a-zA-Z0-9]{1,6}'
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
         if not s:
@@ -72,6 +73,10 @@ def xss_protection(target, port, timeout_sec, log_in_file, language, time_sleep,
             req = requests.get(target)
             try:
                 if req.headers['X-XSS-Protection'] == '1; mode=block':
+                    return False
+                elif req.header['X-XSS-Protection'] == '1':
+                    return False
+                elif re.match(regex, req.header['X-XSS-Protection']):
                     return False
                 else:
                     return True
