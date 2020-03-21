@@ -3,7 +3,7 @@
 
 import sys
 import os
-from core.alert import *
+from core.alert import messages
 from core._die import __die_failure
 
 __version__ = '0.0.1'
