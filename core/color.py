@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import sys
-from core import compatible
-
-os_name = compatible.os_name()
-
+os_name = sys.platform
 
 def finish():
     """
