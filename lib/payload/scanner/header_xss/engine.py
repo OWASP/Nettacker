@@ -31,7 +31,7 @@ def header_xss(host, data=None, payloads_xss=None, headers_xss=None):
             }
     try:
         # Expanding our scope of attack by using all the
-        # HTTP methods available, HEAD and OPTIONS return 
+        # HTTP methods available, HEAD and OPTIONS return
         # header sets only, so rXSS is null in those cases.
         r1 = requests.get(host, headers=headers_xss)
         r2 = requests.post(host, data=data, headers=headers_xss)
