@@ -70,10 +70,6 @@ def http_cookie(target, port, timeout_sec, log_in_file, language, time_sleep,
             value = req.headers['Set-Cookie'].lower()
             if "samesite" in value:
                 return False
-            if "secure" in value:
-                return False
-            if "httponly" in value:
-                return False
             else:
                 return True
 
@@ -87,10 +83,10 @@ def __http_cookie(target, port, timeout_sec, log_in_file, language, time_sleep,
     if http_cookie(target, port, timeout_sec, log_in_file, language, time_sleep,
                  thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "target_vulnerable").format(target, port,
-                                                            'HttpOnly, Samesite and secure cookies flag should be presen inside Set-Cookie header for preventing CSRF attacks'))
+                                                            'Samesite cookie flag should be presen inside Set-Cookie header for preventing CSRF attacks'))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'http_cookie_vuln',
-                           'DESCRIPTION': messages(language, "vulnerable").format('HttpOnly, Samesite and secure cookies flag should be presen inside Set-Cookie header for preventing CSRF attacks'), 'TIME': now(),
+                           'DESCRIPTION': messages(language, "vulnerable").format('Samesite cookie flag should be presen inside Set-Cookie header for preventing CSRF attacks'), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
