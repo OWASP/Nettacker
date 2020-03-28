@@ -73,7 +73,7 @@ def http_cookie(target, port, timeout_sec, log_in_file, language, time_sleep,
             else:
                 return True
 
-    except Exception as e:
+    except Exception:
         # some error warning
         return False
 
