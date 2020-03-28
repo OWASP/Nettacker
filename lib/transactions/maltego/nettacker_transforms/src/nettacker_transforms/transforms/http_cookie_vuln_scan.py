@@ -26,7 +26,7 @@ class HTTP_CookieVulnScan(Transform):
 
     # The transform input entity type.
     input_type = NettackerScan
-
+    @staticmethod
     def do_transform(self, request, response, config):
         # TODO: write your code here.
         scan_request = request.entity
