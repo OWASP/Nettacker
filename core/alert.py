@@ -5,8 +5,8 @@ import os
 import sys
 import json
 from core import color
-from core.compatible import version
 
+pyversion = int(sys.version_info[0])
 
 def is_not_run_from_api():
     """
@@ -43,7 +43,7 @@ def messages(language, msg_id):
                        'all_messages')()[str(msg_id)]
     except:
         msgs = getattr(__import__('lib.language.messages_en', fromlist=['all_messages']), 'all_messages')()[str(msg_id)]
-    if version() is 2:
+    if pyversion is 2:
         return msgs.decode('utf8')
     return msgs
 
@@ -58,7 +58,7 @@ def __input_msg(content):
     Returns:
         the message in input structure
     """
-    if version() is 2:
+    if pyversion is 2:
         return color.color('yellow') + '[+] ' + color.color('green') \
                + content.encode('utf8') + color.color('reset')
     else:
@@ -82,7 +82,7 @@ def info(content, log_in_file=None, mode=None, event=None, language=None, thread
         None
     """
     if is_not_run_from_api():  # prevent to stdout if run from API
-        if version() is 2:
+        if pyversion is 2:
             sys.stdout.write(color.color('yellow') + '[+] ' + color.color('green') +
                              content.encode('utf8') + color.color('reset') + '\n')
         else:
@@ -107,7 +107,7 @@ def write(content):
         None
     """
     if is_not_run_from_api():
-        if version() is 2:
+        if pyversion is 2:
             sys.stdout.write(content.encode('utf8'))
         else:
             sys.stdout.buffer.write(bytes(content, 'utf8') if isinstance(content, str) else content)
@@ -125,7 +125,7 @@ def warn(content):
         the message in warn structure - None
     """
     if is_not_run_from_api():
-        if version() is 2:
+        if pyversion is 2:
             sys.stdout.write(color.color('blue') + '[!] ' + color.color('yellow') +
                              content.encode('utf8') + color.color('reset') + '\n')
         else:
@@ -145,7 +145,7 @@ def error(content):
         the message in error structure - None
     """
     if is_not_run_from_api():
-        if version() is 2:
+        if pyversion is 2:
             sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
                              content.encode('utf8') + color.color('reset') + '\n')
         else:
@@ -165,7 +165,7 @@ def write_to_api_console(content):
     Returns:
         None
     """
-    if version() is 2:
+    if pyversion is 2:
         sys.stdout.write(content.encode('utf8'))
     else:
         sys.stdout.buffer.write(bytes(content, 'utf8'))
