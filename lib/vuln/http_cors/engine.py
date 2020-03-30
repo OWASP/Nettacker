@@ -85,7 +85,7 @@ def http_cors(target, port, timeout_sec, log_in_file, language, time_sleep,
                 'null-origin': 'null',
                 'broken parser': '%60.example.com',
                 'unescaped regex': root.replace('.', 'x', 1),
-                'http-origin allowed': 'https://' + urlparsed.netloc,
+                'http-origin allowed': 'http://' + urlparsed.netloc,
             }
             time.sleep(0.01)
             headers = {'Referer': 'http://example.foo/CORSexample1.html', 'Origin': origin["wildcard value"],
@@ -140,7 +140,7 @@ def http_cors(target, port, timeout_sec, log_in_file, language, time_sleep,
             headers = {'Referer': 'http://example.foo/CORSexample1.html', 'Origin': origin["http-origin allowed"],
                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0'}
             req = requests.head(target, timeout=10, headers=headers)
-            if req.headers['Access-Control-Allow-Origin'].startswith("https://"):
+            if req.headers['Access-Control-Allow-Origin'].startswith("http://"):
                 print("http-origin allowed CORS misconfiguration found")
                 return True
             else:
