@@ -143,10 +143,8 @@ def http_cors(target, port, timeout_sec, log_in_file, language, time_sleep,
             if req.headers['Access-Control-Allow-Origin'].startswith("https://"):
                 print("http-origin allowed CORS misconfiguration found")
                 return True
-            
             else:
                 return False
-
 
     except Exception as e:
         # some error warning
