@@ -23,6 +23,9 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
+from urlparse import urlparse, parse_qs
+import tldextract
+import time
 
 
 def extra_requirements_dict():
@@ -70,15 +73,80 @@ def http_cors(target, port, timeout_sec, log_in_file, language, time_sleep,
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
-            headers = {'Referer': 'http://example.foo/CORSexample1.html', 'Origin': 'http://example.foo',
+            urlparsed = urlparse(target)
+            scheme = urlparsed.scheme
+            domainName =  tldextract.extract(target)
+            root = domainName.domain + domainName.suffix
+            origin = {
+                'wildcard value': '*', 
+                'origin reflected': scheme + 'example.com',
+                'post-domain wildcard': root + '.example.com',
+                'pre-domain wildcard': 'example.com.' + root,
+                'null-origin': 'null',
+                'broken parser': '%60.example.com',
+                'unescaped regex': root.replace('.', 'x', 1),
+                'http-origin allowed': 'https://' + urlparsed.netloc,
+            }
+            time.sleep(0.01)
+            headers = {'Referer': 'http://example.foo/CORSexample1.html', 'Origin': origin["wildcard value"],
                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0'}
-            req = requests.get(target, headers=headers)
+            req = requests.head(target, timeout=10, headers=headers)
             if req.headers['Access-Control-Allow-Origin'] == "*":
+                print("Wildcard value CORS misconfiguration found")
                 return True
-            elif req.headers['Access-Control-Allow-Origin'] == "http://example.foo" and req.headers['Access-Control-Allow-Credentials'] == "true":
+            time.sleep(0.01)
+            headers = {'Referer': 'http://example.foo/CORSexample1.html', 'Origin': origin["origin reflected"],
+                       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0'}
+            req = requests.head(target, timeout=10, headers=headers)
+            if req.headers['Access-Control-Allow-Origin'] == origin["origin reflected"]:
+                print("Origin reflected CORS misconfiguration found")
                 return True
+            time.sleep(0.01)
+            headers = {'Referer': 'http://example.foo/CORSexample1.html', 'Origin': origin["post-domain wildcard"],
+                       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0'}
+            req = requests.head(target, timeout=10, headers=headers)
+            if req.headers['Access-Control-Allow-Origin'] == origin["post-domain wildcard"]:
+                print("post-domain wildcard CORS misconfiguration found")
+                return True
+            time.sleep(0.01)
+            headers = {'Referer': 'http://example.foo/CORSexample1.html', 'Origin': origin["pre-domain wildcard"],
+                       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0'}
+            req = requests.head(target, timeout=10, headers=headers)
+            if req.headers['Access-Control-Allow-Origin'] == origin["pre-domain wildcard"]:
+                print("pre-domain wildcard CORS misconfiguration found")
+                return True
+            time.sleep(0.01)
+            headers = {'Referer': 'http://example.foo/CORSexample1.html', 'Origin': origin["null-origin"],
+                       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0'}
+            req = requests.head(target, timeout=10, headers=headers)
+            if req.headers['Access-Control-Allow-Origin'] == origin["null-origin"]:
+                print("null-origin CORS misconfiguration found")
+                return True
+            time.sleep(0.01)
+            headers = {'Referer': 'http://example.foo/CORSexample1.html', 'Origin': origin["broken parser"],
+                       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0'}
+            req = requests.head(target, timeout=10, headers=headers)
+            if '`.example.com' in req.headers['Access-Control-Allow-Origin']:
+                print("broken parser misconfiguration found")
+                return True
+            time.sleep(0.01)
+            headers = {'Referer': 'http://example.foo/CORSexample1.html', 'Origin': origin["unescaped regex"],
+                       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0'}
+            req = requests.head(target, timeout=10, headers=headers)
+            if req.headers['Access-Control-Allow-Origin'] == origin["unescaped regex"]:
+                print("unescaped regex CORS misconfiguration found")
+                return True
+            time.sleep(0.01)
+            headers = {'Referer': 'http://example.foo/CORSexample1.html', 'Origin': origin["http-origin allowed"],
+                       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0'}
+            req = requests.head(target, timeout=10, headers=headers)
+            if req.headers['Access-Control-Allow-Origin'].startswith("https://"):
+                print("http-origin allowed CORS misconfiguration found")
+                return True
+            
             else:
                 return False
+
 
     except Exception as e:
         # some error warning
@@ -147,11 +215,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             if keyboard_interrupt_flag:
                 break
         # wait for threads
-        kill_switch = 0
+        kill_switch = -5
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1222) if int(timeout_sec / 0.1222) is not 0 else 1
         while 1:
-            time.sleep(0.1)
+            time.sleep(1)
             kill_switch += 1
             try:
                 if threading.activeCount() is 1 or kill_switch is kill_time:
