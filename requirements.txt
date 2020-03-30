@@ -17,3 +17,5 @@ py3DNS==3.1.1a0; python_version > '3'
 scapy-python3==0.25; python_version > '3'
 pyDNS==2.3.6; python_version < '3'
 scapy>=2.4.1; python_version < '3'
+pycurl==7.43.0.5
+xmltodict==0.12.0
