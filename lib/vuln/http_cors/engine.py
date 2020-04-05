@@ -23,10 +23,8 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
-from urlparse import urlparse, parse_qs
+from urlparse import urlparse
 import tldextract
-import time
-
 
 def extra_requirements_dict():
     return {
@@ -78,7 +76,7 @@ def http_cors(target, port, timeout_sec, log_in_file, language, time_sleep,
             domainName =  tldextract.extract(target)
             root = domainName.domain + domainName.suffix
             origin = {
-                'wildcard value': '*', 
+                'wildcard value': '*',
                 'origin reflected': scheme + 'example.com',
                 'post-domain wildcard': root + '.example.com',
                 'pre-domain wildcard': 'example.com.' + root,
