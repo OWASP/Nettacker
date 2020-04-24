@@ -180,6 +180,7 @@ def all_messages():
             "ports_int": "ports must be integers! (e.g. 80 || 80,1080 || 80,1080-1300,9000,12000-15000)",
             "through_API": "Through the OWASP Nettacker API",
             "API_invalid": "invalid API key",
+            "API_cert": "API CERTIFICATE",
             "unauthorized_IP": "your IP not authorized",
             "not_found": "Not Found!",
             "no_subdomain_found": "subdomain_scan: no subdomain found!",
