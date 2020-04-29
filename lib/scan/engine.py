@@ -103,9 +103,9 @@ def __csp_validator(target, port, timeout_sec, log_in_file, language, time_sleep
         # info(messages(language, "target_vulnerable").format(target, port,
                                                             # 'CSP makes it possible for server administrators to reduce or eliminate the vectors by which XSS can occur by specifying the domains that the browser should consider to be valid sources of executable scripts. '))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'content_security_policy_vuln',
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'csp_domain_extraction_scan',
                            'DESCRIPTION': messages(language, "vulnerable").format('CSP makes it possible for server administrators to reduce or eliminate the vectors by which XSS can occur by specifying the domains that the browser should consider to be valid sources of executable scripts. '), 'TIME': now(),
-                           'CATEGORY': "vuln",
+                           'CATEGORY': "scan",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         # __log_into_file(log_in_file, 'a', data, language)
 
@@ -147,7 +147,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'csp_validator_vuln'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'csp_domain_extraction_scan'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -177,7 +177,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             info(messages(language, "len_subdomain_found").format(len(subs)))
             for sub in subs:
                
-                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'CSP domains found!!',
+                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'csp_domain_extraction_scan',
                                    'DESCRIPTION': sub, 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
                                    'SCAN_CMD': scan_cmd}) + "\n"
                 __log_into_file(log_in_file, 'a', data, language)
@@ -185,5 +185,5 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
 
     else:
         warn(messages(language, "input_target_error").format(
-            'csp_validator_vuln', target))
+            'csp_domain_extraction_scan', target))
         return []
