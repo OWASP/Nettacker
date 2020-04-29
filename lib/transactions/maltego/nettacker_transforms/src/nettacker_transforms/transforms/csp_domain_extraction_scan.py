@@ -40,7 +40,7 @@ class cspValidatorscan(Transform):
             url = result["HOST"] + ":" + result["PORT"]
             response += URL(url=url, title=result["DESCRIPTION"],
                             short_title="CSP Domains found!",
-                            link_label='csp_validator_scan')
+                            link_label='csp_domain_extraction_scan')
         return response
 
     def on_terminate(self):
