@@ -4,7 +4,7 @@ ipaddr==2.2.0
 requests==2.19.1
 paramiko==2.4.1
 texttable==1.4.0
-PySocks==1.6.8
+PySocks==1.7.1
 win_inet_pton==1.0.1
 pyOpenSSL==18.0.0
 flask==1.0.2
