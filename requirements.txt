@@ -2,7 +2,7 @@ argparse==1.4.0
 netaddr==0.7.19
 ipaddr==2.2.0
 requests==2.19.1
-paramiko==2.4.1
+paramiko==2.4.2
 texttable==1.4.0
 PySocks==1.6.8
 win_inet_pton==1.0.1
