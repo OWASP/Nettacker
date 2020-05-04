@@ -5,7 +5,7 @@ requests==2.19.1
 paramiko==2.4.2
 texttable==1.4.0
 PySocks==1.7.1
-win_inet_pton==1.0.1
+win_inet_pton==1.1.0
 pyOpenSSL==19.1.0
 flask==1.0.2
 lockfile==0.12.2
