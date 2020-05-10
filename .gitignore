@@ -3,7 +3,8 @@
 
 #ignore IDE settings
 *.idea*
-
+#ignore vscode files
+.vscode
 #setup
 build/*
 dist/*

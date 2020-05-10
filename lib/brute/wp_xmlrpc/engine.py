@@ -26,17 +26,11 @@ from lib.scan.wp_theme import small_themes
 
 def extra_requirements_dict():
     return {
-        "wp_users": ["admin", "root", "test", "anonymous", "user", "support"],
-        "wp_passwds": ["admin", "root", "test", "anonymous", "user", "1", "12345",
-                                    "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
-                                    "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
-                                    "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
-                                    "admin123", ""],
         "wp_xmlrpc_brute_ports": [80, 443]
     }
 
 
-def check(user, passwd, target, port, headers, timeout_sec, log_in_file, language,
+def check(target, port, headers, timeout_sec, log_in_file, language,
             retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     time.sleep(time_sleep)
     try:
@@ -65,16 +59,15 @@ def check(user, passwd, target, port, headers, timeout_sec, log_in_file, languag
                 if target_type(target) != "HTTP" and port == 80:
                     target = 'http://' + target
                 target = target + '/xmlrpc.php'
-                postdata = '''<methodCall><methodName>wp.getUsersBlogs</methodName><params><param><value><string>'''+ user +'''</string></value></param><param><value><string>'''+ passwd + '''</string></value></param></params></methodCall>'''
+                postdata = '''<?xml version="1.0" encoding="utf-8"?><methodCall><methodName>system.listMethods</methodName><params></params></methodCall>'''
                 r = requests.post(
                         target, timeout = timeout_sec, headers = headers, data = postdata)
-                if "incorrect" not in r.text.lower() and user in r.text.lower():
-                    info(messages(language, "user_pass_found").format(
-                                    user, passwd, target, port))
-                    data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'wp_xmlrpc_brute',
-                               'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
+                if "demo.sayhello" in r.text.lower():
+                    info(messages(language, "XML-RPC enabled").format(
+                                    target, port))
+                    data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'wp_xmlrpc_brute',
+                               'DESCRIPTION': messages(language, "XML-RPC enabled") , 'TIME': now(), 'CATEGORY': "brute", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
                     __log_into_file(log_in_file, 'a', data, language)
-                break
             except:
                 n += 1
                 if n is retries:
@@ -111,17 +104,16 @@ def test(target, port, retries, timeout_sec, headers, socks_proxy, verbose_level
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
-            postdata = '''<methodCall><methodName>wp.getUsersBlogs</methodName><params><param><value><string>admin</string></value></param><param><value><string></string></value></param></params></methodCall>'''
+            postdata = '''<?xml version="1.0" encoding="utf-8"?><methodCall><methodName>system.listMethods</methodName><params></params></methodCall>'''
             try:
                 req = requests.post(target+'/xmlrpc.php', data = postdata, headers = headers)
-                #print (target)
-                if re.search('<int>403</int>',req.text):
+                if 'demo.sayhello' in req.text.lower():
                     return True
                 else:
                     return False
             except:
                 return False
-        except Exception as err:
+        except:
             return False
             
 
@@ -160,16 +152,13 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         threads = []
-        if users is None:
-            users = extra_requirements["wp_users"]
-        if passwds is None:
-            passwds = extra_requirements["wp_passwds"]
+
         if ports is None:
             ports = extra_requirements["wp_xmlrpc_brute_ports"]
         if verbose_level > 3:
-            total_req = len(users) * len(passwds) * len (ports)
+            total_req = len (ports)
         else:
-            total_req = len(users) * len(passwds) * len(ports)
+            total_req = len(ports)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1', language)
@@ -180,36 +169,34 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             if test(str(target), port, retries, timeout_sec, headers,
                     socks_proxy, verbose_level, trying, total_req, total, num, language) is True:
                 keyboard_interrupt_flag = False
-                for user in users:
-                    for passwd in passwds:
-                        #print(user + " " + passwd)
-                        t = threading.Thread(target=check,
-                                             args=(
-                                                 user, passwd, target, port, headers, timeout_sec, log_in_file, language,
-                                                 retries, time_sleep, thread_tmp_filename, socks_proxy,
-                                                 scan_id, scan_cmd))
-                        threads.append(t)
-                        t.start()
-                        trying += 1
-                        if verbose_level > 3:
-                            info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target),
-                                                                             port, 'wp_xmlrpc_brute'))
-                        while 1:
-                            try:
-                                if threading.activeCount() >= thread_number:
-                                    time.sleep(0.01)
-                                else:
-                                    break
-                            except KeyboardInterrupt:
-                                keyboard_interrupt_flag = True
-                                break
-                        if keyboard_interrupt_flag:
+                t = threading.Thread(target=check,
+                                        args=(
+                                            target, port, headers, timeout_sec, log_in_file, language,
+                                            retries, time_sleep, thread_tmp_filename, socks_proxy,
+                                            scan_id, scan_cmd))
+                threads.append(t)
+                t.start()
+                trying += 1
+                if verbose_level > 3:
+                    info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target),
+                                                                    port, 'wp_xmlrpc_brute'))
+                while 1:
+                    try:
+                        if threading.activeCount() >= thread_number:
+                            time.sleep(0.01)
+                        else:
                             break
+                    except KeyboardInterrupt:
+                        keyboard_interrupt_flag = True
+                        break
+                if keyboard_interrupt_flag:
+                    break
 
             else:
                 warn(messages(language, "open_error").format(target))
 
         # wait for threads
+
         kill_switch = 0
         kill_time = int(
             timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
@@ -222,6 +209,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
+        info(messages(language, "XML-RPC enabled").format(
+            'XML-RPC'))
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'wp_xmlrpc_brute',
+                        'DESCRIPTION': messages(language, "XML-RPC enabled"), 'TIME': now(), 'CATEGORY': "brute", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
+        __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
     else:
         warn(messages(language, "input_target_error").format(

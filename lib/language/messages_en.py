@@ -29,6 +29,7 @@ def all_messages():
             "read_target": "read target(s) from file",
             "scan_method_options": "Scan method options",
             "choose_scan_method": "choose scan method {0}",
+            "XML-RPC enabled": "XML-RPC enabled",
             "exclude_scan_method": "choose scan method to exclude {0}",
             "username_list": "username(s) list, separate with \",\"",
             "username_from_file": "read username(s) from file",
