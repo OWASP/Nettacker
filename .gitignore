@@ -8,7 +8,8 @@
 build/*
 dist/*
 *egg-info*
-
+#ignore vscode
+.vscode
 #tmp files
 *.py~
 user.txt
