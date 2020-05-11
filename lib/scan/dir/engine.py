@@ -18,7 +18,7 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 from core._die import __die_failure
-
+from core.compatible import version
 
 def extra_requirements_dict():
     return {
