@@ -155,7 +155,6 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
         keys = JSON_Data[0].keys()
         data = json.dumps(JSON_Data)
         events_num = len(JSON_Data)
-        print(log_in_file)
         __log_into_file(log_in_file, 'w', data, language, final=True)
         with open(log_in_file, 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=keys)
