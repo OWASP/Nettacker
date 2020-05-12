@@ -196,6 +196,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 socks_proxy, verbose_level, trying, total_req, total, num, language) is 0:
             keyboard_interrupt_flag = False
             for idir in extra_requirements["dir_scan_list"]:
+                time.sleep(0.5)
                 if random_agent_flag:
                     user_agent = {'User-agent': random.choice(user_agent_list)}
                 t = threading.Thread(target=check,
