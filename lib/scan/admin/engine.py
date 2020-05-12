@@ -18,6 +18,7 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 from core._die import __die_failure
+from core.compatible import version
 
 
 def extra_requirements_dict():
@@ -41,7 +42,7 @@ def extra_requirements_dict():
 
 def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
           http_method, socks_proxy, scan_id, scan_cmd):
-    status_codes = [200, 401, 403]
+    status_codes = [401, 403]
     directory_listing_msgs = ["<title>Index of /", "<a href=\"\\?C=N;O=D\">Name</a>", "Directory Listing for",
                               "Parent Directory</a>", "Last modified</a>", "<TITLE>Folder Listing.",
                               "- Browsing directory "]
@@ -90,16 +91,23 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                                'PORT': "", 'TYPE': 'admin_scan',
                                'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
                                'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
-            if r.status_code is 200:
-                for dlmsg in directory_listing_msgs:
-                    if dlmsg in content:
-                        info(messages(language, "directory_listing").format(target), log_in_file, "a"
-                                           ,{'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
-                                           'PORT': "", 'TYPE': 'admin_scan',
-                                           'DESCRIPTION': messages(language, "directoy_listing").format(target), 'TIME': now(),
-                                           'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
-                        __log_into_file(log_in_file, 'a', data, language)
-                        break
+        if r.status_code is 200:
+            for dlmsg in directory_listing_msgs:
+                if dlmsg in content:
+                    info(messages(language, "directory_listing").format(target), log_in_file, "a"
+                                        ,{'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                                        'PORT': "", 'TYPE': 'admin_scan',
+                                        'DESCRIPTION': messages(language, "directoy_listing").format(target), 'TIME': now(),
+                                        'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
+                    __log_into_file(log_in_file, 'a', data, language)
+                else:
+                    info(messages(language, "found").format(
+                        target, r.status_code, r.reason), log_in_file, "a",
+                        {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                                    'PORT': "", 'TYPE': 'admin_scan',
+                                    'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
+                                    'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
+                break
         return True
     except:
         return False
@@ -195,6 +203,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 socks_proxy, verbose_level, trying, total_req, total, num, language) is 0:
             keyboard_interrupt_flag = False
             for idir in extra_requirements["admin_scan_list"]:
+                time.sleep(0.5)
                 if random_agent_flag:
                     user_agent = {'User-agent': random.choice(user_agent_list)}
                 t = threading.Thread(target=check,
