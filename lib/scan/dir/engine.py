@@ -35,13 +35,13 @@ def extra_requirements_dict():
                           "upgrade", "upgrade.php", "update.php", "LICENSE", "LICENSE.txt", "Server.php", "WS_FTP.LOG",
                           "WS_FTP.ini", "WS_FTP.log", "Web.config", "Webalizer", "webalizer", "config.php",
                           "config.php.new", "config.php~", "controlpanel", "cpanel", "favicon.ico", "old", "php-error",
-                          "php.ini~", "php.ini", "php.log", "robots.txt", "security", "webdav", "1"]
+                          "php.ini~", "php.ini", "php.log", "robots.txt", "security", "webdav", "1", "assets", "data"]
     }
 
 
 def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
           http_method, socks_proxy, scan_id, scan_cmd):
-    status_codes = [200, 401, 403]
+    status_codes = [401, 403]
     directory_listing_msgs = ["<title>Index of /", "<a href=\"\\?C=N;O=D\">Name</a>", "Directory Listing for",
                               "Parent Directory</a>", "Last modified</a>", "<TITLE>Folder Listing.",
                               "- Browsing directory "]
@@ -91,16 +91,24 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                                'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
                                'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
-            if r.status_code is 200:
-                for dlmsg in directory_listing_msgs:
-                    if dlmsg in content:
-                        info(messages(language, "directoy_listing").format(target))
-                        data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
-                                           'PORT': "", 'TYPE': 'dir_scan',
-                                           'DESCRIPTION': messages(language, "directoy_listing").format(target), 'TIME': now(),
-                                           'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-                        __log_into_file(log_in_file, 'a', data, language)
-                        break
+        if r.status_code is 200:
+            for dlmsg in directory_listing_msgs:
+                if dlmsg in content:
+                    info(messages(language, "directoy_listing").format(target))
+                    data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                                        'PORT': "", 'TYPE': 'dir_scan',
+                                        'DESCRIPTION': messages(language, "directoy_listing").format(target), 'TIME': now(),
+                                        'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                    __log_into_file(log_in_file, 'a', data, language)
+                else:
+                    info(messages(language, "found").format(
+                        target, r.status_code, r.reason))
+                    data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                                    'PORT': "", 'TYPE': 'dir_scan',
+                                    'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
+                                    'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                    __log_into_file(log_in_file, 'a', data, language)
+                break
         return True
     except:
         return False
