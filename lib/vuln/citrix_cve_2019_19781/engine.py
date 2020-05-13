@@ -25,6 +25,8 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
+from lib.http_fuzzer.engine import user_agents_list
+
 
 
 def extra_requirements_dict():
@@ -74,11 +76,7 @@ def citrix_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
-            user_agent_list = [
-			                "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0",
-			                "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Ubuntu/10.04",
-	                        "Mozilla/5.0 (Linux; Android 9; Mi A3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Mobile Safari/537.36"
-                       ]
+            user_agent_list = user_agents_list()
     
             user_agent = {'User-agent': random.choice(user_agent_list)}
             # as a pre-requisite check that CSS return the word citrix

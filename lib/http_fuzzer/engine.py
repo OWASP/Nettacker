@@ -5,17 +5,35 @@ import time
 import json
 import socket
 import socks
+import subprocess
 import requests
 import itertools
 import threading
-from mimetools import Message
-from StringIO import StringIO
-
+import os
+from email import message_from_string
+from io import StringIO
 from core.alert import *
 from core.log import __log_into_file
 from core.targets import target_type
 from lib.socks_resolver.engine import getaddrinfo
 
+dir_path = subprocess.check_output("locate /lib/http_fuzzer/directory_listing.txt", shell=True).strip().decode()
+uagent_path = subprocess.check_output("locate /lib/http_fuzzer/user_agent_wordlist.txt", shell=True).strip().decode()
+
+def directory_lists():
+    """
+    List of all possible words needed for directory listing
+
+    Returns:
+        array of words for directory listing
+    """
+
+    f = open(dir_path, "r")
+    dir_list = []
+    for line in f.readlines():
+        dir_list.append(line.strip("\n"))
+    f.close()
+    return dir_list
 
 def user_agents_list():
     """
@@ -24,35 +42,12 @@ def user_agents_list():
     Returns:
         array of user agents
     """
-    return [
-        "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
-        "Googlebot/2.1 ( http://www.googlebot.com/bot.html)",
-        "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Ubuntu/10.04",
-        "Chromium/9.0.595.0 Chrome/9.0.595.0 Safari/534.13",
-        "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.2; WOW64; .NET CLR 2.0.50727)",
-        "Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22 Version/10.51",
-        "Mozilla/5.0 (compatible; 008/0.83; http://www.80legs.com/webcrawler.html) Gecko/2008032620",
-        "Debian APT-HTTP/1.3 (0.8.10.3)",
-        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
-        "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
-        "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
-        "YahooSeeker/1.2 (compatible; Mozilla 4.0; MSIE 5.5; yahooseeker at yahoo-inc dot com ; ",
-        "http://help.yahoo.com/help/us/shop/merchant/)",
-        "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)",
-        "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",
-        "msnbot/1.1 (+http://search.msn.com/msnbot.htm)",
-        #Windows 10-based PC using Edge browser
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246",
-        #Chrome OS-based laptop using Chrome browser (Chromebook)
-        "Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36",
-        #Mac OS X-based computer using a Safari browser
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9",
-        #Windows 7-based PC using a Chrome browser
-        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36",
-        #Linux-based PC using a Firefox browser
-        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1",
-    ]
-
+    uagentlist = []
+    uagent = open(uagent_path, "r")
+    for line in uagent.readlines():
+        uagentlist.append(line.strip("\n"))
+    uagent.close()
+    return uagentlist
 
 def simple_test_open_url(url):
     """
@@ -220,7 +215,7 @@ def request_with_data(post_request, content_type, req_type, retries, time_sleep,
     """
     post_data_format = ""
     request_line, headers_alone = post_request.split('\r\n', 1)
-    headers = Message(StringIO(headers_alone)).dict
+    headers = message_from_string(StringIO(headers_alone)).dict
     clean_headers = {x.strip(): y for x, y in headers.items()}
     headers = clean_headers
     if "content-type" in headers:
@@ -278,7 +273,7 @@ def request_without_data(request, req_type, retries, time_sleep, timeout_sec, pa
 
     """
     request_line, headers_alone = request.split('\r\n', 1)
-    headers = Message(StringIO(headers_alone)).dict
+    headers = message_from_string(StringIO(headers_alone)).dict
     clean_headers = {x.strip(): y for x, y in headers.items()}
     headers = clean_headers
     headers.pop("Content-Length", None)
