@@ -155,13 +155,13 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
         keys = JSON_Data[0].keys()
         data = json.dumps(JSON_Data)
         events_num = len(JSON_Data)
-        __log_into_file(log_in_file, 'w', data, language, final=True)
-        with open(log_in_file, 'w') as csvfile:
+        with open(log_in_file, 'a') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=keys)
             writer.writeheader()
-            dicdata = {key: value for key, value in JSON_Data[0].items()
-                        if key in keys}
-            writer.writerow(dicdata)
+            for i in range(len(JSON_Data)):
+                dicdata = {key: value for key, value in JSON_Data[0].items()
+                            if key in keys}
+                writer.writerow(dicdata)
 
     else:
         graph_flag = ""
