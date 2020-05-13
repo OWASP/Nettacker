@@ -17,8 +17,9 @@ from core.log import __log_into_file
 from core.targets import target_type
 from lib.socks_resolver.engine import getaddrinfo
 
-dir_path = subprocess.check_output("locate /lib/http_fuzzer/directory_listing.txt", shell=True).strip().decode()
-uagent_path = subprocess.check_output("locate /lib/http_fuzzer/user_agent_wordlist.txt", shell=True).strip().decode()
+#Took big.txt from https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/big.txt
+dir_path = subprocess.check_output("locate /lib/http_fuzzer/directoryListing.txt", shell=True).strip().decode()
+uagent_path = subprocess.check_output("locate /lib/http_fuzzer/userAgentWordlist.txt", shell=True).strip().decode()
 
 def directory_lists():
     """
