@@ -61,7 +61,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def citrix_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
+def citrix_vuln(target, port, timeout_sec, log_in_file, language, verbose_level, time_sleep,
                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
@@ -102,7 +102,7 @@ def citrix_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
         return False
 
 
-def __citrix_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
+def __citrix_vuln(target, port, timeout_sec, log_in_file, language, verbose_level, time_sleep,
                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     if citrix_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
@@ -145,7 +145,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         for port in ports:
             port = int(port)
             t = threading.Thread(target=__citrix_vuln,
-                                 args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
+                                 args=(target, int(port), timeout_sec, log_in_file, language, verbose_level, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
             t.start()
