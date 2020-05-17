@@ -31,7 +31,7 @@ script:
 - "python scripts/__travis_test__.py"
 - if [[ ${#CODACY_PROJECT_TOKEN} == 32 ]];
     then
-      coverage erase
+      coverage erase &&
       coverage run nettacker.py -i 127.0.0.1 -m all -t 1000 &&
       coverage report -m &&
       coverage xml &&
