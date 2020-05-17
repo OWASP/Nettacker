@@ -149,7 +149,7 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
         events_num = len(JSON_Data)
         __log_into_file(log_in_file, 'w', data, language, final=True)
 
-    elif len(log_in_file) >=5 and log_in_file[-4:] == '.csv':
+    elif len(log_in_file)>=5 and log_in_file[-4:] == '.csv':
         graph_flag = ""
         report_type = "CSV"
         keys = JSON_Data[0].keys()
@@ -160,7 +160,7 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
             writer.writeheader()
             for i in JSON_Data:
                 dicdata = {key: value for key, value in i.items()
-                            if key in keys}
+                           if key in keys}
                 writer.writerow(dicdata)
 
     else:
