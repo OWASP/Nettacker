@@ -23,7 +23,7 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
-from lib.http_fuzzer.engine import user_agents_list
+from lib.payload.wordlists import useragents
 
 
 def extra_requirements_dict():
@@ -70,7 +70,7 @@ def cms_detection(target, port, timeout_sec, log_in_file, language, time_sleep,
         if not s:
             return False
         else:
-            user_agent_list = user_agents_list()
+            user_agent_list = useragents.useragents()
             global cms_name
             if target_type(target) != "HTTP" and port == 443:
                 target = 'https://' + target

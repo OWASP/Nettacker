@@ -9,46 +9,13 @@ import subprocess
 import requests
 import itertools
 import threading
-import os
-from email import message_from_string
-from io import StringIO
+from mimetools import Message
+from StringIO import StringIO
 from core.alert import *
 from core.log import __log_into_file
 from core.targets import target_type
 from lib.socks_resolver.engine import getaddrinfo
-
-#Took big.txt from https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/big.txt
-dir_path = subprocess.check_output("locate /lib/http_fuzzer/directoryListing.txt", shell=True).strip().decode()
-uagent_path = subprocess.check_output("locate /lib/http_fuzzer/userAgentWordlist.txt", shell=True).strip().decode()
-
-def directory_lists():
-    """
-    List of all possible words needed for directory listing
-
-    Returns:
-        array of words for directory listing
-    """
-
-    f = open(dir_path, "r")
-    dir_list = []
-    for line in f.readlines():
-        dir_list.append(line.strip("\n"))
-    f.close()
-    return dir_list
-
-def user_agents_list():
-    """
-    List of available user agents
-
-    Returns:
-        array of user agents
-    """
-    uagentlist = []
-    uagent = open(uagent_path, "r")
-    for line in uagent.readlines():
-        uagentlist.append(line.strip("\n"))
-    uagent.close()
-    return uagentlist
+from lib.payload.wordlists import useragents
 
 def simple_test_open_url(url):
     """
@@ -61,7 +28,7 @@ def simple_test_open_url(url):
         True if response available, otherwise False
     """
     try:
-        return requests.get(url, headers={"User-Agent": user_agents_list()[0]}, verify=False).status_code
+        return requests.get(url, headers={"User-Agent": useragents.useragents()[0]}, verify=False).status_code
     except Exception as _:
         return False
 

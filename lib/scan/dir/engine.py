@@ -19,13 +19,14 @@ from core._time import now
 from core.log import __log_into_file
 from core._die import __die_failure
 from core.compatible import version
-from lib.http_fuzzer.engine import directory_lists, user_agents_list
+from lib.scan.dir import wordlist
+from lib.payload.wordlists import useragents
 
 def extra_requirements_dict():
     return {
         "dir_scan_http_method": ["GET"],
         "dir_scan_random_agent": ["True"],
-        "dir_scan_list": directory_lists()
+        "dir_scan_list": wordlist.wordlists()
     }
 
 
@@ -147,7 +148,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
             target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
         # rand useragent
-        user_agent_list = user_agents_list()
+        user_agent_list = useragents.useragents()
         http_methods = ["GET", "HEAD"]
         user_agent = {'User-agent': random.choice(user_agent_list)}
 

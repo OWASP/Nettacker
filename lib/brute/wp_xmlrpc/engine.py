@@ -22,7 +22,7 @@ from core.log import __log_into_file
 from core._die import __die_failure
 from lib.scan.wp_theme import themes
 from lib.scan.wp_theme import small_themes
-from lib.http_fuzzer.engine import user_agents_list
+from lib.payload.wordlists import useragents
 
 
 def extra_requirements_dict():
@@ -132,7 +132,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
             target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
         # rand useragent
-        user_agent_list = user_agents_list()
+        user_agent_list = useragents.useragents()
         headers = {'User-agent': random.choice(user_agent_list), 'Content-Type': 'text/xml'}
 
         # requirements check

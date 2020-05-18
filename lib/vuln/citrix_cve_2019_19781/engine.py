@@ -25,9 +25,7 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
-from lib.http_fuzzer.engine import user_agents_list
-
-
+from lib.payload.wordlists import useragents
 
 def extra_requirements_dict():
     return {
@@ -68,15 +66,13 @@ def citrix_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
         if not s:
-            if verbose_level > 4:
-                warn('unable to connect to: {} on port: {} timeout: {}'.format(target,port,timeout_sec))
             return False
         else:
             if target_type(target) != "HTTP" and port == 443:
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
-            user_agent_list = user_agents_list()
+            user_agent_list = useragents.useragents()
     
             user_agent = {'User-agent': random.choice(user_agent_list)}
             # as a pre-requisite check that CSS return the word citrix
@@ -100,7 +96,7 @@ def citrix_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
         return False
 
 
-def __citrix_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
+def __citrix_vuln(target, port, timeout_sec, log_in_file, language, verbose_level, time_sleep,
                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     if citrix_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
@@ -143,7 +139,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         for port in ports:
             port = int(port)
             t = threading.Thread(target=__citrix_vuln,
-                                 args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
+                                 args=(target, int(port), timeout_sec, log_in_file, language, verbose_level, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
             t.start()
