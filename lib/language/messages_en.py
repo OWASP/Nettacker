@@ -102,7 +102,7 @@ def all_messages():
             "current_version": "you are running OWASP Nettacker version {0}{1}{2}{6} with code name {3}{4}{5}",
             "feature_unavailable": "this feature is not available yet! please run \"git clone "
                                    "https://github.com/zdresearch/OWASP-Nettacker.git or pip install"
-                                   " -U OWASP-Nettacker to get the last version.",
+                                   " -U OWASP-Nettacker to get the latest version.",
             "available_graph": "build a graph of all activities and information, you must"
                                " use HTML output. available graphs: {0}",
             "graph_output": "to use graph feature your output filename must end with \".html\" or \".htm\"!",
@@ -122,9 +122,9 @@ def all_messages():
             "ping_before_scan": "ping before scan the host",
             "skipping_target": "skipping whole target {0} and scanning method {1} because of "
                                "--ping-before-scan is true and it didn't response!",
-            "not_last_version": "you are not using the last version of OWASP Nettacker, please update.",
+            "not_last_version": "you are not using the latest version of OWASP Nettacker, please update.",
             "cannot_update": "cannot check for update, please check your internet connection.",
-            "last_version": "You are using the last version of OWASP Nettacker ...",
+            "last_version": "You are using the latest version of OWASP Nettacker ...",
             "directoy_listing": "directory listing found in {0}",
             "insert_port_message": "please insert port through the -g or --methods-args switch instead of url",
             "http_connection_timeout": "http connection {0} timeout!",
