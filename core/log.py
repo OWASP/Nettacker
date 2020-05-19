@@ -19,6 +19,7 @@ from core.config import _paths
 from core.config_builder import _builder
 from core.compatible import version
 from core.alert import write
+import csv
 
 
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
@@ -147,6 +148,21 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
         data = json.dumps(JSON_Data)
         events_num = len(JSON_Data)
         __log_into_file(log_in_file, 'w', data, language, final=True)
+
+    elif len(log_in_file)>=5 and log_in_file[-4:] == '.csv':
+        graph_flag = ""
+        report_type = "CSV"
+        keys = JSON_Data[0].keys()
+        data = json.dumps(JSON_Data)
+        events_num = len(JSON_Data)
+        with open(log_in_file, 'a') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=keys)
+            writer.writeheader()
+            for i in JSON_Data:
+                dicdata = {key: value for key, value in i.items()
+                           if key in keys}
+                writer.writerow(dicdata)
+
     else:
         graph_flag = ""
         report_type = "TEXT"
