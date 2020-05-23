@@ -5,7 +5,7 @@ from canari.maltego.entities import URL
 from canari.framework import EnableDebugWindow
 from common.entities import NettackerScan
 
-from lib.scan.drupal_version.engine import start
+from lib.scan.magento_version.engine import start
 
 from database.db import __logs_by_scan_id as find_log
 
