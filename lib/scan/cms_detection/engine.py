@@ -23,7 +23,8 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
-from lib.http_fuzzer.engine import user_agents_list
+from lib.payload.wordlists import useragents
+
 
 def extra_requirements_dict():
     return {
@@ -69,36 +70,66 @@ def cms_detection(target, port, timeout_sec, log_in_file, language, time_sleep,
         if not s:
             return False
         else:
-            user_agent_list = user_agents_list()
+            user_agent_list = useragents.useragents()
             global cms_name
             if target_type(target) != "HTTP" and port == 443:
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
             req_url = target + "/N0WH3R3.php"
-            req_joomla_url = target + "/configuration.php"           
-            req_wordpress_url = target + "/wp-admin"
-            req_drupal_url = target + "/sites/default/settings.php"
+            req_joomla_dir_url = target + "/media/com_joomlaupdate/"
+            req_joomla_string_url = target
+            req_joomla_generator_url = target
+            req_wordpress_login_url = target + '/wp-admin/'
+            req_wordpress_generator_url = target
+            req_drupal_url = target
+            req_magento_admin_url = target + '/index.php/admin'
+            req_magento_string_url = target
             try:
-               user_agent = {'User-agent': random.choice(user_agent_list)}
-               req = requests.get(req_url, timeout=10, headers=user_agent)
-               code_for_404 = req.status_code
-               user_agent = {'User-agent': random.choice(user_agent_list)}
-               req_wordpress = requests.get(req_wordpress_url, timeout=10, headers=user_agent)
-               user_agent = {'User-agent': random.choice(user_agent_list)}
-               req_joomla = requests.get(req_joomla_url, timeout=10, headers=user_agent)
-               user_agent = {'User-agent': random.choice(user_agent_list)}
-               req_drupal = requests.get(req_drupal_url, timeout=10, headers=user_agent)
+                user_agent = {'User-agent': random.choice(user_agent_list)}
+                req = requests.get(req_url, timeout=10, headers=user_agent)
+                code_for_404 = req.status_code
+                user_agent = {'User-agent': random.choice(user_agent_list)}
+                req_wordpress_login = requests.get(req_wordpress_login_url, timeout=10, headers=user_agent)
+                user_agent = {'User-agent': random.choice(user_agent_list)}
+                req_wordpress_generator = requests.get(req_wordpress_generator_url, timeout=10, headers=user_agent)
+                user_agent = {'User-agent': random.choice(user_agent_list)}
+                req_joomla_dir = requests.get(req_joomla_dir_url, timeout=10, headers=user_agent)
+                user_agent = {'User-agent': random.choice(user_agent_list)}
+                req_joomla_string = requests.get(req_joomla_string_url, timeout=10, headers=user_agent)
+                user_agent = {'User-agent': random.choice(user_agent_list)}
+                req_joomla_generator = requests.get(req_joomla_generator_url, timeout=10, headers=user_agent)
+                user_agent = {'User-agent': random.choice(user_agent_list)}
+                req_drupal = requests.get(req_drupal_url, timeout=10, headers=user_agent)
+                user_agent = {'User-agent': random.choice(user_agent_list)}
+                req_magento_admin = requests.get(req_magento_admin_url, timeout=10, headers=user_agent)
+                user_agent = {'User-agent': random.choice(user_agent_list)}
+                req_magento_string = requests.get(req_magento_string_url, timeout=10, headers=user_agent)
             except requests.exceptions.RequestException as e: 
                return False
-            if req_wordpress.status_code != code_for_404 or req_wordpress.status_code == 403:
+            if (req_wordpress_login.status_code != code_for_404 and 'user_login' in req_wordpress_login.text) or req_wordpress_login.status_code == 403:
                 cms_name = "Wordpress"
                 return True
-            elif req_drupal.status_code != code_for_404 or req_drupal.status_code == 403:
+            elif req_wordpress_generator.status_code != code_for_404 and 'name="generator" content="WordPress' in req_wordpress_generator.text:
+                cms_name = "Wordpress"
+                return True
+            elif req_drupal.status_code != code_for_404 and 'name="Generator" content="Drupal' in req_drupal.text:
                 cms_name = "Drupal"
                 return True
-            elif req_joomla.status_code != code_for_404 or req_joomla.status_code == 403:
+            elif req_joomla_dir.status_code == 200 or req_joomla_dir.status_code == 403:
                 cms_name = "Joomla"
+                return True
+            elif req_joomla_generator.status_code != code_for_404 and 'name="generator" content="Joomla' in req_joomla_generator.text:
+                cms_name = "Joomla"
+                return True
+            elif req_joomla_string.status_code != code_for_404 and "Joomla".lower() in req_joomla_string.text.lower():
+                cms_name = "Joomla"
+                return True
+            elif 'login' in req_magento_admin.text and req_magento_admin.status_code != code_for_404:
+                cms_name = "Magento"
+                return True
+            elif 'Magento_Theme' in req_magento_string.text and req_magento_string.status_code != code_for_404:
+                cms_name = "Magento"
                 return True
             else:
                 return False
