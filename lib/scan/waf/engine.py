@@ -108,7 +108,7 @@ def waf(target, port, timeout_sec, log_in_file, language, time_sleep,
                     return True
                 time.sleep(0.01)
                 req = requests.get(target, timeout=10)
-                if re.match('.*AWSALB.*', req.headers['set-cookie'], re.IGNORECASE) and extra_requirements["waf_scan_use_awselb"][0]:
+                if re.match('.*AWSALB=.*', req.headers['set-cookie'], re.IGNORECASE) and extra_requirements["waf_scan_use_awselb"][0]:
                     waf = "AWS ELB Detected!!"
                     return True
                 for i in req.headers:
