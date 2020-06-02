@@ -12,6 +12,7 @@ from mimetools import Message
 from StringIO import StringIO
 from core.alert import *
 from core.log import __log_into_file
+import random
 from core.targets import target_type
 from lib.socks_resolver.engine import getaddrinfo
 from lib.payload.wordlists import useragents
@@ -27,7 +28,7 @@ def simple_test_open_url(url):
         True if response available, otherwise False
     """
     try:
-        return requests.get(url, headers={"User-Agent": useragents.useragents()[0]}).status_code
+        return requests.get(url, headers={"User-Agent": random.choice(useragents.useragents())}).status_code
     except Exception as _:
         return False
 
@@ -182,7 +183,7 @@ def request_with_data(post_request, content_type, req_type, retries, time_sleep,
     """
     post_data_format = ""
     request_line, headers_alone = post_request.split('\r\n', 1)
-    headers = message_from_string(StringIO(headers_alone)).dict
+    headers = Message(StringIO(headers_alone)).dict
     clean_headers = {x.strip(): y for x, y in headers.items()}
     headers = clean_headers
     if "content-type" in headers:
@@ -240,7 +241,7 @@ def request_without_data(request, req_type, retries, time_sleep, timeout_sec, pa
 
     """
     request_line, headers_alone = request.split('\r\n', 1)
-    headers = message_from_string(StringIO(headers_alone)).dict
+    headers = Message(StringIO(headers_alone)).dict
     clean_headers = {x.strip(): y for x, y in headers.items()}
     headers = clean_headers
     headers.pop("Content-Length", None)

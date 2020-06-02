@@ -88,7 +88,7 @@ def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, t
         start = getattr(
                 __import__('lib.{0}.{1}.engine'.format(scan_method.rsplit('_')[-1], '_'.join(scan_method.rsplit('_')[:-1])),
                        fromlist=['start']), 'start')
-    except:
+    except Exception as e:
         __die_failure(
             messages(language, "module_not_available").format(scan_method))
     start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,

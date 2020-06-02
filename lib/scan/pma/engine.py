@@ -11,8 +11,8 @@ from core.load_modules import load_file_path
 from core._time import now
 from core.log import __log_into_file
 from lib.http_fuzzer.engine import __repeater
-from lib.http_fuzzer.engine import user_agents_list
-from lib.payload.wordlists import pma
+from lib.scan.pma import pma
+from lib.payload.wordlists import useragents
 
 def extra_requirements_dict():
     return {
@@ -45,7 +45,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         __log_into_file(thread_tmp_filename, 'w', '1', language)
         default_ports = [80, 443]
         request = """{0} __target_locat_here__{{0}} HTTP/1.1\nUser-Agent: {1}\n\n""".format(
-            extra_requirements["pma_scan_http_method"][0], random.choice(user_agents_list())
+            extra_requirements["pma_scan_http_method"][0], random.choice(useragents.useragents())
             if extra_requirements["pma_scan_random_agent"][0].lower() == "true" else
             "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5")
         status_codes = [200, 401, 403]
