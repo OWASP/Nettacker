@@ -18,12 +18,12 @@ from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-
+from lib.payload.wordlists import usernames, passwords
 
 def extra_requirements_dict():
     return {
-        "ssh_brute_users": ["root",  "user", ],
-        "ssh_brute_passwds": ["root", "user", "1qaz2wsx", "12345678"],
+        "ssh_brute_users": usernames.users(),
+        "ssh_brute_passwds": passwords.passwords(),
         "ssh_brute_ports": ["22"]
     }
 

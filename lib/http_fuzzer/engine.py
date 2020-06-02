@@ -5,7 +5,6 @@ import time
 import json
 import socket
 import socks
-import subprocess
 import requests
 import itertools
 import threading
@@ -28,7 +27,7 @@ def simple_test_open_url(url):
         True if response available, otherwise False
     """
     try:
-        return requests.get(url, headers={"User-Agent": useragents.useragents()[0]}, verify=False).status_code
+        return requests.get(url, headers={"User-Agent": useragents.useragents()[0]}).status_code
     except Exception as _:
         return False
 

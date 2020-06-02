@@ -23,16 +23,12 @@ from core._die import __die_failure
 from lib.scan.wp_theme import themes
 from lib.scan.wp_theme import small_themes
 from lib.payload.wordlists import useragents
-
+from lib.payload.wordlists import usernames, passwords
 
 def extra_requirements_dict():
     return {
-        "wp_users": ["admin", "root", "test", "anonymous", "user", "support"],
-        "wp_passwds": ["admin", "root", "test", "anonymous", "user", "1", "12345",
-                                    "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
-                                    "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
-                                    "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
-                                    "admin123", ""],
+        "wp_users": usernames.users(),
+        "wp_passwds": passwords.passwords(),
         "wp_xmlrpc_brute_ports": [80, 443]
     }
 
