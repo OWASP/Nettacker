@@ -21,6 +21,7 @@ from core.log import __log_into_file
 from core.compatible import is_windows
 from lib.payload.scanner.service.engine import discover_by_port
 from lib.scan.port import ports
+from scapy.config import conf
 from scapy.layers.inet import IP, TCP, ICMP
 from scapy.sendrecv import sr1
 from scapy import base_classes, plist, utils, data
