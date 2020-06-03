@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Pradeep Jairamani , github.com/pradeepjairamani
+# Author: Aman Gupta , github.com/aman566
 
 import socket
 import socks
