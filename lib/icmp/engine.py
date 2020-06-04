@@ -192,7 +192,7 @@ def send_one_ping(my_socket, dest_addr, id, psize):
     """
     try:
         dest_addr = socket.gethostbyname(dest_addr)
-    except:
+    except Exception:
         return None
     # Remove header size from packet size
     psize = psize - 8

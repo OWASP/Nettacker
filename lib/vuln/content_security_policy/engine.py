@@ -74,7 +74,7 @@ def content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
             try:
                 req.headers['Content-Security-Policy']
                 return False
-            except:
+            except Exception:
                 return True
     except Exception as e:
         # some error warning

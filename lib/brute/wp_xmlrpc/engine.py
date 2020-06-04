@@ -75,13 +75,13 @@ def check(user, passwd, target, port, headers, timeout_sec, log_in_file, languag
                                'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
                     __log_into_file(log_in_file, 'a', data, language)
                 break
-            except:
+            except Exception:
                 n += 1
                 if n is retries:
                     warn(messages(language, "http_connection_timeout").format(target))
                     return 1
             return True
-    except:
+    except Exception:
         return False
 
 
@@ -119,7 +119,7 @@ def test(target, port, retries, timeout_sec, headers, socks_proxy, verbose_level
                     return True
                 else:
                     return False
-            except:
+            except Exception:
                 return False
         except Exception as err:
             return False

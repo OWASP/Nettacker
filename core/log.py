@@ -46,7 +46,7 @@ def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, 
             __import__('lib.graph.{0}.engine'.format(graph_flag.rsplit('_graph')[0]),
                        fromlist=['start']),
             'start')
-    except:
+    except Exception:
         __die_failure(
             messages(language, "graph_module_unavailable").format(graph_flag))
 

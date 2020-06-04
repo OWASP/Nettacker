@@ -75,7 +75,7 @@ def server_version(target, port, timeout_sec, log_in_file, language, time_sleep,
                 global header_server
                 header_server = req.headers['server']
                 return True
-            except:
+            except Exception:
                 return False
     except Exception as e:
         # some error warning

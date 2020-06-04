@@ -54,7 +54,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         s.settimeout(timeout_sec)
         s.connect((targ, port))
         return s
-    except:
+    except Exception:
         return None
 
 
@@ -77,7 +77,7 @@ def restriction_bypass(target, port, timeout_sec, log_in_file, language, time_sl
                     return False
             else:
                 return False
-    except:
+    except Exception:
         # some error warning
         return False
 

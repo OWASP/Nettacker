@@ -73,7 +73,7 @@ def joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
                     host_ip = host_ip.decode("utf-8")
                 result = spf.check2(host_ip,"admin@"+target, target)
                 return True
-            except:
+            except Exception:
                 return False
     except Exception as e:
         return False

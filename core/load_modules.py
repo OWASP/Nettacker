@@ -79,7 +79,7 @@ def load_all_method_args(language, API=False):
         try:
             extra_requirements_dict = getattr(__import__(imodule, fromlist=['extra_requirements_dict']),
                                               'extra_requirements_dict')
-        except:
+        except Exception:
             warn(messages(language, "module_args_error").format(imodule))
             _ERROR = True
         if not _ERROR:
@@ -110,7 +110,7 @@ def __check_external_modules():
     for module in external_modules:
         try:
             __import__(module)
-        except:
+        except Exception:
             __die_failure("pip install -r requirements.txt ---> " +
                           module + " not installed!")
 
@@ -121,19 +121,19 @@ def __check_external_modules():
             os.mkdir(default_config["home_path"])
             os.mkdir(default_config["tmp_path"])
             os.mkdir(default_config["results_path"])
-        except:
+        except Exception:
             __die_failure("cannot access the directory {0}".format(
                 default_config["home_path"]))
     if not os.path.exists(default_config["tmp_path"]):
         try:
             os.mkdir(default_config["tmp_path"])
-        except:
+        except Exception:
             __die_failure("cannot access the directory {0}".format(
                 default_config["results_path"]))
     if not os.path.exists(default_config["results_path"]):
         try:
             os.mkdir(default_config["results_path"])
-        except:
+        except Exception:
             __die_failure("cannot access the directory {0}".format(
                 default_config["results_path"]))
     if default_config["database_type"] == "sqlite":
@@ -143,7 +143,7 @@ def __check_external_modules():
             else:
                 from database.sqlite_create import sqlite_create_tables
                 sqlite_create_tables()
-        except:
+        except Exception:
             __die_failure("cannot access the directory {0}".format(
                 default_config["home_path"]))
     elif default_config["database_type"] == "mysql":
@@ -151,7 +151,7 @@ def __check_external_modules():
             from database.mysql_create import mysql_create_tables, mysql_create_database
             mysql_create_database()
             mysql_create_tables()
-        except:
+        except Exception:
             __die_failure(messages("en", "database_connection_failed"))
     else:
         __die_failure(messages("en", "invalid_database"))

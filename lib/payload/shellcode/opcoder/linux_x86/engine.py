@@ -99,7 +99,7 @@ def convert(shellcode):
                                         1].rsplit(',')[0]).encode('latin-1'))
                                     ).decode('latin-1')))
                             shellcode = shellcode.replace(line, rep)
-                        except:
+                        except Exception:
                             if version() is 2:
                                 rep = str('35') + str(stack.st(
                                     binascii.a2b_hex(str('0') + str(
@@ -125,7 +125,7 @@ def convert(shellcode):
                                         1].rsplit(',')[0]).encode('latin-1'))
                                     ).decode('latin-1')))
                             shellcode = shellcode.replace(line, rep)
-                        except:
+                        except Exception:
                             if version() is 2:
                                 rep = str('81 f3') + str(stack.st(
                                     binascii.a2b_hex(str('0') + str(
@@ -151,7 +151,7 @@ def convert(shellcode):
                                         1].rsplit(',')[0]).encode('latin-1'))
                                     ).decode('latin-1')))
                             shellcode = shellcode.replace(line, rep)
-                        except:
+                        except Exception:
                             if version() is 2:
                                 rep = str('81 f1') + str(stack.st(
                                     binascii.a2b_hex(str('0') + str(
@@ -177,7 +177,7 @@ def convert(shellcode):
                                         1].rsplit(',')[0]).encode('latin-1'))
                                     ).decode('latin-1')))
                             shellcode = shellcode.replace(line, rep)
-                        except:
+                        except Exception:
                             if version() is 2:
                                 rep = str('81 f2') + str(stack.st(
                                     binascii.a2b_hex(str('0') + str(
@@ -211,7 +211,7 @@ def convert(shellcode):
                                         1].rsplit(',')[0]).encode('latin-1'))
                                     ).decode('latin-1')))
                             shellcode = shellcode.replace(line, rep)
-                        except:
+                        except Exception:
                             if version() is 2:
                                 rep = str('05') + str(stack.st(
                                     binascii.a2b_hex(str('0') + str(
@@ -237,7 +237,7 @@ def convert(shellcode):
                                         1].rsplit(',')[0]).encode('latin-1'))
                                     ).decode('latin-1')))
                             shellcode = shellcode.replace(line, rep)
-                        except:
+                        except Exception:
                             if version() is 2:
                                 rep = str('81 c3') + str(stack.st(
                                     binascii.a2b_hex(str('0') + str(
@@ -263,7 +263,7 @@ def convert(shellcode):
                                         1].rsplit(',')[0]).encode('latin-1'))
                                     ).decode('latin-1')))
                             shellcode = shellcode.replace(line, rep)
-                        except:
+                        except Exception:
                             if version() is 2:
                                 rep = str('81 c1') + str(stack.st(
                                     binascii.a2b_hex(str('0') + str(
@@ -289,7 +289,7 @@ def convert(shellcode):
                                         1].rsplit(',')[0]).encode('latin-1'))
                                     ).decode('latin-1')))
                             shellcode = shellcode.replace(line, rep)
-                        except:
+                        except Exception:
                             if version() is 2:
                                 rep = str('81 c2') + str(stack.st(
                                     binascii.a2b_hex(str('0') + str(
@@ -324,7 +324,7 @@ def convert(shellcode):
                                         1].rsplit(',')[0]).encode('latin-1'))
                                     ).decode('latin-1')))
                             shellcode = shellcode.replace(line, rep)
-                        except:
+                        except Exception:
                             if version() is 2:
                                 rep = str('2d') + str(stack.st(
                                     binascii.a2b_hex(str('0') + str(
@@ -350,7 +350,7 @@ def convert(shellcode):
                                         1].rsplit(',')[0]).encode('latin-1'))
                                     ).decode('latin-1')))
                             shellcode = shellcode.replace(line, rep)
-                        except:
+                        except Exception:
                             if version() is 2:
                                 rep = str('81 eb') + str(stack.st(
                                     binascii.a2b_hex(str('0') + str(
@@ -376,7 +376,7 @@ def convert(shellcode):
                                         1].rsplit(',')[0]).encode('latin-1'))
                                     ).decode('latin-1')))
                             shellcode = shellcode.replace(line, rep)
-                        except:
+                        except Exception:
                             if version() is 2:
                                 rep = str('81 e9') + str(stack.st(
                                     binascii.a2b_hex(str('0') + str(
@@ -402,7 +402,7 @@ def convert(shellcode):
                                         1].rsplit(',')[0]).encode('latin-1'))
                                     ).decode('latin-1')))
                             shellcode = shellcode.replace(line, rep)
-                        except:
+                        except Exception:
                             if version() is 2:
                                 rep = str('81 ea') + str(stack.st(
                                     binascii.a2b_hex(str('0') + str(

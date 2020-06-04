@@ -54,7 +54,7 @@ def load_all_args(module_names, graph_names):
     if "-L" in sys.argv or "--language" in sys.argv:
         try:
             index = sys.argv.index("-L") + 1
-        except:
+        except Exception:
             index = sys.argv.index("--language") + 1
     else:
         index = -1
@@ -64,7 +64,7 @@ def load_all_args(module_names, graph_names):
         _error_flag = False
         try:
             language = sys.argv[index]
-        except:
+        except Exception:
             _error_flag = True
         if _error_flag or language not in language_list:
             __die_failure(
@@ -307,7 +307,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
 
         try:
             api_port = int(api_port)
-        except:
+        except Exception:
             __die_failure(messages(language, "API_port_int"))
         if api_client_white_list:
             if type(api_client_white_list_ips) != type([]):
@@ -333,7 +333,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         if api_access_log:
             try:
                 f = open(api_access_log_filename, 'a')
-            except:
+            except Exception:
                 write_to_api_console(
                     " * " + messages(language, "file_write_error").format(api_access_log_filename) + "\n")
                 __die_failure("")
@@ -373,7 +373,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                 for sm in _all_profiles[pr]:
                     if sm not in tmp_sm.rsplit(","):
                         tmp_sm += sm + ","
-            except:
+            except Exception:
                 __die_failure(messages(language, "profile_404").format(pr))
         if tmp_sm[-1] == ",":
             tmp_sm = tmp_sm[0:-1]
@@ -401,7 +401,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                 e = True
             elif len(socks_proxy.rsplit(":")) is 3 and socks_proxy.rsplit(":")[2] == "":
                 e = True
-        except:
+        except Exception:
             e = True
         if e:
             __die_failure(messages(language, "valid_socks_address"))
@@ -421,7 +421,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         elif targets_list is not None:
             try:
                 targets = list(set(open(targets_list, "rb").read().rsplit()))
-            except:
+            except Exception:
                 __die_failure(
                     messages(language, "error_target_file").format(targets_list))
     # Check thread number
@@ -506,7 +506,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                     for p in t_ports:
                         if p not in tmp_ports:
                             tmp_ports.append(p)
-            except:
+            except Exception:
                 __die_failure(messages(language, "ports_int"))
         if len(tmp_ports) is 0:
             ports = None
@@ -519,7 +519,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         try:
             # fix later
             users = list(set(open(users_list).read().rsplit("\n")))
-        except:
+        except Exception:
             __die_failure(
                 messages(language, "error_username").format(targets_list))
     # Check password list
@@ -529,13 +529,13 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         try:
             passwds = list(
                 set(open(passwds_list).read().rsplit("\n")))  # fix later
-        except:
+        except Exception:
             __die_failure(
                 messages(language, "error_password_file").format(targets_list))
     # Check output file
     try:
         tmpfile = open(log_in_file, "w")
-    except:
+    except Exception:
         __die_failure(
             messages(language, "file_write_error").format(log_in_file))
     # Check Graph
@@ -556,7 +556,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                     try:
                         read_data = list(
                             set(open(imethod_args.rsplit("=read_from_file:")[1]).read().rsplit("\n")))
-                    except:
+                    except Exception:
                         __die_failure(messages(language, "error_reading_file"))
                     new_methods_args[imethod_args.rsplit("=")[0]] = read_data
                 else:

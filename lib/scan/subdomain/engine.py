@@ -77,7 +77,7 @@ def __cert_spotter(target, timeout_sec, log_in_file, time_sleep, language, verbo
             pass
         __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs), language)
         return subs
-    except:
+    except Exception:
         return []
 
 
@@ -121,7 +121,7 @@ def __google_dig(target, timeout_sec, log_in_file, time_sleep, language, verbose
             pass
         __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs), language)
         return subs
-    except:
+    except Exception:
         return []
 
 
@@ -157,7 +157,7 @@ def __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
                 try:
                     results = requests.get(url, headers=headers)
                     break
-                except:
+                except Exception:
                     n += 1
                     if n is 3:
                         break
@@ -175,11 +175,11 @@ def __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
             try:
                 url = 'http://searchdns.netcraft.com' + re.compile('<A href="(.*?)"><b>Next page</b></a>').findall(
                     results.content)[0]
-            except:
+            except Exception:
                 break
         __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs), language)
         return subs
-    except:
+    except Exception:
         return []
 
 
@@ -211,21 +211,21 @@ def __threatcrowd(target, timeout_sec, log_in_file, time_sleep, language, verbos
             try:
                 results = requests.get(url, headers=headers)
                 break
-            except:
+            except Exception:
                 n += 1
                 if n is 3:
                     break
         if results.status_code is 200:
             try:
                 subs = json.loads(results.content)["subdomains"]
-            except:
+            except Exception:
                 subs = []
         else:
             # warn 403
             pass
         __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs), language)
         return subs
-    except:
+    except Exception:
         return []
 
 
@@ -268,7 +268,7 @@ def __dnsdumpster(target, timeout_sec, log_in_file, time_sleep, language, verbos
             pass
         __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs), language)
         return subs
-    except:
+    except Exception:
         return []
 
 
@@ -299,7 +299,7 @@ def __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose
             try:
                 results = requests.get(url, headers=headers)
                 break
-            except:
+            except Exception:
                 n += 1
                 if n is 3:
                     break
@@ -316,7 +316,7 @@ def __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose
             pass
         __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs), language)
         return subs
-    except:
+    except Exception:
         return []
 
 
@@ -349,7 +349,7 @@ def __virustotal(target, timeout_sec, log_in_file, time_sleep, language, verbose
             try:
                 results = requests.get(url, headers=headers)
                 break
-            except:
+            except Exception:
                 n += 1
                 if n is 3:
                     break
@@ -360,14 +360,14 @@ def __virustotal(target, timeout_sec, log_in_file, time_sleep, language, verbose
                     if '*' not in target_to_host(l) and target_to_host(l.strip()).endswith(
                             '.' + target) and target_to_host(l.strip()) not in subs:
                         subs.append(target_to_host(l.strip()))
-            except:
+            except Exception:
                 pass
         else:
             # warn 403
             pass
         __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs), language)
         return subs
-    except:
+    except Exception:
         return []
 
 
@@ -399,7 +399,7 @@ def __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose
             try:
                 results = requests.get(url, headers=headers)
                 break
-            except:
+            except Exception:
                 n += 1
                 if n is 3:
                     break
@@ -412,7 +412,7 @@ def __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose
             pass
         __log_into_file(thread_tmp_filename, 'a', '\n'.join(subs), language)
         return subs
-    except:
+    except Exception:
         return []
 
 
@@ -525,7 +525,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
     try:
         kill_time = -1 if extra_requirements["subdomain_scan_time_limit_seconds"][0] == -1 \
             else int(int(extra_requirements["subdomain_scan_time_limit_seconds"[0]]) / 0.1)
-    except:
+    except Exception:
         kill_time = -1
     while 1:
         time.sleep(0.1)
@@ -538,7 +538,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
     try:
         subs = list(set(open(thread_tmp_filename).read().rsplit()))
         os.remove(thread_tmp_filename)
-    except:
+    except Exception:
         subs = []
     return subs
 

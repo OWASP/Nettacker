@@ -81,7 +81,7 @@ def joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
                 version = re.findall(pattern, req.text)
                 version = ''.join(version)
                 return True
-            except:
+            except Exception:
                 return False
     except Exception as e:
         # some error warning

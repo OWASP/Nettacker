@@ -137,7 +137,7 @@ def clear_threads(threads):
     for thread in threads:
         try:
             thread._Thread__stop()
-        except:
+        except Exception:
             pass
 
 
@@ -167,7 +167,7 @@ def start():
         f = open(args.output, "w")
         f.write("")
         f.close()
-    except:
+    except Exception:
         sys.exit(info("{0} is not writable!".format(args.output)))
     n = 1
     BREAK = False
