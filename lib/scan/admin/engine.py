@@ -243,7 +243,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 info(messages(language, "directory_file_404").format(
                     target, "default_port"), log_in_file, "a",
                     {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'admin_scan',
-                     'DESCRIPTION': messages(language, "direcroty_file_404").format(target, "default_port"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                     'DESCRIPTION': messages(language, "directory_file_404").format(target, "default_port"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
                      'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
                 __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
