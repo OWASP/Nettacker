@@ -5,7 +5,7 @@ from canari.maltego.entities import URL
 from canari.framework import EnableDebugWindow
 from common.entities import NettackerScan
 
-from lib.vuln.wp_xmlrpc_pingback.engine import start
+from lib.scan.wp_xmlrpc.engine import start
 
 from database.db import __logs_by_scan_id as find_log
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author Pradeep Jairamani; github.com/pradeepjairamani
+# Author Aman Gupta; github.com/aman566
 
 import socket
 import socks
@@ -20,13 +20,11 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 from core._die import __die_failure
-from lib.scan.wp_theme import themes
-from lib.scan.wp_theme import small_themes
 
 
 def extra_requirements_dict():
     return {
-        "wp_xmlrpc_brute_ports": [80, 443]
+        "wp_xmlrpc_scan_ports": [80, 443]
     }
 
 
@@ -66,7 +64,7 @@ def check(target, port, headers, timeout_sec, log_in_file, language,
                     info(messages(language, "target_vulnerable").format(
                                     target, port, "XMLRPC DOS attacks"))
                     __log_into_file(thread_tmp_filename, 'w', '0', language)
-                    data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'wp_xmlrpc_brute',
+                    data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'wp_xmlrpc_scan',
                                'DESCRIPTION': messages(language, "vulnerable").format("XML-RPC DOS attacks!!") , 'TIME': now(), 'CATEGORY': "brute", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
                     __log_into_file(log_in_file, 'a', data, language)
             except:
@@ -100,13 +98,14 @@ def test(target, port, retries, timeout_sec, headers, socks_proxy, verbose_level
     n = 0
     while 1:
         try:
-            headers = {}
             if target_type(target) != "HTTP" and port == 443:
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
             postdata = '''<?xml version="1.0" encoding="utf-8"?><methodCall><methodName>system.listMethods</methodName><params></params></methodCall>'''
             try:
+                if target.endswith("/"):
+                    target = target[:-1]
                 req = requests.post(target+'/xmlrpc.php', data = postdata, headers = headers)
                 if 'demo.sayhello' in req.text.lower():
                     return True
@@ -155,7 +154,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         threads = []
 
         if ports is None:
-            ports = extra_requirements["wp_xmlrpc_brute_ports"]
+            ports = extra_requirements["wp_xmlrpc_scan_ports"]
         if verbose_level > 3:
             total_req = len (ports)
         else:
@@ -180,7 +179,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 trying += 1
                 if verbose_level > 3:
                     info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target),
-                                                                    port, 'wp_xmlrpc_brute'))
+                                                                    port, 'wp_xmlrpc_scan'))
                 while 1:
                     try:
                         if threading.activeCount() >= thread_number:
@@ -214,10 +213,10 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
 
             info(messages(language, "no_vulnerability_found").format(
                 'XML-RPC'))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'wp_xmlrpc_brute',
-                            'DESCRIPTION': messages(language, "no_vulnerability_found").format("XML-RPC DOS attacks"), 'TIME': now(), 'CATEGORY': "brute", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'wp_xmlrpc_scan',
+                            'DESCRIPTION': messages(language, "no_vulnerability_found").format("XML-RPC DOS attacks"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
     else:
         warn(messages(language, "input_target_error").format(
-            'wp_xmlrpc_brute', target))
+            'wp_xmlrpc_scan', target))
