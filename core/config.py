@@ -139,6 +139,7 @@ def _core_config():
         "ping_flag": False,
         "methods_args": None,
         "method_args_list": False,
+        "shodan_api_key": '',
         "startup_check_for_update": True,
         "wizard_mode": False,
         "profile": None,

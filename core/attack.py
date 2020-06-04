@@ -29,7 +29,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, thread_number, ports, log_in_file,
-                 time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args, scan_id, scan_cmd):
+                 time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args, shodan_api_key, scan_id, scan_cmd):
     """
     start new attack for each target
 
@@ -91,15 +91,19 @@ def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, t
     except:
         __die_failure(
             messages(language, "module_not_available").format(scan_method))
-    start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
-          verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd)
+    if('shodan' in '_'.join(scan_method.rsplit('_')[:-1])):
+        start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
+                verbose_level, socks_proxy, retries, methods_args, shodan_api_key, scan_id, scan_cmd)
+    else:
+        start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
+                verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd)
     return True
 
 
 def __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_sleep, language, verbose_level, retries,
                      socks_proxy, users, passwds, timeout_sec, thread_number, ports, ping_flag, methods_args,
                      backup_ports, scan_method, thread_number_host, graph_flag, profile,
-                     api_flag, scan_id=None):
+                     api_flag, shodan_api_key, scan_id=None):
     """
     preparing for attacks and managing multi-processing for host
 
@@ -137,7 +141,7 @@ def __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_
     total_targets = -1
     for total_targets, _ in enumerate(
             analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-                     language, verbose_level, retries, socks_proxy, True)):
+                     language, verbose_level, retries, socks_proxy, True, scan_method)):
         pass
     total_targets += 1
     total_targets = total_targets * len(scan_method)
@@ -147,7 +151,7 @@ def __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_
         pass
     range_temp = "{}/tmp/ranges_".format(load_file_path()) + suff
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-                       language, verbose_level, retries, socks_proxy, False)
+                       language, verbose_level, retries, socks_proxy, False, scan_method)
     trying = 0
     if scan_id is None:
         scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
@@ -159,8 +163,7 @@ def __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_
             p = multiprocessing.Process(target=start_attack, args=(
                 str(target).rsplit()[
                     0], trying, total_targets, sm, users, passwds, timeout_sec, thread_number,
-                ports, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args,
-                scan_id, scan_cmd))
+                ports, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries, ping_flag, methods_args, shodan_api_key, scan_id, scan_cmd))
             p.name = str(target) + "->" + sm
             p.start()
             while 1:

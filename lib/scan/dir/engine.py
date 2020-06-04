@@ -19,7 +19,6 @@ from core._time import now
 from core.log import __log_into_file
 from core._die import __die_failure
 
-
 def extra_requirements_dict():
     return {
         "dir_scan_http_method": ["GET"],

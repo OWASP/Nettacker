@@ -61,7 +61,7 @@ def target_type(target):
 
 
 def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-             language, verbose_level, retries, socks_proxy, enumerate_flag):
+             language, verbose_level, retries, socks_proxy, enumerate_flag, scan_method):
     """
     analysis and calulcate targets.
 
@@ -105,17 +105,21 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
         elif target_type(target) == 'SINGLE_IPv6':
             yield target
 
+        
         elif target_type(target) == 'RANGE_IPv4' or target_type(target) == 'CIDR_IPv4':
-            IPs = IPRange(target, range_temp, language)
-            if not enumerate_flag:
-                info(messages(language, "checking").format(target))
-            if type(IPs) == netaddr.ip.IPNetwork:
-                for IPm in IPs:
-                    yield IPm
-            elif type(IPs) == list:
-                for IPm in IPs:
-                    for IP in IPm:
-                        yield IP
+            if("shodan_scan" in scan_method and "/" in target):
+                    yield target
+            else:
+                IPs = IPRange(target, range_temp, language)
+                if not enumerate_flag:
+                    info(messages(language, "checking").format(target))
+                if type(IPs) == netaddr.ip.IPNetwork:
+                    for IPm in IPs:
+                        yield IPm
+                elif type(IPs) == list:
+                    for IPm in IPs:
+                        for IP in IPm:
+                            yield IP
 
         elif target_type(target) == 'DOMAIN':
             if check_subdomains:

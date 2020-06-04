@@ -189,6 +189,9 @@ def load_all_args(module_names, graph_names):
     method.add_argument("--method-args-list", action="store_true",
                         dest="method_args_list", default=default_config["method_args_list"],
                         help=messages(language, "list_methods"))
+    method.add_argument("-k", "--shodan_api_key", action="store",
+                        dest="shodan_api_key", default=default_config["shodan_api_key"],
+                        help=messages(language, "shodan_api_key")),
 
     # API Options
     api = parser.add_argument_group(
@@ -229,7 +232,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                        log_in_file, scan_method, exclude_method, users, users_list,
                        passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level,
                        show_version, check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args,
-                       method_args_list, wizard_mode, profile, start_api, api_host, api_port, api_debug_mode,
+                       method_args_list, shodan_api_key, wizard_mode, profile, start_api, api_host, api_port, api_debug_mode,
                        api_access_key, api_client_white_list, api_client_white_list_ips, api_access_log,
                        api_access_log_filename):
     """
@@ -565,11 +568,13 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             else:
                 new_methods_args[imethod_args] = ["True"]
         methods_args = new_methods_args
+    if shodan_api_key is '':
+        shodan_api_key = shodan_api_key
     # Return the values
     return [targets, targets_list, thread_number, thread_number_host,
             log_in_file, scan_method, exclude_method, users, users_list,
             passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level,
             show_version, check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args,
-            method_args_list, wizard_mode, profile, start_api, api_host, api_port, api_debug_mode,
+            method_args_list, shodan_api_key, wizard_mode, profile, start_api, api_host, api_port, api_debug_mode,
             api_access_key, api_client_white_list, api_client_white_list_ips, api_access_log,
             api_access_log_filename]
