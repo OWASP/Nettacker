@@ -38,25 +38,54 @@ def do_one_ping(dest_addr, timeout, psize):
     return delay
 
 
-def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
-          verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):
-    if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
-            target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
+def start(
+    target,
+    users,
+    passwds,
+    ports,
+    timeout_sec,
+    thread_number,
+    num,
+    total,
+    log_in_file,
+    time_sleep,
+    language,
+    verbose_level,
+    socks_proxy,
+    retries,
+    methods_args,
+    scan_id,
+    scan_cmd,
+):
+    if (
+        target_type(target) != "SINGLE_IPv4"
+        or target_type(target) != "DOMAIN"
+        or target_type(target) != "HTTP"
+        or target_type(target) != "SINGLE_IPv6"
+    ):
         if socks_proxy is not None:
-            socks_version = socks.SOCKS5 if socks_proxy.startswith(
-                'socks5://') else socks.SOCKS4
-            socks_proxy = socks_proxy.rsplit('://')[1]
-            if '@' in socks_proxy:
-                socks_username = socks_proxy.rsplit(':')[0]
-                socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
-                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
-                                        int(socks_proxy.rsplit(':')[-1]), username=socks_username,
-                                        password=socks_password)
+            socks_version = (
+                socks.SOCKS5 if socks_proxy.startswith("socks5://") else socks.SOCKS4
+            )
+            socks_proxy = socks_proxy.rsplit("://")[1]
+            if "@" in socks_proxy:
+                socks_username = socks_proxy.rsplit(":")[0]
+                socks_password = socks_proxy.rsplit(":")[1].rsplit("@")[0]
+                socks.set_default_proxy(
+                    socks_version,
+                    str(socks_proxy.rsplit("@")[1].rsplit(":")[0]),
+                    int(socks_proxy.rsplit(":")[-1]),
+                    username=socks_username,
+                    password=socks_password,
+                )
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
             else:
-                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]),
-                                        int(socks_proxy.rsplit(':')[1]))
+                socks.set_default_proxy(
+                    socks_version,
+                    str(socks_proxy.rsplit(":")[0]),
+                    int(socks_proxy.rsplit(":")[1]),
+                )
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
         n = 0
@@ -70,25 +99,55 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     if verbose_level > 3:
                         warn(messages(language, "host_down").format(target))
                     if verbose_level is not 0:
-                        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
-                                           'TYPE': 'icmp scan',
-                                           'DESCRIPTION': messages(language, "host_down").format(target),
-                                           'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                                           'SCAN_CMD': scan_cmd}) + "\n"
-                        __log_into_file(log_in_file, 'a', data, language)
+                        data = (
+                            json.dumps(
+                                {
+                                    "HOST": target,
+                                    "USERNAME": "",
+                                    "PASSWORD": "",
+                                    "PORT": "",
+                                    "TYPE": "icmp scan",
+                                    "DESCRIPTION": messages(
+                                        language, "host_down"
+                                    ).format(target),
+                                    "TIME": now(),
+                                    "CATEGORY": "scan",
+                                    "SCAN_ID": scan_id,
+                                    "SCAN_CMD": scan_cmd,
+                                }
+                            )
+                            + "\n"
+                        )
+                        __log_into_file(log_in_file, "a", data, language)
                     break
                 else:
                     pass
             else:
-                info(messages(language, "host_up").format(
-                    target, str(round(r * 1000, 2)) + "ms"))
-                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
-                                   'TYPE': 'icmp scan',
-                                   'DESCRIPTION': messages(language, "host_up").format(target,
-                                                                                       str(round(r * 1000, 2)) + "ms"),
-                                   'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                                   'SCAN_CMD': scan_cmd}) + "\n"
-                __log_into_file(log_in_file, 'a', data, language)
+                info(
+                    messages(language, "host_up").format(
+                        target, str(round(r * 1000, 2)) + "ms"
+                    )
+                )
+                data = (
+                    json.dumps(
+                        {
+                            "HOST": target,
+                            "USERNAME": "",
+                            "PASSWORD": "",
+                            "PORT": "",
+                            "TYPE": "icmp scan",
+                            "DESCRIPTION": messages(language, "host_up").format(
+                                target, str(round(r * 1000, 2)) + "ms"
+                            ),
+                            "TIME": now(),
+                            "CATEGORY": "scan",
+                            "SCAN_ID": scan_id,
+                            "SCAN_CMD": scan_cmd,
+                        }
+                    )
+                    + "\n"
+                )
+                __log_into_file(log_in_file, "a", data, language)
                 break
     else:
-        warn(messages(language, "input_target_error").format('icmp_scan', target))
+        warn(messages(language, "input_target_error").format("icmp_scan", target))

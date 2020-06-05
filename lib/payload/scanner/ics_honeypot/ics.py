@@ -12,21 +12,41 @@ import json
 # from lib.payload.scanner.service.engine import recv_all
 
 COMMANDS = [
-    {
-        "\x01I30100\n": ["9999FF1B"]
-    },
-    {
-        "\x01I20100\n": ["I20100", "IN-TANK INVENTORY"]
-    }
+    {"\x01I30100\n": ["9999FF1B"]},
+    {"\x01I20100\n": ["I20100", "IN-TANK INVENTORY"]},
 ]
 
 # https://github.com/sjhilt/GasPot/blob/master/config.ini.dist
 DEFAULT_SIGNATURES = [
-    "EXXON STATION\n    12 Fake St\n    Anytown, MO 12346", "FUEL COOP", "SHELL STATION", "AMOCO FUELS",
-    "MOBIL STATION", "MARATHON GAS", "CHEVRON STATION", "CITGO FUELS", "BP FUELS", "PILOT TRUCK STOP",
-    "FLYING J TRUCK STOP", "LOVES FUEL STATION", "SINCLAIR FUEL", "VICTORY OIL", "CONOCO FUELS", "76 OIL",
-    "TEXACO STATION", "PETRO-CANADA", "TOTAL PETROL", "HEM PETROL", "ARAL PETROL", "OBERT 24h", "AGIP PETROL",
-    "ROMPETROL STATION", "PETRON STATION", "CIRCLE K STATION", "LUK OIL", "MURPHY OIL"]
+    "EXXON STATION\n    12 Fake St\n    Anytown, MO 12346",
+    "FUEL COOP",
+    "SHELL STATION",
+    "AMOCO FUELS",
+    "MOBIL STATION",
+    "MARATHON GAS",
+    "CHEVRON STATION",
+    "CITGO FUELS",
+    "BP FUELS",
+    "PILOT TRUCK STOP",
+    "FLYING J TRUCK STOP",
+    "LOVES FUEL STATION",
+    "SINCLAIR FUEL",
+    "VICTORY OIL",
+    "CONOCO FUELS",
+    "76 OIL",
+    "TEXACO STATION",
+    "PETRO-CANADA",
+    "TOTAL PETROL",
+    "HEM PETROL",
+    "ARAL PETROL",
+    "OBERT 24h",
+    "AGIP PETROL",
+    "ROMPETROL STATION",
+    "PETRON STATION",
+    "CIRCLE K STATION",
+    "LUK OIL",
+    "MURPHY OIL",
+]
 
 DEFAULT_PRODUCTS = ["SUPER", "UNLEAD", "DIESEL", "PREMIUM"]
 
@@ -107,7 +127,11 @@ def first_ics_connect(target, port, timeout, output):
                 FLAG = False
         __JSON_STRUCTURE["DEFAULT_PRODUCTS"] = FLAG
 
-        info("possible found honeypot {0}".format(target), response=__JSON_STRUCTURE, output=output)
+        info(
+            "possible found honeypot {0}".format(target),
+            response=__JSON_STRUCTURE,
+            output=output,
+        )
     return
 
 
@@ -121,9 +145,19 @@ def read_targets(filename):
         hosts = []
         try:
             for tag in loaded_data["nmaprun"]["host"]:
-                hosts.append(json.loads(json.dumps(json.loads(json.dumps(tag))["address"]))["@addr"])
+                hosts.append(
+                    json.loads(json.dumps(json.loads(json.dumps(tag))["address"]))[
+                        "@addr"
+                    ]
+                )
         except Exception as _:
-            sys.exit(info("some error occurred while parsing targets from {0}".format(filename)))
+            sys.exit(
+                info(
+                    "some error occurred while parsing targets from {0}".format(
+                        filename
+                    )
+                )
+            )
     elif filename.endswith(".txt"):
         hosts = list(set(data.rsplit()))
     else:
@@ -144,20 +178,66 @@ def clear_threads(threads):
 def start():
     parser = argparse.ArgumentParser(prog="ICS Hunter", add_help=False)
     engineOpt = parser.add_argument_group("Options")
-    engineOpt.add_argument("-h", "--help", action="store_true",
-                           default=False, dest="help_menu", help="show this help menu")
-    engineOpt.add_argument("-i", "--targets", action="store", dest="target", default=None,
-                           help="input targets (e.g. masscan-gaspot.xml, lists.txt)")
-    engineOpt.add_argument("-p", "--port", action="store", dest="port", default=10001, type=int,
-                           help="port number")
-    engineOpt.add_argument("-t", "--threads", action="store", dest="threads", default=500, type=int,
-                           help="max threads number")
-    engineOpt.add_argument("-T", "--timeout", action="store", dest="timeout", default=3, type=int,
-                           help="timeout seconds")
-    engineOpt.add_argument("-o", "--output", action="store", dest="output", default="results.json",
-                           help="output filename (e.g. results.json)")
-    engineOpt.add_argument("-a", "--alert", action="store", dest="alert", default=1000, type=int,
-                           help="alert every x thread to show position")
+    engineOpt.add_argument(
+        "-h",
+        "--help",
+        action="store_true",
+        default=False,
+        dest="help_menu",
+        help="show this help menu",
+    )
+    engineOpt.add_argument(
+        "-i",
+        "--targets",
+        action="store",
+        dest="target",
+        default=None,
+        help="input targets (e.g. masscan-gaspot.xml, lists.txt)",
+    )
+    engineOpt.add_argument(
+        "-p",
+        "--port",
+        action="store",
+        dest="port",
+        default=10001,
+        type=int,
+        help="port number",
+    )
+    engineOpt.add_argument(
+        "-t",
+        "--threads",
+        action="store",
+        dest="threads",
+        default=500,
+        type=int,
+        help="max threads number",
+    )
+    engineOpt.add_argument(
+        "-T",
+        "--timeout",
+        action="store",
+        dest="timeout",
+        default=3,
+        type=int,
+        help="timeout seconds",
+    )
+    engineOpt.add_argument(
+        "-o",
+        "--output",
+        action="store",
+        dest="output",
+        default="results.json",
+        help="output filename (e.g. results.json)",
+    )
+    engineOpt.add_argument(
+        "-a",
+        "--alert",
+        action="store",
+        dest="alert",
+        default=1000,
+        type=int,
+        help="alert every x thread to show position",
+    )
 
     args = parser.parse_args()
     if len(sys.argv) <= 1 or "-h" in sys.argv or "--help" in sys.argv:
@@ -175,7 +255,10 @@ def start():
     for target in targets:
         if n % args.alert is 0:
             info(str(n) + "/" + str(len(targets)) + "->" + target)
-        thread = threading.Thread(target=first_ics_connect, args=(target, args.port, args.timeout, args.output)).start()
+        thread = threading.Thread(
+            target=first_ics_connect,
+            args=(target, args.port, args.timeout, args.output),
+        ).start()
         threads.append(thread)
         while 1:
             try:

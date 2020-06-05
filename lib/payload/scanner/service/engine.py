@@ -16,12 +16,32 @@ result_dict = {}
 external_run_values = []
 
 ports_services_and_condition = {
-    "http": ["HTTP", ["OK", "CREATED", "No Content", "Moved Permanently", "Found", "Not Modified", "Permanent Redirect"
-                      "Bad Request", "Unauthorized", "Payment Required", "Forbidden", "Not Found", "Method Not Allowed",
-                      "Not Acceptable", "Request Timeout", "Unsupported Media Type", "Too Many Requests",
-                      "Internal Server Error", "Bad Gateway", "Service Unavailable", "Gateway Timeout",
-                      "444 No Response"],
-             ],
+    "http": [
+        "HTTP",
+        [
+            "OK",
+            "CREATED",
+            "No Content",
+            "Moved Permanently",
+            "Found",
+            "Not Modified",
+            "Permanent Redirect" "Bad Request",
+            "Unauthorized",
+            "Payment Required",
+            "Forbidden",
+            "Not Found",
+            "Method Not Allowed",
+            "Not Acceptable",
+            "Request Timeout",
+            "Unsupported Media Type",
+            "Too Many Requests",
+            "Internal Server Error",
+            "Bad Gateway",
+            "Service Unavailable",
+            "Gateway Timeout",
+            "444 No Response",
+        ],
+    ],
     "ftp": ["FTP", ["214", "220", "530", "230", "502", "500"]],
     "ssh": ["SSH"],
     "telnet": ["Telnet"],
@@ -38,58 +58,173 @@ ports_services_and_condition = {
 }
 
 ports_services_or_condition = {
-    "http": ["400 Bad Request", "401 Unauthorized", "302 Found", "Server: cloudflare", "Server: nginx",
-             "Content-Length:", "Content-Type:", "text/html", "application/json", "multipart/form-data",
-             "Access-Control-Request-Headers", "Forwarded: for=", "Proxy-Authorization:", "User-Agent:",
-             "X-Forwarded-Host", "Content-MD5", ["HTTP", "Authorization"], "Access-Control-Request-Method",
-             "Accept-Language", "HTTP", "404 Not Found", "HTML", "Apache"],
-    "ftp": [["Pure-FTPd", "----------\r\n"], "\r\n220-You are user number", ["orks FTP server", "VxWorks VxWorks"],
-            "530 USER and PASS required", "Server ready.\r\n5", "Invalid command: try being more creative",
-            "220 Hotspot FTP server (MikroTik 6.27) ready", "220 SHARP MX-M264N Ver 01.05.00.0n.16.U FTP server.",
-            "220 Microsoft FTP Service", "220 FTP Server ready.", "220 Microsoft FTP Service",
-            "220 Welcome to virtual FTP service.", "220 DreamHost FTP Server",
-            "220 FRITZ!BoxFonWLAN7360SL(UI) FTP server ready.", "Directory status",
-            "Service closing control connection", "Requested file action", "Connection closed; transfer aborted",
-            "Requested file action not taken", "Directory not empty"],
-    "ssh": ["openssh", "-OpenSSH_", "\r\nProtocol mism", "_sshlib GlobalSCAPE\r\n",
-            "\x00\x1aversion info line too long","SSH Windows NT Server", "WinNT sshd", "Secure sshd",
-            "sshd", "SSH Secure Shell", "WinSSHD"],
-    "telnet": ["Welcome to Microsoft Telnet Service", "no decompiling or reverse-engineering shall be allowed",
-               "is not a secure protocol", "recommended to use Stelnet", "Login authentication",
-               "*WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING*", "NetportExpress",
-               "Closing Telnet connection due to host problems", "No more connections are allowed to telnet server",
-               "Raptor Firewall Secure Gateway", "Check Point FireWall-1 authenticated Telnet server running on"],
-    "smtp": ["Server ready", "SMTP synchronization error", "220-Greetings", "ESMTP Arnet Email Security", "SMTP 2.0",
-             "Fidelix Fx2020", "ESMTP"],
-    "imap": ["BAD Error in IMAP command received by server", "IMAP4rev1 SASL-IR", "OK [CAPABILITY IMAP4rev1",
-             "OK IMAPrev1", "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE NAMESPACE AUTH=PLAIN AUTH=LOGIN]",
-             "CAPABILITY completed"
-             "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN AUTH=LOGIN AUTH=DIGEST-MD5 AUTH=CRAM-MD5]",
-             "Internet Mail Server", "IMAP4 service", "BYE Hi This is the IMAP SSL Redirect"],
+    "http": [
+        "400 Bad Request",
+        "401 Unauthorized",
+        "302 Found",
+        "Server: cloudflare",
+        "Server: nginx",
+        "Content-Length:",
+        "Content-Type:",
+        "text/html",
+        "application/json",
+        "multipart/form-data",
+        "Access-Control-Request-Headers",
+        "Forwarded: for=",
+        "Proxy-Authorization:",
+        "User-Agent:",
+        "X-Forwarded-Host",
+        "Content-MD5",
+        ["HTTP", "Authorization"],
+        "Access-Control-Request-Method",
+        "Accept-Language",
+        "HTTP",
+        "404 Not Found",
+        "HTML",
+        "Apache",
+    ],
+    "ftp": [
+        ["Pure-FTPd", "----------\r\n"],
+        "\r\n220-You are user number",
+        ["orks FTP server", "VxWorks VxWorks"],
+        "530 USER and PASS required",
+        "Server ready.\r\n5",
+        "Invalid command: try being more creative",
+        "220 Hotspot FTP server (MikroTik 6.27) ready",
+        "220 SHARP MX-M264N Ver 01.05.00.0n.16.U FTP server.",
+        "220 Microsoft FTP Service",
+        "220 FTP Server ready.",
+        "220 Microsoft FTP Service",
+        "220 Welcome to virtual FTP service.",
+        "220 DreamHost FTP Server",
+        "220 FRITZ!BoxFonWLAN7360SL(UI) FTP server ready.",
+        "Directory status",
+        "Service closing control connection",
+        "Requested file action",
+        "Connection closed; transfer aborted",
+        "Requested file action not taken",
+        "Directory not empty",
+    ],
+    "ssh": [
+        "openssh",
+        "-OpenSSH_",
+        "\r\nProtocol mism",
+        "_sshlib GlobalSCAPE\r\n",
+        "\x00\x1aversion info line too long",
+        "SSH Windows NT Server",
+        "WinNT sshd",
+        "Secure sshd",
+        "sshd",
+        "SSH Secure Shell",
+        "WinSSHD",
+    ],
+    "telnet": [
+        "Welcome to Microsoft Telnet Service",
+        "no decompiling or reverse-engineering shall be allowed",
+        "is not a secure protocol",
+        "recommended to use Stelnet",
+        "Login authentication",
+        "*WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING*",
+        "NetportExpress",
+        "Closing Telnet connection due to host problems",
+        "No more connections are allowed to telnet server",
+        "Raptor Firewall Secure Gateway",
+        "Check Point FireWall-1 authenticated Telnet server running on",
+    ],
+    "smtp": [
+        "Server ready",
+        "SMTP synchronization error",
+        "220-Greetings",
+        "ESMTP Arnet Email Security",
+        "SMTP 2.0",
+        "Fidelix Fx2020",
+        "ESMTP",
+    ],
+    "imap": [
+        "BAD Error in IMAP command received by server",
+        "IMAP4rev1 SASL-IR",
+        "OK [CAPABILITY IMAP4rev1",
+        "OK IMAPrev1",
+        "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE NAMESPACE AUTH=PLAIN AUTH=LOGIN]",
+        "CAPABILITY completed"
+        "LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE AUTH=PLAIN AUTH=LOGIN AUTH=DIGEST-MD5 AUTH=CRAM-MD5]",
+        "Internet Mail Server",
+        "IMAP4 service",
+        "BYE Hi This is the IMAP SSL Redirect",
+    ],
     "mariadb": ["is not allowed to connect to this MariaDB server"],
     "mysql": ["is not allowed to connect to this MySQL server"],
-    "PostgreSQL": ["fe_sendauth: no password supplied", "no pg_hba.conf entry for host",
-                   "received invalid response to SSL negotiation:", "unsupported frontend protocol",
-                   "FATAL 1:  invalid length of startup packet",],
-    "ILC 150 GSM/GPRS|pcworx": ["PLC Type: ILC 150 GSM/GPRS", "Model Number: 2916545", "Firmware Version: 3.93",
-                                "Firmware Version: 3.71", "Firmware Version: 3.70", "Firmware Date:", "Firmware Time:"],
-    "RTSP": ["RTSP/1.0 401 Unauthorized", "RTSP/1.0 200 OK", "WWW-Authenticate:", 'Basic realm="device"',
-             "Server: Dahua Rtsp Server", "Server: Rtsp Server/2.0", "RTSP/1.0 404 Not Found"],
-    "pptp": ["Firmware: 1", "Hostname: pptp server", "Vendor: BRN", "Vendor: Fortinet pptp", "Vendor: AMIT"],
+    "PostgreSQL": [
+        "fe_sendauth: no password supplied",
+        "no pg_hba.conf entry for host",
+        "received invalid response to SSL negotiation:",
+        "unsupported frontend protocol",
+        "FATAL 1:  invalid length of startup packet",
+    ],
+    "ILC 150 GSM/GPRS|pcworx": [
+        "PLC Type: ILC 150 GSM/GPRS",
+        "Model Number: 2916545",
+        "Firmware Version: 3.93",
+        "Firmware Version: 3.71",
+        "Firmware Version: 3.70",
+        "Firmware Date:",
+        "Firmware Time:",
+    ],
+    "RTSP": [
+        "RTSP/1.0 401 Unauthorized",
+        "RTSP/1.0 200 OK",
+        "WWW-Authenticate:",
+        'Basic realm="device"',
+        "Server: Dahua Rtsp Server",
+        "Server: Rtsp Server/2.0",
+        "RTSP/1.0 404 Not Found",
+    ],
+    "pptp": [
+        "Firmware: 1",
+        "Hostname: pptp server",
+        "Vendor: BRN",
+        "Vendor: Fortinet pptp",
+        "Vendor: AMIT",
+    ],
     "rsync": ["@RSYNCD: 30.0", "@RSYNCD: EXIT"],
-    "Portmap": ["Program", "Program	Version	Protocol	Port", "portmapper", "status	1", "nfs	2",
-                "nlockmgr	1"],
-    "antivir": ["Symantec AntiVirus Scan Engine", "antivirus", "NOD32 AntiVirus", "NOD32SS"],
-    "nntp": ["NetWare-News-Server", "NetWare nntpd", "nntp", "Leafnode nntpd", "InterNetNews NNRP server INN"],
-    "pop3": ["POP3", "POP3 gateway ready", "POP3 Server", "Welcome to mpopd", "OK Hello there"],
+    "Portmap": [
+        "Program",
+        "Program	Version	Protocol	Port",
+        "portmapper",
+        "status	1",
+        "nfs	2",
+        "nlockmgr	1",
+    ],
+    "antivir": [
+        "Symantec AntiVirus Scan Engine",
+        "antivirus",
+        "NOD32 AntiVirus",
+        "NOD32SS",
+    ],
+    "nntp": [
+        "NetWare-News-Server",
+        "NetWare nntpd",
+        "nntp",
+        "Leafnode nntpd",
+        "InterNetNews NNRP server INN",
+    ],
+    "pop3": [
+        "POP3",
+        "POP3 gateway ready",
+        "POP3 Server",
+        "Welcome to mpopd",
+        "OK Hello there",
+    ],
 }
 
 ports_services_regex = {
-    "http": ["HTTP\/[\d.]+\s+[\d]+", ],  # checks for any pattern of type HTTP/1.0 200 OK, etc.
+    "http": [
+        "HTTP\/[\d.]+\s+[\d]+",
+    ],  # checks for any pattern of type HTTP/1.0 200 OK, etc.
     "ftp": ["FTP\/[\d.]+\s+[\d]+"],  # similar to above in HTTP
-    "ssh": ["SSH-([\d.]+)-OpenSSH_([\w._-]+)[ -]{1,2}Debian[ -_](.*ubuntu.*)", ],
-    "mysql": [".\0\0\0\xff..Host .* is not allowed to connect to this MySQL server$", ],
-    "mariadb": ["[\d.]+[\d][\d]-MariaDB", ],
+    "ssh": ["SSH-([\d.]+)-OpenSSH_([\w._-]+)[ -]{1,2}Debian[ -_](.*ubuntu.*)",],
+    "mysql": [".\0\0\0\xff..Host .* is not allowed to connect to this MySQL server$",],
+    "mariadb": ["[\d.]+[\d][\d]-MariaDB",],
 }
 
 
@@ -132,20 +267,28 @@ def discover_by_port(host, port, timeout, send_data, socks_proxy, external_run=F
 
     ssl_flag = False
     if socks_proxy is not None:
-        socks_version = socks.SOCKS5 if socks_proxy.startswith(
-            'socks5://') else socks.SOCKS4
-        socks_proxy = socks_proxy.rsplit('://')[1]
-        if '@' in socks_proxy:
-            socks_username = socks_proxy.rsplit(':')[0]
-            socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
-            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
-                                    int(socks_proxy.rsplit(':')[-1]), username=socks_username,
-                                    password=socks_password)
+        socks_version = (
+            socks.SOCKS5 if socks_proxy.startswith("socks5://") else socks.SOCKS4
+        )
+        socks_proxy = socks_proxy.rsplit("://")[1]
+        if "@" in socks_proxy:
+            socks_username = socks_proxy.rsplit(":")[0]
+            socks_password = socks_proxy.rsplit(":")[1].rsplit("@")[0]
+            socks.set_default_proxy(
+                socks_version,
+                str(socks_proxy.rsplit("@")[1].rsplit(":")[0]),
+                int(socks_proxy.rsplit(":")[-1]),
+                username=socks_username,
+                password=socks_password,
+            )
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
         else:
-            socks.set_default_proxy(socks_version, str(
-                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socks.set_default_proxy(
+                socks_version,
+                str(socks_proxy.rsplit(":")[0]),
+                int(socks_proxy.rsplit(":")[1]),
+            )
             socket.socket = socks.socksocket
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -230,7 +373,15 @@ def discover_by_port(host, port, timeout, send_data, socks_proxy, external_run=F
     return result_dict[port]
 
 
-def discovery(target, ports=None, timeout=3, thread_number=1000, send_data=None, time_sleep=0, socks_proxy=None):
+def discovery(
+    target,
+    ports=None,
+    timeout=3,
+    thread_number=1000,
+    send_data=None,
+    time_sleep=0,
+    socks_proxy=None,
+):
     """
     Discover the service run on the port, it can detect real service names when users change default port number
     Args:
@@ -249,11 +400,16 @@ def discovery(target, ports=None, timeout=3, thread_number=1000, send_data=None,
     if not send_data:
         send_data = b"ABC\x00\r\n" * 10
     if not ports:
-        from lib.scan.port.engine import extra_requirements_dict as port_scanner_default_ports
+        from lib.scan.port.engine import (
+            extra_requirements_dict as port_scanner_default_ports,
+        )
+
         ports = port_scanner_default_ports()["port_scan_ports"]
     for port in ports:
-        t = threading.Thread(target=discover_by_port,
-                             args=(target, int(port), int(timeout), send_data, socks_proxy))
+        t = threading.Thread(
+            target=discover_by_port,
+            args=(target, int(port), int(timeout), send_data, socks_proxy),
+        )
         threads.append(t)
         t.start()
         time.sleep(time_sleep)
@@ -269,7 +425,9 @@ def discovery(target, ports=None, timeout=3, thread_number=1000, send_data=None,
         time.sleep(0.01)
         kill_switch += 1
         try:
-            if threading.activeCount() is 1 or int(kill_switch) is int(timeout * 5 * 10):
+            if threading.activeCount() is 1 or int(kill_switch) is int(
+                timeout * 5 * 10
+            ):
                 break
         except KeyboardInterrupt:
             break

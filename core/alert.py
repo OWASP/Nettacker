@@ -8,6 +8,7 @@ from core import color
 
 pyversion = int(sys.version_info[0])
 
+
 def is_not_run_from_api():
     """
     check if framework run from API to prevent any alert
@@ -15,7 +16,9 @@ def is_not_run_from_api():
     Returns:
         True if run from API otherwise False
     """
-    if '--start-api' in sys.argv or (len(sys.argv) == 4 and 'transforms' in sys.argv[1]):
+    if "--start-api" in sys.argv or (
+        len(sys.argv) == 4 and "transforms" in sys.argv[1]
+    ):
         return False
     return True
 
@@ -33,18 +36,34 @@ def messages(language, msg_id):
     """
     # Returning selected langauge
     if language is -1:
-        return list(set([langs.rsplit('_')[1].rsplit('.')[0] for langs in
-                         os.listdir(os.path.dirname(os.path.abspath(__file__)).replace(
-                             '\\', '/') + '/../lib/language/')
-                         if langs != 'readme.md' and langs.rsplit('_')[1].rsplit('.')[0] != '']))
+        return list(
+            set(
+                [
+                    langs.rsplit("_")[1].rsplit(".")[0]
+                    for langs in os.listdir(
+                        os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")
+                        + "/../lib/language/"
+                    )
+                    if langs != "readme.md"
+                    and langs.rsplit("_")[1].rsplit(".")[0] != ""
+                ]
+            )
+        )
     # Importing messages
     try:
-        msgs = getattr(__import__('lib.language.messages_{0}'.format(language), fromlist=['all_messages']),
-                       'all_messages')()[str(msg_id)]
+        msgs = getattr(
+            __import__(
+                "lib.language.messages_{0}".format(language), fromlist=["all_messages"]
+            ),
+            "all_messages",
+        )()[str(msg_id)]
     except:
-        msgs = getattr(__import__('lib.language.messages_en', fromlist=['all_messages']), 'all_messages')()[str(msg_id)]
+        msgs = getattr(
+            __import__("lib.language.messages_en", fromlist=["all_messages"]),
+            "all_messages",
+        )()[str(msg_id)]
     if pyversion is 2:
-        return msgs.decode('utf8')
+        return msgs.decode("utf8")
     return msgs
 
 
@@ -59,14 +78,32 @@ def __input_msg(content):
         the message in input structure
     """
     if pyversion is 2:
-        return color.color('yellow') + '[+] ' + color.color('green') \
-               + content.encode('utf8') + color.color('reset')
+        return (
+            color.color("yellow")
+            + "[+] "
+            + color.color("green")
+            + content.encode("utf8")
+            + color.color("reset")
+        )
     else:
-        return bytes(color.color('yellow') + '[+] ' + color.color('green') +
-                     content + color.color('reset'), 'utf8')
+        return bytes(
+            color.color("yellow")
+            + "[+] "
+            + color.color("green")
+            + content
+            + color.color("reset"),
+            "utf8",
+        )
 
 
-def info(content, log_in_file=None, mode=None, event=None, language=None, thread_tmp_filename=None):
+def info(
+    content,
+    log_in_file=None,
+    mode=None,
+    event=None,
+    language=None,
+    thread_tmp_filename=None,
+):
     """
     build the info message, log the message in database if requested, rewrite the thread temporary file
 
@@ -83,13 +120,29 @@ def info(content, log_in_file=None, mode=None, event=None, language=None, thread
     """
     if is_not_run_from_api():  # prevent to stdout if run from API
         if pyversion is 2:
-            sys.stdout.write(color.color('yellow') + '[+] ' + color.color('green') +
-                             content.encode('utf8') + color.color('reset') + '\n')
+            sys.stdout.write(
+                color.color("yellow")
+                + "[+] "
+                + color.color("green")
+                + content.encode("utf8")
+                + color.color("reset")
+                + "\n"
+            )
         else:
-            sys.stdout.buffer.write(bytes(color.color('yellow') + '[+] ' + color.color('green') +
-                                          content + color.color('reset') + '\n', 'utf8'))
+            sys.stdout.buffer.write(
+                bytes(
+                    color.color("yellow")
+                    + "[+] "
+                    + color.color("green")
+                    + content
+                    + color.color("reset")
+                    + "\n",
+                    "utf8",
+                )
+            )
     if event:  # if an event is present log it
         from core.log import __log_into_file
+
         __log_into_file(log_in_file, mode, json.dumps(event), language)
         if thread_tmp_filename:  # if thread temporary filename present, rewrite it
             __log_into_file(thread_tmp_filename, "w", "0", language)
@@ -108,9 +161,11 @@ def write(content):
     """
     if is_not_run_from_api():
         if pyversion is 2:
-            sys.stdout.write(content.encode('utf8'))
+            sys.stdout.write(content.encode("utf8"))
         else:
-            sys.stdout.buffer.write(bytes(content, 'utf8') if isinstance(content, str) else content)
+            sys.stdout.buffer.write(
+                bytes(content, "utf8") if isinstance(content, str) else content
+            )
     return
 
 
@@ -126,11 +181,26 @@ def warn(content):
     """
     if is_not_run_from_api():
         if pyversion is 2:
-            sys.stdout.write(color.color('blue') + '[!] ' + color.color('yellow') +
-                             content.encode('utf8') + color.color('reset') + '\n')
+            sys.stdout.write(
+                color.color("blue")
+                + "[!] "
+                + color.color("yellow")
+                + content.encode("utf8")
+                + color.color("reset")
+                + "\n"
+            )
         else:
-            sys.stdout.buffer.write(bytes(color.color('blue') + '[!] ' + color.color('yellow') +
-                                          content + color.color('reset') + '\n', 'utf8'))
+            sys.stdout.buffer.write(
+                bytes(
+                    color.color("blue")
+                    + "[!] "
+                    + color.color("yellow")
+                    + content
+                    + color.color("reset")
+                    + "\n",
+                    "utf8",
+                )
+            )
     return
 
 
@@ -146,12 +216,24 @@ def error(content):
     """
     if is_not_run_from_api():
         if pyversion is 2:
-            sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
-                             content.encode('utf8') + color.color('reset') + '\n')
+            sys.stdout.write(
+                color.color("red")
+                + "[X] "
+                + color.color("yellow")
+                + content.encode("utf8")
+                + color.color("reset")
+                + "\n"
+            )
         else:
-            data = color.color(
-                'red') + '[X] ' + color.color('yellow') + content + color.color('reset') + '\n'
-            sys.stdout.buffer.write(data.encode('utf8'))
+            data = (
+                color.color("red")
+                + "[X] "
+                + color.color("yellow")
+                + content
+                + color.color("reset")
+                + "\n"
+            )
+            sys.stdout.buffer.write(data.encode("utf8"))
     return
 
 
@@ -166,7 +248,7 @@ def write_to_api_console(content):
         None
     """
     if pyversion is 2:
-        sys.stdout.write(content.encode('utf8'))
+        sys.stdout.write(content.encode("utf8"))
     else:
-        sys.stdout.buffer.write(bytes(content, 'utf8'))
+        sys.stdout.buffer.write(bytes(content, "utf8"))
     return

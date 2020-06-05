@@ -17,9 +17,9 @@ def _paths():
         a JSON contain the working, tmp and results path
     """
     return {
-        "home_path": os.path.expanduser('~/.owasp-nettacker'),
-        "tmp_path": os.path.expanduser('~/.owasp-nettacker/tmp'),
-        "results_path": os.path.expanduser('~/.owasp-nettacker/results')
+        "home_path": os.path.expanduser("~/.owasp-nettacker"),
+        "tmp_path": os.path.expanduser("~/.owasp-nettacker/tmp"),
+        "results_path": os.path.expanduser("~/.owasp-nettacker/results"),
     }
 
 
@@ -37,20 +37,34 @@ def _profiles():
         "vuln": ["*_vuln"],
         "scan": ["*_scan"],
         "brute": ["*_brute"],
-        "wp": ["wp_plugin_scan", "wp_theme_scan", "wp_timthumbs_scan", "wp_user_enum_scan",
-               "wordpress_dos_cve_2018_6389_vuln", "wp_xmlrpc_bruteforce_vuln", "wp_xmlrpc_pingback_vuln"],
-        "wordpress": ["wp_plugin_scan", "wp_theme_scan", "wp_timthumbs_scan", "wp_user_enum_scan",
-                      "wordpress_dos_cve_2018_6389_vuln", "wp_xmlrpc_bruteforce_vuln", "wp_xmlrpc_pingback_vuln"],
-        "joomla": ["joomla_template_scan", "joomla_user_enum_scan", "joomla_version_scan"]
+        "wp": [
+            "wp_plugin_scan",
+            "wp_theme_scan",
+            "wp_timthumbs_scan",
+            "wp_user_enum_scan",
+            "wordpress_dos_cve_2018_6389_vuln",
+            "wp_xmlrpc_bruteforce_vuln",
+            "wp_xmlrpc_pingback_vuln",
+        ],
+        "wordpress": [
+            "wp_plugin_scan",
+            "wp_theme_scan",
+            "wp_timthumbs_scan",
+            "wp_user_enum_scan",
+            "wordpress_dos_cve_2018_6389_vuln",
+            "wp_xmlrpc_bruteforce_vuln",
+            "wp_xmlrpc_pingback_vuln",
+        ],
+        "joomla": [
+            "joomla_template_scan",
+            "joomla_user_enum_scan",
+            "joomla_version_scan",
+        ],
     }
 
 
 def _synonym_profile():
-    return {
-        "info": "information_gathering",
-        "vuln": "vulnerability",
-        "wp": "wordpress"
-    }
+    return {"info": "information_gathering", "vuln": "vulnerability", "wp": "wordpress"}
 
 
 def _api_config():
@@ -67,12 +81,9 @@ def _api_config():
         "api_access_key": "".join(random.choice("0123456789abcdef") for x in range(32)),
         "api_client_white_list": {
             "enabled": False,
-            "ips": ["127.0.0.1", "10.0.0.0/24", "192.168.1.1-192.168.1.255"]
+            "ips": ["127.0.0.1", "10.0.0.0/24", "192.168.1.1-192.168.1.255"],
         },
-        "api_access_log": {
-            "enabled": False,
-            "filename": "nettacker_api_access.log"
-        },
+        "api_access_log": {"enabled": False, "filename": "nettacker_api_access.log"},
     }
 
 
@@ -98,7 +109,7 @@ def _database_config():
         "USERNAME": "",
         "PASSWORD": "",
         "HOST": "",
-        "PORT": ""
+        "PORT": "",
     }
 
 
@@ -114,9 +125,11 @@ def _core_config():
         "verbose_level": 0,
         "show_version": False,
         "check_update": False,
-        "log_in_file": "{0}/results_{1}_{2}.html".format(_paths()["results_path"], now(model="%Y_%m_%d_%H_%M_%S"),
-                                                         "".join(random.choice(string.ascii_lowercase) for x in
-                                                                 range(10))),
+        "log_in_file": "{0}/results_{1}_{2}.html".format(
+            _paths()["results_path"],
+            now(model="%Y_%m_%d_%H_%M_%S"),
+            "".join(random.choice(string.ascii_lowercase) for x in range(10)),
+        ),
         "graph_flag": "d3_tree_v2_graph",
         "help_menu_flag": False,
         "targets": None,
@@ -159,6 +172,5 @@ def _core_config():
         "database_port": _database_config()["PORT"],
         "home_path": _paths()["home_path"],
         "tmp_path": _paths()["tmp_path"],
-        "results_path": _paths()["results_path"]
-
+        "results_path": _paths()["results_path"],
     }

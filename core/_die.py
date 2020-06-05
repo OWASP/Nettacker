@@ -9,6 +9,7 @@ def __die_success():
     exit the framework with code 0
     """
     from core.color import finish
+
     finish()
     sys.exit(0)
 
@@ -22,6 +23,7 @@ def __die_failure(msg):
     """
     from core.color import finish
     from core.alert import error
+
     error(msg)
     finish()
     sys.exit(1)

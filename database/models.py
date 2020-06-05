@@ -6,25 +6,31 @@ from sqlalchemy import Column, Integer, Text
 
 Base = declarative_base()
 
+
 class Update_Log(Base):
     """
     This Class defines the table schema for the update log table, Any changes related to updating log table need to be done here.
     """
-    __tablename__ = 'update'
+
+    __tablename__ = "update"
     id = Column(Integer, primary_key=True, autoincrement=True)
     last_update_time = Column(Text)
+
     def __repr__(self):
         """
         returns a printable representation of the object of the class Update Log
         """
-        return "<Update_Log(id={0}, last_update_time={2})>".format(self.id, self.last_update_time)
+        return "<Update_Log(id={0}, last_update_time={2})>".format(
+            self.id, self.last_update_time
+        )
 
 
 class Report(Base):
     """
     This class defines the table schema of the reports table. Any changes to the reports table need to be done here.
     """
-    __tablename__ = 'reports'
+
+    __tablename__ = "reports"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     date = Column(Text)
@@ -46,14 +52,17 @@ class Report(Base):
         """
         returns a printable representation of the object of the class Report
         """
-        return "<Report(id={0}, scan_id={1}, date={2})>".format(self.id, self.scan_id, self.date)
+        return "<Report(id={0}, scan_id={1}, date={2})>".format(
+            self.id, self.scan_id, self.date
+        )
 
 
 class HostsLog(Base):
     """
     This class defines the table schema of the hosts_log table. Any changes to the reports hosts_log need to be done here.
     """
-    __tablename__ = 'hosts_log'
+
+    __tablename__ = "hosts_log"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     host = Column(Text)
@@ -71,4 +80,6 @@ class HostsLog(Base):
         """
         returns a printable representation of the object of the class HostsLog
         """
-        return "<HostsLog(id={0}, host={1}, date={2})>".format(self.id, self.host, self.date)
+        return "<HostsLog(id={0}, host={1}, date={2})>".format(
+            self.id, self.host, self.date
+        )

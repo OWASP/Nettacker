@@ -1,3 +1,1 @@
-__all__ = [
-    'entities'
-]
+__all__ = ["entities"]

@@ -22,10 +22,7 @@ def __structure(status="", msg=""):
     Returns:
         a JSON message
     """
-    return {
-        "status": status,
-        "msg": msg
-    }
+    return {"status": status, "msg": msg}
 
 
 def __get_value(flask_request, _key):
@@ -51,7 +48,7 @@ def __get_value(flask_request, _key):
                 key = None
     if key is not None:
         # fix it later
-        key = key.replace("\\\"", "\"").replace("\\\'", "\'")
+        key = key.replace('\\"', '"').replace("\\'", "'")
     return key
 
 
@@ -65,10 +62,28 @@ def __remove_non_api_keys(config):
     Returns:
         removed non-api keys in all keys in JSON
     """
-    non_api_keys = ["start_api", "api_host", "api_port", "api_debug_mode", "api_access_key", "api_client_white_list",
-                    "api_client_white_list_ips", "api_access_log", "api_access_log", "api_access_log_filename",
-                    "show_version", "check_update", "help_menu_flag", "targets_list", "users_list", "passwds_list",
-                    "method_args_list", "startup_check_for_update", "wizard_mode", "exclude_method"]
+    non_api_keys = [
+        "start_api",
+        "api_host",
+        "api_port",
+        "api_debug_mode",
+        "api_access_key",
+        "api_client_white_list",
+        "api_client_white_list_ips",
+        "api_access_log",
+        "api_access_log",
+        "api_access_log_filename",
+        "show_version",
+        "check_update",
+        "help_menu_flag",
+        "targets_list",
+        "users_list",
+        "passwds_list",
+        "method_args_list",
+        "startup_check_for_update",
+        "wizard_mode",
+        "exclude_method",
+    ]
     new_config = {}
     for key in config:
         if key not in non_api_keys:
@@ -87,7 +102,9 @@ def __is_login(app, flask_request):
     Returns:
         True if session is valid otherwise False
     """
-    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] == __get_value(flask_request, "key"):
+    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] == __get_value(
+        flask_request, "key"
+    ):
         return True
     return False
 
@@ -167,7 +184,7 @@ def __mime_types():
         "audio/3gpp": "video",
         ".3g2": "video/3gpp2",
         "audio/3gpp2": "video",
-        ".7z": "application/x-7z-compressed"
+        ".7z": "application/x-7z-compressed",
     }
 
 
@@ -178,7 +195,9 @@ def root_dir():
     Returns:
         root path for static files
     """
-    return os.path.join(os.path.join(os.path.dirname(os.path.dirname(__file__)), "web"), "static")
+    return os.path.join(
+        os.path.join(os.path.dirname(os.path.dirname(__file__)), "web"), "static"
+    )
 
 
 def get_file(filename):
@@ -193,7 +212,7 @@ def get_file(filename):
     """
     try:
         src = os.path.join(root_dir(), filename)
-        return open(src, 'rb').read()
+        return open(src, "rb").read()
     except IOError as exc:
         abort(404)
 
@@ -211,7 +230,9 @@ def __api_key_check(app, flask_request, language):
         200 HTTP code if it's valid otherwise 401 error
 
     """
-    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != __get_value(flask_request, "key"):
+    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != __get_value(
+        flask_request, "key"
+    ):
         abort(401, messages(language, "API_invalid"))
     return
 
@@ -246,11 +267,12 @@ def __languages():
         "ur": "pk",
         "id": "id",
         "es": "es",
-        "iw": "il"
+        "iw": "il",
     }
     for lang in languages:
-        res += """<option {2} id="{0}" data-content='<span class="flag-icon flag-icon-{1}" value="{0}"></span> {0}'></option>""" \
-            .format(lang, flags[lang], "selected" if lang == "en" else "")
+        res += """<option {2} id="{0}" data-content='<span class="flag-icon flag-icon-{1}" value="{0}"></span> {0}'></option>""".format(
+            lang, flags[lang], "selected" if lang == "en" else ""
+        )
     return res
 
 
@@ -265,7 +287,9 @@ def __graphs():
                             class="label label-default">None</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""
     for graph in load_all_graphs():
         res += """<label><input id="{0}" type="radio" name="graph_flag" value="{0}" class="radio"><a
-                            class="label label-default">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(graph)
+                            class="label label-default">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(
+            graph
+        )
     return res
 
 
@@ -279,13 +303,22 @@ def __profiles():
     profiles = _builder(_profiles(), default_profiles())
     synonyms = _synonym_profile().keys()
     for synonym in synonyms:
-        del (profiles[synonym])
+        del profiles[synonym]
     res = ""
     for profile in profiles:
-        label = "success" if (profile == "scan") else "warning" if (profile == "brute") else "danger" if (profile ==
-                                                                                                          "vulnerability") else "default"
+        label = (
+            "success"
+            if (profile == "scan")
+            else "warning"
+            if (profile == "brute")
+            else "danger"
+            if (profile == "vulnerability")
+            else "default"
+        )
         res += """<label><input id="{0}" type="checkbox" class="checkbox checkbox-{0}"><a class="label 
-            label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(profile, label)
+            label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(
+            profile, label
+        )
     return res
 
 
@@ -300,12 +333,28 @@ def __scan_methods():
     methods.remove("all")
     res = ""
     for sm in methods:
-        label = "success" if sm.endswith("_scan") else "warning" if sm.endswith("_brute") else "danger" if sm.endswith(
-            "_vuln") else "default"
-        profile = "scan" if sm.endswith("_scan") else "brute" if sm.endswith("_brute") else "vuln" if sm.endswith(
-            "_vuln") else "default"
+        label = (
+            "success"
+            if sm.endswith("_scan")
+            else "warning"
+            if sm.endswith("_brute")
+            else "danger"
+            if sm.endswith("_vuln")
+            else "default"
+        )
+        profile = (
+            "scan"
+            if sm.endswith("_scan")
+            else "brute"
+            if sm.endswith("_brute")
+            else "vuln"
+            if sm.endswith("_vuln")
+            else "default"
+        )
         res += """<label><input id="{0}" type="checkbox" class="checkbox checkbox-{2}-module">
-        <a class="label label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(sm, label, profile)
+        <a class="label label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(
+            sm, label, profile
+        )
     return res
 
 
@@ -322,17 +371,21 @@ def __rules(config, defaults, language):
         config with applied rules
     """
     # Check Ranges
-    config["check_ranges"] = True if config[
-                                         "check_ranges"] is not False else False
+    config["check_ranges"] = True if config["check_ranges"] is not False else False
     # Check Subdomains
-    config["check_subdomains"] = True if config[
-                                             "check_subdomains"] is not False else False
+    config["check_subdomains"] = (
+        True if config["check_subdomains"] is not False else False
+    )
     # Check Graph
-    config["graph_flag"] = config["graph_flag"] if config[
-                                                       "graph_flag"] in load_all_graphs() else None
+    config["graph_flag"] = (
+        config["graph_flag"] if config["graph_flag"] in load_all_graphs() else None
+    )
     # Check Language
-    config["language"] = config["language"] if config[
-                                                   "language"] in [lang for lang in messages(-1, 0)] else "en"
+    config["language"] = (
+        config["language"]
+        if config["language"] in [lang for lang in messages(-1, 0)]
+        else "en"
+    )
     # Check Targets
     if config["targets"] is not None:
         config["targets"] = list(set(config["targets"].rsplit(",")))
@@ -343,8 +396,7 @@ def __rules(config, defaults, language):
         f = open(config["log_in_file"], "a")
         f.close()
     except:
-        abort(400, messages(language, "file_write_error").format(
-            config["log_in_file"]))
+        abort(400, messages(language, "file_write_error").format(config["log_in_file"]))
     # Check Method ARGS
     methods_args = config["methods_args"]
     if methods_args is not None:
@@ -352,30 +404,33 @@ def __rules(config, defaults, language):
         methods_args = methods_args.rsplit("&")
         for imethod_args in methods_args:
             if len(imethod_args.rsplit("=")) is 2:
-                new_methods_args[imethod_args.rsplit("=")[0]] = imethod_args.rsplit("=")[
-                    1].rsplit(",")
+                new_methods_args[imethod_args.rsplit("=")[0]] = imethod_args.rsplit(
+                    "="
+                )[1].rsplit(",")
             else:
                 new_methods_args[imethod_args] = ["True"]
         methods_args = new_methods_args
     config["methods_args"] = methods_args
 
     # Check Passwords
-    config["passwds"] = config["passwds"].rsplit(
-        ',') if config["passwds"] is not None else None
+    config["passwds"] = (
+        config["passwds"].rsplit(",") if config["passwds"] is not None else None
+    )
     # Check Ping Before Scan
     config["ping_flag"] = True if config["ping_flag"] is not False else False
     # Check Ports
     ports = config["ports"]
     if type(ports) is not list and ports is not None:
         tmp_ports = []
-        for port in ports.rsplit(','):
+        for port in ports.rsplit(","):
             try:
-                if '-' not in port:
+                if "-" not in port:
                     if int(port) not in tmp_ports:
                         tmp_ports.append(int(port))
                 else:
                     t_ports = range(
-                        int(port.rsplit('-')[0]), int(port.rsplit('-')[1]) + 1)
+                        int(port.rsplit("-")[0]), int(port.rsplit("-")[1]) + 1
+                    )
                     for p in t_ports:
                         if p not in tmp_ports:
                             tmp_ports.append(p)
@@ -391,7 +446,7 @@ def __rules(config, defaults, language):
         _all_profiles = _builder(_profiles(), default_profiles())
         synonyms = _synonym_profile().keys()
         for synonym in synonyms:
-            del (_all_profiles[synonym])
+            del _all_profiles[synonym]
         if config["scan_method"] is None:
             config["scan_method"] = ""
         else:
@@ -418,13 +473,20 @@ def __rules(config, defaults, language):
     if config["scan_method"] is not None and "all" in config["scan_method"].rsplit(","):
         config["scan_method"] = load_all_modules()
         config["scan_method"].remove("all")
-    elif config["scan_method"] is not None and len(config["scan_method"].rsplit(",")) is 1 and "*_" not in config[
-        "scan_method"]:
+    elif (
+        config["scan_method"] is not None
+        and len(config["scan_method"].rsplit(",")) is 1
+        and "*_" not in config["scan_method"]
+    ):
         if config["scan_method"] in load_all_modules():
             config["scan_method"] = config["scan_method"].rsplit()
         else:
-            abort(400, messages(language, "scan_module_not_found").format(
-                config["scan_method"]))
+            abort(
+                400,
+                messages(language, "scan_module_not_found").format(
+                    config["scan_method"]
+                ),
+            )
     else:
         if config["scan_method"] is not None:
             if config["scan_method"] not in load_all_modules():
@@ -442,8 +504,10 @@ def __rules(config, defaults, language):
                                     scan_method_error = False
                                     found_flag = True
                             if found_flag is False:
-                                abort(400, messages(
-                                    language, "module_pattern_404").format(sm))
+                                abort(
+                                    400,
+                                    messages(language, "module_pattern_404").format(sm),
+                                )
                         elif sm == "all":
                             config["scan_method"] = load_all_modules()
                             scan_method_error = False
@@ -452,13 +516,19 @@ def __rules(config, defaults, language):
                         elif sm in load_all_modules():
                             scan_method_error = False
                         elif sm not in load_all_modules():
-                            abort(400, messages(
-                                language, "scan_module_not_found").format(sm))
+                            abort(
+                                400,
+                                messages(language, "scan_module_not_found").format(sm),
+                            )
                 else:
                     scan_method_error = True
             if scan_method_error:
-                abort(400, messages(language, "scan_module_not_found").format(
-                    config["scan_method"]))
+                abort(
+                    400,
+                    messages(language, "scan_module_not_found").format(
+                        config["scan_method"]
+                    ),
+                )
         else:
             abort(400, messages(language, "scan_method_select"))
         config["scan_method"] = list(set(config["scan_method"]))
@@ -517,6 +587,7 @@ def __rules(config, defaults, language):
     except:
         config["thread_number_host"] = defaults["thread_number_host"]
     # Check users
-    config["users"] = config["users"].rsplit(
-        ',') if config["users"] is not None else None
+    config["users"] = (
+        config["users"].rsplit(",") if config["users"] is not None else None
+    )
     return config

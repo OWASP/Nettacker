@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import sys
+
 os_name = sys.platform
+
 
 def finish():
     """
@@ -11,6 +13,7 @@ def finish():
         sys.stdout.write("\033[0m")
     else:
         import ctypes
+
         std_out_handle = ctypes.windll.kernel32.GetStdHandle(-11)
         handle = std_out_handle
         ctypes.windll.kernel32.SetConsoleTextAttribute(handle, 7)
@@ -47,6 +50,7 @@ def color(color):
             return "\033[1;37m"
     else:
         import ctypes
+
         std_out_handle = ctypes.windll.kernel32.GetStdHandle(-11)
         handle = std_out_handle
         if color == "reset":

@@ -30,8 +30,7 @@ def load():
 
     # Parse ARGVs
     try:
-        parser, options, startup_update_flag = load_all_args(
-            module_names, graph_names)
+        parser, options, startup_update_flag = load_all_args(module_names, graph_names)
     except SystemExit:
         finish()
         sys.exit(1)
@@ -77,19 +76,80 @@ def load():
     backup_ports = ports
 
     # Checking Requirements
-    (targets, targets_list, thread_number, thread_number_host,
-     log_in_file, scan_method, exclude_method, users, users_list,
-     passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-     check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args, method_args_list, wizard_mode,
-     profile, start_api, api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
-     api_client_white_list_ips, api_access_log, api_access_log_filename) = \
-        check_all_required(
-            targets, targets_list, thread_number, thread_number_host,
-            log_in_file, scan_method, exclude_method, users, users_list,
-            passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level, show_version,
-            check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args, method_args_list, wizard_mode,
-            profile, start_api, api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
-            api_client_white_list_ips, api_access_log, api_access_log_filename
+    (
+        targets,
+        targets_list,
+        thread_number,
+        thread_number_host,
+        log_in_file,
+        scan_method,
+        exclude_method,
+        users,
+        users_list,
+        passwds,
+        passwds_list,
+        timeout_sec,
+        ports,
+        parser,
+        module_names,
+        language,
+        verbose_level,
+        show_version,
+        check_update,
+        socks_proxy,
+        retries,
+        graph_flag,
+        help_menu_flag,
+        methods_args,
+        method_args_list,
+        wizard_mode,
+        profile,
+        start_api,
+        api_host,
+        api_port,
+        api_debug_mode,
+        api_access_key,
+        api_client_white_list,
+        api_client_white_list_ips,
+        api_access_log,
+        api_access_log_filename,
+    ) = check_all_required(
+        targets,
+        targets_list,
+        thread_number,
+        thread_number_host,
+        log_in_file,
+        scan_method,
+        exclude_method,
+        users,
+        users_list,
+        passwds,
+        passwds_list,
+        timeout_sec,
+        ports,
+        parser,
+        module_names,
+        language,
+        verbose_level,
+        show_version,
+        check_update,
+        socks_proxy,
+        retries,
+        graph_flag,
+        help_menu_flag,
+        methods_args,
+        method_args_list,
+        wizard_mode,
+        profile,
+        start_api,
+        api_host,
+        api_port,
+        api_debug_mode,
+        api_access_key,
+        api_client_white_list,
+        api_client_white_list_ips,
+        api_access_log,
+        api_access_log_filename,
     )
 
     info(messages(language, "scan_started"))
@@ -98,9 +158,33 @@ def load():
         __version__, __code_name__ = _version_info()
         _check(__version__, __code_name__, language, socks_proxy)
 
-    info(messages(language, "loaded_modules").format(
-        len(load_all_modules()) - 1 + len(load_all_graphs())))
-    __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_sleep, language, verbose_level, retries,
-                     socks_proxy, users, passwds, timeout_sec, thread_number, ports, ping_flag, methods_args,
-                     backup_ports, scan_method, thread_number_host, graph_flag, profile, False)
+    info(
+        messages(language, "loaded_modules").format(
+            len(load_all_modules()) - 1 + len(load_all_graphs())
+        )
+    )
+    __go_for_attacks(
+        targets,
+        check_ranges,
+        check_subdomains,
+        log_in_file,
+        time_sleep,
+        language,
+        verbose_level,
+        retries,
+        socks_proxy,
+        users,
+        passwds,
+        timeout_sec,
+        thread_number,
+        ports,
+        ping_flag,
+        methods_args,
+        backup_ports,
+        scan_method,
+        thread_number_host,
+        graph_flag,
+        profile,
+        False,
+    )
     return True

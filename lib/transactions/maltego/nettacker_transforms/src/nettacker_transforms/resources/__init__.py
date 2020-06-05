@@ -1,4 +1,1 @@
-__all__ = [
-    'etc',
-    'images'
-]
+__all__ = ["etc", "images"]

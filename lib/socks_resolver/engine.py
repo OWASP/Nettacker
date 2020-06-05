@@ -14,4 +14,4 @@ def getaddrinfo(*args):
     Returns:
         getaddrinfo
     """
-    return [(socket.AF_INET, socket.SOCK_STREAM, 6, '', (args[0], args[1]))]
+    return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", (args[0], args[1]))]

@@ -14,12 +14,24 @@ import json
 global monthly
 global list1
 
-monthly = {"01": "jan", "02": "feb", "03": "march", "04": "april", "05": "may", "06": "june", "07": "july",
-           "08": "aug", "09": "sept", "10": "oct", "11": "nov", "12": "dec"}
+monthly = {
+    "01": "jan",
+    "02": "feb",
+    "03": "march",
+    "04": "april",
+    "05": "may",
+    "06": "june",
+    "07": "july",
+    "08": "aug",
+    "09": "sept",
+    "10": "oct",
+    "11": "nov",
+    "12": "dec",
+}
 
-charlist = ['@', '*', '!', '#', '$']
+charlist = ["@", "*", "!", "#", "$"]
 
-random_list = ['98765', '9876', '987', '123', '1234', '12345']
+random_list = ["98765", "9876", "987", "123", "1234", "12345"]
 
 password_list = list()
 list1 = list()
@@ -30,7 +42,7 @@ random_l = list()
 
 
 def datepart(date):
-    if(len(date) != 0):
+    if len(date) != 0:
         date, sep, tail = date.partition("/")
         month, sep, year = tail.partition("/")
         list1.append(date)
@@ -47,8 +59,28 @@ def datepart(date):
         list1.append(year[1:])
 
 
-def generate(filename = "", first_name="", last_name = "", nick= "", email = "", dob = "", phone = "", partner_name = "", partner_dob = "", bestfriend = "", child_name = "", company = "", other = "",  maxm = 8, minm = 16, special_characters = False, leet_speak = False, random_numbers = False, language="en"):
-    random_l=list()
+def generate(
+    filename="",
+    first_name="",
+    last_name="",
+    nick="",
+    email="",
+    dob="",
+    phone="",
+    partner_name="",
+    partner_dob="",
+    bestfriend="",
+    child_name="",
+    company="",
+    other="",
+    maxm=8,
+    minm=16,
+    special_characters=False,
+    leet_speak=False,
+    random_numbers=False,
+    language="en",
+):
+    random_l = list()
     other = other.replace(" ", "")
     words2 = other.split(",")
     if special_characters == True:
@@ -68,15 +100,30 @@ def generate(filename = "", first_name="", last_name = "", nick= "", email = "",
     purtname = partner_name.title()
     bustf = bestfriend.title()
     chld = child_name.title()
-    #chldn = childn.title()
+    # chldn = childn.title()
     cumpny = company.title()
 
     # 3
 
     emails, sep, tail = email.partition("@")
 
-    list1 = [first_name, last_name, nick, emails, funame, nuick, phone, partner_name,
-            bestfriend, purtname, bustf, child_name, company, chld, cumpny]
+    list1 = [
+        first_name,
+        last_name,
+        nick,
+        emails,
+        funame,
+        nuick,
+        phone,
+        partner_name,
+        bestfriend,
+        purtname,
+        bustf,
+        child_name,
+        company,
+        chld,
+        cumpny,
+    ]
     for i in words2:
         list1.append(i)
 
@@ -89,20 +136,20 @@ def generate(filename = "", first_name="", last_name = "", nick= "", email = "",
     for i in list1:
         password_list.append(i)
         for j in list1:
-            if(i.lower()) != (j.lower()):
+            if (i.lower()) != (j.lower()):
                 password_list.append(i + j)
 
     if leet_speak == True:
         for i in password_list:
-            i = i.replace('a', '@')
-            i = i.replace('t', '7')
-            i = i.replace('l', '1')
-            i = i.replace('e', '3')
-            i = i.replace('i', '!')
-            i = i.replace('o', '0')
-            i = i.replace('z', '2')
-            i = i.replace('g', '9')
-            i = i.replace('s', '5')
+            i = i.replace("a", "@")
+            i = i.replace("t", "7")
+            i = i.replace("l", "1")
+            i = i.replace("e", "3")
+            i = i.replace("i", "!")
+            i = i.replace("o", "0")
+            i = i.replace("z", "2")
+            i = i.replace("g", "9")
+            i = i.replace("s", "5")
             leet_list.append(i)
 
     # Leet Speak chars
@@ -136,7 +183,7 @@ def generate(filename = "", first_name="", last_name = "", nick= "", email = "",
             pass
         else:
             unique_list.remove(i)
-    
+
     if filename is not "":
-        __log_into_file(filename, 'w', json.dumps(unique_list), language, final=True)
+        __log_into_file(filename, "w", json.dumps(unique_list), language, final=True)
     return unique_list

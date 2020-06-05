@@ -22,7 +22,9 @@ from core.alert import write
 import csv
 
 
-def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
+def build_graph(
+    graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION
+):
     """
     build a graph
 
@@ -43,18 +45,40 @@ def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, 
     info(messages(language, "build_graph"))
     try:
         start = getattr(
-            __import__('lib.graph.{0}.engine'.format(graph_flag.rsplit('_graph')[0]),
-                       fromlist=['start']),
-            'start')
+            __import__(
+                "lib.graph.{0}.engine".format(graph_flag.rsplit("_graph")[0]),
+                fromlist=["start"],
+            ),
+            "start",
+        )
     except:
-        __die_failure(
-            messages(language, "graph_module_unavailable").format(graph_flag))
+        __die_failure(messages(language, "graph_module_unavailable").format(graph_flag))
 
     info(messages(language, "finish_build_graph"))
-    return start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION)
+    return start(
+        graph_flag,
+        language,
+        data,
+        _HOST,
+        _USERNAME,
+        _PASSWORD,
+        _PORT,
+        _TYPE,
+        _DESCRIPTION,
+    )
 
 
-def __build_texttable(JSON_FROM_DB, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _TIME, language):
+def __build_texttable(
+    JSON_FROM_DB,
+    _HOST,
+    _USERNAME,
+    _PASSWORD,
+    _PORT,
+    _TYPE,
+    _DESCRIPTION,
+    _TIME,
+    language,
+):
     """
     build a text table with generated event related to the scan
 
@@ -71,22 +95,47 @@ def __build_texttable(JSON_FROM_DB, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _
         array [text table, event_number]
     """
     _table = texttable.Texttable()
-    _table.add_rows(
-        [[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _TIME]])
+    _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _TIME]])
     events_num = 0
     for value in JSON_FROM_DB:
-        _table.add_rows([[_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _TIME],
-                         [value['HOST'], value['USERNAME'], value['PASSWORD'], value['PORT'], value['TYPE'],
-                          value['DESCRIPTION'], value['TIME']]])
+        _table.add_rows(
+            [
+                [_HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _TIME],
+                [
+                    value["HOST"],
+                    value["USERNAME"],
+                    value["PASSWORD"],
+                    value["PORT"],
+                    value["TYPE"],
+                    value["DESCRIPTION"],
+                    value["TIME"],
+                ],
+            ]
+        )
         events_num += 1
-    return [_table.draw().encode('utf8') + b'\n\n' + messages(language, "nettacker_version_details").format(
-        compatible.__version__,
-        compatible.__code_name__,
-        now()).encode('utf8') + b"\n", events_num]
+    return [
+        _table.draw().encode("utf8")
+        + b"\n\n"
+        + messages(language, "nettacker_version_details")
+        .format(compatible.__version__, compatible.__code_name__, now())
+        .encode("utf8")
+        + b"\n",
+        events_num,
+    ]
 
 
-def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_level, api_flag, profile, scan_method,
-              ports):
+def sort_logs(
+    log_in_file,
+    language,
+    graph_flag,
+    scan_id,
+    scan_cmd,
+    verbose_level,
+    api_flag,
+    profile,
+    scan_method,
+    ports,
+):
     """
     sort all events, create log file in HTML/TEXT/JSON and remove old logs
 
@@ -118,59 +167,111 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     JSON_Data = sorted(JSON_FROM_DB, key=sorted)
     if compatible.version() is 2:
         import sys
+
         reload(sys)
-        sys.setdefaultencoding('utf8')
-    if (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
-            len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
+        sys.setdefaultencoding("utf8")
+    if (len(log_in_file) >= 5 and log_in_file[-5:] == ".html") or (
+        len(log_in_file) >= 4 and log_in_file[-4:] == ".htm"
+    ):
         report_type = "HTML"
         data = sorted(JSON_FROM_DB, key=lambda x: sorted(x.keys()))
         # if user want a graph
-        _graph = ''
+        _graph = ""
         if graph_flag is not None:
-            _graph = build_graph(graph_flag, language, data, 'HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE',
-                                 'DESCRIPTION')
+            _graph = build_graph(
+                graph_flag,
+                language,
+                data,
+                "HOST",
+                "USERNAME",
+                "PASSWORD",
+                "PORT",
+                "TYPE",
+                "DESCRIPTION",
+            )
         from lib.html_log import _log_data
+
         _css = _log_data.css_1
-        _table = _log_data.table_title.format(_graph, _css, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION,
-                                              _TIME)
+        _table = _log_data.table_title.format(
+            _graph, _css, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION, _TIME
+        )
 
         for value in data:
-            _table += _log_data.table_items.format(value['HOST'], value['USERNAME'], value['PASSWORD'],
-                                                   value['PORT'], value['TYPE'], value['DESCRIPTION'], value['TIME'])
+            _table += _log_data.table_items.format(
+                value["HOST"],
+                value["USERNAME"],
+                value["PASSWORD"],
+                value["PORT"],
+                value["TYPE"],
+                value["DESCRIPTION"],
+                value["TIME"],
+            )
             events_num += 1
-        _table += _log_data.table_end + '<p class="footer">' + messages(language, "nettacker_version_details") \
-            .format(compatible.__version__, compatible.__code_name__, now()) + '</p>'
-        __log_into_file(log_in_file, 'w' if type(_table) ==
-                                            str else 'wb', _table, language, final=True)
-    elif len(log_in_file) >= 5 and log_in_file[-5:] == '.json':
+        _table += (
+            _log_data.table_end
+            + '<p class="footer">'
+            + messages(language, "nettacker_version_details").format(
+                compatible.__version__, compatible.__code_name__, now()
+            )
+            + "</p>"
+        )
+        __log_into_file(
+            log_in_file,
+            "w" if type(_table) == str else "wb",
+            _table,
+            language,
+            final=True,
+        )
+    elif len(log_in_file) >= 5 and log_in_file[-5:] == ".json":
         graph_flag = ""
         report_type = "JSON"
         data = json.dumps(JSON_Data)
         events_num = len(JSON_Data)
-        __log_into_file(log_in_file, 'w', data, language, final=True)
+        __log_into_file(log_in_file, "w", data, language, final=True)
 
-    elif len(log_in_file)>=5 and log_in_file[-4:] == '.csv':
+    elif len(log_in_file) >= 5 and log_in_file[-4:] == ".csv":
         graph_flag = ""
         report_type = "CSV"
         keys = JSON_Data[0].keys()
         data = json.dumps(JSON_Data)
         events_num = len(JSON_Data)
-        with open(log_in_file, 'a') as csvfile:
+        with open(log_in_file, "a") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=keys)
             writer.writeheader()
             for i in JSON_Data:
-                dicdata = {key: value for key, value in i.items()
-                           if key in keys}
+                dicdata = {key: value for key, value in i.items() if key in keys}
                 writer.writerow(dicdata)
 
     else:
         graph_flag = ""
         report_type = "TEXT"
-        data, events_num = __build_texttable(JSON_FROM_DB, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
-                                             _DESCRIPTION, _TIME, language)
-        __log_into_file(log_in_file, 'wb', data, language, final=True)
-    data = data if report_type == "TEXT" else __build_texttable(JSON_FROM_DB, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
-                                                                _DESCRIPTION, _TIME, language)[0]
+        data, events_num = __build_texttable(
+            JSON_FROM_DB,
+            _HOST,
+            _USERNAME,
+            _PASSWORD,
+            _PORT,
+            _TYPE,
+            _DESCRIPTION,
+            _TIME,
+            language,
+        )
+        __log_into_file(log_in_file, "wb", data, language, final=True)
+    data = (
+        data
+        if report_type == "TEXT"
+        else __build_texttable(
+            JSON_FROM_DB,
+            _HOST,
+            _USERNAME,
+            _PASSWORD,
+            _PORT,
+            _TYPE,
+            _DESCRIPTION,
+            _TIME,
+            language,
+        )[0]
+    )
     info(messages(language, "updating_database"))
     category = []
     for sm in scan_method:
@@ -180,15 +281,29 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     scan_method = ",".join(scan_method)
     if ports is None:
         ports = "default"
-    submit_report_to_db(now(), scan_id, log_in_file, events_num, 0 if verbose_level is 0 else 1, api_flag, report_type,
-                        graph_flag, category, profile, scan_method, language, scan_cmd, ports)
+    submit_report_to_db(
+        now(),
+        scan_id,
+        log_in_file,
+        events_num,
+        0 if verbose_level is 0 else 1,
+        api_flag,
+        report_type,
+        graph_flag,
+        category,
+        profile,
+        scan_method,
+        language,
+        scan_cmd,
+        ports,
+    )
     info(messages(language, "removing_logs_db"))
     hosts = []
     for log in JSON_Data:
         if log["HOST"] not in hosts:
             hosts.append(log["HOST"])
     for host in hosts:
-        for sm in scan_method.rsplit(','):
+        for sm in scan_method.rsplit(","):
             remove_old_logs(host, sm, scan_id, language)
     # info(messages(language,"inserting_logs_db"))
     # for log in JSON_Data:
@@ -217,18 +332,18 @@ def __log_into_file(filename, mode, data, language, final=False):
     Returns:
         True if success otherwise None
     """
-    log = ''
+    log = ""
     if version() is 2:
         if isinstance(data, str):
             try:
                 log = json.loads(data)
             except ValueError:
-                log = ''
+                log = ""
 
         if isinstance(log, dict):
             if final:
                 with open(filename, mode) as save:
-                    save.write(data + '\n')
+                    save.write(data + "\n")
             else:
                 submit_logs_to_db(language, data)
         else:
@@ -236,7 +351,7 @@ def __log_into_file(filename, mode, data, language, final=False):
                 flock = lockfile.FileLock(filename)
                 flock.acquire()
             with open(filename, mode) as save:
-                save.write(data + '\n')
+                save.write(data + "\n")
             if not final:
                 flock.release()
     else:
@@ -245,20 +360,20 @@ def __log_into_file(filename, mode, data, language, final=False):
             try:
                 log = json.loads(data)
             except ValueError:
-                log = ''
+                log = ""
 
         if isinstance(log, dict):
             if final:
-                with open(filename, mode, encoding='utf-8') as save:
-                    save.write(data + '\n')
+                with open(filename, mode, encoding="utf-8") as save:
+                    save.write(data + "\n")
             else:
                 submit_logs_to_db(language, data)
         else:
             if not final:
                 flock = lockfile.FileLock(filename)
                 flock.acquire()
-            with open(filename, mode, encoding='utf-8') as save:
-                save.write(data + '\n')
+            with open(filename, mode, encoding="utf-8") as save:
+                save.write(data + "\n")
             if not final:
                 flock.release()
     return True

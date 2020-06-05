@@ -19,14 +19,14 @@ def __input(msg, default):
     if version() is 2:
         try:
             data = raw_input(__input_msg(msg))
-            if data == '':
+            if data == "":
                 data = default
         except:
             data = default
     else:
         try:
             data = input(__input_msg(msg))
-            if data == '':
+            if data == "":
                 data = default
         except:
             data = default

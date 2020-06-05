@@ -17,9 +17,9 @@ def default_paths():
         a JSON contain the working, tmp and results path
     """
     return {
-        "home_path": os.path.expanduser('~/.owasp-nettacker'),
-        "tmp_path": os.path.expanduser('~/.owasp-nettacker/tmp'),
-        "results_path": os.path.expanduser('~/.owasp-nettacker/results')
+        "home_path": os.path.expanduser("~/.owasp-nettacker"),
+        "tmp_path": os.path.expanduser("~/.owasp-nettacker/tmp"),
+        "results_path": os.path.expanduser("~/.owasp-nettacker/results"),
     }
 
 
@@ -34,7 +34,7 @@ def default_profiles():
         "information_gathering": ["port_scan"],
         "vulnerability": ["*_vuln"],
         "scan": ["*_scan"],
-        "brute": ["*_brute"]
+        "brute": ["*_brute"],
     }
 
 
@@ -52,12 +52,9 @@ def _api_default_config():
         "api_access_key": "".join(random.choice("0123456789abcdef") for x in range(32)),
         "api_client_white_list": {
             "enabled": False,
-            "ips": ["127.0.0.1", "10.0.0.0/24", "192.168.1.1-192.168.1.255"]
+            "ips": ["127.0.0.1", "10.0.0.0/24", "192.168.1.1-192.168.1.255"],
         },
-        "api_access_log": {
-            "enabled": False,
-            "filename": "nettacker_api_access.log"
-        },
+        "api_access_log": {"enabled": False, "filename": "nettacker_api_access.log"},
     }
 
 
@@ -74,7 +71,7 @@ def _database_default_config():
         "USERNAME": "",
         "PASSWORD": "",
         "HOST": "",
-        "PORT": ""
+        "PORT": "",
     }
 
 
@@ -90,10 +87,11 @@ def _core_default_config():
         "verbose_level": 0,
         "show_version": False,
         "check_update": False,
-        "log_in_file": "{0}/results_{1}_{2}.html".format(default_paths()["results_path"],
-                                                         now(model="%Y_%m_%d_%H_%M_%S"),
-                                                         "".join(random.choice(string.ascii_lowercase) for x in
-                                                                 range(10))),
+        "log_in_file": "{0}/results_{1}_{2}.html".format(
+            default_paths()["results_path"],
+            now(model="%Y_%m_%d_%H_%M_%S"),
+            "".join(random.choice(string.ascii_lowercase) for x in range(10)),
+        ),
         "graph_flag": "d3_tree_v2_graph",
         "help_menu_flag": False,
         "targets": None,
@@ -124,8 +122,12 @@ def _core_default_config():
         "api_port": _api_default_config()["api_port"],
         "api_debug_mode": _api_default_config()["api_debug_mode"],
         "api_access_key": _api_default_config()["api_access_key"],
-        "api_client_white_list": _api_default_config()["api_client_white_list"]["enabled"],
-        "api_client_white_list_ips": _api_default_config()["api_client_white_list"]["ips"],
+        "api_client_white_list": _api_default_config()["api_client_white_list"][
+            "enabled"
+        ],
+        "api_client_white_list_ips": _api_default_config()["api_client_white_list"][
+            "ips"
+        ],
         "api_access_log": _api_default_config()["api_access_log"]["enabled"],
         "api_access_log_filename": _api_default_config()["api_access_log"]["filename"],
         "database_type": _database_default_config()["DB"],
@@ -136,7 +138,7 @@ def _core_default_config():
         "database_port": _database_default_config()["PORT"],
         "home_path": default_paths()["home_path"],
         "tmp_path": default_paths()["tmp_path"],
-        "results_path": default_paths()["results_path"]
+        "results_path": default_paths()["results_path"],
     }
 
 

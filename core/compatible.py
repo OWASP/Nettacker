@@ -6,8 +6,8 @@ import os
 from core.alert import messages
 from core._die import __die_failure
 
-__version__ = '0.0.1'
-__code_name__ = 'SAME'
+__version__ = "0.0.1"
+__code_name__ = "SAME"
 
 
 def _version_info():
@@ -27,7 +27,9 @@ def logo():
     from core.alert import write_to_api_console
     from core import color
     from core.color import finish
-    write_to_api_console('''    
+
+    write_to_api_console(
+        """    
    ______          __      _____ _____  
   / __ \ \        / /\    / ____|  __ \ 
  | |  | \ \  /\  / /  \  | (___ | |__) |
@@ -41,10 +43,21 @@ def logo():
   {10}zdresearch.com{11}         | |\  |  __/ |_| || (_| | (__|   <  __/ |   
                          |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|   
                                                
-    \n\n'''.format(__version__, __code_name__, color.color('red'), color.color('reset'), color.color('yellow'),
-                   color.color('reset'), color.color(
-            'cyan'), color.color('reset'), color.color('cyan'),
-                   color.color('reset'), color.color('cyan'), color.color('reset')))
+    \n\n""".format(
+            __version__,
+            __code_name__,
+            color.color("red"),
+            color.color("reset"),
+            color.color("yellow"),
+            color.color("reset"),
+            color.color("cyan"),
+            color.color("reset"),
+            color.color("cyan"),
+            color.color("reset"),
+            color.color("cyan"),
+            color.color("reset"),
+        )
+    )
     finish()
 
 
@@ -68,10 +81,10 @@ def check(language):
         True if compatible otherwise None
     """
     # from core.color import finish
-    if 'linux' in os_name() or 'darwin' in os_name():
+    if "linux" in os_name() or "darwin" in os_name():
         pass
         # os.system('clear')
-    elif 'win32' == os_name() or 'win64' == os_name():
+    elif "win32" == os_name() or "win64" == os_name():
         # if language != 'en':
         #    from core.color import finish
         #    from core.alert import error
@@ -107,6 +120,6 @@ def is_windows():
     Returns:
         True if its running on windows otherwise False
     """
-    if 'win32' == os_name() or 'win64' == os_name():
+    if "win32" == os_name() or "win64" == os_name():
         return True
     return False

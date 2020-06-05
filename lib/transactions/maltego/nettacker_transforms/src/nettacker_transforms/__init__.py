@@ -1,4 +1,1 @@
-__all__ = [
-    'transforms',
-    'resources'
-]
+__all__ = ["transforms", "resources"]

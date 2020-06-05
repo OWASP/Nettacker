@@ -7,7 +7,9 @@ from core.alert import messages
 from core.compatible import version
 
 
-def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
+def start(
+    graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION
+):
     """
     generate the d3_tree_v1_graph with events
 
@@ -27,35 +29,55 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
     """
 
     # define  a normalised_json
-    normalisedjson = {
-        "name": "Started attack",
-        "children": {}
-    }
+    normalisedjson = {"name": "Started attack", "children": {}}
     # get data for normalised_json
     for each_scan in data:
 
-        if each_scan['HOST'] not in normalisedjson['children']:
-            normalisedjson['children'].update({each_scan['HOST']: {}})
-            normalisedjson['children'][each_scan['HOST']].update(
-                {each_scan['TYPE']: []})
+        if each_scan["HOST"] not in normalisedjson["children"]:
+            normalisedjson["children"].update({each_scan["HOST"]: {}})
+            normalisedjson["children"][each_scan["HOST"]].update(
+                {each_scan["TYPE"]: []}
+            )
 
-        if each_scan['TYPE'] not in normalisedjson['children'][each_scan['HOST']]:
-            normalisedjson['children'][each_scan['HOST']].update(
-                {each_scan['TYPE']: []})
+        if each_scan["TYPE"] not in normalisedjson["children"][each_scan["HOST"]]:
+            normalisedjson["children"][each_scan["HOST"]].update(
+                {each_scan["TYPE"]: []}
+            )
 
-        normalisedjson['children'][each_scan['HOST']][each_scan['TYPE']].append("HOST: \"%s\", PORT:\"%s\", DESCRIPTION:\"%s\", USERNAME:\"%s\", PASSWORD:\"%s\"" % (
-            each_scan['HOST'], each_scan['PORT'], each_scan['DESCRIPTION'], each_scan['USERNAME'], each_scan['PASSWORD']))
+        normalisedjson["children"][each_scan["HOST"]][each_scan["TYPE"]].append(
+            'HOST: "%s", PORT:"%s", DESCRIPTION:"%s", USERNAME:"%s", PASSWORD:"%s"'
+            % (
+                each_scan["HOST"],
+                each_scan["PORT"],
+                each_scan["DESCRIPTION"],
+                each_scan["USERNAME"],
+                each_scan["PASSWORD"],
+            )
+        )
 
     # define a d3_structure_json
-    d3_structure = {"name": "Starting attack",
-                    "children": []}
+    d3_structure = {"name": "Starting attack", "children": []}
     # get data for normalised_json
-    for host in list(normalisedjson['children'].keys()):
+    for host in list(normalisedjson["children"].keys()):
 
-        d3_structure["children"].append({"name": host, "children": [{"name": otype, "children": [{"name": description}
-                                                                                                 for description in normalisedjson['children'][host][otype]]} for otype in list(normalisedjson['children'][host].keys())]})
+        d3_structure["children"].append(
+            {
+                "name": host,
+                "children": [
+                    {
+                        "name": otype,
+                        "children": [
+                            {"name": description}
+                            for description in normalisedjson["children"][host][otype]
+                        ],
+                    }
+                    for otype in list(normalisedjson["children"][host].keys())
+                ],
+            }
+        )
 
-    data = '''<!DOCTYPE html>
+    data = (
+        """<!DOCTYPE html>
 <!-- THIS PAGE COPIED AND MODIFIED FROM http://bl.ocks.org/robschmuecker/7880033-->
 <title>__html_title_to_replace__</title>
 <meta charset="utf-8">
@@ -11895,10 +11917,13 @@ treeJSON = d3.json("https://github.com/zdresearch/OWASP-Nettacker", function(err
     <center>
         <div id="tree-container"></div><br>
     </center>
-</body>'''.replace('__data_will_locate_here__', json.dumps(d3_structure)) \
-        .replace('__title_to_replace__', messages(language, "pentest_graphs")) \
-        .replace('__description_to_replace__', messages(language, "graph_message")) \
-        .replace('__html_title_to_replace__', messages(language, "nettacker_report"))
+</body>""".replace(
+            "__data_will_locate_here__", json.dumps(d3_structure)
+        )
+        .replace("__title_to_replace__", messages(language, "pentest_graphs"))
+        .replace("__description_to_replace__", messages(language, "graph_message"))
+        .replace("__html_title_to_replace__", messages(language, "nettacker_report"))
+    )
     if version() is 2:
-        return data.decode('utf8')
+        return data.decode("utf8")
     return data

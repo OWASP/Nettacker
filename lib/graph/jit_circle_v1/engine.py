@@ -7,7 +7,9 @@ from core.alert import messages
 from core.compatible import version
 
 
-def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
+def start(
+    graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION
+):
     """
     generate the jit_circle_v1_graph with events
 
@@ -26,24 +28,31 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
         a graph in HTML
     """
     # define  a normalised_json
-    normalisedjson = {
-        "name": "Started attack",
-        "children": {}
-    }
+    normalisedjson = {"name": "Started attack", "children": {}}
     # get data for normalised_json
     for each_scan in data:
 
-        if each_scan['HOST'] not in normalisedjson['children']:
-            normalisedjson['children'].update({each_scan['HOST']: {}})
-            normalisedjson['children'][each_scan['HOST']].update(
-                {each_scan['TYPE']: []})
+        if each_scan["HOST"] not in normalisedjson["children"]:
+            normalisedjson["children"].update({each_scan["HOST"]: {}})
+            normalisedjson["children"][each_scan["HOST"]].update(
+                {each_scan["TYPE"]: []}
+            )
 
-        if each_scan['TYPE'] not in normalisedjson['children'][each_scan['HOST']]:
-            normalisedjson['children'][each_scan['HOST']].update(
-                {each_scan['TYPE']: []})
+        if each_scan["TYPE"] not in normalisedjson["children"][each_scan["HOST"]]:
+            normalisedjson["children"][each_scan["HOST"]].update(
+                {each_scan["TYPE"]: []}
+            )
 
-        normalisedjson['children'][each_scan['HOST']][each_scan['TYPE']].append("HOST: \"%s\", PORT:\"%s\", DESCRIPTION:\"%s\", USERNAME:\"%s\", PASSWORD:\"%s\"" % (
-            each_scan['HOST'], each_scan['PORT'], each_scan['DESCRIPTION'], each_scan['USERNAME'], each_scan['PASSWORD']))
+        normalisedjson["children"][each_scan["HOST"]][each_scan["TYPE"]].append(
+            'HOST: "%s", PORT:"%s", DESCRIPTION:"%s", USERNAME:"%s", PASSWORD:"%s"'
+            % (
+                each_scan["HOST"],
+                each_scan["PORT"],
+                each_scan["DESCRIPTION"],
+                each_scan["USERNAME"],
+                each_scan["PASSWORD"],
+            )
+        )
 
     # define a dgraph_json
     dgraph = {
@@ -51,19 +60,67 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
         "data": [],
         "relation": "",
         "name": "Start Attacking",
-        "children": []
+        "children": [],
     }
 
     # get data for dgraph_json
     n = 1
-    for host in normalisedjson['children']:
+    for host in normalisedjson["children"]:
 
-        dgraph['children'].append({"id": str(n), "name": host, "data": {"relation": "Start Attacking"}, "children": [{"id": ''.join(random.choice(
-            string.ascii_letters + string.digits) for _ in range(20)), "name": otype, "data": {"band": [description.split(', ')[2].lstrip("DESCRIPTION: ").strip("\"") for description in normalisedjson['children'][host][otype]][0], "relation": [description.split(', ')[1:] for description in normalisedjson['children'][host][otype]]}, "children": [{"children": [], "data":{"band": description.split(', ')[2], "relation": description.split(', ')[1:]}, "id": ''.join(random.choice(
-                string.ascii_letters + string.digits) for _ in range(20)), "name": description.split(', ')[1].lstrip("PORT: ").strip("\"")} for description in normalisedjson['children'][host][otype]]} for otype in normalisedjson['children'][host]]})
+        dgraph["children"].append(
+            {
+                "id": str(n),
+                "name": host,
+                "data": {"relation": "Start Attacking"},
+                "children": [
+                    {
+                        "id": "".join(
+                            random.choice(string.ascii_letters + string.digits)
+                            for _ in range(20)
+                        ),
+                        "name": otype,
+                        "data": {
+                            "band": [
+                                description.split(", ")[2]
+                                .lstrip("DESCRIPTION: ")
+                                .strip('"')
+                                for description in normalisedjson["children"][host][
+                                    otype
+                                ]
+                            ][0],
+                            "relation": [
+                                description.split(", ")[1:]
+                                for description in normalisedjson["children"][host][
+                                    otype
+                                ]
+                            ],
+                        },
+                        "children": [
+                            {
+                                "children": [],
+                                "data": {
+                                    "band": description.split(", ")[2],
+                                    "relation": description.split(", ")[1:],
+                                },
+                                "id": "".join(
+                                    random.choice(string.ascii_letters + string.digits)
+                                    for _ in range(20)
+                                ),
+                                "name": description.split(", ")[1]
+                                .lstrip("PORT: ")
+                                .strip('"'),
+                            }
+                            for description in normalisedjson["children"][host][otype]
+                        ],
+                    }
+                    for otype in normalisedjson["children"][host]
+                ],
+            }
+        )
         n += 1
 
-    data = '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    data = (
+        """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!-- THIS SAMPLE COPIED AND MODIFIED FROM http://philogb.github.io/jit/static/v20/Jit/Examples/Hypertree/example1.html -->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -14801,10 +14858,13 @@ __title_to_replace__
 <div id="log"></div>
 </div>
 </body>
-</html>'''.replace('__data_will_locate_here__', json.dumps(dgraph)) \
-        .replace('__title_to_replace__', messages(language, "pentest_graphs")) \
-        .replace('__description_to_replace__', messages(language, "graph_message")) \
-        .replace('__html_title_to_replace__', messages(language, "nettacker_report"))
+</html>""".replace(
+            "__data_will_locate_here__", json.dumps(dgraph)
+        )
+        .replace("__title_to_replace__", messages(language, "pentest_graphs"))
+        .replace("__description_to_replace__", messages(language, "graph_message"))
+        .replace("__html_title_to_replace__", messages(language, "nettacker_report"))
+    )
     if version() is 2:
-        return data.decode('utf8')
+        return data.decode("utf8")
     return data

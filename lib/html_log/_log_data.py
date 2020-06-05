@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-css_1 = '''<style>
+css_1 = """<style>
  .overlay {
 		border: 5px solid green;
 }
@@ -98,9 +98,11 @@ tbody:hover tr:hover td {
     color: #444;
     text-shadow: 0 1px 0 #fff;
 }
-</style>'''
+</style>"""
 
-table_title = '{0}{1}\n\n<center><br><br><br><table>\n<tr><th>{2}</th><th>{3}</th><th>{4}</th><th>{5}</th><th>{6}' \
-              '</th><th>{7}</th><th>{8}</th></tr>\n'
-table_items = '<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td><td>{6}</td></tr>\n'
-table_end = '</table><br><br></center><br><br>'
+table_title = (
+    "{0}{1}\n\n<center><br><br><br><table>\n<tr><th>{2}</th><th>{3}</th><th>{4}</th><th>{5}</th><th>{6}"
+    "</th><th>{7}</th><th>{8}</th></tr>\n"
+)
+table_items = "<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td><td>{6}</td></tr>\n"
+table_end = "</table><br><br></center><br><br>"

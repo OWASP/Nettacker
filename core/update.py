@@ -14,7 +14,8 @@ from database.db import save_update_log
 from datetime import timedelta
 from datetime import datetime
 
-url = 'https://raw.githubusercontent.com/zdresearch/OWASP-Nettacker/master/version.txt'
+url = "https://raw.githubusercontent.com/zdresearch/OWASP-Nettacker/master/version.txt"
+
 
 def _update(__version__, __code_name__, language, socks_proxy):
     """
@@ -31,18 +32,21 @@ def _update(__version__, __code_name__, language, socks_proxy):
     """
     try:
         if socks_proxy is not None:
-            socks_version = socks.SOCKS5 if socks_proxy.startswith(
-                'socks5://') else socks.SOCKS4
-            socks_proxy = socks_proxy.rsplit('://')[1]
-            socks.set_default_proxy(socks_version, str(
-                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socks_version = (
+                socks.SOCKS5 if socks_proxy.startswith("socks5://") else socks.SOCKS4
+            )
+            socks_proxy = socks_proxy.rsplit("://")[1]
+            socks.set_default_proxy(
+                socks_version,
+                str(socks_proxy.rsplit(":")[0]),
+                int(socks_proxy.rsplit(":")[1]),
+            )
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
-        data = requests.get(
-            url, headers={"User-Agent": "OWASP Nettacker"}).content
+        data = requests.get(url, headers={"User-Agent": "OWASP Nettacker"}).content
         if version() is 3:
             data = data.decode("utf-8")
-        if __version__ + ' ' + __code_name__ == data.rsplit('\n')[0]:
+        if __version__ + " " + __code_name__ == data.rsplit("\n")[0]:
             info(messages(language, "last_version"))
         else:
             warn(messages(language, "not_last_version"))
@@ -50,6 +54,7 @@ def _update(__version__, __code_name__, language, socks_proxy):
     except:
         warn(messages(language, "cannot_update"))
     return True
+
 
 def _update_check(language):
     """
@@ -61,16 +66,19 @@ def _update_check(language):
         True or False depending on if update should happen or not
     """
     try:
-        logs = (get_update_log(language))
+        logs = get_update_log(language)
     except Exception:
         save_update_log(language)
-        logs = (get_update_log(language))
-    logs2 = (logs[len(logs)-1].last_update_time)
-    if datetime.now() > datetime.strptime(logs2, "%Y-%m-%d %H:%M:%S.%f") + timedelta(days=1):
+        logs = get_update_log(language)
+    logs2 = logs[len(logs) - 1].last_update_time
+    if datetime.now() > datetime.strptime(logs2, "%Y-%m-%d %H:%M:%S.%f") + timedelta(
+        days=1
+    ):
         save_update_log(language)
         return True
     else:
         return False
+
 
 def _check(__version__, __code_name__, language, socks_proxy):
     """
@@ -85,21 +93,24 @@ def _check(__version__, __code_name__, language, socks_proxy):
     Returns:
         True if success otherwise None
     """
-#    print(save_update_log(language))
+    #    print(save_update_log(language))
     try:
         if socks_proxy is not None:
-            socks_version = socks.SOCKS5 if socks_proxy.startswith(
-                'socks5://') else socks.SOCKS4
-            socks_proxy = socks_proxy.rsplit('://')[1]
-            socks.set_default_proxy(socks_version, str(
-                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socks_version = (
+                socks.SOCKS5 if socks_proxy.startswith("socks5://") else socks.SOCKS4
+            )
+            socks_proxy = socks_proxy.rsplit("://")[1]
+            socks.set_default_proxy(
+                socks_version,
+                str(socks_proxy.rsplit(":")[0]),
+                int(socks_proxy.rsplit(":")[1]),
+            )
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
-        data = requests.get(
-            url, headers={"User-Agent": "OWASP Nettacker"}).content
+        data = requests.get(url, headers={"User-Agent": "OWASP Nettacker"}).content
         if version() is 3:
             data = data.decode("utf-8")
-        if __version__ + ' ' + __code_name__ == data.rsplit('\n')[0]:
+        if __version__ + " " + __code_name__ == data.rsplit("\n")[0]:
             info(messages(language, "last_version"))
         else:
             warn(messages(language, "not_last_version"))
