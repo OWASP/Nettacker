@@ -22,7 +22,7 @@ def all_messages():
             "subdomains": "find and scan subdomains",
             "thread_number_connections": "thread numbers for connections to a host",
             "thread_number_hosts": "thread numbers for scan hosts",
-            "save_logs": "save all logs in file (results.txt, results.html, results.json)",
+            "save_logs": "save all logs in file (results.txt, results.csv, results.html, results.json)",
             "target": "Target",
             "target_input": "Target input options",
             "target_list": "target(s) list, separate with \",\"",
