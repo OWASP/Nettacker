@@ -183,7 +183,7 @@ def all_messages():
             "API_cert": "API CERTIFICATE",
             "API_cert_key": "API CERTIFICATE Key",
             "api_cert": "Please give the location of your SSL Certificate using --api-cert switch",
-            "api_cert_key": "Please give the location of your SSL Private Key --api-cert-key switch",
+            "api_cert_key": "Please give the location of your SSL Private Key using --api-cert-key switch",
             "wrong_values": "Please provide the correct SSL Certificate and Private key file!",
             "unauthorized_IP": "your IP not authorized",
             "not_found": "Not Found!",
