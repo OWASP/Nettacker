@@ -10,11 +10,7 @@ import threading
 import string
 import random
 import sys
-import struct
-import re
 import os
-from OpenSSL import crypto
-import ssl
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host

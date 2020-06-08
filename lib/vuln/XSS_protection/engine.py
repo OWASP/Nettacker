@@ -80,7 +80,7 @@ def xss_protection(target, port, timeout_sec, log_in_file, language, time_sleep,
                     return False
                 else:
                     return True
-            except:
+            except Exception:
                 return True
     except Exception as e:
         # some error warning

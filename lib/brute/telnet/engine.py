@@ -58,7 +58,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                 tn = telnetlib.Telnet(target)
             exit = 0
             break
-        except:
+        except Exception:
             exit += 1
             if exit is retries:
                 warn(messages(language, "telnet_connection_timeout").format(
@@ -115,7 +115,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
                 tn = telnetlib.Telnet(host=target, port=int(port))
             exit = 0
             break
-        except:
+        except Exception:
             exit += 1
             if exit is retries:
                 error(messages(language, "telnet_connection_failed").format(
@@ -123,7 +123,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
                 try:
                     __log_into_file(ports_tmp_filename, 'a',
                                     str(port), language)
-                except:
+                except Exception:
                     pass
                 break
         time.sleep(time_sleep)
@@ -168,10 +168,10 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
     for port in _ports:
         try:
             ports.remove(int(port))
-        except:
+        except Exception:
             try:
                 ports.remove(port)
-            except:
+            except Exception:
                 pass
     os.remove(ports_tmp_filename)
     return ports

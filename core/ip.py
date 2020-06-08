@@ -31,7 +31,7 @@ def getIPRange(IP):
                 for R in line:
                     if R.count('.') is 6 and R.count('-') is 1 and R.count(' ') is 2:
                         return R.replace(' ', '')
-        except:
+        except Exception:
             n += 1
             if n is 3:
                 return IP

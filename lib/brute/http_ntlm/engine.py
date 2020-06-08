@@ -87,7 +87,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                          'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
                     __log_into_file(log_in_file, 'a', data, language)
                     __log_into_file(thread_tmp_filename, 'w', '0', language)
-        except:
+        except Exception:
             exit += 1
             if exit is retries:
                 warn(messages(language, "http_ntlm_failed").format(
@@ -110,7 +110,7 @@ def check_auth(target, timeout_sec, language, port):
             return 1
         else:
             return 0
-    except:
+    except Exception:
         warn(messages(language, 'no_response'))
         return 1
 

@@ -38,7 +38,7 @@ def datepart(date):
         list1.append(year)
         try:
             list1.append(monthly[month])
-        except:
+        except Exception:
             print("Month not entered Correctly")
         list1.append(date[::-1])
         list1.append(month[::-1])

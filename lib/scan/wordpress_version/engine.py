@@ -72,7 +72,7 @@ def wordpress_version(target, port, timeout_sec, log_in_file, language, time_sle
                 target = 'http://' + target
             try:
                 req = requests.get(target+'/wp-admin/install.php')
-            except:
+            except Exception:
                 return False
             try:
                 global version
@@ -82,7 +82,7 @@ def wordpress_version(target, port, timeout_sec, log_in_file, language, time_sle
                 version = max(set(version), key=version.count).replace(
                     'ver=', '')
                 return True
-            except:
+            except Exception:
                 return False
     except Exception as e:
         # some error warning

@@ -60,7 +60,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             my_ftp.connect(target, port)
             exit = 0
             break
-        except:
+        except Exception:
             exit += 1
             if exit is retries:
                 warn(messages(language, "ftp_connection_timeout").format(
@@ -82,7 +82,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ftp_brute',
                                'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
-        except:
+        except Exception:
             info(messages(language, "user_pass_found").format(user, passwd,
                                                               target, port) + ' ' + messages(language, "file_listing_error"))
             data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'FTP',
@@ -123,7 +123,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
             my_ftp.connect(target, int(port))
             exit = 0
             break
-        except:
+        except Exception:
             exit += 1
             if exit is retries:
                 error(messages(language, "ftp_connection_failed").format(
@@ -131,7 +131,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
                 try:
                     __log_into_file(ports_tmp_filename, 'a',
                                     str(port), language)
-                except:
+                except Exception:
                     pass
                 break
         time.sleep(time_sleep)
@@ -177,10 +177,10 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
     for port in _ports:
         try:
             ports.remove(int(port))
-        except:
+        except Exception:
             try:
                 ports.remove(port)
-            except:
+            except Exception:
                 pass
     os.remove(ports_tmp_filename)
     return ports

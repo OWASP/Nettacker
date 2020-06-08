@@ -138,13 +138,13 @@ def filter_port(ip, port):
             try:
                 if s[0][1].seq == 0:
                     pass
-            except:
+            except Exception:
                 s = sr1(IP(dst=ip) / TCP(dport=closed_port, flags='S'), timeout=2, verbose=0)
                 if s == None:
                     return None
                 else:
                     return True
-    except:
+    except Exception:
         pass
 
 
@@ -206,7 +206,7 @@ def stealth(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
             # "CHECK"
             pass
         return True
-    except:
+    except Exception:
         return False
 
 def __udp(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, socks_proxy, scan_id,
@@ -242,7 +242,7 @@ def __udp(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp
             s.sendto(data,(host,port))
         try:
             s.recvfrom(4096)
-        except:
+        except Exception:
             return False
         try:
             service_name = "/" + socket.getservbyport(port)
@@ -275,9 +275,9 @@ def __udp(host, port, timeout_sec, log_in_file, language, time_sleep, thread_tmp
                                    'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n'
                 __log_into_file(log_in_file, 'a', data, language)
                 __log_into_file(thread_tmp_filename, 'w', '0', language)
-        except:
+        except Exception:
             pass
-    except:
+    except Exception:
         return False
 
 
@@ -348,9 +348,9 @@ def connect(host, port, timeout_sec, log_in_file, language, time_sleep, thread_t
                                    'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + '\n'
                 __log_into_file(log_in_file, 'a', data, language)
                 __log_into_file(thread_tmp_filename, 'w', '0', language)
-        except:
+        except Exception:
             pass
-    except:
+    except Exception:
         return False
 
 

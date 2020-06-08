@@ -81,7 +81,7 @@ def joomla_template(target, port, timeout_sec, log_in_file, language, time_sleep
                     return True
                 else:
                     return False
-            except:
+            except Exception:
                 return False
     except Exception as e:
         # some error warning

@@ -47,7 +47,7 @@ def _update(__version__, __code_name__, language, socks_proxy):
         else:
             warn(messages(language, "not_last_version"))
             warn(messages(language, "feature_unavailable"))
-    except:
+    except Exception:
         warn(messages(language, "cannot_update"))
     return True
 
@@ -103,6 +103,6 @@ def _check(__version__, __code_name__, language, socks_proxy):
             info(messages(language, "last_version"))
         else:
             warn(messages(language, "not_last_version"))
-    except:
+    except Exception:
         warn(messages(language, "cannot_update"))
     return True

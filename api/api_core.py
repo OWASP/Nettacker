@@ -41,13 +41,13 @@ def __get_value(flask_request, _key):
     """
     try:
         key = flask_request.args[_key]
-    except:
+    except Exception:
         try:
             key = flask_request.form[_key]
-        except:
+        except Exception:
             try:
                 key = flask_request.cookies[_key]
-            except:
+            except Exception:
                 key = None
     if key is not None:
         # fix it later
@@ -342,7 +342,7 @@ def __rules(config, defaults, language):
     try:
         f = open(config["log_in_file"], "a")
         f.close()
-    except:
+    except Exception:
         abort(400, messages(language, "file_write_error").format(
             config["log_in_file"]))
     # Check Method ARGS
@@ -379,7 +379,7 @@ def __rules(config, defaults, language):
                     for p in t_ports:
                         if p not in tmp_ports:
                             tmp_ports.append(p)
-            except:
+            except Exception:
                 abort(400, messages(language, "ports_int"))
         if len(tmp_ports) is 0:
             ports = None
@@ -404,7 +404,7 @@ def __rules(config, defaults, language):
                 for sm in _all_profiles[pr]:
                     if sm not in tmp_sm.rsplit(","):
                         tmp_sm += sm + ","
-            except:
+            except Exception:
                 abort(400, messages(language, "profile_404").format(pr))
         if tmp_sm[-1] == ",":
             tmp_sm = tmp_sm[0:-1]
@@ -412,7 +412,7 @@ def __rules(config, defaults, language):
     # Check retries
     try:
         config["retries"] = int(config["retries"])
-    except:
+    except Exception:
         config["retries"] = defaults["retries"]
     # Check Scanning Method
     if config["scan_method"] is not None and "all" in config["scan_method"].rsplit(","):
@@ -487,7 +487,7 @@ def __rules(config, defaults, language):
                 e = True
             elif len(socks_proxy.rsplit(":")) is 3 and socks_proxy.rsplit(":")[2] == "":
                 e = True
-        except:
+        except Exception:
             e = True
         if e:
             abort(400, messages(language, "valid_socks_address"))
@@ -499,22 +499,22 @@ def __rules(config, defaults, language):
     # Check thread numbers
     try:
         config["thread_number"] = int(config["thread_number"])
-    except:
+    except Exception:
         config["thread_number"] = defaults["thread_number"]
     # Check thread number for hosts
     try:
         config["thread_number_host"] = int(config["thread_number_host"])
-    except:
+    except Exception:
         config["thread_number_host"] = defaults["thread_number_host"]
     # Check time sleep
     try:
         config["time_sleep"] = float(config["time_sleep"])
-    except:
+    except Exception:
         config["time_sleep"] = defaults["time_sleep"]
     # Check timeout sec
     try:
         config["timeout_sec"] = int(config["timeout_sec"])
-    except:
+    except Exception:
         config["thread_number_host"] = defaults["thread_number_host"]
     # Check users
     config["users"] = config["users"].rsplit(

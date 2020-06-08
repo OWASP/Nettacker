@@ -27,7 +27,7 @@ def percentage(data1, data2):
         try:
             if r == data2.rsplit()[m]:
                 n += 1
-        except:
+        except Exception:
             n += 1
         m += 1
     return float(100 / float(float(len(data1.rsplit())) / int(len(data1.rsplit()) - n)))

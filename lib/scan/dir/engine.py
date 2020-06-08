@@ -75,7 +75,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                         target, timeout=timeout_sec, headers=user_agent)
                 content = r.content
                 break
-            except:
+            except Exception:
                 n += 1
                 if n is retries:
                     warn(messages(language, "http_connection_timeout").format(target))
@@ -102,7 +102,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                         __log_into_file(log_in_file, 'a', data, language)
                         break
         return True
-    except:
+    except Exception:
         return False
 
 
@@ -138,7 +138,7 @@ def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, ver
                 r = requests.head(target, timeout=timeout_sec,
                                   headers=user_agent)
             return 0
-        except:
+        except Exception:
             n += 1
             if n is retries:
                 return 1

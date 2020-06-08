@@ -55,7 +55,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         s.settimeout(timeout_sec)
         s.connect((targ, port))
         return s
-    except:
+    except Exception:
         return None
 
 
@@ -78,7 +78,7 @@ def clickjacking(target, port, timeout_sec, log_in_file, language, time_sleep,
                 return False
             else:
                 return True
-    except:
+    except Exception:
         # some error warning
         return False
 

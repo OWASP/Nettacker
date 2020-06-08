@@ -57,7 +57,7 @@ def _parse_webpage(target, timeout_sec, language, retries, socks_proxy, scan_cmd
         webpage['metatags'] = {meta['name'].lower(): meta['content']
                                for meta in webpage['html'].findAll('meta', attrs=dict(name=True, content=True))}
         return webpage
-    except:
+    except Exception:
         tries += 1
         if tries >= retries:
             info(messages(language, "no_response"))
@@ -130,7 +130,7 @@ def _has_app(app, webpage):
         for regex in app['html']:
             if regex.search(webpage['response']):
                 return True
-    except:
+    except Exception:
         pass
 
 

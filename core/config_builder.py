@@ -155,6 +155,6 @@ def _builder(defaults, keys):
     for key in keys:
         try:
             defaults[key]
-        except:
+        except Exception:
             defaults[key] = keys[key]
     return defaults

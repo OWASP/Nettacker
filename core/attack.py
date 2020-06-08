@@ -88,7 +88,7 @@ def start_attack(target, num, total, scan_method, users, passwds, timeout_sec, t
         start = getattr(
                 __import__('lib.{0}.{1}.engine'.format(scan_method.rsplit('_')[-1], '_'.join(scan_method.rsplit('_')[:-1])),
                        fromlist=['start']), 'start')
-    except:
+    except Exception:
         __die_failure(
             messages(language, "module_not_available").format(scan_method))
     start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
@@ -143,7 +143,7 @@ def __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_
     total_targets = total_targets * len(scan_method)
     try:
         os.remove(range_temp)
-    except:
+    except Exception:
         pass
     range_temp = "{}/tmp/ranges_".format(load_file_path()) + suff
     targets = analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,

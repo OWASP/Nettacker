@@ -92,7 +92,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             parsed_html.parsed_results[username_field] = user
             parsed_html.parsed_results[password_field] = passwd
             post_data = urllib.urlencode(parsed_html.parsed_results).encode()
-        except:
+        except Exception:
             exit += 1
             if exit is retries:
                 warn(messages(language, "http_form_auth_failed").format(
@@ -119,7 +119,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                     __log_into_file(log_in_file, 'a', data, language)
                     __log_into_file(thread_tmp_filename, 'w', '0', language)
             return flag
-        except:
+        except Exception:
             exit += 1
             if exit is retries:
                 warn(messages(language, "http_form_auth_failed").format(
@@ -141,7 +141,7 @@ def check_auth(target, timeout_sec, language, port):
             return 1
         else:
             return 0
-    except:
+    except Exception:
         warn(messages(language, 'no_response'))
         return 1
 

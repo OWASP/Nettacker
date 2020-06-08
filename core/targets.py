@@ -144,7 +144,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                                 n += 1
                                 if n is 12:
                                     break
-                            except:
+                            except Exception:
                                 err += 1
                                 if err is 3 or n is 12:
                                     break
@@ -190,7 +190,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                             n += 1
                             if n is 12:
                                 break
-                        except:
+                        except Exception:
                             err += 1
                             if err is 3 or n is 12:
                                 break
@@ -229,7 +229,7 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                         n += 1
                         if n is 12:
                             break
-                    except:
+                    except Exception:
                         err += 1
                         if err is 3 or n is 12:
                             break

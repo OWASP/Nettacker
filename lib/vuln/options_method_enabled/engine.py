@@ -76,7 +76,7 @@ def options_method(target, port, timeout_sec, log_in_file, language, time_sleep,
                     global header
                     header = req.headers['allow']
                     return True
-                except:
+                except Exception:
                     return False
             else:
                 return False

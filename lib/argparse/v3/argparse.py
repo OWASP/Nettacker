@@ -617,7 +617,7 @@ class HelpFormatter(object):
             self._indent()
             try:
                 yield get_subactions()
-            except:
+            except Exception:
                 pass
             self._dedent()
 

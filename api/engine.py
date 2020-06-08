@@ -269,7 +269,7 @@ def __get_results():
     __api_key_check(app, flask_request, __language())
     try:
         page = int(__get_value(flask_request, "page"))
-    except:
+    except Exception:
         page = 1
     return jsonify(__select_results(__language(), page)), 200
 
@@ -285,7 +285,7 @@ def __get_result_content():
     __api_key_check(app, flask_request, __language())
     try:
         id = int(__get_value(flask_request, "id"))
-    except:
+    except Exception:
         return jsonify(__structure(status="error", msg="your scan id is not valid!")), 400
     return __get_result(__language(), id)
 
@@ -301,7 +301,7 @@ def __get_last_host_logs():
     __api_key_check(app, flask_request, __language())
     try:
         page = int(__get_value(flask_request, "page"))
-    except:
+    except Exception:
         page = 1
     return jsonify(__last_host_logs(__language(), page)), 200
 
@@ -317,7 +317,7 @@ def __get_logs_html():
     __api_key_check(app, flask_request, __language())
     try:
         host = __get_value(flask_request, "host")
-    except:
+    except Exception:
         host = ""
     return make_response(__logs_to_report_html(host, __language()))
 
@@ -333,7 +333,7 @@ def __get_logs():
     __api_key_check(app, flask_request, __language())
     try:
         host = __get_value(flask_request, "host")
-    except:
+    except Exception:
         host = ""
     return jsonify(__logs_to_report_json(host, __language())), 200
 
@@ -349,11 +349,11 @@ def ___go_for_search_logs():
     __api_key_check(app, flask_request, __language())
     try:
         page = int(__get_value(flask_request, "page"))
-    except:
+    except Exception:
         page = 1
     try:
         query = __get_value(flask_request, "q")
-    except:
+    except Exception:
         query = ""
     return jsonify(__search_logs(__language(), page, query)), 200
 

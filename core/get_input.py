@@ -21,13 +21,13 @@ def __input(msg, default):
             data = raw_input(__input_msg(msg))
             if data == '':
                 data = default
-        except:
+        except Exception:
             data = default
     else:
         try:
             data = input(__input_msg(msg))
             if data == '':
                 data = default
-        except:
+        except Exception:
             data = default
     return data

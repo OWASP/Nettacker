@@ -49,7 +49,7 @@ def __wizard(targets, thread_number, thread_number_host,
                             default_config["thread_number"])
     try:
         thread_number = int(thread_number)
-    except:
+    except Exception:
         thread_number = default_config["thread_number"]
     thread_number_host = __input(messages(language, "enter_default")
                                  .format(messages(language, "thread_number_hosts"),
@@ -57,7 +57,7 @@ def __wizard(targets, thread_number, thread_number_host,
                                  default_config["thread_number_host"])
     try:
         thread_number_host = int(thread_number_host)
-    except:
+    except Exception:
         thread_number_host = default_config["thread_number_host"]
     log_in_file = __input(
         messages(language, "enter_default").format(messages(language, "out_file"), default_config["log_in_file"]),
@@ -81,7 +81,7 @@ def __wizard(targets, thread_number, thread_number_host,
                           default_config["timeout_sec"])
     try:
         timeout_sec = int(timeout_sec)
-    except:
+    except Exception:
         timeout_sec = default_config["timeout_sec"]
     ports = __input(
         messages(language, "enter_default").format(messages(language, "all_ports"), default_config["ports"]),
@@ -97,7 +97,7 @@ def __wizard(targets, thread_number, thread_number_host,
         default_config["retries"])
     try:
         retries = int(retries)
-    except:
+    except Exception:
         retries = default_config["retries"]
     graph_flag = __input(messages(language, "enter_choices_default")
                          .format(messages(language, "graph"), ', '.join(graph_flag), default_config["graph_flag"]),

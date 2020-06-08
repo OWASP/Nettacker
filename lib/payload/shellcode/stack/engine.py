@@ -31,12 +31,12 @@ def generate(data, register, gtype):
         flag_8 = True
         try:
             data = hex(int(data, 8))
-        except:
+        except Exception:
             flag_8 = False
         if flag_8 is False:
             try:
                 data = hex(int(data, 16))
-            except:
+            except Exception:
                 error('hex or digit required!\nExit\n')
     if gtype == 'string':
         data = st(data)

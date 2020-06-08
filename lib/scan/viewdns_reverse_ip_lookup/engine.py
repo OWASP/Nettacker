@@ -58,7 +58,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 res = requests.get('https://viewdns.info/reverseip/?host={0}&t=1'.format(target), timeout=timeout_sec,
                                    headers=headers, verify=True).text
                 break
-            except:
+            except Exception:
                 n += 1
                 if n is retries:
                     warn(messages(language, "http_connection_timeout").format(

@@ -90,7 +90,7 @@ def send_dos(target, user_agent, timeout_sec, log_in_file, language, time_sleep,
         r = requests.get(target + payload, timeout=timeout_sec,
                          headers=user_agent).content
         return True
-    except:
+    except Exception:
         return False
 
 
@@ -122,7 +122,7 @@ def test(target, retries, timeout_sec, user_agent, socks_proxy, verbose_level, t
             r = requests.get(target, timeout=timeout_sec,
                              headers=user_agent).content
             return 0
-        except:
+        except Exception:
             n += 1
             if n is retries:
                 if dos_flag:

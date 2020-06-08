@@ -23,18 +23,18 @@ def requirements():
             if "> '3'" in requirement and int(sys.version_info[0]) is 3:
                 try:
                     __import__(requirement.rsplit('==')[0])
-                except:
+                except Exception:
                     requirements_list.append(requirement.rsplit(';')[0])
             elif "< '3'" in requirement and int(sys.version_info[0]) is 2:
                 try:
                     __import__(requirement.rsplit('==')[0])
-                except:
+                except Exception:
                     requirements_list.append(requirement.rsplit(';')[0])
         else:
             if requirement != "":
                 try:
                     __import__(requirement.rsplit('==')[0])
-                except:
+                except Exception:
                     requirements_list.append(requirement.rsplit(';')[0])
     return list(set(requirements_list))
 

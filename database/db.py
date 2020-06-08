@@ -58,9 +58,9 @@ def create_connection(language):
                 Session = sessionmaker(bind=db_engine)
                 session = Session()
                 return session
-            except:
+            except Exception:
                 time.sleep(0.01)
-    except:
+    except Exception:
         warn(messages(language, "database_connect_fail"))
     return False
 
@@ -355,7 +355,7 @@ def __logs_by_scan_id(scan_id, language):
         }
         return_logs.append(data)
     return return_logs
-    # except:
+    # except Exception:
     #     return []
 
 
