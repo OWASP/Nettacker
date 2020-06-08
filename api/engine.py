@@ -16,6 +16,7 @@ from flask import make_response
 from core.alert import write_to_api_console
 from core.alert import messages
 from core._die import __die_success
+from core._die import __die_failure
 from api.api_core import __structure
 from api.api_core import __get_value
 from api.api_core import root_dir
@@ -359,7 +360,7 @@ def ___go_for_search_logs():
 
 
 def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
-                 api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, language):
+                 api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, api_cert_key, language):
     """
     a function to run flask in a subprocess to make kill signal in a better way!
 
@@ -372,6 +373,9 @@ def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_
         api_client_white_list_ips: clients white list IPs
         api_access_log: access log flag
         api_access_log_filename: access log filename
+        api_cert: SSL certificate
+        api_cert_key: SSL Private key
+
         language: language
     """
     app.config["OWASP_NETTACKER_CONFIG"] = {
@@ -381,13 +385,29 @@ def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_
         "api_access_log": api_access_log,
         "api_access_log_filename": api_access_log_filename,
         "api_cert": api_cert,
+        "api_cert_key": api_cert_key,
         "language": language
     }
-    app.run(host=api_host, port=api_port, debug=api_debug_mode, ssl_context="adhoc", threaded=True)
+    try:
+        if api_cert:
+            if api_cert_key:
+                app.run(host=api_host, port=api_port, debug=api_debug_mode, ssl_context=(api_cert, api_cert_key), threaded=True)
+            else:
+                __die_failure(messages(language, "api_cert_key"))
 
+        if api_cert_key:
+            if api_cert:
+                app.run(host=api_host, port=api_port, debug=api_debug_mode, ssl_context=(api_cert, api_cert_key), threaded=True)
+            else:
+                __die_failure(messages(language, "api_cert"))
+
+        else:
+            app.run(host=api_host, port=api_port, debug=api_debug_mode, ssl_context="adhoc", threaded=True)
+    except Exception as e:
+        __die_failure(messages(language, "wrong_values"))
 
 def _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
-               api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, language):
+               api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, api_cert_key, language):
     """
     entry point to run the API through the flask
 
@@ -400,13 +420,15 @@ def _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_wh
         api_client_white_list_ips: clients white list IPs
         api_access_log: access log flag
         api_access_log_filename: access log filename
+        api_cert: SSL certificate
+        api_cert_key: SSL Private key
         language: language
     """
     # Starting the API
     write_to_api_console(messages(language, "API_key").format(api_access_key))
     p = multiprocessing.Process(target=__process_it,
                                 args=(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
-                                      api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, language))
+                                      api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, api_cert_key, language))
     p.start()
     # Sometimes it's take much time to terminate flask with CTRL+C
     # So It's better to use KeyboardInterrupt to terminate!

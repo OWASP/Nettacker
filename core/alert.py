@@ -144,14 +144,13 @@ def error(content):
     Returns:
         the message in error structure - None
     """
-    if is_not_run_from_api():
-        if pyversion is 2:
-            sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
-                             content.encode('utf8') + color.color('reset') + '\n')
-        else:
-            data = color.color(
-                'red') + '[X] ' + color.color('yellow') + content + color.color('reset') + '\n'
-            sys.stdout.buffer.write(data.encode('utf8'))
+    if pyversion is 2:
+        sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
+                            content.encode('utf8') + color.color('reset') + '\n')
+    else:
+        data = color.color(
+            'red') + '[X] ' + color.color('yellow') + content + color.color('reset') + '\n'
+        sys.stdout.buffer.write(data.encode('utf8'))
     return
 
 
