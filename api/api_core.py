@@ -66,7 +66,7 @@ def __remove_non_api_keys(config):
         removed non-api keys in all keys in JSON
     """
     non_api_keys = ["start_api", "api_host", "api_port", "api_debug_mode", "api_access_key", "api_client_white_list",
-                    "api_client_white_list_ips", "api_access_log", "api_access_log", "api_access_log_filename",
+                    "api_client_white_list_ips", "api_access_log", "api_access_log", "api_access_log_filename", "api_cert",
                     "show_version", "check_update", "help_menu_flag", "targets_list", "users_list", "passwds_list",
                     "method_args_list", "startup_check_for_update", "wizard_mode", "exclude_method"]
     new_config = {}
