@@ -25,7 +25,6 @@ def __scan(config):
     retries = config["retries"]
     socks_proxy = config["socks_proxy"]
     scan_method = config["scan_method"]
-    shodan_api_key = config["shodan_api_key"]
     users = config["users"]
     passwds = config["passwds"]
     timeout_sec = config["timeout_sec"]
@@ -41,4 +40,4 @@ def __scan(config):
     return __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_sleep, language, verbose_level,
                             retries,
                             socks_proxy, users, passwds, timeout_sec, thread_number, ports, ping_flag, methods_args,
-                            backup_ports, scan_method, thread_number_host, graph_flag, profile, True, shodan_api_key)
+                            backup_ports, scan_method, thread_number_host, graph_flag, profile, True)
