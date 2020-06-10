@@ -116,7 +116,9 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     report_type = ""
     JSON_FROM_DB = __logs_by_scan_id(scan_id, language)
     JSON_Data = sorted(JSON_FROM_DB, key=sorted)
-    if compatible.version() is 2:
+    if compatible.version() == 3:
+        from importlib import reload
+     else:
         import sys
         # Python2 hack
         try:
