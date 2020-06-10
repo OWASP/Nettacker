@@ -4,6 +4,12 @@
 from core.compatible import version
 from core.alert import __input_msg
 
+#Python2 hack
+try:
+    raw_import
+except NameError:
+    raw_input = input
+
 
 def __input(msg, default):
     """
