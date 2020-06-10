@@ -118,8 +118,11 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     JSON_Data = sorted(JSON_FROM_DB, key=sorted)
     if compatible.version() is 2:
         import sys
-        reload(sys)
-        sys.setdefaultencoding('utf8')
+        try:
+            reload(sys)
+            sys.setdefaultencoding('utf8')
+        except Exception: 
+            pass     
     if (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
             len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
         report_type = "HTML"
