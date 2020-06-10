@@ -220,9 +220,8 @@ def load_all_args(module_names, graph_names):
     api.add_argument("--api-access-log-filename", action="store",
                      dest="api_access_log_filename", default=default_config["api_access_log_filename"],
                      help=messages(language, "API_access_log_file"))
-    api.add_argument("--api-cert", action="store",
-                     dest="api_cert", default=default_config["api_cert"],
-                     help=messages(language, "API_cert"))
+    api.add_argument("--api-cert", action="store", dest="api_cert", help=messages(language, "API_cert"))
+    api.add_argument("--api-cert-key", action="store", dest="api_cert_key", help=messages(language, "API_cert_key"))
     # Return Options
     return [parser, parser.parse_args(), default_config["startup_check_for_update"]]
 
@@ -233,7 +232,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                        show_version, check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args,
                        method_args_list, wizard_mode, profile, start_api, api_host, api_port, api_debug_mode,
                        api_access_key, api_client_white_list, api_client_white_list_ips, api_access_log,
-                       api_access_log_filename, api_cert):
+                       api_access_log_filename, api_cert, api_cert_key):
     """
     check all rules and requirements for ARGS
 
@@ -340,7 +339,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                     " * " + messages(language, "file_write_error").format(api_access_log_filename) + "\n")
                 __die_failure("")
         _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
-                   api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, language)
+                   api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, api_cert_key, language)
     # Wizard mode
     if wizard_mode:
         (targets, thread_number, thread_number_host,
@@ -574,4 +573,4 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             show_version, check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args,
             method_args_list, wizard_mode, profile, start_api, api_host, api_port, api_debug_mode,
             api_access_key, api_client_white_list, api_client_white_list_ips, api_access_log,
-            api_access_log_filename, api_cert]
+            api_access_log_filename, api_cert, api_cert_key]
