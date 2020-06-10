@@ -10,11 +10,8 @@ import threading
 import string
 import random
 import sys
-import struct
 import re
 import os
-from OpenSSL import crypto
-import ssl
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
@@ -60,7 +57,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
 
 
 def wp_user_enum(target, port, timeout_sec, log_in_file, language, time_sleep,
-                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                 thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
         if not s:
@@ -70,8 +67,8 @@ def wp_user_enum(target, port, timeout_sec, log_in_file, language, time_sleep,
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
-            r = requests.get(target+'/?feed=rss2', verify = False) 
-            r2 = requests.get(target+'/?author=', verify = False)
+            r = requests.get(target+'/?feed=rss2', verify=False)
+            r2 = requests.get(target+'/?author=', verify=False)
             try:
                 global wp_users
                 wp_users_feed = re.findall("<dc:creator><!\[CDATA\[(.+?)\]\]></dc:creator>", r.text, re.IGNORECASE)
@@ -79,7 +76,7 @@ def wp_user_enum(target, port, timeout_sec, log_in_file, language, time_sleep,
                 wp_users_admin2 = re.findall("/author/(.+?)/feed/", r2.text, re.IGNORECASE)
                 wp_users = wp_users_feed + wp_users_admin + wp_users_admin2
                 wp_users = sorted(set(wp_users))
-                wp_users = ', '.join(wp_users) 
+                wp_users = ', '.join(wp_users)
                 if wp_users is not "":
                     return True
                 else:
@@ -92,14 +89,15 @@ def wp_user_enum(target, port, timeout_sec, log_in_file, language, time_sleep,
 
 
 def __wp_user_enum(target, port, timeout_sec, log_in_file, language, time_sleep,
-                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     if wp_user_enum(target, port, timeout_sec, log_in_file, language, time_sleep,
-                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "found").format(
             target, "Wordpress users found ", wp_users))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'wp_user_enum_scan',
-                           'DESCRIPTION': messages(language, "found").format(target, "Wordpress users found ", wp_users), 'TIME': now(),
+                           'DESCRIPTION': messages(language, "found").format(target, "Wordpress users found ",
+                                                                             wp_users), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
@@ -140,7 +138,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'wp_user_enum_scan'))
+                    messages(language, "trying_message").format(trying, total_req, num, total,
+                                                                target, port, 'wp_user_enum_scan'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -154,8 +153,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         # wait for threads
         kill_switch = 0
-        kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1

