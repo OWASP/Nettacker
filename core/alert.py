@@ -144,7 +144,7 @@ def error(content):
     Returns:
         the message in error structure - None
     """
-    if pyversion is 2:
+    if pyversion == 2:
         sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
                             content.encode('utf8') + color.color('reset') + '\n')
     else:
