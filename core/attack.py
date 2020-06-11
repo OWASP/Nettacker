@@ -13,6 +13,7 @@ import socket
 import urllib3
 from core._die import __die_failure
 from core.alert import info
+from targets import target_type
 from core.alert import messages
 from core._time import now
 from core.load_modules import load_file_path
@@ -137,6 +138,9 @@ def __go_for_attacks(targets, check_ranges, check_subdomains, log_in_file, time_
             analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
                      language, verbose_level, retries, socks_proxy, True)):
         pass
+    for i in targets:
+        if target_type(i) == 'RANGE_IPv4' or target_type(i) == 'CIDR_IPv4':
+            total_targets = _
     total_targets += 1
     total_targets = total_targets * len(scan_method)
     try:

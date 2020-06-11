@@ -10,7 +10,10 @@ from core.alert import *
 from core._die import __die_failure
 from lib.scan.subdomain.engine import __get_subs
 from core.log import __log_into_file
+import ipaddress
 
+
+temp = 0
 
 def target_to_host(target):
     """
@@ -107,6 +110,23 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
 
         elif target_type(target) == 'RANGE_IPv4' or target_type(target) == 'CIDR_IPv4':
             IPs = IPRange(target, range_temp, language)
+            global temp
+            if target_type(target) == 'CIDR_IPv4' and temp == 0:
+                net = ipaddress.ip_network(unicode(target))
+                start = net[0]
+                end = net[-1]
+                ip1 = int(ipaddress.IPv4Address(unicode(start)))
+                ip2 = int(ipaddress.IPv4Address(unicode(end)))
+                yield ip2 - ip1
+                temp = 1
+                break
+            if target_type(target) == 'RANGE_IPv4' and temp == 0:
+                start, end = target.rsplit("-")
+                ip1 = int(ipaddress.IPv4Address(unicode(start)))
+                ip2 = int(ipaddress.IPv4Address(unicode(end)))
+                yield ip2 - ip1
+                temp = 1
+                break
             if not enumerate_flag:
                 info(messages(language, "checking").format(target))
             if type(IPs) == netaddr.ip.IPNetwork:
