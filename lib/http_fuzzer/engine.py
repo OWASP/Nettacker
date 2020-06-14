@@ -34,7 +34,6 @@ def user_agents_list():
         "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
         "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
         "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
-        "YahooSeeker/1.2 (compatible; Mozilla 4.0; MSIE 5.5; yahooseeker at yahoo-inc dot com ; ",
         "http://help.yahoo.com/help/us/shop/merchant/)",
         "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)",
         "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",
@@ -224,7 +223,7 @@ def request_with_data(post_request, content_type, req_type, retries, time_sleep,
             headers[x.split(':', 1)[0]] = x.split(':', 1)[1]
     except IndexError:
         headers[headers_alone.split(':', 1)[0]] = headers_alone.split(':', 1)[1]
-    clean_headers = {x.strip(): y for x, y in headers.items()}
+    clean_headers = {x.strip(): y.strip() for x, y in headers.items()}
     headers = clean_headers
     if "content-type" in headers:
         content_type = headers['content-type']
@@ -236,7 +235,13 @@ def request_with_data(post_request, content_type, req_type, retries, time_sleep,
     url_sample = request_line.strip().split(' ')[1]
     for target in targets:
         url = url_sample.replace('__target_locat_here__', str(target))
-        port = url[url.find(':', 7) + 1:url.find('/', 7)]
+        try:
+            port = url.split(":")[2].split("/")[0]
+        except IndexError:
+            if target.startswith("https://"):
+                port = 443
+            if target.startswith("http://"):
+                port = 80
         response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec,
                                         post_data_format, content_type, socks_proxy)
         if isinstance(response, requests.models.Response):
@@ -287,13 +292,19 @@ def request_without_data(request, req_type, retries, time_sleep, timeout_sec, pa
             headers[x.split(':', 1)[0]] = x.split(':', 1)[1]
     except IndexError:
         headers[headers_alone.split(':', 1)[0]] = headers_alone.split(':', 1)[1]
-    clean_headers = {x.strip(): y for x, y in headers.items()}
+    clean_headers = {x.strip(): y.strip() for x, y in headers.items()}
     headers = clean_headers
     headers.pop("Content-Length", None)
     url_sample = request_line.strip().split(' ')[1]
     for target in targets:
         url = url_sample.replace('__target_locat_here__', str(target))
-        port = url[url.find(':', 7) + 1:url.find('/', 7)]
+        try:
+            port = url.split(":")[2].split("/")[0]
+        except IndexError:
+            if target.startswith("https://"):
+                port = 443
+            if target.startswith("http://"):
+                port = 80
         response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec)
         if isinstance(response, requests.models.Response):
             if rule_evaluator(response, condition):
@@ -338,7 +349,8 @@ def sample_event_key_evaluator(response, payload, value):
     """
     try:
         if value != '':
-            exec ("value = " + value)
+            exec ("global value1; value1 = " + value)
+            value = value1
         return value
     except Exception as _:
         return value

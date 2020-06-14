@@ -199,6 +199,7 @@ def all_messages():
             "len_subdomain_found": "{0} subdomain(s) found!",
             "len_domain_found": "{0} domain(s) found!",
             "phpmyadmin_dir_404": "not any phpmyadmin dir found!",
+            "admin_dir_404": "not any admin dir found!",
             "DOS_send": "sending DoS packets to {0}",
             "host_up": "{0} is up! Time taken to ping back is {1}",
             "host_down": "Cannot ping {0}!",
