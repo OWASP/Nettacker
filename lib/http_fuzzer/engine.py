@@ -236,9 +236,15 @@ def request_with_data(post_request, content_type, req_type, retries, time_sleep,
     url_sample = request_line.strip().split(' ')[1]
     for target in targets:
         url = url_sample.replace('__target_locat_here__', str(target))
-        port = url[url.find(':', 7) + 1:url.find('/', 7)]
+        try:
+            port = url.split(":")[2].split("/")[0]
+        except IndexError:
+            if target.startswith("https://"):
+                port = 443
+            if target.startswith("http://"):
+                port = 80
         response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec,
-                                        post_data_format, content_type, socks_proxy)
+                post_data_format, content_type, socks_proxy)
         if isinstance(response, requests.models.Response):
             if rule_evaluator(response, condition):
                 __log_into_file(thread_tmp_filename, 'w', '0', language)
@@ -293,7 +299,13 @@ def request_without_data(request, req_type, retries, time_sleep, timeout_sec, pa
     url_sample = request_line.strip().split(' ')[1]
     for target in targets:
         url = url_sample.replace('__target_locat_here__', str(target))
-        port = url.split(":")[2].split("/")[0]
+        try:
+            port = url.split(":")[2].split("/")[0]
+        except IndexError:
+            if target.startswith("https://"):
+                port = 443
+            if target.startswith("http://"):
+                port = 80
         response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec)
         if isinstance(response, requests.models.Response):
             if rule_evaluator(response, condition):
