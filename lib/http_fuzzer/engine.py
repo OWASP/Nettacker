@@ -14,7 +14,8 @@ from core.log import __log_into_file
 from core.targets import target_type
 from lib.socks_resolver.engine import getaddrinfo
 
-global value1
+value1 = None
+
 def user_agents_list():
     """
     List of available user agents
@@ -350,7 +351,6 @@ def sample_event_key_evaluator(response, payload, value):
     """
     try:
         if value != '':
-            # value1 = ''
             exec ("global value1; value1 = " + value)
             value = value1
         return value
