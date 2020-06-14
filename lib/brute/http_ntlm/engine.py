@@ -59,7 +59,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             curl.setopt(pycurl.URL, target)
             curl.setopt(pycurl.SSL_VERIFYPEER, 0)
             curl.setopt(pycurl.HTTPAUTH, pycurl.HTTPAUTH_NTLM)
-            c.setopt(c.WRITEDATA, curl_tmp_filename)
+            curl.setopt(pycurl.WRITEDATA, curl_tmp_filename)
             if timeout_sec is not None:
                 curl.setopt(pycurl.CONNECTTIMEOUT, timeout_sec)
             else:
