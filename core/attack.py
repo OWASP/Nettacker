@@ -12,7 +12,7 @@ import socket
 import urllib3
 from core._die import __die_failure
 from core.alert import info
-from targets import target_type
+from core.targets import target_type
 from core.alert import messages
 from core._time import now
 from core.load_modules import load_file_path
