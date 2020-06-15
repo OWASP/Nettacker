@@ -72,12 +72,17 @@ def wp_user_enum(target, port, timeout_sec, log_in_file, language, time_sleep,
                 target = 'http://' + target
             r = requests.get(target+'/?feed=rss2', verify = False) 
             r2 = requests.get(target+'/?author=', verify = False)
+            r3 = requests.get(target+"/wp-json/wp/v2/users")
+            r3List = json.loads(r3.text)
+            wp_users_admin3 = []
             try:
                 global wp_users
                 wp_users_feed = re.findall("<dc:creator><!\[CDATA\[(.+?)\]\]></dc:creator>", r.text, re.IGNORECASE)
                 wp_users_admin = re.findall("author author-(.+?) ", r2.text, re.IGNORECASE)
                 wp_users_admin2 = re.findall("/author/(.+?)/feed/", r2.text, re.IGNORECASE)
-                wp_users = wp_users_feed + wp_users_admin + wp_users_admin2
+                for i in r3List:
+                    wp_users_admin3.append(i["slug"])
+                wp_users = wp_users_feed + wp_users_admin + wp_users_admin2 + wp_users_admin3
                 wp_users = sorted(set(wp_users))
                 wp_users = ', '.join(wp_users) 
                 if wp_users is not "":

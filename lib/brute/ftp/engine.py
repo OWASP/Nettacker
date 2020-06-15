@@ -32,7 +32,7 @@ def extra_requirements_dict():
 
 
 def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename,
-          socks_proxy):
+          socks_proxy, scan_id, scan_cmd):
     exit = 0
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith(
@@ -80,13 +80,13 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             info(messages(language, "user_pass_found").format(
                 user, passwd, target, port))
             data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'ftp_brute',
-                               'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
+                               'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
         except:
             info(messages(language, "user_pass_found").format(user, passwd,
                                                               target, port) + ' ' + messages(language, "file_listing_error"))
             data = json.dumps({'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'FTP',
-                               'DESCRIPTION': messages(language, "login_list_error"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
+                               'DESCRIPTION': messages(language, "login_list_error"), 'TIME': now(), 'CATEGORY': "brute", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
             __log_into_file(log_in_file, 'a', data, language)
         __log_into_file(thread_tmp_filename, 'w', '0', language)
     else:
@@ -224,7 +224,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     t = threading.Thread(target=login,
                                          args=(
                                              user, passwd, target, port, timeout_sec, log_in_file, language,
-                                             retries, time_sleep, thread_tmp_filename, socks_proxy))
+                                             retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
                     threads.append(t)
                     t.start()
                     trying += 1
