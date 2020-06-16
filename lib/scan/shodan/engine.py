@@ -19,9 +19,9 @@ import shodan
 
 def extra_requirements_dict():
     return {
-        "shodan_scan": ["True"],
-        "status_code": [200, 401, 403],
-        "shodan_api_key": ["testkey"],
+        "shodan_api_key": ["your_shodan_api_key_here"],
+        "shodan_query_override": [""],
+        "shodan_results": [],
     }
 
 
@@ -35,7 +35,7 @@ def __shodan_scan(
     socks_proxy,
     retries,
     headers,
-    shodan_api_key,
+    extra_requirements,
 ):
     try:
         if socks_proxy is not None:
@@ -65,38 +65,50 @@ def __shodan_scan(
                 )
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
-        testQuery = "apache"
+        test_query = "8.8.8.8"
+        shodan_api_key = extra_requirements["shodan_api_key"][0]
+        shodan_query = extra_requirements["shodan_query_override"][0]
         key = shodan.Shodan(shodan_api_key)
-        dnsipresults = ""
-        if "/" in target:
-            url1 = (
-                "https://api.shodan.io/shodan/host/search?key="
-                + shodan_api_key
-                + '&query="net: '
-                + target
-                + '"'
-            )
-        else:
-            url1 = (
-                "https://api.shodan.io/shodan/host/search?key="
-                + shodan_api_key
-                + '&query="hostname: '
-                + target
-                + '"'
-            )
-            dnsip = (
-                "https://api.shodan.io/dns/resolve?hostnames="
-                + target
-                + "&key="
-                + shodan_api_key
-            )
+        dnsipresults = None
         try:
-            key.search(testQuery)
+            key.host(test_query)
         except shodan.APIError as error:
             warn(messages(language, "Invalid_shodan_api_key").format(error))
             return []
+        if shodan_query:
+            try:
+                list_query = shodan_query.split(" ")
+            except Exception:
+                list_query = shodan_query.split(":")
+            for i in list_query:
+                target_final = i.split(":")
+                try:
+                    if "." in target_final[1]:
+                        target = target_final[1]
+                        break
+                except IndexError:
+                    pass
+            shodan_url = (
+                "https://api.shodan.io/shodan/host/search?key="
+                + shodan_api_key
+                + "&query="
+                + shodan_query
+            )
+        else:
+            shodan_url = (
+                "https://api.shodan.io/shodan/host/search?key="
+                + shodan_api_key
+                + "&query=hostname:"
+                + target
+            )
+        dnsip = (
+            "https://api.shodan.io/dns/resolve?hostnames="
+            + target
+            + "&key="
+            + shodan_api_key
+        )
         try:
-            req = requests.get(url1)
+            req = requests.get(shodan_url, verify=False, headers=headers)
         except Exception:
             warn(
                 messages(language, "input_target_error").format(
@@ -104,26 +116,61 @@ def __shodan_scan(
                 )
             )
             return []
-        if "/" not in target:
-            dnsipreq = requests.get(dnsip)
-            dnsipresults = json.loads(dnsipreq.text)[target]
-            if dnsipresults is None:
-                dnsipresults = ""
-        subs = []
-        results = json.loads(req.text)["matches"]
-        if results:
-            pass
-        else:
-            url1 = (
+        dnsipreq = requests.get(dnsip, verify=False, headers=headers)
+        dnsipresults = json.loads(dnsipreq.text)[target]
+        try:
+            results = json.loads(req.text)["matches"]
+        except Exception:
+            warn(messages(language, "shodan_plan_upgrade"))
+            if ":" in shodan_query:
+                return []
+            shodan_url = (
                 "https://api.shodan.io/shodan/host/search?key="
                 + shodan_api_key
                 + "&query="
-                + '"hostname: '
-                + dnsipresults
-                + '"'
+                + target
             )
-            req = requests.get(url1)
+            req = requests.get(shodan_url, verify=False, headers=headers)
             results = json.loads(req.text)["matches"]
+            if not results:
+                if dnsipresults is None:
+                    return []
+                shodan_url = (
+                    "https://api.shodan.io/shodan/host/search?key="
+                    + shodan_api_key
+                    + "&query="
+                    + dnsipresults
+                )
+                req = requests.get(shodan_url, verify=False, headers=headers)
+                results = json.loads(req.text)["matches"]
+        if not results:
+            if dnsipresults is None:
+                return []
+
+            shodan_url = (
+                "https://api.shodan.io/shodan/host/search?key="
+                + shodan_api_key
+                + "&query="
+                + "hostname:"
+                + dnsipresults
+            )
+            req = requests.get(shodan_url, verify=False, headers=headers)
+            try:
+                results = json.loads(req.text)["matches"]
+                if not results:
+                    shodan_url = (
+                        "https://api.shodan.io/shodan/host/search?key="
+                        + shodan_api_key
+                        + "&query="
+                        + dnsipresults
+                    )
+                    req = requests.get(
+                        shodan_url, verify=False, headers=headers
+                    )
+                    results = json.loads(req.text)["matches"]
+            except Exception:
+                info(messages(language, "shodan_results_not_found"))
+                return []
         for i in range(len(results)):
             subsearch = []
             subsearch.append(
@@ -158,8 +205,15 @@ def __shodan_scan(
                     )
             except Exception:
                 pass
-            subs.append("\n".join(subsearch))
-        return subs
+            if (
+                "\n".join(subsearch)
+                not in extra_requirements["shodan_results"]
+            ):
+                extra_requirements["shodan_results"].append(
+                    "\n".join(subsearch)
+                )
+
+        return extra_requirements["shodan_results"]
     except Exception:
         logging.exception("message")
         return []
@@ -176,12 +230,13 @@ def __shodan(
     retries,
     num,
     total,
-    shodan_api_key,
     extra_requirements=extra_requirements_dict(),
     headers={
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
+             AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "Accept": "text/html,application/xhtml+xml,application/xml;\
+            q=0.9,image/webp,image/apng,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
         "Accept-Encoding": "gzip, deflate, br",
     },
@@ -190,34 +245,36 @@ def __shodan(
     trying = 0
     threads = []
     for key in extra_requirements:
-        if extra_requirements[key][0] == "True":
-            total_req += 1
-    if extra_requirements["shodan_scan"][0] == "True":
-        trying += 1
-        if verbose_level > 3:
-            info(
-                messages(language, "trying_process").format(
-                    trying, total_req, num, total, target, "shodan_scan"
-                )
+        try:
+            if extra_requirements[key][0] == "True":
+                total_req += 1
+        except IndexError:
+            pass
+    trying += 1
+    if verbose_level > 3:
+        info(
+            messages(language, "trying_process").format(
+                trying, total_req, num, total, target, "shodan_scan"
             )
-        t = threading.Thread(
-            target=__shodan_scan,
-            args=(
-                target,
-                timeout_sec,
-                log_in_file,
-                time_sleep,
-                language,
-                verbose_level,
-                socks_proxy,
-                retries,
-                headers,
-                shodan_api_key,
-            ),
         )
-        threads.append(t)
-        t.start()
-        threads.append(t)
+    t = threading.Thread(
+        target=__shodan_scan,
+        args=(
+            target,
+            timeout_sec,
+            log_in_file,
+            time_sleep,
+            language,
+            verbose_level,
+            socks_proxy,
+            retries,
+            headers,
+            extra_requirements,
+        ),
+    )
+    threads.append(t)
+    t.start()
+    threads.append(t)
     # wait for threads
     kill_switch = 0
     kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
@@ -243,7 +300,7 @@ def __shodan(
             socks_proxy,
             retries,
             headers,
-            shodan_api_key,
+            extra_requirements,
         )
     except Exception:
         result = []
@@ -269,6 +326,7 @@ def start(
     scan_id,
     scan_cmd,
 ):  # Main function
+    info(messages(language, "searching_shodan_database").format(target))
     if (
         target_type(target) != "SINGLE_IPv4"
         or target_type(target) != "DOMAIN"
@@ -298,16 +356,22 @@ def start(
             retries,
             num,
             total,
-            extra_requirements["shodan_api_key"][0],
             extra_requirements=extra_requirements,
         )
         count = 0
         if len(result) == 0:
-            info(messages(language, "shodan_false"))
+            info(messages(language, "shodan_results_not_found"))
         if len(result) != 0:
+            info(
+                messages(language, "shodan_results_found").format(len(result))
+            )
             for parts in result:
                 if verbose_level > 2:
-                    info(messages(language, "shodan_true").format(parts))
+                    info(
+                        messages(language, "shodan_results_found").format(
+                            parts
+                        )
+                    )
                 try:
                     data = (
                         json.dumps(
@@ -315,7 +379,9 @@ def start(
                                 "HOST": target,
                                 "USERNAME": "",
                                 "PASSWORD": "",
-                                "PORT": "",
+                                "PORT": str(parts)
+                                .split("\n")[0]
+                                .split(":")[1],
                                 "TYPE": "shodan_scan",
                                 "DESCRIPTION": parts,
                                 "TIME": now(),
