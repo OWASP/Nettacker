@@ -20,10 +20,11 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
+from bs4 import BeautifulSoup
 
 
 def extra_requirements_dict():
-    return {"cms_detection_ports": [80, 443]}
+    return {"cms_detection_ports": [443]}
 
 
 def conn(targ, port, timeout_sec, socks_proxy):
@@ -90,28 +91,41 @@ def cms_detection(
             if target_type(target) != "HTTP" and port == 80:
                 target = "http://" + target
             try:
-                req_whatcms = requests.get(
-                    """https://whatcms.org/?gpreq=json&jsoncallback=jQuery22402553217973748706_1591818963231&s={0}&na=&nb=2o47fvoogs9yqqm822a3uc1mvjhyuu1n9byo2ucljcib2d73axyjxdhy0q8bu4xhv2xxy6zes2yc6eqx&verified=&_=1591818963232""".format(
-                        target
+                headers = {
+                    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:77.0) Gecko/20100101 Firefox/77.0",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                    "Accept-Language": "en-US,en;q=0.7,ru;q=0.3",
+                    "Accept-Encoding": "gzip, deflate",
+                    "Connection": "Keep-Alive",
+                    "Upgrade-Insecure-Requests": "1",
+                    "X-Requested-With": "XMLHttpRequest",
+                }
+                i = 5
+                session = requests.Session()
+                r = session.get("https://whatcms.org/", headers=headers)
+                soup = BeautifulSoup(r.text, features='html.parser')
+                nb = soup.find(attrs={"name": "nb"})["value"]
+                time.sleep(1)
+                req_whatcms = session.get(
+                    """https://whatcms.org/?gpreq=json&jsoncallback=jQuery22402553217973748706_1591818963731&s={0}&na=&nb={1}&verified=&_=1591818963232""".format(
+                        target_to_host(target),
+                        nb
                     ),
-                    headers={
-                        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:77.0) Gecko/20100101 Firefox/77.0",
-                        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                        "Accept-Language": "en-US,en;q=0.7,ru;q=0.3",
-                        "Accept-Encoding": "gzip, deflate",
-                        "Connection": "keep-alive",
-                        "Upgrade": "Insecure-Requests: 1",
-                        "TE": "Trailers",
-                    },
+                    headers=headers,
+                    timeout=5,
                 )
+                res = re.search(
+                    r"uses <\\/div>[^>]+>(.*?)<\\/a>", req_whatcms.text
+                )
+                string = str(res.group(1))
+                s = string.split("href")[-1].split('">')[1]
+
+                if s:
+                    cms_name = s
+                    return True
+                i -= 1
             except requests.exceptions.RequestException:
                 return False
-            res = re.search(
-                r"uses <\\/div>[^>]+>(.*?)<\\/a>", req_whatcms.text
-            )
-            string = str(res.group(1))
-            s = string.split("href")[-1].split('">')[1]
-            cms_name = s
             return True
     except Exception:
         # print(e)
