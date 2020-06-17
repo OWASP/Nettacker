@@ -76,6 +76,7 @@ def __shodan_scan(
             warn(messages(language, "Invalid_shodan_api_key").format(error))
             return []
         if shodan_query:
+            info(messages(language, "using_shodan_query_override").format(shodan_query))
             try:
                 list_query = shodan_query.split(" ")
             except Exception:

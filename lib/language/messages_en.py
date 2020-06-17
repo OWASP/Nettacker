@@ -212,6 +212,7 @@ def all_messages():
             "http_auth_failed": "http basic authentication failed to {0}:{3} using {1}:{2}",
             "http_form_auth_success": "http form authentication success - host:{2}:{3}, user: {0}, pass:{1} found!",
             "http_form_auth_failed": "http form authentication failed to {0}:{3} using {1}:{2}",
+            "using_shodan_query_override": "Using {0} as a target",
             "http_ntlm_success": "http ntlm authentication success - host:{2}:{3}, user: {0}, pass:{1} found!",
             "http_ntlm_failed": "http ntlm authentication failed to {0}:{3} using {1}:{2}",
             "no_response": "cannot get response from target",
