@@ -56,7 +56,7 @@ def load_all_args(module_names, graph_names):
             index = sys.argv.index("--language") + 1
     else:
         index = -1
-    if index is -1:
+    if index == -1:
         language = "en"
     else:
         _error_flag = False
