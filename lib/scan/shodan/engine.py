@@ -376,7 +376,9 @@ def start(
                     data = (
                         json.dumps(
                             {
-                                "HOST": target,
+                                "HOST": str(parts)
+                                .split("\n")[0]
+                                .split(":")[0],
                                 "USERNAME": "",
                                 "PASSWORD": "",
                                 "PORT": str(parts)
