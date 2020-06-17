@@ -21,7 +21,12 @@ from core.compatible import version
 from core.alert import write
 import csv
 
-
+try:
+    reload
+except NameError:
+    def reload(dummy):
+        return dummy
+    
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
     """
     build a graph
@@ -116,10 +121,11 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     report_type = ""
     JSON_FROM_DB = __logs_by_scan_id(scan_id, language)
     JSON_Data = sorted(JSON_FROM_DB, key=sorted)
-    if compatible.version() is 2:
+    if compatible.version() == 2:
         import sys
         reload(sys)
         sys.setdefaultencoding('utf8')
+                  
     if (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
             len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
         report_type = "HTML"

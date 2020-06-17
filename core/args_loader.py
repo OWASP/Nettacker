@@ -333,72 +333,36 @@ def load_all_args(module_names, graph_names):
     )
     # API Options
     api = parser.add_argument_group(
-        messages(language, "API"), messages(language, "API_options")
-    )
-    api.add_argument(
-        "--start-api",
-        action="store_true",
-        dest="start_api",
-        default=default_config["start_api"],
-        help=messages(language, "start_API"),
-    )
-    api.add_argument(
-        "--api-host",
-        action="store",
-        dest="api_host",
-        default=default_config["api_host"],
-        help=messages(language, "API_host"),
-    )
-    api.add_argument(
-        "--api-port",
-        action="store",
-        dest="api_port",
-        default=default_config["api_port"],
-        help=messages(language, "API_port"),
-    )
-    api.add_argument(
-        "--api-debug-mode",
-        action="store_true",
-        dest="api_debug_mode",
-        default=default_config["api_debug_mode"],
-        help=messages(language, "API_debug"),
-    )
-    api.add_argument(
-        "--api-access-key",
-        action="store",
-        dest="api_access_key",
-        default=default_config["api_access_key"],
-        help=messages(language, "API_access_key"),
-    )
-    api.add_argument(
-        "--api-client-white-list",
-        action="store_true",
-        dest="api_client_white_list",
-        default=default_config["api_client_white_list"],
-        help=messages(language, "white_list_API"),
-    )
-    api.add_argument(
-        "--api-client-white-list-ips",
-        action="store",
-        dest="api_client_white_list_ips",
-        default=default_config["api_client_white_list_ips"],
-        help=messages(language, "define_whie_list"),
-    )
-    api.add_argument(
-        "--api-access-log",
-        action="store_true",
-        dest="api_access_log",
-        default=default_config["api_access_log"],
-        help=messages(language, "gen_API_access_log"),
-    )
-    api.add_argument(
-        "--api-access-log-filename",
-        action="store",
-        dest="api_access_log_filename",
-        default=default_config["api_access_log_filename"],
-        help=messages(language, "API_access_log_file"),
-    )
-
+        messages(language, "API"), messages(language, "API_options"))
+    api.add_argument("--start-api", action="store_true",
+                     dest="start_api", default=default_config["start_api"],
+                     help=messages(language, "start_API"))
+    api.add_argument("--api-host", action="store",
+                     dest="api_host", default=default_config["api_host"],
+                     help=messages(language, "API_host"))
+    api.add_argument("--api-port", action="store",
+                     dest="api_port", default=default_config["api_port"],
+                     help=messages(language, "API_port"))
+    api.add_argument("--api-debug-mode", action="store_true",
+                     dest="api_debug_mode", default=default_config["api_debug_mode"],
+                     help=messages(language, "API_debug"))
+    api.add_argument("--api-access-key", action="store",
+                     dest="api_access_key", default=default_config["api_access_key"],
+                     help=messages(language, "API_access_key"))
+    api.add_argument("--api-client-white-list", action="store_true",
+                     dest="api_client_white_list", default=default_config["api_client_white_list"],
+                     help=messages(language, "white_list_API"))
+    api.add_argument("--api-client-white-list-ips", action="store",
+                     dest="api_client_white_list_ips", default=default_config["api_client_white_list_ips"],
+                     help=messages(language, "define_whie_list"))
+    api.add_argument("--api-access-log", action="store_true",
+                     dest="api_access_log", default=default_config["api_access_log"],
+                     help=messages(language, "gen_API_access_log"))
+    api.add_argument("--api-access-log-filename", action="store",
+                     dest="api_access_log_filename", default=default_config["api_access_log_filename"],
+                     help=messages(language, "API_access_log_file"))
+    api.add_argument("--api-cert", action="store", dest="api_cert", help=messages(language, "API_cert"))
+    api.add_argument("--api-cert-key", action="store", dest="api_cert_key", help=messages(language, "API_cert_key"))
     # Return Options
     return [
         parser,
@@ -407,44 +371,13 @@ def load_all_args(module_names, graph_names):
     ]
 
 
-def check_all_required(
-    targets,
-    targets_list,
-    thread_number,
-    thread_number_host,
-    log_in_file,
-    scan_method,
-    exclude_method,
-    users,
-    users_list,
-    passwds,
-    passwds_list,
-    timeout_sec,
-    ports,
-    parser,
-    module_names,
-    language,
-    verbose_level,
-    show_version,
-    check_update,
-    socks_proxy,
-    retries,
-    graph_flag,
-    help_menu_flag,
-    methods_args,
-    method_args_list,
-    wizard_mode,
-    profile,
-    start_api,
-    api_host,
-    api_port,
-    api_debug_mode,
-    api_access_key,
-    api_client_white_list,
-    api_client_white_list_ips,
-    api_access_log,
-    api_access_log_filename,
-):
+def check_all_required(targets, targets_list, thread_number, thread_number_host,
+                       log_in_file, scan_method, exclude_method, users, users_list,
+                       passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level,
+                       show_version, check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args,
+                       method_args_list, wizard_mode, profile, start_api, api_host, api_port, api_debug_mode,
+                       api_access_key, api_client_white_list, api_client_white_list_ips, api_access_log,
+                       api_access_log_filename, api_cert, api_cert_key):
     """
     check all rules and requirements for ARGS
 
@@ -565,17 +498,9 @@ def check_all_required(
                     + "\n"
                 )
                 __die_failure("")
-        _start_api(
-            api_host,
-            api_port,
-            api_debug_mode,
-            api_access_key,
-            api_client_white_list,
-            api_client_white_list_ips,
-            api_access_log,
-            api_access_log_filename,
-            language,
-        )
+
+        _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
+                   api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, api_cert_key, language)
     # Wizard mode
     if wizard_mode:
         (
@@ -870,41 +795,11 @@ def check_all_required(
                 new_methods_args[imethod_args] = ["True"]
         methods_args = new_methods_args
     # Return the values
-    return [
-        targets,
-        targets_list,
-        thread_number,
-        thread_number_host,
-        log_in_file,
-        scan_method,
-        exclude_method,
-        users,
-        users_list,
-        passwds,
-        passwds_list,
-        timeout_sec,
-        ports,
-        parser,
-        module_names,
-        language,
-        verbose_level,
-        show_version,
-        check_update,
-        socks_proxy,
-        retries,
-        graph_flag,
-        help_menu_flag,
-        methods_args,
-        method_args_list,
-        wizard_mode,
-        profile,
-        start_api,
-        api_host,
-        api_port,
-        api_debug_mode,
-        api_access_key,
-        api_client_white_list,
-        api_client_white_list_ips,
-        api_access_log,
-        api_access_log_filename,
-    ]
+
+    return [targets, targets_list, thread_number, thread_number_host,
+            log_in_file, scan_method, exclude_method, users, users_list,
+            passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level,
+            show_version, check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args,
+            method_args_list, wizard_mode, profile, start_api, api_host, api_port, api_debug_mode,
+            api_access_key, api_client_white_list, api_client_white_list_ips, api_access_log,
+            api_access_log_filename, api_cert, api_cert_key]

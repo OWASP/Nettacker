@@ -3,6 +3,8 @@
 
 import sys
 import socket
+import socks
+from lib.socks_resolver.engine import getaddrinfo
 from lib.payload.scanner.service.engine import recv_all
 
 def conn(targ, port, timeout_sec, socks_proxy):
@@ -33,7 +35,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
                 socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]),
                                         int(socks_proxy.rsplit(':')[1]))
                 socket.socket = socks.socksocket
-                socket.getaddrinfo = getaddrinfo()
+                socket.getaddrinfo = getaddrinfo
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sys.stdout.flush()
         s.settimeout(timeout_sec)
@@ -45,6 +47,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
 def kippo_detect(host, port, timeout= None, socks_proxy = None):
     try:
         s = conn(host, port, timeout, socks_proxy)
+        spacer = '\r\n'
         if s is not None:
             banner = recv_all(s)
             s.send(banner + spacer)
