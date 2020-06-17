@@ -77,10 +77,7 @@ def __shodan_scan(
             return []
         if shodan_query:
             info(messages(language, "using_shodan_query_override").format(shodan_query))
-            try:
-                list_query = shodan_query.split(" ")
-            except Exception:
-                list_query = shodan_query.split(":")
+            list_query = shodan_query.split(" ")
             for i in list_query:
                 target_final = i.split(":")
                 try:
@@ -96,18 +93,28 @@ def __shodan_scan(
                 + shodan_query
             )
         else:
-            shodan_url = (
-                "https://api.shodan.io/shodan/host/search?key="
-                + shodan_api_key
-                + "&query=hostname:"
-                + target
-            )
-        dnsip = (
-            "https://api.shodan.io/dns/resolve?hostnames="
-            + target
-            + "&key="
-            + shodan_api_key
-        )
+            if target_type(target) == "SINGLE_IPv4":
+                shodan_url = (
+                    "https://api.shodan.io/shodan/host/search?key="
+                    + shodan_api_key
+                    + "&query=ip:"
+                    + target
+                )
+            else:
+                shodan_url = (
+                    "https://api.shodan.io/shodan/host/search?key="
+                    + shodan_api_key
+                    + "&query=hostname:"
+                    + target
+                )
+                dnsip = (
+                    "https://api.shodan.io/dns/resolve?hostnames="
+                    + target
+                    + "&key="
+                    + shodan_api_key
+                )
+                dnsipreq = requests.get(dnsip, verify=False, headers=headers)
+                dnsipresults = json.loads(dnsipreq.text)[target]
         try:
             req = requests.get(shodan_url, verify=False, headers=headers)
         except Exception:
@@ -117,14 +124,13 @@ def __shodan_scan(
                 )
             )
             return []
-        dnsipreq = requests.get(dnsip, verify=False, headers=headers)
-        dnsipresults = json.loads(dnsipreq.text)[target]
         try:
             results = json.loads(req.text)["matches"]
         except Exception:
             warn(messages(language, "shodan_plan_upgrade"))
             if ":" in shodan_query:
                 return []
+            
             shodan_url = (
                 "https://api.shodan.io/shodan/host/search?key="
                 + shodan_api_key
@@ -139,20 +145,19 @@ def __shodan_scan(
                 shodan_url = (
                     "https://api.shodan.io/shodan/host/search?key="
                     + shodan_api_key
-                    + "&query="
+                    + "&query=ip:"
                     + dnsipresults
                 )
                 req = requests.get(shodan_url, verify=False, headers=headers)
                 results = json.loads(req.text)["matches"]
-        if not results:
+        if not results and target_type(target) != "SINGLE_IPv4":
             if dnsipresults is None:
                 return []
 
             shodan_url = (
                 "https://api.shodan.io/shodan/host/search?key="
                 + shodan_api_key
-                + "&query="
-                + "hostname:"
+                + "&query=ip:"
                 + dnsipresults
             )
             req = requests.get(shodan_url, verify=False, headers=headers)
@@ -162,7 +167,7 @@ def __shodan_scan(
                     shodan_url = (
                         "https://api.shodan.io/shodan/host/search?key="
                         + shodan_api_key
-                        + "&query="
+                        + "&query=ip:"
                         + dnsipresults
                     )
                     req = requests.get(
