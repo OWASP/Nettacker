@@ -9,26 +9,29 @@ import socket
 import json
 import string
 import random
-try:
-    from html.parser import HTMLParser
-    import http.cookiejar as cookiejar
-    import urllib.request as request
-    from urllib.parse import urlencode
-except ImportError:
-    from HTMLParser import HTMLParser
-    import cookielib as cookiejar
-    import urllib2 as request
-    from urllib import urlencode
+from six import text_type
+from core.compatible import version
 import os
 import requests
-from core.alert import *
+from core.alert import warn, info, messages
 from core.targets import target_type
 from core.targets import target_to_host
 from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
+import mechanize
 from core._time import now
 from core.log import __log_into_file
 
+
+HEADERS = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
+             AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;\
+            q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+    }
 
 def extra_requirements_dict():
     return {
@@ -38,31 +41,14 @@ def extra_requirements_dict():
                                     "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
                                     "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
                                     "admin123", ""],
-        "http_form_brute_ports": ["80"],
+        "http_form_brute_ports": ["80", "443"],
 
     }
 
 
 def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename,
           socks_proxy, scan_id, scan_cmd):
-    username_field = "username"
-    password_field = "password"
     exit = 0
-
-    class BruteParser(HTMLParser):
-
-        def __init__(self):
-            HTMLParser.__init__(self)
-            self.parsed_results = {}
-
-        def handle_starttag(self, tag, attrs):
-            if tag == "input":
-                for name, value in attrs:
-                    if name == "name" and value == username_field:
-                        self.parsed_results[username_field] = username_field
-                    if name == "name" and value == password_field:
-                        self.parsed_results[password_field] = password_field
-
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith(
             'socks5://') else socks.SOCKS4
@@ -80,71 +66,63 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                 socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
-    while 1:
-        target_host = str(target) + ":" + str(port)
-        flag = 1
-        try:
-            cookie = cookiejar.FileCookieJar("cookies")
-            opener = request.build_opener(request.HTTPCookieProcessor(cookie))
-            response = opener.open(target)
-            page = response.read()
-            parsed_html = BruteParser()
-            parsed_html.feed(page)
-            parsed_html.parsed_results[username_field] = user
-            parsed_html.parsed_results[password_field] = passwd
-            post_data = urlencode(parsed_html.parsed_results).encode()
-        except:
-            exit += 1
-            if exit is retries:
-                warn(messages(language, "http_form_auth_failed").format(
-                    target, user, passwd, port))
-                return 1
-            else:
-                time.sleep(time_sleep)
-                continue
-        try:
-            if timeout_sec is not None:
-                brute_force_response = opener.open(
-                    target_host, data=post_data, timeout=timeout_sec)
-            else:
-                brute_force_response = opener.open(target_host, data=post_data)
-            if brute_force_response.code == 200:
-                flag = 0
-                if flag is 0:
-                    info(messages(language, "http_form_auth_success").format(
-                        user, passwd, target, port))
-                    data = json.dumps(
-                        {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'http_form_brute',
-                         'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute",
-                         'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
-                    __log_into_file(log_in_file, 'a', data, language)
-                    __log_into_file(thread_tmp_filename, 'w', '0', language)
-            return flag
-        except:
-            exit += 1
-            if exit is retries:
-                warn(messages(language, "http_form_auth_failed").format(
-                    target, user, passwd, port))
-                return 1
-            else:
-                time.sleep(time_sleep)
-                continue
-
-
-def check_auth(target, timeout_sec, language, port):
     try:
-        if timeout_sec is not None:
-            req = requests.get((str(target) + str(port)), timeout = timeout_sec)
-        else:
-            req = requests.get(str(target) + str(port))
-        if req.status_code == 200:
-            info(messages(language, "no_auth").format(target, port))
+        browser = mechanize.Browser()
+        browser.addheaders = [("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
+            AppleWebKit/537.36 "), ("Accept", "text/html,application/xhtml+xml,application/xml;\
+        q=0.9,image/webp,image/apng,*/*;q=0.8"), ("Accept-Language","en-US,en;q=0.9")]
+        browser.open(target)
+        for form in browser.forms():
+            try:
+                if form.name is not None:
+                    browser.select_form(form.name)
+                    browser.set_all_readonly(False) 
+                    browser.set_handle_robots(False)
+                    browser.set_handle_refresh(False)
+                    for control in browser.form.controls:
+                        if control.type == "text":
+                            control.value = user
+                        if control.type == "password":
+                            control.value = passwd
+                        if control.type == "submit":
+                            control.disabled = True
+                    response_after_login = browser.submit()
+                    if version() == 3:
+                        response = text_type(response_after_login.read())
+                    else:
+                        response = response_after_login.read()
+                    if "logout" in response.lower() and "login" not in response:
+                        flag = 0
+                        info(messages(language, "http_form_auth_success").format(
+                            user, passwd, target, port))
+                        data = json.dumps(
+                            {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'http_form_brute',
+                            'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute",
+                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
+                        __log_into_file(log_in_file, 'a', data, language)
+                        __log_into_file(thread_tmp_filename, 'w', '0', language)
+                        return flag
+            except Exception:
+                # logging.exception("message")
+                pass
+    except Exception:
+        # logging.exception("message")
+        exit += 1
+        if exit == retries:
+            warn(messages(language, "http_form_auth_failed").format(
+                target, user, passwd, port))
             return 1
         else:
-            return 0
-    except:
+            time.sleep(time_sleep)
+        
+
+def check(target, timeout_sec, language, port):
+    try:
+        requests.get(target, verify=False, timeout=timeout_sec, headers=HEADERS)
+        return True
+    except Exception:
         warn(messages(language, 'no_response'))
-        return 1
+        return False
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
@@ -175,8 +153,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         trying = 0
         keyboard_interrupt_flag = False
         for port in ports:
-            if check_auth(target, timeout_sec, language, port):
-                continue
+            if check("http://"+target_to_host(target), timeout_sec, language, port):
+                target = target
+            elif check("https://"+target_to_host(target), timeout_sec, language, port):
+                target = "https" + target[4:]
+            
             for user in users:
                 for passwd in passwds:
                     t = threading.Thread(target=login,
@@ -207,18 +188,18 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             # wait for threads
             kill_switch = 0
             kill_time = int(
-                timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+                timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
             while 1:
                 time.sleep(0.1)
                 kill_switch += 1
                 try:
-                    if threading.activeCount() is 1 or kill_switch is kill_time:
+                    if threading.activeCount() == 1 or kill_switch == kill_time:
                         break
                 except KeyboardInterrupt:
                     break
                 thread_write = int(
                     open(thread_tmp_filename).read().rsplit()[0])
-                if thread_write is 1 and verbose_level is not 0:
+                if thread_write == 1 and verbose_level != 0:
                     data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
                                        'TYPE': 'http_form_brute', 'DESCRIPTION': messages(language, "no_user_passwords"), 'TIME': now(),
                                        'CATEGORY': "brute", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
