@@ -1,5 +1,5 @@
 argparse==1.4.0
-netaddr==0.7.19
+netaddr==0.7.20
 ipaddr==2.2.0
 requests==2.23.0
 paramiko==2.7.1
