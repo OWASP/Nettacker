@@ -26,6 +26,10 @@ import requests
 from lib.payload.wordlists import useragents
 
 
+
+USER_AGENT = {'User-agent': random.choice(useragents.useragents())}
+
+
 def extra_requirements_dict():
     return {
         "cms_detection_ports": [80,443]
@@ -65,12 +69,11 @@ def cms_detection(target, port, timeout_sec, log_in_file, language, time_sleep,
     try:
         try:
             s = conn(target, port, timeout_sec, socks_proxy)
-        except Exception as e:
+        except Exception:
             return False
         if not s:
             return False
         else:
-            user_agent_list = useragents.useragents()
             global cms_name
             if target_type(target) != "HTTP" and port == 443:
                 target = 'https://' + target
@@ -81,16 +84,13 @@ def cms_detection(target, port, timeout_sec, log_in_file, language, time_sleep,
             req_wordpress_url = target + "/wp-config.php"
             req_drupal_url = target + "/sites/default/settings.php"
             try:
-               user_agent = {'User-agent': random.choice(user_agent_list)}
-               req = requests.get(req_url, timeout=10, headers=user_agent)
+               
+               req = requests.get(req_url, timeout=10, headers=USER_AGENT)
                code_for_404 = req.text
-               user_agent = {'User-agent': random.choice(user_agent_list)}
-               req_wordpress = requests.get(req_wordpress_url, timeout=10, headers=user_agent)
-               user_agent = {'User-agent': random.choice(user_agent_list)}
-               req_joomla = requests.get(req_joomla_url, timeout=10, headers=user_agent)
-               user_agent = {'User-agent': random.choice(user_agent_list)}
-               req_drupal = requests.get(req_drupal_url, timeout=10, headers=user_agent)
-            except requests.exceptions.RequestException as e: 
+               req_wordpress = requests.get(req_wordpress_url, timeout=10, headers=USER_AGENT)
+               req_joomla = requests.get(req_joomla_url, timeout=10, headers=USER_AGENT)
+               req_drupal = requests.get(req_drupal_url, timeout=10, headers=USER_AGENT)
+            except requests.exceptions.RequestException: 
                return False
             if req_wordpress.text != code_for_404 or req_wordpress.status_code == 403:
                 cms_name = "Wordpress"
@@ -170,17 +170,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1:
+                if threading.activeCount() == 1:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1 and verbose_level is not 0:
+        if thread_write == 1 and verbose_level != 0:
             info(messages(language, "not_found"))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'cms_detection_scan',
                                'DESCRIPTION': messages(language, "not_found"), 'TIME': now(),

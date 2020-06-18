@@ -124,7 +124,7 @@ def test(target, retries, timeout_sec, user_agent, socks_proxy, verbose_level, t
             return 0
         except:
             n += 1
-            if n is retries:
+            if n == retries:
                 if dos_flag:
                     __log_into_file(thread_tmp_filename, 'w', '0', language)
                     info(messages(language, "vulnerable").format(
@@ -177,7 +177,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                                            '').replace('https://', '').rsplit('/')[1:])
             url = http + '://' + host + '/' + path
         if test(url, retries, timeout_sec, user_agent, socks_proxy, verbose_level, trying, total_req, total, num,
-                language, False, log_in_file, scan_id, scan_cmd, thread_tmp_filename) is not 0:
+                language, False, log_in_file, scan_id, scan_cmd, thread_tmp_filename) != 0:
             warn(messages(language, "open_error").format(url))
             return
         info(messages(language, "DOS_send").format(target))
@@ -203,8 +203,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target), port,
                                                                  'wordpress_dos_cve_2018_6389_vuln'))
             try:
-                if int(open(thread_tmp_filename).read().rsplit()[0]) is 0:
-                    if limit is not -1:
+                if int(open(thread_tmp_filename).read().rsplit()[0]) == 0:
+                    if limit != -1:
                         break
             except Exception:
                 pass
@@ -222,20 +222,20 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 2 or kill_switch is kill_time:
+                if threading.activeCount() == 2 or kill_switch == kill_time:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1:
+        if thread_write == 1:
             info(messages(language, "no_vulnerability_found").format(
                 "wordpress_dos_cve_2018_6389_vuln"))
-            if verbose_level is not 0:
+            if verbose_level != 0:
                 data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
                                    'TYPE': 'wordpress_dos_cve_2018_6389_vuln',
                                    'DESCRIPTION': messages(language, "no_vulnerability_found").format("wordpress_dos_cve_2018_6389_vuln"),

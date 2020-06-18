@@ -5,6 +5,7 @@ import os
 import sys
 import json
 from core import color
+import six
 
 pyversion = int(sys.version_info[0])
 
@@ -32,7 +33,7 @@ def messages(language, msg_id):
         the message content in the selected language if message found otherwise return message in English
     """
     # Returning selected langauge
-    if language is -1:
+    if language == -1:
         return list(set([langs.rsplit('_')[1].rsplit('.')[0] for langs in
                          os.listdir(os.path.dirname(os.path.abspath(__file__)).replace(
                              '\\', '/') + '/../lib/language/')
@@ -43,7 +44,7 @@ def messages(language, msg_id):
                        'all_messages')()[str(msg_id)]
     except:
         msgs = getattr(__import__('lib.language.messages_en', fromlist=['all_messages']), 'all_messages')()[str(msg_id)]
-    if pyversion is 2:
+    if pyversion == 2:
         return msgs.decode('utf8')
     return msgs
 
@@ -58,7 +59,7 @@ def __input_msg(content):
     Returns:
         the message in input structure
     """
-    if pyversion is 2:
+    if pyversion == 2:
         return color.color('yellow') + '[+] ' + color.color('green') \
                + content.encode('utf8') + color.color('reset')
     else:
@@ -82,12 +83,8 @@ def info(content, log_in_file=None, mode=None, event=None, language=None, thread
         None
     """
     if is_not_run_from_api():  # prevent to stdout if run from API
-        if pyversion is 2:
-            sys.stdout.write(color.color('yellow') + '[+] ' + color.color('green') +
-                             content.encode('utf8') + color.color('reset') + '\n')
-        else:
-            sys.stdout.buffer.write(bytes(color.color('yellow') + '[+] ' + color.color('green') +
-                                          content + color.color('reset') + '\n', 'utf8'))
+        sys.stdout.write(color.color('yellow') + '[+] ' + color.color('green') +
+                six.text_type(content) + color.color('reset') + '\n')
     if event:  # if an event is present log it
         from core.log import __log_into_file
         __log_into_file(log_in_file, mode, json.dumps(event), language)
@@ -107,7 +104,7 @@ def write(content):
         None
     """
     if is_not_run_from_api():
-        if pyversion is 2:
+        if pyversion == 2:
             sys.stdout.write(content.encode('utf8'))
         else:
             sys.stdout.buffer.write(bytes(content, 'utf8') if isinstance(content, str) else content)
@@ -125,7 +122,7 @@ def warn(content):
         the message in warn structure - None
     """
     if is_not_run_from_api():
-        if pyversion is 2:
+        if pyversion == 2:
             sys.stdout.write(color.color('blue') + '[!] ' + color.color('yellow') +
                              content.encode('utf8') + color.color('reset') + '\n')
         else:
@@ -145,7 +142,7 @@ def error(content):
         the message in error structure - None
     """
     if is_not_run_from_api():
-        if pyversion is 2:
+        if pyversion == 2:
             sys.stdout.write(color.color('red') + '[X] ' + color.color('yellow') +
                              content.encode('utf8') + color.color('reset') + '\n')
         else:
@@ -165,7 +162,7 @@ def write_to_api_console(content):
     Returns:
         None
     """
-    if pyversion is 2:
+    if pyversion == 2:
         sys.stdout.write(content.encode('utf8'))
     else:
         sys.stdout.buffer.write(bytes(content, 'utf8'))

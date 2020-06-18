@@ -74,7 +74,7 @@ def check(user, passwd, target, port, headers, timeout_sec, log_in_file, languag
                 break
             except:
                 n += 1
-                if n is retries:
+                if n == retries:
                     warn(messages(language, "http_connection_timeout").format(target))
                     return 1
             return True
@@ -83,7 +83,7 @@ def check(user, passwd, target, port, headers, timeout_sec, log_in_file, languag
 
 
 def test(target, port, retries, timeout_sec, headers, socks_proxy, verbose_level, trying, total_req, total, num, language):
-    if socks_proxy is not None:
+    if socks_proxy != None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith(
             'socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.rsplit('://')[1]
@@ -158,7 +158,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             target = 'https://' + target
         for port in ports:
             if test(str(target), port, retries, timeout_sec, headers,
-                    socks_proxy, verbose_level, trying, total_req, total, num, language) is True:
+                    socks_proxy, verbose_level, trying, total_req, total, num, language) == True:
                 keyboard_interrupt_flag = False
                 for user in users:
                     for passwd in passwds:
@@ -192,12 +192,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threading.activeCount() == 1 or kill_switch == kill_time:
                     break
             except KeyboardInterrupt:
                 break

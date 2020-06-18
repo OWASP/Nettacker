@@ -10,17 +10,21 @@ import string
 import requests
 import random
 import os
-from core.alert import *
+from core.alert import warn, info, messages
 from core.targets import target_type
 from core.targets import target_to_host
 from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-from core._die import __die_failure
 from core.compatible import version
 from lib.scan.dir import wordlist
 from lib.payload.wordlists import useragents
+import six
+
+
+SESSION = requests.Session()
+
 
 def extra_requirements_dict():
     return {
@@ -59,20 +63,18 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
         while 1:
             try:
                 if http_method == "GET":
-                    r = requests.get(
-                        target, timeout=timeout_sec, headers=user_agent)
+                    r = SESSION.get(
+                        target, verify=False, timeout=timeout_sec, headers=user_agent)
+                    content = r.text
                 elif http_method == "HEAD":
-                    r = requests.head(
-                        target, timeout=timeout_sec, headers=user_agent)
-                content = r.content
+                    r = SESSION.head(
+                        target, verify=False, timeout=timeout_sec, headers=user_agent)
                 break
-            except:
+            except Exception:
                 n += 1
-                if n is retries:
+                if n == retries:
                     # warn(messages(language, "http_connection_timeout").format(target))
                     return 1
-        if version() is 3:
-            content = content.decode('utf8')
         if r.status_code in status_codes:
             info(messages(language, "found").format(
                 target, r.status_code, r.reason))
@@ -82,10 +84,12 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                                'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
                                'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
-        if r.status_code is 200:
+
+        if r.status_code == 200:
             for dlmsg in directory_listing_msgs:
                 if dlmsg in content:
                     info(messages(language, "directoy_listing").format(target))
+    
                     data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
                                         'PORT': "", 'TYPE': 'dir_scan',
                                         'DESCRIPTION': messages(language, "directoy_listing").format(target), 'TIME': now(),
@@ -94,6 +98,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                 else:
                     info(messages(language, "found").format(
                         target, r.status_code, r.reason))
+    
                     data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
                                     'PORT': "", 'TYPE': 'dir_scan',
                                     'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
@@ -131,15 +136,15 @@ def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, ver
     while 1:
         try:
             if http_method == "GET":
-                r = requests.get(target, timeout=timeout_sec,
+                SESSION.get(target, verify=False, timeout=timeout_sec,
                                  headers=user_agent)
             elif http_method == "HEAD":
-                r = requests.head(target, timeout=timeout_sec,
+                SESSION.head(target, verify=False, timeout=timeout_sec,
                                   headers=user_agent)
             return 0
         except:
             n += 1
-            if n is retries:
+            if n == retries:
                 return 1
 
 
@@ -175,11 +180,15 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if target_type(target) != "HTTP":
             target = 'http://' + target
         if test(str(target), retries, timeout_sec, user_agent, extra_requirements["dir_scan_http_method"][0],
-                socks_proxy, verbose_level, trying, total_req, total, num, language) is 0:
+                socks_proxy, verbose_level, trying, total_req, total, num, language) == 0:
             keyboard_interrupt_flag = False
             for idir in extra_requirements["dir_scan_list"]:
                 if random_agent_flag:
                     user_agent = {'User-agent': random.choice(user_agent_list)}
+                if target.endswith("/"):
+                    target = target[:-1]
+                if idir.startswith("/"):
+                    idir = idir[1:]
                 t = threading.Thread(target=check,
                                      args=(
                                          target + '/' + idir, user_agent, timeout_sec, log_in_file, language,
@@ -211,20 +220,20 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threading.activeCount() == 1 or kill_switch == kill_time:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1:
+        if thread_write == 1:
             info(messages(language, "directory_file_404").format(
                 target, "default_port"))
-            if verbose_level is not 0:
+            if verbose_level != 0:
                 data = json.dumps(
                     {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'dir_scan',
                      'DESCRIPTION': messages(language, "no_open_ports"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,

@@ -21,6 +21,8 @@ from core._die import __die_failure
 from lib.payload.wordlists import useragents
 from core.compatible import version
 from lib.scan.admin import admin_scan
+import six
+
 def extra_requirements_dict():
     return {
         "admin_scan_http_method": ["GET"],
@@ -31,7 +33,7 @@ def extra_requirements_dict():
 
 def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
           http_method, socks_proxy, scan_id, scan_cmd):
-    status_codes = [200, 401, 403]
+    status_codes = [401, 403]
     directory_listing_msgs = ["<title>Index of /", "<a href=\"\\?C=N;O=D\">Name</a>", "Directory Listing for",
                               "Parent Directory</a>", "Last modified</a>", "<TITLE>Folder Listing.",
                               "- Browsing directory "]
@@ -65,31 +67,41 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                         target, timeout=timeout_sec, headers=user_agent)
                 content = r.content
                 break
-            except:
+            except Exception:
                 n += 1
-                if n is retries:
-                    warn(messages(language, "http_connection_timeout").format(target))
+                if n == retries:
+                    # warn(messages(language, "http_connection_timeout").format(target))
                     return 1
-        if version() is 3:
-            content = content.decode('utf8')
+        
+        content = six.text_type(content)
         if r.status_code in status_codes:
-            log_in_file(thread_tmp_filename, 'w', '0', language)
             info(messages(language, "found").format(
-                target, r.status_code, r.reason), log_in_file, "a",
-                {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                target, r.status_code, r.reason))
+            __log_into_file(thread_tmp_filename, 'w', '0', language)
+            data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
                                'PORT': "", 'TYPE': 'admin_scan',
                                'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
-                               'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
-            if r.status_code is 200:
-                for dlmsg in directory_listing_msgs:
-                    if dlmsg in content:
-                        info(messages(language, "directory_listing").format(target), log_in_file, "a"
-                                           ,{'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
-                                           'PORT': "", 'TYPE': 'admin_scan',
-                                           'DESCRIPTION': messages(language, "directoy_listing").format(target), 'TIME': now(),
-                                           'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
-                        __log_into_file(log_in_file, 'a', data, language)
-                        break
+                               'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            __log_into_file(log_in_file, 'a', data, language)
+
+        elif r.status_code == 200:
+            for dlmsg in directory_listing_msgs:
+                if dlmsg in content:
+                    info(messages(language, "directoy_listing").format(target))
+                    data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                                        'PORT': "", 'TYPE': 'admin_scan',
+                                        'DESCRIPTION': messages(language, "directoy_listing").format(target), 'TIME': now(),
+                                        'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                    __log_into_file(log_in_file, 'a', data, language)
+                else:
+                    info(messages(language, "found").format(
+                        target, r.status_code, r.reason))
+                    data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
+                                    'PORT': "", 'TYPE': 'admin_scan',
+                                    'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
+                                    'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                    __log_into_file(log_in_file, 'a', data, language)
+                break
         return True
     except:
         return False
@@ -121,15 +133,15 @@ def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, ver
     while 1:
         try:
             if http_method == "GET":
-                r = requests.get(target, timeout=timeout_sec,
+                requests.get(target, timeout=timeout_sec,
                                  headers=user_agent)
             elif http_method == "HEAD":
-                r = requests.head(target, timeout=timeout_sec,
+                requests.head(target, timeout=timeout_sec,
                                   headers=user_agent)
             return 0
         except:
             n += 1
-            if n is retries:
+            if n == retries:
                 return 1
 
 
@@ -165,14 +177,19 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if target_type(target) != "HTTP":
             target = 'http://' + target
         if test(str(target), retries, timeout_sec, user_agent, extra_requirements["admin_scan_http_method"][0],
-                socks_proxy, verbose_level, trying, total_req, total, num, language) is 0:
+                socks_proxy, verbose_level, trying, total_req, total, num, language) == 0:
             keyboard_interrupt_flag = False
             for idir in extra_requirements["admin_scan_list"]:
+                # time.sleep(0.001)
                 if random_agent_flag:
                     user_agent = {'User-agent': random.choice(user_agent_list)}
+                if target.endswith("/"):
+                    target = target[:-1]
+                if idir.startswith("/"):
+                    idir = idir[1:]
                 t = threading.Thread(target=check,
                                      args=(
-                                         target + '/' + idir, user_agent, timeout_sec, log_in_file, language,
+                                         target + "/" + idir, user_agent, timeout_sec, log_in_file, language,
                                          time_sleep, thread_tmp_filename, retries,
                                          extra_requirements[
                                              "admin_scan_http_method"][0],
@@ -201,24 +218,25 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threading.activeCount() == 1 or kill_switch == kill_time:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1:
-            if verbose_level is not 0:
+        if thread_write == 1:
+            if verbose_level != 0:
+                data = {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'admin_scan',
+                     'DESCRIPTION': messages(language, "directory_file_404").format(target, "default_port"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                     'SCAN_CMD': scan_cmd}
                 info(messages(language, "directory_file_404").format(
                     target, "default_port"), log_in_file, "a",
-                    {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'admin_scan',
-                     'DESCRIPTION': messages(language, "direcroty_file_404").format(target, "default_port"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                     'SCAN_CMD': scan_cmd}, language, thread_tmp_filename)
-                __log_into_file(log_in_file, 'a', data, language)
+                    data, language, thread_tmp_filename)
+                __log_into_file(log_in_file, 'a', json.dumps(data), language)
         os.remove(thread_tmp_filename)
     else:
         warn(messages(language, "input_target_error").format('admin_scan', target))
