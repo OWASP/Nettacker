@@ -8,9 +8,10 @@ import socket
 import json
 import string
 import random
+import base64
 import requests
 import os
-from core.alert import *
+from core.alert import warn, info, messages
 from core.targets import target_type
 from core.targets import target_to_host
 from core.load_modules import load_file_path
@@ -18,6 +19,16 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 
+
+HEADERS = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
+             AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;\
+            q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+    }
 
 def extra_requirements_dict():
     return {
@@ -32,7 +43,7 @@ def extra_requirements_dict():
 
 
 def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename,
-          socks_proxy, scan_id, scan_cmd):
+          socks_proxy, scan_id, scan_cmd, headers):
     exit = 0
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith(
@@ -52,17 +63,16 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
     while 1:
-        target_host = str(target) + ":" + str(port)
         try:
-            if timeout_sec is not None:
-                req = requests.get(
-                  target_host, timeout=timeout_sec, auth=(user, passwd))
-            else:
-                req = requests.get(target_host, auth=(user, passwd))
+            creds = user + ":" + passwd
+            base64encode = base64.b64encode(creds)
+            headers["Authorization"] = "Basic " + base64encode
+            req = requests.get(
+                target, timeout=timeout_sec, headers=headers)
             flag = 1
             if req.status_code != 200:
                 exit += 1
-                if exit is retries:
+                if exit == retries:
                     warn(messages(language, "http_auth_failed").format(
                         target, user, passwd, port))
                     return 1
@@ -71,7 +81,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                     continue
             elif req.status_code == 200:
                 flag = 0
-                if flag is 0:
+                if flag == 0:
                     info(messages(language, "http_auth_success").format(
                         user, passwd, target, port))
                     data = json.dumps(
@@ -80,9 +90,10 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                          'CATEGORY': "brute", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
                     __log_into_file(log_in_file, 'a', data, language)
                     __log_into_file(thread_tmp_filename, 'w', '0', language)
+                break
         except:
             exit += 1
-            if exit is retries:
+            if exit == retries:
                 warn(messages(language, "http_auth_failed").format(
                     target, user, passwd, port))
                 return 1
@@ -92,12 +103,9 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         return flag
 
 
-def check_auth(target, timeout_sec, language, port):
+def check_auth(target, timeout_sec, language, port, headers):
     try:
-        if timeout_sec is not None:
-            req = requests.get((str(target) + str(port)), timeout = timeout_sec)
-        else:
-            req = requests.get(str(target) + str(port))
+        req = requests.get(target, timeout=timeout_sec, headers=headers)
         if req.status_code == 200:
             info(messages(language, "no_auth").format(target, port))
             return 1
@@ -124,10 +132,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             passwds = extra_requirements["http_basic_auth_brute_passwds"]
         if ports is None:
             ports = extra_requirements["http_basic_auth_brute_ports"]
-        if target.lower().startswith('http://') or target.lower().startswith('https://'):
-            pass
-        else:
-            target = 'http://' + str(target)
         threads = []
         total_req = len(users) * len(passwds)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
@@ -136,14 +140,22 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         trying = 0
         keyboard_interrupt_flag = False
         for port in ports:
-            if check_auth(target, timeout_sec, language, port):
-                continue
+            if not target.startswith("http://"):
+                try:
+                    check_auth("https://"+target, timeout_sec, language, port, HEADERS)
+                    target = "https://" + target
+                except:
+                    pass
+            else:
+                if check_auth("http://"+target_to_host(target), timeout_sec, language, port, HEADERS):
+                    target = target
+
             for user in users:
                 for passwd in passwds:
                     t = threading.Thread(target=login,
                                          args=(
                                              user, passwd, target, port, timeout_sec, log_in_file, language,
-                                             retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
+                                             retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id, scan_cmd, HEADERS))
                     threads.append(t)
                     t.start()
                     trying += 1
@@ -168,18 +180,18 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             # wait for threads
             kill_switch = 0
             kill_time = int(
-                timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+                timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
             while 1:
                 time.sleep(0.1)
                 kill_switch += 1
                 try:
-                    if threading.activeCount() is 1 or kill_switch is kill_time:
+                    if threading.activeCount() == 1 or kill_switch == kill_time:
                         break
                 except KeyboardInterrupt:
                     break
                 thread_write = int(
                     open(thread_tmp_filename).read().rsplit()[0])
-                if thread_write is 1 and verbose_level is not 0:
+                if thread_write == 1 and verbose_level != 0:
                     data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
                                        'TYPE': 'http_basic_auth_brute', 'DESCRIPTION': messages(language, "no_user_passwords"),
                                        'TIME': now(), 'CATEGORY': "brute", 'SCAN_ID': scan_id,
