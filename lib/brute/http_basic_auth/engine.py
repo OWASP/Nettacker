@@ -4,6 +4,7 @@
 import threading
 import time
 import socks
+from core.compatible import version
 import socket
 import json
 import string
@@ -12,6 +13,7 @@ import base64
 import requests
 import os
 from core.alert import warn, info, messages
+import logging
 from core.targets import target_type
 from core.targets import target_to_host
 from core.load_modules import load_file_path
@@ -32,8 +34,8 @@ HEADERS = {
 
 def extra_requirements_dict():
     return {
-        "http_basic_auth_brute_users": ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
-        "http_basic_auth_brute_passwds": ["admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
+        "http_basic_auth_brute_users": ["raj", "admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
+        "http_basic_auth_brute_passwds": ["toor", "admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
                                           "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
                                           "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
                                           "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
@@ -65,10 +67,9 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     while 1:
         try:
             creds = user + ":" + passwd
-            base64encode = base64.b64encode(creds)
-            headers["Authorization"] = "Basic " + base64encode
+            headers["Authorization"] = "Basic " + base64.b64encode(creds.encode()).decode()
             req = requests.get(
-                target, timeout=timeout_sec, headers=headers)
+                target, timeout=timeout_sec, headers=headers, verify=False)
             flag = 1
             if req.status_code != 200:
                 exit += 1
@@ -91,7 +92,8 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                     __log_into_file(log_in_file, 'a', data, language)
                     __log_into_file(thread_tmp_filename, 'w', '0', language)
                 break
-        except:
+        except Exception:
+            # logging.exception("message")
             exit += 1
             if exit == retries:
                 warn(messages(language, "http_auth_failed").format(
@@ -111,7 +113,8 @@ def check_auth(target, timeout_sec, language, port, headers):
             return 1
         else:
             return 0
-    except:
+    except Exception:
+        logging.exception("message")
         warn(messages(language, 'no_response'))
         return 1
 
