@@ -25,7 +25,7 @@ INCORRECT_URL = 0
 
 
 def extra_requirements_dict():
-    return {"wayback_scan": ["True"], "extensions": [""]}
+    return {"extensions": [""]}
 
 
 def __wayback_machine_scan(
@@ -157,33 +157,32 @@ def __wayback_machine(
     for key in extra_requirements:
         if extra_requirements[key][0] == "True":
             total_req += 1
-    if extra_requirements["wayback_scan"][0] == "True":
-        trying += 1
-        if verbose_level > 3:
-            info(
-                messages(language, "trying_message").format(
-                    trying, total_req, num, total, target, "Web.archive.org",
-                )
+    trying += 1
+    if verbose_level > 3:
+        info(
+            messages(language, "trying_message").format(
+                trying, total_req, num, total, target, "Web.archive.org",
             )
-        t = threading.Thread(
-            target=__wayback_machine_scan,
-            args=(
-                target,
-                timeout_sec,
-                log_in_file,
-                time_sleep,
-                language,
-                verbose_level,
-                socks_proxy,
-                retries,
-                headers,
-                thread_tmp_filename,
-                extra_requirements,
-            ),
         )
-        threads.append(t)
-        t.start()
-        threads.append(t)
+    t = threading.Thread(
+        target=__wayback_machine_scan,
+        args=(
+            target,
+            timeout_sec,
+            log_in_file,
+            time_sleep,
+            language,
+            verbose_level,
+            socks_proxy,
+            retries,
+            headers,
+            thread_tmp_filename,
+            extra_requirements,
+        ),
+    )
+    threads.append(t)
+    t.start()
+    threads.append(t)
     # wait for threads
     kill_switch = 0
     paths = []
