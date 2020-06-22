@@ -71,7 +71,7 @@ def __wayback_machine_scan(
                 socket.getaddrinfo = getaddrinfo
 
         try:
-            requests.get(target)
+            requests.get(target, verify=False, headers=headers)
         except Exception:
             global INCORRECT_URL
             INCORRECT_URL = 1
@@ -86,7 +86,7 @@ def __wayback_machine_scan(
             target
         )
         try:
-            req = requests.get(request_url)
+            req = requests.get(request_url, verify=False, headers=headers)
             temp = []
             t = json.loads(req.text)
             for i in t:
