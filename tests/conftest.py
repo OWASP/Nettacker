@@ -13,11 +13,10 @@ reqs_clickjacking = [
         None,
         "nettacker.py -m clickjacking_vuln -i http://flipkart.com",
         "6eaa4fd99a3a881b9a426be1014f6442",
-        True,
     ),
     (
         "http://52.198.49.156/",
-        443,
+        80,
         3.0,
         "./test.html",
         "en",
@@ -26,7 +25,18 @@ reqs_clickjacking = [
         None,
         "nettacker.py -m clickjacking_vuln -i http://52.198.49.156/",
         "6eaa4fd99a3a881b9a426be1014f6442",
-        True,
+    ),
+    (
+        "http://72.15.57.35:10443",
+        10443,
+        3.0,
+        "./test.html",
+        "en",
+        0.0,
+        "./thread",
+        None,
+        "nettacker.py -m clickjacking_vuln -i http://52.198.49.156/",
+        "6eaa4fd99a3a881b9a426be1014f6442",
     ),
 ]
 
@@ -37,6 +47,35 @@ headers = {
     "Accept-Language": "en-US,en;q=0.9",
     "Accept-Encoding": "gzip, deflate, br",
 }
+reqs_wayback = [
+    (
+        "https://uber.com",
+        3.0,
+        "./test.html",
+        0.0,
+        "en",
+        0,
+        None,
+        3,
+        headers,
+        "./thread",
+        {"extensions": [""]}
+    ),
+    (
+        "xyz",
+        3.0,
+        "./test.html",
+        0.0,
+        "en",
+        0,
+        None,
+        3,
+        headers,
+        "./thread",
+        {"extensions": [""]}
+    ),
+]
+
 
 check_valid_api_key = [
     (
@@ -90,6 +129,11 @@ def validapikey():
 
 
 @fixture(params=reqs_clickjacking)
-def boilerplate(request):
+def clickjacking_boilerplate(request):
+    key = request.param
+    yield key
+
+@fixture(params=reqs_wayback)
+def wayback_boilerplate(request):
     key = request.param
     yield key

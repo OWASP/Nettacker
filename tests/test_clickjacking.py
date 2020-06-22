@@ -12,9 +12,8 @@ def test_clickjacking(boilerplate):
         time_sleep,
         thread_tmp_filename,
         socks_proxy,
-        scan_id,
         scan_cmd,
-        result,
+        scan_id,
     ) = boilerplate
     try:
         assert (
@@ -27,8 +26,8 @@ def test_clickjacking(boilerplate):
                 time_sleep,
                 thread_tmp_filename,
                 socks_proxy,
-                scan_id,
                 scan_cmd,
+                scan_id,
             )
             == False
         )
@@ -43,8 +42,8 @@ def test_clickjacking(boilerplate):
                 time_sleep,
                 thread_tmp_filename,
                 socks_proxy,
-                scan_id,
                 scan_cmd,
+                scan_id,
             )
             == True
         )
