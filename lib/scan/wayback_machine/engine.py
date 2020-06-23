@@ -70,16 +70,18 @@ def __wayback_machine_scan(
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
 
+        if target_type(target) == "HTTP":
+            target = target_to_host(target)
         try:
-            requests.get(target, verify=False, headers=headers)
+            requests.get("https://" + target, verify=False, headers=headers)
         except Exception:
+            requests.get("http://" + target, verify=False, headers=headers)
+        except:
             global INCORRECT_URL
             INCORRECT_URL = 1
             warn(messages(language, "open_error").format(target))
             return []
 
-        if target_type(target) == "HTTP":
-            target = target_to_host(target)
 
         request_url = """http://web.archive.org/cdx/search/cdx?url=*.{0}/*
         &output=json&fl=original&collapse=urlkey&page=/""".format(
@@ -157,6 +159,8 @@ def __wayback_machine(
     for key in extra_requirements:
         if extra_requirements[key][0] == "True":
             total_req += 1
+    if target_type(target) == 'HTTP':
+            target = target_to_host(target)
     trying += 1
     if verbose_level > 3:
         info(
@@ -239,6 +243,8 @@ def start(
                         extra_requirement
                     ]
         extra_requirements = new_extra_requirements
+        for i in range(len(extra_requirements["extensions"])):
+            extra_requirements["extensions"][i] = "." + extra_requirements["extensions"][i]
         paths = __wayback_machine(
             target,
             timeout_sec,
