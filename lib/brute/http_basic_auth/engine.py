@@ -34,8 +34,8 @@ HEADERS = {
 
 def extra_requirements_dict():
     return {
-        "http_basic_auth_brute_users": ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
-        "http_basic_auth_brute_passwds": ["admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
+        "http_basic_auth_brute_users": ["raj", "admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
+        "http_basic_auth_brute_passwds": ["toor", "admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
                                           "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
                                           "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
                                           "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
@@ -45,7 +45,7 @@ def extra_requirements_dict():
 
 
 def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename,
-          socks_proxy, scan_id, scan_cmd, headers):
+          socks_proxy, scan_id, scan_cmd):
     exit = 0
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith(
@@ -67,9 +67,9 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
     while 1:
         try:
             creds = user + ":" + passwd
-            headers["Authorization"] = "Basic " + base64.b64encode(creds.encode()).decode()
+            HEADERS["Authorization"] = "Basic " + base64.b64encode(creds.encode()).decode()
             req = requests.get(
-                target, timeout=timeout_sec, headers=headers, verify=False)
+                target, timeout=timeout_sec, headers=HEADERS, verify=False)
             flag = 1
             if req.status_code != 200:
                 exit += 1
@@ -105,9 +105,9 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         return flag
 
 
-def check_auth(target, timeout_sec, language, port, headers):
+def check_auth(target, timeout_sec, language, port):
     try:
-        req = requests.get(target, timeout=timeout_sec, headers=headers)
+        req = requests.get(target, timeout=timeout_sec, headers=HEADERS)
         if req.status_code == 200:
             info(messages(language, "no_auth").format(target, port))
             return 1
@@ -145,12 +145,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         for port in ports:
             if not target.startswith("http://"):
                 try:
-                    check_auth("https://"+target, timeout_sec, language, port, HEADERS)
+                    check_auth("https://"+target, timeout_sec, language, port)
                     target = "https://" + target
                 except:
                     pass
             else:
-                if check_auth("http://"+target_to_host(target), timeout_sec, language, port, HEADERS):
+                if check_auth("http://"+target_to_host(target), timeout_sec, language, port):
                     target = target
 
             for user in users:
@@ -158,7 +158,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     t = threading.Thread(target=login,
                                          args=(
                                              user, passwd, target, port, timeout_sec, log_in_file, language,
-                                             retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id, scan_cmd, HEADERS))
+                                             retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
                     threads.append(t)
                     t.start()
                     trying += 1
