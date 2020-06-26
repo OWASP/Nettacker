@@ -5,7 +5,7 @@ import socket
 import json
 import netaddr.ip
 import re
-from core.ip import getIPRange, isIP, IPRange, isIP6
+from core.ip import getIPRange, IPRange, isIP, isIP6
 from core.alert import messages, info
 from core._die import __die_failure
 from lib.scan.subdomain.engine import __get_subs
@@ -58,7 +58,7 @@ def target_type(target):
         if isIP(start_ip) and isIP(stop_ip):
             return "RANGE_IPv4"
     elif re.match(
-        "^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$", target
+        r"^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$", target
     ):
         return "DOMAIN"
     elif target.lower().startswith("http://") or target.lower().startswith(
@@ -69,7 +69,7 @@ def target_type(target):
             isIP(t)
             or isIP6(t)
             or re.match(
-                "^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$", t
+                r"^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$", t
             )
         ):
             return "HTTP"
