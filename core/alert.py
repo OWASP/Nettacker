@@ -36,7 +36,7 @@ def messages(language, msg_id):
         the message content in the selected language if message found otherwise return message in English
     """
     # Returning selected langauge
-    if language is -1:
+    if language == -1:
         return list(
             set(
                 [
