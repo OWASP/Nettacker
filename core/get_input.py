@@ -4,7 +4,7 @@
 from core.compatible import version
 from core.alert import __input_msg
 from six import moves
-
+import sys
 
 def __input(msg, default):
     """
@@ -24,6 +24,9 @@ def __input(msg, default):
                 data = default
         except Exception:
             data = default
+        except KeyboardInterrupt:
+            print("\n")
+            exit(1)
     else:
         try:
             data = moves.input(__input_msg(msg))
@@ -31,4 +34,7 @@ def __input(msg, default):
                 data = default
         except Exception:
             data = default
+        except KeyboardInterrupt:
+            print("\n")
+            exit(1)
     return data
