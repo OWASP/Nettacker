@@ -20,6 +20,8 @@ def all_messages():
             "select_language": "select a language {0}",
             "range": "scan all IPs in the range",
             "subdomains": "find and scan subdomains",
+            "Invalid_whatcms_api_key": "{0}",
+            "searching_whatcms_database": "Searching Whatcms.org...",
             "thread_number_connections": "thread numbers for connections to a host",
             "thread_number_hosts": "thread numbers for scan hosts",
             "save_logs": "save all logs in file (results.txt, results.csv, results.html, results.json)",

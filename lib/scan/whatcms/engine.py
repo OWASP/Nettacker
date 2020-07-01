@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Pradeep Jairamani , github.com/pradeepjairamani
+# Author: Aman Gupta , github.com/aman566
 
 import socket
 import socks
@@ -23,6 +23,7 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
+from six import text_type
 
 
 def extra_requirements_dict():
@@ -36,9 +37,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
     try:
         if socks_proxy is not None:
             socks_version = (
-                socks.SOCKS5
-                if socks_proxy.startswith("socks5://")
-                else socks.SOCKS4
+                socks.SOCKS5 if socks_proxy.startswith("socks5://") else socks.SOCKS4
             )
             socks_proxy = socks_proxy.rsplit("://")[1]
             if "@" in socks_proxy:
@@ -101,15 +100,30 @@ def whatcms(
                 "Upgrade-Insecure-Requests": "1",
                 "X-Requested-With": "XMLHttpRequest",
             }
-            requests_url = (
-                "https://whatcms.org/API/CMS?key="
-                + whatcms_api_key
-                + "&url="
-                + target
+            check_api_key_is_valid = (
+                "https://whatcms.org/API/Status?key=" + whatcms_api_key
             )
-            req = requests.get(requests_url, verify=False, headers=headers)
-            cms_name = json.loads(req.text)["result"]["name"]
-            return cms_name
+            check = requests.get(
+                check_api_key_is_valid, headers=headers, verify=False, timeout=10
+            )
+            api_result = json.loads(check.text)["result"]["msg"]
+            if text_type(api_result).lower() == "invalid api key":
+                warn(
+                    messages(language, "Invalid_whatcms_api_key").format(
+                        "Invalid API Key"
+                    )
+                )
+                return
+            info(messages(language, "searching_whatcms_database").format(target))
+            requests_url = (
+                "https://whatcms.org/API/CMS?key=" + whatcms_api_key + "&url=" + target
+            )
+            try:
+                req = requests.get(requests_url, verify=False, headers=headers)
+                cms_name = json.loads(req.text)["result"]["name"]
+                return cms_name
+            except Exception:
+                return
     except Exception:
         return False
 
@@ -203,11 +217,8 @@ def start(
             target = target_to_host(target)
         threads = []
         total_req = len(ports)
-        thread_tmp_filename = "{}/tmp/thread_tmp_".format(
-            load_file_path()
-        ) + "".join(
-            random.choice(string.ascii_letters + string.digits)
-            for _ in range(20)
+        thread_tmp_filename = "{}/tmp/thread_tmp_".format(load_file_path()) + "".join(
+            random.choice(string.ascii_letters + string.digits) for _ in range(20)
         )
         __log_into_file(thread_tmp_filename, "w", "1", language)
         trying = 0
@@ -236,13 +247,7 @@ def start(
             if verbose_level > 3:
                 info(
                     messages(language, "trying_message").format(
-                        trying,
-                        total_req,
-                        num,
-                        total,
-                        target,
-                        port,
-                        "whatcms_scan",
+                        trying, total_req, num, total, target, port, "whatcms_scan",
                     )
                 )
             while 1:
@@ -258,9 +263,7 @@ def start(
                 break
         # wait for threads
         kill_switch = 0
-        kill_time = (
-            int(timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
-        )
+        kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
@@ -290,8 +293,4 @@ def start(
         os.remove(thread_tmp_filename)
 
     else:
-        warn(
-            messages(language, "input_target_error").format(
-                "whatcms_scan", target
-            )
-        )
+        warn(messages(language, "input_target_error").format("whatcms_scan", target))
