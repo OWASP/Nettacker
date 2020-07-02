@@ -31,6 +31,7 @@ HEADERS = {
         "Accept-Language": "en-US,en;q=0.9",
         "Accept-Encoding": "gzip, deflate, br",
     }
+CODES = [401,403]
 
 def extra_requirements_dict():
     return {
@@ -71,7 +72,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             req = requests.get(
                 target, timeout=timeout_sec, headers=HEADERS, verify=False)
             flag = 1
-            if req.status_code != 200:
+            if req.status_code in CODES:
                 exit += 1
                 if exit == retries:
                     warn(messages(language, "http_auth_failed").format(
@@ -80,7 +81,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                 else:
                     time.sleep(time_sleep)
                     continue
-            elif req.status_code == 200:
+            elif req.status_code not in CODES:
                 flag = 0
                 if flag == 0:
                     info(messages(language, "http_auth_success").format(
@@ -108,7 +109,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
 def check_auth(target, timeout_sec, language, port):
     try:
         req = requests.get(target, timeout=timeout_sec, headers=HEADERS, verify=False)
-        if req.status_code == 200:
+        if req.status_code not in CODES:
             info(messages(language, "no_auth").format(target, port))
             return 1
         else:
@@ -135,6 +136,15 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             passwds = extra_requirements["http_basic_auth_brute_passwds"]
         if ports is None:
             ports = extra_requirements["http_basic_auth_brute_ports"]
+        if target.lower().startswith('http://') or target.lower().startswith('https://'):
+            pass
+        else:
+            try:
+                target = 'http://' + str(target)
+                requests.get(target, headers=HEADERS, verify=False)
+            except Exception:
+                target = 'https://' + str(target)
+                requests.get(target, headers=HEADERS, verify=False)
         threads = []
         total_req = len(users) * len(passwds)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
@@ -142,17 +152,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         __log_into_file(thread_tmp_filename, 'w', '1', language)
         trying = 0
         keyboard_interrupt_flag = False
+        if target.endswith("/"):
+            target = target.strip("/")
         for port in ports:
-            if target_type(target) != "HTTP":
-                try:
-                    check_auth("http://"+target, timeout_sec, language, port)
-                    target = "http://" + target
-                except:
-                    pass
-            else:
-                if check_auth("https://"+target_to_host(target), timeout_sec, language, port):
-                    target = target
-
+            if check_auth(target, timeout_sec, language, port):
+                continue
             for user in users:
                 for passwd in passwds:
                     t = threading.Thread(target=login,
