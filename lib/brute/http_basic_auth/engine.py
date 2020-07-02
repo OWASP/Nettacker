@@ -107,14 +107,14 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
 
 def check_auth(target, timeout_sec, language, port):
     try:
-        req = requests.get(target, timeout=timeout_sec, headers=HEADERS)
+        req = requests.get(target, timeout=timeout_sec, headers=HEADERS, verify=False)
         if req.status_code == 200:
             info(messages(language, "no_auth").format(target, port))
             return 1
         else:
             return 0
     except Exception:
-        logging.exception("message")
+        # logging.exception("message")
         warn(messages(language, 'no_response'))
         return 1
 
@@ -143,14 +143,14 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         trying = 0
         keyboard_interrupt_flag = False
         for port in ports:
-            if not target.startswith("http://"):
+            if target_type(target) != "HTTP":
                 try:
-                    check_auth("https://"+target, timeout_sec, language, port)
-                    target = "https://" + target
+                    check_auth("http://"+target, timeout_sec, language, port)
+                    target = "http://" + target
                 except:
                     pass
             else:
-                if check_auth("http://"+target_to_host(target), timeout_sec, language, port):
+                if check_auth("https://"+target_to_host(target), timeout_sec, language, port):
                     target = target
 
             for user in users:
