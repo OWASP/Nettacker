@@ -41,7 +41,7 @@ def extra_requirements_dict():
                                           "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
                                           "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
                                           "admin123", ""],
-        "http_basic_auth_brute_ports": ["80"],
+        "http_basic_auth_brute_ports": ["80", "443"],
     }
 
 
@@ -114,7 +114,7 @@ def check_auth(target, timeout_sec, language, port):
             return 1
         else:
             return 0
-    except Exception:
+    except requests.exceptions.RequestException:
         # logging.exception("message")
         warn(messages(language, 'no_response'))
         return 1
