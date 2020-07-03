@@ -4,7 +4,7 @@
 from core.compatible import version
 from core.alert import __input_msg
 from six import moves
-import sys
+
 
 def __input(msg, default):
     """
