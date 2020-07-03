@@ -14,6 +14,7 @@ import struct
 import re
 import os
 from OpenSSL import crypto
+import logging
 import ssl
 from core.alert import *
 from core.targets import target_type
@@ -32,6 +33,9 @@ def extra_requirements_dict():
         "whatcms_api_key": ["test_api_key"],
     }
 
+CHECK = 0
+SESSION = requests.Session()
+CMS_CODES = [0, 102, 121, 123, 201, 202, 203, 204]
 
 def conn(targ, port, timeout_sec, socks_proxy):
     try:
@@ -103,27 +107,38 @@ def whatcms(
             check_api_key_is_valid = (
                 "https://whatcms.org/API/Status?key=" + whatcms_api_key
             )
-            check = requests.get(
-                check_api_key_is_valid, headers=headers, verify=False, timeout=10
-            )
-            api_result = json.loads(check.text)["result"]["msg"]
-            if text_type(api_result).lower() == "invalid api key":
-                warn(
-                    messages(language, "Invalid_whatcms_api_key").format(
-                        "Invalid API Key"
-                    )
+            global CHECK
+            if CHECK == 0:
+                check = SESSION.get(
+                    check_api_key_is_valid, headers=headers, verify=False, timeout=timeout_sec
                 )
-                return
+                api_result = json.loads(check.text)["result"]["msg"]
+                if text_type(api_result).lower() == "invalid api key":
+                    warn(
+                        messages(language, "Invalid_whatcms_api_key").format(
+                            "Invalid API Key"
+                        )
+                    )
+                    return
+                CHECK = 1
             info(messages(language, "searching_whatcms_database").format(target))
             requests_url = (
                 "https://whatcms.org/API/CMS?key=" + whatcms_api_key + "&url=" + target
             )
-            try:
-                req = requests.get(requests_url, verify=False, headers=headers)
-                cms_name = json.loads(req.text)["result"]["name"]
-                return cms_name
-            except Exception:
-                return
+            while 1:
+                try:
+                    req = SESSION.get(requests_url, verify=False, headers=headers, timeout=timeout_sec)
+                    cms_name = json.loads(req.text)["result"]["name"]
+                    cms_version = json.loads(req.text)["result"]["version"]
+                    status_codes = json.loads(req.text)["result"]["code"]
+                    if status_codes == 200:
+                        if cms_version:
+                            cms_name += " version " + cms_version
+                        return cms_name
+                    elif status_codes in CMS_CODES:
+                        return
+                except requests.exceptions.Timeout:
+                    time.sleep(5)
     except Exception:
         return False
 
