@@ -73,9 +73,9 @@ def __wayback_machine_scan(
         if target_type(target) == "HTTP":
             target = target_to_host(target)
         try:
-            requests.get("https://" + target, verify=False, headers=headers)
+            requests.get("https://" + target, verify=False, headers=headers, timeout=timeout_sec)
         except Exception:
-            requests.get("http://" + target, verify=False, headers=headers)
+            requests.get("http://" + target, verify=False, headers=headers, timeout=timeout_sec)
         except:
             global INCORRECT_URL
             INCORRECT_URL = 1
@@ -88,7 +88,7 @@ def __wayback_machine_scan(
             target
         )
         try:
-            req = requests.get(request_url, verify=False, headers=headers)
+            req = requests.get(request_url, verify=False, headers=headers, timeout=timeout_sec)
             temp = []
             t = json.loads(req.text)
             for i in t:
