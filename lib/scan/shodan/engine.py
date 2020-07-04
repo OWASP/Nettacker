@@ -24,6 +24,7 @@ def extra_requirements_dict():
         "shodan_results": [],
     }
 
+HOST_URL = "https://api.shodan.io/shodan/host/search?key="
 
 def __shodan_scan(
     target,
@@ -87,7 +88,7 @@ def __shodan_scan(
                 except IndexError:
                     pass
             shodan_url = (
-                "https://api.shodan.io/shodan/host/search?key="
+                HOST_URL
                 + shodan_api_key
                 + "&query="
                 + shodan_query
@@ -95,14 +96,14 @@ def __shodan_scan(
         else:
             if target_type(target) == "SINGLE_IPv4":
                 shodan_url = (
-                    "https://api.shodan.io/shodan/host/search?key="
+                    HOST_URL
                     + shodan_api_key
                     + "&query=ip:"
                     + target
                 )
             else:
                 shodan_url = (
-                    "https://api.shodan.io/shodan/host/search?key="
+                    HOST_URL
                     + shodan_api_key
                     + "&query=hostname:"
                     + target
@@ -132,7 +133,7 @@ def __shodan_scan(
                 return []
             
             shodan_url = (
-                "https://api.shodan.io/shodan/host/search?key="
+                HOST_URL
                 + shodan_api_key
                 + "&query="
                 + target
@@ -143,7 +144,7 @@ def __shodan_scan(
                 if dnsipresults is None:
                     return []
                 shodan_url = (
-                    "https://api.shodan.io/shodan/host/search?key="
+                    HOST_URL
                     + shodan_api_key
                     + "&query=ip:"
                     + dnsipresults
@@ -155,7 +156,7 @@ def __shodan_scan(
                 return []
 
             shodan_url = (
-                "https://api.shodan.io/shodan/host/search?key="
+                HOST_URL
                 + shodan_api_key
                 + "&query=ip:"
                 + dnsipresults
@@ -165,7 +166,7 @@ def __shodan_scan(
                 results = json.loads(req.text)["matches"]
                 if not results:
                     shodan_url = (
-                        "https://api.shodan.io/shodan/host/search?key="
+                        HOST_URL
                         + shodan_api_key
                         + "&query=ip:"
                         + dnsipresults
@@ -207,7 +208,7 @@ def __shodan_scan(
             try:
                 for key in results[int(i)]["vulns"].keys():
                     subsearch.append(
-                        key + "&cvss: " + results[int(i)]["vulns"][key]["cvss"]
+                        str(key) + "&cvss: " + str(results[int(i)]["vulns"][key]["cvss"])
                     )
             except Exception:
                 pass
@@ -221,7 +222,6 @@ def __shodan_scan(
 
         return extra_requirements["shodan_results"]
     except Exception:
-        logging.exception("message")
         return []
 
 
