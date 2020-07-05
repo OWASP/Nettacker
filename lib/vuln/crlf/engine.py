@@ -112,9 +112,8 @@ def crlf_vuln(
                     req = session.get(
                         target, headers=headers, verify=False, timeout=timeout_sec
                     )
-                    print(req.cookies.get_dict())
                     if (
-                        "crlf" in req.cookies.get_dict()
+                        "crlf" in req.cookies.get_dict().keys()
                         and "injection" in session.cookies.get_dict().values()
                     ):
                         crlf_url = req.url
