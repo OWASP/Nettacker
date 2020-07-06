@@ -18,6 +18,7 @@ from OpenSSL import crypto
 import ssl
 from core.alert import *
 from core.targets import target_type
+import logging
 from core.targets import target_to_host
 from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
@@ -27,7 +28,7 @@ import requests
 
 
 def extra_requirements_dict():
-    return {"f5_cve_2020_5902_vuln_ports": [443]}
+    return {"f5_cve_2020_5902_vuln_ports": [443, 8443, 7443, 4443, 9443]}
 
 
 def conn(targ, port, timeout_sec, socks_proxy):
@@ -62,7 +63,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         s.settimeout(timeout_sec)
         s.connect((targ, port))
         return s
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -83,10 +84,8 @@ def f5_vuln(
         if not s:
             return False
         else:
-            if target_type(target) != "HTTP" and port == 443:
+            if target_type(target) != "HTTP" and port in extra_requirements_dict()["f5_cve_2020_5902_vuln_ports"]:
                 target = "https://" + target
-            if target_type(target) != "HTTP" and port == 80:
-                target = "http://" + target
             user_agent = [
                 "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
                 "Googlebot/2.1 ( http://www.googlebot.com/bot.html)",
@@ -113,7 +112,7 @@ def f5_vuln(
             }
             vuln_url = (
                 "https://"
-                + target_to_host(target)
+                + target_to_host(target) + ":" + str(port)
                 + "/tmui/login.jsp/..;/tmui/util/getTabSet.jsp?tabId=jaffa"
             )
             vulnURL = requests.get(
@@ -123,10 +122,9 @@ def f5_vuln(
                 verify=False,
                 allow_redirects=True,
             )
-
             if vulnURL.status_code == 200 and "jaffa" in vulnURL.text.lower():
                 r = requests.get(
-                    "https://" + target_to_host(target) + "/tmui/login.jsp",
+                    "https://" + target_to_host(target) + ":" + str(port) + "/tmui/login.jsp",
                     verify=False,
                     timeout=10,
                 )
@@ -144,6 +142,7 @@ def f5_vuln(
             else:
                 return False
     except Exception as e:
+        logging.exception("message")
         # some error warning
         return False
 
