@@ -27,7 +27,7 @@ import requests
 
 
 def extra_requirements_dict():
-    return {"f5_rce_cve_2020_5902_vuln_ports": [443]}
+    return {"f5_cve_2020_5902_vuln_ports": [443]}
 
 
 def conn(targ, port, timeout_sec, socks_proxy):
@@ -66,7 +66,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def f5_rce_vuln(
+def f5_vuln(
     target,
     port,
     timeout_sec,
@@ -148,7 +148,7 @@ def f5_rce_vuln(
         return False
 
 
-def __f5_rce_vuln(
+def __f5_vuln(
     target,
     port,
     timeout_sec,
@@ -161,7 +161,7 @@ def __f5_rce_vuln(
     scan_id,
     scan_cmd,
 ):
-    if f5_rce_vuln(
+    if f5_vuln(
         target,
         port,
         timeout_sec,
@@ -185,9 +185,9 @@ def __f5_rce_vuln(
                 "USERNAME": "",
                 "PASSWORD": "",
                 "PORT": port,
-                "TYPE": "f5_rce_cve_2020_5902_vuln",
+                "TYPE": "f5_cve_2020_5902_vuln",
                 "DESCRIPTION": messages(language, "vulnerable").format(
-                    "f5_rce_cve_2020_5902_vuln"
+                    "f5_cve_2020_5902_vuln"
                 ),
                 "TIME": now(),
                 "CATEGORY": "vuln",
@@ -235,7 +235,7 @@ def start(
                     ]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["f5_rce_cve_2020_5902_vuln_ports"]
+            ports = extra_requirements["f5_cve_2020_5902_vuln_ports"]
         if target_type(target) == "HTTP":
             target = target_to_host(target)
         threads = []
@@ -250,7 +250,7 @@ def start(
         for port in ports:
             port = int(port)
             t = threading.Thread(
-                target=__f5_rce_vuln,
+                target=__f5_vuln,
                 args=(
                     target,
                     int(port),
@@ -277,7 +277,7 @@ def start(
                         total,
                         target,
                         port,
-                        "f5_rce_cve_2020_5902_vuln",
+                        "f5_cve_2020_5902_vuln",
                     )
                 )
             while 1:
@@ -305,7 +305,7 @@ def start(
         if thread_write == 1 and verbose_level != 0:
             info(
                 messages(language, "no_vulnerability_found").format(
-                    "f5_rce_cve_2020_5902_vuln not found"
+                    "f5_cve_2020_5902_vuln not found"
                 )
             )
             data = json.dumps(
@@ -314,9 +314,9 @@ def start(
                     "USERNAME": "",
                     "PASSWORD": "",
                     "PORT": "",
-                    "TYPE": "f5_rce_cve_2020_5902_vuln",
+                    "TYPE": "f5_cve_2020_5902_vuln",
                     "DESCRIPTION": messages(language, "no_vulnerability_found").format(
-                        "f5_rce_cve_2020_5902_vuln not found"
+                        "f5_cve_2020_5902_vuln not found"
                     ),
                     "TIME": now(),
                     "CATEGORY": "scan",
@@ -330,6 +330,6 @@ def start(
     else:
         warn(
             messages(language, "input_target_error").format(
-                "f5_rce_cve_2020_5902_vuln", target
+                "f5_cve_2020_5902_vuln", target
             )
         )

@@ -5,7 +5,7 @@ from canari.maltego.entities import URL
 from canari.framework import EnableDebugWindow
 from common.entities import NettackerScan
 
-from lib.vuln.f5_rce_cve_2020_5902.engine import start
+from lib.vuln.f5_cve_2020_5902.engine import start
 
 from database.db import __logs_by_scan_id as find_log
 
@@ -21,7 +21,7 @@ __status__ = 'Development'
 
 
 @EnableDebugWindow
-class F5RCECVE20205092VulnScan(Transform):
+class F5CVE20205092VulnScan(Transform):
     """TODO: Your transform description."""
 
     # The transform input entity type.
@@ -39,8 +39,8 @@ class F5RCECVE20205092VulnScan(Transform):
         for result in results:
             url = result["HOST"] + ":" + result["PORT"]
             response += URL(url=url, title=result["DESCRIPTION"],
-                            short_title="F5 RCE CVE 2020 5092 Found!",
-                            link_label='f5_rce_cve_2020_5902_vuln')
+                            short_title="F5 CVE 2020 5092 Found!",
+                            link_label='f5_cve_2020_5902_vuln')
         return response
 
     def on_terminate(self):
