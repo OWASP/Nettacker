@@ -115,35 +115,37 @@ def f5_vuln(
                 + target_to_host(target) + ":" + str(port)
                 + "/tmui/login.jsp/..;/tmui/util/getTabSet.jsp?tabId=jaffa"
             )
-            vulnURL = requests.get(
-                vuln_url,
-                timeout=10,
-                headers=headers,
-                verify=False,
-                allow_redirects=True,
-            )
-            if vulnURL.status_code == 200 and "jaffa" in vulnURL.text.lower():
-                r = requests.get(
-                    "https://" + target_to_host(target) + ":" + str(port) + "/tmui/login.jsp",
-                    verify=False,
+            try:
+                vulnURL = requests.get(
+                    vuln_url,
                     timeout=10,
+                    headers=headers,
+                    verify=False,
+                    allow_redirects=True,
                 )
-                hostname = (
-                    re.search(r"<p\stitle=\"(.*?)\">", r.text).group(1).strip().lower()
-                )
-                info(
-                    target
-                    + " ("
-                    + hostname
-                    + ")"
-                    + " is vulnerable to Remote Code Execution"
-                )
-                return True
-            else:
+                if vulnURL.status_code == 200 and "jaffa" in vulnURL.text.lower():
+                    r = requests.get(
+                        "https://" + target_to_host(target) + ":" + str(port) + "/tmui/login.jsp",
+                        verify=False,
+                        timeout=10,
+                        headers=headers
+                    )
+                    hostname = (
+                        re.search(r"<p\stitle=\"(.*?)\">", r.text).group(1).strip().lower()
+                    )
+                    info(
+                        target
+                        + " ("
+                        + hostname
+                        + ")"
+                        + " is vulnerable to Remote Code Execution"
+                    )
+                    return True
+                else:
+                    return False
+            except Exception:
                 return False
-    except Exception as e:
-        logging.exception("message")
-        # some error warning
+    except Exception:
         return False
 
 
