@@ -40,6 +40,33 @@ reqs_clickjacking = [
     ),
 ]
 
+reqs_crlf = [
+    (
+        "https://ac611f591e4f78de80ff42fc004e0028.web-security-academy.net/",
+        443,
+        3.0,
+        "./test.html",
+        "en",
+        0.0,
+        "./thread",
+        None,
+        "6eaa4fd99a3a881b9a426be1014f6442",
+        "nettacker.py -m clickjacking_vuln -i http://flipkart.com",
+    ),
+    (
+        "http://uber.com",
+        80,
+        3.0,
+        "./test.html",
+        "en",
+        0.0,
+        "./thread",
+        None,
+        "6eaa4fd99a3a881b9a426be1014f6442",
+        "nettacker.py -m clickjacking_vuln -i http://52.198.49.156/",
+    )
+]
+
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36",
@@ -135,5 +162,10 @@ def clickjacking_boilerplate(request):
 
 @fixture(params=reqs_wayback)
 def wayback_boilerplate(request):
+    key = request.param
+    yield key
+
+@fixture(params=reqs_crlf)
+def crlf_boilerplate(request):
     key = request.param
     yield key

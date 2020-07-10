@@ -2,7 +2,7 @@ import pytest
 from lib.vuln.clickjacking import engine
 
 
-def test_clickjacking(boilerplate):
+def test_clickjacking(clickjacking_boilerplate):
     (
         target,
         port,
@@ -14,7 +14,7 @@ def test_clickjacking(boilerplate):
         socks_proxy,
         scan_cmd,
         scan_id,
-    ) = boilerplate
+    ) = clickjacking_boilerplate
     try:
         assert (
             engine.clickjacking(
