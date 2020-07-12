@@ -35,7 +35,7 @@ from core.compatible import version
 
 if version() == 3:
     from urllib.parse import urlparse
-if version() == 2:
+else:
     from urlparse import urlparse
 
 
@@ -46,7 +46,8 @@ def extra_requirements_dict():
     }
 
 
-global csrf_vulnerable
+definitions = set()
+csrf_vulnerable = ""
 
 COMMON_CSRF_NAMES = (
     "csrf_token",
@@ -126,11 +127,15 @@ def csrf_vuln(
         if not s:
             return False
         else:
+            target_details = urlparse(target)
+            scheme = target_details.scheme
+            domain = target_details.netloc
+            path = target_details.path
             if target_type(target) != "HTTP" and port == 443:
-                target = "https://" + target
+                target = "https://" + domain + path
             if target_type(target) != "HTTP" and port == 80:
-                target = "http://" + target
-            if extra_requirements["cookies"]:
+                target = "http://" + domain + path
+            if extra_requirements["cookies"][0] != "fake":
                 HEADERS["Cookie"] = extra_requirements["cookies"].encode("utf-8")
 
             try:
@@ -146,22 +151,18 @@ def csrf_vuln(
                     return
             except Exception:
                 pass
-
+            global csrf_vulnerable
             try:
                 # If in set-cookie response header SameSite=Lax|strict is present then CSRF is not possible.
                 set_cookie_session = requests.Session()
                 is_present = set_cookie_session.get(
-                    target, headers=HEADERS, verify=False
+                    target, headers=HEADERS, verify=False, timeout=10
                 )
                 for set_cookie in is_present.headers:
                     if set_cookie.lower() == "set-cookie":
-                        if (
-                            not ["strict", "lax"]
-                            in is_present.headers[set_cookie].lower()
-                        ):
-                            global csrf_vulnerable
-                            csrf_vulnerable = (
-                                "CSRF due to missing SameSite Cookie attributes"
+                        if "samesite=none" in is_present.headers[set_cookie].lower():
+                            definitions.add(
+                                "CSRF due to missing Lax|Strict value in SameSite attribute"
                             )
                             COUNT.add(True)
             except Exception:
@@ -173,7 +174,7 @@ def csrf_vuln(
                 hidden = requests.get(target, headers=HEADERS, verify=False, timeout=10)
                 # In 95% cases if type="hidden" is not present in the forms are present that most probably that is CSRF token value. In that case CSRF is possible.
                 if 'type="hidden"' not in hidden.text.lower():
-                    csrf_vulnerable = "CSRF with no defenses(tokens)"
+                    definitions.add("\nCSRF with no defenses(tokens)")
                     COUNT.add(True)
                 for form in forms:
                     # finding forms in order to find CSRF vulnerabilities
@@ -219,14 +220,12 @@ def csrf_vuln(
                                 data[input_tag["name"]] = "testing@123"
                             elif in_type == "hidden":
                                 data[input_tag["name"]] = input_tag["value"]
-                    target_details = urlparse(target)
-                    scheme = target_details.scheme
-                    domain = target_details.netloc
-                    path = target_details.path
                     temp = HEADERS
                     if form_details["action"].startswith("http"):
                         final_target = form_details["action"]
                     elif not form_details["action"].startswith("/"):
+                        if not path.endswith("/"):
+                            path += "/"
                         final_target = (
                             scheme + "://" + domain + path + form_details["action"]
                         )
@@ -244,6 +243,7 @@ def csrf_vuln(
                                             headers=temp,
                                             data=data,
                                             timeout=10,
+                                            verify=False,
                                         )
                                     elif form_details["method"] == "get":
                                         token_abs = requests.get(
@@ -251,6 +251,7 @@ def csrf_vuln(
                                             headers=temp,
                                             data=data,
                                             timeout=10,
+                                            verify=False,
                                         )
                                 except Exception:
                                     logging.exception("message")
@@ -262,7 +263,9 @@ def csrf_vuln(
                                     201,
                                     204,
                                 ]:
-                                    csrf_vulnerable = "CSRF where token validation depends on token being present"
+                                    definitions.add(
+                                        "\nCSRF where token validation depends on token being present"
+                                    )
                                     COUNT.add(True)
                     except Exception:
                         pass
@@ -271,14 +274,23 @@ def csrf_vuln(
                     try:
                         if form_details["method"] == "post":
                             res = requests.post(
-                                final_target, headers=temp, data=data, timeout=10
+                                final_target,
+                                headers=temp,
+                                data=data,
+                                verify=False,
+                                timeout=10,
                             )
                         elif form_details["method"] == "get":
                             res = requests.get(
-                                final_target, headers=temp, data=data, timeout=10
+                                final_target,
+                                headers=temp,
+                                data=data,
+                                verify=False,
+                                timeout=10,
                             )
-                    except Exception:
-                        logging.exception("message")
+                    except requests.exceptions.ConnectTimeout:
+                        # logging.exception("message")
+                        pass
                     if res.status_code in [400, 401, 403, 500, 503, 404]:
                         try:
                             temp.pop("Referer")
@@ -288,11 +300,19 @@ def csrf_vuln(
                         try:
                             if form_details["method"] == "post":
                                 res = requests.post(
-                                    final_target, headers=temp, data=data, timeout=10
+                                    final_target,
+                                    headers=temp,
+                                    data=data,
+                                    timeout=10,
+                                    verify=False,
                                 )
                             elif form_details["method"] == "get":
                                 res = requests.get(
-                                    final_target, headers=temp, data=data, timeout=10
+                                    final_target,
+                                    headers=temp,
+                                    data=data,
+                                    timeout=10,
+                                    verify=False,
                                 )
                         except Exception:
                             logging.exception("message")
@@ -300,9 +320,12 @@ def csrf_vuln(
                         if str(res.status_code).startswith("2") or str(
                             res.status_code
                         ).startswith("3"):
-                            csrf_vulnerable = "CSRF where Referer validation depends on header being present. Stripping Referer header makes the request successfull"
+                            definitions.add(
+                                "\nCSRF Stripping Referer header makes the request successfull"
+                            )
                             COUNT.add(True)
                 if True in COUNT:
+                    csrf_vulnerable = "\n".join(definitions)
                     return csrf_vulnerable
                 else:
                     return False
