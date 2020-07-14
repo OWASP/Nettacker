@@ -249,7 +249,7 @@ def csrf_vuln(
                                         token_abs = requests.get(
                                             final_target,
                                             headers=temp,
-                                            data=data,
+                                            params=data,
                                             timeout=10,
                                             verify=False,
                                         )
