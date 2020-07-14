@@ -178,152 +178,155 @@ def csrf_vuln(
                     COUNT.add(True)
                 for form in forms:
                     # finding forms in order to find CSRF vulnerabilities
-                    details = {}
-                    action = form.attrs.get("action").lower()
-                    method = form.attrs.get("method", "get").lower()
-                    inputs = []
-                    for input_tag in form.find_all("input"):
-                        input_type = input_tag.attrs.get("type", "text")
-                        input_name = input_tag.attrs.get("name")
-                        input_value = input_tag.attrs.get("value", "")
-                        inputs.append(
-                            {
-                                "type": input_type,
-                                "name": input_name,
-                                "value": input_value,
-                            }
-                        )
-                    details["action"] = action
-                    details["method"] = method
-                    details["inputs"] = inputs
-                    form_details = details
-                    # print(details)
-                    data = {}
-                    for input_tag in form_details["inputs"]:
-                        if input_tag["type"] == "hidden":
-                            temperory = 0
-                            for name in COMMON_CSRF_NAMES:
-                                if input_tag["name"] == name and temperory == 0:
+                    try:
+                        details = {}
+                        action = form.attrs.get("action").lower()
+                        method = form.attrs.get("method", "get").lower()
+                        inputs = []
+                        for input_tag in form.find_all("input"):
+                            input_type = input_tag.attrs.get("type", "text")
+                            input_name = input_tag.attrs.get("name")
+                            input_value = input_tag.attrs.get("value", "")
+                            inputs.append(
+                                {
+                                    "type": input_type,
+                                    "name": input_name,
+                                    "value": input_value,
+                                }
+                            )
+                        details["action"] = action
+                        details["method"] = method
+                        details["inputs"] = inputs
+                        form_details = details
+                        # print(details)
+                        data = {}
+                        for input_tag in form_details["inputs"]:
+                            if input_tag["type"] == "hidden":
+                                temperory = 0
+                                for name in COMMON_CSRF_NAMES:
+                                    if input_tag["name"] == name and temperory == 0:
+                                        data[input_tag["name"]] = input_tag["value"]
+                                        token_name = name
+                                        temperory = 1
+                                        break
+                                if temperory == 0:
                                     data[input_tag["name"]] = input_tag["value"]
-                                    token_name = name
-                                    temperory = 1
-                                    break
-                            if temperory == 0:
-                                data[input_tag["name"]] = input_tag["value"]
-                        elif input_tag["type"] != "submit":
-                            in_type = input_tag["type"]
-                            if in_type == "checkbox":
-                                data[input_tag["name"]] = True
-                            elif in_type == "email":
-                                data[input_tag["name"]] = "test@test.com"
-                            elif in_type == "password":
-                                data[input_tag["name"]] = "testing@123"
-                            elif in_type == "hidden":
-                                data[input_tag["name"]] = input_tag["value"]
-                    temp = HEADERS
-                    if form_details["action"].startswith("http"):
-                        final_target = form_details["action"]
-                    elif not form_details["action"].startswith("/"):
-                        if not path.endswith("/"):
-                            path += "/"
-                        final_target = (
-                            scheme + "://" + domain + path + form_details["action"]
-                        )
-                    else:
-                        final_target = scheme + "://" + domain + form_details["action"]
-                    try:
-                        for key in data.keys():
-                            # In general some websites do not accept if token is manipulated but accepts when the token is stripped. So if token is there and after deleting the value, if request is successful then CSRF is possible.
-                            if key == token_name:
-                                del data[key]
-                                try:
-                                    if form_details["method"] == "post":
-                                        token_abs = requests.post(
-                                            final_target,
-                                            headers=temp,
-                                            data=data,
-                                            timeout=10,
-                                            verify=False,
-                                        )
-                                    elif form_details["method"] == "get":
-                                        token_abs = requests.get(
-                                            final_target,
-                                            headers=temp,
-                                            params=data,
-                                            timeout=10,
-                                            verify=False,
-                                        )
-                                except Exception:
-                                    logging.exception("message")
-                                if token_abs.status_code in [
-                                    301,
-                                    302,
-                                    307,
-                                    200,
-                                    201,
-                                    204,
-                                ]:
-                                    definitions.add(
-                                        "\nCSRF where token validation depends on token being present"
-                                    )
-                                    COUNT.add(True)
-                    except Exception:
-                        pass
-                    # Some web application do verify the CSRF using Referer headers. Meaning if referer header contains their own domain value than the request is successful but if referer header is manipulated than the access is denied. In some cases deleting the referer headers make the CSRF possible.
-                    temp["Referer"] = "https://evil.com"
-                    try:
-                        if form_details["method"] == "post":
-                            res = requests.post(
-                                final_target,
-                                headers=temp,
-                                data=data,
-                                verify=False,
-                                timeout=10,
+                            elif input_tag["type"] != "submit":
+                                in_type = input_tag["type"]
+                                if in_type == "checkbox":
+                                    data[input_tag["name"]] = True
+                                elif in_type == "email":
+                                    data[input_tag["name"]] = "test@test.com"
+                                elif in_type == "password":
+                                    data[input_tag["name"]] = "testing@123"
+                                elif in_type == "hidden":
+                                    data[input_tag["name"]] = input_tag["value"]
+                        temp = HEADERS
+                        if form_details["action"].startswith("http"):
+                            final_target = form_details["action"]
+                        elif not form_details["action"].startswith("/"):
+                            if not path.endswith("/"):
+                                path += "/"
+                            final_target = (
+                                scheme + "://" + domain + path + form_details["action"]
                             )
-                        elif form_details["method"] == "get":
-                            res = requests.get(
-                                final_target,
-                                headers=temp,
-                                data=data,
-                                verify=False,
-                                timeout=10,
-                            )
-                    except requests.exceptions.ConnectTimeout:
-                        # logging.exception("message")
-                        pass
-                    if res.status_code in [400, 401, 403, 500, 503, 404]:
+                        else:
+                            final_target = scheme + "://" + domain + form_details["action"]
                         try:
-                            temp.pop("Referer")
-                        except:
+                            for key in data.keys():
+                                # In general some websites do not accept if token is manipulated but accepts when the token is stripped. So if token is there and after deleting the value, if request is successful then CSRF is possible.
+                                if key == token_name:
+                                    del data[key]
+                                    try:
+                                        if form_details["method"] == "post":
+                                            token_abs = requests.post(
+                                                final_target,
+                                                headers=temp,
+                                                data=data,
+                                                timeout=10,
+                                                verify=False,
+                                            )
+                                        elif form_details["method"] == "get":
+                                            token_abs = requests.get(
+                                                final_target,
+                                                headers=temp,
+                                                params=data,
+                                                timeout=10,
+                                                verify=False,
+                                            )
+                                    except Exception:
+                                        logging.exception("message")
+                                    if token_abs.status_code in [
+                                        301,
+                                        302,
+                                        307,
+                                        200,
+                                        201,
+                                        204,
+                                    ]:
+                                        definitions.add(
+                                            "\nCSRF where token validation depends on token being present"
+                                        )
+                                        COUNT.add(True)
+                        except Exception:
                             pass
-                        # res = requests.get(final_target, verify=False, timeout=timeout_sec, headers=temp)
+                        # Some web application do verify the CSRF using Referer headers. Meaning if referer header contains their own domain value than the request is successful but if referer header is manipulated than the access is denied. In some cases deleting the referer headers make the CSRF possible.
+                        temp["Referer"] = "https://evil.com"
                         try:
                             if form_details["method"] == "post":
                                 res = requests.post(
                                     final_target,
                                     headers=temp,
                                     data=data,
-                                    timeout=10,
                                     verify=False,
+                                    timeout=10,
                                 )
                             elif form_details["method"] == "get":
                                 res = requests.get(
                                     final_target,
                                     headers=temp,
                                     data=data,
-                                    timeout=10,
                                     verify=False,
+                                    timeout=10,
                                 )
-                        except Exception:
-                            logging.exception("message")
+                        except requests.exceptions.ConnectTimeout:
+                            # logging.exception("message")
                             pass
-                        if str(res.status_code).startswith("2") or str(
-                            res.status_code
-                        ).startswith("3"):
-                            definitions.add(
-                                "\nCSRF Stripping Referer header makes the request successfull"
-                            )
-                            COUNT.add(True)
+                        if res.status_code in [400, 401, 403, 500, 503, 404]:
+                            try:
+                                temp.pop("Referer")
+                            except:
+                                pass
+                            # res = requests.get(final_target, verify=False, timeout=timeout_sec, headers=temp)
+                            try:
+                                if form_details["method"] == "post":
+                                    res = requests.post(
+                                        final_target,
+                                        headers=temp,
+                                        data=data,
+                                        timeout=10,
+                                        verify=False,
+                                    )
+                                elif form_details["method"] == "get":
+                                    res = requests.get(
+                                        final_target,
+                                        headers=temp,
+                                        data=data,
+                                        timeout=10,
+                                        verify=False,
+                                    )
+                            except Exception:
+                                logging.exception("message")
+                                pass
+                            if str(res.status_code).startswith("2") or str(
+                                res.status_code
+                            ).startswith("3"):
+                                definitions.add(
+                                    "\nCSRF Stripping Referer header makes the request successfull"
+                                )
+                                COUNT.add(True)
+                    except Exception:
+                        pass
                 if True in COUNT:
                     csrf_vulnerable = "\n".join(definitions)
                     return csrf_vulnerable
@@ -332,7 +335,7 @@ def csrf_vuln(
             else:
                 return False
     except:
-        logging.exception("message")
+        # logging.exception("message")
         return False
 
 
