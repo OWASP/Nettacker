@@ -12,6 +12,7 @@ import random
 from six import text_type
 from core.compatible import version
 import os
+import re
 import requests
 from core.alert import warn, info, messages
 from core.targets import target_type
@@ -19,10 +20,17 @@ from core.targets import target_to_host
 from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 import mechanize
+import logging
 from core._time import now
 from core.log import __log_into_file
+from bs4 import BeautifulSoup
+from core.compatible import version
 
 
+if version() == 3:
+    from urllib.parse import urlparse
+else:
+    from urlparse import urlparse
 HEADERS = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
              AppleWebKit/537.36 "
@@ -36,7 +44,7 @@ HEADERS = {
 def extra_requirements_dict():
     return {
         "http_form_brute_users": ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
-        "http_form_brute_passwds": ["admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
+        "http_form_brute_passwds": ["Aman@123", "Manas", "root", "test", "ftp", "anonymous", "user", "1", "12345",
                                     "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
                                     "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
                                     "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
@@ -45,6 +53,26 @@ def extra_requirements_dict():
 
     }
 
+def get_all_forms(url):
+    session = requests.Session()
+    res = session.get(url)
+    soup = BeautifulSoup(res.text, "html.parser")
+    return soup.find_all("form")
+
+def get_form_details(form):
+    details = {}
+    action = form.attrs.get("action").lower()
+    method = form.attrs.get("method", "get").lower()
+    inputs = []
+    for input_tag in form.find_all("input"):
+        input_type = input_tag.attrs.get("type", "text")
+        input_name = input_tag.attrs.get("name")
+        input_value =input_tag.attrs.get("value", "")
+        inputs.append({"type": input_type, "name": input_name, "value": input_value})
+    details["action"] = action
+    details["method"] = method
+    details["inputs"] = inputs
+    return details
 
 def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename,
           socks_proxy, scan_id, scan_cmd):
@@ -67,41 +95,43 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
     try:
-        browser = mechanize.Browser()
-        browser.addheaders = [("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
-            AppleWebKit/537.36 "), ("Accept", "text/html,application/xhtml+xml,application/xml;\
-        q=0.9,image/webp,image/apng,*/*;q=0.8"), ("Accept-Language","en-US,en;q=0.9")]
-        browser.open(target)
-        for form in browser.forms():
+        forms = get_all_forms(target)
+        for i, form in enumerate(forms, start=1):
+            form_details = get_form_details(form)
+            data = {}
+            for input_tag in form_details["inputs"]:
+                if input_tag["type"] == "hidden":
+                    data[input_tag["name"]] = input_tag["value"]
+                elif input_tag["type"] == "text":
+                    data[input_tag["name"]] = user
+                elif input_tag["type"] == "password":
+                    data[input_tag["name"]] = passwd
+            target_details = urlparse(target)
+            scheme = target_details.scheme
+            domain = target_details.netloc
+            path = target_details.path
             try:
-                if form.name is not None:
-                    browser.select_form(form.name)
-                    browser.set_all_readonly(False) 
-                    browser.set_handle_robots(False)
-                    browser.set_handle_refresh(False)
-                    for control in browser.form.controls:
-                        if control.type == "text":
-                            control.value = user
-                        if control.type == "password":
-                            control.value = passwd
-                        if control.type == "submit":
-                            control.disabled = True
-                    response_after_login = browser.submit()
-                    if version() == 3:
-                        response = text_type(response_after_login.read())
+                if form_details["action"].startswith("/"):
+                    url = scheme + "://" + domain + form_details["action"]
+                else:
+                    if target.endswith("/"):
+                        url = scheme + "://" + domain + form_details["action"]
                     else:
-                        response = response_after_login.read()
-                    if "logout" in response.lower() and "login" not in response:
-                        flag = 0
-                        info(messages(language, "http_form_auth_success").format(
-                            user, passwd, target, port))
-                        data = json.dumps(
-                            {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'http_form_brute',
-                            'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute",
-                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
-                        __log_into_file(log_in_file, 'a', data, language)
-                        __log_into_file(thread_tmp_filename, 'w', '0', language)
-                        return flag
+                        url = scheme + "://" + domain + path + "/" + form_details["action"]
+                if form_details["method"] == "post":
+                    res = requests.post(url, data=data, verify=False)
+                elif form_details["method"] == "get":
+                    res = requests.get(url, params=data, verify=False)
+                if "login" not in res.text:
+                    info(messages(language, "http_form_auth_success").format(
+                    user, passwd, target, port))
+                    data = json.dumps(
+                        {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'http_form_brute',
+                        'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute",
+                        'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
+                    __log_into_file(log_in_file, 'a', data, language)
+                    __log_into_file(thread_tmp_filename, 'w', '0', language)
+                    return
             except Exception:
                 # logging.exception("message")
                 pass
@@ -187,13 +217,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
             # wait for threads
             kill_switch = 0
-            kill_time = int(
-                timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
             while 1:
                 time.sleep(0.1)
                 kill_switch += 1
                 try:
-                    if threading.activeCount() == 1 or kill_switch == kill_time:
+                    if threading.activeCount() == 1:
                         break
                 except KeyboardInterrupt:
                     break
