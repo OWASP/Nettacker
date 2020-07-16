@@ -48,6 +48,7 @@ def all_messages():
             "error_reading_file": "cannot read file {0}",
             "error_username": "Cannot specify the username(s), unable to open file: {0}",
             "found": "{0} found! ({1}:{2})",
+            "waf_detected": "{0}",
             "error_password_file": "Cannot specify the password(s), unable to open file: {0}",
             "file_write_error": "file \"{0}\" is not writable!",
             "scan_method_select": "please choose your scan method!",
