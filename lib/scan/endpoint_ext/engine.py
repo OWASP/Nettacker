@@ -80,6 +80,8 @@ def endpoints_extract(
     retries,
     thread_tmp_filename,
     extra_requirements,
+    domain,
+    scheme,
 ):
     try:
         if socks_proxy is not None:
@@ -107,9 +109,6 @@ def endpoints_extract(
                 )
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
-        target_details = urlparse(target)
-        scheme = target_details.scheme
-        domain = target_details.netloc
         r = requests.get(target, verify=False, headers=HEADERS)
         content = jsbeautifier.beautify(r.text)
         regex = re.compile(extra_requirements["regex"][0], re.VERBOSE)
@@ -137,6 +136,8 @@ def __get_endpoints(
     retries,
     num,
     total,
+    domain,
+    scheme,
     extra_requirements=extra_requirements_dict(),
 ):
     total_req = 0
@@ -168,6 +169,8 @@ def __get_endpoints(
             retries,
             thread_tmp_filename,
             extra_requirements,
+            domain,
+            scheme,
         ),
     )
     threads.append(t)
@@ -213,7 +216,10 @@ def start(
 ):
     from core.targets import target_type
     from core.targets import target_to_host
-
+    target_details = urlparse(target)
+    scheme = target_details.scheme
+    domain = target_details.netloc
+    path = target_details.path
     if (
         target_type(target) != "SINGLE_IPv4"
         or target_type(target) != "DOMAIN"
@@ -229,7 +235,7 @@ def start(
                         extra_requirement
                     ]
         extra_requirements = new_extra_requirements
-        if target[-3:].lower() == ".js":
+        if str(scheme + "://" + domain + path)[-3:] == ".js":
             endpoints = __get_endpoints(
                 target,
                 timeout_sec,
@@ -241,6 +247,8 @@ def start(
                 retries,
                 num,
                 total,
+                domain,
+                scheme,
                 extra_requirements=extra_requirements,
             )
         else:
