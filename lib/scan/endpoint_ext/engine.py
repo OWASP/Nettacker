@@ -28,14 +28,8 @@ from core.compatible import version
 
 if version() == 3:
     from urllib.parse import urlparse
-    from io import BytesIO
-
-    readBytesCustom = BytesIO
 else:
     from urlparse import urlparse
-    from StringIO import StringIO
-
-    readBytesCustom = StringIO
 
 
 def extra_requirements_dict():
