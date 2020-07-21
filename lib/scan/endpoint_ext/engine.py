@@ -23,7 +23,6 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
-import jsbeautifier
 from core.compatible import version
 
 
@@ -109,10 +108,9 @@ def endpoints_extract(
                 )
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
-        r = requests.get(target, verify=False, headers=HEADERS)
-        content = jsbeautifier.beautify(r.text)
+        r = requests.get(target, verify=False, headers=HEADERS, timeout=timeout_sec)
         regex = re.compile(extra_requirements["regex"][0], re.VERBOSE)
-        endpoints = [m.group(1) for m in re.finditer(regex, content)]
+        endpoints = [m.group(1) for m in re.finditer(regex, r.text)]
         new_endpoints = []
         for endpoint in endpoints:
             if endpoint.startswith("/"):
