@@ -69,7 +69,7 @@ def host_header_vuln(target, port, timeout_sec, log_in_file, language, time_slee
             global result
             host_headers = {"Host": "evil.com", "User-Agent": random.choice(useragents.useragents())}
             try:
-                req_host = requests.get(target, headers=host_headers, allow_redirects=False)
+                req_host = requests.get(target, verify=False, timeout=timeout_sec, headers=host_headers, allow_redirects=False)
                 if "evil.com" in req_host.headers["Location"]:
                     result = "Found Host header injection vulnerability"
                     return True
@@ -77,7 +77,7 @@ def host_header_vuln(target, port, timeout_sec, log_in_file, language, time_slee
                 pass
             x_forwarded_for_headers = {"x-forwarded-for": "evil.com", "User-Agent": random.choice(useragents.useragents())}
             try:
-                req_forwarded_for = requests.get(target, headers=x_forwarded_for_headers, allow_redirects=False)
+                req_forwarded_for = requests.get(target, verify=False, timeout=timeout_sec, headers=x_forwarded_for_headers, allow_redirects=False)
                 if "evil.com" in req_forwarded_for.text:
                     result = "Response contains 'evil.com' from x-forwarded-for: evil.com header value. May be vulnerable to cross-site scripting!!"
                     return True
@@ -88,7 +88,7 @@ def host_header_vuln(target, port, timeout_sec, log_in_file, language, time_slee
                 pass
             x_forwarded_host_headers = {"x-forwarded-host": "evil.com", "User-Agent": random.choice(useragents.useragents())}
             try:
-                req_forwarded_host = requests.get(target, headers=x_forwarded_host_headers, allow_redirects=False)
+                req_forwarded_host = requests.get(target, verify=False, timeout=timeout_sec, headers=x_forwarded_host_headers, allow_redirects=False)
                 if "evil.com" in req_forwarded_host.headers["Location"]:
                     result = "Found X-forwarded-Host header injection vulnerability"
                     return True
