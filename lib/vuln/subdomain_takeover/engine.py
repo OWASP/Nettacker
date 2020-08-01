@@ -233,7 +233,7 @@ def __sub_takeover(
             messages(language, "target_vulnerable").format(
                 target,
                 port,
-                "Subdomain Takeover Vulnerability found which will allow an adversary to claim and take control of the victim’s subdomain.",
+                "Subdomain Takeover Vulnerability found which will allow an adversary to claim and take control of the victim's subdomain.",
             )
         )
         __log_into_file(thread_tmp_filename, "w", "0", language)
@@ -245,7 +245,7 @@ def __sub_takeover(
                 "PORT": port,
                 "TYPE": "subomain_takeover_vuln",
                 "DESCRIPTION": messages(language, "vulnerable").format(
-                    "Subdomain Takeover Vulnerability found which will allow an adversary to claim and take control of the victim’s subdomain."
+                    "Subdomain Takeover Vulnerability found which will allow an adversary to claim and take control of the victim's subdomain."
                 ),
                 "TIME": now(),
                 "CATEGORY": "vuln",
