@@ -18,6 +18,7 @@ from core._time import now
 from core.log import __log_into_file
 import censys.certificates
 
+
 def extra_requirements_dict():
     return {
         "censys_api_key": ["your_censys_api_key"],
@@ -72,7 +73,7 @@ def __cert_spotter(target, timeout_sec, log_in_file, time_sleep, language, verbo
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
         req = requests.get(
-            'https://certspotter.com/api/v0/certs?domain={0}'.format(target), headers=headers)
+            'https://certspotter.com/api/v0/certs?domain={0}'.format(target), headers=headers, verify=False, timeout=timeout_sec)
         subs = []
         if req.status_code == 200:
             for w in req.content.replace('"', ' ').replace('\'', ' ').rsplit():
@@ -116,7 +117,7 @@ def __google_dig(target, timeout_sec, log_in_file, time_sleep, language, verbose
         req = s.post(url_2, cookies={'csrftoken': csrf_middleware},
                      data={'csrfmiddlewaretoken': csrf_middleware,
                            'domain': target, 'typ': 'ANY'},
-                     headers={'Referer': url_1})
+                     headers={'Referer': url_1}, verify=False, timeout=timeout_sec)
         subs = []
         if req.status_code == 200:
             for w in json.loads(req.content)["response"].replace('"', ' ').replace(';', ' ').rsplit():
@@ -161,7 +162,7 @@ def __netcraft(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
         while '<b>Next page</b></a>' not in results:
             while 1:
                 try:
-                    results = requests.get(url, headers=headers)
+                    results = requests.get(url, headers=headers, verify=False, timeout=timeout_sec)
                     break
                 except:
                     n += 1
@@ -215,7 +216,7 @@ def __threatcrowd(target, timeout_sec, log_in_file, time_sleep, language, verbos
         subs = []
         while 1:
             try:
-                results = requests.get(url, headers=headers)
+                results = requests.get(url, headers=headers, verify=False, timeout=timeout_sec)
                 break
             except:
                 n += 1
@@ -263,7 +264,7 @@ def __dnsdumpster(target, timeout_sec, log_in_file, time_sleep, language, verbos
         req = s.post(url, cookies={'csrftoken': csrf_middleware},
                      data={'csrfmiddlewaretoken': csrf_middleware,
                            'targetip': target},
-                     headers={'Referer': url})
+                     headers={'Referer': url}, verify=False, timeout=timeout_sec)
         subs = []
         if req.status_code == 200:
             for w in req.content.replace('.<', ' ').replace('<', ' ').replace('>', ' ').rsplit():
@@ -303,7 +304,7 @@ def __comodo_crt(target, timeout_sec, log_in_file, time_sleep, language, verbose
         subs = []
         while 1:
             try:
-                results = requests.get(url, headers=headers)
+                results = requests.get(url, headers=headers, verify=False, timeout=timeout_sec)
                 break
             except:
                 n += 1
@@ -353,7 +354,7 @@ def __virustotal(target, timeout_sec, log_in_file, time_sleep, language, verbose
         subs = []
         while 1:
             try:
-                results = requests.get(url, headers=headers)
+                results = requests.get(url, headers=headers, verify=False, timeout=timeout_sec)
                 break
             except:
                 n += 1
@@ -403,7 +404,7 @@ def __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose
         subs = []
         while 1:
             try:
-                results = requests.get(url, headers=headers)
+                results = requests.get(url, headers=headers, verify=False, timeout=timeout_sec)
                 break
             except:
                 n += 1
@@ -448,7 +449,7 @@ def __anubis(target, timeout_sec, log_in_file, time_sleep, language, verbose_lev
                 )
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
-        req = requests.get("https://jldc.me/anubis/subdomains/{0}".format(target))
+        req = requests.get("https://jldc.me/anubis/subdomains/{0}".format(target), headers=headers, verify=False, timeout=timeout_sec)
         subs = []
         results = json.loads(req.text)
         for w in results:
@@ -498,7 +499,7 @@ def __bufferover_run(
                 )
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
-        req = requests.get("http://dns.bufferover.run/dns?q={0}".format(target))
+        req = requests.get("http://dns.bufferover.run/dns?q={0}".format(target), headers=headers, verify=False, timeout=timeout_sec)
         subs = []
         results = json.loads(req.text)["FDNS_A"]
         for w in results:
@@ -554,7 +555,7 @@ def __urlscan_io(
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
         req = requests.get(
-            "https://urlscan.io/api/v1/search/?q=domain:{0}".format(target)
+            "https://urlscan.io/api/v1/search/?q=domain:{0}".format(target), headers=headers, verify=False, timeout=timeout_sec
         )
         subs = []
         results = json.loads(req.text)["results"]
@@ -613,7 +614,7 @@ def __otx_alienvault(
         req = requests.get(
             "https://otx.alienvault.com/api/v1/indicator/domain/{0}/passive_dns".format(
                 target
-            )
+            ), headers=headers, verify=False, timeout=timeout_sec
         )
         subs = []
         results = json.loads(req.text)["passive_dns"]
@@ -667,7 +668,7 @@ def __threatminer(
         req = requests.get(
             "https://api.threatminer.org/v2/domain.php?q={0}&api=True&rt=5".format(
                 target
-            )
+            ), headers=headers, verify=False, timeout=timeout_sec
         )
         subs = []
         results = json.loads(req.text)["results"]
@@ -746,7 +747,7 @@ def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_l
                    '(KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36',
                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
                    'Accept-Language': 'en-US,en;q=0.9',
-                   'Accept-Encoding': 'gzip, deflate, br',
+                   'Accept-Encoding': 'gzip, deflate',
                }):
     total_req = 0
     trying = 0
