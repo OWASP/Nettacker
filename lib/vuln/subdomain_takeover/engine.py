@@ -121,6 +121,12 @@ def extra_requirements_dict():
             "This job board website is either expired or its domain name is invalid."
         ],
         "sub_takeover_strikingly": ["page not found"],
+        "sub_takeover_agilecrm": ["Sorry, this page is no longer available."],
+        "sub_takeover_gemfury": ["404: This page could not be found."],
+        "sub_takeover_getresponse": ["With GetResponse Landing Pages, lead generation has never been easier"],
+        "sub_takeover_juzzhr": ["This account no longer active"],
+        "sub_takeover_landingi": ["The page you are looking for is not found"],
+        "sub_takeover_smugmug": ["{\"text\":\"Page Not Found\""]
     }
 
 
