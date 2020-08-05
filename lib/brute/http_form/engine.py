@@ -16,8 +16,8 @@ if version() == 3:
 else:
     from HTMLParser import HTMLParser
     import cookielib as cookiejar
-import urllib
-import urllib2
+    import urllib2 as request
+    from urllib import urlencode
 import os
 import requests
 from core.alert import *
@@ -92,7 +92,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             parsed_html.feed(page)
             parsed_html.parsed_results[username_field] = user
             parsed_html.parsed_results[password_field] = passwd
-            post_data = urllib.urlencode(parsed_html.parsed_results).encode()
+            post_data = urlencode(parsed_html.parsed_results).encode()
         except:
             exit += 1
             if exit == retries:

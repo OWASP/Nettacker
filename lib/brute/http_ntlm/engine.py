@@ -98,9 +98,9 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
 def check_auth(target, timeout_sec, language, port):
     try:
         if timeout_sec is not None:
-            req = requests.get((str(target) + str(port)), timeout = timeout_sec)
+            req = requests.get((str(target) + ":" + str(port)), timeout = timeout_sec)
         else:
-            req = requests.get(str(target) + str(port))
+            req = requests.get(str(target) + ":" + str(port))
         if req.status_code == 200:
             info(messages(language, "no_auth").format(target, port))
             return 1

@@ -5,8 +5,8 @@ import socket
 import json
 import netaddr.ip
 import re
-from core.ip import *
-from core.alert import *
+from core.ip import getIPRange, IPRange, isIP, isIP6
+from core.alert import messages, info
 from core._die import __die_failure
 from lib.scan.subdomain.engine import __get_subs
 from core.log import __log_into_file
@@ -21,11 +21,15 @@ def target_to_host(target):
     Returns:
         the host target
     """
-    if target_type(target) == 'HTTP':
-        target = target.lower().replace(
-            'http://', '').replace('https://', '').rsplit('/')[0]
-        if ':' in target:
-            target = target.rsplit(':')[0]
+    if target_type(target) == "HTTP":
+        target = (
+            target.lower()
+            .replace("http://", "")
+            .replace("https://", "")
+            .rsplit("/")[0]
+        )
+        if ":" in target:
+            target = target.rsplit(":")[0]
     return target
 
 
@@ -40,28 +44,50 @@ def target_type(target):
         the target type (SINGLE_IPv4, SINGLE_IPv6, RANGE_IPv4, DOMAIN, HTTP, CIDR_IPv4, UNKNOWN)
     """
     if isIP(target):
-        return 'SINGLE_IPv4'
+        return "SINGLE_IPv4"
     elif isIP6(target):
-        return 'SINGLE_IPv6'
-    elif len(target.rsplit('.')) is 7 and '-' in target and '/' not in target:
-        start_ip, stop_ip = target.rsplit('-')
+        return "SINGLE_IPv6"
+    elif len(target.rsplit(".")) == 7 and "-" in target and "/" not in target:
+        start_ip, stop_ip = target.rsplit("-")
         if isIP(start_ip) and isIP(stop_ip):
-            return 'RANGE_IPv4'
-    elif re.match('^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$', target):
-        return 'DOMAIN'
-    elif (target.lower().startswith('http://') or target.lower().startswith('https://')):
+            return "RANGE_IPv4"
+    elif re.match(
+        r"^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$", target
+    ):
+        return "DOMAIN"
+    elif target.lower().startswith("http://") or target.lower().startswith(
+        "https://"
+    ):
         t = target.rsplit("://")[1].rsplit("/")[0].rsplit(":")[0]
-        if isIP(t) or isIP6(t) or re.match('^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$', t):
-            return 'HTTP'
-    elif len(target.rsplit('.')) is 4 and '-' not in target and '/' in target:
-        IP, CIDR = target.rsplit('/')
+        if (
+            isIP(t)
+            or isIP6(t)
+            or re.match(
+                r"^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$", t
+            )
+        ):
+            return "HTTP"
+    elif len(target.rsplit(".")) == 4 and "-" not in target and "/" in target:
+        IP, CIDR = target.rsplit("/")
         if isIP(IP) and (int(CIDR) >= 0 and int(CIDR) <= 32):
-            return 'CIDR_IPv4'
-    return 'UNKNOWN'
+            return "CIDR_IPv4"
+    return "UNKNOWN"
 
 
-def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log_in_file, time_sleep,
-             language, verbose_level, retries, socks_proxy, enumerate_flag):
+def analysis(
+    targets,
+    check_ranges,
+    check_subdomains,
+    subs_temp,
+    range_temp,
+    log_in_file,
+    time_sleep,
+    language,
+    verbose_level,
+    retries,
+    socks_proxy,
+    enumerate_flag,
+):
     """
     analysis and calulcate targets.
 
@@ -82,11 +108,11 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
     Returns:
         a generator
     """
-    __log_into_file(range_temp, 'a', '', language)
-    __log_into_file(subs_temp, 'a', '', language)
+    __log_into_file(range_temp, "a", "", language)
+    __log_into_file(subs_temp, "a", "", language)
 
     for target in targets:
-        if target_type(target) == 'SINGLE_IPv4':
+        if target_type(target) == "SINGLE_IPv4":
             if check_ranges:
                 if not enumerate_flag:
                     info(messages(language, "checking_range").format(target))
@@ -102,10 +128,13 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                 if not enumerate_flag:
                     info(messages(language, "target_submitted").format(target))
                 yield target
-        elif target_type(target) == 'SINGLE_IPv6':
+        elif target_type(target) == "SINGLE_IPv6":
             yield target
 
-        elif target_type(target) == 'RANGE_IPv4' or target_type(target) == 'CIDR_IPv4':
+        elif (
+            target_type(target) == "RANGE_IPv4"
+            or target_type(target) == "CIDR_IPv4"
+        ):
             IPs = IPRange(target, range_temp, language)
             if not enumerate_flag:
                 info(messages(language, "checking").format(target))
@@ -117,22 +146,31 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                     for IP in IPm:
                         yield IP
 
-        elif target_type(target) == 'DOMAIN':
+        elif target_type(target) == "DOMAIN":
             if check_subdomains:
                 if check_ranges:
                     if enumerate_flag:
                         info(messages(language, "checking").format(target))
-                    sub_domains = json.loads(open(subs_temp).read()) if len(open(subs_temp).read()) > 2 else \
-                        __get_subs(target, 3, '', 0, language,
-                                   0, socks_proxy, 3, 0, 0)
-                    if len(open(subs_temp).read()) is 0:
-                        __log_into_file(subs_temp, 'a', json.dumps(
-                            sub_domains), language)
+                    sub_domains = (
+                        json.loads(open(subs_temp).read())
+                        if len(open(subs_temp).read()) > 2
+                        else __get_subs(
+                            target, 3, "", 0, language, 0, socks_proxy, 3, 0, 0
+                        )
+                    )
+                    if len(open(subs_temp).read()) == 0:
+                        __log_into_file(
+                            subs_temp, "a", json.dumps(sub_domains), language
+                        )
                     if target not in sub_domains:
                         sub_domains.append(target)
                     for target in sub_domains:
                         if not enumerate_flag:
-                            info(messages(language, "target_submitted").format(target))
+                            info(
+                                messages(language, "target_submitted").format(
+                                    target
+                                )
+                            )
                         yield target
                         n = 0
                         err = 0
@@ -142,16 +180,20 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                                 IPs.append(socket.gethostbyname(target))
                                 err = 0
                                 n += 1
-                                if n is 12:
+                                if n == 12:
                                     break
-                            except:
+                            except Exception:
                                 err += 1
-                                if err is 3 or n is 12:
+                                if err == 3 or n == 12:
                                     break
                         IPz = list(set(IPs))
                         for IP in IPz:
                             if not enumerate_flag:
-                                info(messages(language, "checking_range").format(IP))
+                                info(
+                                    messages(
+                                        language, "checking_range"
+                                    ).format(IP)
+                                )
                             IPs = IPRange(getIPRange(IP), range_temp, language)
                             if type(IPs) == netaddr.ip.IPNetwork:
                                 for IPm in IPs:
@@ -163,17 +205,26 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                 else:
                     if enumerate_flag:
                         info(messages(language, "checking").format(target))
-                    sub_domains = json.loads(open(subs_temp).read()) if len(open(subs_temp).read()) > 2 else \
-                        __get_subs(target, 3, '', 0, language,
-                                   0, socks_proxy, 3, 0, 0)
-                    if len(open(subs_temp).read()) is 0:
-                        __log_into_file(subs_temp, 'a', json.dumps(
-                            sub_domains), language)
+                    sub_domains = (
+                        json.loads(open(subs_temp).read())
+                        if len(open(subs_temp).read()) > 2
+                        else __get_subs(
+                            target, 3, "", 0, language, 0, socks_proxy, 3, 0, 0
+                        )
+                    )
+                    if len(open(subs_temp).read()) == 0:
+                        __log_into_file(
+                            subs_temp, "a", json.dumps(sub_domains), language
+                        )
                     if target not in sub_domains:
                         sub_domains.append(target)
                     for target in sub_domains:
                         if not enumerate_flag:
-                            info(messages(language, "target_submitted").format(target))
+                            info(
+                                messages(language, "target_submitted").format(
+                                    target
+                                )
+                            )
                         yield target
             else:
                 if check_ranges:
@@ -188,16 +239,18 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                             IPs.append(socket.gethostbyname(target))
                             err = 0
                             n += 1
-                            if n is 12:
+                            if n == 12:
                                 break
-                        except:
+                        except Exception:
                             err += 1
-                            if err is 3 or n is 12:
+                            if err == 3 or n == 12:
                                 break
                     IPz = list(set(IPs))
                     for IP in IPz:
                         if not enumerate_flag:
-                            info(messages(language, "checking_range").format(IP))
+                            info(
+                                messages(language, "checking_range").format(IP)
+                            )
                         IPs = IPRange(getIPRange(IP), range_temp, language)
                         if type(IPs) == netaddr.ip.IPNetwork:
                             for IPm in IPs:
@@ -208,18 +261,22 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                                     yield IPn
                 else:
                     if not enumerate_flag:
-                        info(messages(language, "target_submitted").format(target))
+                        info(
+                            messages(language, "target_submitted").format(
+                                target
+                            )
+                        )
                     yield target
 
-        elif target_type(target) == 'HTTP':
+        elif target_type(target) == "HTTP":
             if not enumerate_flag:
                 info(messages(language, "checking").format(target))
             yield target
             if check_ranges:
-                if 'http://' == target[:7].lower():
-                    target = target[7:].rsplit('/')[0]
-                if 'https://' == target[:8].lower():
-                    target = target[8:].rsplit('/')[0]
+                if "http://" == target[:7].lower():
+                    target = target[7:].rsplit("/")[0]
+                if "https://" == target[:8].lower():
+                    target = target[8:].rsplit("/")[0]
                 yield target
                 IPs = []
                 while True:
@@ -227,11 +284,11 @@ def analysis(targets, check_ranges, check_subdomains, subs_temp, range_temp, log
                         IPs.append(socket.gethostbyname(target))
                         err = 0
                         n += 1
-                        if n is 12:
+                        if n == 12:
                             break
-                    except:
+                    except Exception:
                         err += 1
-                        if err is 3 or n is 12:
+                        if err == 3 or n == 12:
                             break
                 IPz = list(set(IPs))
                 for IP in IPz:

@@ -190,7 +190,6 @@ def error(content):
     Returns:
         the message in error structure - None
     """
-
     if pyversion == 2:
         sys.stdout.write(
             color.color("red")
