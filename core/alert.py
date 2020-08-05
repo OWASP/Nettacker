@@ -85,7 +85,7 @@ def __input_msg(content):
         color.color("yellow")
         + "[+] "
         + color.color("green")
-        + text_type(content)
+        + six.text_type(content)
         + color.color("reset")
     )
 
