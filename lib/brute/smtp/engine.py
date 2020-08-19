@@ -59,7 +59,9 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                 server = smtplib.SMTP(target, int(port), timeout=timeout_sec)
             else:
                 server = smtplib.SMTP(target, int(port))
-            server.starttls()
+            output = server.ehlo(name="test")
+            if starttls in output[1].lower():
+                server.starttls()
             exit = 0
             break
         except:
@@ -119,7 +121,9 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
                 server = smtplib.SMTP(target, int(port), timeout=timeout_sec)
             else:
                 server = smtplib.SMTP(target, int(port))
-            server.starttls()
+            output = server.ehlo(name="test")
+            if starttls in output[1].lower():
+                server.starttls()
             server.quit()
             exit = 0
             break
