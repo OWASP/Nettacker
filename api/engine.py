@@ -477,7 +477,7 @@ def _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_wh
     while 1:
         try:
             exitflag = True
-            if len(multiprocessing.active_children()) is not 0:
+            if len(multiprocessing.active_children()) != 0:
                 exitflag = False
             time.sleep(0.3)
             if exitflag:
