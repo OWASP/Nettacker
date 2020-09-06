@@ -4,6 +4,8 @@
 import multiprocessing
 import time
 import random
+import csv
+import json
 import os
 import string
 from flask import Flask
@@ -336,8 +338,48 @@ def __get_logs():
         host = __get_value(flask_request, "host")
     except:
         host = ""
-    return jsonify(__logs_to_report_json(host, __language())), 200
+    data = __logs_to_report_json(host, __language())
+    json_object = json.dumps(data)
+    return Response(json_object,
+        mimetype='application/json',
+        headers={'Content-Disposition':'attachment;filename=results.json'})
 
+
+
+@app.route("/logs/get_csv", methods=["GET"])
+def __get_logs_csv():
+    """
+    get host's logs through the API in JSON type
+
+    Returns:
+        an array with JSON events
+    """
+    __api_key_check(app, flask_request, __language())
+    try:
+        host = __get_value(flask_request, "host")
+    except:
+        host = ""
+    data = __logs_to_report_json(host, __language())
+    keys = data[0].keys()
+    with open('results.csv', "w")  as output_file:
+        dict_writer = csv.DictWriter(output_file, fieldnames=keys)
+        dict_writer.writeheader()
+        for i in data:
+            dictdata = {key: value for key, value in i.items()
+                        if key in keys}
+            dict_writer.writerow(dictdata)
+    printData = []
+    with open('results.csv', 'r') as output_file:
+        reader = csv.reader(output_file)
+        for row in reader:
+            printData.append(row)
+    s = ''
+    for i in printData:
+        s += ", ".join(i)
+        s += "\n"
+    return Response(s,
+        mimetype='text/csv',
+        headers={'Content-Disposition':'attachment;filename=results.csv'})
 
 @app.route("/logs/search", methods=["GET"])
 def ___go_for_search_logs():

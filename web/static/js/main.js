@@ -628,13 +628,13 @@ $(document).ready(function () {
                 }
             }
 
-            HTMLData += "<a target='_blank' href=\"/logs/get_html?host=" + host + "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
+            HTMLData += "<a target='_blank' href=\"/logs/get_html?host=" + host + "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" + 
                 "<div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
                 "<h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
                 "class=\"bold label label-danger\">" + host + "</span></h3>\n" +
                 "</div></div>\n" + "<p class=\"mb-1\"> " + html_categories + html_scan_methods +
                 html_open_ports + html_description +
-                "</p>\n </a>";
+                "</p>\n </a>"+"<button><a href=\"/logs/get_json?host=" + host + "\">Get Json</a></button>" + "<button><a href=\"/logs/get_csv?host=" + host + "\">Get CSV </a></button>";
         }
 
         if (res["msg"] == "No more search results") {
