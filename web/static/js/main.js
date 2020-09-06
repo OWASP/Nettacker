@@ -634,9 +634,8 @@ $(document).ready(function () {
                 "class=\"bold label label-danger\">" + host + "</span></h3>\n" +
                 "</div></div>\n" + "<p class=\"mb-1\"> " + html_categories + html_scan_methods +
                 html_open_ports + html_description +
-                "</p>\n </a>"+"<button><a href=\"/logs/get_json?host=" + host + "\">Get Json</a></button>" + "<button><a href=\"/logs/get_csv?host=" + host + "\">Get CSV </a></button>";
+                "</p>\n </a>"+"<button style=\"background-color: #EEEEEE;padding: 8px 20px;text-decoration:none;font-weight:bold;border-radius:5px;color: #10a2ff;cursor:pointer;\"><a href=\"/logs/get_json?host=" + host + "\">Get Json</a></button>" + "<button style=\"background-color: #EEEEEE;padding: 8px 20px;text-decoration:none;font-weight:bold;border-radius:5px;color: #10a2ff;cursor:pointer;\"><a href=\"/logs/get_csv?host=" + host + "\">Get CSV </a></button>";
         }
-
         if (res["msg"] == "No more search results") {
             HTMLData = "<p class=\"mb-1\"> No more results to show!!</p>";
         }
