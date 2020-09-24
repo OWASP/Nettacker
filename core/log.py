@@ -13,6 +13,7 @@ from core._die import __die_failure
 from database.db import submit_report_to_db
 from database.db import submit_logs_to_db
 from database.db import remove_old_logs
+import html
 from database.db import __logs_by_scan_id
 from core.config_builder import default_paths
 from core.config import _paths
@@ -132,6 +133,10 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
         data = sorted(JSON_FROM_DB, key=lambda x: sorted(x.keys()))
         # if user want a graph
         _graph = ''
+        for i in data:
+            if(i["DESCRIPTION"]):
+                i["DESCRIPTION"] = html.escape(i["DESCRIPTION"])
+                break;
         if graph_flag is not None:
             _graph = build_graph(graph_flag, language, data, 'HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE',
                                  'DESCRIPTION')
