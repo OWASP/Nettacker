@@ -1,4 +1,4 @@
-OWASP Nettacker
+OWASP An Open Source Project
 =========
 [![Build Status Travic CI](https://travis-ci.org/zdresearch/OWASP-Nettacker.svg?branch=master)](https://travis-ci.org/zdresearch/OWASP-Nettacker)
 [![Donate US](https://img.shields.io/badge/Donate-OWASP-green.svg)](https://www.owasp.org/index.php/OWASP_Nettacker)
