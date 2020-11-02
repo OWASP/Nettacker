@@ -418,6 +418,7 @@ $(document).ready(function () {
             language = res[i]["language"];
             scan_cmd = res[i]["scan_cmd"];
             ports = res[i]["ports"];
+            host = scan_cmd.split(" ")[2].split("/")[2];
             HTMLData += "<a target='_blank' href=\"/results/get?id=" + id +
                 "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
                 "<div class=\"row\" ><div class=\"d-flex w-100\">\n" +
@@ -439,7 +440,7 @@ $(document).ready(function () {
                 "<p class='mb-1 bold label label-success'>language:" + language + "</p>" +
                 "<span class='card-flag flag-icon flag-icon-" + flags[language] + "'></span><br>" +
                 "<p class='mb-1 bold label label-default'>scan_cmd:" + scan_cmd + "</p>" +
-                "</p>\n </a>";
+                "</p>\n </a><button style=\"background-color: #EEEEEE;padding: 8px 20px;text-decoration:none;font-weight:bold;border-radius:5px;color: #10a2ff;cursor:pointer;\"><a href=\"/logs/get_json?host=" + host + "\">Get Json</a></button>" + "<button style=\"background-color: #EEEEEE;padding: 8px 20px;text-decoration:none;font-weight:bold;border-radius:5px;color: #10a2ff;cursor:pointer;\"><a href=\"/logs/get_csv?host=" + host + "\">Get CSV </a></button>";
         }
 
         if (res["msg"] == "No more search results") {
