@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Pradeep Jairamani , github.com/pradeepjairamani
+# Author: Aman Gupta , github.com/aman566
 
 import socket
 import socks
@@ -10,9 +10,13 @@ import threading
 import string
 import random
 import sys
+import struct
 import re
 import os
-from core.alert import warn, info, messages
+from OpenSSL import crypto
+import logging
+import ssl
+from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
 from core.load_modules import load_file_path
@@ -20,19 +24,24 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
+from six import text_type
 
 
 def extra_requirements_dict():
-    return {"wp_user_enum_ports": [80, 443]}
+    return {
+        "whatcms_ports": [443],
+        "whatcms_api_key": ["test_api_key"],
+    }
 
+CHECK = 0
+SESSION = requests.Session()
+CMS_CODES = [0, 102, 123, 201, 202, 203, 204]
 
 def conn(targ, port, timeout_sec, socks_proxy):
     try:
         if socks_proxy is not None:
             socks_version = (
-                socks.SOCKS5
-                if socks_proxy.startswith("socks5://")
-                else socks.SOCKS4
+                socks.SOCKS5 if socks_proxy.startswith("socks5://") else socks.SOCKS4
             )
             socks_proxy = socks_proxy.rsplit("://")[1]
             if "@" in socks_proxy:
@@ -64,7 +73,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def wp_user_enum(
+def whatcms(
     target,
     port,
     timeout_sec,
@@ -75,85 +84,69 @@ def wp_user_enum(
     socks_proxy,
     scan_id,
     scan_cmd,
+    whatcms_api_key,
 ):
     try:
-        s = conn(target, port, timeout_sec, socks_proxy)
+        try:
+            s = conn(target, port, timeout_sec, socks_proxy)
+        except Exception:
+            return False
         if not s:
             return False
         else:
-            if target_type(target) != "HTTP" and port == 443:
-                target = "https://" + target
-            if target_type(target) != "HTTP" and port == 80:
-                target = "http://" + target
-            user_agent_list = [
-                "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; \
-                    rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
-                "Googlebot/2.1 ( http://www.googlebot.com/bot.html)",
-                "Mozilla/5.0 (X11; U; Linux x86_64; en-US) \
-                    AppleWebKit/534.13 (KHTML, like Gecko) Ubuntu/10.04"
-                " Chromium/9.0.595.0 Chrome/9.0.595.0 Safari/534.13",
-                "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.2;\
-                     WOW64; .NET CLR 2.0.50727)",
-                "Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22\
-                     Version/10.51",
-                "Debian APT-HTTP/1.3 (0.8.10.3)",
-                "Mozilla/5.0 (compatible; Googlebot/2.1;\
-                     +http://www.google.com/bot.html)",
-                "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
-                "Mozilla/5.0 (compatible; Yahoo! Slurp;\
-                     http://help.yahoo.com/help/us/ysearch/slurp)",
-                "YahooSeeker/1.2 (compatible; Mozilla 4.0; MSIE 5.5;\
-                     yahooseeker at yahoo-inc dot com ; "
-                "http://help.yahoo.com/help/us/shop/merchant/)",
-            ]
-            headers = {"User-agent": random.choice(user_agent_list)}
-            r = requests.get(
-                target + "/?feed=rss2", verify=False, headers=headers
+            global cms_name
+            headers = {
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:77.0) Gecko/20100101 Firefox/77.0",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.7,ru;q=0.3",
+                "Accept-Encoding": "gzip, deflate",
+                "Connection": "Keep-Alive",
+                "Upgrade-Insecure-Requests": "1",
+                "X-Requested-With": "XMLHttpRequest",
+            }
+            check_api_key_is_valid = (
+                "https://whatcms.org/API/Status?key=" + whatcms_api_key
             )
-            r2 = requests.get(
-                target + "/?author=", verify=False, headers=headers
+            global CHECK
+            if CHECK == 0:
+                check = SESSION.get(
+                    check_api_key_is_valid, headers=headers, verify=False, timeout=timeout_sec
+                )
+                api_result_code = json.loads(check.text)["result"]["code"]
+                if api_result_code == 101:
+                    warn(
+                        messages(language, "Invalid_whatcms_api_key").format(
+                            "Invalid API Key"
+                        )
+                    )
+                    return
+                CHECK = 1
+            info(messages(language, "searching_whatcms_database").format(target))
+            requests_url = (
+                "https://whatcms.org/API/CMS?key=" + whatcms_api_key + "&url=" + target
             )
-            r3 = requests.get(
-                target + "/wp-json/wp/v2/users", verify=False, headers=headers
-            )
-            try:
-                r3List = json.loads(r3.text)
-            except Exception:
-                pass
-            wp_users_admin3 = []
-            try:
-                global wp_users
-                wp_users_feed = re.findall(
-                    r"<dc:creator><!\[CDATA\[(.+?)\]\]></dc:creator>",
-                    r.text,
-                    re.IGNORECASE,
-                )
-                wp_users_admin = re.findall(
-                    "author author-(.+?) ", r2.text, re.IGNORECASE
-                )
-                wp_users_admin2 = re.findall(
-                    "/author/(.+?)/feed/", r2.text, re.IGNORECASE
-                )
-                for i in r3List:
-                    wp_users_admin3.append(i["slug"])
-                wp_users = (
-                    wp_users_feed
-                    + wp_users_admin
-                    + wp_users_admin2
-                    + wp_users_admin3
-                )
-                wp_users = sorted(set(wp_users))
-                if wp_users != "":
-                    return True
-                else:
-                    return False
-            except Exception:
-                return False
+            while 1:
+                try:
+                    req = SESSION.get(requests_url, verify=False, headers=headers, timeout=timeout_sec)
+                    cms_name = json.loads(req.text)["result"]["name"]
+                    cms_version = json.loads(req.text)["result"]["version"]
+                    status_codes = json.loads(req.text)["result"]["code"]
+                    if status_codes == 200:
+                        if cms_version:
+                            cms_name += " version " + cms_version
+                        return cms_name
+                    elif status_codes == 121:
+                        warn(messages(language, "whatcms_monthly_quota_exceeded"))
+                        return
+                    elif status_codes in CMS_CODES:
+                        return
+                except requests.exceptions.Timeout:
+                    time.sleep(5)
     except Exception:
         return False
 
 
-def __wp_user_enum(
+def __whatcms(
     target,
     port,
     timeout_sec,
@@ -164,8 +157,9 @@ def __wp_user_enum(
     socks_proxy,
     scan_id,
     scan_cmd,
+    whatcms_api_key,
 ):
-    if wp_user_enum(
+    if whatcms(
         target,
         port,
         timeout_sec,
@@ -176,31 +170,27 @@ def __wp_user_enum(
         socks_proxy,
         scan_id,
         scan_cmd,
+        whatcms_api_key,
     ):
-        info(
-            messages(language, "found").format(
-                target, "Wordpress users found ", ", ".join(wp_users)
-            )
-        )
+        info(messages(language, "found").format(target, "CMS Name", cms_name))
         __log_into_file(thread_tmp_filename, "w", "0", language)
-        for i in wp_users:
-            data = json.dumps(
-                {
-                    "HOST": target,
-                    "USERNAME": i,
-                    "PASSWORD": "",
-                    "PORT": port,
-                    "TYPE": "wp_user_enum_scan",
-                    "DESCRIPTION": messages(language, "found").format(
-                        target, "Wordpress user found ", i
-                    ),
-                    "TIME": now(),
-                    "CATEGORY": "vuln",
-                    "SCAN_ID": scan_id,
-                    "SCAN_CMD": scan_cmd,
-                }
-            )
-            __log_into_file(log_in_file, "a", data, language)
+        data = json.dumps(
+            {
+                "HOST": target,
+                "USERNAME": "",
+                "PASSWORD": "",
+                "PORT": port,
+                "TYPE": "whatcms_scan",
+                "DESCRIPTION": messages(language, "found").format(
+                    target, "CMS Name", cms_name
+                ),
+                "TIME": now(),
+                "CATEGORY": "scan",
+                "SCAN_ID": scan_id,
+                "SCAN_CMD": scan_cmd,
+            }
+        )
+        __log_into_file(log_in_file, "a", data, language)
         return True
     else:
         return False
@@ -240,16 +230,13 @@ def start(
                     ]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["wp_user_enum_ports"]
+            ports = extra_requirements["whatcms_ports"]
         if target_type(target) == "HTTP":
             target = target_to_host(target)
         threads = []
         total_req = len(ports)
-        thread_tmp_filename = "{}/tmp/thread_tmp_".format(
-            load_file_path()
-        ) + "".join(
-            random.choice(string.ascii_letters + string.digits)
-            for _ in range(20)
+        thread_tmp_filename = "{}/tmp/thread_tmp_".format(load_file_path()) + "".join(
+            random.choice(string.ascii_letters + string.digits) for _ in range(20)
         )
         __log_into_file(thread_tmp_filename, "w", "1", language)
         trying = 0
@@ -257,7 +244,7 @@ def start(
         for port in ports:
             port = int(port)
             t = threading.Thread(
-                target=__wp_user_enum,
+                target=__whatcms,
                 args=(
                     target,
                     int(port),
@@ -269,6 +256,7 @@ def start(
                     socks_proxy,
                     scan_id,
                     scan_cmd,
+                    extra_requirements["whatcms_api_key"][0],
                 ),
             )
             threads.append(t)
@@ -277,13 +265,7 @@ def start(
             if verbose_level > 3:
                 info(
                     messages(language, "trying_message").format(
-                        trying,
-                        total_req,
-                        num,
-                        total,
-                        target,
-                        port,
-                        "wp_user_enum_scan",
+                        trying, total_req, num, total, target, port, "whatcms_scan",
                     )
                 )
             while 1:
@@ -299,6 +281,7 @@ def start(
                 break
         # wait for threads
         kill_switch = 0
+        kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
@@ -316,7 +299,7 @@ def start(
                     "USERNAME": "",
                     "PASSWORD": "",
                     "PORT": "",
-                    "TYPE": "wp_user_enum_scan",
+                    "TYPE": "whatcms_scan",
                     "DESCRIPTION": messages(language, "not_found"),
                     "TIME": now(),
                     "CATEGORY": "scan",
@@ -328,8 +311,4 @@ def start(
         os.remove(thread_tmp_filename)
 
     else:
-        warn(
-            messages(language, "input_target_error").format(
-                "wp_user_enum_scan", target
-            )
-        )
+        warn(messages(language, "input_target_error").format("whatcms_scan", target))

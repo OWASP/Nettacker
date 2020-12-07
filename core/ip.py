@@ -35,7 +35,6 @@ def getIPRange(IP):
             n += 1
             if n is 3:
                 return IP
-                break
             time.sleep(0.1)
     return data
 
