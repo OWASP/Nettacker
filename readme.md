@@ -1,7 +1,7 @@
 OWASP Nettacker
 =========
 [![Build Status Travic CI](https://travis-ci.org/zdresearch/OWASP-Nettacker.svg?branch=master)](https://travis-ci.org/zdresearch/OWASP-Nettacker)
-[![Donate US](https://img.shields.io/badge/Donate-OWASP-green.svg)](https://www.owasp.org/index.php/OWASP_Nettacker)
+[![Donate US](https://img.shields.io/badge/Donate-OWASP-green.svg)](https://owasp.org/donate/?reponame=www-project-nettacker&title=OWASP+Nettacker)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/04ca57d1b996435d8a42c767add84859)](https://www.codacy.com/app/zdresearch/OWASP-Nettacker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=zdresearch/OWASP-Nettacker&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/04ca57d1b996435d8a42c767add84859)](https://www.codacy.com/app/zdresearch/OWASP-Nettacker?utm_source=github.com&utm_medium=referral&utm_content=zdresearch/OWASP-Nettacker&utm_campaign=Badge_Coverage)
 [![Python 2.x](https://img.shields.io/badge/python-2.x-blue.svg)](https://travis-ci.org/zdresearch/OWASP-Nettacker)
