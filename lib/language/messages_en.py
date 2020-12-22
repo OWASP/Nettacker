@@ -22,6 +22,7 @@ def all_messages():
             "subdomains": "find and scan subdomains",
             "Invalid_whatcms_api_key": "{0}",
             "searching_whatcms_database": "Searching for CMS on whatcms.org...",
+            "whatcms_monthly_quota_exceeded": "You have exceeded your monthly WHATCMS request quota",
             "thread_number_connections": "thread numbers for connections to a host",
             "thread_number_hosts": "thread numbers for scan hosts",
             "save_logs": "save all logs in file (results.txt, results.csv, results.html, results.json)",
