@@ -16,6 +16,7 @@ pass.txt
 logs.txt
 *.log
 results.*
+.owasp-nettacker*
 *.html
 *.htm
 *.DS_Store
