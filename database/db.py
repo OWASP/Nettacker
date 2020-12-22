@@ -23,6 +23,12 @@ HOST = _database_config()["HOST"]
 PORT = _database_config()["PORT"]
 DATABASE = _database_config()["DATABASE"]
 
+#Python2 hack for flake8
+try:
+    reload
+except NameError:
+    def reload(dummy):
+        return dummy
 
 def db_inputs(connection_type):
     """

@@ -66,8 +66,6 @@ def citrix_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
         if not s:
-            if verbose_level > 4:
-                warn('unable to connect to: {} on port: {} timeout: {}'.format(target,port,timeout_sec))
             return False
         else:
             if target_type(target) != "HTTP" and port == 443:
@@ -102,7 +100,7 @@ def citrix_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
         return False
 
 
-def __citrix_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
+def __citrix_vuln(target, port, timeout_sec, log_in_file, language, verbose_level, time_sleep,
                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     if citrix_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
@@ -145,7 +143,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         for port in ports:
             port = int(port)
             t = threading.Thread(target=__citrix_vuln,
-                                 args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
+                                 args=(target, int(port), timeout_sec, log_in_file, language, verbose_level, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
             t.start()

@@ -21,7 +21,7 @@ from core.log import __log_into_file
 from core._die import __die_failure
 from lib.scan.wp_theme import themes
 from lib.scan.wp_theme import small_themes
-
+from core.compatible import version
 
 def extra_requirements_dict():
     return {

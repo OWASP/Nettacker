@@ -199,9 +199,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 idir = "/wp-content/plugins/" + idir
                 if random_agent_flag:
                     user_agent = {'User-agent': random.choice(user_agent_list)}
+                if target.endswith("/"):
+                    target = target[:-1]
                 t = threading.Thread(target=check,
                                      args=(
-                                         target + '/' + idir, user_agent, timeout_sec, log_in_file, language,
+                                         target + idir, user_agent, timeout_sec, log_in_file, language,
                                          time_sleep, thread_tmp_filename, retries,
                                          extra_requirements[
                                              "wp_plugin_scan_http_method"][0],

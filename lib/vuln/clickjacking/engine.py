@@ -71,10 +71,12 @@ def clickjacking(target, port, timeout_sec, log_in_file, language, time_sleep,
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
             req = requests.get(target)
-            try:
-                req.headers['x-frame-options']
+            if req.headers['x-frame-options']:
                 return False
-            except:
+            req = requests.get(target)
+            if "frame-ancestors" in req.headers["content-security-policy"]:
+                return False
+            else:
                 return True
     except:
         # some error warning
@@ -86,10 +88,10 @@ def __clickjacking(target, port, timeout_sec, log_in_file, language, time_sleep,
     if clickjacking(target, port, timeout_sec, log_in_file, language, time_sleep,
                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "target_vulnerable").format(target, port,
-                                                            'Header x-frame-options not set, ClickJacking attack is possible. Clickjacking, also known as a "UI redress attack", is when an attacker uses multiple transparent or opaque layers to trick a user into clicking on a button or link on another page when they were intending to click on the the top level page. '))
+                                                            'Header x-frame-options or frame-ancestors directive not set, ClickJacking attack is possible. Clickjacking, also known as a "UI redress attack", is when an attacker uses multiple transparent or opaque layers to trick a user into clicking on a button or link on another page when they were intending to click on the the top level page. '))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'clickjacking_vuln',
-                           'DESCRIPTION': messages(language, "vulnerable").format('Header x-frame-options not set, ClickJacking attack is possible. Clickjacking, also known as a "UI redress attack", is when an attacker uses multiple transparent or opaque layers to trick a user into clicking on a button or link on another page when they were intending to click on the the top level page. '), 'TIME': now(),
+                           'DESCRIPTION': messages(language, "vulnerable").format('Header x-frame-options or frame-ancestors directive not set, ClickJacking attack is possible. Clickjacking, also known as a "UI redress attack", is when an attacker uses multiple transparent or opaque layers to trick a user into clicking on a button or link on another page when they were intending to click on the the top level page. '), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)

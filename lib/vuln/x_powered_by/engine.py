@@ -73,7 +73,7 @@ def powered_by(target, port, timeout_sec, log_in_file, language, time_sleep,
             req = requests.get(target)
             try:
                 global header_server
-                header_server=req.headers['x-powered-by']
+                header_server = req.headers['x-powered-by']
                 return True
             except:
                 return False
@@ -90,7 +90,7 @@ def __powered_by(target, port, timeout_sec, log_in_file, language, time_sleep,
                                                             'X-powered-by disclosure in headers - ' + header_server))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'x_powered_by_vuln',
-                           'DESCRIPTION': messages(language, "vulnerable").format(''), 'TIME': now(),
+                           'DESCRIPTION': header_server[:128], 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
