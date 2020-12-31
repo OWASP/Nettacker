@@ -227,6 +227,7 @@ def __log_into_file(filename, mode, data, language, final=False):
         True if success otherwise None
     """
 
+    log = ''
     if isinstance(data, str):
         try:
             log = json.loads(data)
