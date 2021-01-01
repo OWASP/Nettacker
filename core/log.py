@@ -15,9 +15,6 @@ from database.db import submit_logs_to_db
 from database.db import remove_old_logs
 import html
 from database.db import __logs_by_scan_id
-from core.config_builder import default_paths
-from core.config import _paths
-from core.config_builder import _builder
 from core.compatible import version
 from core.alert import write
 import csv
@@ -28,6 +25,7 @@ except NameError:
     def reload(dummy):
         return dummy
     
+
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
     """
     build a graph
@@ -228,14 +226,15 @@ def __log_into_file(filename, mode, data, language, final=False):
     Returns:
         True if success otherwise None
     """
-    log = ''
-    if version() == 2:
-        if isinstance(data, str):
-            try:
-                log = json.loads(data)
-            except ValueError:
-                log = ''
 
+    log = ''
+    if isinstance(data, str):
+        try:
+            log = json.loads(data)
+        except ValueError:
+            log = ''
+
+    if version() == 2:
         if isinstance(log, dict):
             if final:
                 with open(filename, mode) as save:
@@ -251,13 +250,6 @@ def __log_into_file(filename, mode, data, language, final=False):
             if not final:
                 flock.release()
     else:
-
-        if isinstance(data, str):
-            try:
-                log = json.loads(data)
-            except ValueError:
-                log = ''
-
         if isinstance(log, dict):
             if final:
                 with open(filename, mode, encoding='utf-8') as save:
