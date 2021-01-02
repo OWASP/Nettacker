@@ -499,7 +499,7 @@ def __bufferover_run(
                 )
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
-        req = requests.get("http://dns.bufferover.run/dns?q={0}".format(target), headers=headers, verify=False, timeout=timeout_sec)
+        req = requests.get("https://dns.bufferover.run/dns?q={0}".format(target), headers=headers, verify=False, timeout=timeout_sec)
         subs = []
         results = json.loads(req.text)["FDNS_A"]
         for w in results:
