@@ -102,7 +102,7 @@ def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, ver
     if verbose_level > 3:
         info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target), "default_port",
                                                          'wp_timthumb_scan'))
-    if socks_proxy != None:
+    if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith(
             'socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.rsplit('://')[1]

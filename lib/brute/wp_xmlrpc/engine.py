@@ -83,7 +83,7 @@ def check(user, passwd, target, port, headers, timeout_sec, log_in_file, languag
 
 
 def test(target, port, retries, timeout_sec, headers, socks_proxy, verbose_level, trying, total_req, total, num, language):
-    if socks_proxy != None:
+    if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith(
             'socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.rsplit('://')[1]
