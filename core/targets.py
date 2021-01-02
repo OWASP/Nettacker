@@ -15,7 +15,6 @@ import six
 
 temp = 0
 
-
 def target_to_host(target):
     """
     convert a target to host, example http://owasp.org to \
@@ -118,6 +117,7 @@ def analysis(
     __log_into_file(subs_temp, "a", "", language)
 
     for target in targets:
+        target = six.ensure_text(target)
         if target_type(target) == "SINGLE_IPv4":
             if check_ranges:
                 if not enumerate_flag:
