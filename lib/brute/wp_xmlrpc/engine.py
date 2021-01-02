@@ -22,16 +22,13 @@ from core.log import __log_into_file
 from core._die import __die_failure
 from lib.scan.wp_theme import themes
 from lib.scan.wp_theme import small_themes
-
+from lib.payload.wordlists import useragents
+from lib.payload.wordlists import usernames, passwords
 
 def extra_requirements_dict():
     return {
-        "wp_users": ["admin", "root", "test", "anonymous", "user", "support"],
-        "wp_passwds": ["admin", "root", "test", "anonymous", "user", "1", "12345",
-                                    "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
-                                    "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
-                                    "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
-                                    "admin123", ""],
+        "wp_users": usernames.users(),
+        "wp_passwds": passwords.passwords(),
         "wp_xmlrpc_brute_ports": [80, 443]
     }
 
@@ -77,7 +74,7 @@ def check(user, passwd, target, port, headers, timeout_sec, log_in_file, languag
                 break
             except:
                 n += 1
-                if n is retries:
+                if n == retries:
                     warn(messages(language, "http_connection_timeout").format(target))
                     return 1
             return True
@@ -131,24 +128,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
             target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
         # rand useragent
-        user_agent_list = [
-            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
-            "Googlebot/2.1 ( http://www.googlebot.com/bot.html)",
-            "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Ubuntu/10.04"
-            " Chromium/9.0.595.0 Chrome/9.0.595.0 Safari/534.13",
-            "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.2; WOW64; .NET CLR 2.0.50727)",
-            "Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22 Version/10.51",
-            "Mozilla/5.0 (compatible; 008/0.83; http://www.80legs.com/webcrawler.html) Gecko/2008032620",
-            "Debian APT-HTTP/1.3 (0.8.10.3)",
-            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
-            "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
-            "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
-            "YahooSeeker/1.2 (compatible; Mozilla 4.0; MSIE 5.5; yahooseeker at yahoo-inc dot com ; "
-            "http://help.yahoo.com/help/us/shop/merchant/)",
-            "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)",
-            "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",
-            "msnbot/1.1 (+http://search.msn.com/msnbot.htm)"
-        ]
+        user_agent_list = useragents.useragents()
         headers = {'User-agent': random.choice(user_agent_list), 'Content-Type': 'text/xml'}
 
         # requirements check
@@ -178,7 +158,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             target = 'https://' + target
         for port in ports:
             if test(str(target), port, retries, timeout_sec, headers,
-                    socks_proxy, verbose_level, trying, total_req, total, num, language) is True:
+                    socks_proxy, verbose_level, trying, total_req, total, num, language) == True:
                 keyboard_interrupt_flag = False
                 for user in users:
                     for passwd in passwds:
@@ -212,12 +192,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threading.activeCount() == 1 or kill_switch == kill_time:
                     break
             except KeyboardInterrupt:
                 break

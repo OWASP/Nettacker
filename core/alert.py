@@ -5,7 +5,7 @@ import os
 import sys
 import json
 from core import color
-from six import text_type
+import six
 
 pyversion = int(sys.version_info[0])
 
@@ -85,7 +85,7 @@ def __input_msg(content):
         color.color("yellow")
         + "[+] "
         + color.color("green")
-        + text_type(content)
+        + six.text_type(content)
         + color.color("reset")
     )
 
@@ -112,27 +112,8 @@ def info(
         None
     """
     if is_not_run_from_api():  # prevent to stdout if run from API
-        if pyversion == 2:
-            sys.stdout.write(
-                color.color("yellow")
-                + "[+] "
-                + color.color("green")
-                + content.encode("utf8")
-                + color.color("reset")
-                + "\n"
-            )
-        else:
-            sys.stdout.buffer.write(
-                bytes(
-                    color.color("yellow")
-                    + "[+] "
-                    + color.color("green")
-                    + content
-                    + color.color("reset")
-                    + "\n",
-                    "utf8",
-                )
-            )
+        sys.stdout.write(color.color('yellow') + '[+] ' + color.color('green') +
+                six.text_type(content) + color.color('reset') + '\n')
     if event:  # if an event is present log it
         from core.log import __log_into_file
 
