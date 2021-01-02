@@ -4,7 +4,7 @@
 - [ ] The code is both Python 2 and Python 3 compatible.
 - [ ] The code follows the PEP8 styling guidelines with 4 spaces indentation.
 - [ ] This Pull Request relates to only one issue or only one feature
-- [ ] I have referenced the coresspoinding issue number in my commit message
+- [ ] I have referenced the corresponding issue number in my commit message
 - [ ] I have added the relevant documentation.
 - [ ] My branch is up-to-date with the Upstream master branch.
 
