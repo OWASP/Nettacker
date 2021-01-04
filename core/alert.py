@@ -112,8 +112,27 @@ def info(
         None
     """
     if is_not_run_from_api():  # prevent to stdout if run from API
-        sys.stdout.write(color.color('yellow') + '[+] ' + color.color('green') +
-                six.text_type(content) + color.color('reset') + '\n')
+        if pyversion == 2:
+            sys.stdout.write(
+                color.color("yellow")
+                + "[+] "
+                + color.color("green")
+                + content.encode("utf8")
+                + color.color("reset")
+                + "\n"
+            )
+        else:
+            sys.stdout.buffer.write(
+                bytes(
+                    color.color("yellow")
+                    + "[+] "
+                    + color.color("green")
+                    + content
+                    + color.color("reset")
+                    + "\n",
+                    "utf8",
+                )
+            )
     if event:  # if an event is present log it
         from core.log import __log_into_file
 
