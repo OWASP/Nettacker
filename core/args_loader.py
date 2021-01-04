@@ -618,7 +618,7 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             targets = list(set(targets.rsplit(",")))
         elif targets_list is not None:
             try:
-                targets = list(set(open(targets_list, "rb").read().rsplit()))
+                targets = list(set(open(targets_list, "rb").read().decode().rsplit()))
             except Exception:
                 __die_failure(
                     messages(language, "error_target_file").format(

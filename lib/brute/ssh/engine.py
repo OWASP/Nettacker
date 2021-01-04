@@ -18,12 +18,12 @@ from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-
+from lib.payload.wordlists import usernames, passwords
 
 def extra_requirements_dict():
     return {
-        "ssh_brute_users": ["root",  "user", ],
-        "ssh_brute_passwds": ["root", "user", "1qaz2wsx", "12345678"],
+        "ssh_brute_users": usernames.users(),
+        "ssh_brute_passwds": passwords.passwords(),
         "ssh_brute_ports": ["22"]
     }
 
@@ -59,12 +59,12 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             break
         except:
             exit += 1
-            if exit is retries:
+            if exit == retries:
                 warn(messages(language, "ssh_connection_timeout").format(
                     target, str(port), user, passwd))
                 return 1
         time.sleep(time_sleep)
-    if flag is 0:
+    if flag == 0:
         try:
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -128,7 +128,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
                 return
             else:
                 exit += 1
-                if exit is retries:
+                if exit == retries:
                     error(messages(language, "ssh_connection_failed").format(
                         target, port, str(num), str(total)))
                     try:
@@ -139,7 +139,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
                     break
         except:
             exit += 1
-            if exit is 3:
+            if exit == 3:
                 error(messages(language, "ssh_connection_failed").format(
                     target, port, str(num), str(total)))
                 try:
@@ -180,7 +180,7 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         threads.append(t)
         t.start()
         trying += 1
-        if verbose_level is not 0:
+        if verbose_level != 0:
             info(messages(language, "trying_message").format(
                 trying, total_req, num, total, target, port, 'ssh_brute'))
         while 1:
@@ -278,17 +278,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threading.activeCount() == 1 or kill_switch == kill_time:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1 and verbose_level is not 0:
+        if thread_write == 1 and verbose_level != 0:
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'ssh_brute',
                                'DESCRIPTION': messages(language, "no_user_passwords"), 'TIME': now(), 'CATEGORY': "brute",
                                'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"

@@ -161,7 +161,7 @@ def analyze(target, timeout_sec, log_in_file, language,
     webpage = _parse_webpage(
         target, timeout_sec, language, retries, socks_proxy, scan_cmd, scan_id)
     obj = json.loads(pkg_resources.resource_string(__name__, "apps.json").decode()
-                     if version() is 3 else pkg_resources.resource_string(__name__, "apps.json"))
+                     if version() == 3 else pkg_resources.resource_string(__name__, "apps.json"))
     apps = obj['apps']
     detected = []
     for app_name, app in apps.items():
@@ -171,9 +171,12 @@ def analyze(target, timeout_sec, log_in_file, language,
     detected = set(detected).union(_get_implied_apps(detected, apps))
     category_wise = {}
     for app_name in detected:
-        cats = apps[app_name]['cats']
-        for cat in cats:
-            category_wise[app_name] = obj['categories'][str(cat)]['name']
+        try:
+            cats = apps[app_name]['cats']
+            for cat in cats:
+                category_wise[app_name] = obj['categories'][str(cat)]['name']
+        except Exception:
+            pass
     inv_map = {}
     for k, v in category_wise.items():
         inv_map[v] = inv_map.get(v, [])
@@ -224,20 +227,20 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threading.activeCount() == 1 or kill_switch == kill_time:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1:
+        if thread_write == 1:
             info(messages(language, "nothing_found").format(
                 target, "wappalyzer_scan"))
-            if verbose_level is not 0:
+            if verbose_level != 0:
                 data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'wappalyzer_scan',
                                    'DESCRIPTION': messages(language, "not_found"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
                                    'SCAN_CMD': scan_cmd})

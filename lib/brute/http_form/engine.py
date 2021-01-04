@@ -9,12 +9,11 @@ import socket
 import json
 import string
 import random
-try:
+from core.compatible import version
+
+if version() == 3:
     from html.parser import HTMLParser
-    import http.cookiejar as cookiejar
-    import urllib.request as request
-    from urllib.parse import urlencode
-except ImportError:
+else:
     from HTMLParser import HTMLParser
     import cookielib as cookiejar
     import urllib2 as request
@@ -28,16 +27,12 @@ from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-
+from lib.payload.wordlists import usernames, passwords
 
 def extra_requirements_dict():
     return {
-        "http_form_brute_users": ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
-        "http_form_brute_passwds": ["admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
-                                    "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
-                                    "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
-                                    "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
-                                    "admin123", ""],
+        "http_form_brute_users": usernames.users(),
+        "http_form_brute_passwds": passwords.passwords(),
         "http_form_brute_ports": ["80"],
 
     }
@@ -84,8 +79,13 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
         target_host = str(target) + ":" + str(port)
         flag = 1
         try:
-            cookie = cookiejar.FileCookieJar("cookies")
-            opener = request.build_opener(request.HTTPCookieProcessor(cookie))
+            try:
+                import http.cookiejar as cookiejar
+            except ImportError:
+                from cookielib import cookiejar 
+            cookiejar = cookiejar.FileCookieJar("cookies")
+            opener = urllib2.build_opener(
+                urllib2.HTTPCookieProcessor(cookiejar))
             response = opener.open(target)
             page = response.read()
             parsed_html = BruteParser()
@@ -95,7 +95,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             post_data = urlencode(parsed_html.parsed_results).encode()
         except:
             exit += 1
-            if exit is retries:
+            if exit == retries:
                 warn(messages(language, "http_form_auth_failed").format(
                     target, user, passwd, port))
                 return 1
@@ -110,7 +110,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                 brute_force_response = opener.open(target_host, data=post_data)
             if brute_force_response.code == 200:
                 flag = 0
-                if flag is 0:
+                if flag == 0:
                     info(messages(language, "http_form_auth_success").format(
                         user, passwd, target, port))
                     data = json.dumps(
@@ -122,7 +122,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             return flag
         except:
             exit += 1
-            if exit is retries:
+            if exit == retries:
                 warn(messages(language, "http_form_auth_failed").format(
                     target, user, passwd, port))
                 return 1
@@ -207,18 +207,18 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             # wait for threads
             kill_switch = 0
             kill_time = int(
-                timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+                timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
             while 1:
                 time.sleep(0.1)
                 kill_switch += 1
                 try:
-                    if threading.activeCount() is 1 or kill_switch is kill_time:
+                    if threading.activeCount() == 1 or kill_switch == kill_time:
                         break
                 except KeyboardInterrupt:
                     break
                 thread_write = int(
                     open(thread_tmp_filename).read().rsplit()[0])
-                if thread_write is 1 and verbose_level is not 0:
+                if thread_write == 1 and verbose_level != 0:
                     data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
                                        'TYPE': 'http_form_brute', 'DESCRIPTION': messages(language, "no_user_passwords"), 'TIME': now(),
                                        'CATEGORY': "brute", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
