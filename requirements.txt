@@ -17,5 +17,5 @@ py3DNS==3.2.1; python_version > '3'
 scapy-python3==0.26; python_version > '3'
 pyDNS==2.3.6; python_version < '3'
 scapy>=2.4.1; python_version < '3'
-six==1.12.0
+six==1.15.0
 shodan==1.24.0
