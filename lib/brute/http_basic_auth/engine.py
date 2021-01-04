@@ -20,7 +20,7 @@ from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-
+from lib.payload.wordlists import usernames, passwords
 
 HEADERS = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
@@ -35,12 +35,8 @@ CODES = [401,403]
 
 def extra_requirements_dict():
     return {
-        "http_basic_auth_brute_users": ["raj", "admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
-        "http_basic_auth_brute_passwds": ["toor", "admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
-                                          "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
-                                          "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
-                                          "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
-                                          "admin123", ""],
+        "http_basic_auth_brute_users": usernames.users(),
+        "http_basic_auth_brute_passwds": passwords.passwords(),
         "http_basic_auth_brute_ports": ["80", "443"],
     }
 

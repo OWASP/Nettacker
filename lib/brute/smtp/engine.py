@@ -17,16 +17,12 @@ from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-
+from lib.payload.wordlists import usernames, passwords
 
 def extra_requirements_dict():
     return {
-        "smtp_brute_users": ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
-        "smtp_brute_passwds": ["admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
-                               "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
-                               "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
-                               "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
-                               "admin123", ""],
+        "smtp_brute_users": usernames.users(),
+        "smtp_brute_passwds": passwords.passwords(),
         "smtp_brute_ports": ["25", "465", "587"],
         "smtp_brute_split_user_set_pass": ["False"],
         "smtp_brute_split_user_set_pass_prefix": [""]
@@ -66,7 +62,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             break
         except:
             exit += 1
-            if exit is retries:
+            if exit == retries:
                 warn(messages(language, "smtp_connection_timeout").format(
                     target, port, user, passwd))
                 return 1
@@ -129,7 +125,7 @@ def __connect_to_port(port, timeout_sec, target, retries, language, num, total, 
             break
         except:
             exit += 1
-            if exit is retries:
+            if exit == retries:
                 error(messages(language, "smtp_connection_failed").format(
                     target, port, str(num), str(total)))
                 try:
