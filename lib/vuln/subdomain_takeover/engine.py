@@ -23,110 +23,13 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
+from lib.payload.wordlists import takeovers
 
 
 def extra_requirements_dict():
     return {
         "sub_takeover_vuln_ports": [80, 443],
-        "sub_takeover_aws": ["The specified bucket does not exist"],
-        "sub_takeover_bitbucket": ["Repository not found"],
-        "sub_takeover_github": ["There isn't a Github Pages site here."],
-        "sub_takeover_shopify": ["Sorry, this shop is currently unavailable."],
-        "sub_takeover_fastly": ["Fastly error: unknown domain:"],
-        "sub_takeover_feedPress": ["The feed has not been found."],
-        "sub_takeover_ghost": [
-            "The thing you were looking for is no longer here, or never was"
-        ],
-        "sub_takeover_heroku": [
-            "no-such-app.html|<title>no such app</title>|herokucdn.com/error-pages/no-such-app.html"
-        ],
-        "sub_takeover_pantheon": [
-            "The gods are wise, but do not know of the site which you seek."
-        ],
-        "sub_takeover_tumblr": [
-            "Whatever you were looking for doesn't currently exist at this address."
-        ],
-        "sub_takeover_wordpress": ["Do you want to register"],
-        "sub_takeover_teamWork": ["Oops - We didn't find your site."],
-        "sub_takeover_helpjuice": ["We could not find what you're looking for."],
-        "sub_takeover_helpscout": ["No settings were found for this company:"],
-        "sub_takeover_cargo": ["<title>404 &mdash; File not found</title>"],
-        "sub_takeover_statusPage": [
-            'You are being <a href="https://www.statuspage.io">redirected'
-        ],
-        "sub_takeover_uservoice": ["This UserVoice subdomain is currently available!"],
-        "sub_takeover_surge": ["project not found"],
-        "sub_takeover_intercom": [
-            "This page is reserved for artistic dogs.|Uh oh. That page doesn't exist</h1>"
-        ],
-        "sub_takeover_webflow": [
-            '<p class="description">The page you are looking for doesn\'t exist or has been moved.</p>'
-        ],
-        "sub_takeover_kajabi": [
-            "<h1>The page you were looking for doesn't exist.</h1>"
-        ],
-        "sub_takeover_thinkific": [
-            "You may have mistyped the address or the page may have moved."
-        ],
-        "sub_takeover_tave": ["<h1>Error 404: Page Not Found</h1>"],
-        "sub_takeover_wishpond": ["<h1>https://www.wishpond.com/404?campaign=true"],
-        "sub_takeover_aftership": [
-            "Oops.</h2><p class=\"text-muted text-tight\">The page you're looking for doesn't exist."
-        ],
-        "sub_takeover_aha": ["There is no portal here ... sending you back to Aha!"],
-        "sub_takeover_tictail": [
-            'to target URL: <a href="https://tictail.com|Start selling on Tictail.'
-        ],
-        "sub_takeover_brightcove": [
-            '<p class="bc-gallery-error-code">Error Code: 404</p>'
-        ],
-        "sub_takeover_bigcartel": ["<h1>Oops! We couldn&#8217;t find that page.</h1>"],
-        "sub_takeover_activeCampaign": ['alt="LIGHTTPD - fly light."'],
-        "sub_takeover_campaignmonitor": [
-            'Double check the URL or <a href="mailto:help@createsend.com'
-        ],
-        "sub_takeover_acquia": [
-            "The site you are looking for could not be found.|If you are an Acquia Cloud customer and expect to see your site at this address"
-        ],
-        "sub_takeover_proposify": [
-            'If you need immediate assistance, please contact <a href="mailto:support@proposify.biz"'
-        ],
-        "sub_takeover_simplebooklet": [
-            "We can't find this <a href=\"https://simplebooklet.com"
-        ],
-        "sub_takeover_getResponse": [
-            "With GetResponse Landing Pages, lead generation has never been easier"
-        ],
-        "sub_takeover_vend": ["Looks like you've traveled too far into cyberspace."],
-        "sub_takeover_jetbrains": ["is not a registered InCloud YouTrack."],
-        "sub_takeover_smartling": ["Domain is not configured"],
-        "sub_takeover_pingdom": ["pingdom"],
-        "sub_takeover_tilda": ["Domain has been assigned"],
-        "sub_takeover_surveygizmo": ["data-html-name"],
-        "sub_takeover_mashery": ["Unrecognized domain <strong>"],
-        "sub_takeover_divio": ["Application not responding"],
-        "sub_takeover_airee": ["Ошибка 402. Сервис Айри.рф не оплачен"],
-        "sub_takeover_anima": [
-            "If this is your website and you've just created it, try refreshing in a minute"
-        ],
-        "sub_takeover_hatenablog": ["404 Blog is not found"],
-        "sub_takeover_kinsta": ["No Site For Domain"],
-        "sub_takeover_launchrock": [
-            "It looks like you may have taken a wrong turn somewhere. Don't worry...it happens to all of us."
-        ],
-        "sub_takeover_ngrok": ["Tunnel *.ngrok.io not found"],
-        "sub_takeover_unbounce": ["The requested URL was not found on this server."],
-        "sub_takeover_readme": ["Project doesnt exist... yet!"],
-        "sub_takeover_smartjobboard": [
-            "This job board website is either expired or its domain name is invalid."
-        ],
-        "sub_takeover_strikingly": ["page not found"],
-        "sub_takeover_agilecrm": ["Sorry, this page is no longer available."],
-        "sub_takeover_gemfury": ["404: This page could not be found."],
-        "sub_takeover_getresponse": ["With GetResponse Landing Pages, lead generation has never been easier"],
-        "sub_takeover_juzzhr": ["This account no longer active"],
-        "sub_takeover_landingi": ["The page you are looking for is not found"],
-        "sub_takeover_smugmug": ["{\"text\":\"Page Not Found\""]
+        "subdomain_takeover_list": takeovers.takeovers(),
     }
 
 
@@ -197,14 +100,14 @@ def sub_takeover(
             req = requests.get(
                 target, headers=headers, verify=False, timeout=timeout_sec
             )
-            for key, value in extra_requirement.items():
+            for key, value in extra_requirement["subdomain_takeover_list"].items():
                 if (
-                    key != "sub_takeover_vuln_ports"
-                    and value[0].lower() in req.text.lower()
+                    value[0].lower() in req.text.lower()
                 ):
-                    return True
+                    return key
             return False
     except Exception as e:
+        print(e)
         # some error warning
         return False
 
@@ -222,7 +125,7 @@ def __sub_takeover(
     scan_cmd,
     extra_requirement,
 ):
-    if sub_takeover(
+    result = sub_takeover(
         target,
         port,
         timeout_sec,
@@ -234,12 +137,13 @@ def __sub_takeover(
         scan_id,
         scan_cmd,
         extra_requirement,
-    ):
+    )
+    if result:
         info(
             messages(language, "target_vulnerable").format(
                 target,
                 port,
-                "Subdomain Takeover Vulnerability found which will allow an adversary to claim and take control of the victim's subdomain.",
+                "Potential Subdomain Takeover Vulnerability found pointing to " + result.split("_")[2],
             )
         )
         __log_into_file(thread_tmp_filename, "w", "0", language)
@@ -251,7 +155,7 @@ def __sub_takeover(
                 "PORT": port,
                 "TYPE": "subomain_takeover_vuln",
                 "DESCRIPTION": messages(language, "vulnerable").format(
-                    "Subdomain Takeover Vulnerability found which will allow an adversary to claim and take control of the victim's subdomain."
+                    "Potential Subdomain Takeover Vulnerability found pointing to " + result.split("_")[2]
                 ),
                 "TIME": now(),
                 "CATEGORY": "vuln",
