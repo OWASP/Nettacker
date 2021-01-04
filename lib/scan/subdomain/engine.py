@@ -962,12 +962,21 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if len(subs) != 0:
             info(messages(language, "len_subdomain_found").format(len(subs)))
             for sub in subs:
-                if verbose_level > 2:
-                    info(messages(language, "subdomain_found").format(sub))
-                data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
-                                   'DESCRIPTION': sub, 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
-                                   'SCAN_CMD': scan_cmd}) + "\n"
-                __log_into_file(log_in_file, 'a', data, language)
+                if("<br>" in sub):
+                    for i in sub.lower().split("<br>"):
+                        if verbose_level > 2:
+                            info(messages(language, "subdomain_found").format(sub))
+                        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
+                                        'DESCRIPTION': i, 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                                        'SCAN_CMD': scan_cmd}) + "\n"
+                        __log_into_file(log_in_file, 'a', data, language)
+                else:
+                    if verbose_level > 2:
+                        info(messages(language, "subdomain_found").format(sub))
+                    data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
+                                    'DESCRIPTION': sub, 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                                    'SCAN_CMD': scan_cmd}) + "\n"
+                    __log_into_file(log_in_file, 'a', data, language)
         if len(subs) == 0 and verbose_level != 0:
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'subdomain_scan',
                                'DESCRIPTION': messages(language, "subdomain_found").format(len(subs), ', '.join(subs)
