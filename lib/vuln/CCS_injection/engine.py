@@ -13,6 +13,7 @@ import sys
 import struct
 import re
 import os
+import rule
 from OpenSSL import crypto
 import ssl
 from core.alert import *
