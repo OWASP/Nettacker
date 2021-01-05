@@ -29,12 +29,13 @@ def extra_requirements_dict():
     return {
         "wp_plugin_scan_http_method": ["GET"],
         "wp_plugin_scan_random_agent": ["True"],
+        "wp_plugin_scan_use_large_list": ["False"],
     }
 
 
 def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
           http_method, socks_proxy, scan_id, scan_cmd):
-    status_codes = [200, 401, 403]
+    status_codes = [200]
     directory_listing_msgs = ["<title>Index of /", "<a href=\"\\?C=N;O=D\">Name</a>", "Directory Listing for",
                               "Parent Directory</a>", "Last modified</a>", "<TITLE>Folder Listing.",
                               "- Browsing directory "]
@@ -75,7 +76,9 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                     return 1
         if version() == 3:
             content = content.decode('utf8')
-        if r.status_code in status_codes:
+    
+        # readme.txt for WP Plugins contain License: string    
+        if (r.status_code in status_codes) and ("Tags:" in content):
             info(messages(language, "found").format(
                 target, r.status_code, r.reason))
             __log_into_file(thread_tmp_filename, 'w', '0', language)
@@ -83,18 +86,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                                'PORT': "", 'TYPE': 'wp_plugin_scan',
                                'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
                                'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-            __log_into_file(log_in_file, 'a', data, language)
-            if r.status_code == 200:
-                for dlmsg in directory_listing_msgs:
-                    if dlmsg in content:
-                        info(messages(language, "directoy_listing").format(target))
-                        data = json.dumps({'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '',
-                                           'PORT': "", 'TYPE': 'wp_plugin_scan',
-                                           'DESCRIPTION': messages(language, "directoy_listing").format(target),
-                                           'TIME': now(),
-                                           'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-                        __log_into_file(log_in_file, 'a', data, language)
-                        break
+            __log_into_file(log_in_file, 'a', data, language)           
         return True
     except:
         return False
@@ -162,8 +154,12 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         random_agent_flag = True
         if extra_requirements["wp_plugin_scan_random_agent"][0] == "False":
             random_agent_flag = False
+        use_large_list_flag = False
+        if extra_requirements["wp_plugin_scan_use_large_list"][0] == "True":
+            use_large_list_flag = True
+            
         threads = []
-        if verbose_level > 3:
+        if use_large_list_flag:
             total_req = len(wp_plugins.wp_plugins())
         else:
             total_req = len(wp_plugins_small.wp_plugins())
@@ -176,19 +172,19 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if test(str(target), retries, timeout_sec, user_agent, extra_requirements["wp_plugin_scan_http_method"][0],
                 socks_proxy, verbose_level, trying, total_req, total, num, language) == 0:
             keyboard_interrupt_flag = False
-            if verbose_level > 3:
+            if use_large_list_flag:
                 scan_list = wp_plugins.wp_plugins()
             else:
                 scan_list = wp_plugins_small.wp_plugins()
             for idir in scan_list:
-                idir = "/wp-content/plugins/" + idir
+                tpath = "/wp-content/plugins/" + idir + "/readme.txt"
                 if random_agent_flag:
                     user_agent = {'User-agent': random.choice(user_agent_list)}
                 if target.endswith("/"):
                     target = target[:-1]
                 t = threading.Thread(target=check,
                                      args=(
-                                         target + idir, user_agent, timeout_sec, log_in_file, language,
+                                         target + tpath, user_agent, timeout_sec, log_in_file, language,
                                          time_sleep, thread_tmp_filename, retries,
                                          extra_requirements[
                                              "wp_plugin_scan_http_method"][0],
