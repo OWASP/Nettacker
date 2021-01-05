@@ -54,5 +54,5 @@ def wp_plugins():
             "wp-starsratebox", "wp-stats-dashboard", "wp-support-plus-responsive-ticket-system",
             "wp-survey-and-quiz-tool", "wp-symposium", "wp-syntax", "wp-table", "wp-twitter-feed", "wp-whois", "wpSS",
             "wpeasystats", "wpforum", "wpmarketplace", "wpstorecart", "wptouch", "x7host-videox7-ugc-plugin",
-            "yolink-search", "yt-audio-streaming-audio-from-youtube", "zingiri-web-shop", "zotpress",
-            "zotpressinboundio-marketing"]
+            "yolink-search", "yt-audio-streaming-audio-from-youtube", "zingiri-web-shop", "zotpress","zotpressinboundio-marketing","woocommerce",
+            "tablepress","ultimate-member","yoast","ninja-forms","wordfence","elementor","all-in-one-seo-pack","contact-form-7","easy-wp-smtp","redux-framework","loginizer","wp-file-manager"]
