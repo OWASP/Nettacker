@@ -78,7 +78,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
             content = content.decode('utf8')
     
         # readme.txt for WP Plugins contain License: string    
-        if (r.status_code in status_codes) and ("License:" in content):
+        if (r.status_code in status_codes) and ("Tags:" in content):
             info(messages(language, "found").format(
                 target, r.status_code, r.reason))
             __log_into_file(thread_tmp_filename, 'w', '0', language)
