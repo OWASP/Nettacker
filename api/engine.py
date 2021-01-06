@@ -41,6 +41,7 @@ from database.db import __search_logs
 from database.db import __logs_to_report_html
 from api.__start_scan import __scan
 from core._time import now
+from core.compatible import version
 
 template_dir = os.path.join(os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "web"), "static")
@@ -146,7 +147,7 @@ def access_log(response):
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"]:
         r_log = open(app.config["OWASP_NETTACKER_CONFIG"][
-                         "api_access_log_filename"], "ab")
+            "api_access_log_filename"], "ab")
         # if you need to log POST data
         # r_log.write(
         #     "{0} [{1}] {2} \"{3} {4}\" {5} {6} {7}\r\n".format(flask_request.remote_addr, now(), flask_request.host,
@@ -186,9 +187,15 @@ def index():
         rendered HTML page
     """
     filename = _builder(_core_config(), _core_default_config())["log_in_file"]
-    return render_template("index.html", scan_method=__scan_methods(), profile=__profiles(),
-                           graphs=__graphs(), languages=__languages(), filename=filename,
-                           method_args_list=load_all_method_args(__language(), API=True))
+
+    if version() == 2:
+        return render_template("index.html", scan_method=__scan_methods(), profile=__profiles(),
+                               graphs=__graphs(), languages=__languages(), filename=filename,
+                               method_args_list=load_all_method_args(__language(), API=True).decode('utf-8'))
+    else:
+        return render_template("index.html", scan_method=__scan_methods(), profile=__profiles(),
+                               graphs=__graphs(), languages=__languages(), filename=filename,
+                               method_args_list=load_all_method_args(__language(), API=True))
 
 
 @app.route("/new/scan", methods=["GET", "POST"])
@@ -391,20 +398,24 @@ def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_
     try:
         if api_cert:
             if api_cert_key:
-                app.run(host=api_host, port=api_port, debug=api_debug_mode, ssl_context=(api_cert, api_cert_key), threaded=True)
+                app.run(host=api_host, port=api_port, debug=api_debug_mode,
+                        ssl_context=(api_cert, api_cert_key), threaded=True)
             else:
                 __die_failure(messages(language, "api_cert_key"))
 
         if api_cert_key:
             if api_cert:
-                app.run(host=api_host, port=api_port, debug=api_debug_mode, ssl_context=(api_cert, api_cert_key), threaded=True)
+                app.run(host=api_host, port=api_port, debug=api_debug_mode,
+                        ssl_context=(api_cert, api_cert_key), threaded=True)
             else:
                 __die_failure(messages(language, "api_cert"))
 
         else:
-            app.run(host=api_host, port=api_port, debug=api_debug_mode, ssl_context="adhoc", threaded=True)
+            app.run(host=api_host, port=api_port, debug=api_debug_mode,
+                    ssl_context="adhoc", threaded=True)
     except Exception as e:
         __die_failure(messages(language, "wrong_values"))
+
 
 def _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
                api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, api_cert_key, language):
