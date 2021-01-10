@@ -24,7 +24,7 @@ from core._time import now
 from core.log import __log_into_file
 import requests
 from lib.payload.wordlists import takeovers
-
+from core.compatible import version
 
 def extra_requirements_dict():
     return {
@@ -101,13 +101,14 @@ def sub_takeover(
                 target, headers=headers, verify=False, timeout=timeout_sec
             )
             for key, value in extra_requirement["subdomain_takeover_list"].items():
-                if (
-                    value[0].lower() in req.text.lower()
-                ):
-                    return key
+                    if version() == 2:
+                        if (value[0].decode('utf-8').lower() in req.text.decode('utf-8').lower()):
+                            return key
+                    else:
+                        if (value[0].lower() in req.text.lower()):
+                            return key
             return False
     except Exception as e:
-        print(e)
         # some error warning
         return False
 
