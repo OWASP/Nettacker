@@ -15,6 +15,12 @@ from core.alert import write_to_api_console
 from core.alert import messages
 from core._die import __die_success
 from core._die import __die_failure
+from core._time import now
+from core.compatible import version
+from core.load_modules import load_all_method_args
+from core.config import _core_config
+from core.config_builder import _core_default_config
+from core.config_builder import _builder
 from api.api_core import __structure
 from api.api_core import __get_value
 from api.api_core import root_dir
@@ -24,22 +30,17 @@ from api.api_core import __scan_methods
 from api.api_core import __profiles
 from api.api_core import __graphs
 from api.api_core import __languages
-from core.load_modules import load_all_method_args
-from core.config import _core_config
-from core.config_builder import _core_default_config
-from core.config_builder import _builder
 from api.api_core import __remove_non_api_keys
 from api.api_core import __rules
 from api.api_core import __api_key_check
+from api.__start_scan import __scan
 from database.db import __select_results
 from database.db import __get_result
 from database.db import __last_host_logs
 from database.db import __logs_to_report_json
 from database.db import __search_logs
 from database.db import __logs_to_report_html
-from api.__start_scan import __scan
-from core._time import now
-from core.compatible import version
+
 
 template_dir = os.path.join(os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "web"), "static")
@@ -203,12 +204,12 @@ def index():
                                languages=__languages(), filename=filename,
                                method_args_list=load_all_method_args(
                                    __language(), API=True).decode('utf-8'))
-    else:
-        return render_template("index.html", scan_method=__scan_methods(),
-                               profile=__profiles(), graphs=__graphs(),
-                               languages=__languages(), filename=filename,
-                               method_args_list=load_all_method_args(
-                                   __language(), API=True))
+
+    return render_template("index.html", scan_method=__scan_methods(),
+                           profile=__profiles(), graphs=__graphs(),
+                           languages=__languages(), filename=filename,
+                           method_args_list=load_all_method_args(
+        __language(), API=True))
 
 
 @app.route("/new/scan", methods=["GET", "POST"])
@@ -436,7 +437,7 @@ def __process_it(api_host, api_port, api_debug_mode, api_access_key,
         else:
             app.run(host=api_host, port=api_port, debug=api_debug_mode,
                     ssl_context="adhoc", threaded=True)
-    except Exception as e:
+    except Exception:
         __die_failure(messages(language, "wrong_values"))
 
 
@@ -474,7 +475,7 @@ def _start_api(api_host, api_port, api_debug_mode, api_access_key,
     while 1:
         try:
             exitflag = True
-            if len(multiprocessing.active_children()) is not 0:
+            if len(multiprocessing.active_children()) != 0:
                 exitflag = False
             time.sleep(0.3)
             if exitflag:
