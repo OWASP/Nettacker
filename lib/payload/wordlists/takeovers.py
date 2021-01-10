@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 def takeovers():
     return {
         "sub_takeover_aws": ["The specified bucket does not exist"],
