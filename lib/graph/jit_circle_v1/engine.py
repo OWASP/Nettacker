@@ -14805,6 +14805,6 @@ __title_to_replace__
         .replace('__title_to_replace__', messages(language, "pentest_graphs")) \
         .replace('__description_to_replace__', messages(language, "graph_message")) \
         .replace('__html_title_to_replace__', messages(language, "nettacker_report"))
-    if version() is 2:
+    if version() == 2:
         return data.decode('utf8')
     return data
