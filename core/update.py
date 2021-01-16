@@ -40,7 +40,7 @@ def _update(__version__, __code_name__, language, socks_proxy):
             socket.getaddrinfo = getaddrinfo
         data = requests.get(
             url, headers={"User-Agent": "OWASP Nettacker"}).content
-        if version() is 3:
+        if version() ==3:
             data = data.decode("utf-8")
         if __version__ + ' ' + __code_name__ == data.rsplit('\n')[0]:
             info(messages(language, "last_version"))
@@ -97,7 +97,7 @@ def _check(__version__, __code_name__, language, socks_proxy):
             socket.getaddrinfo = getaddrinfo
         data = requests.get(
             url, headers={"User-Agent": "OWASP Nettacker"}).content
-        if version() is 3:
+        if version() ==3:
             data = data.decode("utf-8")
         if __version__ + ' ' + __code_name__ == data.rsplit('\n')[0]:
             info(messages(language, "last_version"))

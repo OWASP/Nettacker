@@ -17,10 +17,10 @@ def start(shellcode):
     t = True
     eax = str('0xb')
     while t:
-        if version() is 2:
+        if version() ==2:
             eax_1 = binascii.b2a_hex(''.join(random.choice(chars)
                                              for i in range(1)))
-        if version() is 3:
+        if version() ==3:
             eax_1 = (binascii.b2a_hex((''.join(random.choice(
                 chars) for i in range(1))).encode('latin-1'))
             ).decode('latin-1')
@@ -36,7 +36,7 @@ def start(shellcode):
         eax_2 = eax_2.replace('-', '')
         eax_add = 'push $0x%s\npop %%eax\nneg %%eax\nadd $0x%s,%%eax\n' % (
             eax_2, eax_1)
-    if A is 0:
+    if A == 0:
         eax_add = 'push $0x%s\npop %%eax\nadd $0x%s,%%eax\n' % (eax_2,
                                                                 eax_1)
     shellcode = shellcode.replace('push   $0xb\npop    %eax\ncltd',
@@ -47,10 +47,10 @@ def start(shellcode):
             data = line.rsplit('push')[1].rsplit('$0x')[1]
             t = True
             while t:
-                if version() is 2:
+                if version() ==2:
                     ebx_1 = binascii.b2a_hex(''.join(random.choice(chars)
                                                      for i in range(4)))
-                if version() is 3:
+                if version() ==3:
                     ebx_1 = (binascii.b2a_hex((''.join(random.choice(
                         chars) for i in range(4))).encode('latin-1'))
                     ).decode('latin-1')
