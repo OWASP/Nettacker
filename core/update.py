@@ -14,7 +14,7 @@ from database.db import save_update_log
 from datetime import timedelta
 from datetime import datetime
 
-url = 'https://raw.githubusercontent.com/zdresearch/OWASP-Nettacker/master/version.txt'
+url = 'https://raw.githubusercontent.com/OWASP/Nettacker/master/version.txt'
 
 
 def _update(__version__, __code_name__, language, socks_proxy):
@@ -100,6 +100,7 @@ def _check(__version__, __code_name__, language, socks_proxy):
             socket.getaddrinfo = getaddrinfo
         data = requests.get(
             url, headers={"User-Agent": "OWASP Nettacker"}).content
+        
         if version() == 3:
             data = data.decode("utf-8")
         if __version__ + ' ' + __code_name__ == data.rsplit('\n')[0]:

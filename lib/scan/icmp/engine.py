@@ -69,7 +69,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 if n == retries:
                     if verbose_level > 3:
                         warn(messages(language, "host_down").format(target))
-                    if verbose_level is not 0:
+                    if verbose_level != 0:
                         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
                                            'TYPE': 'icmp scan',
                                            'DESCRIPTION': messages(language, "host_down").format(target),
