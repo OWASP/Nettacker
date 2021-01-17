@@ -66,7 +66,7 @@ setup(
     package_data={"": package_files()},
     include_package_data=True,
     install_requires=requirements(),
-    url="https://github.com/zdresearch/OWASP-Nettacker",
+    url="https://github.com/OWASP/Nettacker",
     license="Apache-2.0",
     author="Ali Razmjoo",
     author_email="ali.razmjoo@owasp.org",

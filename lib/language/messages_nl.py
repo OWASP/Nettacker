@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "Nettacker-motor is gestart ...",
             "options": "python nettacker.py [opties]",
             "help_menu": "Toon Nettacker Help Menu",
-            "license": "Lees de licentie en overeenkomsten https://github.com/zdresearch/OWASP-Nettacker",
+            "license": "Lees de licentie en overeenkomsten https://github.com/OWASP/Nettacker",
             "engine": "Motor",
             "engine_input": "Motor invoeropties",
             "select_language": "selecteer een taal {0}",
@@ -107,7 +107,7 @@ def all_messages():
             "target_submitted": "target {0} ingediend!",
             "current_version": "u gebruikt OWASP Nettacker-versie {0} {1} {2} {6} met codenaam {3} {4} {5}",
             "feature_unavailable": "deze functie is nog niet beschikbaar! voer alstublieft \"git clone "
-                                   "https://github.com/zdresearch/OWASP-Nettacker.git or pip install -U "
+                                   "https://github.com/OWASP/Nettacker.git or pip install -U "
                                    "OWASP-Nettacker uit om de laatste versie te krijgen.",
             "available_graph": "maak een grafiek van alle activiteiten en informatie, gebruik HTML-uitvoer. "
                                "beschikbare grafieken: {0}",
