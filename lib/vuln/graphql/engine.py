@@ -24,7 +24,7 @@ from core._time import now
 from core.log import __log_into_file
 import requests
 from lib.payload.wordlists.graphql import graphql_list
-
+from lib.payload.wordlists.useragents import useragents
 
 def extra_requirements_dict():
     return {
@@ -72,24 +72,25 @@ def graphql(target, port, timeout_sec, log_in_file, language, time_sleep,
                 target = 'http://' + target
 
             headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome 63.0.3239.132 Safari/537.36",
+                "User-Agent": random.choice(useragents()),
                 "Accept": "text/html,application/xhtml+xml,application/xml; q=0.9,image/webp,image/apng,*/*;q=0.8",
                 "Accept-Language": "en-US,en;q=0.9",
                 "Accept-Encoding": "gzip, deflate, br",
             }
             params = {"query":"query IntrospectionQuery{__schema {queryType { name }}}"}
             tempTarget = target
+            global final_endpoint
             for endpoint in graphql_list():
                 tempTarget += endpoint
-                print(tempTarget)
                 req = requests.get(tempTarget, params=params, headers=headers, verify=False, timeout=timeout_sec)
-                print(req.url)
                 if(re.search("__schema|.*?operation not found.*?|(Introspection|INTROSPECTION|introspection).*?", req.text)):
+                    final_endpoint = req.url
                     return True
                 tempTarget = target
             return False
-    except Exception:
+    except Exception as e:
         # some error warning
+        print(e)
         return False
 
 
@@ -97,11 +98,10 @@ def __graphql(target, port, timeout_sec, log_in_file, language, time_sleep,
                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     if graphql(target, port, timeout_sec, log_in_file, language, time_sleep,
                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-        info(messages(language, "graphql_inspection").format(target, port,
-                                                            ))
+        info(messages(language, "graphql_inspection").format(target, port))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'graphql_vuln',
-                           'DESCRIPTION': messages(language, "graphql_inspection_console").format(), 'TIME': now(),
+                           'DESCRIPTION': messages(language, "graphql_inspection_console").format(final_endpoint), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
@@ -168,10 +168,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write == 1 and verbose_level != 0:
-            info(messages(language, "console_not_found").format(
-                'graphql'))
+            info(messages(language, "graphql_console_not_found"))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'graphql_vuln',
-                               'DESCRIPTION': messages(language, "console_not_found").format('graphql'), 'TIME': now(),
+                               'DESCRIPTION': messages(language, "graphql_console_not_found"), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
