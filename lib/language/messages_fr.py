@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "Moteur Nettacker a commencé ...",
             "options": "python nettacker.py [options]",
             "help_menu": "Afficher le menu d'aide de Nettacker",
-            "license": "S'il vous plaît lire la licence et les accords https://github.com/zdresearch/OWASP-Nettacker",
+            "license": "S'il vous plaît lire la licence et les accords https://github.com/OWASP/Nettacker",
             "engine": "Moteur",
             "engine_input": "Options de saisie du moteur",
             "select_language": "sélectionner une langue {0}",
@@ -111,7 +111,7 @@ def all_messages():
             "current_version": "vous utilisez la version OWASP Nettacker {0} {1} {2} {6} avec le "
                                "nom de code {3} {4} {5}",
             "feature_unavailable": "cette fonctionnalité n'est pas encore disponible! S'il vous plaît exécuter"
-                                   " \"git clone https://github.com/zdresearch/OWASP-Nettacker.git ou pip "
+                                   " \"git clone https://github.com/OWASP/Nettacker.git ou pip "
                                    "installer -U OWASP-Nettacker pour obtenir la dernière version.",
             "available_graph": "construire un graphique de toutes les activités et informations, vous devez"
                                " utiliser la sortie HTML. graphiques disponibles: {0}",

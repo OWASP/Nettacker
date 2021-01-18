@@ -23,6 +23,12 @@ HOST = _database_config()["HOST"]
 PORT = _database_config()["PORT"]
 DATABASE = _database_config()["DATABASE"]
 
+#Python2 hack for flake8
+try:
+    reload
+except NameError:
+    def reload(dummy):
+        return dummy
 
 def db_inputs(connection_type):
     """
@@ -187,7 +193,7 @@ def submit_logs_to_db(language, log):
         session = create_connection(language)
         session.add(HostsLog(
             host=log["HOST"], date=log["TIME"], port=log["PORT"], type=log["TYPE"], category=log["CATEGORY"],
-            description=log["DESCRIPTION"].encode('utf8') if version() is 2 else log["DESCRIPTION"],
+            description=log["DESCRIPTION"].encode('utf8') if version() ==2 else log["DESCRIPTION"],
             username=log["USERNAME"], password=log["PASSWORD"], scan_id=log["SCAN_ID"], scan_cmd=log["SCAN_CMD"]
         ))
         return send_submit_query(session, language)
@@ -419,7 +425,7 @@ def __logs_to_report_html(host, language):
             }
             logs.append(data)
         from core.log import build_graph
-        if compatible.version() is 2:
+        if compatible.version() == 2:
             import sys
             reload(sys)
             sys.setdefaultencoding('utf8')

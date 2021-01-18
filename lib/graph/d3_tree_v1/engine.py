@@ -60,7 +60,7 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
 <title>__html_title_to_replace__</title>
 <meta charset="utf-8">
 <div class="header">
-    <h3><a href="https://github.com/zdresearch/nettacker">OWASP Nettacker</a></h3>
+    <h3><a href="https://github.com/OWASP/Nettacker">OWASP Nettacker</a></h3>
     <h3>__title_to_replace__</h3>
 </div>
 <style type="text/css">
@@ -11404,7 +11404,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.*/
 
 
 // Get JSON data
-treeJSON = d3.json("https://github.com/zdresearch/OWASP-Nettacker", function(error, treeData) {
+treeJSON = d3.json("https://github.com/OWASP/Nettacker", function(error, treeData) {
 
     // Calculate total nodes, max label length
     treeData = __data_will_locate_here__;
@@ -11899,6 +11899,6 @@ treeJSON = d3.json("https://github.com/zdresearch/OWASP-Nettacker", function(err
         .replace('__title_to_replace__', messages(language, "pentest_graphs")) \
         .replace('__description_to_replace__', messages(language, "graph_message")) \
         .replace('__html_title_to_replace__', messages(language, "nettacker_report"))
-    if version() is 2:
+    if version() == 2:
         return data.decode('utf8')
     return data

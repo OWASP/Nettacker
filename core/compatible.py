@@ -82,7 +82,7 @@ def check(language):
         pass
     else:
         __die_failure(messages(language, "error_platform"))
-    if version() is 2 or version() is 3:
+    if version() ==2 or version() == 3:
         pass
     else:
         __die_failure(messages(language, "python_version_error"))

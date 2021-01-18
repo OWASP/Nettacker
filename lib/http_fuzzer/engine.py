@@ -8,51 +8,15 @@ import socks
 import requests
 import itertools
 import threading
-from mimetools import Message
-from StringIO import StringIO
-
-from core.alert import *
+import os
+from core.alert import info, messages
 from core.log import __log_into_file
+import random
 from core.targets import target_type
 from lib.socks_resolver.engine import getaddrinfo
+from lib.payload.wordlists import useragents
 
-
-def user_agents_list():
-    """
-    List of available user agents
-
-    Returns:
-        array of user agents
-    """
-    return [
-        "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
-        "Googlebot/2.1 ( http://www.googlebot.com/bot.html)",
-        "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Ubuntu/10.04",
-        "Chromium/9.0.595.0 Chrome/9.0.595.0 Safari/534.13",
-        "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.2; WOW64; .NET CLR 2.0.50727)",
-        "Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22 Version/10.51",
-        "Mozilla/5.0 (compatible; 008/0.83; http://www.80legs.com/webcrawler.html) Gecko/2008032620",
-        "Debian APT-HTTP/1.3 (0.8.10.3)",
-        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
-        "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
-        "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
-        "YahooSeeker/1.2 (compatible; Mozilla 4.0; MSIE 5.5; yahooseeker at yahoo-inc dot com ; ",
-        "http://help.yahoo.com/help/us/shop/merchant/)",
-        "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)",
-        "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",
-        "msnbot/1.1 (+http://search.msn.com/msnbot.htm)",
-        #Windows 10-based PC using Edge browser
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246",
-        #Chrome OS-based laptop using Chrome browser (Chromebook)
-        "Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36",
-        #Mac OS X-based computer using a Safari browser
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9",
-        #Windows 7-based PC using a Chrome browser
-        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36",
-        #Linux-based PC using a Firefox browser
-        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1",
-    ]
-
+value1 = None
 
 def simple_test_open_url(url):
     """
@@ -65,7 +29,7 @@ def simple_test_open_url(url):
         True if response available, otherwise False
     """
     try:
-        return requests.get(url, headers={"User-Agent": user_agents_list()[0]}, verify=False).status_code
+        return requests.get(url, headers={"User-Agent": random.choice(useragents.useragents())}).status_code
     except Exception as _:
         return False
 
@@ -89,7 +53,9 @@ def target_builder(target, ports, default_ports):
     if target_type(target) != "HTTP":
         for port in ports:
             for method in methods:
-                if simple_test_open_url(method + "://" + target + ":" + str(port) + "/"):
+                if simple_test_open_url(
+                    method + "://" + target + ":" + str(port) + "/"
+                ):
                     URL.append(method + "://" + target + ":" + str(port))
     else:
         if not simple_test_open_url(target):
@@ -132,8 +98,17 @@ def __http_requests_generator(request_template, parameters):
         yield request_template.format(*payload), payload
 
 
-def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec=None, data=None, content_type=None,
-                         socks_proxy=None):
+def __http_request_maker(
+    req_type,
+    url,
+    headers,
+    retries,
+    time_sleep,
+    timeout_sec=None,
+    data=None,
+    content_type=None,
+    socks_proxy=None,
+):
     """
     this function performs the actual requests using the requests library according to the given type
     Supported types are GET, POST, PUT, DELETE, PATCH
@@ -148,20 +123,30 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
 
     """
     if socks_proxy is not None:
-        socks_version = socks.SOCKS5 if socks_proxy.startswith(
-            'socks5://') else socks.SOCKS4
-        socks_proxy = socks_proxy.rsplit('://')[1]
-        if '@' in socks_proxy:
-            socks_username = socks_proxy.rsplit(':')[0]
-            socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
-            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
-                                    int(socks_proxy.rsplit(':')[-1]), username=socks_username,
-                                    password=socks_password)
+        socks_version = (
+            socks.SOCKS5
+            if socks_proxy.startswith("socks5://")
+            else socks.SOCKS4
+        )
+        socks_proxy = socks_proxy.rsplit("://")[1]
+        if "@" in socks_proxy:
+            socks_username = socks_proxy.rsplit(":")[0]
+            socks_password = socks_proxy.rsplit(":")[1].rsplit("@")[0]
+            socks.set_default_proxy(
+                socks_version,
+                str(socks_proxy.rsplit("@")[1].rsplit(":")[0]),
+                int(socks_proxy.rsplit(":")[-1]),
+                username=socks_username,
+                password=socks_password,
+            )
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
         else:
-            socks.set_default_proxy(socks_version, str(
-                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
+            socks.set_default_proxy(
+                socks_version,
+                str(socks_proxy.rsplit(":")[0]),
+                int(socks_proxy.rsplit(":")[1]),
+            )
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
     exits = 0
@@ -169,16 +154,28 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
     while True:
         try:
             req_type = req_type.lower()
-            if req_type in ['post', 'put', 'patch']:
-                if content_type == 'application/data':
-                    r = eval('requests.{}(url=url, headers=headers, data=data,\
-                             timeout=timeout_sec, verify=False)'.format(req_type))
-                elif content_type == 'application/json':
-                    r = eval('requests.{}(url=url, headers=headers, json=data,\
-                             timeout=timeout_sec, verify=False)'.format(req_type))
-            elif req_type in ['get', 'head', 'delete']:
-                r = eval('requests.{}(url=url, headers=headers,\
-                         verify=False, timeout=timeout_sec)'.format(req_type))
+            if req_type in ["post", "put", "patch"]:
+                if content_type == "application/data":
+                    r = eval(
+                        "requests.{}(url=url, headers=headers, data=data,\
+                             timeout=timeout_sec, verify=False)".format(
+                            req_type
+                        )
+                    )
+                elif content_type == "application/json":
+                    r = eval(
+                        "requests.{}(url=url, headers=headers, json=data,\
+                             timeout=timeout_sec, verify=False)".format(
+                            req_type
+                        )
+                    )
+            elif req_type in ["get", "head", "delete"]:
+                r = eval(
+                    "requests.{}(url=url, headers=headers,\
+                         verify=False, timeout=timeout_sec)".format(
+                        req_type
+                    )
+                )
             break
         except Exception as _:
             exits += 1
@@ -190,9 +187,26 @@ def __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_se
     return r
 
 
-def request_with_data(post_request, content_type, req_type, retries, time_sleep, timeout_sec, payload,
-                      condition, output, sample_event, message, log_in_file, thread_tmp_filename, language,
-                      targets, ports, default_ports, socks_proxy):
+def request_with_data(
+    post_request,
+    content_type,
+    req_type,
+    retries,
+    time_sleep,
+    timeout_sec,
+    payload,
+    condition,
+    output,
+    sample_event,
+    message,
+    log_in_file,
+    thread_tmp_filename,
+    language,
+    targets,
+    ports,
+    default_ports,
+    socks_proxy,
+):
     """
     this function extracts the data, headers and url for the POST type request which is to be sent to
     the __http_request_maker function
@@ -219,40 +233,91 @@ def request_with_data(post_request, content_type, req_type, retries, time_sleep,
 
     """
     post_data_format = ""
-    request_line, headers_alone = post_request.split('\r\n', 1)
-    headers = Message(StringIO(headers_alone)).dict
-    clean_headers = {x.strip(): y for x, y in headers.items()}
+    request_line, headers_alone = post_request.split("\r\n", 1)
+    headers = dict()
+    try:
+        for x in headers_alone.split("\r\n"):
+            headers[x.split(":", 1)[0]] = x.split(":", 1)[1]
+    except IndexError:
+        headers[headers_alone.split(":", 1)[0]] = headers_alone.split(":", 1)[
+            1
+        ]
+    clean_headers = {x.strip(): y.strip() for x, y in headers.items()}
     headers = clean_headers
     if "content-type" in headers:
-        content_type = headers['content-type']
-        if content_type == 'application/x-www-form-urlencoded':
-            post_data_format = post_data_parser(post_request.split('\r\n')[-1])
-        elif content_type == 'application/json':
-            post_data_format = json.loads(post_request[post_request.find('{'):post_request.find('}') + 1])
+        content_type = headers["content-type"]
+        if content_type == "application/x-www-form-urlencoded":
+            post_data_format = post_data_parser(post_request.split("\r\n")[-1])
+        elif content_type == "application/json":
+            post_data_format = json.loads(
+                post_request[
+                    post_request.find("{"): post_request.find("}") + 1
+                ]
+            )
     headers.pop("Content-Length", None)
-    url_sample = request_line.strip().split(' ')[1]
+    url_sample = request_line.strip().split(" ")[1]
     for target in targets:
-        url = url_sample.replace('__target_locat_here__', str(target))
-        port = url[url.find(':', 7) + 1:url.find('/', 7)]
-        response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec,
-                                        post_data_format, content_type, socks_proxy)
+        url = url_sample.replace("__target_locat_here__", str(target))
+        try:
+            port = url.split(":")[2].split("/")[0]
+        except IndexError:
+            if target.startswith("https://"):
+                port = 443
+            if target.startswith("http://"):
+                port = 80
+        response = __http_request_maker(
+            req_type,
+            url,
+            headers,
+            retries,
+            time_sleep,
+            timeout_sec,
+            post_data_format,
+            content_type,
+            socks_proxy,
+        )
         if isinstance(response, requests.models.Response):
             if rule_evaluator(response, condition):
-                __log_into_file(thread_tmp_filename, 'w', '0', language)
-                sample_event['PORT'] = port
-                event_parser(message, sample_event, response, payload, log_in_file, language)
-            output.append({
-                "payload": payload,
-                "condition": condition,
-                "result": rule_evaluator(response, condition),
-                "response": response
-            })
+                __log_into_file(thread_tmp_filename, "w", "0", language)
+                sample_event["PORT"] = port
+                event_parser(
+                    message,
+                    sample_event,
+                    response,
+                    payload,
+                    log_in_file,
+                    language,
+                )
+            output.append(
+                {
+                    "payload": payload,
+                    "condition": condition,
+                    "result": rule_evaluator(response, condition),
+                    "response": response,
+                }
+            )
     return output
 
 
-def request_without_data(request, req_type, retries, time_sleep, timeout_sec, payload, condition, output, sample_event,
-                         message, log_in_file, thread_tmp_filename, language, targets, ports, default_ports,
-                         socks_proxy):
+def request_without_data(
+    request,
+    req_type,
+    retries,
+    time_sleep,
+    timeout_sec,
+    payload,
+    condition,
+    output,
+    sample_event,
+    message,
+    log_in_file,
+    thread_tmp_filename,
+    language,
+    targets,
+    ports,
+    default_ports,
+    socks_proxy,
+):
     """
     this function extracts the data, headers and url for the requests other than POST type which is to be sent to
     the __http_request_maker function
@@ -277,27 +342,51 @@ def request_without_data(request, req_type, retries, time_sleep, timeout_sec, pa
             ]
 
     """
-    request_line, headers_alone = request.split('\r\n', 1)
-    headers = Message(StringIO(headers_alone)).dict
-    clean_headers = {x.strip(): y for x, y in headers.items()}
+    request_line, headers_alone = request.split("\r\n", 1)
+    headers = dict()
+    try:
+        for x in headers_alone.split("\r\n"):
+            headers[x.split(":", 1)[0]] = x.split(":", 1)[1]
+    except IndexError:
+        headers[headers_alone.split(":", 1)[0]] = headers_alone.split(":", 1)[
+            1
+        ]
+    clean_headers = {x.strip(): y.strip() for x, y in headers.items()}
     headers = clean_headers
     headers.pop("Content-Length", None)
-    url_sample = request_line.strip().split(' ')[1]
+    url_sample = request_line.strip().split(" ")[1]
     for target in targets:
-        url = url_sample.replace('__target_locat_here__', str(target))
-        port = url[url.find(':', 7) + 1:url.find('/', 7)]
-        response = __http_request_maker(req_type, url, headers, retries, time_sleep, timeout_sec)
+        url = url_sample.replace("__target_locat_here__", str(target))
+        try:
+            port = url.split(":")[2].split("/")[0]
+        except IndexError:
+            if target.startswith("https://"):
+                port = 443
+            if target.startswith("http://"):
+                port = 80
+        response = __http_request_maker(
+            req_type, url, headers, retries, time_sleep, timeout_sec
+        )
         if isinstance(response, requests.models.Response):
             if rule_evaluator(response, condition):
-                __log_into_file(thread_tmp_filename, 'w', '0', language)
-                sample_event['PORT'] = port
-                event_parser(message, sample_event, response, payload, log_in_file, language)
-            output.append({
-                "payload": payload,
-                "condition": condition,
-                "result": rule_evaluator(response, condition),
-                "response": response
-            })
+                __log_into_file(thread_tmp_filename, "w", "0", language)
+                sample_event["PORT"] = port
+                event_parser(
+                    message,
+                    sample_event,
+                    response,
+                    payload,
+                    log_in_file,
+                    language,
+                )
+            output.append(
+                {
+                    "payload": payload,
+                    "condition": condition,
+                    "result": rule_evaluator(response, condition),
+                    "response": response,
+                }
+            )
     return output
 
 
@@ -329,14 +418,17 @@ def sample_event_key_evaluator(response, payload, value):
         the corresponding value by executing the expression
     """
     try:
-        if value != '':
-            exec ("value = " + value)
+        if value != "":
+            exec ("global value1; value1 = " + value)
+            value = value1
         return value
     except Exception as _:
         return value
 
 
-def event_parser(message, sample_event, response, payload, log_in_file, language):
+def event_parser(
+    message, sample_event, response, payload, log_in_file, language
+):
     """
     this function is reponsible for logging events into the database and showing messages in the terminal
 
@@ -352,13 +444,32 @@ def event_parser(message, sample_event, response, payload, log_in_file, language
     message = sample_event_key_evaluator(response, payload, message)
     for key, value in sample_event.items():
         event[key] = sample_event_key_evaluator(response, payload, value)
-    info(message, log_in_file, 'a', event, language)
+    info(message, log_in_file, "a", event, language)
     return 1
 
 
-def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_file, time_sleep, language,
-               verbose_level, socks_proxy, retries, scan_id, scan_cmd, condition, thread_tmp_filename,
-               sample_event, message, target, ports, default_ports, counter_message=None):
+def __repeater(
+    request_template,
+    parameters,
+    timeout_sec,
+    thread_number,
+    log_in_file,
+    time_sleep,
+    language,
+    verbose_level,
+    socks_proxy,
+    retries,
+    scan_id,
+    scan_cmd,
+    condition,
+    thread_tmp_filename,
+    sample_event,
+    message,
+    target,
+    ports,
+    default_ports,
+    counter_message=None,
+):
     """
     this function is the main repeater functions which determines the type of request, the content type and calls the
     appropriate funtion
@@ -381,17 +492,21 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
 
     """
     if counter_message is None:
-        counter_message = messages(language, "fuzzer_no_response").format(sample_event['TYPE'])
-    __log_into_file(thread_tmp_filename, 'w', '1', language)
+        counter_message = messages(language, "fuzzer_no_response").format(
+            sample_event["TYPE"]
+        )
+    __log_into_file(thread_tmp_filename, "w", "1", language)
     output = []
     request_text = request_template.replace("\r", "").replace("\n", "\r\n")
     content_type = ""
     request_type = ""
-    if request_text.rsplit()[0] == "POST" or request_text.rsplit()[0] == "PUT" or \
-            request_text.rsplit()[0] == "PATCH":
+    if (
+        request_text.rsplit()[0] == "POST" or request_text.rsplit()[0] == "PUT" or request_text.rsplit()[0] == "PATCH"
+    ):
         request_type = "POST"
-    elif request_text.rsplit()[0] == "GET" or request_text.rsplit()[0] == "HEAD" or \
-            request_text.rsplit()[0] == "DELETE":
+    elif (
+        request_text.rsplit()[0] == "GET" or request_text.rsplit()[0] == "HEAD" or request_text.rsplit()[0] == "DELETE"
+    ):
         request_type = "GET"
     req_type = request_text.rsplit()[0]
     threads = []
@@ -400,16 +515,52 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
     targets = target_builder(target, ports, default_ports)
     for request in requests_list:
         if request_type == "POST":
-            t = threading.Thread(target=request_with_data,
-                                 args=(request[0], content_type, req_type, retries, time_sleep, timeout_sec, request[1],
-                                       condition, output, sample_event, message, log_in_file, thread_tmp_filename,
-                                       language, targets, ports, default_ports, socks_proxy))
+            t = threading.Thread(
+                target=request_with_data,
+                args=(
+                    request[0],
+                    content_type,
+                    req_type,
+                    retries,
+                    time_sleep,
+                    timeout_sec,
+                    request[1],
+                    condition,
+                    output,
+                    sample_event,
+                    message,
+                    log_in_file,
+                    thread_tmp_filename,
+                    language,
+                    targets,
+                    ports,
+                    default_ports,
+                    socks_proxy,
+                ),
+            )
         elif request_type == "GET":
-            t = threading.Thread(target=request_without_data,
-                                 args=(
-                                     request[0], req_type, retries, time_sleep, timeout_sec, request[1], condition,
-                                     output, sample_event, message, log_in_file, thread_tmp_filename, language, targets,
-                                     ports, default_ports, socks_proxy))
+            t = threading.Thread(
+                target=request_without_data,
+                args=(
+                    request[0],
+                    req_type,
+                    retries,
+                    time_sleep,
+                    timeout_sec,
+                    request[1],
+                    condition,
+                    output,
+                    sample_event,
+                    message,
+                    log_in_file,
+                    thread_tmp_filename,
+                    language,
+                    targets,
+                    ports,
+                    default_ports,
+                    socks_proxy,
+                ),
+            )
         threads.append(t)
         t.start()
         time.sleep(time_sleep)
@@ -428,19 +579,27 @@ def __repeater(request_template, parameters, timeout_sec, thread_number, log_in_
 
     # wait for threads
     kill_switch = 0
-    kill_time = int(
-        timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+    kill_time = (
+        int(timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
+    )
     while 1:
         time.sleep(0.1)
         kill_switch += 1
         try:
-            if threading.activeCount() is 1 or kill_switch is kill_time:
+            if threading.activeCount() == 1 or kill_switch == kill_time:
                 break
         except KeyboardInterrupt:
             break
     thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-    if thread_write is 1 and verbose_level is not 0:
-        sample_event['DESCRIPTION'] = counter_message
-        event_parser(message=counter_message, sample_event=sample_event, response=None, payload=None,
-                     log_in_file=log_in_file, language=language)
+    if thread_write == 1 and verbose_level != 0:
+        sample_event["DESCRIPTION"] = counter_message
+        event_parser(
+            message=counter_message,
+            sample_event=sample_event,
+            response=None,
+            payload=None,
+            log_in_file=log_in_file,
+            language=language,
+        )
     os.remove(thread_tmp_filename)
+

@@ -77,7 +77,7 @@ def joomla_template(target, port, timeout_sec, log_in_file, language, time_sleep
                 global admin_template
                 web_template = ''.join(set(re.findall("/templates/(.+?)/", r.text, re.IGNORECASE)))
                 admin_template = ''.join(set(re.findall("/administrator/templates/(.+?)/", r2.text, re.IGNORECASE)))
-                if web_template is not "" or admin_template is not "":
+                if web_template != "" or admin_template != "":
                     return True
                 else:
                     return False
@@ -152,17 +152,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1:
+                if threading.activeCount() == 1:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1 and verbose_level is not 0:
+        if thread_write == 1 and verbose_level != 0:
             info(messages(language, "not_found"))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'joomla_template',
                                'DESCRIPTION': messages(language, "not_found"), 'TIME': now(),

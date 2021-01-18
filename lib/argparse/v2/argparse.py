@@ -91,6 +91,11 @@ import textwrap as _textwrap
 
 from gettext import gettext as _
 
+try:
+  basestring
+except NameError:
+  basestring = str
+
 
 def _callable(obj):
     return hasattr(obj, '__call__') or hasattr(obj, '__bases__')

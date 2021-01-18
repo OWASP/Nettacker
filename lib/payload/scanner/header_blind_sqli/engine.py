@@ -39,5 +39,5 @@ def header_bsqli(host, payloads_bsqli = None, headers_bsqli = None):
         else:
             return False
     except Exception as e:
-        print e
+        print(e)
         return False

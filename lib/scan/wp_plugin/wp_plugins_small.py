@@ -4,7 +4,7 @@
 
 
 def wp_plugins():
-    return ["1-flash-gallery", "1-jquery-photo-gallery-slideshow-flash", "Calendar", "Premium_Gallery_Manager",
+    return ["1-flash-gallery", "1-jquery-photo-gallery-slideshow-flash", "Premium_Gallery_Manager",
             "a-gallery", "a-to-z-category-listing", "accept-signups", "adminimize", "adrotate", "advanced-text-widget",
             "advertizer", "age-verification", "ajax-category-dropdown", "ajax-store-locator-wordpress_0", "ajaxgallery",
             "akismet", "alert-before-your-post", "all-in-one-wp-security-and-firewall", "all-video-gallery",
@@ -55,4 +55,6 @@ def wp_plugins():
             "wp-survey-and-quiz-tool", "wp-symposium", "wp-syntax", "wp-table", "wp-twitter-feed", "wp-whois", "wpSS",
             "wpeasystats", "wpforum", "wpmarketplace", "wpstorecart", "wptouch", "x7host-videox7-ugc-plugin",
             "yolink-search", "yt-audio-streaming-audio-from-youtube", "zingiri-web-shop", "zotpress",
-            "zotpressinboundio-marketing"]
+            "zotpressinboundio-marketing", "woocommerce", "tablepress", "ultimate-member", "yoast", "ninja-forms",
+            "wordfence", "elementor", "all-in-one-seo-pack", "contact-form-7", "easy-wp-smtp", "redux-framework",
+            "loginizer", "wp-file-manager"]
