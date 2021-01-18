@@ -186,7 +186,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             target = 'http://' + target
         nowh3r3 = target + "/ThisFileIs404"
         try:
-            r = SESSION.get(nowh3r3, verify=False, headers=user_agent, timeout=10)
+            r = SESSION.get(nowh3r3, verify=False, headers=user_agent, timeout=timeout_sec)
             length = len(r.text)
         except Exception:
             length = 0
