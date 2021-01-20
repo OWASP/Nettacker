@@ -22,7 +22,6 @@ from lib.payload.wordlists import useragents
 from core.compatible import version
 from lib.scan.admin import admin_scan
 from difflib import SequenceMatcher
-import six
 
 
 def extra_requirements_dict():
@@ -33,8 +32,9 @@ def extra_requirements_dict():
     }
 
 
-def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
-          http_method, length, socks_proxy, scan_id, scan_cmd):
+def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep,
+          thread_tmp_filename, retries, http_method, length,
+          socks_proxy, scan_id, scan_cmd):
     status_codes = [401, 403]
     directory_listing_msgs = ["<title>Index of /", "<a href=\"\\?C=N;O=D\">Name</a>", "Directory Listing for",
                               "Parent Directory</a>", "Last modified</a>", "<TITLE>Folder Listing.",
@@ -310,9 +310,9 @@ def start(
         if target_type(target) != "HTTP":
             target = 'http://' + target
 
-        nowh3r3 = target + "/ThisFileIs404"
+        deadend = target + "/ThisFileIs404"
         try:
-            r = requests.get(nowh3r3, verify=False,
+            r = requests.get(deadend, verify=False,
                              headers=user_agent, timeout=timeout_sec)
             length = len(r.text)
         except Exception:
@@ -383,8 +383,12 @@ def start(
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write == 1:
             if verbose_level != 0:
-                data = {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'admin_scan',
-                        'DESCRIPTION': messages(language, "directory_file_404").format(target, "default_port"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
+                data = {'HOST': target_to_host(target), 'USERNAME': '',
+                        'PASSWORD': '', 'PORT': '', 'TYPE': 'admin_scan',
+                        'DESCRIPTION': messages(
+                            language, "directory_file_404").format(
+                            target, "default_port"),
+                        'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,
                         'SCAN_CMD': scan_cmd}
                 info(messages(language, "directory_file_404").format(
                     target, "default_port"), log_in_file, "a",
