@@ -19,4 +19,4 @@ pyDNS==2.3.6; python_version < '3'
 scapy>=2.4.1; python_version < '3'
 censys==0.0.8
 six==1.15.0
-shodan==1.24.0
+shodan==1.25.0
