@@ -48,6 +48,9 @@ def target_type(target):
         the target type (SINGLE_IPv4, SINGLE_IPv6, RANGE_IPv4, \
             DOMAIN, HTTP, CIDR_IPv4, UNKNOWN)
     """
+    regex = '^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$'
+    targets = {'http': 'HTTP', 'https': 'HTTP', 'ftp': 'FTP', 'ssh': 'SSH', 'smtp': 'SMTP'}
+
     if isIP(target):
         return "SINGLE_IPv4"
     elif isIP6(target):
@@ -55,28 +58,20 @@ def target_type(target):
     elif len(target.rsplit(".")) == 7 and "-" in target and "/" not in target:
         start_ip, stop_ip = target.rsplit("-")
         if isIP(start_ip) and isIP(stop_ip):
-            return "RANGE_IPv4"
-    elif re.match(
-        r"^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$", target
-    ):
-        return "DOMAIN"
-    elif target.lower().startswith("http://") or target.lower().startswith(
-        "https://"
-    ):
-        t = target.rsplit("://")[1].rsplit("/")[0].rsplit(":")[0]
-        if (
-            isIP(t)
-            or isIP6(t)
-            or re.match(
-                r"^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$", t
-            )
-        ):
-            return "HTTP"
-    elif len(target.rsplit(".")) == 4 and "-" not in target and "/" in target:
-        IP, CIDR = target.rsplit("/")
+            return 'RANGE_IPv4'
+    elif re.match(regex, target):
+        return 'DOMAIN'
+    elif len(target.rsplit('.')) is 4 and '-' not in target and '/' in target:
+        IP, CIDR = target.rsplit('/')
         if isIP(IP) and (int(CIDR) >= 0 and int(CIDR) <= 32):
-            return "CIDR_IPv4"
-    return "UNKNOWN"
+            return 'CIDR_IPv4'
+
+    t = target.rsplit("://")[1].rsplit("/")[0].rsplit(":")[0]
+    if isIP(t) or isIP6(t) or re.match(regex, t):
+        scheme = target.split("://")[0].lower()
+        return targets[scheme]
+
+    return 'UNKNOWN'
 
 
 def analysis(
