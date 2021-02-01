@@ -61,7 +61,7 @@ def target_type(target):
             return 'RANGE_IPv4'
     elif re.match(regex, target):
         return 'DOMAIN'
-    elif len(target.rsplit('.')) is 4 and '-' not in target and '/' in target:
+    elif len(target.rsplit('.')) == 4 and '-' not in target and '/' in target:
         IP, CIDR = target.rsplit('/')
         if isIP(IP) and (int(CIDR) >= 0 and int(CIDR) <= 32):
             return 'CIDR_IPv4'
