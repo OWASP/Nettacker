@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "नेटटेकर इंजन शुरू हुआ ...",
             "options": "पायथन nettacker.py [विकल्प]",
             "help_menu": "नेटटेकर सहायता मेनू दिखाएं",
-            "license": "कृपया लाइसेंस और समझौते https://github.com/zdresearch/OWASP-Nettacker पढ़ें",
+            "license": "कृपया लाइसेंस और समझौते https://github.com/OWASP/Nettacker पढ़ें",
             "engine": "इंजन",
             "engine_input": "इंजन इनपुट विकल्प",
             "select_language": "एक भाषा का चयन करें {0}",
@@ -100,7 +100,7 @@ def all_messages():
             "target_submitted": "लक्ष्य {0} जमा!",
             "current_version": "आप OWASP Nettacker संस्करण {0} {1} {2} {6} कोड नाम {3} {4} {5} के साथ चल रहे हैं",
             "feature_unavailable": "यह सुविधा अभी तक उपलब्ध नहीं है! अंतिम संस्करण प्राप्त करने के लिए कृपया \"गिट क्लोन "
-                                   "https://github.com/zdresearch/OWASP-Nettacker.git या पाइप इंस्टॉल -यू"
+                                   "https://github.com/OWASP/Nettacker.git या पाइप इंस्टॉल -यू"
                                    " OWASP-Nettacker चलाएं।",
             "available_graph": "सभी गतिविधियों और जानकारी का एक ग्राफ बनाएं, आपको HTML आउटपुट का उपयोग करना होगा।"
                                " उपलब्ध ग्राफ: {0}",
@@ -150,6 +150,12 @@ def all_messages():
             "all_usernames": "उपयोगकर्ता नाम",
             "all_passwords": "पासवर्ड",
             "timeout_seconds": "टाइमआउट सेकेंड",
+            "Invalid_shodan_api_key": "{0}",
+            "shodan_api_key": "शोदन के लिए शोडान एपीआई कुंजी",
+            "shodan_results_found": "शोदन के परिणाम मिले",
+            "shodan_results_not_found": "शोदन डेटाबेस में कुछ भी नहीं मिला",
+            "shodan_plan_upgrade": "कृपया फ़िल्टर या पेजिंग का उपयोग करने के लिए अपनी एपीआई योजना को अपग्रेड करें और बेहतर परिणाम प्राप्त करें",
+            "searching_shodan_database": "खोज रहे शोदन डेटाबेस...",
             "all_ports": "बंदरगाह संख्या",
             "all_verbose_level": "वर्बोज़ स्तर",
             "all_socks_proxy": "मोजे प्रॉक्सी",
@@ -181,6 +187,11 @@ def all_messages():
             "ports_int": "बंदरगाह पूर्णांक होना चाहिए! (उदाहरण के लिए 80 || 80,1080 || 80,1080-1300,9000,12000-15000)",
             "through_API": "ओडब्ल्यूएएसपी नेटटेकर एपीआई के माध्यम से",
             "API_invalid": "अवैध एपीआई कुंजी",
+            "API_cert": "एपीआई प्रमाण पत्र",
+            "API_cert_key": "एपीआई प्रमाणपत्र कुंजी",
+            "api_cert": "कृपया अपने एसएसपी सर्टिफिकेट की लोकेशन --api-cert स्विच का उपयोग करके दें",
+            "api_cert_key": "कृपया --api-cert-key स्विच का उपयोग करके अपनी निजी कुंजी का स्थान दें",
+            "wrong_values": "कृपया सही एसएसएल प्रमाणपत्र और निजी कुंजी फ़ाइल प्रदान करें!",
             "unauthorized_IP": "आपका आईपी अधिकृत नहीं है",
             "not_found": "नहीं मिला!",
             "no_subdomain_found": "subdomain_scan: कोई सबडोमेन की स्थापना की!",
@@ -212,5 +223,11 @@ def all_messages():
             "no_response": "लक्ष्य से प्रतिक्रिया प्राप्त नहीं कर सकते हैं",
             "category_framework": "श्रेणी: {0}, ढांचे: {1} मिला!",
             "nothing_found": "{0} में {1} में कुछ भी नहीं मिला!",
-            "no_auth": "{0}: {1} पर कोई लेख नहीं मिला"
+            "no_auth": "{0}: {1} पर कोई लेख नहीं मिला",
+            "invalid_database": "कृपया कॉन्फ़िगरेशन फ़ाइल में माई एसक्यूएल या sqlite से चुनें",
+            "database_connection_failed": "चयनित डाटाबेस से कनेक्शन विफल हुआ",
+            "fuzzer_no_response": "एचटीटीपी फ़ज़र को कोई आउटपुट नहीं मिला {0}",
+            "summary_report": "सारांश रिपोर्ट तालिका",
+            "file_saved": "रिपोर्ट डेटाबेस और {0} में सहेजी गई",
+            "no_event_found": "इस स्कैन में कोई ईवेंट नहीं मिला",
         }

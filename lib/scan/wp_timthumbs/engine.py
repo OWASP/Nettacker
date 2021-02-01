@@ -20,7 +20,8 @@ from core._time import now
 from core.log import __log_into_file
 from core._die import __die_failure
 from lib.scan.wp_timthumbs import wp_timthumbs
-
+from lib.payload.wordlists import useragents
+from core.compatible import version
 
 def extra_requirements_dict():
     return {
@@ -67,10 +68,10 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                 break
             except:
                 n += 1
-                if n is retries:
+                if n == retries:
                     warn(messages(language, "http_connection_timeout").format(target))
                     return 1
-        if version() is 3:
+        if version() == 3:
             content = content.decode('utf8')
         if r.status_code in status_codes:
             info(messages(language, "found").format(
@@ -81,7 +82,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                                'DESCRIPTION': messages(language, "found").format(target, r.status_code, r.reason),
                                'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
-            if r.status_code is 200:
+            if r.status_code == 200:
                 for dlmsg in directory_listing_msgs:
                     if dlmsg in content:
                         info(messages(language, "directoy_listing").format(target))
@@ -130,7 +131,7 @@ def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, ver
             return 0
         except:
             n += 1
-            if n is retries:
+            if n == retries:
                 return 1
 
 
@@ -139,24 +140,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
             target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
         # rand useragent
-        user_agent_list = [
-            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
-            "Googlebot/2.1 ( http://www.googlebot.com/bot.html)",
-            "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Ubuntu/10.04"
-            " Chromium/9.0.595.0 Chrome/9.0.595.0 Safari/534.13",
-            "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.2; WOW64; .NET CLR 2.0.50727)",
-            "Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22 Version/10.51",
-            "Mozilla/5.0 (compatible; 008/0.83; http://www.80legs.com/webcrawler.html) Gecko/2008032620",
-            "Debian APT-HTTP/1.3 (0.8.10.3)",
-            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
-            "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
-            "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
-            "YahooSeeker/1.2 (compatible; Mozilla 4.0; MSIE 5.5; yahooseeker at yahoo-inc dot com ; "
-            "http://help.yahoo.com/help/us/shop/merchant/)",
-            "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)",
-            "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",
-            "msnbot/1.1 (+http://search.msn.com/msnbot.htm)"
-        ]
+        user_agent_list = useragents.useragents()
         http_methods = ["GET", "HEAD"]
         user_agent = {'User-agent': random.choice(user_agent_list)}
 
@@ -183,7 +167,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if target_type(target) != "HTTP":
             target = 'https://' + target
         if test(str(target), retries, timeout_sec, user_agent, extra_requirements["wp_timthumb_scan_http_method"][0],
-                socks_proxy, verbose_level, trying, total_req, total, num, language) is 0:
+                socks_proxy, verbose_level, trying, total_req, total, num, language) == 0:
             keyboard_interrupt_flag = False
             scan_list = wp_timthumbs.timthumb()
             for idir in scan_list:
@@ -220,20 +204,20 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threading.activeCount() == 1 or kill_switch == kill_time:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1:
+        if thread_write == 1:
             info(messages(language, "directory_file_404").format(
                 target, "default_port"))
-            if verbose_level is not 0:
+            if verbose_level != 0:
                 data = json.dumps(
                     {'HOST': target_to_host(target), 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'wp_timthumb_scan',
                      'DESCRIPTION': messages(language, "no_open_ports"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,

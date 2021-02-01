@@ -14,12 +14,15 @@ def all_messages():
             "scan_started": "Nettacker engine started ...\n\n",
             "options": "python nettacker.py [options]",
             "help_menu": "Show Nettacker Help Menu",
-            "license": "Please read license and agreements https://github.com/zdresearch/OWASP-Nettacker\n",
+            "license": "Please read license and agreements https://github.com/OWASP/Nettacker\n",
             "engine": "Engine",
             "engine_input": "Engine input options",
             "select_language": "select a language {0}",
             "range": "scan all IPs in the range",
             "subdomains": "find and scan subdomains",
+            "Invalid_whatcms_api_key": "{0}",
+            "searching_whatcms_database": "Searching for CMS on whatcms.org...",
+            "whatcms_monthly_quota_exceeded": "You have exceeded your monthly WHATCMS request quota",
             "thread_number_connections": "thread numbers for connections to a host",
             "thread_number_hosts": "thread numbers for scan hosts",
             "save_logs": "save all logs in file (results.txt, results.csv, results.html, results.json)",
@@ -101,7 +104,7 @@ def all_messages():
             "target_submitted": "target {0} submitted!",
             "current_version": "you are running OWASP Nettacker version {0}{1}{2}{6} with code name {3}{4}{5}",
             "feature_unavailable": "this feature is not available yet! please run \"git clone "
-                                   "https://github.com/zdresearch/OWASP-Nettacker.git or pip install"
+                                   "https://github.com/OWASP/Nettacker.git or pip install"
                                    " -U OWASP-Nettacker to get the latest version.",
             "available_graph": "build a graph of all activities and information, you must"
                                " use HTML output. available graphs: {0}",

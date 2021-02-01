@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "Nettacker շարժիչը սկսվեց ...",
             "options": "python nettacker.py [ընտրանքներ]",
             "help_menu": "Ցույց տալ Nettacker Օգնություն Մենյու",
-            "license": "Խնդրում ենք կարդալ լիցենզիա եւ համաձայնագրեր https://github.com/zdresearch/OWASP-Nettacker",
+            "license": "Խնդրում ենք կարդալ լիցենզիա եւ համաձայնագրեր https://github.com/OWASP/Nettacker",
             "engine": "Շարժիչ",
             "engine_input": "Շարժիչի ներածման ընտրանքները",
             "select_language": "{0} լեզու ընտրել",
@@ -103,7 +103,7 @@ def all_messages():
             "target_submitted": "թիրախ {0} ներկայացվեց:",
             "current_version": "Դուք աշխատում եք {0} {1} {2} {6} - ի OWASP Nettacker տարբերակով {3} {4} {5}",
             "feature_unavailable": "այս հատկությունը հասանելի չէ: խնդրում ենք վազել \"git clone "
-                                   "https://github.com/zdresearch/OWASP-Nettacker.git կամ pip install "
+                                   "https://github.com/OWASP/Nettacker.git կամ pip install "
                                    "-U OWASP-Nettacker ստանալ վերջին տարբերակը:",
             "available_graph": "կառուցեք բոլոր գործողությունների եւ տեղեկատվության գրաֆիկ, դուք պետք է "
                                "օգտագործեք HTML արտադրանքը: մատչելի գրաֆիկները `{0}",

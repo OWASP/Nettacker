@@ -10,11 +10,15 @@ from core.alert import messages, info
 from core._die import __die_failure
 from lib.scan.subdomain.engine import __get_subs
 from core.log import __log_into_file
+import ipaddress
+import six
 
+temp = 0
 
 def target_to_host(target):
     """
-    convert a target to host, example http://owasp.org to owasp.org or http://127.0.0.1 to 127.0.0.1
+    convert a target to host, example http://owasp.org to \
+        owasp.org or http://127.0.0.1 to 127.0.0.1
     Args:
         target: the target
 
@@ -41,7 +45,8 @@ def target_type(target):
         target: the target
 
     Returns:
-        the target type (SINGLE_IPv4, SINGLE_IPv6, RANGE_IPv4, DOMAIN, HTTP, CIDR_IPv4, UNKNOWN)
+        the target type (SINGLE_IPv4, SINGLE_IPv6, RANGE_IPv4, \
+            DOMAIN, HTTP, CIDR_IPv4, UNKNOWN)
     """
     if isIP(target):
         return "SINGLE_IPv4"
@@ -112,6 +117,7 @@ def analysis(
     __log_into_file(subs_temp, "a", "", language)
 
     for target in targets:
+        target = six.ensure_text(target)
         if target_type(target) == "SINGLE_IPv4":
             if check_ranges:
                 if not enumerate_flag:
@@ -136,6 +142,23 @@ def analysis(
             or target_type(target) == "CIDR_IPv4"
         ):
             IPs = IPRange(target, range_temp, language)
+            global temp
+            if target_type(target) == "CIDR_IPv4" and temp == 0:
+                net = ipaddress.ip_network(six.text_type(target))
+                start = net[0]
+                end = net[-1]
+                ip1 = int(ipaddress.IPv4Address(six.text_type(start)))
+                ip2 = int(ipaddress.IPv4Address(six.text_type(end)))
+                yield ip2 - ip1
+                temp = 1
+                break
+            if target_type(target) == "RANGE_IPv4" and temp == 0:
+                start, end = target.rsplit("-")
+                ip1 = int(ipaddress.IPv4Address(six.text_type(start)))
+                ip2 = int(ipaddress.IPv4Address(six.text_type(end)))
+                yield ip2 - ip1
+                temp = 1
+                break
             if not enumerate_flag:
                 info(messages(language, "checking").format(target))
             if type(IPs) == netaddr.ip.IPNetwork:
