@@ -45,7 +45,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # set user agent
         headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0",
                    "Accept": "text/javascript, text/html, application/xml, text/xml, */*",
-                   "Accept-Language": "en-US,en;q=0.5"
+                   "Accept-Language": "en-US,en;q=0.5",
+                   "Referer": "https://viewdns.info/"
                    }
         total_req = 1
         trying = 1
@@ -54,7 +55,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         n = 0
         while 1:
             try:
-                res = requests.get('http://viewdns.info/reverseip/?host={0}&t=1'.format(target), timeout=timeout_sec,
+                res = requests.get('https://viewdns.info/reverseip/?host={0}&t=1'.format(target), timeout=timeout_sec,
                                    headers=headers, verify=True).text
                 break
             except:
@@ -76,7 +77,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 _values.append(dict(zip(headers, values))["Domain"])
         except Exception:
             pass
-        if len(_values) is 0:
+        if len(_values) == 0:
             info(messages(language, "viewdns_domain_404"))
         if len(_values) > 0:
             info(messages(language, "len_domain_found").format(len(_values)))
@@ -87,7 +88,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                                    'TYPE': 'viewdns_reverse_ip_lookup_scan', 'DESCRIPTION': domain,
                                    'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
                 __log_into_file(log_in_file, 'a', data, language)
-        if verbose_level is not 0:
+        if verbose_level != 0:
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'viewdns_reverse_ip_lookup_scan',
                                'DESCRIPTION': messages(language, "domain_found").format(len(_values), ", ".join(_values) if len(
                                    _values) > 0 else "None"), 'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id,

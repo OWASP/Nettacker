@@ -13,13 +13,18 @@ from core._die import __die_failure
 from database.db import submit_report_to_db
 from database.db import submit_logs_to_db
 from database.db import remove_old_logs
+import html
 from database.db import __logs_by_scan_id
-from core.config_builder import default_paths
-from core.config import _paths
-from core.config_builder import _builder
 from core.compatible import version
 from core.alert import write
+import csv
 
+try:
+    reload
+except NameError:
+    def reload(dummy):
+        return dummy
+    
 
 def build_graph(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
     """
@@ -115,16 +120,21 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     report_type = ""
     JSON_FROM_DB = __logs_by_scan_id(scan_id, language)
     JSON_Data = sorted(JSON_FROM_DB, key=sorted)
-    if compatible.version() is 2:
+    if compatible.version() == 2:
         import sys
         reload(sys)
         sys.setdefaultencoding('utf8')
+                  
     if (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
             len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
         report_type = "HTML"
         data = sorted(JSON_FROM_DB, key=lambda x: sorted(x.keys()))
         # if user want a graph
         _graph = ''
+        for i in data:
+            if(i["DESCRIPTION"]):
+                i["DESCRIPTION"] = html.escape(i["DESCRIPTION"])
+                break;
         if graph_flag is not None:
             _graph = build_graph(graph_flag, language, data, 'HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE',
                                  'DESCRIPTION')
@@ -147,6 +157,21 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
         data = json.dumps(JSON_Data)
         events_num = len(JSON_Data)
         __log_into_file(log_in_file, 'w', data, language, final=True)
+
+    elif len(log_in_file)>=5 and log_in_file[-4:] == '.csv':
+        graph_flag = ""
+        report_type = "CSV"
+        keys = JSON_Data[0].keys()
+        data = json.dumps(JSON_Data)
+        events_num = len(JSON_Data)
+        with open(log_in_file, 'a') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=keys)
+            writer.writeheader()
+            for i in JSON_Data:
+                dicdata = {key: value for key, value in i.items()
+                           if key in keys}
+                writer.writerow(dicdata)
+
     else:
         graph_flag = ""
         report_type = "TEXT"
@@ -164,7 +189,7 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     scan_method = ",".join(scan_method)
     if ports is None:
         ports = "default"
-    submit_report_to_db(now(), scan_id, log_in_file, events_num, 0 if verbose_level is 0 else 1, api_flag, report_type,
+    submit_report_to_db(now(), scan_id, log_in_file, events_num, 0 if verbose_level == 0 else 1, api_flag, report_type,
                         graph_flag, category, profile, scan_method, language, scan_cmd, ports)
     info(messages(language, "removing_logs_db"))
     hosts = []
@@ -201,14 +226,15 @@ def __log_into_file(filename, mode, data, language, final=False):
     Returns:
         True if success otherwise None
     """
-    log = ''
-    if version() is 2:
-        if isinstance(data, str):
-            try:
-                log = json.loads(data)
-            except ValueError:
-                log = ''
 
+    log = ''
+    if isinstance(data, str):
+        try:
+            log = json.loads(data)
+        except ValueError:
+            log = ''
+
+    if version() == 2:
         if isinstance(log, dict):
             if final:
                 with open(filename, mode) as save:
@@ -224,13 +250,6 @@ def __log_into_file(filename, mode, data, language, final=False):
             if not final:
                 flock.release()
     else:
-
-        if isinstance(data, str):
-            try:
-                log = json.loads(data)
-            except ValueError:
-                log = ''
-
         if isinstance(log, dict):
             if final:
                 with open(filename, mode, encoding='utf-8') as save:

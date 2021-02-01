@@ -73,7 +73,7 @@ def server_version(target, port, timeout_sec, log_in_file, language, time_sleep,
             req = requests.get(target)
             try:
                 global header_server
-                header_server=req.headers['server']
+                header_server = req.headers['server']
                 return True
             except:
                 return False
@@ -90,7 +90,7 @@ def __server_version(target, port, timeout_sec, log_in_file, language, time_slee
                                                             'Server Version Diclosure in headers - ' + header_server))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'server_version_vuln',
-                           'DESCRIPTION': messages(language, "vulnerable").format(''), 'TIME': now(),
+                           'DESCRIPTION': header_server[:128], 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
@@ -146,17 +146,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threading.activeCount() == 1 or kill_switch == kill_time:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1 and verbose_level is not 0:
+        if thread_write == 1 and verbose_level != 0:
             info(messages(language, "no_vulnerability_found").format(
                 'Server version not found'))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'server_version_vuln',

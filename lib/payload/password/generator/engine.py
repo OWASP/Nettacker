@@ -136,8 +136,7 @@ def generate(filename="", first_name="", last_name="", nick="", email="", dob=""
             pass
         else:
             unique_list.remove(i)
-
-    if filename is not "":
-        __log_into_file(filename, 'w', json.dumps(
-            unique_list), language, final=True)
+    
+    if filename != "":
+        __log_into_file(filename, 'w', json.dumps(unique_list), language, final=True)
     return unique_list

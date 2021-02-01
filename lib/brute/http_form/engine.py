@@ -9,58 +9,69 @@ import socket
 import json
 import string
 import random
-if int(sys.version_info[0]) is 3:
-    from html.parser import HTMLParser
-    import http.cookiejar as cookiejar
-else:
-    from HTMLParser import HTMLParser
-    import cookielib as cookiejar
-import urllib
-import urllib2
+from six import text_type
+from core.compatible import version
 import os
+import re
 import requests
-from core.alert import *
+from core.alert import warn, info, messages
 from core.targets import target_type
 from core.targets import target_to_host
 from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
+import mechanize
+import logging
 from core._time import now
 from core.log import __log_into_file
+from bs4 import BeautifulSoup
+from core.compatible import version
+from lib.payload.wordlists import usernames, passwords
 
+if version() == 3:
+    from urllib.parse import urlparse
+else:
+    from urlparse import urlparse
+HEADERS = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
+             AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;\
+            q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+    }
 
 def extra_requirements_dict():
     return {
-        "http_form_brute_users": ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"],
-        "http_form_brute_passwds": ["admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",
-                                    "123456", "124567", "12345678", "123456789", "1234567890", "admin1",
-                                    "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx",
-                                    "password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd",
-                                    "admin123", ""],
-        "http_form_brute_ports": ["80"],
-
+        "http_form_brute_users": usernames.users(),
+        "http_form_brute_passwds": passwords.passwords(),
+        "http_form_brute_ports": ["80", "443"],
     }
 
+def get_all_forms(url):
+    session = requests.Session()
+    res = session.get(url)
+    soup = BeautifulSoup(res.text, "html.parser")
+    return soup.find_all("form")
+
+def get_form_details(form):
+    details = {}
+    action = form.attrs.get("action").lower()
+    method = form.attrs.get("method", "get").lower()
+    inputs = []
+    for input_tag in form.find_all("input"):
+        input_type = input_tag.attrs.get("type", "text")
+        input_name = input_tag.attrs.get("name")
+        input_value =input_tag.attrs.get("value", "")
+        inputs.append({"type": input_type, "name": input_name, "value": input_value})
+    details["action"] = action
+    details["method"] = method
+    details["inputs"] = inputs
+    return details
 
 def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename,
           socks_proxy, scan_id, scan_cmd):
-    username_field = "username"
-    password_field = "password"
     exit = 0
-
-    class BruteParser(HTMLParser):
-
-        def __init__(self):
-            HTMLParser.__init__(self)
-            self.parsed_results = {}
-
-        def handle_starttag(self, tag, attrs):
-            if tag == "input":
-                for name, value in attrs:
-                    if name == "name" and value == username_field:
-                        self.parsed_results[username_field] = username_field
-                    if name == "name" and value == password_field:
-                        self.parsed_results[password_field] = password_field
-
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith(
             'socks5://') else socks.SOCKS4
@@ -78,72 +89,65 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                 socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
             socket.socket = socks.socksocket
             socket.getaddrinfo = getaddrinfo
-    while 1:
-        target_host = str(target) + ":" + str(port)
-        flag = 1
-        try:
-            cookiejar = cookiejar.FileCookieJar("cookies")
-            opener = urllib2.build_opener(
-                urllib2.HTTPCookieProcessor(cookiejar))
-            response = opener.open(target)
-            page = response.read()
-            parsed_html = BruteParser()
-            parsed_html.feed(page)
-            parsed_html.parsed_results[username_field] = user
-            parsed_html.parsed_results[password_field] = passwd
-            post_data = urllib.urlencode(parsed_html.parsed_results).encode()
-        except:
-            exit += 1
-            if exit is retries:
-                warn(messages(language, "http_form_auth_failed").format(
-                    target, user, passwd, port))
-                return 1
-            else:
-                time.sleep(time_sleep)
-                continue
-        try:
-            if timeout_sec is not None:
-                brute_force_response = opener.open(
-                    target_host, data=post_data, timeout=timeout_sec)
-            else:
-                brute_force_response = opener.open(target_host, data=post_data)
-            if brute_force_response.code == 200:
-                flag = 0
-                if flag is 0:
+    try:
+        forms = get_all_forms(target)
+        for i, form in enumerate(forms, start=1):
+            form_details = get_form_details(form)
+            data = {}
+            for input_tag in form_details["inputs"]:
+                if input_tag["type"] == "hidden":
+                    data[input_tag["name"]] = input_tag["value"]
+                elif input_tag["type"] == "text":
+                    data[input_tag["name"]] = user
+                elif input_tag["type"] == "password":
+                    data[input_tag["name"]] = passwd
+            target_details = urlparse(target)
+            scheme = target_details.scheme
+            domain = target_details.netloc
+            path = target_details.path
+            try:
+                if form_details["action"].startswith("/"):
+                    url = scheme + "://" + domain + form_details["action"]
+                else:
+                    if target.endswith("/"):
+                        url = scheme + "://" + domain + form_details["action"]
+                    else:
+                        url = scheme + "://" + domain + path + "/" + form_details["action"]
+                if form_details["method"] == "post":
+                    res = requests.post(url, data=data, verify=False)
+                elif form_details["method"] == "get":
+                    res = requests.get(url, params=data, verify=False)
+                if "login" not in res.text:
                     info(messages(language, "http_form_auth_success").format(
-                        user, passwd, target, port))
+                    user, passwd, target, port))
                     data = json.dumps(
                         {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'http_form_brute',
-                         'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute",
-                         'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
+                        'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute",
+                        'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"
                     __log_into_file(log_in_file, 'a', data, language)
                     __log_into_file(thread_tmp_filename, 'w', '0', language)
-            return flag
-        except:
-            exit += 1
-            if exit is retries:
-                warn(messages(language, "http_form_auth_failed").format(
-                    target, user, passwd, port))
-                return 1
-            else:
-                time.sleep(time_sleep)
-                continue
-
-
-def check_auth(target, timeout_sec, language, port):
-    try:
-        if timeout_sec is not None:
-            req = requests.get((str(target) + str(port)), timeout = timeout_sec)
-        else:
-            req = requests.get(str(target) + str(port))
-        if req.status_code == 200:
-            info(messages(language, "no_auth").format(target, port))
+                    return
+            except Exception:
+                # logging.exception("message")
+                pass
+    except Exception:
+        # logging.exception("message")
+        exit += 1
+        if exit == retries:
+            warn(messages(language, "http_form_auth_failed").format(
+                target, user, passwd, port))
             return 1
         else:
-            return 0
-    except:
+            time.sleep(time_sleep)
+        
+
+def check(target, timeout_sec, language, port):
+    try:
+        requests.get(target, verify=False, timeout=timeout_sec, headers=HEADERS)
+        return True
+    except Exception:
         warn(messages(language, 'no_response'))
-        return 1
+        return False
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep,
@@ -174,8 +178,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         trying = 0
         keyboard_interrupt_flag = False
         for port in ports:
-            if check_auth(target, timeout_sec, language, port):
-                continue
+            if check("http://"+target_to_host(target), timeout_sec, language, port):
+                target = target
+            elif check("https://"+target_to_host(target), timeout_sec, language, port):
+                target = "https" + target[4:]
+            
             for user in users:
                 for passwd in passwds:
                     t = threading.Thread(target=login,
@@ -205,19 +212,18 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
             # wait for threads
             kill_switch = 0
-            kill_time = int(
-                timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
             while 1:
                 time.sleep(0.1)
                 kill_switch += 1
                 try:
-                    if threading.activeCount() is 1 or kill_switch is kill_time:
+                    if threading.activeCount() == 1:
+
                         break
                 except KeyboardInterrupt:
                     break
                 thread_write = int(
                     open(thread_tmp_filename).read().rsplit()[0])
-                if thread_write is 1 and verbose_level is not 0:
+                if thread_write == 1 and verbose_level != 0:
                     data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
                                        'TYPE': 'http_form_brute', 'DESCRIPTION': messages(language, "no_user_passwords"), 'TIME': now(),
                                        'CATEGORY': "brute", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd}) + "\n"

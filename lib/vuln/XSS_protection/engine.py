@@ -60,6 +60,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
 
 def xss_protection(target, port, timeout_sec, log_in_file, language, time_sleep,
                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+    regex = '1; report='+'https?:\/\/(www\.)?[-a-zA-Z0-9]{1,256}\.[-a-zA-Z0-9]{1,6}'
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
         if not s:
@@ -72,6 +73,10 @@ def xss_protection(target, port, timeout_sec, log_in_file, language, time_sleep,
             req = requests.get(target)
             try:
                 if req.headers['X-XSS-Protection'] == '1; mode=block':
+                    return False
+                elif req.header['X-XSS-Protection'] == '1':
+                    return False
+                elif re.match(regex, req.header['X-XSS-Protection']):
                     return False
                 else:
                     return True
@@ -146,17 +151,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threading.activeCount() == 1 or kill_switch == kill_time:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1 and verbose_level is not 0:
+        if thread_write == 1 and verbose_level != 0:
             info(messages(language, "no_vulnerability_found").format(
                 'X_XSS_Protection set properly'))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'XSS_protection_vuln',

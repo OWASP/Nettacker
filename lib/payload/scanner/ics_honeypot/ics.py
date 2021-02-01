@@ -173,7 +173,7 @@ def start():
     BREAK = False
     threads = []
     for target in targets:
-        if n % args.alert is 0:
+        if n % args.alert == 0:
             info(str(n) + "/" + str(len(targets)) + "->" + target)
         thread = threading.Thread(target=first_ics_connect, args=(target, args.port, args.timeout, args.output)).start()
         threads.append(thread)
@@ -188,7 +188,7 @@ def start():
         if BREAK:
             break
         n += 1
-        if int(n % 2000) is 0:
+        if int(n % 2000) == 0:
             time.sleep(args.timeout + 1)
             info("clearing cache")
             clear_threads(threads)
