@@ -20,5 +20,5 @@ scapy>=2.4.1; python_version < '3'
 censys==0.0.8
 six==1.15.0
 shodan==1.25.0
-pycurl==7.43.0.6
+pycurl==7.43.0.5
 xmltodict==0.12.0
