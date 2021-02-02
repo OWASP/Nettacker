@@ -399,7 +399,7 @@ def __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
         n = 0
-        url = 'http://ptrarchive.com/tools/search2.htm?label={0}&date=ALL'.format(
+        url = 'http://ptrarchive.com/tools/search5.htm?label={0}'.format(
             target)
         subs = []
         while 1:
@@ -411,9 +411,32 @@ def __ptrarchive(target, timeout_sec, log_in_file, time_sleep, language, verbose
                 if n == 3:
                     break
         if results.status_code == 200:
-            for sub in results.content.rsplit():
-                if '*' in sub and sub.endswith('.' + target) and sub not in subs:
+            content = results.content.replace(">", " ")
+            for sub in content.rsplit():
+                if sub.endswith('.' + target) and sub not in subs:
                     subs.append(sub)
+            content = results.content.split("\n")
+            for line in content:
+                if "Search <a href" in line and target in line:
+
+                    n = 0
+                    url = "http://ptrarchive.com/tools/search5.htm?label={0}&date={1}".format(
+                        target, line.split(target)[1].split("\"")[0].split('date=')[1]
+                    )
+
+                    while 1:
+                        try:
+                            results = requests.get(url, headers=headers, verify=False, timeout=timeout_sec)
+                            break
+                        except:
+                            n += 1
+                            if n == 3:
+                                break
+                    if results.status_code == 200:
+                        content_u = results.content.replace(">", " ")
+                        for sub in content_u.rsplit():
+                            if sub.endswith('.' + target) and sub not in subs:
+                                subs.append(sub)
         else:
             # warn 403
             pass

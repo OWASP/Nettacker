@@ -9,4 +9,4 @@ services:
     ports:
       - 5000:5000
     volumes:
-      - ./.owasp-nettacker:/root/.owasp-nettacker
+      - ./:/usr/src/owaspnettacker

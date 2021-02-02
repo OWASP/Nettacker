@@ -10,11 +10,15 @@ from core.alert import messages, info
 from core._die import __die_failure
 from lib.scan.subdomain.engine import __get_subs
 from core.log import __log_into_file
+import ipaddress
 import six
+
+temp = 0
 
 def target_to_host(target):
     """
-    convert a target to host, example http://owasp.org to owasp.org or http://127.0.0.1 to 127.0.0.1
+    convert a target to host, example http://owasp.org to \
+        owasp.org or http://127.0.0.1 to 127.0.0.1
     Args:
         target: the target
 
@@ -41,8 +45,12 @@ def target_type(target):
         target: the target
 
     Returns:
-        the target type (SINGLE_IPv4, SINGLE_IPv6, RANGE_IPv4, DOMAIN, HTTP, CIDR_IPv4, UNKNOWN)
+        the target type (SINGLE_IPv4, SINGLE_IPv6, RANGE_IPv4, \
+            DOMAIN, HTTP, CIDR_IPv4, UNKNOWN)
     """
+    regex = '^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$'
+    targets = {'http': 'HTTP', 'https': 'HTTP', 'ftp': 'FTP', 'ssh': 'SSH', 'smtp': 'SMTP'}
+
     if isIP(target):
         return "SINGLE_IPv4"
     elif isIP6(target):
@@ -50,28 +58,20 @@ def target_type(target):
     elif len(target.rsplit(".")) == 7 and "-" in target and "/" not in target:
         start_ip, stop_ip = target.rsplit("-")
         if isIP(start_ip) and isIP(stop_ip):
-            return "RANGE_IPv4"
-    elif re.match(
-        r"^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$", target
-    ):
-        return "DOMAIN"
-    elif target.lower().startswith("http://") or target.lower().startswith(
-        "https://"
-    ):
-        t = target.rsplit("://")[1].rsplit("/")[0].rsplit(":")[0]
-        if (
-            isIP(t)
-            or isIP6(t)
-            or re.match(
-                r"^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$", t
-            )
-        ):
-            return "HTTP"
-    elif len(target.rsplit(".")) == 4 and "-" not in target and "/" in target:
-        IP, CIDR = target.rsplit("/")
+            return 'RANGE_IPv4'
+    elif re.match(regex, target):
+        return 'DOMAIN'
+    elif len(target.rsplit('.')) == 4 and '-' not in target and '/' in target:
+        IP, CIDR = target.rsplit('/')
         if isIP(IP) and (int(CIDR) >= 0 and int(CIDR) <= 32):
-            return "CIDR_IPv4"
-    return "UNKNOWN"
+            return 'CIDR_IPv4'
+
+    t = target.rsplit("://")[1].rsplit("/")[0].rsplit(":")[0]
+    if isIP(t) or isIP6(t) or re.match(regex, t):
+        scheme = target.split("://")[0].lower()
+        return targets[scheme]
+
+    return 'UNKNOWN'
 
 
 def analysis(
@@ -137,6 +137,23 @@ def analysis(
             or target_type(target) == "CIDR_IPv4"
         ):
             IPs = IPRange(target, range_temp, language)
+            global temp
+            if target_type(target) == "CIDR_IPv4" and temp == 0:
+                net = ipaddress.ip_network(six.text_type(target))
+                start = net[0]
+                end = net[-1]
+                ip1 = int(ipaddress.IPv4Address(six.text_type(start)))
+                ip2 = int(ipaddress.IPv4Address(six.text_type(end)))
+                yield ip2 - ip1
+                temp = 1
+                break
+            if target_type(target) == "RANGE_IPv4" and temp == 0:
+                start, end = target.rsplit("-")
+                ip1 = int(ipaddress.IPv4Address(six.text_type(start)))
+                ip2 = int(ipaddress.IPv4Address(six.text_type(end)))
+                yield ip2 - ip1
+                temp = 1
+                break
             if not enumerate_flag:
                 info(messages(language, "checking").format(target))
             if type(IPs) == netaddr.ip.IPNetwork:
