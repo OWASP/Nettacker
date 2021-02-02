@@ -15,6 +15,7 @@ import six
 
 temp = 0
 
+
 def target_to_host(target):
     """
     convert a target to host, example http://owasp.org to \
@@ -28,9 +29,9 @@ def target_to_host(target):
     if target_type(target) == "HTTP":
         target = (
             target.lower()
-            .replace("http://", "")
-            .replace("https://", "")
-            .rsplit("/")[0]
+                .replace("http://", "")
+                .replace("https://", "")
+                .rsplit("/")[0]
         )
         if ":" in target:
             target = target.rsplit(":")[0]
@@ -49,44 +50,48 @@ def target_type(target):
             DOMAIN, HTTP, CIDR_IPv4, UNKNOWN)
     """
     regex = '^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$'
-    targets = {'http': 'HTTP', 'https': 'HTTP', 'ftp': 'FTP', 'ssh': 'SSH', 'smtp': 'SMTP'}
+    targets_protocols = {
+        'http': 'HTTP',
+        'https': 'HTTP',
+        'ftp': 'FTP',
+        'ssh': 'SSH',
+        'smtp': 'SMTP'
+    }
 
     if isIP(target):
         return "SINGLE_IPv4"
     elif isIP6(target):
         return "SINGLE_IPv6"
+    elif True in [target.lower().startswith(key + '://') for key in targets_protocols]:
+        scheme = target.split("://")[0].lower()
+        return targets_protocols[scheme]
     elif len(target.rsplit(".")) == 7 and "-" in target and "/" not in target:
         start_ip, stop_ip = target.rsplit("-")
         if isIP(start_ip) and isIP(stop_ip):
             return 'RANGE_IPv4'
-    elif re.match(regex, target):
-        return 'DOMAIN'
     elif len(target.rsplit('.')) == 4 and '-' not in target and '/' in target:
+        print(target)
         IP, CIDR = target.rsplit('/')
         if isIP(IP) and (int(CIDR) >= 0 and int(CIDR) <= 32):
             return 'CIDR_IPv4'
-
-    t = target.rsplit("://")[1].rsplit("/")[0].rsplit(":")[0]
-    if isIP(t) or isIP6(t) or re.match(regex, t):
-        scheme = target.split("://")[0].lower()
-        return targets[scheme]
-
+    elif re.match(regex, target):
+        return 'DOMAIN'
     return 'UNKNOWN'
 
 
 def analysis(
-    targets,
-    check_ranges,
-    check_subdomains,
-    subs_temp,
-    range_temp,
-    log_in_file,
-    time_sleep,
-    language,
-    verbose_level,
-    retries,
-    socks_proxy,
-    enumerate_flag,
+        targets,
+        check_ranges,
+        check_subdomains,
+        subs_temp,
+        range_temp,
+        log_in_file,
+        time_sleep,
+        language,
+        verbose_level,
+        retries,
+        socks_proxy,
+        enumerate_flag,
 ):
     """
     analysis and calulcate targets.
@@ -133,8 +138,8 @@ def analysis(
             yield target
 
         elif (
-            target_type(target) == "RANGE_IPv4"
-            or target_type(target) == "CIDR_IPv4"
+                target_type(target) == "RANGE_IPv4"
+                or target_type(target) == "CIDR_IPv4"
         ):
             IPs = IPRange(target, range_temp, language)
             global temp
