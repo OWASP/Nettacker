@@ -154,7 +154,7 @@ def all_messages():
             "retries_number": "د بیرته ترلاسه کولو شمیره",
             "graph": "يوه ګراف",
             "subdomain_found": "فرعي ماډل وموندل شو: {0}",
-            "select_profile": "پېژندڅېره {{} غوره کړه",
+            "select_profile": "پېژندڅېره {} غوره کړه",
             "profile_404": "پروفائل \"{0}\" ونه موندل شو!",
             "waiting": "د {0} انتظار",
             "vulnerable": "{0} ته زیان رسونکي",
