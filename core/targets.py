@@ -62,17 +62,18 @@ def target_type(target):
         return "SINGLE_IPv4"
     elif isIP6(target):
         return "SINGLE_IPv6"
+    elif True in [target.lower().startswith(key + '://') for key in targets_protocols]:
+        scheme = target.split("://")[0].lower()
+        return targets_protocols[scheme]
     elif len(target.rsplit(".")) == 7 and "-" in target and "/" not in target:
         start_ip, stop_ip = target.rsplit("-")
         if isIP(start_ip) and isIP(stop_ip):
             return 'RANGE_IPv4'
     elif len(target.rsplit('.')) == 4 and '-' not in target and '/' in target:
+        print(target)
         IP, CIDR = target.rsplit('/')
         if isIP(IP) and (int(CIDR) >= 0 and int(CIDR) <= 32):
             return 'CIDR_IPv4'
-    elif True in [target.lower().startswith(targets_protocols[key]) + '://' for key in targets_protocols]:
-        scheme = target.split("://")[0].lower()
-        return targets_protocols[scheme]
     elif re.match(regex, target):
         return 'DOMAIN'
     return 'UNKNOWN'
