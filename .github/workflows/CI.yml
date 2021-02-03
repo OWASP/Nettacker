@@ -8,14 +8,34 @@ on:
     branches:
       - master
       - development
+      - '**'
     paths:
       - '**.py'
   pull_request:
     branches:
       - master
       - development
-    paths:
-      - '**.py'
+
+    paths-ignore:
+      - 'lib/**'
+
+    types: [
+      assigned,
+      unassigned,
+      labeled,
+      unlabeled,
+      opened,
+      edited,
+      closed,
+      reopened,
+      synchronize,
+      ready_for_review,
+      locked,
+      unlocked,
+      review_requested,
+      review_request_removed
+    ]
+
 jobs:
   build:
 
