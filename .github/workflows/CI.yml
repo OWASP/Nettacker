@@ -16,9 +16,6 @@ on:
       - master
       - development
 
-    paths-ignore:
-      - 'lib/**'
-
     types: [
       assigned,
       unassigned,
