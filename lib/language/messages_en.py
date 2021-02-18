@@ -234,5 +234,9 @@ def all_messages():
             "file_saved": "report saved in {0} and database",
             "no_event_found": "no event found in this scan",
             "invalid_json_type_to_db": "Invalid type of JSON data for the database. Skipping the submission to database"
-                                       ". Data:{0}"
+                                       ". Data:{0}",
+            "email_scan_get": "email_scan_http_method value must be GET",
+            "len_email_found": "{0} email(s) found",
+            "email_404": "no emails not found",
+            "email_found": "{0} -> email found",
         }
