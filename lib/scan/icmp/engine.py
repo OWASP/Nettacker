@@ -5,6 +5,7 @@ import socket
 import os
 import socks
 import json
+import icmplib
 from core.targets import target_type
 from core.alert import info
 from core.alert import messages
@@ -23,19 +24,15 @@ def do_one_ping(dest_addr, timeout, psize):
     """
     Returns either the delay (in seconds) or none on timeout.
     """
-    icmp = socket.getprotobyname("icmp")
     try:
-        my_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)
-    except socket.error:
+        host = icmplib.ping(dest_addr, count=1, timeout=timeout, privileged=False, payload_size=psize)
+    except icmplib.NameLookupError:
         return None
 
-    my_id = os.getpid() & 0xFFFF
+    if not host.is_alive:
+        return None
 
-    send_one_ping(my_socket, dest_addr, my_id, psize)
-    delay = receive_one_ping(my_socket, my_id, timeout)
-
-    my_socket.close()
-    return delay
+    return host.avg_rtt
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
