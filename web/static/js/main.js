@@ -418,7 +418,7 @@ $(document).ready(function () {
             language = res[i]["language"];
             scan_cmd = res[i]["scan_cmd"];
             ports = res[i]["ports"];
-            host = scan_cmd.split(" ")[2].split("/")[2];
+            host = scan_cmd.split(" ")[2];
             HTMLData += "<a target='_blank' href=\"/results/get?id=" + id +
                 "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
                 "<div class=\"row\" ><div class=\"d-flex w-100\">\n" +
