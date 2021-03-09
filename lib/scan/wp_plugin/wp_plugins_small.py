@@ -57,4 +57,4 @@ def wp_plugins():
             "yolink-search", "yt-audio-streaming-audio-from-youtube", "zingiri-web-shop", "zotpress",
             "zotpressinboundio-marketing", "woocommerce", "tablepress", "ultimate-member", "yoast", "ninja-forms",
             "wordfence", "elementor", "all-in-one-seo-pack", "contact-form-7", "easy-wp-smtp", "redux-framework",
-            "loginizer", "wp-file-manager"]
+            "loginizer", "wp-file-manager", "sucuri-scanner", "ninja-forms"]
