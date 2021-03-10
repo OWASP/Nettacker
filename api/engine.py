@@ -43,6 +43,8 @@ from database.db import __search_logs
 from database.db import __logs_to_report_html
 from api.__start_scan import __scan
 from core._time import now
+from database.db import create_connection
+from database.models import HostsLog
 
 template_dir = os.path.join(os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "web"), "static")
@@ -291,6 +293,67 @@ def __get_result_content():
     except:
         return jsonify(__structure(status="error", msg="your scan id is not valid!")), 400
     return __get_result(__language(), id)
+
+@app.route("/results/get_json", methods=["GET"])
+def __get_results_json():
+    """
+    get host's logs through the API in JSON type
+
+    Returns:
+        an array with JSON events
+    """
+    session = create_connection(__language())
+    __api_key_check(app, flask_request, __language())
+    try:
+        id = __get_value(flask_request, "id")
+    except:
+        id = ""
+    data = session.query(HostsLog).filter(HostsLog.id==id).all()
+    host = data[0].host
+    print(data)
+    data = __logs_to_report_json(host, __language())
+    json_object = json.dumps(data)
+    return Response(json_object,
+        mimetype='application/json',
+        headers={'Content-Disposition':'attachment;filename=results.json'})
+
+@app.route("/results/get_csv", methods=["GET"])
+def __get_results_csv():
+    """
+    get host's logs through the API in JSON type
+
+    Returns:
+        an array with JSON events
+    """
+    session = create_connection(__language())
+    __api_key_check(app, flask_request, __language())
+    try:
+        id = __get_value(flask_request, "id")
+    except:
+        id = ""
+    data = session.query(HostsLog).filter(HostsLog.id==id).all()
+    host = data[0].host
+    data = __logs_to_report_json(host, __language())
+    keys = data[0].keys()
+    with open('results.csv', "w")  as output_file:
+        dict_writer = csv.DictWriter(output_file, fieldnames=keys)
+        dict_writer.writeheader()
+        for i in data:
+            dictdata = {key: value for key, value in i.items()
+                        if key in keys}
+            dict_writer.writerow(dictdata)
+    printData = []
+    with open('results.csv', 'r') as output_file:
+        reader = csv.reader(output_file)
+        for row in reader:
+            printData.append(row)
+    s = ''
+    for i in printData:
+        s += ", ".join(i)
+        s += "\n"
+    return Response(s,
+        mimetype='text/csv',
+        headers={'Content-Disposition':'attachment;filename=results.csv'})
 
 
 @app.route("/logs/get_list", methods=["GET"])
