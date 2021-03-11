@@ -309,12 +309,13 @@ def __get_results_json():
     except:
         id = ""
     result_id = session.query(Report).join(HostsLog, Report.id==HostsLog.id).filter(Report.id==id).all()
-    scan_id = result_id[0].scan_id
-    data = session.query(HostsLog).filter(HostsLog.scan_id==scan_id).all()
-    host = data[0].host
-    print(data)
-    data = __logs_to_report_json(host, __language())
-    json_object = json.dumps(data)
+    json_object = {}
+    if(result_id):
+        scan_id = result_id[0].scan_id
+        data = session.query(HostsLog).filter(HostsLog.scan_id==scan_id).all()
+        host = data[0].host
+        data = __logs_to_report_json(host, __language())
+        json_object = json.dumps(data)
     return Response(json_object,
         mimetype='application/json',
         headers={'Content-Disposition':'attachment;filename=results.json'})
@@ -333,26 +334,29 @@ def __get_results_csv():
         id = __get_value(flask_request, "id")
     except:
         id = ""
-    data = session.query(HostsLog).filter(HostsLog.id==id).all()
-    host = data[0].host
-    data = __logs_to_report_json(host, __language())
-    keys = data[0].keys()
-    with open('results.csv', "w")  as output_file:
-        dict_writer = csv.DictWriter(output_file, fieldnames=keys)
-        dict_writer.writeheader()
-        for i in data:
-            dictdata = {key: value for key, value in i.items()
-                        if key in keys}
-            dict_writer.writerow(dictdata)
-    printData = []
-    with open('results.csv', 'r') as output_file:
-        reader = csv.reader(output_file)
-        for row in reader:
-            printData.append(row)
+    result_id = session.query(Report).join(HostsLog, Report.id==HostsLog.id).filter(Report.id==id).all()
     s = ''
-    for i in printData:
-        s += ", ".join(i)
-        s += "\n"
+    if(result_id):
+        scan_id = result_id[0].scan_id
+        data = session.query(HostsLog).filter(HostsLog.scan_id==scan_id).all()
+        host = data[0].host
+        data = __logs_to_report_json(host, __language())
+        keys = data[0].keys()
+        with open('results.csv', "w")  as output_file:
+            dict_writer = csv.DictWriter(output_file, fieldnames=keys)
+            dict_writer.writeheader()
+            for i in data:
+                dictdata = {key: value for key, value in i.items()
+                            if key in keys}
+                dict_writer.writerow(dictdata)
+        printData = []
+        with open('results.csv', 'r') as output_file:
+            reader = csv.reader(output_file)
+            for row in reader:
+                printData.append(row)
+        for i in printData:
+            s += ", ".join(i)
+            s += "\n"
     return Response(s,
         mimetype='text/csv',
         headers={'Content-Disposition':'attachment;filename=results.csv'})
