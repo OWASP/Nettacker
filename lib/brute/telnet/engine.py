@@ -18,6 +18,7 @@ from core._time import now
 from core.log import __log_into_file
 from lib.payload.wordlists import usernames, passwords
 
+
 def extra_requirements_dict():
     return {
         "telnet_brute_users": usernames.users(),
@@ -27,7 +28,7 @@ def extra_requirements_dict():
 
 
 def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename,
-          socks_proxy,scan_id, scan_cmd):
+          socks_proxy, scan_id, scan_cmd):
     exit = 0
     if socks_proxy is not None:
         socks_version = socks.SOCKS5 if socks_proxy.startswith(
@@ -144,7 +145,7 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         while 1:
             n = 0
             for thread in threads:
-                if thread.isAlive():
+                if thread.is_alive():
                     n += 1
                 else:
                     threads.remove(thread)
@@ -155,7 +156,7 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
     while 1:
         n = True
         for thread in threads:
-            if thread.isAlive():
+            if thread.is_alive():
                 n = False
         time.sleep(0.01)
         if n:
