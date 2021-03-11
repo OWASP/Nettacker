@@ -44,7 +44,7 @@ from database.db import __logs_to_report_html
 from api.__start_scan import __scan
 from core._time import now
 from database.db import create_connection
-from database.models import HostsLog
+from database.models import HostsLog, Report
 
 template_dir = os.path.join(os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "web"), "static")
@@ -308,7 +308,9 @@ def __get_results_json():
         id = __get_value(flask_request, "id")
     except:
         id = ""
-    data = session.query(HostsLog).filter(HostsLog.id==id).all()
+    result_id = session.query(Report).join(HostsLog, Report.id==HostsLog.id).filter(Report.id==id).all()
+    scan_id = result_id[0].scan_id
+    data = session.query(HostsLog).filter(HostsLog.scan_id==scan_id).all()
     host = data[0].host
     print(data)
     data = __logs_to_report_json(host, __language())
