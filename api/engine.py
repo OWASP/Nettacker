@@ -332,9 +332,13 @@ def __get_results_csv():
     __api_key_check(app, flask_request, __language())
     try:
         id = __get_value(flask_request, "id")
+        scan_id_temp = session.query(Report).filter(Report.id==id).all()
     except:
         id = ""
-    result_id = session.query(Report).join(HostsLog, Report.id==HostsLog.id).filter(Report.id==id).all()
+    if(scan_id_temp):
+        result_id = session.query(Report).join(HostsLog, Report.scan_id==HostsLog.scan_id).filter(Report.scan_id==scan_id_temp[0].scan_id).all()
+    else:
+        result_id = []
     s = ''
     if(result_id):
         scan_id = result_id[0].scan_id
