@@ -98,7 +98,7 @@ except NameError:
 
 
 def _callable(obj):
-    return hasattr(obj, '__call__') or hasattr(obj, '__bases__')
+    return callable(obj) or hasattr(obj, '__bases__')
 
 
 SUPPRESS = '==SUPPRESS=='
