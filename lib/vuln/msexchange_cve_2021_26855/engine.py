@@ -70,8 +70,10 @@ def msexchange_vuln(target, port, timeout_sec, log_in_file, language, time_sleep
                 "X-AnonResource-Backend": "localhost/ecp/default.flt?~3",
                 "X-BEResource": "localhost/owa/auth/logon.aspx?~3",
             }
-
-            req = requests.get(target, cookies=cookies)
+            if target.endswith("/"):
+                target = target[:-1]
+            path = '/owa/auth/x.js'
+            req = requests.get(target + path, cookies=cookies)
             try:
                 global header_server
                 header_server = req.headers['x-calculatedbetarget']
@@ -120,9 +122,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             ports = extra_requirements["vuln_ports"]
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
-        if target.endswith("/"):
-            target = target[:-1]
-        path = '/owa/auth/x.js'
         threads = []
         total_req = len(ports)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
@@ -133,7 +132,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         for port in ports:
             port = int(port)
             t = threading.Thread(target=__msexchange_vuln,
-                                 args=(target + path, int(port), timeout_sec, log_in_file, language, time_sleep,
+                                 args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
             t.start()
