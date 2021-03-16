@@ -10,6 +10,7 @@ import sys
 import socks
 import socket
 import urllib3
+from icmplib import ping
 from core._die import __die_failure
 from core.alert import info
 from core.targets import target_type
@@ -109,7 +110,7 @@ def start_attack(
                 )
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
-        if do_one_ping(target, timeout_sec, 8) is None:
+        if not ping(target, count=1, timeout=timeout_sec, privileged=False, payload_size=8).is_alive:
             if verbose_level >= 3:
                 warn(
                     messages(language, "skipping_target").format(
