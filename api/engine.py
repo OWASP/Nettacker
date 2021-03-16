@@ -43,7 +43,7 @@ from database.db import __search_logs
 from database.db import __logs_to_report_html
 from api.__start_scan import __scan
 from core._time import now
-from database.db import create_connection
+from database.db import create_connection, __logs_by_scan_id
 from database.models import HostsLog, Report
 
 template_dir = os.path.join(os.path.join(
@@ -305,10 +305,9 @@ def __get_results_json():
     session = create_connection(__language())
     __api_key_check(app, flask_request, __language())
     try:
-        id = __get_value(flask_request, "id")
+        id = int(__get_value(flask_request, "id"))
         scan_id_temp = session.query(Report).filter(Report.id==id).all()
-        print(scan_id_temp)
-    except:
+    except Exception as _:
         id = ""
     if(scan_id_temp):
         result_id = session.query(Report).join(HostsLog, Report.scan_id==HostsLog.scan_id).filter(Report.scan_id==scan_id_temp[0].scan_id).all()
@@ -317,9 +316,7 @@ def __get_results_json():
     json_object = {}
     if(result_id):
         scan_id = result_id[0].scan_id
-        data = session.query(HostsLog).filter(HostsLog.scan_id==scan_id).all()
-        host = data[0].host
-        data = __logs_to_report_json(host, __language())
+        data = __logs_by_scan_id(scan_id, __language())
         json_object = json.dumps(data)
     return Response(json_object,
         mimetype='application/json',
@@ -336,9 +333,9 @@ def __get_results_csv():
     session = create_connection(__language())
     __api_key_check(app, flask_request, __language())
     try:
-        id = __get_value(flask_request, "id")
+        id = int(__get_value(flask_request, "id"))
         scan_id_temp = session.query(Report).filter(Report.id==id).all()
-    except:
+    except Exception as _:
         id = ""
     if(scan_id_temp):
         result_id = session.query(Report).join(HostsLog, Report.scan_id==HostsLog.scan_id).filter(Report.scan_id==scan_id_temp[0].scan_id).all()
@@ -347,9 +344,7 @@ def __get_results_csv():
     s = ''
     if(result_id):
         scan_id = result_id[0].scan_id
-        data = session.query(HostsLog).filter(HostsLog.scan_id==scan_id).all()
-        host = data[0].host
-        data = __logs_to_report_json(host, __language())
+        data = __logs_by_scan_id(scan_id, __language())
         keys = data[0].keys()
         with open('results.csv', "w")  as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
