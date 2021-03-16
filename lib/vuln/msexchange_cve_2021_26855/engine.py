@@ -19,6 +19,7 @@ from core._time import now
 from core.log import __log_into_file
 import requests
 
+from lib.payload.wordlists import useragents
 
 def extra_requirements_dict():
     return {
@@ -70,21 +71,24 @@ def msexchange_vuln(target, port, timeout_sec, log_in_file, language, time_sleep
                 "X-AnonResource-Backend": "localhost/ecp/default.flt?~3",
                 "X-BEResource": "localhost/owa/auth/logon.aspx?~3",
             }
+            headers = {'User-agent': random.choice(useragents.useragents())}
+
             if target.endswith("/"):
                 target = target[:-1]
             path = '/owa/auth/x.js'
-            req = requests.get(target + path, cookies=cookies)
-            try:
-                global header_server
-                header_server = req.headers['x-calculatedbetarget']
-                if header_server == 'localhost':
-                    return True
-                else:
+            req = requests.get(target + path, cookies=cookies, verify=False,
+                               headers=headers, timeout=timeout_sec)
+            if req.status_code in [500, 503]:
+                try:
+                    header_server = req.headers['x-calculatedbetarget']
+                    if 'localhost' in header_server or "NegotiateSecurityContext" in req.text:
+                        return True
+                    else:
+                        return False
+                except Exception as e:
                     return False
-            except:
-                return False
     except Exception as e:
-        # some error warning
+        warn(messages(language, 'no_response'))
         return False
 
 
@@ -93,12 +97,12 @@ def __msexchange_vuln(target, port, timeout_sec, log_in_file, language, time_sle
     if msexchange_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "target_vulnerable").format(target, port,
-                                                            'Exchange Server SSRF Vulnerability'))
+                                                            'Exchange Server SSRF Vulnerability CVE-2021-26855'))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port,
                            'TYPE': 'msexchange_cve_2021_26855_vuln',
                            'DESCRIPTION': messages(language, "vulnerable").format(
-                               'Exchange Server SSRF Vulnerability'), 'TIME': now(),
+                               'Exchange Server SSRF Vulnerability CVE-2021-26855'), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
