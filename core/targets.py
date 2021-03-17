@@ -70,7 +70,6 @@ def target_type(target):
         if isIP(start_ip) and isIP(stop_ip):
             return 'RANGE_IPv4'
     elif len(target.rsplit('.')) == 4 and '-' not in target and '/' in target:
-        print(target)
         IP, CIDR = target.rsplit('/')
         if isIP(IP) and (int(CIDR) >= 0 and int(CIDR) <= 32):
             return 'CIDR_IPv4'
