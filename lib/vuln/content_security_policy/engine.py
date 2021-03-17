@@ -10,11 +10,7 @@ import threading
 import string
 import random
 import sys
-import struct
-import re
 import os
-from OpenSSL import crypto
-import ssl
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
@@ -23,12 +19,14 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 from bs4 import BeautifulSoup
+from lib.payload.wordlists import useragents
 import requests
 
 
 def extra_requirements_dict():
     return {
-        "csp_vuln_ports": [443]
+        "csp_vuln_ports": [443, 80],
+        "csp_vuln_check_source": ["False"],
     }
 
 
@@ -61,7 +59,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
 
 
 def content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
-                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
         global weak
@@ -73,35 +71,41 @@ def content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
-            req = requests.get(target)
+
+            headers = {'User-agent': random.choice(useragents.useragents())}
+
+            req = requests.get(target, headers=headers,
+                               timeout=timeout_sec, verify=False)
             try:
                 weak = False
                 csp = req.headers['Content-Security-Policy']
                 if 'unsafe-inline' in csp or 'unsafe-eval' in csp:
                     weak = True
                 return False
-            except:
-                soup = BeautifulSoup(req.text, "html.parser")
-                meta_tags = soup.find_all('meta', {'http-equiv': 'Content-Security-Policy'})
+            except Exception as e:
+                if check_source_flag:
+                    soup = BeautifulSoup(req.text, "html.parser")
+                    meta_tags = soup.find_all('meta', {'http-equiv': 'Content-Security-Policy'})
 
-                if len(meta_tags) == 0:
+                    if len(meta_tags) == 0:
+                        return True
+                    directives = meta_tags[0].attrs['content']
+
+                    if 'unsafe-inline' in directives or 'unsafe-eval' in directives:
+                        weak = True
+
+                    return False
+                else:
                     return True
-                directives = meta_tags[0].attrs['content']
-
-                if 'unsafe-inline' in directives or 'unsafe-eval' in directives:
-                    weak = True
-
-                return False
-
     except Exception as e:
         # some error warning
         return False
 
 
 def __content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
-                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag):
     if content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
-                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag):
         description = ('CSP makes it possible for server administrators to reduce or'
                        ' eliminate the vectors by which XSS can occur by specifying '
                        'the domains that the browser should consider to be valid '
@@ -145,6 +149,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         extra_requirements = new_extra_requirements
         if ports is None:
             ports = extra_requirements["csp_vuln_ports"]
+        check_source_flag = False
+        if extra_requirements["csp_vuln_check_source"][0] == "True":
+            check_source_flag = True
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
@@ -158,7 +165,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             port = int(port)
             t = threading.Thread(target=__content_policy,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
-                                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
+                                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag))
             threads.append(t)
             t.start()
             trying += 1
