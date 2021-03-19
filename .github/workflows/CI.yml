@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8] # python version is defined in docker
+        python-version: [3.8, 3.9] # python version is defined in docker
 
     steps:
       - uses: actions/checkout@v2
