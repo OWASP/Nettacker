@@ -45,7 +45,7 @@ from api.__start_scan import __scan
 from core._time import now
 from database.db import create_connection, __logs_by_scan_id
 from database.models import HostsLog, Report
-from datetime import datetime
+
 
 template_dir = os.path.join(os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "web"), "static")
@@ -319,7 +319,7 @@ def __get_results_json():
         scan_id = result_id[0].scan_id
         data = __logs_by_scan_id(scan_id, __language())
         json_object = json.dumps(data)
-    filename = "report-" + datetime.now().strftime("%Y%m%d-%H%M%S")
+    filename = "report-" + now(model="%Y_%m_%d_%H_%M_%S")+"".join(random.choice(string.ascii_lowercase) for x in range(10))
     return Response(json_object,
         mimetype='application/json',
         headers={'Content-Disposition':'attachment;filename='+filename+'.json'})
@@ -344,11 +344,12 @@ def __get_results_csv():
     else:
         result_id = []
     s = ''
+    filename = "report-" + now(model="%Y_%m_%d_%H_%M_%S")+"".join(random.choice(string.ascii_lowercase) for x in range(10))
     if(result_id):
         scan_id = result_id[0].scan_id
         data = __logs_by_scan_id(scan_id, __language())
         keys = data[0].keys()
-        with open('results.csv', "w")  as output_file:
+        with open(filename, "w")  as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()
             for i in data:
@@ -356,14 +357,13 @@ def __get_results_csv():
                             if key in keys}
                 dict_writer.writerow(dictdata)
         printData = []
-        with open('results.csv', 'r') as output_file:
+        with open(filename, 'r') as output_file:
             reader = csv.reader(output_file)
             for row in reader:
                 printData.append(row)
         for i in printData:
             s += ", ".join(i)
             s += "\n"
-    filename = "report-" + datetime.now().strftime("%Y%m%d-%H%M%S")
     return Response(s,
         mimetype='text/csv',
         headers={'Content-Disposition':'attachment;filename='+filename+'.csv'})
@@ -416,7 +416,7 @@ def __get_logs():
         host = ""
     data = __logs_to_report_json(host, __language())
     json_object = json.dumps(data)
-    filename = "report-" + datetime.now().strftime("%Y%m%d-%H%M%S")
+    filename = "report-" + now(model="%Y_%m_%d_%H_%M_%S")+"".join(random.choice(string.ascii_lowercase) for x in range(10))
     return Response(json_object,
         mimetype='application/json',
         headers={'Content-Disposition':'attachment;filename='+filename+'.json'})
@@ -438,7 +438,8 @@ def __get_logs_csv():
         host = ""
     data = __logs_to_report_json(host, __language())
     keys = data[0].keys()
-    with open('results.csv', "w")  as output_file:
+    filename = "report-" + now(model="%Y_%m_%d_%H_%M_%S")+"".join(random.choice(string.ascii_lowercase) for x in range(10))
+    with open(filename, "w")  as output_file:
         dict_writer = csv.DictWriter(output_file, fieldnames=keys)
         dict_writer.writeheader()
         for i in data:
@@ -446,7 +447,7 @@ def __get_logs_csv():
                         if key in keys}
             dict_writer.writerow(dictdata)
     printData = []
-    with open('results.csv', 'r') as output_file:
+    with open(filename, 'r') as output_file:
         reader = csv.reader(output_file)
         for row in reader:
             printData.append(row)
@@ -454,7 +455,6 @@ def __get_logs_csv():
     for i in printData:
         s += ", ".join(i)
         s += "\n"
-    filename = "report-" + datetime.now().strftime("%Y%m%d-%H%M%S")
     return Response(s,
         mimetype='text/csv',
         headers={'Content-Disposition':'attachment;filename='+filename+'.csv'})
