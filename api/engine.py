@@ -45,6 +45,7 @@ from api.__start_scan import __scan
 from core._time import now
 from database.db import create_connection, __logs_by_scan_id
 from database.models import HostsLog, Report
+from datetime import datetime
 
 template_dir = os.path.join(os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "web"), "static")
@@ -318,9 +319,10 @@ def __get_results_json():
         scan_id = result_id[0].scan_id
         data = __logs_by_scan_id(scan_id, __language())
         json_object = json.dumps(data)
+    filename = "report-" + datetime.now().strftime("%Y%m%d-%H%M%S")
     return Response(json_object,
         mimetype='application/json',
-        headers={'Content-Disposition':'attachment;filename=results.json'})
+        headers={'Content-Disposition':'attachment;filename='+filename+'.json'})
 
 @app.route("/results/get_csv", methods=["GET"])
 def __get_results_csv():
@@ -361,9 +363,10 @@ def __get_results_csv():
         for i in printData:
             s += ", ".join(i)
             s += "\n"
+    filename = "report-" + datetime.now().strftime("%Y%m%d-%H%M%S")
     return Response(s,
         mimetype='text/csv',
-        headers={'Content-Disposition':'attachment;filename=results.csv'})
+        headers={'Content-Disposition':'attachment;filename='+filename+'.csv'})
 
 
 @app.route("/logs/get_list", methods=["GET"])
@@ -413,9 +416,10 @@ def __get_logs():
         host = ""
     data = __logs_to_report_json(host, __language())
     json_object = json.dumps(data)
+    filename = "report-" + datetime.now().strftime("%Y%m%d-%H%M%S")
     return Response(json_object,
         mimetype='application/json',
-        headers={'Content-Disposition':'attachment;filename=results.json'})
+        headers={'Content-Disposition':'attachment;filename='+filename+'.json'})
 
 
 
@@ -450,9 +454,10 @@ def __get_logs_csv():
     for i in printData:
         s += ", ".join(i)
         s += "\n"
+    filename = "report-" + datetime.now().strftime("%Y%m%d-%H%M%S")
     return Response(s,
         mimetype='text/csv',
-        headers={'Content-Disposition':'attachment;filename=results.csv'})
+        headers={'Content-Disposition':'attachment;filename='+filename+'.csv'})
 
 @app.route("/logs/search", methods=["GET"])
 def ___go_for_search_logs():

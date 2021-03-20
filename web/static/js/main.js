@@ -440,7 +440,7 @@ $(document).ready(function () {
                 "<p class='mb-1 bold label label-success'>language:" + language + "</p>" +
                 "<span class='card-flag flag-icon flag-icon-" + flags[language] + "'></span><br>" +
                 "<p class='mb-1 bold label label-default'>scan_cmd:" + scan_cmd + "</p>" +
-                "</p>\n </a><button style=\"background-color: #EEEEEE;padding: 8px 20px;text-decoration:none;font-weight:bold;border-radius:5px;color: #10a2ff;cursor:pointer;\"><a href=\"/results/get_json?id=" + id + "\">Get Json</a></button>" + "<button style=\"background-color: #EEEEEE;padding: 8px 20px;text-decoration:none;font-weight:bold;border-radius:5px;color: #10a2ff;cursor:pointer;\"><a href=\"/results/get_csv?id=" + id + "\">Get CSV </a></button>";
+                "</p>\n </a><button style=\"background-color: #EEEEEE;padding: 8px 20px;text-decoration:none;font-weight:bold;border-radius:5px;color: #10a2ff;cursor:pointer;\"><a href=\"/results/get_json?id=" + id + "\">Get JSON</a></button>" + "<button style=\"background-color: #EEEEEE;padding: 8px 20px;text-decoration:none;font-weight:bold;border-radius:5px;color: #10a2ff;cursor:pointer;\"><a href=\"/results/get_csv?id=" + id + "\">Get CSV </a></button>";
         }
 
         if (res["msg"] == "No more search results") {
@@ -630,9 +630,8 @@ $(document).ready(function () {
             }
 
             
-            HTMLData += "<div id=\"helloworld\"  class=\"row myBox\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
-                "<h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
-                "class=\"bold label label-danger\"><a target='_blank' href=\"/logs/get_html?host=" + host + "\">" + host + "</a></span><button style=\"background-color: #EEEEEE;padding: 8px 20px;text-decoration:none;font-weight:bold;border-radius:5px;color: #10a2ff;cursor:pointer;\"><a href=\"/logs/get_json?host=" + host + "\">Get Json</a></button>" + "<button style=\"background-color: #EEEEEE;padding: 8px 20px;text-decoration:none;font-weight:bold;border-radius:5px;color: #10a2ff;cursor:pointer;\"><a href=\"/logs/get_csv?host=" + host + "\">Get CSV </a></button></h3>\n" +
+            HTMLData += "<div class=\"row myBox\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
+                "<button style=\"background-color: #EEEEEE;padding: 8px 20px;text-decoration:none;font-weight:bold;border-radius:5px;color: #10a2ff;cursor:pointer;\"><a target='_blank' style=\"color: black\" href=\"/logs/get_html?host=" + host + "\">" + host + "</a></button></span><button style=\"background-color: #EEEEEE;padding: 8px 20px;text-decoration:none;font-weight:bold;border-radius:5px;color: #10a2ff;cursor:pointer;\"><a href=\"/logs/get_json?host=" + host + "\">Get JSON</a></button>" + "<button style=\"background-color: #EEEEEE;padding: 8px 20px;text-decoration:none;font-weight:bold;border-radius:5px;color: #10a2ff;cursor:pointer;\"><a href=\"/logs/get_csv?host=" + host + "\">Get CSV </a></button></h3>\n" +
                 "</div>\n" + "<p class=\"mb-1\"> " + html_categories + html_scan_methods +
                 html_open_ports + html_description +
                 "</p></div>";
