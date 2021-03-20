@@ -14,6 +14,7 @@ from flask import request as flask_request
 from flask import render_template
 from flask import abort
 from flask import Response
+import string
 from flask import make_response
 from core.alert import write_to_api_console
 from core.alert import messages
