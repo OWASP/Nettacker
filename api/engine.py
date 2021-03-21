@@ -418,7 +418,6 @@ def __get_logs():
     Returns:
         an array with JSON events
     """
-    session = create_connection(__language())
     __api_key_check(app, flask_request, __language())
     try:
         host = __get_value(flask_request, "host")
@@ -426,11 +425,7 @@ def __get_logs():
         host = ""
     data = __logs_to_report_json(host, __language())
     json_object = json.dumps(data)
-    host_temp = session.query(HostsLog).filter(HostsLog.host==host).all()
-    dateFromDB = host_temp[0].date
-    dateFormat=datetime.strptime(dateFromDB, "%Y-%m-%d %H:%M:%S")
-    dateFormat = str(dateFormat).replace("-","_").replace(":","_").replace(" ", "_")
-    filename = "report-" + dateFormat+"".join(random.choice(string.ascii_lowercase) for x in range(10))
+    filename = "report-" + now(model="%Y_%m_%d_%H_%M_%S")+"".join(random.choice(string.ascii_lowercase) for x in range(10))
     return Response(json_object,
         mimetype='application/json',
         headers={'Content-Disposition':'attachment;filename='+filename+'.json'})
@@ -445,19 +440,14 @@ def __get_logs_csv():
     Returns:
         an array with JSON events
     """
-    session = create_connection(__language())
     __api_key_check(app, flask_request, __language())
     try:
         host = __get_value(flask_request, "host")
     except:
         host = ""
     data = __logs_to_report_json(host, __language())
-    host_temp = session.query(HostsLog).filter(HostsLog.host==host).all()
-    dateFromDB = host_temp[0].date
-    dateFormat=datetime.strptime(dateFromDB, "%Y-%m-%d %H:%M:%S")
-    dateFormat = str(dateFormat).replace("-","_").replace(":","_").replace(" ", "_")
-    filename = "report-" + dateFormat+"".join(random.choice(string.ascii_lowercase) for x in range(10))
     keys = data[0].keys()
+    filename = "report-" + now(model="%Y_%m_%d_%H_%M_%S")+"".join(random.choice(string.ascii_lowercase) for x in range(10))
     with open(filename, "w")  as output_file:
         dict_writer = csv.DictWriter(output_file, fieldnames=keys)
         dict_writer.writeheader()
