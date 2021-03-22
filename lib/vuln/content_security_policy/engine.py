@@ -10,11 +10,7 @@ import threading
 import string
 import random
 import sys
-import struct
-import re
 import os
-from OpenSSL import crypto
-import ssl
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
@@ -22,12 +18,15 @@ from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
+from bs4 import BeautifulSoup
+from lib.payload.wordlists import useragents
 import requests
 
 
 def extra_requirements_dict():
     return {
-        "csp_vuln_ports": [443]
+        "csp_vuln_ports": [443, 80],
+        "csp_vuln_check_source": ["False"],
     }
 
 
@@ -60,9 +59,11 @@ def conn(targ, port, timeout_sec, socks_proxy):
 
 
 def content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
-                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
+        global weak
+        weak = False
         if not s:
             return False
         else:
@@ -70,32 +71,69 @@ def content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
-            req = requests.get(target)
+
+            headers = {'User-agent': random.choice(useragents.useragents())}
+
+            req = requests.get(target, headers=headers,
+                               timeout=timeout_sec, verify=False)
             try:
-                req.headers['Content-Security-Policy']
+                weak = False
+                csp = req.headers['Content-Security-Policy']
+                if 'unsafe-inline' in csp or 'unsafe-eval' in csp:
+                    weak = True
                 return False
-            except:
-                return True
+            except Exception as e:
+                if check_source_flag:
+                    soup = BeautifulSoup(req.text, "html.parser")
+                    meta_tags = soup.find_all('meta', {'http-equiv': 'Content-Security-Policy'})
+
+                    if len(meta_tags) == 0:
+                        return True
+                    directives = meta_tags[0].attrs['content']
+
+                    if 'unsafe-inline' in directives or 'unsafe-eval' in directives:
+                        weak = True
+
+                    return False
+                else:
+                    return True
     except Exception as e:
         # some error warning
         return False
 
 
 def __content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
-                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag):
     if content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
-                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-        info(messages(language, "target_vulnerable").format(target, port,
-                                                            'CSP makes it possible for server administrators to reduce or eliminate the vectors by which XSS can occur by specifying the domains that the browser should consider to be valid sources of executable scripts. '))
+                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag):
+        description = ('CSP makes it possible for server administrators to reduce or'
+                       ' eliminate the vectors by which XSS can occur by specifying '
+                       'the domains that the browser should consider to be valid '
+                       'sources of executable scripts. ')
+        info(messages(language, "target_vulnerable").format(target, port, description))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'content_security_policy_vuln',
-                           'DESCRIPTION': messages(language, "vulnerable").format('CSP makes it possible for server administrators to reduce or eliminate the vectors by which XSS can occur by specifying the domains that the browser should consider to be valid sources of executable scripts. '), 'TIME': now(),
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port,
+                           'TYPE': 'content_security_policy_vuln',
+                           'DESCRIPTION': messages(language, "vulnerable").format(description), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
         return True
     else:
-        return False
+        if not weak:
+            return False
+        else:
+            description = 'weak CSP implementation. Using unsafe-inline or unsafe-eval in CSP is not safe.'
+            info(messages(language, "target_vulnerable").format(target, port, description))
+            __log_into_file(thread_tmp_filename, 'w', '0', language)
+            data = json.dumps(
+                {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'content_security_policy_vuln',
+                 'DESCRIPTION': messages(language, "vulnerable").format(description),
+                 'TIME': now(),
+                 'CATEGORY': "vuln",
+                 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            __log_into_file(log_in_file, 'a', data, language)
+            return True
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
@@ -111,6 +149,9 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         extra_requirements = new_extra_requirements
         if ports is None:
             ports = extra_requirements["csp_vuln_ports"]
+        check_source_flag = False
+        if extra_requirements["csp_vuln_check_source"][0] == "True":
+            check_source_flag = True
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
@@ -124,13 +165,14 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             port = int(port)
             t = threading.Thread(target=__content_policy,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
-                                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
+                                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag))
             threads.append(t)
             t.start()
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'content_security_policy_vuln'))
+                    messages(language, "trying_message").format(trying, total_req, num,
+                                                                total, target, port, 'content_security_policy_vuln'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -158,9 +200,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         if thread_write == 1 and verbose_level != 0:
             info(messages(language, "no_vulnerability_found").format(
                 'Content Security Policy'))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'content_security_policy_vuln',
-                               'DESCRIPTION': messages(language, "no_vulnerability_found").format('Content Security Policy'), 'TIME': now(),
-                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
+                               'TYPE': 'content_security_policy_vuln',
+                               'DESCRIPTION': messages(language, "no_vulnerability_found").format(
+                                   'Content Security Policy'),
+                               'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
