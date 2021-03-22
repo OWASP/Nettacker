@@ -320,11 +320,11 @@ def __get_results_csv():
         result_id = session.query(Report).join(HostsLog, Report.scan_id == HostsLog.scan_id).filter(Report.scan_id == scan_id_temp[0].scan_id).all()
     else:
         result_id = []
-    _s = ''
     date_from_db = scan_id_temp[0].date
     date_format = datetime.strptime(date_from_db, "%Y-%m-%d %H:%M:%S")
     date_format = str(date_format).replace("-", "_").replace(":", "_").replace(" ", "_")
     filename = "report-" + date_format+"".join(random.choice(string.ascii_lowercase) for x in range(10))
+    _reader = ''
     if(result_id):
         scan_id = result_id[0].scan_id
         data = __logs_by_scan_id(scan_id, __language())
@@ -338,13 +338,8 @@ def __get_results_csv():
                 dict_writer.writerow(dictdata)
         print_data = []
         with open(filename, 'r') as output_file:
-            reader = csv.reader(output_file)
-            for row in reader:
-                print_data.append(row)
-        for i in print_data:
-            _s += ", ".join(i)
-            _s += "\n"
-    return Response(_s, mimetype='text/csv', headers={'Content-Disposition':'attachment;filename='+filename+'.csv'})
+            _reader = output_file.read()
+    return Response(_reader, mimetype='text/csv', headers={'Content-Disposition':'attachment;filename='+filename+'.csv'})
 
 
 @app.route("/logs/get_list", methods=["GET"])
@@ -424,14 +419,8 @@ def __get_logs_csv():
             dict_writer.writerow(dictdata)
     print_data = []
     with open(filename, 'r') as output_file:
-        reader = csv.reader(output_file)
-        for row in reader:
-            print_data.append(row)
-    _s = ''
-    for i in print_data:
-        _s += ", ".join(i)
-        _s += "\n"
-    return Response(_s, mimetype='text/csv', headers={'Content-Disposition':'attachment;filename='+filename+'.csv'})
+        reader = output_file.read()
+    return Response(reader, mimetype='text/csv', headers={'Content-Disposition':'attachment;filename='+filename+'.csv'})
 
 @app.route("/logs/search", methods=["GET"])
 def ___go_for_search_logs():
