@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "Nettackerエンジンが始動しました...",
             "options": "python nettacker.py [options]",
             "help_menu": "Nettackerヘルプメニューを表示する",
-            "license": "ライセンスと契約書をお読みくださいhttps://github.com/zdresearch/OWASP-Nettacker",
+            "license": "ライセンスと契約書をお読みくださいhttps://github.com/OWASP/Nettacker",
             "engine": "エンジン",
             "engine_input": "エンジン入力オプション",
             "select_language": "言語を選択{0}",
@@ -98,8 +98,8 @@ def all_messages():
             "port_found": "ホスト：{0}ポート：{1}（{2}）が見つかりました！",
             "target_submitted": "ターゲット{0}が送信されました。",
             "current_version": "OWASP Nettackerのバージョン{0} {1} {2} {6}をコード名{3} {4} {5}で実行しています。",
-            "feature_unavailable": "この機能はまだ利用できません。 「git clone https://github.com/zdresearch/"
-                                   "OWASP-Nettacker.git」または「pip install -U OWASP-Nettacker」を実行して、"
+            "feature_unavailable": "この機能はまだ利用できません。 「git clone https://github.com/OWASP/"
+                                   "Nettacker.git」または「pip install -U OWASP-Nettacker」を実行して、"
                                    "最新バージョンを入手してください。",
             "available_graph": "すべての活動と情報のグラフを作成するには、HTML出力を使用する必要があります。利用可能なグラフ：{0}",
             "graph_output": "グラフフィーチャを使用するには、出力ファイル名が \".html\"または \".htm\"で終わる必要があります。",

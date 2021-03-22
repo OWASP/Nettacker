@@ -6,22 +6,49 @@ import time
 import random
 import csv
 import json
-import os
 import string
 from datetime import datetime
-from flask import Flask, jsonify, request as flask_request, render_template, abort, Response, make_response
-from core.alert import write_to_api_console, messages
-from core._die import __die_success, __die_failure
-from api.api_core import __structure, __get_value, root_dir, get_file, __mime_types, __scan_methods, __profiles, __graphs, __languages
-from core.load_modules import load_all_method_args
-from core.config import _core_config
-from core.config_builder import _core_default_config, _builder
-from api.api_core import __remove_non_api_keys, __rules, __api_key_check
-from database.db import __select_results, __get_result, __last_host_logs, __logs_to_report_json, __search_logs, __logs_to_report_html
-from api.__start_scan import __scan
-from core._time import now
 from database.db import create_connection, __logs_by_scan_id
 from database.models import HostsLog, Report
+import os
+from flask import Flask
+from flask import jsonify
+from flask import request as flask_request
+from flask import render_template
+from flask import abort
+from flask import escape
+from flask import Response
+from flask import make_response
+from core.alert import write_to_api_console
+from core.alert import messages
+from core._die import __die_success
+from core._die import __die_failure
+from core._time import now
+from core.compatible import version
+from core.load_modules import load_all_method_args
+from core.config import _core_config
+from core.config_builder import _core_default_config
+from core.config_builder import _builder
+from api.api_core import __structure
+from api.api_core import __get_value
+from api.api_core import root_dir
+from api.api_core import get_file
+from api.api_core import __mime_types
+from api.api_core import __scan_methods
+from api.api_core import __profiles
+from api.api_core import __graphs
+from api.api_core import __languages
+from api.api_core import __remove_non_api_keys
+from api.api_core import __rules
+from api.api_core import __api_key_check
+from api.__start_scan import __scan
+from database.db import __select_results
+from database.db import __get_result
+from database.db import __last_host_logs
+from database.db import __logs_to_report_json
+from database.db import __search_logs
+from database.db import __logs_to_report_html
+from core.targets import target_type
 
 
 TEMPLATE_DIR = os.path.join(os.path.join(
@@ -97,7 +124,9 @@ def error_404(error):
         404 JSON error
     """
     return jsonify(__structure(status="error",
-                               msg=messages(app.config["OWASP_NETTACKER_CONFIG"]["language"], "not_found"))), 404
+                               msg=messages(app.config[
+                                   "OWASP_NETTACKER_CONFIG"]["language"],
+                                   "not_found"))), 404
 
 
 @app.before_request
@@ -110,7 +139,8 @@ def limit_remote_addr():
     """
     # IP Limitation
     if app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list"]:
-        if flask_request.remote_addr not in app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list_ips"]:
+        if flask_request.remote_addr not in app.config[
+                "OWASP_NETTACKER_CONFIG"]["api_client_white_list_ips"]:
             abort(403, messages(__language(), "unauthorized_IP"))
     return
 
@@ -130,13 +160,20 @@ def access_log(response):
         r_log = open(app.config["OWASP_NETTACKER_CONFIG"]["api_access_log_filename"], "ab")
         # if you need to log POST data
         # r_log.write(
-        #     "{0} [{1}] {2} \"{3} {4}\" {5} {6} {7}\r\n".format(flask_request.remote_addr, now(), flask_request.host,
-        #                                                      flask_request.method, flask_request.full_path,
-        #                                                      flask_request.user_agent, response.status_code,
+        #     "{0} [{1}] {2} \"{3} {4}\" {5} {6} {7}\r\n".format(
+        #                                                      flask_request.remote_addr,
+        #                                                      now(),
+        #                                                      flask_request.host,
+        #                                                      flask_request.method,
+        #                                                      flask_request.full_path,
+        #                                                      flask_request.user_agent,
+        #                                                      response.status_code,
         #                                                      json.dumps(flask_request.form)))
-        r_log.write("{0} [{1}] {2} \"{3} {4}\" {5} {6}\r\n".format(flask_request.remote_addr, now(), flask_request.host,
-                                                                   flask_request.method, flask_request.full_path,
-                                                                   flask_request.user_agent, response.status_code))
+        r_log.write("{0} [{1}] {2} \"{3} {4}\" {5} {6}\r\n".format(
+            flask_request.remote_addr, now(),
+            flask_request.host,
+            flask_request.method, flask_request.full_path,
+            flask_request.user_agent, response.status_code))
         r_log.close()
     return response
 
@@ -166,9 +203,19 @@ def index():
         rendered HTML page
     """
     filename = _builder(_core_config(), _core_default_config())["log_in_file"]
-    return render_template("index.html", scan_method=__scan_methods(), profile=__profiles(),
-                           graphs=__graphs(), languages=__languages(), filename=filename,
-                           method_args_list=load_all_method_args(__language(), API=True))
+
+    if version() == 2:
+        return render_template("index.html", scan_method=__scan_methods(),
+                               profile=__profiles(), graphs=__graphs(),
+                               languages=__languages(), filename=filename,
+                               method_args_list=load_all_method_args(
+                                   __language(), API=True).decode('utf-8'))
+
+    return render_template("index.html", scan_method=__scan_methods(),
+                           profile=__profiles(), graphs=__graphs(),
+                           languages=__languages(), filename=filename,
+                           method_args_list=load_all_method_args(
+        __language(), API=True))
 
 
 @app.route("/new/scan", methods=["GET", "POST"])
@@ -181,9 +228,12 @@ def new_scan():
     """
     _start_scan_config = {}
     __api_key_check(app, flask_request, __language())
+    targetValue = __get_value(flask_request, "targets")
+    if(target_type(targetValue) == "UNKNOWN"):
+        return jsonify({"error": "Please input correct target"}), 400
     for key in _core_default_config():
         if __get_value(flask_request, key) is not None:
-            _start_scan_config[key] = __get_value(flask_request, key)
+            _start_scan_config[key] = escape(__get_value(flask_request, key))
     _start_scan_config["backup_ports"] = __get_value(flask_request, "ports")
     _start_scan_config = __rules(__remove_non_api_keys(_builder(_start_scan_config,
                                                                 _builder(_core_config(), _core_default_config()))),
@@ -206,7 +256,8 @@ def __session_check():
         a JSON message if it's valid otherwise abort(401)
     """
     __api_key_check(app, flask_request, __language())
-    return jsonify(__structure(status="ok", msg=messages(__language(), "browser_session_valid"))), 200
+    return jsonify(__structure(status="ok", msg=messages(
+        __language(), "browser_session_valid"))), 200
 
 
 @app.route("/session/set", methods=["GET"])
@@ -215,11 +266,13 @@ def __session_set():
     set session on the browser
 
     Returns:
-        200 HTTP response if session is valid and a set-cookie in the response if success otherwise abort(403)
+        200 HTTP response if session is valid and a set-cookie in the
+        response if success otherwise abort(403)
     """
     __api_key_check(app, flask_request, __language())
     res = make_response(
-        jsonify(__structure(status="ok", msg=messages(__language(), "browser_session_valid"))))
+        jsonify(__structure(status="ok", msg=messages(
+            __language(), "browser_session_valid"))))
     res.set_cookie("key", value=app.config[
         "OWASP_NETTACKER_CONFIG"]["api_access_key"])
     return res
@@ -231,10 +284,12 @@ def __session_kill():
     unset session on the browser
 
     Returns:
-        a 200 HTTP response with set-cookie to "expired" to unset the cookie on the browser
+        a 200 HTTP response with set-cookie to "expired"
+        to unset the cookie on the browser
     """
     res = make_response(
-        jsonify(__structure(status="ok", msg=messages(__language(), "browser_session_killed"))))
+        jsonify(__structure(status="ok", msg=messages(
+            __language(), "browser_session_killed"))))
     res.set_cookie("key", "", expires=0)
     return res
 
@@ -442,10 +497,13 @@ def ___go_for_search_logs():
     return jsonify(__search_logs(__language(), page, query)), 200
 
 
-def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
-                 api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, api_cert_key, language):
+def __process_it(api_host, api_port, api_debug_mode, api_access_key,
+                 api_client_white_list, api_client_white_list_ips,
+                 api_access_log, api_access_log_filename, api_cert,
+                 api_cert_key, language):
     """
-    a function to run flask in a subprocess to make kill signal in a better way!
+    a function to run flask in a subprocess to make kill signal in a better
+    way!
 
     Args:
         api_host: host/IP to bind address
@@ -474,13 +532,15 @@ def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_
     try:
         if api_cert:
             if api_cert_key:
-                app.run(host=api_host, port=api_port, debug=api_debug_mode, ssl_context=(api_cert, api_cert_key), threaded=True)
+                app.run(host=api_host, port=api_port, debug=api_debug_mode,
+                        ssl_context=(api_cert, api_cert_key), threaded=True)
             else:
                 __die_failure(messages(language, "api_cert_key"))
 
         if api_cert_key:
             if api_cert:
-                app.run(host=api_host, port=api_port, debug=api_debug_mode, ssl_context=(api_cert, api_cert_key), threaded=True)
+                app.run(host=api_host, port=api_port, debug=api_debug_mode,
+                        ssl_context=(api_cert, api_cert_key), threaded=True)
             else:
                 __die_failure(messages(language, "api_cert"))
 
@@ -489,8 +549,11 @@ def __process_it(api_host, api_port, api_debug_mode, api_access_key, api_client_
     except Exception:
         __die_failure(messages(language, "wrong_values"))
 
-def _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
-               api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, api_cert_key, language):
+
+def _start_api(api_host, api_port, api_debug_mode, api_access_key,
+               api_client_white_list, api_client_white_list_ips,
+               api_access_log, api_access_log_filename, api_cert,
+               api_cert_key, language):
     """
     entry point to run the API through the flask
 
@@ -510,8 +573,11 @@ def _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_wh
     # Starting the API
     write_to_api_console(messages(language, "API_key").format(api_access_key))
     p = multiprocessing.Process(target=__process_it,
-                                args=(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
-                                      api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, api_cert_key, language))
+                                args=(api_host, api_port, api_debug_mode,
+                                      api_access_key, api_client_white_list,
+                                      api_client_white_list_ips,
+                                      api_access_log, api_access_log_filename,
+                                      api_cert, api_cert_key, language))
     p.start()
     # Sometimes it's take much time to terminate flask with CTRL+C
     # So It's better to use KeyboardInterrupt to terminate!

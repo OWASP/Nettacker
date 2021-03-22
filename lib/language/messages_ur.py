@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "Nettacker انجن شروع کر دیا ...",
             "options": "پادری nettacker.py [اختیارات]",
             "help_menu": "Nettacker مدد مینو دکھائیں",
-            "license": "برائے مہربانی لائسنس اور معاہدوں کو https://github.com/zdresearch/OWASP-Nettacker پڑھیں",
+            "license": "برائے مہربانی لائسنس اور معاہدوں کو https://github.com/OWASP/Nettacker پڑھیں",
             "engine": "انجن",
             "engine_input": "انجن ان پٹ کے اختیارات",
             "select_language": "ایک زبان منتخب کریں {0}",
@@ -104,7 +104,7 @@ def all_messages():
             "target_submitted": "ھدف کردہ {0}",
             "current_version": "آپ OWASP Nettacker ورژن {0} {1} {2} {6} کوڈ چل رہے ہیں {کوڈ} {3} {4} {5}",
             "feature_unavailable": "یہ خصوصیت ابھی تک دستیاب نہیں ہے! "
-                                   "براہ کرم \"گٹ کلون https://github.com/zdresearch/OWASP-Nettacker.git یا"
+                                   "براہ کرم \"گٹ کلون https://github.com/OWASP/Nettacker.git یا"
                                    " انسٹال پائپ انسٹال کریں. - OWASP-Nettacker آخری ورژن حاصل کرنے کے لئے.",
             "available_graph": "تمام سرگرمیوں اور معلومات"
                                " کا گراف بناؤ، آپ کو HTML پیداوار استعمال کرنا ضروری ہے. دستیاب گرافس: {0}",
