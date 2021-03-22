@@ -3,6 +3,13 @@
 
 import multiprocessing
 import time
+import random
+import csv
+import json
+import string
+from datetime import datetime
+from database.db import create_connection, __logs_by_scan_id
+from database.models import HostsLog, Report
 import os
 from flask import Flask
 from flask import jsonify
@@ -43,9 +50,10 @@ from database.db import __search_logs
 from database.db import __logs_to_report_html
 from core.targets import target_type
 
-template_dir = os.path.join(os.path.join(
+
+TEMPLATE_DIR = os.path.join(os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "web"), "static")
-app = Flask(__name__, template_folder=template_dir)
+app = Flask(__name__, template_folder=TEMPLATE_DIR)
 app.config.from_object(__name__)
 
 
@@ -149,8 +157,7 @@ def access_log(response):
         the flask response
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"]:
-        r_log = open(app.config["OWASP_NETTACKER_CONFIG"][
-            "api_access_log_filename"], "ab")
+        r_log = open(app.config["OWASP_NETTACKER_CONFIG"]["api_access_log_filename"], "ab")
         # if you need to log POST data
         # r_log.write(
         #     "{0} [{1}] {2} \"{3} {4}\" {5} {6} {7}\r\n".format(
@@ -184,9 +191,7 @@ def get_statics(path):
         file content and content type if file found otherwise abort(404)
     """
     static_types = __mime_types()
-    return Response(get_file(os.path.join(root_dir(), path)),
-                    mimetype=static_types.get(os.path.splitext(path)[1],
-                                              "text/html"))
+    return Response(get_file(os.path.join(root_dir(), path)), mimetype=static_types.get(os.path.splitext(path)[1], "text/html"))
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -230,12 +235,11 @@ def new_scan():
         if __get_value(flask_request, key) is not None:
             _start_scan_config[key] = escape(__get_value(flask_request, key))
     _start_scan_config["backup_ports"] = __get_value(flask_request, "ports")
-    _start_scan_config = __rules(__remove_non_api_keys(_builder(
-        _start_scan_config,
-        _builder(_core_config(), _core_default_config()))),
-        _core_default_config(), __language())
-    p = multiprocessing.Process(target=__scan, args=[_start_scan_config])
-    p.start()
+    _start_scan_config = __rules(__remove_non_api_keys(_builder(_start_scan_config,
+                                                                _builder(_core_config(), _core_default_config()))),
+                                 _core_default_config(), __language())
+    _p = multiprocessing.Process(target=__scan, args=[_start_scan_config])
+    _p.start()
     # Sometimes method_args is too big!
     _start_scan_config["methods_args"] = {
         "as_user_set": "set_successfully"
@@ -316,11 +320,81 @@ def __get_result_content():
     """
     __api_key_check(app, flask_request, __language())
     try:
-        id = int(__get_value(flask_request, "id"))
+        _id = int(__get_value(flask_request, "id"))
     except Exception:
-        return jsonify(__structure(status="error",
-                                   msg="your scan id is not valid!")), 400
-    return __get_result(__language(), id)
+        return jsonify(__structure(status="error", msg="your scan id is not valid!")), 400
+    return __get_result(__language(), _id)
+
+@app.route("/results/get_json", methods=["GET"])
+def __get_results_json():
+    """
+    get host's logs through the API in JSON type
+
+    Returns:
+        an array with JSON events
+    """
+    session = create_connection(__language())
+    __api_key_check(app, flask_request, __language())
+    try:
+        _id = int(__get_value(flask_request, "id"))
+        scan_id_temp = session.query(Report).filter(Report.id == _id).all()
+        print(type(scan_id_temp))
+    except Exception as _:
+        _id = ""
+    if(scan_id_temp):
+        result_id = session.query(Report).join(HostsLog, Report.scan_id == HostsLog.scan_id).filter(Report.scan_id == scan_id_temp[0].scan_id).all()
+    else:
+        result_id = []
+    json_object = {}
+    if(result_id):
+        scan_id = result_id[0].scan_id
+        data = __logs_by_scan_id(scan_id, __language())
+        json_object = json.dumps(data)
+    date_from_db = scan_id_temp[0].date
+    date_format = datetime.strptime(date_from_db, "%Y-%m-%d %H:%M:%S")
+    date_format = str(date_format).replace("-", "_").replace(":", "_").replace(" ", "_")
+    filename = "report-" + date_format +"".join(random.choice(string.ascii_lowercase) for x in range(10))
+    return Response(json_object, mimetype='application/json', headers={'Content-Disposition':'attachment;filename='+filename+'.json'})
+
+@app.route("/results/get_csv", methods=["GET"])
+def __get_results_csv():
+    """
+    get host's logs through the API in JSON type
+
+    Returns:
+        an array with JSON events
+    """
+    session = create_connection(__language())
+    __api_key_check(app, flask_request, __language())
+    try:
+        _id = int(__get_value(flask_request, "id"))
+        scan_id_temp = session.query(Report).filter(Report.id == _id).all()
+    except Exception as _:
+        _id = ""
+    if(scan_id_temp):
+        result_id = session.query(Report).join(HostsLog, Report.scan_id == HostsLog.scan_id).filter(Report.scan_id == scan_id_temp[0].scan_id).all()
+    else:
+        result_id = []
+    date_from_db = scan_id_temp[0].date
+    date_format = datetime.strptime(date_from_db, "%Y-%m-%d %H:%M:%S")
+    date_format = str(date_format).replace("-", "_").replace(":", "_").replace(" ", "_")
+    filename = "report-" + date_format+"".join(random.choice(string.ascii_lowercase) for x in range(10))
+    _reader = ''
+    if(result_id):
+        scan_id = result_id[0].scan_id
+        data = __logs_by_scan_id(scan_id, __language())
+        keys = data[0].keys()
+        with open(filename, "w")  as output_file:
+            dict_writer = csv.DictWriter(output_file, fieldnames=keys, quoting=csv.QUOTE_ALL)
+            dict_writer.writeheader()
+            for i in data:
+                dictdata = {key: value for key, value in i.items()
+                            if key in keys}
+                dict_writer.writerow(dictdata)
+        print_data = []
+        with open(filename, 'r') as output_file:
+            _reader = output_file.read()
+    return Response(_reader, mimetype='text/csv', headers={'Content-Disposition':'attachment;filename='+filename+'.csv'})
 
 
 @app.route("/logs/get_list", methods=["GET"])
@@ -368,8 +442,40 @@ def __get_logs():
         host = __get_value(flask_request, "host")
     except Exception:
         host = ""
-    return jsonify(__logs_to_report_json(host, __language())), 200
+    data = __logs_to_report_json(host, __language())
+    json_object = json.dumps(data)
+    filename = "report-" + now(model="%Y_%m_%d_%H_%M_%S")+"".join(random.choice(string.ascii_lowercase) for x in range(10))
+    return Response(json_object, mimetype='application/json', headers={'Content-Disposition':'attachment;filename='+filename+'.json'})
 
+
+
+@app.route("/logs/get_csv", methods=["GET"])
+def __get_logs_csv():
+    """
+    get host's logs through the API in JSON type
+
+    Returns:
+        an array with JSON events
+    """
+    __api_key_check(app, flask_request, __language())
+    try:
+        host = __get_value(flask_request, "host")
+    except Exception:
+        host = ""
+    data = __logs_to_report_json(host, __language())
+    keys = data[0].keys()
+    filename = "report-" + now(model="%Y_%m_%d_%H_%M_%S")+"".join(random.choice(string.ascii_lowercase) for x in range(10))
+    with open(filename, "w")  as output_file:
+        dict_writer = csv.DictWriter(output_file, fieldnames=keys, quoting=csv.QUOTE_ALL)
+        dict_writer.writeheader()
+        for i in data:
+            dictdata = {key: value for key, value in i.items()
+                        if key in keys}
+            dict_writer.writerow(dictdata)
+    print_data = []
+    with open(filename, 'r') as output_file:
+        reader = output_file.read()
+    return Response(reader, mimetype='text/csv', headers={'Content-Disposition':'attachment;filename='+filename+'.csv'})
 
 @app.route("/logs/search", methods=["GET"])
 def ___go_for_search_logs():
@@ -439,8 +545,7 @@ def __process_it(api_host, api_port, api_debug_mode, api_access_key,
                 __die_failure(messages(language, "api_cert"))
 
         else:
-            app.run(host=api_host, port=api_port, debug=api_debug_mode,
-                    ssl_context="adhoc", threaded=True)
+            app.run(host=api_host, port=api_port, debug=api_debug_mode, ssl_context="adhoc", threaded=True)
     except Exception:
         __die_failure(messages(language, "wrong_values"))
 

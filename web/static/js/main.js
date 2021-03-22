@@ -418,6 +418,7 @@ $(document).ready(function () {
             language = res[i]["language"];
             scan_cmd = res[i]["scan_cmd"];
             ports = res[i]["ports"];
+            host = scan_cmd.split(" ")[2];
             HTMLData += "<a target='_blank' href=\"/results/get?id=" + id +
                 "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
                 "<div class=\"row\" ><div class=\"d-flex w-100\">\n" +
@@ -439,7 +440,7 @@ $(document).ready(function () {
                 "<p class='mb-1 bold label label-success'>language:" + language + "</p>" +
                 "<span class='card-flag flag-icon flag-icon-" + flags[language] + "'></span><br>" +
                 "<p class='mb-1 bold label label-default'>scan_cmd:" + scan_cmd + "</p>" +
-                "</p>\n </a>";
+                "</p>\n </a><button class=\"mb-1 bold label card-date\"\"><a href=\"/results/get_json?id=" + id + "\">Get JSON</a></button>" + "<button class=\"mb-1 bold label card-date\"\"><a href=\"/results/get_csv?id=" + id + "\">Get CSV </a></button>";
         }
 
         if (res["msg"] == "No more search results") {
@@ -628,21 +629,20 @@ $(document).ready(function () {
                 }
             }
 
-            HTMLData += "<a target='_blank' href=\"/logs/get_html?host=" + host + "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
-                "<div class=\"row\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
-                "<h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
-                "class=\"bold label label-danger\">" + host + "</span></h3>\n" +
-                "</div></div>\n" + "<p class=\"mb-1\"> " + html_categories + html_scan_methods +
+            
+            HTMLData += "<div class=\"row myBox\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
+                "<button class=\"mb-1 bold label card-date\"\"><a target='_blank' style=\"color: black\" href=\"/logs/get_html?host=" + host + "\">" + host + "</a></button></span><button class=\"mb-1 bold label card-date\"\"><a href=\"/logs/get_json?host=" + host + "\">Get JSON</a></button>" + "<button class=\"mb-1 bold label card-date\"\"><a href=\"/logs/get_csv?host=" + host + "\">Get CSV </a></button></h3>\n" +
+                "</div>\n" + "<p class=\"mb-1\"> " + html_categories + html_scan_methods +
                 html_open_ports + html_description +
-                "</p>\n </a>";
+                "</p></div>";
         }
-
+        
         if (res["msg"] == "No more search results") {
             HTMLData = "<p class=\"mb-1\"> No more results to show!!</p>";
         }
 
         document.getElementById('crawl_results').innerHTML = HTMLData;
-
+        
     }
 
 
