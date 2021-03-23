@@ -40,7 +40,7 @@ class WordpressXMLPRCScan(Transform):
             url = result["HOST"] + ":" + result["PORT"]
             response += URL(url=url, title=result["DESCRIPTION"],
                             short_title="Site is vulnerable to XMLPRC DOS attacks ",
-                            link_label='wp_xmlrpc_scan')
+                            link_label='wp_xmlrpc_dos_vuln')
         return response
 
     def on_terminate(self):
