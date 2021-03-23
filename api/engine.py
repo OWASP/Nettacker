@@ -338,7 +338,6 @@ def __get_results_json():
     try:
         _id = int(__get_value(flask_request, "id"))
         scan_id_temp = session.query(Report).filter(Report.id == _id).all()
-        print(type(scan_id_temp))
     except Exception as _:
         _id = ""
     if(scan_id_temp):
