@@ -71,7 +71,7 @@ def joomla_user_enum(target, port, timeout_sec, log_in_file, language, time_slee
             for user in joomla_users:
                 temp_var.append(user[0] + " " + user[1])
             joomla_users = ', '.join(temp_var)
-            if joomla_users is not "":
+            if joomla_users != "":
                 return joomla_users
             else:
                 return False
@@ -145,17 +145,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
     #    kill_time = int(
-     #       timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+     #       timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1:
+                if threading.activeCount() == 1:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1 and verbose_level is not 0:
+        if thread_write == 1 and verbose_level != 0:
             info(messages(language, "not_found"))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'joomla_user_enum_scan',
                                'DESCRIPTION': messages(language, "not_found"), 'TIME': now(),

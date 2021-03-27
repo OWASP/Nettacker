@@ -4,6 +4,7 @@
 import random
 import string
 import os
+import sys
 import inspect
 import api
 from core._time import now
@@ -17,9 +18,9 @@ def default_paths():
         a JSON contain the working, tmp and results path
     """
     return {
-        "home_path": os.path.expanduser('~/.owasp-nettacker'),
-        "tmp_path": os.path.expanduser('~/.owasp-nettacker/tmp'),
-        "results_path": os.path.expanduser('~/.owasp-nettacker/results')
+        "home_path": os.path.join(sys.path[0], '.data'),
+        "tmp_path": os.path.join(sys.path[0], '.data/tmp'),
+        "results_path": os.path.join(sys.path[0], '.data/results')
     }
 
 

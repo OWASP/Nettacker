@@ -12,6 +12,7 @@ import socket
 import urllib3
 from core._die import __die_failure
 from core.alert import info
+from core.targets import target_type
 from core.alert import messages
 from core._time import now
 from core.load_modules import load_file_path
@@ -232,6 +233,9 @@ def __go_for_attacks(
         )
     ):
         pass
+    for i in targets:
+        if target_type(i) == "RANGE_IPv4" or target_type(i) == "CIDR_IPv4":
+            total_targets = _
     total_targets += 1
     total_targets = total_targets * len(scan_method)
     try:
@@ -312,7 +316,7 @@ def __go_for_attacks(
                 info(
                     messages(language, "waiting").format(
                         ", ".join(
-                            [p.name for p in multiprocessing.active_children()]
+                            [t.name for t in multiprocessing.active_children()]
                         )
                     )
                 )
