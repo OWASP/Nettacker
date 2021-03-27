@@ -10,11 +10,7 @@ import threading
 import string
 import random
 import sys
-import struct
-import re
 import os
-from OpenSSL import crypto
-import ssl
 from core.alert import *
 from core.targets import target_type
 from core.targets import target_to_host
@@ -59,8 +55,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def graphql(target, port, timeout_sec, log_in_file, language, time_sleep,
-                 thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+def graphql(target, port, timeout_sec, socks_proxy):
     try:
         s = conn(target_to_host(target), port, timeout_sec, socks_proxy)
         if not s:
@@ -77,27 +72,40 @@ def graphql(target, port, timeout_sec, log_in_file, language, time_sleep,
                 "Accept-Language": "en-US,en;q=0.9",
                 "Accept-Encoding": "gzip, deflate, br",
             }
-            params = {"query":"query IntrospectionQuery{__schema {queryType { name }}}"}
+            query = """{
+                __schema {
+                    types {
+                    name
+                    }
+                }
+                }
+            """
+            params = {"query":query, "variables":"{}"}
             tempTarget = target
             global final_endpoint
+            final_endpoint = ''
             for endpoint in graphql_list():
                 tempTarget += endpoint
-                req = requests.get(tempTarget, params=params, headers=headers, verify=False, timeout=timeout_sec)
-                if(re.search("__schema|.*?operation not found.*?|(Introspection|INTROSPECTION|introspection).*?", req.text)):
-                    final_endpoint = req.url
-                    return True
-                tempTarget = target
+                try:
+                    req = requests.post(tempTarget, json=params, headers=headers, verify=False, timeout=timeout_sec)
+                    tempTarget = target
+                except Exception:
+                    return False
+                else:
+                    if req.status_code == 200:
+                        json_data = json.loads(req.text)
+                        if json_data.get('data') or json_data.get('errors'):
+                            return True
+
             return False
-    except Exception as e:
+    except Exception:
         # some error warning
-        print(e)
         return False
 
 
 def __graphql(target, port, timeout_sec, log_in_file, language, time_sleep,
                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
-    if graphql(target, port, timeout_sec, log_in_file, language, time_sleep,
-                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+    if graphql(target, port, timeout_sec, socks_proxy):
         info(messages(language, "graphql_inspection").format(target, port))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'graphql_vuln',
