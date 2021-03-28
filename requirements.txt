@@ -22,3 +22,4 @@ six==1.15.0
 shodan==1.25.0
 pycurl==7.43.0.5
 xmltodict==0.12.0
+rule=0.1.1
