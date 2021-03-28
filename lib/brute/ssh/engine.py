@@ -20,6 +20,7 @@ from core._time import now
 from core.log import __log_into_file
 from lib.payload.wordlists import usernames, passwords
 
+
 def extra_requirements_dict():
     return {
         "ssh_brute_users": usernames.users(),
@@ -186,7 +187,7 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
         while 1:
             n = 0
             for thread in threads:
-                if thread.isAlive():
+                if thread.is_alive():
                     n += 1
                 else:
                     threads.remove(thread)
@@ -197,7 +198,7 @@ def test_ports(ports, timeout_sec, target, retries, language, num, total, time_s
     while 1:
         n = True
         for thread in threads:
-            if thread.isAlive():
+            if thread.is_alive():
                 n = False
         time.sleep(0.01)
         if n:

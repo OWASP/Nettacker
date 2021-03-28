@@ -139,8 +139,11 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 target = 'http://' + str(target)
                 requests.get(target, headers=HEADERS, verify=False)
             except Exception:
-                target = 'https://' + str(target)
-                requests.get(target, headers=HEADERS, verify=False)
+                try:
+                    target = 'https://' + str(target)
+                    requests.get(target, headers=HEADERS, verify=False)
+                except Exception:
+                    pass
         threads = []
         total_req = len(users) * len(passwds)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
