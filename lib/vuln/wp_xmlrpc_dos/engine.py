@@ -55,7 +55,7 @@ def check(target, port, headers, timeout_sec, log_in_file, language, retries, ti
                     target = 'http://' + target
                 target = target + '/xmlrpc.php'
                 postdata = '''<?xml version="1.0" encoding="utf-8"?><methodCall><methodName>system.listMethods</methodName><params></params></methodCall>'''
-                _r = requests.post(target, timeout=timeout_sec, headers=headers, data=postdata)
+                _r = requests.post(target, timeout=timeout_sec, verify=False, headers=headers, data=postdata)
                 if "demo.sayhello" in _r.text.lower():
                     info(messages(language, "target_vulnerable").format(target, port, "XMLRPC DOS attacks"))
                     __log_into_file(thread_tmp_filename, 'w', '0', language)
@@ -99,7 +99,7 @@ def test(target, port, headers, socks_proxy):
             try:
                 if target.endswith("/"):
                     target = target[:-1]
-                req = requests.post(target+'/xmlrpc.php', data=postdata, headers=headers)
+                req = requests.post(target+'/xmlrpc.php', verify=False, data=postdata, headers=headers)
                 if 'demo.sayhello' in req.text.lower():
                     return True
                 return False
