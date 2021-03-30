@@ -4,8 +4,6 @@
 # Password List Generator tool
 # https://github.com/pradeepjairamani/password_list_generator
 
-import os
-import sys
 from core.log import __log_into_file
 import json
 
@@ -30,7 +28,7 @@ random_l = list()
 
 
 def datepart(date):
-    if(len(date) != 0):
+    if (len(date) != 0):
         date, sep, tail = date.partition("/")
         month, sep, year = tail.partition("/")
         list1.append(date)
@@ -47,8 +45,10 @@ def datepart(date):
         list1.append(year[1:])
 
 
-def generate(filename = "", first_name="", last_name = "", nick= "", email = "", dob = "", phone = "", partner_name = "", partner_dob = "", bestfriend = "", child_name = "", company = "", other = "",  maxm = 8, minm = 16, special_characters = False, leet_speak = False, random_numbers = False, language="en"):
-    random_l=list()
+def generate(filename="", first_name="", last_name="", nick="", email="", dob="", phone="", partner_name="",
+             partner_dob="", bestfriend="", child_name="", company="", other="", maxm=8, minm=16,
+             special_characters=False, leet_speak=False, random_numbers=False, language="en"):
+    random_l = list()
     other = other.replace(" ", "")
     words2 = other.split(",")
     if special_characters == True:
@@ -68,7 +68,7 @@ def generate(filename = "", first_name="", last_name = "", nick= "", email = "",
     purtname = partner_name.title()
     bustf = bestfriend.title()
     chld = child_name.title()
-    #chldn = childn.title()
+    # chldn = childn.title()
     cumpny = company.title()
 
     # 3
@@ -76,7 +76,7 @@ def generate(filename = "", first_name="", last_name = "", nick= "", email = "",
     emails, sep, tail = email.partition("@")
 
     list1 = [first_name, last_name, nick, emails, funame, nuick, phone, partner_name,
-            bestfriend, purtname, bustf, child_name, company, chld, cumpny]
+             bestfriend, purtname, bustf, child_name, company, chld, cumpny]
     for i in words2:
         list1.append(i)
 
@@ -89,7 +89,7 @@ def generate(filename = "", first_name="", last_name = "", nick= "", email = "",
     for i in list1:
         password_list.append(i)
         for j in list1:
-            if(i.lower()) != (j.lower()):
+            if (i.lower()) != (j.lower()):
                 password_list.append(i + j)
 
     if leet_speak == True:
@@ -136,7 +136,7 @@ def generate(filename = "", first_name="", last_name = "", nick= "", email = "",
             pass
         else:
             unique_list.remove(i)
-    
-    if filename is not "":
+
+    if filename != "":
         __log_into_file(filename, 'w', json.dumps(unique_list), language, final=True)
     return unique_list

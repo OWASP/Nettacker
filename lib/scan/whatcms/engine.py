@@ -35,7 +35,7 @@ def extra_requirements_dict():
 
 CHECK = 0
 SESSION = requests.Session()
-CMS_CODES = [0, 102, 121, 123, 201, 202, 203, 204]
+CMS_CODES = [0, 102, 123, 201, 202, 203, 204]
 
 def conn(targ, port, timeout_sec, socks_proxy):
     try:
@@ -112,8 +112,8 @@ def whatcms(
                 check = SESSION.get(
                     check_api_key_is_valid, headers=headers, verify=False, timeout=timeout_sec
                 )
-                api_result = json.loads(check.text)["result"]["msg"]
-                if text_type(api_result).lower() == "invalid api key":
+                api_result_code = json.loads(check.text)["result"]["code"]
+                if api_result_code == 101:
                     warn(
                         messages(language, "Invalid_whatcms_api_key").format(
                             "Invalid API Key"
@@ -135,6 +135,9 @@ def whatcms(
                         if cms_version:
                             cms_name += " version " + cms_version
                         return cms_name
+                    elif status_codes == 121:
+                        warn(messages(language, "whatcms_monthly_quota_exceeded"))
+                        return
                     elif status_codes in CMS_CODES:
                         return
                 except requests.exceptions.Timeout:

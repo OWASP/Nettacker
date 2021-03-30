@@ -269,7 +269,7 @@ def discovery(target, ports=None, timeout=3, thread_number=1000, send_data=None,
         time.sleep(0.01)
         kill_switch += 1
         try:
-            if threading.activeCount() is 1 or int(kill_switch) is int(timeout * 5 * 10):
+            if threading.activeCount() == 1 or int(kill_switch) is int(timeout * 5 * 10):
                 break
         except KeyboardInterrupt:
             break
