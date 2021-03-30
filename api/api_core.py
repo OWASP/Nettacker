@@ -349,7 +349,7 @@ def __rules(config, defaults, language):
         new_methods_args = {}
         methods_args = methods_args.rsplit("&")
         for imethod_args in methods_args:
-            if len(imethod_args.rsplit("=")) is 2:
+            if len(imethod_args.rsplit("=")) == 2:
                 new_methods_args[imethod_args.rsplit("=")[0]] = imethod_args.rsplit("=")[
                     1].rsplit(",")
             else:
@@ -379,7 +379,7 @@ def __rules(config, defaults, language):
                             tmp_ports.append(p)
             except:
                 abort(400, messages(language, "ports_int"))
-        if len(tmp_ports) is 0:
+        if len(tmp_ports) == 0:
             ports = None
         else:
             ports = tmp_ports[:]
@@ -416,7 +416,7 @@ def __rules(config, defaults, language):
     if config["scan_method"] is not None and "all" in config["scan_method"].rsplit(","):
         config["scan_method"] = load_all_modules()
         config["scan_method"].remove("all")
-    elif config["scan_method"] is not None and len(config["scan_method"].rsplit(",")) is 1 and "*_" not in config[
+    elif config["scan_method"] is not None and len(config["scan_method"].rsplit(",")) == 1 and "*_" not in config[
         "scan_method"]:
         if config["scan_method"] in load_all_modules():
             config["scan_method"] = config["scan_method"].rsplit()
@@ -481,17 +481,17 @@ def __rules(config, defaults, language):
         try:
             if len(socks_proxy.rsplit(":")) < 2 or len(socks_proxy.rsplit(":")) > 3:
                 e = True
-            elif len(socks_proxy.rsplit(":")) is 2 and socks_proxy.rsplit(":")[1] == "":
+            elif len(socks_proxy.rsplit(":")) == 2 and socks_proxy.rsplit(":")[1] == "":
                 e = True
-            elif len(socks_proxy.rsplit(":")) is 3 and socks_proxy.rsplit(":")[2] == "":
+            elif len(socks_proxy.rsplit(":")) == 3 and socks_proxy.rsplit(":")[2] == "":
                 e = True
         except:
             e = True
         if e:
             abort(400, messages(language, "valid_socks_address"))
-        if socks_flag is 4:
+        if socks_flag == 4:
             socks_proxy = "socks4://" + socks_proxy
-        if socks_flag is 5:
+        if socks_flag == 5:
             socks_proxy = "socks5://" + socks_proxy
     config["socks_proxy"] = socks_proxy
     # Check thread numbers

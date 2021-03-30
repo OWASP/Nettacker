@@ -203,7 +203,7 @@ a {
 }
 
 </style>
-<a target="_blank" href="https://github.com/zdresearch/OWASP-Nettacker"><h2>OWASP Nettacker</h2></a>
+<a target="_blank" href="https://github.com/OWASP/Nettacker"><h2>OWASP Nettacker</h2></a>
 <!--[if IE]><script language="javascript" type="text/javascript" src="../../Extras/excanvas.js"></script><![endif]-->
 
 <!-- JIT Library File -->
@@ -14805,6 +14805,6 @@ __title_to_replace__
         .replace('__title_to_replace__', messages(language, "pentest_graphs")) \
         .replace('__description_to_replace__', messages(language, "graph_message")) \
         .replace('__html_title_to_replace__', messages(language, "nettacker_report"))
-    if version() is 2:
+    if version() == 2:
         return data.decode('utf8')
     return data

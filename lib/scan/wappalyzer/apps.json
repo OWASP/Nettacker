@@ -5877,7 +5877,7 @@
       },
       "html": "<input[^>]+name=\"__VIEWSTATE",
       "icon": "Microsoft ASP.NET.png",
-      "implies": "IIS\\;confidence:50",
+      "implies": "IIS",
       "url": "\\.aspx(?:$|\\?)",
       "website": "http://www.asp.net"
     },

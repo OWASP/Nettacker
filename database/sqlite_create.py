@@ -22,7 +22,9 @@ def sqlite_create_tables():
         True if success otherwise False
     """
     try:
-        db_engine = create_engine('sqlite:///{0}'.format(DATABASE))
+        db_engine = create_engine('sqlite:///{0}'.format(DATABASE),
+                                  connect_args={'check_same_thread': False}
+                                  )
         Base.metadata.create_all(db_engine)
         return True
     except Exception as _:
