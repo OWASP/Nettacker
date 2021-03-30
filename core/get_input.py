@@ -3,6 +3,7 @@
 
 from core.compatible import version
 from core.alert import __input_msg
+from six import moves
 
 
 def __input(msg, default):
@@ -16,18 +17,24 @@ def __input(msg, default):
     Returns:
         user input content
     """
-    if version() is 2:
+    if version() == 2:
         try:
-            data = raw_input(__input_msg(msg))
-            if data == '':
+            data = moves.input(__input_msg(msg))
+            if data == "":
                 data = default
-        except:
+        except Exception:
             data = default
+        except KeyboardInterrupt:
+            print("\n")
+            exit(1)
     else:
         try:
-            data = input(__input_msg(msg))
-            if data == '':
+            data = moves.input(__input_msg(msg))
+            if data == "":
                 data = default
-        except:
+        except Exception:
             data = default
+        except KeyboardInterrupt:
+            print("\n")
+            exit(1)
     return data

@@ -1,12 +1,12 @@
 argparse==1.4.0
-netaddr==0.7.19
+netaddr==0.8.0
 ipaddr==2.2.0
-requests==2.23.0
-paramiko==2.7.1
-texttable==1.6.2
+requests==2.25.1
+paramiko==2.7.2
+texttable==1.6.3
 PySocks==1.7.1
 win_inet_pton==1.1.0
-pyOpenSSL==19.1.0
+pyOpenSSL==20.0.1
 flask==1.1.2
 lockfile==0.12.2
 bs4==0.0.1
@@ -17,3 +17,10 @@ py3DNS==3.2.1; python_version > '3'
 scapy-python3==0.26; python_version > '3'
 pyDNS==2.3.6; python_version < '3'
 scapy>=2.4.1; python_version < '3'
+censys==0.0.8
+six==1.15.0
+shodan==1.25.0
+pycurl==7.43.0.5
+xmltodict==0.12.0
+rule==0.1.1
+mechanize==0.4.5
