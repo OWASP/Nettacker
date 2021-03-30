@@ -1,4 +1,4 @@
-Please Describe the issue or question and share your OS and Python version.
+Please describe the issue or question and share your OS and Python version.
 _________________
 **OS**: `x`
 
