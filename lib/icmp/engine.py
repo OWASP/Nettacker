@@ -205,11 +205,11 @@ def send_one_ping(my_socket, dest_addr, id, psize):
     bytes = struct.calcsize("d")
     data = (psize - bytes) * "Q"
     data = struct.pack("d", time.time(
-    )) + data if version() is 2 else struct.pack("d", time.time()) + data.encode()
+    )) + data if version() ==2 else struct.pack("d", time.time()) + data.encode()
 
     # Calculate the checksum on the data and the dummy header.
     my_checksum = checksum_py2(
-        header + data) if version() is 2 else checksum_py3(header + data)
+        header + data) if version() ==2 else checksum_py3(header + data)
 
     # Now that we have the right checksum, we put that in. It's just easier
     # to make up a new header than to stuff it into the dummy.

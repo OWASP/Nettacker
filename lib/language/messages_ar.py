@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "بدأ محرك Nettacker ...",
             "options": "python nettacker.py [خيارات]",
             "help_menu": "عرض قائمة مساعدة Nettacker",
-            "license": "يرجى قراءة الترخيص والاتفاقيات https://github.com/zdresearch/OWASP-Nettacker",
+            "license": "يرجى قراءة الترخيص والاتفاقيات https://github.com/OWASP/Nettacker",
             "engine": "محرك",
             "engine_input": "خيارات إدخال المحرك",
             "select_language": "اختر لغة {0}",
@@ -103,7 +103,7 @@ def all_messages():
             "target_submitted": "الهدف {0} مقدم!",
             "current_version": "أنت تشغل إصدار OWASP Nettacker {0} {1} {2} {6} مع اسم الكود {3} {4} {5}",
             "feature_unavailable": "هذه الميزة غير متوفرة بعد! يرجى تشغيل "
-                                   "\"بوابة استنساخ https://github.com/zdresearch/OWASP-Nettacker.git أ"
+                                   "\"بوابة استنساخ https://github.com/OWASP/Nettacker.git أ"
                                    "و نقطة تثبيت -U OWASP-Nettacker للحصول على الإصدار الأخير.",
             "available_graph": "بناء رسم بياني لجميع الأنشطة"
                                " والمعلومات ، يجب عليك استخدام مخرجات HTML. الرسوم البيانية المتاحة: {0}",

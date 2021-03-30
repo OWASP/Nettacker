@@ -34,7 +34,7 @@ def percentage(data1, data2):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) is not 3:
+    if len(sys.argv) != 3:
         sys.exit(print("usage: python {0} file1.json file2.json".format(sys.argv[0])))
     file1, file2 = files_check()
     for target_selected in file1:
