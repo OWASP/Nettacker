@@ -73,7 +73,7 @@ def start(
         request = """{0} __target_locat_here__{{0}} HTTP/1.1\
             \nUser-Agent: {1}\n\n""".format(
             extra_requirements["admin_scan_http_method"][0],
-            random.choice(user_agents_list())
+            random.choice(useragents.useragents())
             if extra_requirements["admin_scan_random_agent"][0].lower()
             == "true"
             else "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5)\
