@@ -4,7 +4,7 @@
 # references
 # https://www.youtube.com/watch?v=nNDsGTalXS0
 # https://baraktawily.blogspot.nl/2018/02/how-to-dos-29-of-world-wide-websites.html
-# https://github.com/zdresearch/OWASP-Nettacker/blob/master/lib/vuln/wordpress_dos_cve_2018_6389/engine.py
+# https://github.com/OWASP/Nettacker/blob/master/lib/vuln/wordpress_dos_cve_2018_6389/engine.py
 
 import socket
 import socks
@@ -24,7 +24,7 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 from core._die import __die_failure
-
+from lib.payload.wordlists import useragents
 
 def extra_requirements_dict():
     return {
@@ -124,7 +124,7 @@ def test(target, retries, timeout_sec, user_agent, socks_proxy, verbose_level, t
             return 0
         except:
             n += 1
-            if n is retries:
+            if n == retries:
                 if dos_flag:
                     __log_into_file(thread_tmp_filename, 'w', '0', language)
                     info(messages(language, "vulnerable").format(
@@ -143,24 +143,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(
             target) != 'HTTP' or target_type(target) != 'SINGLE_IPv6':
         # rand useragent
-        user_agent_list = [
-            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5",
-            "Googlebot/2.1 ( http://www.googlebot.com/bot.html)",
-            "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Ubuntu/10.04"
-            " Chromium/9.0.595.0 Chrome/9.0.595.0 Safari/534.13",
-            "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.2; WOW64; .NET CLR 2.0.50727)",
-            "Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22 Version/10.51",
-            "Mozilla/5.0 (compatible; 008/0.83; http://www.80legs.com/webcrawler.html) Gecko/2008032620",
-            "Debian APT-HTTP/1.3 (0.8.10.3)",
-            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
-            "Googlebot/2.1 (+http://www.googlebot.com/bot.html)",
-            "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
-            "YahooSeeker/1.2 (compatible; Mozilla 4.0; MSIE 5.5; yahooseeker at yahoo-inc dot com ; "
-            "http://help.yahoo.com/help/us/shop/merchant/)",
-            "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)",
-            "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",
-            "msnbot/1.1 (+http://search.msn.com/msnbot.htm)"
-        ]
+        user_agent_list = useragents.useragents()
         user_agent = {'User-agent': random.choice(user_agent_list)}
         limit = 1000
         # requirements check
@@ -194,7 +177,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                                            '').replace('https://', '').rsplit('/')[1:])
             url = http + '://' + host + '/' + path
         if test(url, retries, timeout_sec, user_agent, socks_proxy, verbose_level, trying, total_req, total, num,
-                language, False, log_in_file, scan_id, scan_cmd, thread_tmp_filename) is not 0:
+                language, False, log_in_file, scan_id, scan_cmd, thread_tmp_filename) != 0:
             warn(messages(language, "open_error").format(url))
             return
         info(messages(language, "DOS_send").format(target))
@@ -220,8 +203,8 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 info(messages(language, "trying_message").format(trying, total_req, num, total, target_to_host(target), port,
                                                                  'wordpress_dos_cve_2018_6389_vuln'))
             try:
-                if int(open(thread_tmp_filename).read().rsplit()[0]) is 0:
-                    if limit is not -1:
+                if int(open(thread_tmp_filename).read().rsplit()[0]) == 0:
+                    if limit != -1:
                         break
             except Exception:
                 pass
@@ -239,20 +222,20 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 2 or kill_switch is kill_time:
+                if threading.activeCount() == 2 or kill_switch == kill_time:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1:
+        if thread_write == 1:
             info(messages(language, "no_vulnerability_found").format(
                 "wordpress_dos_cve_2018_6389_vuln"))
-            if verbose_level is not 0:
+            if verbose_level != 0:
                 data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
                                    'TYPE': 'wordpress_dos_cve_2018_6389_vuln',
                                    'DESCRIPTION': messages(language, "no_vulnerability_found").format("wordpress_dos_cve_2018_6389_vuln"),

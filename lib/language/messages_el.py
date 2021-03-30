@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "Ο μηχανισμός Nettacker ξεκίνησε ...",
             "options": "python nettacker.py [επιλογές]",
             "help_menu": "Εμφάνιση του μενού βοήθειας Nettacker",
-            "license": "Διαβάστε τις άδειες και τις συμφωνίες https://github.com/zdresearch/OWASP-Nettacker",
+            "license": "Διαβάστε τις άδειες και τις συμφωνίες https://github.com/OWASP/Nettacker",
             "engine": "Κινητήρας",
             "engine_input": "Επιλογές εισαγωγής κινητήρα",
             "select_language": "επιλέξτε μια γλώσσα {0}",
@@ -111,7 +111,7 @@ def all_messages():
             "target_submitted": "ο στόχος {0} υποβλήθηκε!",
             "current_version": "εκτελείτε την έκδοση OWASP Nettacker {0} {1} {2} {6} με το όνομα κώδικα {3} {4} {5}",
             "feature_unavailable": "αυτή η λειτουργία δεν είναι ακόμα διαθέσιμη! εκτελέστε τον "
-                                   "\"git clone https://github.com/zdresearch/OWASP-Nettacker.git ή "
+                                   "\"git clone https://github.com/OWASP/Nettacker.git ή "
                                    "εγκαταστήστε pip -U OWASP-Nettacker για να λάβετε την τελευταία έκδοση.",
             "available_graph": "να δημιουργήσετε ένα γράφημα όλων των δραστηριοτήτων και πληροφοριών, "
                                "πρέπει να χρησιμοποιήσετε την έξοδο HTML. διαθέσιμα γραφήματα: {0}",

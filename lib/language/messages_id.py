@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "Mesin Nettacker mulai ...",
             "options": "python nettacker.py [opsi]",
             "help_menu": "Tampilkan Menu Bantuan Nettacker",
-            "license": "Harap baca lisensi dan perjanjian https://github.com/zdresearch/OWASP-Nettacker",
+            "license": "Harap baca lisensi dan perjanjian https://github.com/OWASP/Nettacker",
             "engine": "Mesin",
             "engine_input": "Opsi masukan mesin",
             "select_language": "pilih bahasa {0}",
@@ -104,7 +104,7 @@ def all_messages():
             "target_submitted": "target {0} dikirimkan!",
             "current_version": "Anda menjalankan OWASP Nettacker versi {0} {1} {2} {6} dengan nama kode {3} {4} {5}",
             "feature_unavailable": "fitur ini belum tersedia! silakan jalankan \"git clone "
-                                   "https://github.com/zdresearch/OWASP-Nettacker.git atau install pip -U"
+                                   "https://github.com/OWASP/Nettacker.git atau install pip -U"
                                    " OWASP-Nettacker untuk mendapatkan versi terakhir.",
             "available_graph": "membangun grafik dari semua aktivitas dan informasi, Anda harus menggunakan "
                                "output HTML. grafik yang tersedia: {0}",
