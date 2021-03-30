@@ -15,7 +15,7 @@ def all_messages():
             "options": "python nettacker.py [опции]",
             "help_menu": "Показать меню справки Nettacker",
             "license": "Пожалуйста, ознакомьтесь с лицензией и соглашениями"
-                       " https://github.com/zdresearch/OWASP-Nettacker",
+                       " https://github.com/OWASP/Nettacker",
             "engine": "двигатель",
             "engine_input": "Параметры ввода двигателя",
             "select_language": "выберите язык {0}",
@@ -104,8 +104,8 @@ def all_messages():
             "port_found": "host: {0} порт: {1} ({2}) найден!",
             "target_submitted": "target {0}!",
             "current_version": "вы используете версию OWASP Nettacker {0} {1} {2} {6} с кодовым названием {3} {4} {5}",
-            "feature_unavailable": "эта функция пока недоступна! запустите «git clone https://github.com/zdresearch"
-                                   "/OWASP-Nettacker.git или pip install -U OWASP-Nettacker, чтобы получить "
+            "feature_unavailable": "эта функция пока недоступна! запустите «git clone https://github.com/OWASP"
+                                   "/Nettacker.git или pip install -U OWASP-Nettacker, чтобы получить "
                                    "последнюю версию.",
             "available_graph": "постройте график всех действий и информации, вы должны использовать вывод HTML. "
                                "доступные графики: {0}",

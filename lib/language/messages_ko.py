@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "Nettacker 엔진이 시작되었습니다 ...",
             "options": "python nettacker.py [options]",
             "help_menu": "Nettacker 도움말 메뉴 표시",
-            "license": "라이센스 및 계약서를 읽으십시오. https://github.com/zdresearch/OWASP-Nettacker",
+            "license": "라이센스 및 계약서를 읽으십시오. https://github.com/OWASP/Nettacker",
             "engine": "엔진",
             "engine_input": "엔진 입력 옵션",
             "select_language": "언어 선택 {0}",
@@ -100,7 +100,7 @@ def all_messages():
             "target_submitted": "타겟 {0}이 제출되었습니다.",
             "current_version": "당신은 코드 이름 {3} {4} {5}로 OWASP Nettacker 버전 {0} {1} {2} {6}",
             "feature_unavailable": "아직이 기능을 사용할 수 없습니다. 마지막 버전을 얻으려면 \"git clone https:"
-                                   "//github.com/zdresearch/OWASP-Nettacker.git 또는 pip install -U OWASP-Nettacker"
+                                   "//github.com/OWASP/Nettacker.git 또는 pip install -U OWASP-Nettacker"
                                    "를 실행하십시오.",
             "available_graph": "모든 활동 및 정보의 그래프를 작성하려면 HTML 출력을 사용해야합니다. 사용 가능한 그래프 : {0}",
             "graph_output": "그래프 기능을 사용하려면 출력 파일 이름이 \".html\"또는 \".htm\"로 끝나야합니다!",

@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "Động cơ Nettacker đã bắt đầu ...",
             "options": "python nettacker.py [tùy chọn]",
             "help_menu": "Hiển thị menu trợ giúp Nettacker",
-            "license": "Vui lòng đọc giấy phép và thỏa thuận https://github.com/zdresearch/OWASP-Nettacker",
+            "license": "Vui lòng đọc giấy phép và thỏa thuận https://github.com/OWASP/Nettacker",
             "engine": "Động cơ",
             "engine_input": "Tùy chọn đầu vào của động cơ",
             "select_language": "chọn ngôn ngữ {0}",
@@ -100,8 +100,8 @@ def all_messages():
             "port_found": "host: {0} port: {1} ({2}) được tìm thấy!",
             "target_submitted": "mục tiêu {0} đã được gửi!",
             "current_version": "bạn đang chạy phiên bản OWASP Nettacker {0} {1} {2} {6} với tên mã {3} {4} {5}",
-            "feature_unavailable": "tính năng này chưa khả dụng! hãy chạy \"git clone https://github.com/zdresearch/"
-                                   "OWASP-Nettacker.git hoặc pip install -U OWASP-Nettacker "
+            "feature_unavailable": "tính năng này chưa khả dụng! hãy chạy \"git clone https://github.com/OWASP/"
+                                   "Nettacker.git hoặc pip install -U OWASP-Nettacker "
                                    "để lấy phiên bản cuối cùng.",
             "available_graph": "xây dựng một biểu đồ của tất cả các hoạt động và thông tin, bạn phải sử"
                                " dụng đầu ra HTML. đồ thị có sẵn: {0}",
