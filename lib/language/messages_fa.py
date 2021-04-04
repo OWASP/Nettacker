@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "انجین Nettacker آغاز به کار کرد ...\n\n",
             "options": "python nettacker.py [گزینه ها]",
             "help_menu": "نشان دادن منوی کمک Nettacker",
-            "license": "لطفا مجوز و موافقت نامه را مطالعه فرمایید https://github.com/zdresearch/OWASP-Nettacker\n",
+            "license": "لطفا مجوز و موافقت نامه را مطالعه فرمایید https://github.com/OWASP/Nettacker\n",
             "engine": "انجین",
             "engine_input": "گزینه های ورودی انجین",
             "select_language": "یک زبان انتخاب کنید {0}",
@@ -106,7 +106,7 @@ def all_messages():
             "target_submitted": "هدف {0} ارسال شد!",
             "current_version": "شما در حال اجرای OWASP Nettacker ورژن {0}{1}{2}{6} با اسم کد {3}{4}{5} می باشید",
             "feature_unavailable": "این ویژگی هنوز فعال نشده است! لطفا "
-                                   "\"git clone https://github.com/zdresearch/OWASP-Nettacker.git\""
+                                   "\"git clone https://github.com/OWASP/Nettacker.git\""
                                    " یا \"pip install -U OWASP-Nettacker\" را جهت گرفتن اخرین ورژن اجرا کنید.",
             "available_graph": "ساخت گراف از همه فعالیت ها و اطلاعات، شما باید"
                                " از خروجی HTML استفاده کنید. گراف های در دسترس: {0}",

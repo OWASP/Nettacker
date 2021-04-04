@@ -14,7 +14,8 @@ from database.db import save_update_log
 from datetime import timedelta
 from datetime import datetime
 
-url = 'http://nettacker.z3r0d4y.com/version.py'
+url = 'https://raw.githubusercontent.com/OWASP/Nettacker/master/version.txt'
+
 
 def _update(__version__, __code_name__, language, socks_proxy):
     """
@@ -40,7 +41,7 @@ def _update(__version__, __code_name__, language, socks_proxy):
             socket.getaddrinfo = getaddrinfo
         data = requests.get(
             url, headers={"User-Agent": "OWASP Nettacker"}).content
-        if version() is 3:
+        if version() == 3:
             data = data.decode("utf-8")
         if __version__ + ' ' + __code_name__ == data.rsplit('\n')[0]:
             info(messages(language, "last_version"))
@@ -51,12 +52,13 @@ def _update(__version__, __code_name__, language, socks_proxy):
         warn(messages(language, "cannot_update"))
     return True
 
+
 def _update_check(language):
     """
     This Function checks if an Update has happened in the previous day and if not, it checks for update
 
     Args:
-        Language
+        language
     Return:
         True or False depending on if update should happen or not
     """
@@ -65,12 +67,13 @@ def _update_check(language):
     except Exception:
         save_update_log(language)
         logs = (get_update_log(language))
-    logs2 = (logs[len(logs)-1].last_update_time)
+    logs2 = logs[len(logs)-1].last_update_time
     if datetime.now() > datetime.strptime(logs2, "%Y-%m-%d %H:%M:%S.%f") + timedelta(days=1):
         save_update_log(language)
         return True
     else:
         return False
+
 
 def _check(__version__, __code_name__, language, socks_proxy):
     """
@@ -85,7 +88,7 @@ def _check(__version__, __code_name__, language, socks_proxy):
     Returns:
         True if success otherwise None
     """
-#    print(save_update_log(language))
+
     try:
         if socks_proxy is not None:
             socks_version = socks.SOCKS5 if socks_proxy.startswith(
@@ -97,7 +100,8 @@ def _check(__version__, __code_name__, language, socks_proxy):
             socket.getaddrinfo = getaddrinfo
         data = requests.get(
             url, headers={"User-Agent": "OWASP Nettacker"}).content
-        if version() is 3:
+        
+        if version() == 3:
             data = data.decode("utf-8")
         if __version__ + ' ' + __code_name__ == data.rsplit('\n')[0]:
             info(messages(language, "last_version"))

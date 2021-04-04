@@ -21,7 +21,7 @@ table {
 }
 
 th {
-    background: url(https://jackrugile.com/images/misc/noise-diagonal.png), linear-gradient(#777, #444);
+    background: linear-gradient(#777, #444);
     border-left: 1px solid #555;
     border-right: 1px solid #777;
     border-top: 1px solid #555;

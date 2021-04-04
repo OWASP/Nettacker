@@ -23,7 +23,7 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import spf
-
+from core.compatible import version
 
 def extra_requirements_dict():
     return {
@@ -69,7 +69,7 @@ def joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
             try:
                 global result
                 host_ip = socket.gethostbyname(target)
-                if version() is 2:
+                if version() ==2:
                     host_ip = host_ip.decode("utf-8")
                 result = spf.check2(host_ip,"admin@"+target, target)
                 return True
@@ -143,17 +143,17 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         # wait for threads
         kill_switch = 0
         kill_time = int(
-            timeout_sec / 0.1) if int(timeout_sec / 0.1) is not 0 else 1
+            timeout_sec / 0.1) if int(timeout_sec / 0.1) != 0 else 1
         while 1:
             time.sleep(0.1)
             kill_switch += 1
             try:
-                if threading.activeCount() is 1 or kill_switch is kill_time:
+                if threading.activeCount() == 1 or kill_switch == kill_time:
                     break
             except KeyboardInterrupt:
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
-        if thread_write is 1 and verbose_level is not 0:
+        if thread_write == 1 and verbose_level != 0:
             info(messages(language, "not_found"))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'joomla_version_scan',
                                'DESCRIPTION': messages(language, "not_found"), 'TIME': now(),
