@@ -28,7 +28,7 @@ from lib.payload.wordlists import useragents
 
 def extra_requirements_dict():
     return {
-        "php_easter_eggs_vuln_ports": [80,443],
+        "php_easter_egg_vuln_ports": [80,443],
         "php_easter_eggs": ['?=PHPB8B5F2A0-3C92-11d3-A3A9-4C7B08C10000',
                             '?=PHPE9568F34-D428-11d2-A769-00AA001ACF42',
                             '?=PHPE9568F35-D428-11d2-A769-00AA001ACF42',
@@ -64,7 +64,7 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def php_easter_eggs_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
+def php_easter_egg_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
                    thread_tmp_filename, extra_requirements, socks_proxy, scan_id, scan_cmd):
     try:
         try:
@@ -115,9 +115,9 @@ def php_easter_eggs_vuln(target, port, timeout_sec, log_in_file, language, time_
         return False
 
 
-def __php_easter_eggs_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
+def __php_easter_egg_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
                      thread_tmp_filename, extra_requirements, socks_proxy, scan_id, scan_cmd):
-    if php_easter_eggs_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
+    if php_easter_egg_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
                       thread_tmp_filename, extra_requirements, socks_proxy, scan_id, scan_cmd):
         info(messages(language, "found").format(target, "PHP easter Egg!", php_easter_egg))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
@@ -142,7 +142,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                     new_extra_requirements[extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["php_easter_eggs_vuln_ports"]
+            ports = extra_requirements["php_easter_egg_vuln_ports"]
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
@@ -154,7 +154,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         keyboard_interrupt_flag = False
         for port in ports:
             port = int(port)
-            t = threading.Thread(target=__php_easter_eggs_vuln,
+            t = threading.Thread(target=__php_easter_egg_vuln,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
                                        thread_tmp_filename, extra_requirements, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
@@ -162,7 +162,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'php_easter_eggs_vuln_scan'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'php_easter_egg_vuln_scan'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -189,7 +189,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write is 1 and verbose_level is not 0:
             info(messages(language, "not_found"))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'php_easter_eggs_vuln_scan',
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'php_easter_egg_vuln_scan',
                                'DESCRIPTION': messages(language, "not_found"), 'TIME': now(),
                                'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
@@ -198,4 +198,4 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
     else:
         print("aman")
         warn(messages(language, "input_target_error").format(
-            'php_easter_eggs_vuln_scan', target))
+            'php_easter_egg_vuln_scan', target))
