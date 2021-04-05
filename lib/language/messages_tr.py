@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "Nettacker motoru başladı ...",
             "options": "python nettacker.py [seçenekler]",
             "help_menu": "Nettacker Yardım Menüsünü Göster",
-            "license": "Lütfen lisans ve sözleşmeleri okuyun https://github.com/zdresearch/OWASP-Nettacker",
+            "license": "Lütfen lisans ve sözleşmeleri okuyun https://github.com/OWASP/Nettacker",
             "engine": "Motor",
             "engine_input": "Motor girişi seçenekleri",
             "select_language": "bir dil seçin {0}",
@@ -102,7 +102,7 @@ def all_messages():
             "target_submitted": "{0} hedefi gönderildi!",
             "current_version": "{0} {1} {2} {6} OWASP Nettacker sürümünü {3} {4} {5} kod adıyla çalıştırıyorsunuz",
             "feature_unavailable": "Bu özellik henüz mevcut değil! son sürümü almak için lütfen git klon "
-                                   "https://github.com/zdresearch/OWASP-Nettacker.git veya pip install -U"
+                                   "https://github.com/OWASP/Nettacker.git veya pip install -U"
                                    " OWASP-Nettacker çalıştırın.",
             "available_graph": "Tüm aktiviteler ve bilgiler için bir grafik oluşturmak, HTML çıkışı kullanmalısınız."
                                " mevcut grafikler: {0}",

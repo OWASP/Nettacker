@@ -14,7 +14,7 @@ def all_messages():
             "scan_started": "מנוע Nettacker התחיל ...",
             "options": "python nettacker.py [אפשרויות]",
             "help_menu": "הצג תפריט עזרה Nettacker",
-            "license": "קרא את הרישיון וההסכמים https://github.com/zdresearch/OWASP-Nettacker",
+            "license": "קרא את הרישיון וההסכמים https://github.com/OWASP/Nettacker",
             "engine": "מנוע",
             "engine_input": "אפשרויות קלט מנוע",
             "select_language": "בחר שפה {0}",
@@ -99,7 +99,7 @@ def all_messages():
             "target_submitted": "יעד {0} נשלח!",
             "current_version": "אתה מפעיל את גרסת OWASP Nettacker {0} {1} {2} {6} עם שם קוד {3} {4} {5}",
             "feature_unavailable": "תכונה זו אינה זמינה עדיין! בבקשה להפעיל \"git"
-                                   " שיבוט https://github.com/zdresearch/OWASP-Nettacker.git או להתקין "
+                                   " שיבוט https://github.com/OWASP/Nettacker.git או להתקין "
                                    "פיפס -U OWASP-Nettacker כדי לקבל את הגירסה האחרונה.",
             "available_graph": "לבנות גרף של כל הפעילויות והמידע, עליך להשתמש בפלט HTML. גרפים זמינים: {0}",
             "graph_output": "כדי להשתמש בתכונת הגרף שם קובץ הפלט שלך חייב להסתיים עם \".html\" או \".htm\"!",
