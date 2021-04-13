@@ -153,6 +153,12 @@ def __check_external_modules():
             mysql_create_tables()
         except:
             __die_failure(messages("en", "database_connection_failed"))
+    elif default_config["database_type"] == "postgres":
+        try:
+            from database.postgres_create import postgres_create_database
+            postgres_create_database()
+        except Exception as e:
+            __die_failure(messages("en", "database_connection_failed"))
     else:
         __die_failure(messages("en", "invalid_database"))
     return True

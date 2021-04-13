@@ -43,6 +43,7 @@ def db_inputs(connection_type):
             corresponding command to connect to the db
         """
     return {
+        "postgres": 'postgres+psycopg2://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE),
         "mysql": 'mysql://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE),
         "sqlite": 'sqlite:///{0}'.format(DATABASE)
     }[connection_type]
