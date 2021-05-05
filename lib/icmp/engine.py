@@ -118,7 +118,7 @@ def checksum_py3(source_string):
         count = count + 2
 
     if countTo < len(source_string):
-        sum = sum + source_string[len(source_string) - 1]
+        sum = sum + source_string[-1]
         sum = sum & 0xffffffff  # Necessary?
 
     sum = (sum >> 16) + (sum & 0xffff)
@@ -145,7 +145,7 @@ def checksum_py2(source_string):
         sum = sum + this
         sum = sum & 0xffffffff  # Necessary?
     if count_to < len(source_string):
-        sum = sum + ord(source_string[len(source_string) - 1])
+        sum = sum + ord(source_string[-1])
         sum = sum & 0xffffffff  # Necessary?
 
     sum = (sum >> 16) + (sum & 0xffff)

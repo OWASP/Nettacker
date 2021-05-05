@@ -46,9 +46,9 @@ def load_all_args(module_names, graph_names):
     # Language Options
     # import libs
     default_config = _builder(_core_config(), _core_default_config())
-    _all_profiles = [key for key in _builder(_profiles(), default_profiles())]
+    _all_profiles = list(_builder(_profiles(), default_profiles()))
     _all_profiles.append("all")
-    language_list = [lang for lang in messages(-1, 0)]
+    language_list = list(messages(-1, 0))
     if "-L" in sys.argv or "--language" in sys.argv:
         try:
             index = sys.argv.index("-L") + 1

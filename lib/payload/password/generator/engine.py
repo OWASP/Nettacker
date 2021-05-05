@@ -51,7 +51,7 @@ def generate(filename="", first_name="", last_name="", nick="", email="", dob=""
     random_l = list()
     other = other.replace(" ", "")
     words2 = other.split(",")
-    if special_characters == True:
+    if special_characters is True:
         special = list()
         for spec1 in charlist:
             special.append(spec1)
@@ -92,7 +92,7 @@ def generate(filename="", first_name="", last_name="", nick="", email="", dob=""
             if (i.lower()) != (j.lower()):
                 password_list.append(i + j)
 
-    if leet_speak == True:
+    if leet_speak is True:
         for i in password_list:
             i = i.replace('a', '@')
             i = i.replace('t', '7')
@@ -117,14 +117,14 @@ def generate(filename="", first_name="", last_name="", nick="", email="", dob=""
     # s='5'
     ####################
 
-    if random_numbers == True:
+    if random_numbers is True:
         for i in password_list:
             for j in random_list:
                 random_l.append(i + j)
     else:
         random_l = password_list
 
-    if special_characters == True:
+    if special_characters is True:
         for i in random_l:
             for j in special:
                 characters_list.append(i + j)

@@ -128,7 +128,7 @@ def read_targets(filename):
         hosts = list(set(data.rsplit()))
     else:
         sys.exit(info("file extension not supported. (only .txt and .xml)"))
-    if not len(hosts):
+    if not hosts:
         sys.exit(info("no targets found in this file {0}".format(filename)))
     return hosts
 

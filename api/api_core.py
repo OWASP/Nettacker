@@ -221,7 +221,7 @@ def __languages():
     Returns:
         HTML code for each language with its country flag
     """
-    languages = [lang for lang in messages(-1, 0)]
+    languages = list(messages(-1, 0))
     res = ""
     flags = {
         "el": "gr",
@@ -330,7 +330,7 @@ def __rules(config, defaults, language):
                                                        "graph_flag"] in load_all_graphs() else None
     # Check Language
     config["language"] = config["language"] if config[
-                                                   "language"] in [lang for lang in messages(-1, 0)] else "en"
+                                                   "language"] in list(messages(-1, 0)) else "en"
     # Check Targets
     if config["targets"] is not None:
         config["targets"] = list(set(config["targets"].rsplit(",")))

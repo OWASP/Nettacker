@@ -67,7 +67,7 @@ def _update_check(language):
     except Exception:
         save_update_log(language)
         logs = (get_update_log(language))
-    logs2 = logs[len(logs)-1].last_update_time
+    logs2 = logs[-1].last_update_time
     if datetime.now() > datetime.strptime(logs2, "%Y-%m-%d %H:%M:%S.%f") + timedelta(days=1):
         save_update_log(language)
         return True

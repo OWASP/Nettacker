@@ -158,7 +158,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
             target = 'https://' + target
         for port in ports:
             if test(str(target), port, retries, timeout_sec, headers,
-                    socks_proxy, verbose_level, trying, total_req, total, num, language) == True:
+                    socks_proxy, verbose_level, trying, total_req, total, num, language) is True:
                 keyboard_interrupt_flag = False
                 for user in users:
                     for passwd in passwds:

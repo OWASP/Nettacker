@@ -68,7 +68,7 @@ def Expired(target, port, timeout_sec, log_in_file, language, time_sleep,
         else:
             cert = ssl.get_server_certificate((target, port))
             x509 = crypto.load_certificate(crypto.FILETYPE_PEM, cert)
-            if(x509.has_expired() == True):
+            if(x509.has_expired() is True):
                 return True
             else:
                 return False
