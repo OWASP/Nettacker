@@ -16,7 +16,7 @@ canari==3.3.10
 py3DNS==3.2.1; python_version > '3'
 pyDNS==2.3.6; python_version < '3'
 censys==0.0.8
-six==1.15.0
+six==1.16.0
 shodan==1.25.0
 pycurl==7.43.0.5
 xmltodict==0.12.0
