@@ -1,0 +1,31 @@
+{% for result in results %}
+<a target='_blank' href="/results/get?id={{result['id']}}" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="row">
+        <div class="d-flex w-100">
+            <h3 class="mb-1">&nbsp;&nbsp;&nbsp;<span id="logintext" class="bold label label-primary"> {{result['id']}}</span>
+                <small class="label label-info card-date"> {{result['date']}}</small>
+            </h3>
+        </div>
+    </div>
+    <hr class='card-hr'>
+    <p class='mb-1  bold label label-default'>scan_id: {{result['scan_id']}} </p><br>
+    <p class='mb-1  bold label label-info'>report_filename: {{result['report_filename']}} </p><br>
+    <p class='mb-1 bold label label-success'>events_num: {{result['events_num']}} </p><br>
+    <p class='mb-1 bold label label-danger'>ports: {{result['ports']}} </p><br>
+    <p class='mb-1 bold label label-info'>category: {{result['category']}} </p><br>
+    <p class='mb-1 bold label label-success'>profile: {{result['profile']}} </p><br>
+    <p class='mb-1 bold label label-warning'>scan_method: {{result['scan_method']}} </p><br>
+    <p class='mb-1 bold  label label-primary'>api_flag: {{result['api_flag']}} </p><br>
+    <p class='mb-1 bold label label-warning'>verbose: {{result['verbose']}} </p><br>
+    <p class='mb-1 bold label label-info'>report_type: {{result['report_type']}} </p><br>
+    <p class='mb-1 bold label label-primary'>graph_flag: {{result['graph_flag']}} </p><br>
+    <p class='mb-1 bold label label-success'>language: {{result['language']}} </p>
+    <span class='card-flag flag-icon flag-icon-{{flags["language"]}}'></span><br>
+    <p class='mb-1 bold label label-default'>scan_cmd: {{result['scan_cmd']}} </p>
+    </p>
+</a><button class="mb-1 bold label card-date"><a href="/results/get_json?id={{result['id']}}">Get JSON</a></button> <button
+    class="mb-1 bold label card-date"><a href="/results/get_csv?id={{result['id']}}">Get CSV </a></button>
+{% endfor %}
+{% if results["msg"] == "No more search results" %}
+    HTMLData = "<p class="mb-1"> No more results to show!!</p>"
+{% endif %}

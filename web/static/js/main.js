@@ -359,110 +359,18 @@ $(document).ready(function () {
         }
     };
 
-    // show scans in the html
-    function show_scans(res) {
-        res = JSON.parse(res);
-        var HTMLData = "";
-        var i;
-        var id;
-        var date;
-        var scan_id;
-        var report_filename;
-        var events_num;
-        var verbose;
-        var api_flag;
-        var report_type;
-        var graph_flag;
-        var category;
-        var profile;
-        var scan_method;
-        var language;
-        var scan_cmd;
-        var ports;
-        var flags = {
-            "el": "gr",
-            "fr": "fr",
-            "en": "us",
-            "nl": "nl",
-            "ps": "ps",
-            "tr": "tr",
-            "de": "de",
-            "ko": "kr",
-            "it": "it",
-            "ja": "jp",
-            "fa": "ir",
-            "hy": "am",
-            "ar": "sa",
-            "zh-cn": "cn",
-            "vi": "vi",
-            "ru": "ru",
-            "hi": "in",
-            "ur": "pk",
-            "id": "id",
-            "es": "es"
-        };
-
-        for (i = 0; i < res.length; i++) {
-            id = res[i]["id"];
-            date = res[i]["date"];
-            scan_id = res[i]["scan_id"];
-            report_filename = res[i]["report_filename"];
-            events_num = res[i]["events_num"];
-            verbose = res[i]["verbose"];
-            api_flag = res[i]["api_flag"];
-            report_type = res[i]["report_type"];
-            graph_flag = res[i]["graph_flag"];
-            category = res[i]["category"];
-            profile = res[i]["profile"];
-            scan_method = res[i]["scan_method"];
-            language = res[i]["language"];
-            scan_cmd = res[i]["scan_cmd"];
-            ports = res[i]["ports"];
-            host = scan_cmd.split(" ")[2];
-            HTMLData += "<a target='_blank' href=\"/results/get?id=" + id +
-                "\" class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
-                "<div class=\"row\" ><div class=\"d-flex w-100\">\n" +
-                "<h3  class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span id=\"logintext\"\n" +
-                "class=\"bold label label-primary\">" + id + "</span>" +
-                "<small class=\"label label-info card-date\">" + date + "</small></h3>" +
-                "</div></div>" + "<hr class='card-hr'>" +
-                "<p class='mb-1  bold label label-default'>scan_id:" + scan_id + "</p><br>" +
-                "<p class='mb-1  bold label label-info'>report_filename:" + report_filename + "</p><br>" +
-                "<p class='mb-1 bold label label-success'>events_num:" + events_num + "</p><br>" +
-                "<p class='mb-1 bold label label-danger'>ports:" + ports + "</p><br>" +
-                "<p class='mb-1 bold label label-info'>category:" + category + "</p><br>" +
-                "<p class='mb-1 bold label label-success'>profile:" + profile + "</p><br>" +
-                "<p class='mb-1 bold label label-warning'>scan_method:" + scan_method + "</p><br>" +
-                "<p class='mb-1 bold  label label-primary'>api_flag:" + api_flag + "</p><br>" +
-                "<p class='mb-1 bold label label-warning'>verbose:" + verbose + "</p><br>" +
-                "<p class='mb-1 bold label label-info'>report_type:" + report_type + "</p><br>" +
-                "<p class='mb-1 bold label label-primary'>graph_flag:" + graph_flag + "</p><br>" +
-                "<p class='mb-1 bold label label-success'>language:" + language + "</p>" +
-                "<span class='card-flag flag-icon flag-icon-" + flags[language] + "'></span><br>" +
-                "<p class='mb-1 bold label label-default'>scan_cmd:" + scan_cmd + "</p>" +
-                "</p>\n </a><button class=\"mb-1 bold label card-date\"\"><a href=\"/results/get_json?id=" + id + "\">Get JSON</a></button>" + "<button class=\"mb-1 bold label card-date\"\"><a href=\"/results/get_csv?id=" + id + "\">Get CSV </a></button>";
-        }
-
-        if (res["msg"] == "No more search results") {
-            HTMLData = "<p class=\"mb-1\"> No more results to show!!</p>";
-        }
-
-        document.getElementById('scan_results').innerHTML = HTMLData;
-
-    }
-
 
     function get_results_list(result_page) {
         $.ajax({
             type: "GET",
             url: "/results/get_list?page=" + result_page,
             dataType: "text"
-        }).done(function (res) {
+        }).done(function (res) {    
             $("#login_first").addClass("hidden");
             $("#scan_results").removeClass("hidden");
             $("#refresh_btn").removeClass("hidden");
             $("#nxt_prv_btn").removeClass("hidden");
-            show_scans(res);
+            document.getElementById('scan_results').innerHTML = res;
         }).fail(function (jqXHR, textStatus, errorThrown) {
             if (errorThrown == "UNAUTHORIZED") {
                 $("#login_first").removeClass("hidden");
@@ -575,77 +483,6 @@ $(document).ready(function () {
     });
 
 
-    function show_crawler(res) {
-        res = JSON.parse(res);
-        var HTMLData = "";
-        var host;
-        var category;
-        var html_categories;
-        var description;
-        var html_description;
-        var open_ports;
-        var html_open_ports;
-        var scan_methods;
-        var html_scan_methods;
-        var j;
-
-        for (i = 0; i < res.length; i++) {
-            host = res[i]["host"];
-            description = res[i]["info"]["descriptions"];
-            open_ports = res[i]["info"]["open_ports"];
-            scan_methods = res[i]["info"]["scan_methods"];
-            category = res[i]["info"]["category"];
-            html_categories = "";
-            html_scan_methods = "";
-            html_open_ports = "";
-            html_description = "";
-            for (j = 0; j < open_ports.length; j++) {
-                html_open_ports += "<p class='mb-1 bold label label-warning'>open_port:" + open_ports[j] + "</p> ";
-                if (j == 10) {
-                    html_open_ports += "<p class='mb-1 bold label label-warning'>open_port: click to see more.</p> ";
-                    break;
-                }
-            }
-            for (j = 0; j < category.length; j++) {
-                html_categories += "<p class='mb-1 bold label label-info'>category:" + category[j] + "</p> ";
-                if (j == 10) {
-                    html_categories += "<p class='mb-1 bold label label-info'>category: click to see more.</p> ";
-                    break;
-                }
-            }
-            html_scan_methods = "";
-            for (j = 0; j < scan_methods.length; j++) {
-                html_scan_methods += "<p class='mb-1 bold label label-primary'>scan_method:" + scan_methods[j] + "</p> ";
-                if (j == 10) {
-                    html_scan_methods += "<p class='mb-1 bold label label-primary'>scan_method: click to see more.</p> ";
-                    break;
-                }
-            }
-            for (j = 0; j < description.length; j++) {
-                html_description += "<p class='mb-1 bold label label-success'>description:" + description[j] + "</p> ";
-                if (j == 10) {
-                    html_description += "<p class='mb-1 bold label label-success'>description: click to see more.</p> ";
-                    break;
-                }
-            }
-
-            
-            HTMLData += "<div class=\"row myBox\" ><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
-                "<button class=\"mb-1 bold label card-date\"\"><a target='_blank' style=\"color: black\" href=\"/logs/get_html?host=" + host + "\">" + host + "</a></button></span><button class=\"mb-1 bold label card-date\"\"><a href=\"/logs/get_json?host=" + host + "\">Get JSON</a></button>" + "<button class=\"mb-1 bold label card-date\"\"><a href=\"/logs/get_csv?host=" + host + "\">Get CSV </a></button></h3>\n" +
-                "</div>\n" + "<p class=\"mb-1\"> " + html_categories + html_scan_methods +
-                html_open_ports + html_description +
-                "</p></div>";
-        }
-        
-        if (res["msg"] == "No more search results") {
-            HTMLData = "<p class=\"mb-1\"> No more results to show!!</p>";
-        }
-
-        document.getElementById('crawl_results').innerHTML = HTMLData;
-        
-    }
-
-
     function get_crawler_list(crawler_page) {
         $.ajax({
             type: "GET",
@@ -656,7 +493,8 @@ $(document).ready(function () {
             $("#crawl_results").removeClass("hidden");
             $("#crw_refresh_btn").removeClass("hidden");
             $("#crw_nxt_prv_btn").removeClass("hidden");
-            show_crawler(res);
+            console.log(res)
+            document.getElementById('crawl_results').innerHTML = res;
         }).fail(function (jqXHR, textStatus, errorThrown) {
             if (errorThrown == "UNAUTHORIZED") {
                 $("#login_first").removeClass("hidden");

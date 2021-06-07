@@ -50,12 +50,11 @@ from database.db import __search_logs
 from database.db import __logs_to_report_html
 from core.targets import target_type
 
-
 TEMPLATE_DIR = os.path.join(os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "web"), "static")
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
 app.config.from_object(__name__)
-
+app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
 def __language(app=app):
     """
@@ -307,7 +306,28 @@ def __get_results():
         page = int(__get_value(flask_request, "page"))
     except Exception:
         page = 1
-    return jsonify(__select_results(__language(), page)), 200
+    return render_template('results.html', results=__select_results(__language(), page), flags={
+            "el": "gr",
+            "fr": "fr",
+            "en": "us",
+            "nl": "nl",
+            "ps": "ps",
+            "tr": "tr",
+            "de": "de",
+            "ko": "kr",
+            "it": "it",
+            "ja": "jp",
+            "fa": "ir",
+            "hy": "am",
+            "ar": "sa",
+            "zh-cn": "cn",
+            "vi": "vi",
+            "ru": "ru",
+            "hi": "in",
+            "ur": "pk",
+            "id": "id",
+            "es": "es"
+        })
 
 
 @app.route("/results/get", methods=["GET"])
@@ -493,7 +513,7 @@ def ___go_for_search_logs():
         query = __get_value(flask_request, "q")
     except Exception:
         query = ""
-    return jsonify(__search_logs(__language(), page, query)), 200
+    return render_template('crawler.html', results=__search_logs(__language(), page, query))
 
 
 def __process_it(api_host, api_port, api_debug_mode, api_access_key,

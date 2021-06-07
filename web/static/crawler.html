@@ -1,0 +1,57 @@
+{% for result in results %}
+    {% set html_categories = "" %}
+    {% set html_scan_methods = "" %}
+    {% set html_open_ports = "" %}
+    {% set html_description = "" %}
+    {% for ports in result['info']['open_ports'] %}
+        <p class='mb-1 bold label label-warning'>open_port: {{ports}}</p>
+        {% if ports == 10 %}
+            <p class='mb-1 bold label label-warning'>open_port: click to see more</p>
+            {% break %}
+        {% endif %}
+    {% endfor %}
+
+    {% for category in result['info']['category'] %}
+        <p class='mb-1 bold label label-info'>category: {{category}}</p>
+        {% if ports == 10 %}
+            <p class='mb-1 bold label label-info'>category: click to see more</p>
+            {% break %}
+        {% endif %}
+    {% endfor %}
+
+    {% for scan_method in result['info']['scan_methods'] %}
+        <p class='mb-1 bold label label-primary'>scan_method: {{scan_method}}</p>
+        {% if ports == 10 %}
+            <p class='mb-1 bold label label-success'>description: {{description}}</p>
+            {% break %}
+        {% endif %}
+    {% endfor %}
+
+    {% for description in result['info']['descriptions'] %}
+        <p class='mb-1 bold label label-success'>description: {{description}}</p>
+        {% if ports == 10 %}
+            <p class='mb-1 bold label label-success'>description: click to see more</p>
+            {% break %}
+        {% endif %}
+    {% endfor %}
+
+    <div class="row myBox">
+        <div class="d-flex w-100 text-justify justify-content-between">
+            <button class="mb-1 bold label card-date">
+                <a target='_blank' style="color: black" href="/logs/get_html?host={{result['host']}}"> {{result['host']}}
+                </a>
+            </button>
+            <button class="mb-1 bold label card-date">
+                <a href="/logs/get_json?host={{result['host']}}">Get JSON</a>
+            </button>
+            <button class="mb-1 bold label card-date">
+                <a href="/logs/get_csv?host={{result['host']}}">Get CSV </a>
+            </button>
+        </div>
+        <p class="mb-1">{{html_categories}} {{html_scan_methods}} {{html_open_ports}} {{html_description}}</p>
+    </div>
+
+{% endfor %}
+{% if results["msg"] == "No more search results" %} 
+    <p class="mb-1"> No more results to show!!</p>
+{% endif %}

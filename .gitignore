@@ -15,10 +15,10 @@ user.txt
 pass.txt
 logs.txt
 *.log
-results.*
+# results.*
 .owasp-nettacker*
 .data*
-*.html
+# *.html
 *.htm
 *.DS_Store
 *.swp
