@@ -196,6 +196,7 @@ def all_messages():
             "wrong_values": "Please provide the correct SSL Certificate and Private key file!",
             "unauthorized_IP": "your IP not authorized",
             "not_found": "Not Found!",
+            "Not_Found": "{0} Not Found! ({1}:{2})",
             "no_subdomain_found": "subdomain_scan: no subdomain found!",
             "viewdns_domain_404": "viewdns_reverse_ip_lookup_scan: no domain found!",
             "browser_session_valid": "your browser session is valid",

@@ -33,7 +33,7 @@ def extra_requirements_dict():
 
 def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
           http_method, socks_proxy, scan_id, scan_cmd):
-    status_codes = [401, 403]
+    status_codes = [401, 403, 404]
     directory_listing_msgs = ["<title>Index of /", "<a href=\"\\?C=N;O=D\">Name</a>", "Directory Listing for",
                               "Parent Directory</a>", "Last modified</a>", "<TITLE>Folder Listing.",
                               "- Browsing directory "]
@@ -91,9 +91,9 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
         if version() == 3:
             content = content.decode("utf8")
         if r.status_code in status_codes:
-            log_in_file(thread_tmp_filename, "w", "0", language)
+            __log_into_file(thread_tmp_filename, "w", "0", language)
             info(
-                messages(language, "found").format(
+                messages(language, "Not_Found").format(
                     target, r.status_code, r.reason
                 ),
                 log_in_file,
@@ -104,7 +104,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                     "PASSWORD": "",
                     "PORT": "",
                     "TYPE": "admin_scan",
-                    "DESCRIPTION": messages(language, "found").format(
+                    "DESCRIPTION": messages(language, "Not_Found").format(
                         target, r.status_code, r.reason
                     ),
                     "TIME": now(),
