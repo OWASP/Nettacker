@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Pradeep Jairamani , github.com/pradeepjairamani
+# Author: Aman Gupta , github.com/aman566
 
 import socket
 import socks
@@ -18,17 +18,14 @@ from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-from bs4 import BeautifulSoup
-from lib.payload.wordlists import useragents
 import requests
-
+from lib.payload.wordlists.graphql import graphql_list
+from lib.payload.wordlists.useragents import useragents
 
 def extra_requirements_dict():
     return {
-        "csp_vuln_ports": [443, 80],
-        "csp_vuln_check_source": ["False"],
+        "graphql_vuln_ports": [80, 443]
     }
-
 
 def conn(targ, port, timeout_sec, socks_proxy):
     try:
@@ -54,16 +51,13 @@ def conn(targ, port, timeout_sec, socks_proxy):
         s.settimeout(timeout_sec)
         s.connect((targ, port))
         return s
-    except Exception as e:
+    except:
         return None
 
 
-def content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
-                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag):
+def graphql(target, port, timeout_sec, socks_proxy):
     try:
-        s = conn(target, port, timeout_sec, socks_proxy)
-        global weak
-        weak = False
+        s = conn(target_to_host(target), port, timeout_sec, socks_proxy)
         if not s:
             return False
         else:
@@ -72,68 +66,56 @@ def content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
             if target_type(target) != "HTTP" and port == 80:
                 target = 'http://' + target
 
-            headers = {'User-agent': random.choice(useragents.useragents())}
-
-            req = requests.get(target, headers=headers,
-                               timeout=timeout_sec, verify=False)
-            try:
-                weak = False
-                csp = req.headers['Content-Security-Policy']
-                if 'unsafe-inline' in csp or 'unsafe-eval' in csp:
-                    weak = True
-                return False
-            except Exception as e:
-                if check_source_flag:
-                    soup = BeautifulSoup(req.text, "html.parser")
-                    meta_tags = soup.find_all('meta', {'http-equiv': 'Content-Security-Policy'})
-
-                    if len(meta_tags) == 0:
-                        return True
-                    directives = meta_tags[0].attrs['content']
-
-                    if 'unsafe-inline' in directives or 'unsafe-eval' in directives:
-                        weak = True
-
+            headers = {
+                "User-Agent": random.choice(useragents()),
+                "Accept": "text/html,application/xhtml+xml,application/xml; q=0.9,image/webp,image/apng,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.9",
+                "Accept-Encoding": "gzip, deflate, br",
+            }
+            query = """{
+                __schema {
+                    types {
+                    name
+                    }
+                }
+                }
+            """
+            params = {"query":query, "variables":"{}"}
+            tempTarget = target
+            global final_endpoint
+            final_endpoint = ''
+            for endpoint in graphql_list():
+                tempTarget += endpoint
+                try:
+                    req = requests.post(tempTarget, json=params, headers=headers, verify=False, timeout=timeout_sec)
+                    tempTarget = target
+                except Exception:
                     return False
                 else:
-                    return True
-    except Exception as e:
+                    if req.status_code == 200:
+                        json_data = json.loads(req.text)
+                        if json_data.get('data') or json_data.get('errors'):
+                            return True
+
+            return False
+    except Exception:
         # some error warning
         return False
 
 
-def __content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
-                     thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag):
-    if content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
-                      thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag):
-        description = ('CSP makes it possible for server administrators to reduce or'
-                       ' eliminate the vectors by which XSS can occur by specifying '
-                       'the domains that the browser should consider to be valid '
-                       'sources of executable scripts. ')
-        info(messages(language, "target_vulnerable").format(target, port, description))
+def __graphql(target, port, timeout_sec, log_in_file, language, time_sleep,
+                   thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
+    if graphql(target, port, timeout_sec, socks_proxy):
+        info(messages(language, "graphql_inspection").format(target, port))
         __log_into_file(thread_tmp_filename, 'w', '0', language)
-        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port,
-                           'TYPE': 'content_security_policy_vuln',
-                           'DESCRIPTION': messages(language, "vulnerable").format(description), 'TIME': now(),
+        data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'graphql_vuln',
+                           'DESCRIPTION': messages(language, "graphql_inspection_console").format(final_endpoint), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
         __log_into_file(log_in_file, 'a', data, language)
         return True
     else:
-        if not weak:
-            return False
-        else:
-            description = 'weak CSP implementation. Using unsafe-inline or unsafe-eval in CSP is not safe.'
-            info(messages(language, "target_vulnerable").format(target, port, description))
-            __log_into_file(thread_tmp_filename, 'w', '0', language)
-            data = json.dumps(
-                {'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': port, 'TYPE': 'content_security_policy_vuln',
-                 'DESCRIPTION': messages(language, "vulnerable").format(description),
-                 'TIME': now(),
-                 'CATEGORY': "vuln",
-                 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-            __log_into_file(log_in_file, 'a', data, language)
-            return True
+        return False
 
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
@@ -148,31 +130,27 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                         extra_requirement] = methods_args[extra_requirement]
         extra_requirements = new_extra_requirements
         if ports is None:
-            ports = extra_requirements["csp_vuln_ports"]
-        check_source_flag = False
-        if extra_requirements["csp_vuln_check_source"][0] == "True":
-            check_source_flag = True
-        if target_type(target) == 'HTTP':
-            target = target_to_host(target)
+            ports = extra_requirements["graphql_vuln_ports"]
         threads = []
         total_req = len(ports)
         thread_tmp_filename = '{}/tmp/thread_tmp_'.format(load_file_path()) + ''.join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20))
         __log_into_file(thread_tmp_filename, 'w', '1', language)
         trying = 0
+        if(target.endswith("/")):
+            target = target[:-1]
         keyboard_interrupt_flag = False
         for port in ports:
             port = int(port)
-            t = threading.Thread(target=__content_policy,
+            t = threading.Thread(target=__graphql,
                                  args=(target, int(port), timeout_sec, log_in_file, language, time_sleep,
-                                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag))
+                                       thread_tmp_filename, socks_proxy, scan_id, scan_cmd))
             threads.append(t)
             t.start()
             trying += 1
             if verbose_level > 3:
                 info(
-                    messages(language, "trying_message").format(trying, total_req, num,
-                                                                total, target, port, 'content_security_policy_vuln'))
+                    messages(language, "trying_message").format(trying, total_req, num, total, target, port, 'graphql_vuln'))
             while 1:
                 try:
                     if threading.activeCount() >= thread_number:
@@ -198,16 +176,13 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 break
         thread_write = int(open(thread_tmp_filename).read().rsplit()[0])
         if thread_write == 1 and verbose_level != 0:
-            info(messages(language, "no_vulnerability_found").format(
-                'Content Security Policy'))
-            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '',
-                               'TYPE': 'content_security_policy_vuln',
-                               'DESCRIPTION': messages(language, "no_vulnerability_found").format(
-                                   'Content Security Policy'),
-                               'TIME': now(), 'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
+            info(messages(language, "graphql_console_not_found"))
+            data = json.dumps({'HOST': target, 'USERNAME': '', 'PASSWORD': '', 'PORT': '', 'TYPE': 'graphql_vuln',
+                               'DESCRIPTION': messages(language, "graphql_console_not_found"), 'TIME': now(),
+                               'CATEGORY': "scan", 'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
             __log_into_file(log_in_file, 'a', data, language)
         os.remove(thread_tmp_filename)
 
     else:
         warn(messages(language, "input_target_error").format(
-            'content_security_policy_vuln', target))
+            'graphql_vuln', target))
