@@ -23,12 +23,13 @@ HOST = _database_config()["HOST"]
 PORT = _database_config()["PORT"]
 DATABASE = _database_config()["DATABASE"]
 
-#Python2 hack for flake8
+# Python2 hack for flake8
 try:
     reload
 except NameError:
     def reload(dummy):
         return dummy
+
 
 def db_inputs(connection_type):
     """
@@ -42,6 +43,7 @@ def db_inputs(connection_type):
             corresponding command to connect to the db
         """
     return {
+        "postgres": 'postgres+psycopg2://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE),
         "mysql": 'mysql://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE),
         "sqlite": 'sqlite:///{0}'.format(DATABASE)
     }[connection_type]
@@ -60,13 +62,15 @@ def create_connection(language):
     try:
         for i in range(0, 100):
             try:
-                db_engine = create_engine(db_inputs(DB))
+                db_engine = create_engine(db_inputs(DB),
+                                          connect_args={'check_same_thread': False}
+                                          )
                 Session = sessionmaker(bind=db_engine)
                 session = Session()
                 return session
-            except:
+            except Exception as _:
                 time.sleep(0.01)
-    except:
+    except Exception as _:
         warn(messages(language, "database_connect_fail"))
     return False
 
@@ -129,12 +133,13 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api
     ))
     return send_submit_query(session, language)
 
+
 def save_update_log(language):
     """
     This Function Saves date of previous time the Nettacker Update happened
 
     Args:
-        Language
+        language
     Return:
         True or False if the data got saved in the db or not
     """
@@ -143,18 +148,20 @@ def save_update_log(language):
     session.add(Update_Log(last_update_time=date_time))
     return send_submit_query(session, language)
 
+
 def get_update_log(language):
     """
     This function Fetches last update time
 
     Args:
-        Language
+        language
     Return:
         Return date in string format
     """
     session = create_connection(language)
     logs = session.query(Update_Log).all()
     return logs
+
 
 def remove_old_logs(host, type, scan_id, language):
     """
@@ -200,6 +207,7 @@ def submit_logs_to_db(language, log):
     else:
         warn(messages(language, "invalid_json_type_to_db").format(log))
         return False
+
 
 def __select_results(language, page):
     """
@@ -290,9 +298,9 @@ def __last_host_logs(language, page):
     selected = []
     try:
         for host in session.query(HostsLog).group_by(HostsLog.host).order_by(HostsLog.id.desc())[page:page+11]:
-            for data in session.query(HostsLog).filter(HostsLog.host==host).group_by(HostsLog.type, HostsLog.port,
-                                                    HostsLog.username, HostsLog.password, HostsLog.description).order_by(
-                                                    HostsLog.id.desc()):
+            for data in session.query(HostsLog).filter(HostsLog.host == host).group_by(
+                    HostsLog.type, HostsLog.port, HostsLog.username, HostsLog.password,
+                    HostsLog.description).order_by(HostsLog.id.desc()):
                 n = 0
                 capture = None
                 for selected_data in selected:
@@ -481,8 +489,8 @@ def __search_logs(language, page, query):
                 | (HostsLog.scan_id.like("%" + str(query) + "%"))
                 | (HostsLog.scan_cmd.like("%" + str(query) + "%"))
         ).group_by(HostsLog.host).order_by(HostsLog.id.desc())[page:page+11]:
-            for data in session.query(HostsLog).filter(HostsLog.host==str(host.host)).group_by(HostsLog.type, HostsLog.port,
-                                                    HostsLog.username, HostsLog.password, HostsLog.description).order_by(
+            for data in session.query(HostsLog).filter(HostsLog.host == str(host.host)).group_by(
+                    HostsLog.type, HostsLog.port, HostsLog.username, HostsLog.password, HostsLog.description).order_by(
                                                     HostsLog.id.desc()).all():
                 n = 0
                 capture = None
