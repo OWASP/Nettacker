@@ -1,0 +1,16 @@
+libcurl4-openssl-dev
+libssl-dev
+python-dev
+python3-dev
+libpq-dev
+pkgconfig 
+openssl-dev 
+libffi-dev 
+musl-dev 
+make 
+gcc 
+git 
+curl-dev 
+librtmp 
+libxml2-dev 
+libxslt-dev
