@@ -19,9 +19,8 @@ from core._time import now
 from core.log import __log_into_file
 from core._die import __die_failure
 from lib.payload.wordlists import useragents
-from core.compatible import version
 from lib.scan.admin import admin_scan
-import six
+
 
 def extra_requirements_dict():
     return {
@@ -88,8 +87,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                         )
                     )
                     return 1
-        if version() == 3:
-            content = content.decode("utf8")
+        content = content.decode("utf8")
         if r.status_code in status_codes:
             log_in_file(thread_tmp_filename, "w", "0", language)
             info(

@@ -22,7 +22,6 @@ from core._die import __die_failure
 from lib.scan.wp_theme import themes
 from lib.scan.wp_theme import small_themes
 from lib.payload.wordlists import useragents
-from core.compatible import version
 
 
 def extra_requirements_dict():
@@ -73,8 +72,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                 if n == retries:
                     warn(messages(language, "http_connection_timeout").format(target))
                     return 1
-        if version() == 3:
-            content = content.decode('utf8')
+        content = content.decode('utf8')
         if r.status_code in status_codes:
             info(messages(language, "found").format(
                 target, r.status_code, r.reason))

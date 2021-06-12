@@ -23,7 +23,7 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import spf
-from core.compatible import version
+
 
 def extra_requirements_dict():
     return {
@@ -69,8 +69,6 @@ def joomla_version(target, port, timeout_sec, log_in_file, language, time_sleep,
             try:
                 global result
                 host_ip = socket.gethostbyname(target)
-                if version() ==2:
-                    host_ip = host_ip.decode("utf-8")
                 result = spf.check2(host_ip,"admin@"+target, target)
                 return True
             except:

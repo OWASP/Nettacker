@@ -16,7 +16,8 @@ from core.alert import *
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-import censys.certificates
+import censys
+from censys.search import CensysCertificates
 
 
 def extra_requirements_dict():
@@ -723,6 +724,7 @@ def __censys_io(
             socks_version = (
                 socks.SOCKS5 if socks_proxy.startswith("socks5://") else socks.SOCKS4
             )
+            print(socks_version)
             socks_proxy = socks_proxy.rsplit("://")[1]
             if "@" in socks_proxy:
                 socks_username = socks_proxy.rsplit(":")[0]
@@ -746,22 +748,31 @@ def __censys_io(
                 socket.getaddrinfo = getaddrinfo
 
         try:
-            cen_certificates = censys.certificates.CensysCertificates(censys_api_key, censys_secret)
+            cen_certificates = CensysCertificates(censys_api_key[0], censys_secret[0])
+            print(cen_certificates)
         except censys.base.CensysUnauthorizedException:
+            print("aman")
             return []
         except censys.base.CensysRateLimitExceededException:
+            print("dev")
             return []
-        else:
-            return []
+        # else:
+        #     print("test")
+        #     return []
         subs = []
         query = "parsed.names: {}".format(target)
+        print(query)
         search_results = cen_certificates.search(query, fields=["parsed.names"])
+        print(search_results)
         for i in search_results:
+            print(i)
             if "*" not in i and i.endswith(target):
+                print(i)
                 subs.append(i)
         __log_into_file(thread_tmp_filename, "a", "\n".join(subs), language)
         return subs
-    except:
+    except Exception as e:
+        print(e)
         return []
 
 def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries,

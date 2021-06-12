@@ -4,7 +4,6 @@
 import threading
 import time
 import socks
-from core.compatible import version
 import socket
 import json
 import string
@@ -21,6 +20,7 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 from lib.payload.wordlists import usernames, passwords
+
 
 HEADERS = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)\

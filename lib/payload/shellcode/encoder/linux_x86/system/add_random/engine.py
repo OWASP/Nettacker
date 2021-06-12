@@ -4,7 +4,6 @@
 import random
 import binascii
 import string
-from core.compatible import version
 
 
 def start(shellcode):
@@ -17,13 +16,9 @@ def start(shellcode):
     t = True
     eax = str('0xb')
     while t:
-        if version() ==2:
-            eax_1 = binascii.b2a_hex(''.join(random.choice(chars)
-                                             for i in range(1)))
-        if version() ==3:
-            eax_1 = (binascii.b2a_hex((''.join(random.choice(
-                chars) for i in range(1))).encode('latin-1'))
-            ).decode('latin-1')
+        eax_1 = (binascii.b2a_hex((''.join(random.choice(
+            chars) for i in range(1))).encode('latin-1'))
+        ).decode('latin-1')
         eax_1 = str('0') + str(eax_1[1])
         eax_2 = "%x" % (int(eax, 16) - int(eax_1, 16))
         if eax > eax_1:
@@ -47,13 +42,9 @@ def start(shellcode):
             data = line.rsplit('push')[1].rsplit('$0x')[1]
             t = True
             while t:
-                if version() ==2:
-                    ebx_1 = binascii.b2a_hex(''.join(random.choice(chars)
-                                                     for i in range(4)))
-                if version() ==3:
-                    ebx_1 = (binascii.b2a_hex((''.join(random.choice(
-                        chars) for i in range(4))).encode('latin-1'))
-                    ).decode('latin-1')
+                ebx_1 = (binascii.b2a_hex((''.join(random.choice(
+                    chars) for i in range(4))).encode('latin-1'))
+                ).decode('latin-1')
                 ebx_2 = "%x" % (int(data, 16) - int(ebx_1, 16))
 
                 if str('00') not in str(ebx_1) and str('00') not in str(
