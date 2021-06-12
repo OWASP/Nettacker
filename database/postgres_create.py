@@ -40,4 +40,3 @@ def postgres_create_database():
         Base.metadata.create_all(engine)
     except Exception as e:
         return False
-

@@ -53,4 +53,3 @@ def mysql_create_tables():
         return True
     except Exception as _:
         return False
-

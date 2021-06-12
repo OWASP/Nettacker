@@ -19,23 +19,16 @@ def requirements():
     """
     requirements_list = []
     for requirement in open("requirements.txt").read().rsplit("\n"):
-        if "python_version" in requirement:
-            if "> '3'" in requirement and int(sys.version_info[0]) == 3:
-                try:
+        if requirement != "":
+            try:
+                if '>' in requirement:
+                    __import__(requirement.rsplit('>')[0])
+                elif '<' in requirement:
+                    __import__(requirement.rsplit('>')[0])
+                else:
                     __import__(requirement.rsplit('==')[0])
-                except:
-                    requirements_list.append(requirement.rsplit(';')[0])
-            elif "< '3'" in requirement and int(sys.version_info[0]) == 2:
-                try:
-                    __import__(requirement.rsplit('==')[0])
-                except:
-                    requirements_list.append(requirement.rsplit(';')[0])
-        else:
-            if requirement != "":
-                try:
-                    __import__(requirement.rsplit('==')[0])
-                except:
-                    requirements_list.append(requirement.rsplit(';')[0])
+            except:
+                requirements_list.append(requirement.rsplit(';')[0])
     return list(set(requirements_list))
 
 

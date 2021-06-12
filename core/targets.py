@@ -11,7 +11,6 @@ from core._die import __die_failure
 from lib.scan.subdomain.engine import __get_subs
 from core.log import __log_into_file
 import ipaddress
-import six
 
 temp = 0
 
@@ -116,7 +115,6 @@ def analysis(
     __log_into_file(subs_temp, "a", "", language)
 
     for target in targets:
-        target = six.ensure_text(target)
         if target_type(target) == "SINGLE_IPv4":
             if check_ranges:
                 if not enumerate_flag:
@@ -143,18 +141,18 @@ def analysis(
             IPs = IPRange(target, range_temp, language)
             global temp
             if target_type(target) == "CIDR_IPv4" and temp == 0:
-                net = ipaddress.ip_network(six.text_type(target))
+                net = ipaddress.ip_network(target)
                 start = net[0]
                 end = net[-1]
-                ip1 = int(ipaddress.IPv4Address(six.text_type(start)))
-                ip2 = int(ipaddress.IPv4Address(six.text_type(end)))
+                ip1 = int(ipaddress.IPv4Address(start))
+                ip2 = int(ipaddress.IPv4Address(end))
                 yield ip2 - ip1
                 temp = 1
                 break
             if target_type(target) == "RANGE_IPv4" and temp == 0:
                 start, end = target.rsplit("-")
-                ip1 = int(ipaddress.IPv4Address(six.text_type(start)))
-                ip2 = int(ipaddress.IPv4Address(six.text_type(end)))
+                ip1 = int(ipaddress.IPv4Address(start))
+                ip2 = int(ipaddress.IPv4Address(end))
                 yield ip2 - ip1
                 temp = 1
                 break

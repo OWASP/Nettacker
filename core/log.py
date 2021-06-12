@@ -120,10 +120,6 @@ def sort_logs(log_in_file, language, graph_flag, scan_id, scan_cmd, verbose_leve
     report_type = ""
     JSON_FROM_DB = __logs_by_scan_id(scan_id, language)
     JSON_Data = sorted(JSON_FROM_DB, key=sorted)
-    if compatible.version() == 2:
-        import sys
-        reload(sys)
-        sys.setdefaultencoding('utf8')
                   
     if (len(log_in_file) >= 5 and log_in_file[-5:] == '.html') or (
             len(log_in_file) >= 4 and log_in_file[-4:] == '.htm'):
@@ -234,34 +230,19 @@ def __log_into_file(filename, mode, data, language, final=False):
         except ValueError:
             log = ''
 
-    if version() == 2:
-        if isinstance(log, dict):
-            if final:
-                with open(filename, mode) as save:
-                    save.write(data + '\n')
-            else:
-                submit_logs_to_db(language, data)
-        else:
-            if not final:
-                flock = lockfile.FileLock(filename)
-                flock.acquire()
-            with open(filename, mode) as save:
-                save.write(data + '\n')
-            if not final:
-                flock.release()
-    else:
-        if isinstance(log, dict):
-            if final:
-                with open(filename, mode, encoding='utf-8') as save:
-                    save.write(data + '\n')
-            else:
-                submit_logs_to_db(language, data)
-        else:
-            if not final:
-                flock = lockfile.FileLock(filename)
-                flock.acquire()
+    if isinstance(log, dict):
+        if final:
             with open(filename, mode, encoding='utf-8') as save:
                 save.write(data + '\n')
-            if not final:
-                flock.release()
+        else:
+            submit_logs_to_db(language, data)
+    else:
+        if not final:
+            flock = lockfile.FileLock(filename)
+            flock.acquire()
+        with open(filename, mode, encoding='utf-8') as save:
+            save.write(data + '\n')
+        if not final:
+            flock.release()
+
     return True

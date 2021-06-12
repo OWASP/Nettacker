@@ -6,6 +6,7 @@ from sqlalchemy import Column, Integer, Text
 
 Base = declarative_base()
 
+
 class Update_Log(Base):
     """
     This Class defines the table schema for the update log table, Any changes related to updating log table need to be done here.
@@ -13,11 +14,12 @@ class Update_Log(Base):
     __tablename__ = 'update'
     id = Column(Integer, primary_key=True, autoincrement=True)
     last_update_time = Column(Text)
+
     def __repr__(self):
         """
         returns a printable representation of the object of the class Update Log
         """
-        return "<Update_Log(id={0}, last_update_time={2})>".format(self.id, self.last_update_time)
+        return "<Update_Log(id={0}, last_update_time={1})>".format(self.id, self.last_update_time)
 
 
 class Report(Base):

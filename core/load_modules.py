@@ -11,7 +11,10 @@ from core.alert import messages
 from core.alert import info
 from core.alert import warn
 from core._die import __die_failure
+from core.compatible import version
 from core.compatible import is_windows
+from core.compatible import check
+from core.compatible import logo
 from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
@@ -105,13 +108,18 @@ def __check_external_modules():
     Returns:
         True if success otherwise None
     """
+    ### check python version
+    if version() == 2:
+        logo()
+        __die_failure(messages("en", "python_version_error"))
+
     external_modules = ["argparse", "netaddr", "requests", "paramiko", "texttable", "socks", "win_inet_pton",
                         "flask", "sqlalchemy"]
     for module in external_modules:
         try:
             __import__(module)
         except:
-            __die_failure("pip install -r requirements.txt ---> " +
+            __die_failure("pip3 install -r requirements.txt ---> " +
                           module + " not installed!")
 
     default_config = _builder(_core_config(), _core_default_config())

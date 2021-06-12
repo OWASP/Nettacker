@@ -24,10 +24,7 @@ from core.update import _update_check
 
 # temporary use fixed version of argparse
 if os_name() == "win32" or os_name() == "win64":
-    if version() == 2:
-        from lib.argparse.v2 import argparse
-    else:
-        from lib.argparse.v3 import argparse
+    from lib.argparse.v3 import argparse
 else:
     import argparse
 

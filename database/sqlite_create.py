@@ -29,4 +29,3 @@ def sqlite_create_tables():
         return True
     except Exception as _:
         return False
-
