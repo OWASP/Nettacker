@@ -751,14 +751,9 @@ def __censys_io(
             cen_certificates = CensysCertificates(censys_api_key[0], censys_secret[0])
             print(cen_certificates)
         except censys.base.CensysUnauthorizedException:
-            print("aman")
             return []
         except censys.base.CensysRateLimitExceededException:
-            print("dev")
             return []
-        # else:
-        #     print("test")
-        #     return []
         subs = []
         query = "parsed.names: {}".format(target)
         print(query)
