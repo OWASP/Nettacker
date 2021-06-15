@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sys
@@ -12,7 +12,8 @@ if os.path.isdir("build"):
 
 def requirements():
     """
-    Grab requirements list based on python version from requirements.txt if you already didn't install it
+    Grab requirements list based on python version from requirements.txt
+    if you already didn't install it
 
     Returns:
         list of requirements in array
@@ -20,11 +21,13 @@ def requirements():
     requirements_list = []
     for requirement in open("requirements.txt").read().rsplit("\n"):
         if requirement != "":
+            if '-' in requirement:
+                requirement = requirement.replace('-', '_')
             try:
                 if '>' in requirement:
                     __import__(requirement.rsplit('>')[0])
                 elif '<' in requirement:
-                    __import__(requirement.rsplit('>')[0])
+                    __import__(requirement.rsplit('<')[0])
                 else:
                     __import__(requirement.rsplit('==')[0])
             except:
@@ -34,7 +37,8 @@ def requirements():
 
 def package_files(directory="."):
     """
-    This function was created to crawl the directory and find files (none python files) using os.walk
+    This function was created to crawl the directory and f
+    ind files (none python files) using os.walk
 
     Args:
         directory: path to crawl
@@ -45,7 +49,8 @@ def package_files(directory="."):
     paths = []
     for (path, directories, filenames) in os.walk(directory):
         for filename in filenames:
-            if filename.rsplit('.')[-1] not in [".py", ".pyc"] and ".git" not in path:
+            if filename.rsplit('.')[-1] not in [".py",
+                                                ".pyc"] and ".git" not in path:
                 paths.append(os.path.join('..', path, filename))
     return paths
 
@@ -71,6 +76,8 @@ setup(
                      " unique method in OWASP Nettacker for discovering protected services and devices such"
                      " as SCADA. It would make a competitive edge compared to other scanner making it one of"
                      " the bests.",
-    scripts=["scripts/nettacker.bat" if sys.platform == "win32" or sys.platform == "win64"
-             else "scripts/nettacker", "nettacker.py"]  # script files for windows and other OS
+    # script files for windows and other OS
+    scripts=["scripts/nettacker.bat"
+             if sys.platform == "win32" or sys.platform == "win64"
+             else "scripts/nettacker", "nettacker.py"]
 )
