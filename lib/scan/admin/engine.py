@@ -87,7 +87,7 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                         )
                     )
                     return 1
-        content = content.decode("utf8")
+        content = content.decode("utf-8")
         if r.status_code in status_codes:
             log_in_file(thread_tmp_filename, "w", "0", language)
             info(
