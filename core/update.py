@@ -55,7 +55,8 @@ def _update(__version__, __code_name__, language, socks_proxy):
 
 def _update_check(language):
     """
-    This Function checks if an Update has happened in the previous day and if not, it checks for update
+    This Function checks if an Update has
+    happened in the previous day and if not, it checks for update
 
     Args:
         language
@@ -68,7 +69,8 @@ def _update_check(language):
         save_update_log(language)
         logs = (get_update_log(language))
     logs2 = logs[len(logs)-1].last_update_time
-    if datetime.now() > datetime.strptime(logs2, "%Y-%m-%d %H:%M:%S.%f") + timedelta(days=1):
+    if datetime.now() > datetime.strptime(
+            logs2, "%Y-%m-%d %H:%M:%S.%f") + timedelta(days=1):
         save_update_log(language)
         return True
     else:
@@ -100,7 +102,7 @@ def _check(__version__, __code_name__, language, socks_proxy):
             socket.getaddrinfo = getaddrinfo
         data = requests.get(
             url, headers={"User-Agent": "OWASP Nettacker"}).content
-        
+
         if version() == 3:
             data = data.decode("utf-8")
         if __version__ + ' ' + __code_name__ == data.rsplit('\n')[0]:

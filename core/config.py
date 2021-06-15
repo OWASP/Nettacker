@@ -5,8 +5,6 @@ import random
 import string
 import os
 import sys
-import inspect
-import api
 from core._time import now
 
 
@@ -26,7 +24,8 @@ def _paths():
 
 def _profiles():
     """
-    a shortcut and users profile to run customize scans (could be modify by user)
+    a shortcut and users profile to run customize scans
+    (could be modify by user)
 
     Returns:
         a JSON contains profile names and module names for each
@@ -38,11 +37,23 @@ def _profiles():
         "vuln": ["*_vuln"],
         "scan": ["*_scan"],
         "brute": ["*_brute"],
-        "wp": ["wp_plugin_scan", "wp_theme_scan", "wp_timthumbs_scan", "wp_user_enum_scan",
-               "wordpress_dos_cve_2018_6389_vuln", "wp_xmlrpc_bruteforce_vuln", "wp_xmlrpc_pingback_vuln"],
-        "wordpress": ["wp_plugin_scan", "wp_theme_scan", "wp_timthumbs_scan", "wp_user_enum_scan",
-                      "wordpress_dos_cve_2018_6389_vuln", "wp_xmlrpc_bruteforce_vuln", "wp_xmlrpc_pingback_vuln"],
-        "joomla": ["joomla_template_scan", "joomla_user_enum_scan", "joomla_version_scan"]
+        "wp": ["wp_plugin_scan",
+               "wp_theme_scan",
+               "wp_timthumbs_scan",
+               "wp_user_enum_scan",
+               "wordpress_dos_cve_2018_6389_vuln",
+               "wp_xmlrpc_bruteforce_vuln",
+               "wp_xmlrpc_pingback_vuln"],
+        "wordpress": ["wp_plugin_scan",
+                      "wp_theme_scan",
+                      "wp_timthumbs_scan",
+                      "wp_user_enum_scan",
+                      "wordpress_dos_cve_2018_6389_vuln",
+                      "wp_xmlrpc_bruteforce_vuln",
+                      "wp_xmlrpc_pingback_vuln"],
+        "joomla": ["joomla_template_scan",
+                   "joomla_user_enum_scan",
+                   "joomla_version_scan"]
     }
 
 
@@ -65,7 +76,8 @@ def _api_config():
         "api_host": "127.0.0.1",
         "api_port": 5000,
         "api_debug_mode": False,
-        "api_access_key": "".join(random.choice("0123456789abcdef") for x in range(32)),
+        "api_access_key": "".join(
+            random.choice("0123456789abcdef") for x in range(32)),
         "api_client_white_list": {
             "enabled": False,
             "ips": ["127.0.0.1", "10.0.0.0/24", "192.168.1.1-192.168.1.255"]
@@ -87,7 +99,8 @@ def _database_config():
     For mysql users:
         fill the name of the DB as mysql
         DATABASE as the name of the database you want to create
-        USERNAME, PASSWORD, HOST and the PORT of the MySQL server need to be filled respectively
+        USERNAME, PASSWORD, HOST and the PORT of the MySQL server
+        need to be filled respectively
 
     Returns:
         a JSON with Database configuration
@@ -95,7 +108,8 @@ def _database_config():
     return {
         "DB": "sqlite",
         # "DB":"mysql", "DB": "postgres"
-        "DATABASE": _paths()["home_path"] + "/nettacker.db",  # Name of the database
+        "DATABASE": _paths()["home_path"] + "/nettacker.db",
+        # Name of the database
         "USERNAME": "",
         "PASSWORD": "",
         "HOST": "",
@@ -115,9 +129,10 @@ def _core_config():
         "verbose_level": 0,
         "show_version": False,
         "check_update": False,
-        "log_in_file": "{0}/results_{1}_{2}.html".format(_paths()["results_path"], now(model="%Y_%m_%d_%H_%M_%S"),
-                                                         "".join(random.choice(string.ascii_lowercase) for x in
-                                                                 range(10))),
+        "log_in_file": "{0}/results_{1}_{2}.html".format(_paths()[
+            "results_path"],
+            now(model="%Y_%m_%d_%H_%M_%S"),
+            "".join(random.choice(string.ascii_lowercase) for x in range(10))),
         "graph_flag": "d3_tree_v2_graph",
         "help_menu_flag": False,
         "targets": None,
@@ -148,8 +163,10 @@ def _core_config():
         "api_port": _api_config()["api_port"],
         "api_debug_mode": _api_config()["api_debug_mode"],
         "api_access_key": _api_config()["api_access_key"],
-        "api_client_white_list": _api_config()["api_client_white_list"]["enabled"],
-        "api_client_white_list_ips": _api_config()["api_client_white_list"]["ips"],
+        "api_client_white_list": _api_config()[
+            "api_client_white_list"]["enabled"],
+        "api_client_white_list_ips": _api_config()[
+            "api_client_white_list"]["ips"],
         "api_access_log": _api_config()["api_access_log"]["enabled"],
         "api_access_log_filename": _api_config()["api_access_log"]["filename"],
         "database_type": _database_config()["DB"],

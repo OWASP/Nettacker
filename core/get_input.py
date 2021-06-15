@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from core.compatible import version
 from core.alert import __input_msg
 
 
@@ -26,5 +25,5 @@ def __input(msg, default):
     except KeyboardInterrupt:
         print("\n")
         exit(1)
-        
+
     return data

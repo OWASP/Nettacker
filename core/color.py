@@ -3,6 +3,7 @@
 import sys
 os_name = sys.platform
 
+
 def finish():
     """
     reset the color of windows/terminal before exit

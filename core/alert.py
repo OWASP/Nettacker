@@ -8,6 +8,7 @@ from core import color
 
 pyversion = int(sys.version_info[0])
 
+
 def is_not_run_from_api():
     """
     check if framework run from API to prevent any alert
@@ -31,7 +32,8 @@ def messages(language, msg_id):
         msg_id: message id
 
     Returns:
-        the message content in the selected language if message found otherwise return message in English
+        the message content in the selected language if
+        message found otherwise return message in English
     """
     # Returning selected langauge
     if language == -1:
@@ -79,7 +81,7 @@ def __input_msg(content):
     Returns:
         the message in input structure
     """
-    
+
     return (
         color.color("yellow")
         + "[+] "
@@ -98,7 +100,8 @@ def info(
     thread_tmp_filename=None,
 ):
     """
-    build the info message, log the message in database if requested, rewrite the thread temporary file
+    build the info message, log the message in database if requested,
+    rewrite the thread temporary file
 
     Args:
         content: content of the message

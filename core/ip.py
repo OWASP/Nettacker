@@ -2,10 +2,8 @@
 # -*- coding: utf-8 -*-
 import netaddr
 import time
-import sys
 import requests
-from core.alert import *
-from core.compatible import version
+from core.alert import warn, messages
 from netaddr import iprange_to_cidrs
 from netaddr import IPNetwork
 from core.log import __log_into_file
@@ -29,7 +27,8 @@ def getIPRange(IP):
             for line in data.rsplit('\n'):
                 line = line.rsplit('"')
                 for R in line:
-                    if R.count('.') == 6 and R.count('-') == 1 and R.count(' ') == 2:
+                    if R.count('.') == 6 and \
+                            R.count('-') == 1 and R.count(' ') == 2:
                         return R.replace(' ', '')
         except:
             n += 1

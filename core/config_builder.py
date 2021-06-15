@@ -5,8 +5,6 @@ import random
 import string
 import os
 import sys
-import inspect
-import api
 from core._time import now
 
 
@@ -50,7 +48,8 @@ def _api_default_config():
         "api_host": "127.0.0.1",
         "api_port": 5000,
         "api_debug_mode": False,
-        "api_access_key": "".join(random.choice("0123456789abcdef") for x in range(32)),
+        "api_access_key": "".join(
+            random.choice("0123456789abcdef") for x in range(32)),
         "api_client_white_list": {
             "enabled": False,
             "ips": ["127.0.0.1", "10.0.0.0/24", "192.168.1.1-192.168.1.255"]
@@ -91,10 +90,10 @@ def _core_default_config():
         "verbose_level": 0,
         "show_version": False,
         "check_update": False,
-        "log_in_file": "{0}/results_{1}_{2}.html".format(default_paths()["results_path"],
-                                                         now(model="%Y_%m_%d_%H_%M_%S"),
-                                                         "".join(random.choice(string.ascii_lowercase) for x in
-                                                                 range(10))),
+        "log_in_file": "{0}/results_{1}_{2}.html".format(
+            default_paths()["results_path"],
+            now(model="%Y_%m_%d_%H_%M_%S"),
+            "".join(random.choice(string.ascii_lowercase) for x in range(10))),
         "graph_flag": "d3_tree_v2_graph",
         "help_menu_flag": False,
         "targets": None,
@@ -125,10 +124,13 @@ def _core_default_config():
         "api_port": _api_default_config()["api_port"],
         "api_debug_mode": _api_default_config()["api_debug_mode"],
         "api_access_key": _api_default_config()["api_access_key"],
-        "api_client_white_list": _api_default_config()["api_client_white_list"]["enabled"],
-        "api_client_white_list_ips": _api_default_config()["api_client_white_list"]["ips"],
+        "api_client_white_list": _api_default_config()[
+            "api_client_white_list"]["enabled"],
+        "api_client_white_list_ips": _api_default_config()[
+            "api_client_white_list"]["ips"],
         "api_access_log": _api_default_config()["api_access_log"]["enabled"],
-        "api_access_log_filename": _api_default_config()["api_access_log"]["filename"],
+        "api_access_log_filename": _api_default_config()[
+            "api_access_log"]["filename"],
         "database_type": _database_default_config()["DB"],
         "database_name": _database_default_config()["DATABASE"],
         "database_username": _database_default_config()["USERNAME"],
