@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: Aman Gupta github.com/aman566
 # https://www.zdnet.com/article/security-researcher-publishes-details-and-exploit-code-for-a-vbulletin-zero-day/

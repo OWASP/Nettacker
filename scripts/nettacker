@@ -1,2 +1,2 @@
 #!/bin/sh
-python `dirname $0`/nettacker.py $@
+python3 `dirname $0`/nettacker.py $@

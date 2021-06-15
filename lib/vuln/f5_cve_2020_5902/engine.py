@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: Aman Gupta github.com/aman566
 # https://support.f5.com/csp/article/K52145254
