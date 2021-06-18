@@ -6,8 +6,8 @@ import os
 from core.alert import messages
 from core._die import __die_failure
 
-__version__ = '0.0.1'
-__code_name__ = 'SAME'
+__version__ = '0.0.2'
+__code_name__ = 'BIST'
 
 
 def _version_info():
@@ -36,7 +36,7 @@ def logo():
   \____/   \/  \/_/    \_\_____/|_|     {4}{1}{5}
                           _   _      _   _             _            
                          | \ | |    | | | |           | |            
-  {6}github.com/zdresearch{7}  |  \| | ___| |_| |_ __ _  ___| | _____ _ __ 
+  {6}github.com/OWASP     {7}  |  \| | ___| |_| |_ __ _  ___| | _____ _ __ 
   {8}owasp.org{9}              | . ` |/ _ \ __| __/ _` |/ __| |/ / _ \ '__|
   {10}zdresearch.com{11}         | |\  |  __/ |_| || (_| | (__|   <  __/ |   
                          |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|   
