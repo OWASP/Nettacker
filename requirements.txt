@@ -7,7 +7,7 @@ texttable==1.6.3
 PySocks==1.7.1
 win_inet_pton==1.1.0
 pyOpenSSL==20.0.1
-flask==1.1.2
+flask==2.0.1
 lockfile==0.12.2
 bs4==0.0.1
 pyspf
