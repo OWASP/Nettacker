@@ -22,6 +22,7 @@ from lib.payload.wordlists import useragents
 from core.compatible import version
 from lib.scan.admin import admin_scan
 import six
+from core.decor import socks_proxy
 
 def extra_requirements_dict():
     return {
@@ -31,6 +32,7 @@ def extra_requirements_dict():
     }
 
 
+@socks_proxy
 def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
           http_method, socks_proxy, scan_id, scan_cmd):
     status_codes = [401, 403]
@@ -39,33 +41,6 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
                               "- Browsing directory "]
     time.sleep(time_sleep)
     try:
-        if socks_proxy is not None:
-            socks_version = (
-                socks.SOCKS5
-                if socks_proxy.startswith("socks5://")
-                else socks.SOCKS4
-            )
-            socks_proxy = socks_proxy.rsplit("://")[1]
-            if "@" in socks_proxy:
-                socks_username = socks_proxy.rsplit(":")[0]
-                socks_password = socks_proxy.rsplit(":")[1].rsplit("@")[0]
-                socks.set_default_proxy(
-                    socks_version,
-                    str(socks_proxy.rsplit("@")[1].rsplit(":")[0]),
-                    int(socks_proxy.rsplit(":")[-1]),
-                    username=socks_username,
-                    password=socks_password,
-                )
-                socket.socket = socks.socksocket
-                socket.getaddrinfo = getaddrinfo
-            else:
-                socks.set_default_proxy(
-                    socks_version,
-                    str(socks_proxy.rsplit(":")[0]),
-                    int(socks_proxy.rsplit(":")[1]),
-                )
-                socket.socket = socks.socksocket
-                socket.getaddrinfo = getaddrinfo
         n = 0
         while 1:
             try:
@@ -176,7 +151,6 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
     except Exception:
         return False
 
-
 def test(
     target,
     retries,
@@ -243,7 +217,6 @@ def test(
             n += 1
             if n == retries:
                 return 1
-
 
 def start(
     target,

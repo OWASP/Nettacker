@@ -15,6 +15,7 @@ import random
 from core.targets import target_type
 from lib.socks_resolver.engine import getaddrinfo
 from lib.payload.wordlists import useragents
+from core.decor import socks_proxy
 
 value1 = None
 
@@ -97,7 +98,7 @@ def __http_requests_generator(request_template, parameters):
     for payload in itertools.product(*parameters):
         yield request_template.format(*payload), payload
 
-
+@socks_proxy
 def __http_request_maker(
     req_type,
     url,
@@ -122,33 +123,6 @@ def __http_request_maker(
          the response of the request made otherwise 0
 
     """
-    if socks_proxy is not None:
-        socks_version = (
-            socks.SOCKS5
-            if socks_proxy.startswith("socks5://")
-            else socks.SOCKS4
-        )
-        socks_proxy = socks_proxy.rsplit("://")[1]
-        if "@" in socks_proxy:
-            socks_username = socks_proxy.rsplit(":")[0]
-            socks_password = socks_proxy.rsplit(":")[1].rsplit("@")[0]
-            socks.set_default_proxy(
-                socks_version,
-                str(socks_proxy.rsplit("@")[1].rsplit(":")[0]),
-                int(socks_proxy.rsplit(":")[-1]),
-                username=socks_username,
-                password=socks_password,
-            )
-            socket.socket = socks.socksocket
-            socket.getaddrinfo = getaddrinfo
-        else:
-            socks.set_default_proxy(
-                socks_version,
-                str(socks_proxy.rsplit(":")[0]),
-                int(socks_proxy.rsplit(":")[1]),
-            )
-            socket.socket = socks.socksocket
-            socket.getaddrinfo = getaddrinfo
     exits = 0
     r = None
     while True:

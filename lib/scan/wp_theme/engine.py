@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author Pradeep Jairamani; github.com/pradeepjairamani
 
+from core.decor import main_function
 import socket
 import socks
 import time
@@ -23,6 +24,7 @@ from lib.scan.wp_theme import themes
 from lib.scan.wp_theme import small_themes
 from lib.payload.wordlists import useragents
 from core.compatible import version
+from core.decor import socks_proxy
 
 
 def extra_requirements_dict():
@@ -135,7 +137,6 @@ def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, ver
             n += 1
             if n == retries:
                 return 1
-
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
           verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function

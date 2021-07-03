@@ -24,6 +24,8 @@ from lib.scan.wp_theme import themes
 from lib.scan.wp_theme import small_themes
 from lib.payload.wordlists import useragents
 from lib.payload.wordlists import usernames, passwords
+from core.decor import socks_proxy
+
 
 def extra_requirements_dict():
     return {
@@ -72,13 +74,13 @@ def check(user, passwd, target, port, headers, timeout_sec, log_in_file, languag
                                'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute"}) + "\n"
                     __log_into_file(log_in_file, 'a', data, language)
                 break
-            except:
+            except Exception as e:
                 n += 1
                 if n == retries:
                     warn(messages(language, "http_connection_timeout").format(target))
                     return 1
             return True
-    except:
+    except Exception as e:
         return False
 
 
@@ -111,12 +113,11 @@ def test(target, port, retries, timeout_sec, headers, socks_proxy, verbose_level
             postdata = '''<methodCall><methodName>wp.getUsersBlogs</methodName><params><param><value><string>admin</string></value></param><param><value><string></string></value></param></params></methodCall>'''
             try:
                 req = requests.post(target+'/xmlrpc.php', data = postdata, headers = headers)
-                #print (target)
                 if re.search('<int>403</int>',req.text):
                     return True
                 else:
                     return False
-            except:
+            except Exception as e:
                 return False
         except Exception as err:
             return False
@@ -162,7 +163,6 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 keyboard_interrupt_flag = False
                 for user in users:
                     for passwd in passwds:
-                        #print(user + " " + passwd)
                         t = threading.Thread(target=check,
                                              args=(
                                                  user, passwd, target, port, headers, timeout_sec, log_in_file, language,

@@ -22,6 +22,7 @@ from lib.scan.dir import wordlist
 from lib.payload.wordlists import useragents
 import six
 from difflib import SequenceMatcher
+from core.decor import socks_proxy
 
 
 SESSION = requests.Session()
@@ -33,7 +34,6 @@ def extra_requirements_dict():
         "dir_scan_random_agent": ["True"],
         "dir_scan_list": wordlist.wordlists()
     }
-
 
 def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
           http_method, length, socks_proxy, scan_id, scan_cmd):
@@ -151,7 +151,6 @@ def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, ver
             n += 1
             if n == retries:
                 return 1
-
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
           verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function

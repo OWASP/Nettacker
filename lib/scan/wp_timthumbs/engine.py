@@ -22,13 +22,14 @@ from core._die import __die_failure
 from lib.scan.wp_timthumbs import wp_timthumbs
 from lib.payload.wordlists import useragents
 from core.compatible import version
+from core.decor import socks_proxy
+
 
 def extra_requirements_dict():
     return {
         "wp_timthumb_scan_http_method": ["GET"],
         "wp_timthumb_scan_random_agent": ["True"],
     }
-
 
 def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
           http_method, socks_proxy, scan_id, scan_cmd):
@@ -95,7 +96,6 @@ def check(target, user_agent, timeout_sec, log_in_file, language, time_sleep, th
         return True
     except:
         return False
-
 
 def test(target, retries, timeout_sec, user_agent, http_method, socks_proxy, verbose_level, trying, total_req, total,
          num, language):

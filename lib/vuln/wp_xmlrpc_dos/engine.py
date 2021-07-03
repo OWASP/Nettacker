@@ -11,7 +11,7 @@ import os
 import json
 import requests
 import socks
-from core.alert import messages, info, warn
+from core.alert import messages, info, warn, error
 from core.targets import target_type
 from core.targets import target_to_host
 from core.load_modules import load_file_path
@@ -19,12 +19,12 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 from lib.payload.wordlists.useragents import useragents
+from core.decor import socks_proxy
 
 def extra_requirements_dict():
     return {
         "wp_xmlrpc_dos_vuln_ports": [80, 443]
     }
-
 
 def check(target, port, headers, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     time.sleep(time_sleep)
@@ -70,25 +70,8 @@ def check(target, port, headers, timeout_sec, log_in_file, language, retries, ti
     except Exception:
         return False
 
-
+@socks_proxy
 def test(target, port, headers, socks_proxy):
-    if socks_proxy is not None:
-        socks_version = socks.SOCKS5 if socks_proxy.startswith(
-            'socks5://') else socks.SOCKS4
-        socks_proxy = socks_proxy.rsplit('://')[1]
-        if '@' in socks_proxy:
-            socks_username = socks_proxy.rsplit(':')[0]
-            socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
-            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
-                                    int(socks_proxy.rsplit(':')[-1]), username=socks_username,
-                                    password=socks_password)
-            socket.socket = socks.socksocket
-            socket.getaddrinfo = getaddrinfo
-        else:
-            socks.set_default_proxy(socks_version, str(
-                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
-            socket.socket = socks.socksocket
-            socket.getaddrinfo = getaddrinfo
     while 1:
         try:
             if target_type(target) != "HTTP" and port == 443:

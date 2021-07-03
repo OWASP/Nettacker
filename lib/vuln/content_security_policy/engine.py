@@ -30,40 +30,20 @@ def extra_requirements_dict():
     }
 
 
-def conn(targ, port, timeout_sec, socks_proxy):
-    try:
-        if socks_proxy is not None:
-            socks_version = socks.SOCKS5 if socks_proxy.startswith(
-                'socks5://') else socks.SOCKS4
-            socks_proxy = socks_proxy.rsplit('://')[1]
-            if '@' in socks_proxy:
-                socks_username = socks_proxy.rsplit(':')[0]
-                socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
-                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
-                                        int(socks_proxy.rsplit(':')[-1]), username=socks_username,
-                                        password=socks_password)
-                socket.socket = socks.socksocket
-                socket.getaddrinfo = getaddrinfo
-            else:
-                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]),
-                                        int(socks_proxy.rsplit(':')[1]))
-                socket.socket = socks.socksocket
-                socket.getaddrinfo = getaddrinfo()
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sys.stdout.flush()
-        s.settimeout(timeout_sec)
-        s.connect((targ, port))
-        return s
-    except Exception as e:
-        return None
+from core.decor import socks_proxy
+
 
 
 def content_policy(target, port, timeout_sec, log_in_file, language, time_sleep,
                    thread_tmp_filename, socks_proxy, scan_id, scan_cmd, check_source_flag):
     try:
-        s = conn(target, port, timeout_sec, socks_proxy)
+        
+
         global weak
         weak = False
+
+        from core.conn import connection
+        s = connection(target, port, timeout_sec, socks_proxy)
         if not s:
             return False
         else:

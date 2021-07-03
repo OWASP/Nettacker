@@ -22,6 +22,7 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
+from core.decor import socks_proxy, main_function
 
 
 def extra_requirements_dict():
@@ -30,38 +31,16 @@ def extra_requirements_dict():
     }
 
 
-def conn(targ, port, timeout_sec, socks_proxy):
-    try:
-        if socks_proxy is not None:
-            socks_version = socks.SOCKS5 if socks_proxy.startswith(
-                'socks5://') else socks.SOCKS4
-            socks_proxy = socks_proxy.rsplit('://')[1]
-            if '@' in socks_proxy:
-                socks_username = socks_proxy.rsplit(':')[0]
-                socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
-                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
-                                        int(socks_proxy.rsplit(':')[-1]), username=socks_username,
-                                        password=socks_password)
-                socket.socket = socks.socksocket
-                socket.getaddrinfo = getaddrinfo
-            else:
-                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit(':')[0]),
-                                        int(socks_proxy.rsplit(':')[1]))
-                socket.socket = socks.socksocket
-                socket.getaddrinfo = getaddrinfo()
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sys.stdout.flush()
-        s.settimeout(timeout_sec)
-        s.connect((targ, port))
-        return s
-    except Exception as e:
-        return None
+
 
 
 def content_type(target, port, timeout_sec, log_in_file, language, time_sleep,
                  thread_tmp_filename, socks_proxy, scan_id, scan_cmd):
     try:
-        s = conn(target, port, timeout_sec, socks_proxy)
+        
+
+        from core.conn import connection
+        s = connection(target, port, timeout_sec, socks_proxy)
         if not s:
             return False
         else:
@@ -98,7 +77,7 @@ def __content_type(target, port, timeout_sec, log_in_file, language, time_sleep,
     else:
         return False
 
-
+@main_function(extra_requirements_dict(), __content_type, "content_type_options_vuln", "X-Content-Type option configured properly")
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
           verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
     if target_type(target) != 'SINGLE_IPv4' or target_type(target) != 'DOMAIN' or target_type(target) != 'HTTP':
