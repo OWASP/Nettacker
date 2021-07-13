@@ -3,7 +3,7 @@ netaddr==0.8.0
 ipaddr==2.2.0
 requests==2.25.1
 paramiko==2.7.2
-texttable==1.6.3
+texttable==1.6.4
 PySocks==1.7.1
 win_inet_pton==1.1.0
 pyOpenSSL==20.0.1
