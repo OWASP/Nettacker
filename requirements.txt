@@ -1,7 +1,7 @@
 argparse==1.4.0
 netaddr==0.8.0
 ipaddr==2.2.0
-requests==2.25.1
+requests==2.26.0
 paramiko==2.7.2
 texttable==1.6.3
 PySocks==1.7.1
