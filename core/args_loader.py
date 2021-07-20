@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sys
@@ -7,7 +7,6 @@ from core.alert import warn
 from core.alert import info
 from core.alert import messages
 from core.compatible import check
-from core.compatible import version
 from core.compatible import os_name
 from core.load_modules import load_all_graphs
 from core.config import _core_config
@@ -24,10 +23,7 @@ from core.update import _update_check
 
 # temporary use fixed version of argparse
 if os_name() == "win32" or os_name() == "win64":
-    if version() == 2:
-        from lib.argparse.v2 import argparse
-    else:
-        from lib.argparse.v3 import argparse
+    from lib.argparse.v3 import argparse
 else:
     import argparse
 
@@ -344,25 +340,35 @@ def load_all_args(module_names, graph_names):
                      dest="api_port", default=default_config["api_port"],
                      help=messages(language, "API_port"))
     api.add_argument("--api-debug-mode", action="store_true",
-                     dest="api_debug_mode", default=default_config["api_debug_mode"],
+                     dest="api_debug_mode",
+                     default=default_config["api_debug_mode"],
                      help=messages(language, "API_debug"))
     api.add_argument("--api-access-key", action="store",
-                     dest="api_access_key", default=default_config["api_access_key"],
+                     dest="api_access_key",
+                     default=default_config["api_access_key"],
                      help=messages(language, "API_access_key"))
     api.add_argument("--api-client-white-list", action="store_true",
-                     dest="api_client_white_list", default=default_config["api_client_white_list"],
+                     dest="api_client_white_list",
+                     default=default_config["api_client_white_list"],
                      help=messages(language, "white_list_API"))
     api.add_argument("--api-client-white-list-ips", action="store",
-                     dest="api_client_white_list_ips", default=default_config["api_client_white_list_ips"],
+                     dest="api_client_white_list_ips",
+                     default=default_config["api_client_white_list_ips"],
                      help=messages(language, "define_whie_list"))
     api.add_argument("--api-access-log", action="store_true",
-                     dest="api_access_log", default=default_config["api_access_log"],
+                     dest="api_access_log",
+                     default=default_config["api_access_log"],
                      help=messages(language, "gen_API_access_log"))
     api.add_argument("--api-access-log-filename", action="store",
-                     dest="api_access_log_filename", default=default_config["api_access_log_filename"],
+                     dest="api_access_log_filename",
+                     default=default_config["api_access_log_filename"],
                      help=messages(language, "API_access_log_file"))
-    api.add_argument("--api-cert", action="store", dest="api_cert", help=messages(language, "API_cert"))
-    api.add_argument("--api-cert-key", action="store", dest="api_cert_key", help=messages(language, "API_cert_key"))
+    api.add_argument("--api-cert",
+                     action="store", dest="api_cert",
+                     help=messages(language, "API_cert"))
+    api.add_argument("--api-cert-key",
+                     action="store", dest="api_cert_key",
+                     help=messages(language, "API_cert_key"))
     # Return Options
     return [
         parser,
@@ -371,12 +377,18 @@ def load_all_args(module_names, graph_names):
     ]
 
 
-def check_all_required(targets, targets_list, thread_number, thread_number_host,
-                       log_in_file, scan_method, exclude_method, users, users_list,
-                       passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level,
-                       show_version, check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args,
-                       method_args_list, wizard_mode, profile, start_api, api_host, api_port, api_debug_mode,
-                       api_access_key, api_client_white_list, api_client_white_list_ips, api_access_log,
+def check_all_required(targets, targets_list, thread_number,
+                       thread_number_host,
+                       log_in_file, scan_method, exclude_method,
+                       users, users_list,
+                       passwds, passwds_list, timeout_sec, ports,
+                       parser, module_names, language, verbose_level,
+                       show_version, check_update, socks_proxy, retries,
+                       graph_flag, help_menu_flag, methods_args,
+                       method_args_list, wizard_mode, profile,
+                       start_api, api_host, api_port, api_debug_mode,
+                       api_access_key, api_client_white_list,
+                       api_client_white_list_ips, api_access_log,
                        api_access_log_filename, api_cert, api_cert_key):
     """
     check all rules and requirements for ARGS
@@ -499,8 +511,12 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
                 )
                 __die_failure("")
 
-        _start_api(api_host, api_port, api_debug_mode, api_access_key, api_client_white_list,
-                   api_client_white_list_ips, api_access_log, api_access_log_filename, api_cert, api_cert_key, language)
+        _start_api(api_host, api_port,
+                   api_debug_mode, api_access_key,
+                   api_client_white_list,
+                   api_client_white_list_ips, api_access_log,
+                   api_access_log_filename, api_cert,
+                   api_cert_key, language)
     # Wizard mode
     if wizard_mode:
         (
@@ -618,7 +634,8 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
             targets = list(set(targets.rsplit(",")))
         elif targets_list is not None:
             try:
-                targets = list(set(open(targets_list, "rb").read().decode().rsplit()))
+                targets = list(set(open(
+                    targets_list, "rb").read().decode().rsplit()))
             except Exception:
                 __die_failure(
                     messages(language, "error_target_file").format(
@@ -796,10 +813,16 @@ def check_all_required(targets, targets_list, thread_number, thread_number_host,
         methods_args = new_methods_args
     # Return the values
 
-    return [targets, targets_list, thread_number, thread_number_host,
-            log_in_file, scan_method, exclude_method, users, users_list,
-            passwds, passwds_list, timeout_sec, ports, parser, module_names, language, verbose_level,
-            show_version, check_update, socks_proxy, retries, graph_flag, help_menu_flag, methods_args,
-            method_args_list, wizard_mode, profile, start_api, api_host, api_port, api_debug_mode,
-            api_access_key, api_client_white_list, api_client_white_list_ips, api_access_log,
+    return [targets, targets_list, thread_number,
+            thread_number_host,
+            log_in_file, scan_method,
+            exclude_method, users, users_list,
+            passwds, passwds_list, timeout_sec, ports,
+            parser, module_names, language, verbose_level,
+            show_version, check_update, socks_proxy,
+            retries, graph_flag, help_menu_flag, methods_args,
+            method_args_list, wizard_mode, profile,
+            start_api, api_host, api_port, api_debug_mode,
+            api_access_key, api_client_white_list,
+            api_client_white_list_ips, api_access_log,
             api_access_log_filename, api_cert, api_cert_key]

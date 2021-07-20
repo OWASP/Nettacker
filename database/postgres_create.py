@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import create_engine
@@ -40,4 +40,3 @@ def postgres_create_database():
         Base.metadata.create_all(engine)
     except Exception as e:
         return False
-

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import create_engine
@@ -29,4 +29,3 @@ def sqlite_create_tables():
         return True
     except Exception as _:
         return False
-

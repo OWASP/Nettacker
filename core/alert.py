@@ -1,11 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
 import sys
 import json
 from core import color
-import six
 
 pyversion = int(sys.version_info[0])
 
@@ -33,7 +32,8 @@ def messages(language, msg_id):
         msg_id: message id
 
     Returns:
-        the message content in the selected language if message found otherwise return message in English
+        the message content in the selected language if
+        message found otherwise return message in English
     """
     # Returning selected langauge
     if language == -1:
@@ -81,13 +81,15 @@ def __input_msg(content):
     Returns:
         the message in input structure
     """
+
     return (
         color.color("yellow")
         + "[+] "
         + color.color("green")
-        + six.text_type(content)
+        + content
         + color.color("reset")
     )
+
 
 def info(
     content,
@@ -98,7 +100,8 @@ def info(
     thread_tmp_filename=None,
 ):
     """
-    build the info message, log the message in database if requested, rewrite the thread temporary file
+    build the info message, log the message in database if requested,
+    rewrite the thread temporary file
 
     Args:
         content: content of the message
@@ -112,27 +115,17 @@ def info(
         None
     """
     if is_not_run_from_api():  # prevent to stdout if run from API
-        if pyversion == 2:
-            sys.stdout.write(
+        sys.stdout.buffer.write(
+            bytes(
                 color.color("yellow")
                 + "[+] "
                 + color.color("green")
-                + content.encode("utf8")
+                + content
                 + color.color("reset")
-                + "\n"
+                + "\n",
+                "utf8",
             )
-        else:
-            sys.stdout.buffer.write(
-                bytes(
-                    color.color("yellow")
-                    + "[+] "
-                    + color.color("green")
-                    + content
-                    + color.color("reset")
-                    + "\n",
-                    "utf8",
-                )
-            )
+        )
     if event:  # if an event is present log it
         from core.log import __log_into_file
 
@@ -155,12 +148,9 @@ def write(content):
         None
     """
     if is_not_run_from_api():
-        if pyversion == 2:
-            sys.stdout.write(content.encode("utf8"))
-        else:
-            sys.stdout.buffer.write(
-                bytes(content, "utf8") if isinstance(content, str) else content
-            )
+        sys.stdout.buffer.write(
+            bytes(content, "utf8") if isinstance(content, str) else content
+        )
     return
 
 
@@ -175,27 +165,17 @@ def warn(content):
         the message in warn structure - None
     """
     if is_not_run_from_api():
-        if pyversion == 2:
-            sys.stdout.write(
+        sys.stdout.buffer.write(
+            bytes(
                 color.color("blue")
                 + "[!] "
                 + color.color("yellow")
-                + content.encode("utf8")
+                + content
                 + color.color("reset")
-                + "\n"
+                + "\n",
+                "utf8",
             )
-        else:
-            sys.stdout.buffer.write(
-                bytes(
-                    color.color("blue")
-                    + "[!] "
-                    + color.color("yellow")
-                    + content
-                    + color.color("reset")
-                    + "\n",
-                    "utf8",
-                )
-            )
+        )
     return
 
 

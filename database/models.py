@@ -1,10 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, Text
 
 Base = declarative_base()
+
 
 class Update_Log(Base):
     """
@@ -13,11 +14,12 @@ class Update_Log(Base):
     __tablename__ = 'update'
     id = Column(Integer, primary_key=True, autoincrement=True)
     last_update_time = Column(Text)
+
     def __repr__(self):
         """
         returns a printable representation of the object of the class Update Log
         """
-        return "<Update_Log(id={0}, last_update_time={2})>".format(self.id, self.last_update_time)
+        return "<Update_Log(id={0}, last_update_time={1})>".format(self.id, self.last_update_time)
 
 
 class Report(Base):

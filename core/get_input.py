@@ -1,9 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from core.compatible import version
 from core.alert import __input_msg
-from six import moves
 
 
 def __input(msg, default):
@@ -17,24 +15,15 @@ def __input(msg, default):
     Returns:
         user input content
     """
-    if version() == 2:
-        try:
-            data = moves.input(__input_msg(msg))
-            if data == "":
-                data = default
-        except Exception:
+
+    try:
+        data = input(__input_msg(msg))
+        if data == "":
             data = default
-        except KeyboardInterrupt:
-            print("\n")
-            exit(1)
-    else:
-        try:
-            data = moves.input(__input_msg(msg))
-            if data == "":
-                data = default
-        except Exception:
-            data = default
-        except KeyboardInterrupt:
-            print("\n")
-            exit(1)
+    except Exception:
+        data = default
+    except KeyboardInterrupt:
+        print("\n")
+        exit(1)
+
     return data
