@@ -3,7 +3,6 @@
 
 import binascii
 from core.alert import error
-from core.compatible import version
 
 
 def shellcoder(shellcode):
@@ -19,10 +18,7 @@ def shellcoder(shellcode):
 
 
 def st(data):
-    if version() ==2:
-        return str(binascii.b2a_hex(data[::-1]))
-    if version() ==3:
-        return (binascii.b2a_hex(data[::-1].encode('latin-1'))).decode('latin-1')
+    return (binascii.b2a_hex(data[::-1].encode('latin-1'))).decode('latin-1')
 
 
 def generate(data, register, gtype):

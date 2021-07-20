@@ -4,7 +4,6 @@
 import threading
 import time
 import socks
-from core.compatible import version
 import socket
 import json
 import string
@@ -22,6 +21,7 @@ from core._time import now
 from core.log import __log_into_file
 from lib.payload.wordlists import usernames, passwords
 from core.decor import socks_proxy
+
 
 
 HEADERS = {

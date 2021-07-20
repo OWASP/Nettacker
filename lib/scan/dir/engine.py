@@ -17,10 +17,8 @@ from core.load_modules import load_file_path
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-from core.compatible import version
 from lib.scan.dir import wordlist
 from lib.payload.wordlists import useragents
-import six
 from difflib import SequenceMatcher
 from core.decor import socks_proxy
 

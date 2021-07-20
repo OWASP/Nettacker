@@ -9,8 +9,6 @@ import socket
 import json
 import string
 import random
-from six import text_type
-from core.compatible import version
 import os
 import re
 import requests
@@ -24,14 +22,10 @@ import logging
 from core._time import now
 from core.log import __log_into_file
 from bs4 import BeautifulSoup
-from core.compatible import version
 from lib.payload.wordlists import usernames, passwords
 from core.decor import socks_proxy
 
-if version() == 3:
-    from urllib.parse import urlparse
-else:
-    from urlparse import urlparse
+
 HEADERS = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)\
              AppleWebKit/537.36 "

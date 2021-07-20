@@ -17,6 +17,7 @@ from lib.socks_resolver.engine import getaddrinfo
 from lib.payload.wordlists import useragents
 from core.decor import socks_proxy
 
+
 value1 = None
 
 def simple_test_open_url(url):

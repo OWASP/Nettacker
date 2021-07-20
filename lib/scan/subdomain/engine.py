@@ -16,7 +16,8 @@ from core.alert import *
 from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
-import censys.certificates
+import censys
+from censys.search import CensysCertificates
 
 
 def extra_requirements_dict():
@@ -746,22 +747,22 @@ def __censys_io(
                 socket.getaddrinfo = getaddrinfo
 
         try:
-            cen_certificates = censys.certificates.CensysCertificates(censys_api_key, censys_secret)
+            cen_certificates = CensysCertificates(censys_api_key[0], censys_secret[0])
         except censys.base.CensysUnauthorizedException:
             return []
         except censys.base.CensysRateLimitExceededException:
-            return []
-        else:
             return []
         subs = []
         query = "parsed.names: {}".format(target)
         search_results = cen_certificates.search(query, fields=["parsed.names"])
         for i in search_results:
-            if "*" not in i and i.endswith(target):
-                subs.append(i)
+            for j in list(i.values()):
+                for k in j:
+                    if "*" not in k and k.endswith(target):
+                        subs.append(k)
         __log_into_file(thread_tmp_filename, "a", "\n".join(subs), language)
         return subs
-    except:
+    except Exception as e:
         return []
 
 def __get_subs(target, timeout_sec, log_in_file, time_sleep, language, verbose_level, socks_proxy, retries,
