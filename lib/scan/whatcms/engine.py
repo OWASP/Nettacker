@@ -24,7 +24,6 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 import requests
-from six import text_type
 
 
 def extra_requirements_dict():

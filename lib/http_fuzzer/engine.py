@@ -16,6 +16,7 @@ from core.targets import target_type
 from lib.socks_resolver.engine import getaddrinfo
 from lib.payload.wordlists import useragents
 
+
 value1 = None
 
 def simple_test_open_url(url):

@@ -31,7 +31,7 @@ def extra_requirements_dict():
 def conn(targ, port, timeout_sec, socks_proxy):
     try:
         if socks_proxy is not None:
-            socks_version = socks.SOCKS5 if socks_proxy.startswith(
+            socks_versiondi = socks.SOCKS5 if socks_proxy.startswith(
                 'socks5://') else socks.SOCKS4
             socks_proxy = socks_proxy.rsplit('://')[1]
             if '@' in socks_proxy:

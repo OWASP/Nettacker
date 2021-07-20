@@ -206,7 +206,7 @@ def __shodan_scan(
             except Exception:
                 pass
             try:
-                for key in results[int(i)]["vulns"].keys():
+                for key in list(results[int(i)]["vulns"].keys()):
                     subsearch.append(
                         str(key) + "&cvss: " + str(results[int(i)]["vulns"][key]["cvss"])
                     )

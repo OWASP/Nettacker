@@ -4,7 +4,6 @@ import string
 import random
 import json
 from core.alert import messages
-from core.compatible import version
 
 
 def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
@@ -14805,6 +14804,4 @@ __title_to_replace__
         .replace('__title_to_replace__', messages(language, "pentest_graphs")) \
         .replace('__description_to_replace__', messages(language, "graph_message")) \
         .replace('__html_title_to_replace__', messages(language, "nettacker_report"))
-    if version() == 2:
-        return data.decode('utf8')
     return data
