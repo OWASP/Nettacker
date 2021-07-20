@@ -23,7 +23,7 @@ from core._time import now
 from core.log import __log_into_file
 from bs4 import BeautifulSoup
 from lib.payload.wordlists import usernames, passwords
-from urllib.parse import urlparse
+from core.decor import socks_proxy
 
 
 HEADERS = {
@@ -64,26 +64,10 @@ def get_form_details(form):
     details["inputs"] = inputs
     return details
 
+@socks_proxy
 def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename,
           socks_proxy, scan_id, scan_cmd):
     exit = 0
-    if socks_proxy is not None:
-        socks_version = socks.SOCKS5 if socks_proxy.startswith(
-            'socks5://') else socks.SOCKS4
-        socks_proxy = socks_proxy.rsplit('://')[1]
-        if '@' in socks_proxy:
-            socks_username = socks_proxy.rsplit(':')[0]
-            socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
-            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
-                                    int(socks_proxy.rsplit(':')[-1]), username=socks_username,
-                                    password=socks_password)
-            socket.socket = socks.socksocket
-            socket.getaddrinfo = getaddrinfo
-        else:
-            socks.set_default_proxy(socks_version, str(
-                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
-            socket.socket = socks.socksocket
-            socket.getaddrinfo = getaddrinfo
     try:
         forms = get_all_forms(target)
         for i, form in enumerate(forms, start=1):

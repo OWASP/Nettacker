@@ -17,32 +17,17 @@ from lib.socks_resolver.engine import getaddrinfo
 from core._time import now
 from core.log import __log_into_file
 from core.compatible import version
+from core.decor import socks_proxy
 
 
 def extra_requirements_dict():
     return {}
 
-
+@socks_proxy
 def _parse_webpage(target, timeout_sec, language, retries, socks_proxy, scan_cmd, scan_id):
     webpage = {}
     tries = 0
-    if socks_proxy is not None:
-        socks_version = socks.SOCKS5 if socks_proxy.startswith(
-            'socks5://') else socks.SOCKS4
-        socks_proxy = socks_proxy.rsplit('://')[1]
-        if '@' in socks_proxy:
-            socks_username = socks_proxy.rsplit(':')[0]
-            socks_password = socks_proxy.rsplit(':')[1].rsplit('@')[0]
-            socks.set_default_proxy(socks_version, str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),
-                                    int(socks_proxy.rsplit(':')[-1]), username=socks_username,
-                                    password=socks_password)
-            socket.socket = socks.socksocket
-            socket.getaddrinfo = getaddrinfo
-        else:
-            socks.set_default_proxy(socks_version, str(
-                socks_proxy.rsplit(':')[0]), int(socks_proxy.rsplit(':')[1]))
-            socket.socket = socks.socksocket
-            socket.getaddrinfo = getaddrinfo
+    
     try:
         if timeout_sec is not None:
             response = requests.get(target, timeout=timeout_sec)
@@ -190,7 +175,6 @@ def analyze(target, timeout_sec, log_in_file, language,
              'SCAN_CMD': scan_cmd})
         __log_into_file(thread_tmp_filename, 'w', '0', language)
         __log_into_file(log_in_file, 'a', data, language)
-
 
 def start(target, users, passwds, ports, timeout_sec, thread_number, num, total, log_in_file, time_sleep, language,
           verbose_level, socks_proxy, retries, methods_args, scan_id, scan_cmd):  # Main function
