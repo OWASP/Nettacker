@@ -1,13 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sys
-import os
 from core.alert import messages
 from core._die import __die_failure
 
-__version__ = '0.0.1'
-__code_name__ = 'SAME'
+__version__ = '0.0.2'
+__code_name__ = 'BIST'
 
 
 def _version_info():
@@ -27,8 +26,8 @@ def logo():
     from core.alert import write_to_api_console
     from core import color
     from core.color import finish
-    write_to_api_console('''    
-   ______          __      _____ _____  
+    write_to_api_console('''
+   ______          __      _____ _____
   / __ \ \        / /\    / ____|  __ \ 
  | |  | \ \  /\  / /  \  | (___ | |__) |
  | |  | |\ \/  \/ / /\ \  \___ \|  ___/ 
@@ -36,15 +35,18 @@ def logo():
   \____/   \/  \/_/    \_\_____/|_|     {4}{1}{5}
                           _   _      _   _             _            
                          | \ | |    | | | |           | |            
-  {6}github.com/zdresearch{7}  |  \| | ___| |_| |_ __ _  ___| | _____ _ __ 
+  {6}github.com/OWASP     {7}  |  \| | ___| |_| |_ __ _  ___| | _____ _ __ 
   {8}owasp.org{9}              | . ` |/ _ \ __| __/ _` |/ __| |/ / _ \ '__|
   {10}zdresearch.com{11}         | |\  |  __/ |_| || (_| | (__|   <  __/ |   
                          |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|   
-                                               
-    \n\n'''.format(__version__, __code_name__, color.color('red'), color.color('reset'), color.color('yellow'),
-                   color.color('reset'), color.color(
-            'cyan'), color.color('reset'), color.color('cyan'),
-                   color.color('reset'), color.color('cyan'), color.color('reset')))
+
+    \n\n'''.format(__version__,
+                   __code_name__, color.color('red'),
+                   color.color('reset'), color.color('yellow'),
+                   color.color('reset'), color.color('cyan'),
+                   color.color('reset'), color.color('cyan'),
+                   color.color('reset'), color.color('cyan'),
+                   color.color('reset')))
     finish()
 
 
@@ -82,10 +84,7 @@ def check(language):
         pass
     else:
         __die_failure(messages(language, "error_platform"))
-    if version() ==2 or version() == 3:
-        pass
-    else:
-        __die_failure(messages(language, "python_version_error"))
+
     logo()
     return True
 

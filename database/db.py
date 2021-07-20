@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import json
@@ -10,7 +10,6 @@ from database.models import HostsLog, Report, Update_Log
 from core.alert import warn
 from core.alert import info
 from core.alert import messages
-from core.compatible import version
 from core._time import now
 from core import compatible
 from api.api_core import __structure
@@ -200,7 +199,7 @@ def submit_logs_to_db(language, log):
         session = create_connection(language)
         session.add(HostsLog(
             host=log["HOST"], date=log["TIME"], port=log["PORT"], type=log["TYPE"], category=log["CATEGORY"],
-            description=log["DESCRIPTION"].encode('utf8') if version() ==2 else log["DESCRIPTION"],
+            description=log["DESCRIPTION"],
             username=log["USERNAME"], password=log["PASSWORD"], scan_id=log["SCAN_ID"], scan_cmd=log["SCAN_CMD"]
         ))
         return send_submit_query(session, language)
@@ -355,7 +354,7 @@ def __logs_by_scan_id(scan_id, language):
     session = create_connection(language)
     # try:
     return_logs = []
-    logs = session.query(HostsLog).filter(HostsLog.scan_id==scan_id).all()
+    logs = session.query(HostsLog).filter(HostsLog.scan_id == scan_id).all()
     for log in logs:
         data = {
             "SCAN_ID": scan_id,
@@ -433,10 +432,6 @@ def __logs_to_report_html(host, language):
             }
             logs.append(data)
         from core.log import build_graph
-        if compatible.version() == 2:
-            import sys
-            reload(sys)
-            sys.setdefaultencoding('utf8')
         _graph = build_graph("d3_tree_v2_graph", "en", logs, 'HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE',
                              'DESCRIPTION')
         from lib.html_log import _log_data
@@ -444,7 +439,7 @@ def __logs_to_report_html(host, language):
                                               'DESCRIPTION', 'TIME')
         for value in logs:
             _table += _log_data.table_items.format(value['HOST'], value['USERNAME'], value['PASSWORD'],
-                                                value['PORT'], value['TYPE'], value['DESCRIPTION'], value['TIME'])
+                                                   value['PORT'], value['TYPE'], value['DESCRIPTION'], value['TIME'])
         _table += _log_data.table_end + '<p class="footer">' + messages("en", "nettacker_report") \
             .format(compatible.__version__, compatible.__code_name__, now()) + '</p>'
         return _table

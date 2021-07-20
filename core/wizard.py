@@ -1,10 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from core.config_builder import _builder
 from core.config import _core_config
 from core.config_builder import _core_default_config
-from core.load_modules import load_all_graphs
 from core.get_input import __input
 from core.alert import messages
 
@@ -42,7 +41,8 @@ def __wizard(targets, thread_number, thread_number_host,
     ex_module_name.remove('all')
     default_config = _builder(_core_config(), _core_default_config())
     targets = __input(
-        messages(language, "enter_default").format(messages(language, "all_targets"), default_config["targets"]),
+        messages(language, "enter_default").format(messages(language, "all_targets"),
+        default_config["targets"]),
         default_config["targets"])
     thread_number = __input(messages(language, "enter_default").format(messages(language, "all_thread_numbers"),
                                                                        default_config["thread_number"]),

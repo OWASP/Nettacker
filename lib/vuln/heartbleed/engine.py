@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Script Resource and Credits: https://gist.github.com/eelsivart/10174134
 # Just converted to an OWASP Nettacker module
