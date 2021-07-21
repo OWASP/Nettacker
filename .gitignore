@@ -26,3 +26,5 @@ results.*
 #codacy
 .coverage
 coverage.xml
+
+venv/*

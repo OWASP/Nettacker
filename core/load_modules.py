@@ -16,6 +16,52 @@ from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
 
+import yaml
+import numpy
+import json
+import sys
+from core.utility import expand_module_steps
+from core import module_protocols
+from io import StringIO
+
+
+class module:
+    def __init__(self):
+        self.module_path = None
+        self.module_content = None
+        self.module_inputs = {}
+        self.libraries = dir(module_protocols)
+
+    def load(self):
+        self.module_content = yaml.load(
+            StringIO(
+                open(self.module_path, 'r').read().format(
+                    **self.module_inputs
+                )
+            ),
+            Loader=yaml.FullLoader
+        )
+
+    def generate_loops(self):
+        self.module_content['payloads'] = expand_module_steps(self.module_content['payloads'])
+
+    def start(self):
+        for payload in self.module_content['payloads']:
+            if payload['library'] not in self.libraries:
+                print('library [{library}] is not support!'.format(library=payload['library']))
+                return None
+            protocol = getattr(
+                __import__(
+                    'lib.module_protocols.{library}'.format(library=payload['library']),
+                    fromlist=['engine']
+                ),
+                'engine'
+            )
+            for step in payload['steps']:
+                for sub_step in step:
+                    # must be multi thread here!
+                    protocol.run(sub_step, payload)
+
 
 def load_all_graphs():
     """
@@ -25,9 +71,9 @@ def load_all_graphs():
         an array of graph names
     """
     graph_names = []
-    for _lib in glob(os.path.dirname(inspect.getfile(lib)) + '/*/*/engine.py'):
+    for _lib in glob(os.path.dirname(inspect.getfile(lib)) + '/graph/*/engine.py'):
         if os.path.dirname(_lib).rsplit('\\' if is_windows() else '/')[
-                -2] == "graph" and _lib + '_graph' not in graph_names:
+            -2] == "graph" and _lib + '_graph' not in graph_names:
             _lib = _lib.rsplit('\\' if is_windows() else '/')[-2]
             graph_names.append(_lib + '_graph')
     return graph_names
@@ -79,9 +125,9 @@ def load_all_method_args(language, API=False):
         _ERROR = False
         try:
             extra_requirements_dict = getattr(__import__(
-                                        imodule,
-                                        fromlist=['extra_requirements_dict']),
-                                        'extra_requirements_dict')
+                imodule,
+                fromlist=['extra_requirements_dict']),
+                'extra_requirements_dict')
         except:
             warn(messages(language, "module_args_error").format(imodule))
             _ERROR = True
@@ -91,7 +137,7 @@ def load_all_method_args(language, API=False):
             for imodule_arg in imodule_args:
                 if API:
                     res += imodule_arg + "=" + \
-                        ",".join(map(str, imodule_args[imodule_arg])) + "\n"
+                           ",".join(map(str, imodule_args[imodule_arg])) + "\n"
                 modules_args[imodule].append(imodule_arg)
     if API:
         return res
@@ -150,7 +196,7 @@ def __check_external_modules():
         try:
             if os.path.isfile(
                     default_config[
-                        "home_path"]+"/"+default_config["database_name"]):
+                        "home_path"] + "/" + default_config["database_name"]):
                 pass
             else:
                 from database.sqlite_create import sqlite_create_tables

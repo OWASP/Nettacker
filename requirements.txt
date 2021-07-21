@@ -23,3 +23,4 @@ rule==0.1.1
 mechanize==0.4.5
 scapy==2.4.5
 psycopg2==2.9.1
+numpy==1.21.1
