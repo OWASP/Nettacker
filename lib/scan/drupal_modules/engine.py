@@ -68,8 +68,7 @@ def __drupal_modules(target, port, timeout_sec, log_in_file, language, time_slee
                            'DESCRIPTION': messages(language, "found").format(target, "drupal modules", modules), 'TIME': now(),
                            'CATEGORY': "vuln",
                            'SCAN_ID': scan_id, 'SCAN_CMD': scan_cmd})
-        __log_into_file(log_in_file, '
-                        a', data, language)
+        __log_into_file(log_in_file, 'a', data, language)
         return True
     else:
         return False

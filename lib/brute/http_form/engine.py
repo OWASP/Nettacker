@@ -1,29 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
 import threading
 import time
-import socks
-import socket
 import json
 import string
 import random
 import os
-import re
 import requests
 from core.alert import warn, info, messages
 from core.targets import target_type
 from core.targets import target_to_host
 from core.load_modules import load_file_path
-from lib.socks_resolver.engine import getaddrinfo
-import mechanize
-import logging
 from core._time import now
 from core.log import __log_into_file
 from bs4 import BeautifulSoup
 from lib.payload.wordlists import usernames, passwords
 from core.decor import socks_proxy
+from urllib.parse import urlparse
 
 
 HEADERS = {
@@ -36,6 +30,7 @@ HEADERS = {
         "Accept-Encoding": "gzip, deflate, br",
     }
 
+
 def extra_requirements_dict():
     return {
         "http_form_brute_users": usernames.users(),
@@ -43,11 +38,13 @@ def extra_requirements_dict():
         "http_form_brute_ports": ["80", "443"],
     }
 
+
 def get_all_forms(url):
     session = requests.Session()
     res = session.get(url)
     soup = BeautifulSoup(res.text, "html.parser")
     return soup.find_all("form")
+
 
 def get_form_details(form):
     details = {}
@@ -57,12 +54,13 @@ def get_form_details(form):
     for input_tag in form.find_all("input"):
         input_type = input_tag.attrs.get("type", "text")
         input_name = input_tag.attrs.get("name")
-        input_value =input_tag.attrs.get("value", "")
+        input_value = input_tag.attrs.get("value", "")
         inputs.append({"type": input_type, "name": input_name, "value": input_value})
     details["action"] = action
     details["method"] = method
     details["inputs"] = inputs
     return details
+
 
 @socks_proxy
 def login(user, passwd, target, port, timeout_sec, log_in_file, language, retries, time_sleep, thread_tmp_filename,
@@ -98,7 +96,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
                     res = requests.get(url, params=data, verify=False)
                 if "login" not in res.text:
                     info(messages(language, "http_form_auth_success").format(
-                    user, passwd, target, port))
+                        user, passwd, target, port))
                     data = json.dumps(
                         {'HOST': target, 'USERNAME': user, 'PASSWORD': passwd, 'PORT': port, 'TYPE': 'http_form_brute',
                         'DESCRIPTION': messages(language, "login_successful"), 'TIME': now(), 'CATEGORY': "brute",
@@ -118,7 +116,7 @@ def login(user, passwd, target, port, timeout_sec, log_in_file, language, retrie
             return 1
         else:
             time.sleep(time_sleep)
-        
+
 
 def check(target, timeout_sec, language, port):
     try:
@@ -161,7 +159,7 @@ def start(target, users, passwds, ports, timeout_sec, thread_number, num, total,
                 target = target
             elif check("https://"+target_to_host(target), timeout_sec, language, port):
                 target = "https" + target[4:]
-            
+
             for user in users:
                 for passwd in passwds:
                     t = threading.Thread(target=login,
