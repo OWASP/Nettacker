@@ -1,0 +1,112 @@
+# this section doesn't matter
+info:
+  id: whatever
+  name: x
+  author: y
+  severity: z
+  description: gg
+  reference: oo
+  tags:
+    - zx
+    - zz
+
+# this section matters
+payloads:
+  # use python socket example
+  - library: socket
+    type: udp
+    timeout: 1 # must rewrite by user input in CLI or pick this default if not exist
+    steps:
+      - method: connect
+      - method: send
+        data:
+          - 'junk'
+          - 'punk'
+      - method: close
+
+  - library: socket
+    type: tcp
+    timeout: 1 # must rewrite by user input in CLI or pick this default if not exist
+    steps:
+      - method: connect
+      - method: send
+        data: 'junk'
+      - method: close
+  # type of connection is lib requests (http(s) in python)
+  - library: http
+    # if true; python will start lib = requests.session()  otherwise lib = requests
+    session: false
+    verify: false # todo: must be designed later
+    timeout: 1 # todo: must be designed later
+    cert: '' # todo: design later
+    stream: false # todo: design later
+    proxies: '' # todo: design later
+    # step design to do multiple actions test in the same or seperate session. e.g upload a file first and then check if its exist
+    # or any other use.
+    # all steps can have loops by entering yaml array or file input. e.g.
+    #  url:
+    #     - "{{BaseURL}}/install/"
+    #     - "{{BaseURL}}/install2/"
+    # or
+    # url = read_list_from_file('path/filename.ext')
+    # variables like BaseURL and more functionality should be design as well, or maybe even encoders?
+    steps:
+      # methods must be exact name as http verbs used in requests library. GET, OPTIONS, HEAD, POST, PUT, PATCH, or DELETE.
+      # requests.get(), requests.post(), equests.put() etc...
+      - method: get
+        # parameters like url, headers, cookies, etc are named based on requests input https://docs.python-requests.org/en/master/api/#requests.request
+        url:
+          - "{BaseURL}/install/"
+          - "{BaseURL}/install2/"
+        headers:
+          Accept-Encoding: deflate
+          fuzz:
+            - 1
+            - 2
+            - 3
+        # at the end python will call library.http_verb(url=url, headers=headers)
+        # in this case
+        # library.get(url='https://www.google.com/install/', headers={{'Accept-Encoding': 'deflate', 'fuzz': '1'}})
+        # library.get(url='https://www.google.com/install/', headers={{'Accept-Encoding': 'deflate', 'fuzz': '2'}})
+        # library.get(url='https://www.google.com/install/', headers={{'Accept-Encoding': 'deflate', 'fuzz': '3'}})
+        # library.get(url='https://www.google.com/install2/', headers={{'Accept-Encoding': 'deflate', 'fuzz': '1'}})
+        # library.get(url='https://www.google.com/install2/', headers={{'Accept-Encoding': 'deflate', 'fuzz': '2'}})
+        # library.get(url='https://www.google.com/install2/', headers={{'Accept-Encoding': 'deflate', 'fuzz': '3'}})
+      - method: post
+        url:
+          - "{BaseURL}/install3/"
+          - "{BaseURL}/install4/"
+        headers:
+          Accept-Encoding: deflate
+          fuzz:
+            - 6
+            - 7
+            - 8
+          json:
+            - n1
+            - n2
+        # in this case
+        # library.post(url='https://www.google.com/install3/', headers={{'Accept-Encoding': 'deflate', 'fuzz': '6'}})
+        # library.post(url='https://www.google.com/install3/', headers={{'Accept-Encoding': 'deflate', 'fuzz': '7'}})
+        # library.post(url='https://www.google.com/install3/', headers={{'Accept-Encoding': 'deflate', 'fuzz': '8'}})
+        # library.post(url='https://www.google.com/install4/', headers={{'Accept-Encoding': 'deflate', 'fuzz': '6'}})
+        # library.post(url='https://www.google.com/install5/', headers={{'Accept-Encoding': 'deflate', 'fuzz': '7'}})
+        # library.post(url='https://www.google.com/install6/', headers={{'Accept-Encoding': 'deflate', 'fuzz': '8'}})
+
+      # sample for brute force model or different length of fuzzing
+      # - method: get
+      #   url: "{{BaseURL}}/auth/" # todo: bug here
+      #   headers:
+      #     User-Agent: chrome
+      #     Cookies: read_from_file('/path/cookies.txt') # must be design
+      #     X-Secret: base64_encode('something') # todo: must be design later
+      #     Token: read_from_database('x_token') # todo: must be designed later
+      #   auth: # todo: this must conver to tuple
+      #     usernames:
+      #       - admin
+      #       - user
+      #     passwords: read_list_from_file('/path/passwords.txt') # todo: must be designed
+      #     # passwords:
+
+
+      # todo: design response, include content, status, raw, etc plus and/or condition and regex
