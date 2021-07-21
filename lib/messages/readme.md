@@ -1,4 +1,4 @@
 OWASP Nettacker Language Library
 ================================
 
-OWASP Nettacker language libraries stored in here.
+OWASP Nettacker message libraries stored in here.
