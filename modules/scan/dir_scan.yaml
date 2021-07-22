@@ -1,0 +1,43 @@
+info:
+  id: admin-scan
+  name: Divyansh
+  author: y
+  severity: z
+  description: gg
+  reference: oo
+  tags:
+    - zx
+    - zz
+
+payloads:
+  - library: http
+    session: false
+    verify: false
+    timeout: 1
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        url:
+          nettacker_fuzzer:
+            input_format: "{{urls}}"
+            prefix: "{BaseURL}/"
+            suffix:
+            interceptors:
+            data:
+              urls:
+                - administrator
+                - admin
+                - old
+                - _vti_bin
+                - _private
+                - cgi-bin
+                - public_html
+                - images
+        response:
+          condition_type: or
+          conditions:
+            status_code:
+              regex: 200|403|401
+              reverse: false

@@ -42,7 +42,6 @@ class module:
     def generate_loops(self):
         from core.utility import expand_module_steps
         self.module_content['payloads'] = expand_module_steps(self.module_content['payloads'])
-
     def start(self):
         for payload in self.module_content['payloads']:
             if payload['library'] not in self.libraries:
@@ -50,7 +49,7 @@ class module:
                 return None
             protocol = getattr(
                 __import__(
-                    'lib.module_protocols.{library}'.format(library=payload['library']),
+                    'core.module_protocols.{library}'.format(library=payload['library']),
                     fromlist=['engine']
                 ),
                 'engine'
@@ -230,3 +229,17 @@ def load_file_path():
         value of home path
     """
     return _builder(_core_config(), _core_default_config())["home_path"]
+
+
+def main():
+    for directory in os.listdir('modules/scan/'):
+        if 'dir_scan.yaml' in directory:
+            validate_module = module()
+            validate_module.module_path = "modules/scan/{}".format(directory)
+            validate_module.module_inputs = {
+                "BaseURL": 'https://evil.com',
+                'TimeOut': 2
+            }
+            validate_module.load()
+            validate_module.generate_loops()
+            validate_module.start()

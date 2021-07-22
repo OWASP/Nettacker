@@ -1,0 +1,36 @@
+info:
+  id: Clickjacking
+  name: Aman
+  author: Aman
+  severity: Depends on the Feature(Maybe high or low)
+  description: #description for clickjacking
+  reference: #needs to be done
+  tags:
+    - zx
+    - zz
+
+payloads:
+  - library: http
+    session: false
+    verify: false
+    timeout: 1
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        url:
+          - "{BaseURL}/"
+        response:
+          condition_type: and
+          conditions:
+            headers:
+              x-frame-options:
+                regex: DENY|SAMEORIGIN
+                reverse: true
+              Content-Security-Policy:
+                regex: frame-ancestors|frame-src
+                reverse: true
+            content:
+              regex: http-equiv="Content-Security-Policy"
+              reverse: true
