@@ -15,12 +15,8 @@ from core.compatible import logo
 from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
-
-import yaml
-import numpy
 import json
 import sys
-from core.utility import expand_module_steps
 from core import module_protocols
 from io import StringIO
 
@@ -33,6 +29,7 @@ class module:
         self.libraries = dir(module_protocols)
 
     def load(self):
+        import yaml
         self.module_content = yaml.load(
             StringIO(
                 open(self.module_path, 'r').read().format(
@@ -43,6 +40,7 @@ class module:
         )
 
     def generate_loops(self):
+        from core.utility import expand_module_steps
         self.module_content['payloads'] = expand_module_steps(self.module_content['payloads'])
 
     def start(self):
@@ -157,7 +155,7 @@ def __check_external_modules():
     # check python version
     if version() == 2:
         logo()
-        __die_failure(messages("en", "python_version_error"))
+        __die_failure("Python2 is No longer supported")
 
     external_modules = ["argparse", "netaddr", "requests",
                         "paramiko", "texttable", "socks",

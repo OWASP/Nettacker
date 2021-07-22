@@ -35,39 +35,40 @@ def messages(language, msg_id):
         the message content in the selected language if
         message found otherwise return message in English
     """
+    import yaml
+    from io import StringIO
     # Returning selected langauge
     if language == -1:
         return list(
             set(
                 [
-                    langs.rsplit("_")[1].rsplit(".")[0]
-                    for langs in os.listdir(
+                    #langs.rsplit("_")[1].rsplit(".")[0]
+                    langs.rsplit(".yaml")[0] for langs in os.listdir(
                         os.path.dirname(os.path.abspath(__file__)).replace(
                             "\\", "/"
                         )
-                        + "/../lib/language/"
+                        + "/../lib/messages/"
                     )
                     if langs != "readme.md"
-                    and langs.rsplit("_")[1].rsplit(".")[0] != ""
+                    and langs.rsplit(".yaml")[0] != ""
                 ]
             )
         )
     # Importing messages
     try:
-        msgs = getattr(
-            __import__(
-                "lib.language.messages_{0}".format(language),
-                fromlist=["all_messages"],
+        msgs = yaml.load(
+            StringIO(
+                open("lib/messages/{0}.yaml".format(language), 'r').read()
             ),
-            "all_messages",
-        )()[str(msg_id)]
+            Loader=yaml.FullLoader
+        )[str(msg_id)]
     except Exception:
-        msgs = getattr(
-            __import__("lib.language.messages_en", fromlist=["all_messages"]),
-            "all_messages",
-        )()[str(msg_id)]
-    if pyversion == 2:
-        return msgs.decode("utf8")
+        msgs = yaml.load(
+            StringIO(
+                open("lib/messages/en.yaml".format(language), 'r').read()
+            ),
+            Loader=yaml.FullLoader
+        )[str(msg_id)]
     return msgs
 
 

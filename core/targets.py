@@ -8,7 +8,8 @@ import re
 from core.ip import getIPRange, IPRange, isIP, isIP6
 from core.alert import messages, info
 from core._die import __die_failure
-from lib.scan.subdomain.engine import __get_subs
+## required to edit as per yaml format currently not needed
+#from lib.scan.subdomain.engine import __get_subs
 from core.log import __log_into_file
 import ipaddress
 
