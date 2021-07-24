@@ -42,6 +42,7 @@ class module:
     def generate_loops(self):
         from core.utility import expand_module_steps
         self.module_content['payloads'] = expand_module_steps(self.module_content['payloads'])
+
     def start(self):
         for payload in self.module_content['payloads']:
             if payload['library'] not in self.libraries:
@@ -156,17 +157,20 @@ def check_dependencies():
         logo()
         __die_failure("Python2 is No longer supported")
 
-    external_modules = open('requirements.txt').read().split('\n')
-    for module in external_modules:
+    default_config = _builder(_core_config(), _core_default_config())
+    external_modules = open(default_config["requirements_path"]).read().split('\n')
+
+    for module_name in external_modules:
         try:
             __import__(
-                module.split('==')[0] if 'library_name=' not in module else module.split('library_name=')[1].split()[0]
+                module_name.split('==')[0] if 'library_name=' not in module_name
+                else module_name.split('library_name=')[1].split()[0]
             )
-        except:
-            __die_failure("pip3 install -r requirements.txt ---> " +
-                          module + " not installed!")
-
-    default_config = _builder(_core_config(), _core_default_config())
+        except Exception:
+            __die_failure(
+                "pip3 install -r requirements.txt ---> " +
+                module_name + " not installed!"
+            )
 
     if not os.path.exists(default_config["home_path"]):
         try:

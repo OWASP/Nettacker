@@ -16,6 +16,8 @@ def _paths():
         a JSON contain the working, tmp and results path
     """
     return {
+        "requirements_path": os.path.join(sys.path[0], 'requirements.txt'),
+        "requirements_dev_path": os.path.join(sys.path[0], 'requirements-dev.txt'),
         "home_path": os.path.join(sys.path[0], '.data'),
         "tmp_path": os.path.join(sys.path[0], '.data/tmp'),
         "results_path": os.path.join(sys.path[0], '.data/results')
@@ -175,8 +177,6 @@ def _core_config():
         "database_password": _database_config()["PASSWORD"],
         "database_host": _database_config()["HOST"],
         "database_port": _database_config()["PORT"],
-        "home_path": _paths()["home_path"],
-        "tmp_path": _paths()["tmp_path"],
-        "results_path": _paths()["results_path"]
+        **_paths(),
 
     }
