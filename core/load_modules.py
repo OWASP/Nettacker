@@ -242,4 +242,4 @@ def main():
             validate_module.load()
             validate_module.generate_loops()
             validate_module.start()
-    return True
+    return os.EX_OK
