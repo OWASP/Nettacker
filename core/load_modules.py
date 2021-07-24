@@ -144,7 +144,7 @@ def load_all_method_args(language, API=False):
     return module_names
 
 
-def __check_external_modules():
+def check_dependencies():
     """
     check external libraries if they are installed
 
@@ -156,13 +156,10 @@ def __check_external_modules():
         logo()
         __die_failure("Python2 is No longer supported")
 
-    external_modules = ["argparse", "netaddr", "requests",
-                        "paramiko", "texttable", "socks",
-                        "win_inet_pton",
-                        "flask", "sqlalchemy"]
+    external_modules = open('requirements.txt').read().split('\n')
     for module in external_modules:
         try:
-            __import__(module)
+            __import__(module.split('==')[0] if 'library_name=' not in module else module.split('library_name=')[1].split()[0])
         except:
             __die_failure("pip3 install -r requirements.txt ---> " +
                           module + " not installed!")
@@ -243,3 +240,4 @@ def main():
             validate_module.load()
             validate_module.generate_loops()
             validate_module.start()
+    return True

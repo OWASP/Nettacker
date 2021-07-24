@@ -8,8 +8,6 @@ import re
 from core.ip import getIPRange, IPRange, isIP, isIP6
 from core.alert import messages, info
 from core._die import __die_failure
-## required to edit as per yaml format currently not needed
-#from lib.scan.subdomain.engine import __get_subs
 from core.log import __log_into_file
 import ipaddress
 
@@ -175,9 +173,10 @@ def analysis(
                     sub_domains = (
                         json.loads(open(subs_temp).read())
                         if len(open(subs_temp).read()) > 2
-                        else __get_subs(
-                            target, 3, "", 0, language, 0, socks_proxy, 3, 0, 0
-                        )
+                        else 1
+                        # else __get_subs(
+                        #     target, 3, "", 0, language, 0, socks_proxy, 3, 0, 0
+                        # )
                     )
                     if len(open(subs_temp).read()) == 0:
                         __log_into_file(
@@ -229,9 +228,10 @@ def analysis(
                     sub_domains = (
                         json.loads(open(subs_temp).read())
                         if len(open(subs_temp).read()) > 2
-                        else __get_subs(
-                            target, 3, "", 0, language, 0, socks_proxy, 3, 0, 0
-                        )
+                        else 1
+                        # else __get_subs(
+                        #     target, 3, "", 0, language, 0, socks_proxy, 3, 0, 0
+                        # )
                     )
                     if len(open(subs_temp).read()) == 0:
                         __log_into_file(

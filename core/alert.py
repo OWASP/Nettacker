@@ -17,7 +17,7 @@ def is_not_run_from_api():
         True if run from API otherwise False
     """
     if "--start-api" in sys.argv or (
-        len(sys.argv) == 4 and "transforms" in sys.argv[1]
+            len(sys.argv) == 4 and "transforms" in sys.argv[1]
     ):
         return False
     return True
@@ -42,15 +42,15 @@ def messages(language, msg_id):
         return list(
             set(
                 [
-                    #langs.rsplit("_")[1].rsplit(".")[0]
+                    # langs.rsplit("_")[1].rsplit(".")[0]
                     langs.rsplit(".yaml")[0] for langs in os.listdir(
-                        os.path.dirname(os.path.abspath(__file__)).replace(
-                            "\\", "/"
-                        )
-                        + "/../lib/messages/"
+                    os.path.dirname(os.path.abspath(__file__)).replace(
+                        "\\", "/"
                     )
+                    + "/../lib/messages/"
+                )
                     if langs != "readme.md"
-                    and langs.rsplit(".yaml")[0] != ""
+                       and langs.rsplit(".yaml")[0] != ""
                 ]
             )
         )
@@ -84,21 +84,21 @@ def __input_msg(content):
     """
 
     return (
-        color.color("yellow")
-        + "[+] "
-        + color.color("green")
-        + content
-        + color.color("reset")
+            color.color("yellow")
+            + "[+] "
+            + color.color("green")
+            + content
+            + color.color("reset")
     )
 
 
 def info(
-    content,
-    log_in_file=None,
-    mode=None,
-    event=None,
-    language=None,
-    thread_tmp_filename=None,
+        content,
+        log_in_file=None,
+        mode=None,
+        event=None,
+        language=None,
+        thread_tmp_filename=None,
 ):
     """
     build the info message, log the message in database if requested,
@@ -132,7 +132,7 @@ def info(
 
         __log_into_file(log_in_file, mode, json.dumps(event), language)
         if (
-            thread_tmp_filename
+                thread_tmp_filename
         ):  # if thread temporary filename present, rewrite it
             __log_into_file(thread_tmp_filename, "w", "0", language)
     return
@@ -201,12 +201,12 @@ def error(content):
         )
     else:
         data = (
-            color.color("red")
-            + "[X] "
-            + color.color("yellow")
-            + content
-            + color.color("reset")
-            + "\n"
+                color.color("red")
+                + "[X] "
+                + color.color("yellow")
+                + content
+                + color.color("reset")
+                + "\n"
         )
         sys.stdout.buffer.write(data.encode("utf8"))
     return
