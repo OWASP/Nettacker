@@ -159,7 +159,9 @@ def check_dependencies():
     external_modules = open('requirements.txt').read().split('\n')
     for module in external_modules:
         try:
-            __import__(module.split('==')[0] if 'library_name=' not in module else module.split('library_name=')[1].split()[0])
+            __import__(
+                module.split('==')[0] if 'library_name=' not in module else module.split('library_name=')[1].split()[0]
+            )
         except:
             __die_failure("pip3 install -r requirements.txt ---> " +
                           module + " not installed!")
