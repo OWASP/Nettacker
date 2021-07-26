@@ -85,7 +85,6 @@ def check(language):
     else:
         __die_failure(messages(language, "error_platform"))
 
-    logo()
     return True
 
 

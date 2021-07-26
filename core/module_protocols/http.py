@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import requests
 import re
-
+import requests
 
 def reverse_and_regex_condition(regex, reverse):
     if regex:
