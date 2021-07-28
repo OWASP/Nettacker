@@ -28,7 +28,7 @@ error_target: Kan het doel (de doelen) niet specificeren
 error_target_file: 'Kan doel (en) niet specificeren, kan bestand niet openen: {0}'
 thread_number_warning: het is beter om een ​​draadnummer lager dan 100 te gebruiken,
   trouwens, we gaan door ...
-set_timeout: time-out op {0} seconden instellen, het is te groot, toch? trouwens,
+settimeout: time-out op {0} seconden instellen, het is te groot, toch? trouwens,
   we gaan door ...
 scan_module_not_found: deze scanmodule [{0}] niet gevonden!
 error_exclude_all: je kunt niet alle scanmethoden uitsluiten
@@ -76,7 +76,7 @@ valid_socks_address: 'voer een geldig sokkenadres en -poort in. voorbeeld socks5
   socks4: // gebruikersnaam: wachtwoord@127.0.0.1, socks5: // gebruikersnaam: wachtwoord@127.0.0.1'
 connection_retries: Nieuwe pogingen wanneer de time-out van de verbinding is ingesteld
   (standaard 3)
-ftp_connection_timeout: 'ftp-verbinding met {0}: {1} time-out, overslaan {2}: {3}'
+ftp_connectiontimeout: 'ftp-verbinding met {0}: {1} time-out, overslaan {2}: {3}'
 login_successful: SUCCESVOL INGELOGD!
 login_list_error: SUCCES INGEHEVEN, TOESTEMMING ONTKEND VOOR LIJSTOPDRACHT!
 ftp_connection_failed: 'ftp-verbinding met {0}: {1} mislukt, hele stap overslaan [proces
@@ -86,10 +86,10 @@ input_target_error: invoerdoel voor de {0} module moet DOMAIN, HTTP of SINGLE_IP
 user_pass_found: 'gebruiker: {0} pass: {1} host: {2} poort: {3} gevonden!'
 file_listing_error: "(GEEN TOESTEMMING VOOR LIJSTBESTANDEN)"
 trying_message: 'proberen {0} van {1} in proces {2} van {3} {4}: {5} ({6})'
-smtp_connection_timeout: 'smtp-verbinding met {0}: {1} time-out, overslaan {2}: {3}'
+smtp_connectiontimeout: 'smtp-verbinding met {0}: {1} time-out, overslaan {2}: {3}'
 smtp_connection_failed: 'smtp-verbinding met {0}: {1} mislukt, hele stap overslaan
   [proces {2} van {3}]! naar de volgende stap gaan'
-ssh_connection_timeout: 'ssh-verbinding met {0}: {1} time-out, overslaan {2}: {3}'
+ssh_connectiontimeout: 'ssh-verbinding met {0}: {1} time-out, overslaan {2}: {3}'
 ssh_connection_failed: 'ssh-verbinding met {0}: {1} is mislukt, hele stap overslaan
   [proces {2} van {3}]! naar de volgende stap gaan'
 port/type: "{0} / {1}"
@@ -126,7 +126,7 @@ last_version: U gebruikt de laatste versie van OWASP Nettacker ...
 directoy_listing: directoryvermelding gevonden in {0}
 insert_port_message: voer de poort in via de -g of --methods-args switch in plaats
   van de URL
-http_connection_timeout: HTTP-verbinding {0} time-out!
+http_connectiontimeout: HTTP-verbinding {0} time-out!
 wizard_mode: start wizardmodus
 directory_file_404: geen map of bestand gevonden voor {0} in poort {1}
 open_error: kan {0} niet openen
@@ -201,7 +201,7 @@ host_down: Kan {0} niet pingen!
 root_required: dit moet als root worden uitgevoerd
 admin_scan_get: admin_scan_http_method waarde moet GET of HEAD zijn, zet standaard
   op GET.
-telnet_connection_timeout: 'telnet-verbinding met {0}: {1} time-out, overslaan {2}:
+telnet_connectiontimeout: 'telnet-verbinding met {0}: {1} time-out, overslaan {2}:
   {3}'
 telnet_connection_failed: 'Telnet-verbinding met {0}: {1} is mislukt, hele stap overslaan
   [proces {2} van {3}]! naar de volgende stap gaan'

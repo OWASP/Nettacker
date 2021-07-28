@@ -27,7 +27,7 @@ time_to_sleep: זמן לישון בין כל בקשה
 error_target: לא ניתן להגדיר את המיקודים
 error_target_file: 'לא ניתן לציין את היעדים, לא ניתן לפתוח את הקובץ: {0}'
 thread_number_warning: עדיף להשתמש במספר פתיל נמוך מ -100, BTW אנחנו ממשיכים ...
-set_timeout: להגדיר פסק זמן ל {0} שניות, זה גדול מדי, לא? בדרך שאנחנו ממשיכים ...
+settimeout: להגדיר פסק זמן ל {0} שניות, זה גדול מדי, לא? בדרך שאנחנו ממשיכים ...
 scan_module_not_found: מודול הסריקה [{0}] לא נמצא!
 error_exclude_all: לא ניתן לבצע אי הכללה של כל שיטות הסריקה
 exclude_module_error: מודול {0} שבחרת לא לכלול לא נמצא!
@@ -70,7 +70,7 @@ valid_socks_address: 'נא להזין כתובת גרביים חוקית יצי�
   9050, אימות: socks: // username: password @ 127.0.0.1, socks4: // שם משתמש: password@127.0.0.1,
   socks5: // שם משתמש: password@127.0.0.1'
 connection_retries: ניסיונות חוזרים כאשר פסק הזמן לחיבור (ברירת מחדל 3)
-ftp_connection_timeout: 'חיבור ל- {0}: {1} פסק זמן, דילוג על {2}: {3}'
+ftp_connectiontimeout: 'חיבור ל- {0}: {1} פסק זמן, דילוג על {2}: {3}'
 login_successful: התחברת בהצלחה!
 login_list_error: מחובר בהצלחה, הרשאה מסולקת עבור פקודת רשימה!
 ftp_connection_failed: 'חיבור ל- {0}: {1} נכשל, מדלג על כל התהליך [תהליך {2} של {3}]!
@@ -80,10 +80,10 @@ input_target_error: יעד קלט עבור מודול {0} חייב להיות DO
 user_pass_found: 'המשתמש: {0} pass: {1} host: {2} port: {3} נמצא!'
 file_listing_error: "(אין הרשאה עבור רשימת קבצים)"
 trying_message: 'מנסה {0} של {1} בתהליך {2} של {3} {4}: {5} ({6})'
-smtp_connection_timeout: 'חיבור smtp אל {0}: {1} פסק זמן, דילוג על {2}: {3}'
+smtp_connectiontimeout: 'חיבור smtp אל {0}: {1} פסק זמן, דילוג על {2}: {3}'
 smtp_connection_failed: 'חיבור smtp אל {0}: {1} נכשל, מדלג על כל השלבים [תהליך {2}
   של {3}]! הולך לשלב הבא'
-ssh_connection_timeout: 'חיבור ssh ל- {0}: {1} פסק זמן, דילוג על {2}: {3}'
+ssh_connectiontimeout: 'חיבור ssh ל- {0}: {1} פסק זמן, דילוג על {2}: {3}'
 ssh_connection_failed: 'חיבור ssh ל- {0}: {1} נכשל, מדלג על כל השלבים [תהליך {2} של
   {3}]! הולך לשלב הבא'
 port/type: "{0} / {1}"
@@ -116,7 +116,7 @@ cannot_update: לא ניתן לבדוק אם יש עדכון, בדוק את חי
 last_version: אתה משתמש בגירסה האחרונה של OWASP Nettacker ...
 directoy_listing: רישום בספרייה שנמצא ב- {0}
 insert_port_message: אנא הכנס את היציאה דרך מתג -g או -methods-args במקום url
-http_connection_timeout: HTTP {0} פסק זמן!
+http_connectiontimeout: HTTP {0} פסק זמן!
 wizard_mode: הפעל מצב אשף
 directory_file_404: לא נמצאה ספרייה או קובץ עבור {0} ביציאה {1}
 open_error: לא ניתן לפתוח {0}
@@ -190,7 +190,7 @@ host_down: לא ניתן לבצע פינג {0}!
 root_required: זה צריך להיות לרוץ כמו שורש
 admin_scan_get: הערך admin_scan_http_method חייב להיות GET או HEAD, הגדר את ברירת
   המחדל ל- GET.
-telnet_connection_timeout: 'חיבור Telnet אל {0}: {1} פסק זמן, דילוג על {2}: {3}'
+telnet_connectiontimeout: 'חיבור Telnet אל {0}: {1} פסק זמן, דילוג על {2}: {3}'
 telnet_connection_failed: 'חיבור Telnet ל- {0}: {1} נכשל, מדלג על כל השלבים [תהליך
   {2} של {3}]! הולך לשלב הבא'
 http_auth_success: 'אימות HTTP בסיסי אימות - מארח: {2}: {3}, משתמש: {0}, לעבור: {1}

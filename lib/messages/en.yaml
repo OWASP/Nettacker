@@ -33,7 +33,7 @@ error_target: Cannot specify the target(s)
 error_target_file: 'Cannot specify the target(s), unable to open file: {0}'
 thread_number_warning: it's better to use thread number lower than 100, BTW we are
   continuing...
-set_timeout: set timeout to {0} seconds, it is too big, isn't it ? by the way we are
+settimeout: set timeout to {0} seconds, it is too big, isn't it ? by the way we are
   continuing...
 scan_module_not_found: this scan module [{0}] not found!
 error_exclude_all: you cannot exclude all scan methods
@@ -75,7 +75,7 @@ valid_socks_address: 'please enter valid socks address and port. example socks5:
   authentication: socks://username:password@127.0.0.1, socks4://username:password@127.0.0.1,
   socks5://username:password@127.0.0.1'
 connection_retries: Retries when the connection timeout (default 3)
-ftp_connection_timeout: ftp connection to {0}:{1} timeout, skipping {2}:{3}
+ftp_connectiontimeout: ftp connection to {0}:{1} timeout, skipping {2}:{3}
 login_successful: LOGGED IN SUCCESSFULLY!
 login_list_error: LOGGED IN SUCCESSFULLY, PERMISSION DENIED FOR LIST COMMAND!
 ftp_connection_failed: ftp connection to {0}:{1} failed, skipping whole step [process
@@ -85,10 +85,10 @@ input_target_error: input target for {0} module must be DOMAIN, HTTP or SINGLE_I
 user_pass_found: 'user: {0} pass:{1} host:{2} port:{3} found!'
 file_listing_error: "(NO PERMISSION FOR LIST FILES)"
 trying_message: trying {0} of {1} in process {2} of {3} {4}:{5} ({6})
-smtp_connection_timeout: smtp connection to {0}:{1} timeout, skipping {2}:{3}
+smtp_connectiontimeout: smtp connection to {0}:{1} timeout, skipping {2}:{3}
 smtp_connection_failed: smtp connection to {0}:{1} failed, skipping whole step [process
   {2} of {3}]! going to next step
-ssh_connection_timeout: ssh connection to {0}:{1} timeout, skipping {2}:{3}
+ssh_connectiontimeout: ssh connection to {0}:{1} timeout, skipping {2}:{3}
 ssh_connection_failed: ssh connection to {0}:{1} failed, skipping whole step [process
   {2} of {3}]! going to next step
 port/type: "{0}/{1}"
@@ -125,7 +125,7 @@ last_version: You are using the latest version of OWASP Nettacker ...
 directoy_listing: directory listing found in {0}
 insert_port_message: please insert port through the -g or --methods-args switch instead
   of url
-http_connection_timeout: http connection {0} timeout!
+http_connectiontimeout: http connection {0} timeout!
 wizard_mode: start wizard mode
 directory_file_404: no directory or file found for {0} in port {1}
 open_error: unable to open {0}
@@ -216,7 +216,7 @@ host_up: "{0} is up! Time taken to ping back is {1}"
 host_down: Cannot ping {0}!
 root_required: this needs to be run as root
 admin_scan_get: admin_scan_http_method value must be GET or HEAD, set default to GET.
-telnet_connection_timeout: telnet connection to {0}:{1} timeout, skipping {2}:{3}
+telnet_connectiontimeout: telnet connection to {0}:{1} timeout, skipping {2}:{3}
 telnet_connection_failed: telnet connection to {0}:{1} failed, skipping whole step
   [process {2} of {3}]! going to next step
 http_auth_success: 'http basic authentication success - host:{2}:{3}, user: {0}, pass:{1}

@@ -11,7 +11,7 @@ from core.config_builder import _builder
 from flask import abort
 
 
-def __structure(status="", msg=""):
+def structure(status="", msg=""):
     """
     basic JSON message structure
 
@@ -28,7 +28,7 @@ def __structure(status="", msg=""):
     }
 
 
-def __get_value(flask_request, _key):
+def get_value(flask_request, _key):
     """
     get a value from GET, POST or CCOKIES
 
@@ -55,7 +55,7 @@ def __get_value(flask_request, _key):
     return key
 
 
-def __remove_non_api_keys(config):
+def remove_non_api_keys(config):
     """
     a function to remove non-api keys while loading ARGV
 
@@ -78,7 +78,7 @@ def __remove_non_api_keys(config):
     return new_config
 
 
-def __is_login(app, flask_request):
+def is_login(app, flask_request):
     """
     check if session is valid
 
@@ -89,12 +89,12 @@ def __is_login(app, flask_request):
     Returns:
         True if session is valid otherwise False
     """
-    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] == __get_value(flask_request, "key"):
+    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] == get_value(flask_request, "key"):
         return True
     return False
 
 
-def __mime_types():
+def mime_types():
     """
     contains all mime types for HTTP request
 
@@ -200,7 +200,7 @@ def get_file(filename):
         abort(404)
 
 
-def __api_key_check(app, flask_request, language):
+def api_key_check(app, flask_request, language):
     """
     check the validity of API key
 
@@ -213,7 +213,7 @@ def __api_key_check(app, flask_request, language):
         200 HTTP code if it's valid otherwise 401 error
 
     """
-    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != __get_value(flask_request, "key"):
+    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != get_value(flask_request, "key"):
         abort(401, messages(language, "API_invalid"))
     return
 

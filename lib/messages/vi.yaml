@@ -28,7 +28,7 @@ error_target: Không thể chỉ định (các) mục tiêu
 error_target_file: 'Không thể chỉ định (các) đích, không thể mở tệp: {0}'
 thread_number_warning: nó tốt hơn để sử dụng số chủ đề thấp hơn 100, BTW chúng tôi
   đang tiếp tục ...
-set_timeout: đặt thời gian chờ thành {0} giây, nó quá lớn, phải không? bằng cách chúng
+settimeout: đặt thời gian chờ thành {0} giây, nó quá lớn, phải không? bằng cách chúng
   ta tiếp tục ...
 scan_module_not_found: mô-đun quét này [{0}] không tìm thấy!
 error_exclude_all: bạn không thể loại trừ tất cả các phương pháp quét
@@ -72,7 +72,7 @@ valid_socks_address: 'xin vui lòng nhập địa chỉ vớ hợp lệ và cổ
   9050, xác thực: socks: // username: password @ 127.0.0.1, tên người dùng socks4:
   //: password@127.0.0.1, socks5: // username: password@127.0.0.1'
 connection_retries: Thử lại khi hết thời gian chờ kết nối (mặc định 3)
-ftp_connection_timeout: 'kết nối ftp với {0}: {1} thời gian chờ, bỏ qua {2}: {3}'
+ftp_connectiontimeout: 'kết nối ftp với {0}: {1} thời gian chờ, bỏ qua {2}: {3}'
 login_successful: ĐĂNG NHẬP THÀNH CÔNG!
 login_list_error: ĐĂNG NHẬP TRONG SUCCESSFULLY, PERMISSION DENIED CHO DANH SÁCH DANH
   SÁCH!
@@ -84,10 +84,10 @@ user_pass_found: 'người dùng: {0} vượt qua: {1} máy chủ lưu trữ: {2
   tìm thấy!'
 file_listing_error: "(KHÔNG PHÉP CHO DANH SÁCH DANH SÁCH)"
 trying_message: 'đang thử {0} trong {1} trong quá trình {2} của {3} {4}: {5} ({6})'
-smtp_connection_timeout: 'kết nối smtp thành {0}: {1} thời gian chờ, bỏ qua {2}: {3}'
+smtp_connectiontimeout: 'kết nối smtp thành {0}: {1} thời gian chờ, bỏ qua {2}: {3}'
 smtp_connection_failed: 'kết nối smtp thành {0}: {1} không thành công, bỏ qua toàn
   bộ bước [process {2} of {3}]! bước tiếp theo'
-ssh_connection_timeout: 'kết nối ssh tới {0}: {1} thời gian chờ, bỏ qua {2}: {3}'
+ssh_connectiontimeout: 'kết nối ssh tới {0}: {1} thời gian chờ, bỏ qua {2}: {3}'
 ssh_connection_failed: 'kết nối ssh tới {0}: {1} không thành công, bỏ qua toàn bộ
   bước [process {2} of {3}]! bước tiếp theo'
 port/type: "{0} / {1}"
@@ -126,7 +126,7 @@ last_version: Bạn đang sử dụng phiên bản mới nhất của OWASP Nett
 directoy_listing: danh sách thư mục được tìm thấy trong {0}
 insert_port_message: hãy chèn cổng thông qua chuyển đổi -g hoặc --methods-args thay
   vì url
-http_connection_timeout: kết nối http {0} hết giờ!
+http_connectiontimeout: kết nối http {0} hết giờ!
 wizard_mode: chế độ thuật sĩ khởi động
 directory_file_404: không tìm thấy thư mục hoặc tệp nào cho {0} trong cổng {1}
 open_error: không thể mở {0}
@@ -201,7 +201,7 @@ host_down: Không thể ping {0}!
 root_required: điều này cần phải được chạy dưới dạng root
 admin_scan_get: Giá trị admin_scan_http_method phải là GET hoặc HEAD, đặt mặc định
   là GET.
-telnet_connection_timeout: 'kết nối telnet tới {0}: {1} thời gian chờ, bỏ qua {2}:
+telnet_connectiontimeout: 'kết nối telnet tới {0}: {1} thời gian chờ, bỏ qua {2}:
   {3}'
 telnet_connection_failed: 'kết nối telnet tới {0}: {1} không thành công, bỏ qua toàn
   bộ bước [process {2} of {3}]! bước tiếp theo'

@@ -21,25 +21,25 @@ from flask import Response
 from flask import make_response
 from core.alert import write_to_api_console
 from core.alert import messages
-from core._die import __die_success
-from core._die import __die_failure
-from core._time import now
+from core.die import die_success
+from core.die import die_failure
+from core.time import now
 from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
-from api.api_core import __structure
-from api.api_core import __get_value
+from api.api_core import structure
+from api.api_core import get_value
 from api.api_core import root_dir
 from api.api_core import get_file
-from api.api_core import __mime_types
+from api.api_core import mime_types
 from api.api_core import __scan_methods
 from api.api_core import __profiles
 from api.api_core import __graphs
 from api.api_core import __languages
-from api.api_core import __remove_non_api_keys
+from api.api_core import remove_non_api_keys
 from api.api_core import __rules
-from api.api_core import __api_key_check
-from api.__start_scan import __scan
+from api.api_core import api_key_check
+from api.start_scan import __scan
 from database.db import __select_results
 from database.db import __get_result
 from database.db import __last_host_logs
@@ -79,7 +79,7 @@ def error_400(error):
     Returns:
         400 JSON error
     """
-    return jsonify(__structure(status="error", msg=error.description)), 400
+    return jsonify(structure(status="error", msg=error.description)), 400
 
 
 @app.errorhandler(401)
@@ -93,7 +93,7 @@ def error_401(error):
     Returns:
         401 JSON error
     """
-    return jsonify(__structure(status="error", msg=error.description)), 401
+    return jsonify(structure(status="error", msg=error.description)), 401
 
 
 @app.errorhandler(403)
@@ -107,7 +107,7 @@ def error_403(error):
     Returns:
         403 JSON error
     """
-    return jsonify(__structure(status="error", msg=error.description)), 403
+    return jsonify(structure(status="error", msg=error.description)), 403
 
 
 @app.errorhandler(404)
@@ -121,7 +121,7 @@ def error_404(error):
     Returns:
         404 JSON error
     """
-    return jsonify(__structure(status="error",
+    return jsonify(structure(status="error",
                                msg=messages(app.config[
                                    "OWASP_NETTACKER_CONFIG"]["language"],
                                    "not_found"))), 404
@@ -189,7 +189,7 @@ def get_statics(path):
     Returns:
         file content and content type if file found otherwise abort(404)
     """
-    static_types = __mime_types()
+    static_types = mime_types()
     return Response(get_file(os.path.join(root_dir(), path)),
                     mimetype=static_types.get(os.path.splitext(path)[1],
                     "text/html"))
@@ -219,15 +219,15 @@ def new_scan():
         a JSON message with scan details if success otherwise a JSON error
     """
     _start_scan_config = {}
-    __api_key_check(app, flask_request, __language())
-    targetValue = __get_value(flask_request, "targets")
+    api_key_check(app, flask_request, __language())
+    targetValue = get_value(flask_request, "targets")
     if(target_type(targetValue) == "UNKNOWN"):
         return jsonify({"error": "Please input correct target"}), 400
     for key in _core_default_config():
-        if __get_value(flask_request, key) is not None:
-            _start_scan_config[key] = escape(__get_value(flask_request, key))
-    _start_scan_config["backup_ports"] = __get_value(flask_request, "ports")
-    _start_scan_config = __rules(__remove_non_api_keys(_builder(
+        if get_value(flask_request, key) is not None:
+            _start_scan_config[key] = escape(get_value(flask_request, key))
+    _start_scan_config["backup_ports"] = get_value(flask_request, "ports")
+    _start_scan_config = __rules(remove_non_api_keys(_builder(
         _start_scan_config, _builder(_core_config(), _core_default_config()))),
         _core_default_config(), __language())
     _p = multiprocessing.Process(target=__scan, args=[_start_scan_config])
@@ -243,8 +243,8 @@ def __session_check():
     Returns:
         a JSON message if it's valid otherwise abort(401)
     """
-    __api_key_check(app, flask_request, __language())
-    return jsonify(__structure(status="ok", msg=messages(
+    api_key_check(app, flask_request, __language())
+    return jsonify(structure(status="ok", msg=messages(
         __language(), "browser_session_valid"))), 200
 
 
@@ -257,9 +257,9 @@ def __session_set():
         200 HTTP response if session is valid and a set-cookie in the
         response if success otherwise abort(403)
     """
-    __api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request, __language())
     res = make_response(
-        jsonify(__structure(status="ok", msg=messages(
+        jsonify(structure(status="ok", msg=messages(
             __language(), "browser_session_valid"))))
     res.set_cookie("key", value=app.config[
         "OWASP_NETTACKER_CONFIG"]["api_access_key"])
@@ -276,7 +276,7 @@ def __session_kill():
         to unset the cookie on the browser
     """
     res = make_response(
-        jsonify(__structure(status="ok", msg=messages(
+        jsonify(structure(status="ok", msg=messages(
             __language(), "browser_session_killed"))))
     res.set_cookie("key", "", expires=0)
     return res
@@ -290,9 +290,9 @@ def __get_results():
     Returns:
         an array of JSON scan's results if success otherwise abort(403)
     """
-    __api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request, __language())
     try:
-        page = int(__get_value(flask_request, "page"))
+        page = int(get_value(flask_request, "page"))
     except Exception:
         page = 1
     return jsonify(__select_results(__language(), page)), 200
@@ -306,11 +306,11 @@ def __get_result_content():
     Returns:
         content of the scan result
     """
-    __api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request, __language())
     try:
-        _id = int(__get_value(flask_request, "id"))
+        _id = int(get_value(flask_request, "id"))
     except Exception:
-        return jsonify(__structure(status="error",
+        return jsonify(structure(status="error",
                        msg="your scan id is not valid!")), 400
     return __get_result(__language(), _id)
 
@@ -324,9 +324,9 @@ def __get_results_json():
         an array with JSON events
     """
     session = create_connection(__language())
-    __api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request, __language())
     try:
-        _id = int(__get_value(flask_request, "id"))
+        _id = int(get_value(flask_request, "id"))
         scan_id_temp = session.query(Report).filter(Report.id == _id).all()
     except Exception as _:
         _id = ""
@@ -362,9 +362,9 @@ def __get_results_csv():
         an array with JSON events
     """
     session = create_connection(__language())
-    __api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request, __language())
     try:
-        _id = int(__get_value(flask_request, "id"))
+        _id = int(get_value(flask_request, "id"))
         scan_id_temp = session.query(Report).filter(Report.id == _id).all()
     except Exception as _:
         _id = ""
@@ -408,9 +408,9 @@ def __get_last_host_logs():
     Returns:
         an array of JSON logs if success otherwise abort(403)
     """
-    __api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request, __language())
     try:
-        page = int(__get_value(flask_request, "page"))
+        page = int(get_value(flask_request, "page"))
     except Exception:
         page = 1
     return jsonify(__last_host_logs(__language(), page)), 200
@@ -424,9 +424,9 @@ def __get_logs_html():
     Returns:
         HTML report
     """
-    __api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request, __language())
     try:
-        host = __get_value(flask_request, "host")
+        host = get_value(flask_request, "host")
     except Exception:
         host = ""
     return make_response(__logs_to_report_html(host, __language()))
@@ -440,9 +440,9 @@ def __get_logs():
     Returns:
         an array with JSON events
     """
-    __api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request, __language())
     try:
-        host = __get_value(flask_request, "host")
+        host = get_value(flask_request, "host")
     except Exception:
         host = ""
     data = __logs_to_report_json(host, __language())
@@ -463,9 +463,9 @@ def __get_logs_csv():
     Returns:
         an array with JSON events
     """
-    __api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request, __language())
     try:
-        host = __get_value(flask_request, "host")
+        host = get_value(flask_request, "host")
     except Exception:
         host = ""
     data = __logs_to_report_json(host, __language())
@@ -496,13 +496,13 @@ def ___go_for_search_logs():
     Returns:
         an array with JSON events
     """
-    __api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request, __language())
     try:
-        page = int(__get_value(flask_request, "page"))
+        page = int(get_value(flask_request, "page"))
     except Exception:
         page = 1
     try:
-        query = __get_value(flask_request, "q")
+        query = get_value(flask_request, "q")
     except Exception:
         query = ""
     return jsonify(__search_logs(__language(), page, query)), 200
@@ -546,21 +546,21 @@ def __process_it(api_host, api_port, api_debug_mode, api_access_key,
                 app.run(host=api_host, port=api_port, debug=api_debug_mode,
                         ssl_context=(api_cert, api_cert_key), threaded=True)
             else:
-                __die_failure(messages(language, "api_cert_key"))
+                die_failure(messages(language, "api_cert_key"))
 
         if api_cert_key:
             if api_cert:
                 app.run(host=api_host, port=api_port, debug=api_debug_mode,
                         ssl_context=(api_cert, api_cert_key), threaded=True)
             else:
-                __die_failure(messages(language, "api_cert"))
+                die_failure(messages(language, "api_cert"))
 
         else:
             app.run(host=api_host,
                     port=api_port, debug=api_debug_mode,
                     ssl_context="adhoc", threaded=True)
     except Exception:
-        __die_failure(messages(language, "wrong_values"))
+        die_failure(messages(language, "wrong_values"))
 
 
 def _start_api(api_host, api_port, api_debug_mode, api_access_key,
@@ -607,4 +607,4 @@ def _start_api(api_host, api_port, api_debug_mode, api_access_key,
                 process.terminate()
             break
 
-    __die_success()
+    die_success()

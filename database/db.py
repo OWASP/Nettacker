@@ -10,9 +10,9 @@ from database.models import HostsLog, Report, Update_Log
 from core.alert import warn
 from core.alert import info
 from core.alert import messages
-from core._time import now
+from core.time import now
 from core import compatible
-from api.api_core import __structure
+from api.api_core import structure
 from core.config import _database_config
 
 DB = _database_config()["DB"]
@@ -143,8 +143,8 @@ def save_update_log(language):
         True or False if the data got saved in the db or not
     """
     session = create_connection(language)
-    date_time = now()
-    session.add(Update_Log(last_update_time=date_time))
+    datetime = now()
+    session.add(Update_Log(last_updatetime=datetime))
     return send_submit_query(session, language)
 
 
@@ -245,7 +245,7 @@ def __select_results(language, page):
             }
             selected.append(tmp)
     except Exception as _:
-        return __structure(status="error", msg="database error!")
+        return structure(status="error", msg="database error!")
     return selected
 
 
@@ -267,9 +267,9 @@ def __get_result(language, id):
             filename = file_obj.report_filename
             return open(filename, 'rb').read(), 200
         except Exception as _:
-            return jsonify(__structure(status="error", msg="cannot find the file!")), 400
+            return jsonify(structure(status="error", msg="cannot find the file!")), 400
     except Exception as _:
-        return jsonify(__structure(status="error", msg="database error!")), 200
+        return jsonify(structure(status="error", msg="database error!")), 200
 
 
 def __last_host_logs(language, page):
@@ -334,9 +334,9 @@ def __last_host_logs(language, page):
                         selected[capture]["info"][
                             "descriptions"].append(data.description)
     except Exception as _:
-        return __structure(status="error", msg="database error!")
+        return structure(status="error", msg="database error!")
     if len(selected) == 0:
-        return __structure(status="finished", msg="No more search results")
+        return structure(status="finished", msg="No more search results")
     return selected
 
 
@@ -521,7 +521,7 @@ def __search_logs(language, page, query):
                         selected[capture]["info"][
                             "descriptions"].append(data.description)
     except Exception as _:
-        return __structure(status="error", msg="database error!")
+        return structure(status="error", msg="database error!")
     if len(selected) == 0:
-        return __structure(status="finished", msg="No more search results")
+        return structure(status="finished", msg="No more search results")
     return selected

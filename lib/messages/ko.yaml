@@ -27,7 +27,7 @@ time_to_sleep: 각 요청 사이에 잠자기 시간
 error_target: 타겟을 지정할 수 없습니다.
 error_target_file: '파일을 열 수없는 대상을 지정할 수 없습니다 : {0}'
 thread_number_warning: 100보다 낮은 스레드 번호를 사용하는 것이 좋습니다. 계속 진행 중입니다 ...
-set_timeout: 시간 초과를 {0} 초로 설정하면 너무 큽니다. 그렇지 않습니까? 그런데 우리가 계속 ...
+settimeout: 시간 초과를 {0} 초로 설정하면 너무 큽니다. 그렇지 않습니까? 그런데 우리가 계속 ...
 scan_module_not_found: 이 스캔 모듈 [{0}]을 찾을 수 없습니다!
 error_exclude_all: 모든 검사 방법을 제외 할 수는 없습니다.
 exclude_module_error: 찾을 수없는 제외 모듈 {0}을 (를) 찾았습니다!
@@ -68,7 +68,7 @@ valid_socks_address: '유효한 양말 주소와 포트를 입력하십시오. �
   : socks : // 사용자 이름 : password @ 127.0.0.1, socks4 : // 사용자 이름 : password@127.0.0.1,
   socks5 : // 사용자 이름 : password@127.0.0.1'
 connection_retries: 연결 시간 제한 (기본값 3)
-ftp_connection_timeout: "{0}에 대한 FTP 연결 : {1} 시간 초과, {2} 건너 뛰기 : {3}"
+ftp_connectiontimeout: "{0}에 대한 FTP 연결 : {1} 시간 초과, {2} 건너 뛰기 : {3}"
 login_successful: 성공 적으로 로깅되었습니다!
 login_list_error: 성공적으로 로깅되었으므로 권한이 목록 명령에 거부되었습니다!
 ftp_connection_failed: "{0} (으) 로의 FTP 연결이 실패했습니다 : {3}의 {2} 번 프로세스를 건너 뜁니다! 다음 단계로
@@ -77,10 +77,10 @@ input_target_error: "{0} 모듈의 입력 대상은 {1}을 (를) 건너 뛰고 D
 user_pass_found: '사용자 : {0} 통과 : {1} 호스트 : {2} 포트 : {3}이 (가) 발견되었습니다.'
 file_listing_error: "(목록 파일에 대한 권한 없음)"
 trying_message: "{3} {4} : {5} ({6})의 {2} 프로세스에서 {1}의 {0}"
-smtp_connection_timeout: "{0}에 대한 smtp 연결 : {1} 시간 초과, {2} 건너 뛰기 : {3}"
+smtp_connectiontimeout: "{0}에 대한 smtp 연결 : {1} 시간 초과, {2} 건너 뛰기 : {3}"
 smtp_connection_failed: "{0}에 대한 smtp 연결이 실패했습니다 : {3}의 {{2}} 프로세스 전체를 건너 뜁니다! 다음
   단계로 이동"
-ssh_connection_timeout: "{0}에 대한 ssh 연결 : {1} 시간 초과, {2} 건너 뛰기 : {3}"
+ssh_connectiontimeout: "{0}에 대한 ssh 연결 : {1} 시간 초과, {2} 건너 뛰기 : {3}"
 ssh_connection_failed: "{0}에 대한 ssh 연결 : {1}이 (가) {3}의 전체 {{2}} 프로세스를 건너 뛰었습니다! 다음
   단계로 이동"
 port/type: "{0} / {1}"
@@ -111,7 +111,7 @@ cannot_update: 업데이트를 확인할 수 없으므로 인터넷 연결을 �
 last_version: OWASP Nettacker의 마지막 버전을 사용 중입니다 ...
 directoy_listing: "{0}에있는 디렉토리 목록"
 insert_port_message: URL 대신 -g 또는 --methods-args 스위치를 통해 포트를 삽입하십시오.
-http_connection_timeout: http 연결 {0} 시간 초과!
+http_connectiontimeout: http 연결 {0} 시간 초과!
 wizard_mode: 마법사 모드 시작
 directory_file_404: 포트 {1}에서 {0}에 대한 디렉토리 또는 파일을 찾을 수 없습니다.
 open_error: "{0}을 (를) 열 수 없습니다."
@@ -183,7 +183,7 @@ host_up: "{0}이 (가) 있습니다! 핑 (ping)까지 걸리는 시간은 {1}입
 host_down: "{0}을 (를) 핑 (ping) 할 수 없습니다!"
 root_required: 이것은 루트로서 실행되어야한다.
 admin_scan_get: admin_scan_http_method 값은 GET 또는 HEAD 여야하며, 기본값은 GET으로 설정하십시오.
-telnet_connection_timeout: "{0}에 대한 텔넷 연결 : {1} 시간 초과, {2} 건너 뛰기 : {3}"
+telnet_connectiontimeout: "{0}에 대한 텔넷 연결 : {1} 시간 초과, {2} 건너 뛰기 : {3}"
 telnet_connection_failed: "{0} : {1}에 대한 텔넷 연결이 실패했습니다. [{3}의 {2}} 프로세스! 다음 단계로 이동"
 http_auth_success: 'http 기본 인증 성공 - 호스트 : {2} : {3}, 사용자 : {0}, 통과 : {1}이 (가) 발견되었습니다!'
 http_auth_failed: 'http 기본 인증이 {1}을 (를) 사용하여 {0} : {3}에 실패했습니다 : {2}'

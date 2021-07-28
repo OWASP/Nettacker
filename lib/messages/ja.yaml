@@ -27,7 +27,7 @@ time_to_sleep: 各リクエストの間にスリープする時間
 error_target: ターゲットを指定できません
 error_target_file: ファイルを開くことができないターゲットを指定することはできません：{0}
 thread_number_warning: 100より低いスレッド番号を使用する方が良いです、私たちは継続しています...
-set_timeout: タイムアウトを{0}秒に設定すると大きすぎますね。私たちが続けているところで...
+settimeout: タイムアウトを{0}秒に設定すると大きすぎますね。私たちが続けているところで...
 scan_module_not_found: このスキャンモジュール[{0}]は見つかりませんでした！
 error_exclude_all: すべてのスキャン方法を除外することはできません
 exclude_module_error: 除外するように選択した{0}モジュールが見つかりません！
@@ -63,7 +63,7 @@ outgoing_proxy: 発信接続プロキシ（ソックス）。例：socks5：127.
 valid_socks_address: 有効な靴下のアドレスとポートを入力してください。例socks5：127.0.0.1:9050、socks：//127.0.0.1：9050、socks5：//127.0.0.1：9050またはsocks4：socks4：//127.0.0.1：9050、認証：socks：//
   username：password @ 127.0.0.1、socks4：// username：password@127.0.0.1、socks5：// username：password@127.0.0.1
 connection_retries: 接続タイムアウト（デフォルトは3）
-ftp_connection_timeout: "{0}へのFTP接続：{1}タイムアウト、{2}をスキップ：{3}"
+ftp_connectiontimeout: "{0}へのFTP接続：{1}タイムアウト、{2}をスキップ：{3}"
 login_successful: 成功裏にログオン！
 login_list_error: 成功裏にログに記録され、許可はリストコマンドに拒否されました！
 ftp_connection_failed: "{0}へのftp接続：{1}は{3}の[{2}}プロセス全体をスキップしました！次のステップに進む"
@@ -71,9 +71,9 @@ input_target_error: "{0}モジュールの入力ターゲットはDOMAIN、HTTP�
 user_pass_found: ユーザー：{0}合格：{1}ホスト：{2}ポート：{3}が見つかりました！
 file_listing_error: "（リストファイルの許可なし）"
 trying_message: "{3} {4}：{5}（{6}）のプロセス{2}で{1}の{0}を試しています"
-smtp_connection_timeout: "{0}へのsmtp接続：{1}タイムアウト、{2}をスキップ：{3}"
+smtp_connectiontimeout: "{0}へのsmtp接続：{1}タイムアウト、{2}をスキップ：{3}"
 smtp_connection_failed: "{0}へのsmtp接続：{1}の全工程[{2}}をスキップしました！次のステップに進む"
-ssh_connection_timeout: "{0}へのssh接続：{1}タイムアウト、{2}をスキップ：{3}"
+ssh_connectiontimeout: "{0}へのssh接続：{1}タイムアウト、{2}をスキップ：{3}"
 ssh_connection_failed: "{0}へのssh接続が失敗しました。{3}の{{2}}プロセス全体をスキップしました！次のステップに進む"
 port/type: "{0} / {1}"
 port_found: ホスト：{0}ポート：{1}（{2}）が見つかりました！
@@ -101,7 +101,7 @@ cannot_update: アップデートを確認できません。インターネッ�
 last_version: OWASP Nettackerの最新バージョンを使用しています...
 directoy_listing: "{0}にあるディレクトリリスト"
 insert_port_message: URLの代わりに-gまたは--methods-argsスイッチを使用してポートを挿入してください
-http_connection_timeout: http接続{0}タイムアウト！
+http_connectiontimeout: http接続{0}タイムアウト！
 wizard_mode: ウィザードモードを開始する
 directory_file_404: ポート{1}の{0}のディレクトリまたはファイルが見つかりません
 open_error: "{0}を開くことができません"
@@ -172,7 +172,7 @@ host_up: "{0}はアップです！ pingにかかった時間は{1}です。"
 host_down: "{0}にpingできません！"
 root_required: これはrootとして実行する必要があります
 admin_scan_get: admin_scan_http_methodの値はGETまたはHEADにする必要があります。デフォルトはGETに設定します。
-telnet_connection_timeout: "{0}へのtelnet接続：{1}タイムアウト、{2}をスキップ：{3}"
+telnet_connectiontimeout: "{0}へのtelnet接続：{1}タイムアウト、{2}をスキップ：{3}"
 telnet_connection_failed: "{0}へのtelnet接続が失敗しました。{3}の{{2}}プロセス全体をスキップしました！次のステップに進む"
 http_auth_success: http基本認証の成功 - ホスト：{2}：{3}、ユーザー：{0}、パス：{1}が見つかりました！
 http_auth_failed: http基本認証が{0}に失敗しました：{1}を使用している{3}：{2}

@@ -7,7 +7,7 @@ import netaddr.ip
 import re
 from core.ip import getIPRange, IPRange, isIP, isIP6
 from core.alert import messages, info
-from core._die import __die_failure
+from core.die import die_failure
 from core.log import __log_into_file
 import ipaddress
 
@@ -325,4 +325,4 @@ def analysis(
                                 yield IPn
 
         else:
-            __die_failure(messages(language, "unknown_target").format(target))
+            die_failure(messages(language, "unknown_target").format(target))

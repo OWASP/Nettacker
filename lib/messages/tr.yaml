@@ -28,7 +28,7 @@ error_target: Hedef (ler) belirtilemiyor
 error_target_file: 'Dosya açılamayan hedef (ler) belirtilemiyor: {0}'
 thread_number_warning: 100'den daha düşük iplik numarası kullanmak daha iyi, BTW devam
   ediyor ...
-set_timeout: zaman aşımını {0} saniye olarak ayarlayın, çok büyük değil mi? devam
+settimeout: zaman aşımını {0} saniye olarak ayarlayın, çok büyük değil mi? devam
   ettikçe ...
 scan_module_not_found: bu tarama modülü [{0}] bulunamadı!
 error_exclude_all: tüm tarama yöntemlerini hariç tutamazsınız
@@ -72,7 +72,7 @@ valid_socks_address: 'lütfen geçerli bir çorap adresi ve port giriniz. örnek
   çorap4: //127.0.0.1: 9050, kimlik doğrulama: çorap: // kullanıcı adı: şifre @ 127.0.0.1,
   socks4: // kullanıcı adı: password@127.0.0.1, socks5: // kullanıcı adı: password@127.0.0.1'
 connection_retries: Bağlantı zaman aşımı olduğunda tekrar dener (varsayılan 3)
-ftp_connection_timeout: "{0} ile ftp bağlantısı: {1} zaman aşımı, {2} atlama: {3}"
+ftp_connectiontimeout: "{0} ile ftp bağlantısı: {1} zaman aşımı, {2} atlama: {3}"
 login_successful: BAŞARIYLA GİRİŞ YAPTI!
 login_list_error: BAŞARILI OLMAK ÜZERE, LİSANS KOMİSYONU İÇİN İZİN VERİLDİ!
 ftp_connection_failed: "{0} için ftp bağlantısı: {1} başarısız oldu, tüm adımı atladım
@@ -83,10 +83,10 @@ user_pass_found: 'user: {0} pass: {1} host: {2} bağlantı noktası: {3} bulundu
 file_listing_error: "(LİSTE DOSYALARI İÇİN İZİN YOK)"
 trying_message: "{3} {4}: {5} ({6}) 'daki {2} sürecindeki {1} hesabının {0} değerini
   denemek"
-smtp_connection_timeout: "{0} için smtp bağlantısı: {1} zaman aşımı, {2} atlama: {3}"
+smtp_connectiontimeout: "{0} için smtp bağlantısı: {1} zaman aşımı, {2} atlama: {3}"
 smtp_connection_failed: "{0} için smtp bağlantısı: {1} başarısız oldu, tüm adımı atla
   {süreç {2}} {2}]! bir sonraki adıma geçmek"
-ssh_connection_timeout: "{0} ile ssh bağlantısı: {1} zaman aşımı, {2} atlama: {3}"
+ssh_connectiontimeout: "{0} ile ssh bağlantısı: {1} zaman aşımı, {2} atlama: {3}"
 ssh_connection_failed: "{0} için ssh bağlantısı: {1} başarısız oldu, tüm adımı atladı
   {süreç {2} {2}]! bir sonraki adıma geçmek"
 port/type: "{0} / {1}"
@@ -125,7 +125,7 @@ last_version: OWASP Nettacker'ın son sürümünü kullanıyorsunuz ...
 directoy_listing: dizin girişi {0} bulundu
 insert_port_message: lütfen URL yerine -g veya --methods-args anahtarından bağlantı
   noktası ekleyin
-http_connection_timeout: http bağlantısı {0} zaman aşımı!
+http_connectiontimeout: http bağlantısı {0} zaman aşımı!
 wizard_mode: sihirbaz modunu başlat
 directory_file_404: "{1} numaralı bağlantı noktasında {0} için dizin veya dosya bulunamadı"
 open_error: "{0} açılamıyor"
@@ -201,7 +201,7 @@ host_down: "{0} ping edilemiyor!"
 root_required: bunun kök olarak çalıştırılması gerekiyor
 admin_scan_get: admin_scan_http_method değeri GET veya HEAD olmalı, varsayılanı GET
   olarak ayarlanmış olmalıdır.
-telnet_connection_timeout: "{0} ile telnet bağlantısı: {1} zaman aşımı, {2} atlama:
+telnet_connectiontimeout: "{0} ile telnet bağlantısı: {1} zaman aşımı, {2} atlama:
   {3}"
 telnet_connection_failed: "{0} ile telnet bağlantısı: {1} başarısız oldu, tüm adımı
   atladı {süreç {2}} {2}]! bir sonraki adıma geçmek"

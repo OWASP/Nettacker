@@ -8,7 +8,7 @@ from glob import glob
 from core.alert import messages
 from core.alert import info
 from core.alert import warn
-from core._die import __die_failure
+from core.die import die_failure
 from core.compatible import version
 from core.compatible import is_windows
 from core.compatible import logo

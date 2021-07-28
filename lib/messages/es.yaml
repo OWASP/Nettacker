@@ -29,7 +29,7 @@ error_target_file: 'No se puede especificar el (los) objetivo (s), no se puede a
   el archivo: {0}'
 thread_number_warning: es mejor usar un número de hilo inferior a 100, por cierto,
   continuamos ...
-set_timeout: establece el tiempo de espera en {0} segundos, es demasiado grande, ¿no?
+settimeout: establece el tiempo de espera en {0} segundos, es demasiado grande, ¿no?
   por cierto, continuamos ...
 scan_module_not_found: este módulo de exploración [{0}] no se encuentra!
 error_exclude_all: no puedes excluir todos los métodos de escaneo
@@ -78,7 +78,7 @@ valid_socks_address: 'por favor ingrese la dirección y el puerto válidos de lo
   de usuario: contraseña@127.0.0.1, socks5: // nombre de usuario: contraseña@127.0.0.1'
 connection_retries: Reintentos cuando el tiempo de espera de conexión (valor predeterminado
   3)
-ftp_connection_timeout: 'conexión ftp a {0}: {1} tiempo de espera, omitiendo {2}:
+ftp_connectiontimeout: 'conexión ftp a {0}: {1} tiempo de espera, omitiendo {2}:
   {3}'
 login_successful: "¡INICIADO SUCESIVAMENTE!"
 login_list_error: "¡INICIADO SUCESIVAMENTE, PERMISO DENEGADO POR COMANDO DE LISTA!"
@@ -89,11 +89,11 @@ input_target_error: el destino de entrada para el módulo {0} debe ser DOMINIO, 
 user_pass_found: 'usuario: {0} pase: {1} host: {2} puerto: {3} encontrado!'
 file_listing_error: "(SIN PERMISO PARA ARCHIVOS DE LISTA)"
 trying_message: 'intentando {0} de {1} en proceso {2} de {3} {4}: {5} ({6})'
-smtp_connection_timeout: 'conexión smtp a {0}: {1} tiempo de espera, omitiendo {2}:
+smtp_connectiontimeout: 'conexión smtp a {0}: {1} tiempo de espera, omitiendo {2}:
   {3}'
 smtp_connection_failed: 'smtp conexión a {0}: {1} error, omitiendo todo el paso [proceso
   {2} de {3}]! yendo al siguiente paso'
-ssh_connection_timeout: 'conexión ssh a {0}: {1} tiempo de espera, omitiendo {2}:
+ssh_connectiontimeout: 'conexión ssh a {0}: {1} tiempo de espera, omitiendo {2}:
   {3}'
 ssh_connection_failed: 'la conexión ssh a {0}: {1} falló, omitiendo todo el paso [proceso
   {2} de {3}]! yendo al siguiente paso'
@@ -132,7 +132,7 @@ last_version: Estás utilizando la última versión de OWASP Nettacker ...
 directoy_listing: listado de directorio encontrado en {0}
 insert_port_message: por favor inserte el puerto a través del conmutador -g o --methods-args
   en lugar de url
-http_connection_timeout: http connection {0} timeout!
+http_connectiontimeout: http connection {0} timeout!
 wizard_mode: iniciar el modo asistente
 directory_file_404: no se encontró ningún directorio o archivo para {0} en el puerto
   {1}
@@ -208,7 +208,7 @@ host_down: No se puede hacer ping a {0}!
 root_required: esto debe ejecutarse como root
 admin_scan_get: El valor de admin_scan_http_method debe ser GET o HEAD, establecer
   de manera predeterminada en GET.
-telnet_connection_timeout: 'conexión telnet a {0}: {1} tiempo de espera, omitiendo
+telnet_connectiontimeout: 'conexión telnet a {0}: {1} tiempo de espera, omitiendo
   {2}: {3}'
 telnet_connection_failed: 'La conexión telnet a {0}: {1} falló, omitiendo todo el
   paso [proceso {2} de {3}]! yendo al siguiente paso'

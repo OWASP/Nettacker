@@ -11,8 +11,8 @@ from core.compatible import os_name
 from core.load_modules import load_all_graphs
 from core.config import _core_config
 from core.config_builder import _builder
-from core._die import __die_success
-from core._die import __die_failure
+from core.die import die_success
+from core.die import die_failure
 from core.color import finish
 from core.wizard import __wizard
 from core.config_builder import _core_default_config
@@ -61,7 +61,7 @@ def load_all_args(module_names, graph_names):
         except Exception:
             _error_flag = True
         if _error_flag or language not in language_list:
-            __die_failure(
+            die_failure(
                 "Please select one of these languages {0}".format(
                     language_list
                 )
@@ -427,7 +427,7 @@ def check_all_required(targets, targets_list, thread_number,
         parser.print_help()
         write("\n\n")
         write(messages(language, "license"))
-        __die_success()
+        die_success()
     # Check version
     if show_version:
         from core import color
@@ -443,7 +443,7 @@ def check_all_required(targets, targets_list, thread_number,
                 color.color("green"),
             )
         )
-        __die_success()
+        die_success()
     # API mode
     if start_api:
         from api.engine import _start_api
@@ -453,7 +453,7 @@ def check_all_required(targets, targets_list, thread_number,
         try:
             api_port = int(api_port)
         except Exception:
-            __die_failure(messages(language, "API_port_int"))
+            die_failure(messages(language, "API_port_int"))
         if api_client_white_list:
             if type(api_client_white_list_ips) != type([]):
                 api_client_white_list_ips = list(
@@ -474,7 +474,7 @@ def check_all_required(targets, targets_list, thread_number,
                         if ip not in hosts:
                             hosts.append(str(ip))
                 else:
-                    __die_failure(messages(language, "unknown_ip_input"))
+                    die_failure(messages(language, "unknown_ip_input"))
             api_client_white_list_ips = hosts[:]
         if api_access_log:
             try:
@@ -487,7 +487,7 @@ def check_all_required(targets, targets_list, thread_number,
                     )
                     + "\n"
                 )
-                __die_failure("")
+                die_failure("")
 
         _start_api(api_host, api_port,
                    api_debug_mode, api_access_key,
@@ -533,10 +533,10 @@ def check_all_required(targets, targets_list, thread_number,
     if targets is None and targets_list is None:
         parser.print_help()
         write("\n")
-        __die_failure(messages(language, "error_target"))
+        die_failure(messages(language, "error_target"))
     # Select a Profile
     if scan_method is None and profile is None:
-        __die_failure(messages(language, "scan_method_select"))
+        die_failure(messages(language, "scan_method_select"))
     if profile is not None:
         if scan_method is None:
             scan_method = ""
@@ -552,7 +552,7 @@ def check_all_required(targets, targets_list, thread_number,
                     if sm not in tmp_sm.rsplit(","):
                         tmp_sm += sm + ","
             except Exception:
-                __die_failure(messages(language, "profile_404").format(pr))
+                die_failure(messages(language, "profile_404").format(pr))
         if tmp_sm[-1] == ",":
             tmp_sm = tmp_sm[0:-1]
         scan_method = ",".join(list(set(tmp_sm.rsplit(","))))
@@ -591,7 +591,7 @@ def check_all_required(targets, targets_list, thread_number,
         except Exception:
             e = True
         if e:
-            __die_failure(messages(language, "valid_socks_address"))
+            die_failure(messages(language, "valid_socks_address"))
         if socks_flag == 4:
             socks_proxy = "socks4://" + socks_proxy
         if socks_flag == 5:
@@ -606,7 +606,7 @@ def check_all_required(targets, targets_list, thread_number,
             language,
             socks_proxy,
         )
-        __die_success()
+        die_success()
     else:
         if targets is not None:
             targets = list(set(targets.rsplit(",")))
@@ -615,7 +615,7 @@ def check_all_required(targets, targets_list, thread_number,
                 targets = list(set(open(
                     targets_list, "rb").read().decode().rsplit()))
             except Exception:
-                __die_failure(
+                die_failure(
                     messages(language, "error_target_file").format(
                         targets_list
                     )
@@ -625,7 +625,7 @@ def check_all_required(targets, targets_list, thread_number,
         warn(messages(language, "thread_number_warning"))
     # Check timeout number
     if timeout_sec is not None and timeout_sec >= 15:
-        warn(messages(language, "set_timeout").format(timeout_sec))
+        warn(messages(language, "settimeout").format(timeout_sec))
     # Check scanning method
     if scan_method is not None and "all" in scan_method.rsplit(","):
         scan_method = module_names
@@ -638,7 +638,7 @@ def check_all_required(targets, targets_list, thread_number,
         if scan_method in module_names:
             scan_method = scan_method.rsplit()
         else:
-            __die_failure(
+            die_failure(
                 messages(language, "scan_module_not_found").format(scan_method)
             )
     else:
@@ -658,7 +658,7 @@ def check_all_required(targets, targets_list, thread_number,
                                     scan_method_error = False
                                     found_flag = True
                             if found_flag is False:
-                                __die_failure(
+                                die_failure(
                                     messages(
                                         language, "module_pattern_404"
                                     ).format(sm)
@@ -671,7 +671,7 @@ def check_all_required(targets, targets_list, thread_number,
                         elif sm in module_names:
                             scan_method_error = False
                         elif sm not in module_names:
-                            __die_failure(
+                            die_failure(
                                 messages(
                                     language, "scan_module_not_found"
                                 ).format(sm)
@@ -679,13 +679,13 @@ def check_all_required(targets, targets_list, thread_number,
                 else:
                     scan_method_error = True
             if scan_method_error:
-                __die_failure(
+                die_failure(
                     messages(language, "scan_module_not_found").format(
                         scan_method
                     )
                 )
         else:
-            __die_failure(messages(language, "scan_method_select"))
+            die_failure(messages(language, "scan_method_select"))
     scan_method = list(set(scan_method))
     # Check for exluding scanning method
     if exclude_method is not None:
@@ -693,13 +693,13 @@ def check_all_required(targets, targets_list, thread_number,
         for exm in exclude_method:
             if exm in scan_method:
                 if "all" == exm:
-                    __die_failure(messages(language, "error_exclude_all"))
+                    die_failure(messages(language, "error_exclude_all"))
                 else:
                     scan_method.remove(exm)
                     if len(scan_method) == 0:
-                        __die_failure(messages(language, "error_exclude_all"))
+                        die_failure(messages(language, "error_exclude_all"))
             else:
-                __die_failure(
+                die_failure(
                     messages(language, "exclude_module_error").format(exm)
                 )
     # Check port(s)
@@ -718,7 +718,7 @@ def check_all_required(targets, targets_list, thread_number,
                         if p not in tmp_ports:
                             tmp_ports.append(p)
             except Exception:
-                __die_failure(messages(language, "ports_int"))
+                die_failure(messages(language, "ports_int"))
         if len(tmp_ports) == 0:
             ports = None
         else:
@@ -731,7 +731,7 @@ def check_all_required(targets, targets_list, thread_number,
             # fix later
             users = list(set(open(users_list).read().rsplit("\n")))
         except Exception:
-            __die_failure(
+            die_failure(
                 messages(language, "error_username").format(targets_list)
             )
     # Check password list
@@ -743,20 +743,20 @@ def check_all_required(targets, targets_list, thread_number,
                 set(open(passwds_list).read().rsplit("\n"))
             )  # fix later
         except Exception:
-            __die_failure(
+            die_failure(
                 messages(language, "error_password_file").format(targets_list)
             )
     # Check output file
     try:
         open(log_in_file, "w")
     except Exception:
-        __die_failure(
+        die_failure(
             messages(language, "file_write_error").format(log_in_file)
         )
     # Check Graph
     if graph_flag is not None:
         if graph_flag not in load_all_graphs():
-            __die_failure(
+            die_failure(
                 messages(language, "graph_module_404").format(graph_flag)
             )
         if not (log_in_file.endswith(".html") or log_in_file.endswith(".htm")):

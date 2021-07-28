@@ -3,7 +3,7 @@
 
 import sys
 from core.alert import messages
-from core._die import __die_failure
+from core.die import die_failure
 
 __version__ = '0.0.2'
 __code_name__ = 'BIST'
@@ -83,7 +83,7 @@ def check(language):
         # os.system('cls')
         pass
     else:
-        __die_failure(messages(language, "error_platform"))
+        die_failure(messages(language, "error_platform"))
 
     return True
 

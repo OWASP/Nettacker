@@ -4,7 +4,7 @@
 import sys
 
 
-def __die_success():
+def die_success():
     """
     exit the framework with code 0
     """
@@ -13,7 +13,7 @@ def __die_success():
     sys.exit(0)
 
 
-def __die_failure(msg):
+def die_failure(msg):
     """
     exit the framework with code 1
 

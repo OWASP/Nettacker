@@ -161,7 +161,7 @@ payloads:
               Set-Cookie:
                 regex: admin
                 reverse: false
-            response_time:  ">= 0.2" # 200 ms
+            responsetime:  ">= 0.2" # 200 ms
 
 
       # # todo: design response, include content, status, raw, etc plus and/or condition and regex

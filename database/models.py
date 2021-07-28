@@ -13,13 +13,13 @@ class Update_Log(Base):
     """
     __tablename__ = 'update'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    last_update_time = Column(Text)
+    last_updatetime = Column(Text)
 
     def __repr__(self):
         """
         returns a printable representation of the object of the class Update Log
         """
-        return "<Update_Log(id={0}, last_update_time={1})>".format(self.id, self.last_update_time)
+        return "<Update_Log(id={0}, last_updatetime={1})>".format(self.id, self.last_updatetime)
 
 
 class Report(Base):

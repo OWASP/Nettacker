@@ -28,7 +28,7 @@ error_target: هدف یا هدف مشخص کولی نشی
 error_target_file: 'نشی ټاکل شوی هدفونه، د فایل پرانستلو توان نلري: {0}'
 thread_number_warning: دا غوره ده چې د موضوع شمیره د 100 څخه کمه وي، BTW مونږ دوام
   کوو ...
-set_timeout: د {0} ثانیو لپاره وخت وخت ټاکئ، دا خورا لوی دی، نه دا؟ په هغه لاره چې
+settimeout: د {0} ثانیو لپاره وخت وخت ټاکئ، دا خورا لوی دی، نه دا؟ په هغه لاره چې
   موږ دوام کوو ...
 scan_module_not_found: دا سکین ماډول [{0}] ونه موندل شو!
 error_exclude_all: تاسو د سکین ټولې میتودونه نه شي کولی
@@ -72,7 +72,7 @@ valid_socks_address: 'مهرباني وکړئ د سم جرابې پته او پ�
   جرابې: //127.0.0.1: 9050، تصدیق: جراب: // // کارن-نوم: پاسورډ @ 127.0.0.1، socks4:
   // کارن-نوم: password@127.0.0.1، socks5: // کارن-نوم: پاسورډ@127.0.0.1'
 connection_retries: کله چې د ارتباط وخت (default 3
-ftp_connection_timeout: 'د FTP اړیکه د {0}: {1} وخت نیسي، غصب کول {2}: {3}'
+ftp_connectiontimeout: 'د FTP اړیکه د {0}: {1} وخت نیسي، غصب کول {2}: {3}'
 login_successful: په بریالیتوب سره نښلول!
 login_list_error: په بریالیتوب سره نښلول، د لیست کمیسون لپاره اجازه ورکړل شوه!
 ftp_connection_failed: 'د FTP اړیکه د {0}: {1} ناکامه شوه، د بشپړ مرحلې [پروسیجر {2}
@@ -82,10 +82,10 @@ input_target_error: "{0} ماډل لپاره د انټرنیټ موخه باید
 user_pass_found: 'کارن: {0} پاسورډ: {1} میزبان: {2} بندر: {3} وموندل شو!'
 file_listing_error: "(د لیست فلمونو لپاره هیڅ ډول اجازه نشته)"
 trying_message: "{0} {1} د {2} {4}: {5} ({6}) په بهیر کې {2} هڅه کوي"
-smtp_connection_timeout: 'د SMTP نښلول {0}: {1} وخت نیسي، غصب کول {2}: {3}'
+smtp_connectiontimeout: 'د SMTP نښلول {0}: {1} وخت نیسي، غصب کول {2}: {3}'
 smtp_connection_failed: 'د SMTP پیوستون ته {0}: {1} ناکام شو، د بشپړ مرحله [پروسیجر
   {2} {3}] لرې کولو! راتلونکی ګام ته لاړ شه'
-ssh_connection_timeout: 'د SSH کنکشن {0}: {1} وخت نیسي، ځپلي {2}: {3}'
+ssh_connectiontimeout: 'د SSH کنکشن {0}: {1} وخت نیسي، ځپلي {2}: {3}'
 ssh_connection_failed: 'د SSH کنکشن {0}: {1} ناکامه شوه، د بشپړ مرحله [پروسیجر {2}
   {3}] لغوه کول! راتلونکی ګام ته لاړ شه'
 port/type: "{0} / {1}"
@@ -122,7 +122,7 @@ last_version: تاسو د OWASP Nettacker وروستنۍ نسخه کاروئ ...
 directoy_listing: د لارښوونې لیست په {0} کې وموندل شو
 insert_port_message: مهرباني وکړئ د -g یا -methods- د آر ایل پهځای د args switch له
   لارې بندر داخل کړئ
-http_connection_timeout: http اړیکې {0} وخت
+http_connectiontimeout: http اړیکې {0} وخت
 wizard_mode: د جادوگر اکر پېل کړئ
 directory_file_404: هیڅ لارښود یا فایل د {1} بندر {1} لپاره نه موندل شوی
 open_error: د خلاصولو توان نلري {0}
@@ -197,7 +197,7 @@ host_down: "{0} پنگ نه شي کولی!"
 root_required: دا اړتیا باید د ریښی په توګه ودرول شي
 admin_scan_get: admin_scan_http_method د ارزښت ارزښت باید GET یا HEAD وي، د GET لپاره
   ډیزاین ترتیب کړئ.
-telnet_connection_timeout: 'د ټیلټینټ شبکه {0}: {1} وخت نیسي، غصب کول {2}: {3}'
+telnet_connectiontimeout: 'د ټیلټینټ شبکه {0}: {1} وخت نیسي، غصب کول {2}: {3}'
 telnet_connection_failed: 'د ټیلټینټ اړیکه د {0}: {1} ناکامه شوه، د بشپړ مرحلې [پروسیجر
   {2} {3}] لیرې کول! راتلونکی ګام ته لاړ شه'
 http_auth_success: 'http بنسټیز تصدیق بریالیتوب - میزبان: {2}: {3}، کارن: {0}، پاس:

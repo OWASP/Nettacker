@@ -2,15 +2,15 @@
 # -*- coding: utf-8 -*-
 from core.compatible import version
 from core.compatible import logo
-from core._die import __die_failure
+from core.die import die_failure
 if version() == 2:
     logo()
-    __die_failure("Python2 is No longer supported")
+    die_failure("Python2 is No longer supported")
 
 logo()
 import os
 from core.alert import messages
-from core._die import __die_failure
+from core.die import die_failure
 from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
@@ -27,7 +27,7 @@ for module_name in external_modules:
         #library_name=pip
         #library_name=requests
     except Exception:
-        __die_failure(
+        die_failure(
             "pip3 install -r requirements.txt ---> " +
             module_name + " not installed!"
         )
@@ -38,19 +38,19 @@ if not os.path.exists(default_config["home_path"]):
         os.mkdir(default_config["tmp_path"])
         os.mkdir(default_config["results_path"])
     except:
-        __die_failure("cannot access the directory {0}".format(
+        die_failure("cannot access the directory {0}".format(
             default_config["home_path"]))
 if not os.path.exists(default_config["tmp_path"]):
     try:
         os.mkdir(default_config["tmp_path"])
     except:
-        __die_failure("cannot access the directory {0}".format(
+        die_failure("cannot access the directory {0}".format(
             default_config["results_path"]))
 if not os.path.exists(default_config["results_path"]):
     try:
         os.mkdir(default_config["results_path"])
     except:
-        __die_failure("cannot access the directory {0}".format(
+        die_failure("cannot access the directory {0}".format(
             default_config["results_path"]))
 if default_config["database_type"] == "sqlite":
     try:
@@ -62,7 +62,7 @@ if default_config["database_type"] == "sqlite":
             from database.sqlite_create import sqlite_create_tables
             sqlite_create_tables()
     except:
-        __die_failure("cannot access the directory {0}".format(
+        die_failure("cannot access the directory {0}".format(
             default_config["home_path"]))
 elif default_config["database_type"] == "mysql":
     try:
@@ -72,15 +72,15 @@ elif default_config["database_type"] == "mysql":
         mysql_create_database()
         mysql_create_tables()
     except:
-        __die_failure(messages("en", "database_connection_failed"))
+        die_failure(messages("en", "database_connection_failed"))
 elif default_config["database_type"] == "postgres":
     try:
         from database.postgres_create import postgres_create_database
         postgres_create_database()
     except Exception as e:
-        __die_failure(messages("en", "database_connection_failed"))
+        die_failure(messages("en", "database_connection_failed"))
 else:
-    __die_failure(messages("en", "invalid_database"))
+    die_failure(messages("en", "invalid_database"))
 
 from core.module_protocols import http
 from core.module_protocols import socket
@@ -97,7 +97,7 @@ from core.module_protocols import socket
     #         #library_name=pip
     #         #library_name=requests
     #     except Exception:
-    #         __die_failure(
+    #         die_failure(
     #             "pip3 install -r requirements.txt ---> " +
     #             module_name + " not installed!"
     #         )

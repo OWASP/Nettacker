@@ -10,11 +10,11 @@ import sys
 import socks
 import socket
 import urllib3
-from core._die import __die_failure
+from core.die import die_failure
 from core.alert import info
 from core.targets import target_type
 from core.alert import messages
-from core._time import now
+from core.time import now
 from core.load_modules import load_file_path
 from core.log import sort_logs
 from core.targets import analysis
@@ -128,7 +128,7 @@ def start_attack(
             "start",
         )
     except Exception:
-        __die_failure(
+        die_failure(
             messages(language, "module_not_available").format(scan_method)
         )
     start(

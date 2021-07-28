@@ -5,7 +5,7 @@ import random
 import string
 import os
 import sys
-from core._time import now
+from core.time import now
 
 
 def default_paths():

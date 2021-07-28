@@ -38,19 +38,19 @@ def response_conditions(response, conditions):
                                   str(response.headers[header]).encode())
                 reverse = conditions['headers'][header]['reverse']
                 condition_results.append(reverse_and_regex_condition(regex, reverse))
-    if 'response_time' in conditions:
-        if conditions['response_time'].startswith(">="):
-            condition_results.append(response.elapsed.total_seconds() >= float(conditions['response_time'].split()[-1]))
-        if conditions['response_time'].startswith("=="):
-            condition_results.append(response.elapsed.total_seconds() == float(conditions['response_time'].split()[-1]))
-        if conditions['response_time'].startswith("<="):
-            condition_results.append(response.elapsed.total_seconds() <= float(conditions['response_time'].split()[-1]))
-        if conditions['response_time'].startswith("!="):
-            condition_results.append(response.elapsed.total_seconds() != float(conditions['response_time'].split()[-1]))
-        if conditions['response_time'].startswith("<"):
-            condition_results.append(response.elapsed.total_seconds() < float(conditions['response_time'].split()[-1]))
-        if conditions['response_time'].startswith(">"):
-            condition_results.append(response.elapsed.total_seconds() <= float(conditions['response_time'].split()[-1]))
+    if 'responsetime' in conditions:
+        if conditions['responsetime'].startswith(">="):
+            condition_results.append(response.elapsed.total_seconds() >= float(conditions['responsetime'].split()[-1]))
+        if conditions['responsetime'].startswith("=="):
+            condition_results.append(response.elapsed.total_seconds() == float(conditions['responsetime'].split()[-1]))
+        if conditions['responsetime'].startswith("<="):
+            condition_results.append(response.elapsed.total_seconds() <= float(conditions['responsetime'].split()[-1]))
+        if conditions['responsetime'].startswith("!="):
+            condition_results.append(response.elapsed.total_seconds() != float(conditions['responsetime'].split()[-1]))
+        if conditions['responsetime'].startswith("<"):
+            condition_results.append(response.elapsed.total_seconds() < float(conditions['responsetime'].split()[-1]))
+        if conditions['responsetime'].startswith(">"):
+            condition_results.append(response.elapsed.total_seconds() <= float(conditions['responsetime'].split()[-1]))
     if condition_type.lower() == "or":
         if True in condition_results:
             return True

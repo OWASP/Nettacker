@@ -28,7 +28,7 @@ error_target_file: 'Die Ziele können nicht angegeben werden, Datei kann nicht g
   werden: {0}'
 thread_number_warning: Es ist besser, die Thread-Nummer niedriger als 100 zu verwenden,
   BTW wir fahren fort ...
-set_timeout: Setzen Sie Timeout auf {0} Sekunden, es ist zu groß, oder? Übrigens machen
+settimeout: Setzen Sie Timeout auf {0} Sekunden, es ist zu groß, oder? Übrigens machen
   wir weiter ...
 scan_module_not_found: Dieses Scanmodul [{0}] wurde nicht gefunden!
 error_exclude_all: Sie können nicht alle Scanmethoden ausschließen
@@ -77,7 +77,7 @@ valid_socks_address: 'Bitte geben Sie eine gültige Socken Adresse und Port ein.
   password@127.0.0.1'
 connection_retries: Wiederholt, wenn das Verbindungstimeout abgelaufen ist (Standard
   3)
-ftp_connection_timeout: 'FTP-Verbindung zu {0}: {1} Zeitüberschreitung, Überspringen
+ftp_connectiontimeout: 'FTP-Verbindung zu {0}: {1} Zeitüberschreitung, Überspringen
   von {2}: {3}'
 login_successful: ERFOLGREICH EINGELOGGT!
 login_list_error: ERFOLGREICH ERFOLGT, ERLAUBNIS FÜR LISTENBEFEHLE VERPFLICHTET!
@@ -88,11 +88,11 @@ input_target_error: Das Eingabeziel für das Modul {0} muss DOMAIN, HTTP oder SI
 user_pass_found: 'Benutzer: {0} Pass: {1} Host: {2} Port: {3} gefunden!'
 file_listing_error: "(KEINE ERLAUBNIS FÜR LISTENDATEIEN)"
 trying_message: "{0} von {1} im Prozess {2} von {3} {4} versuchen: {5} ({6})"
-smtp_connection_timeout: 'SMTP-Verbindung zu {0}: {1} Zeitüberschreitung, Überspringen
+smtp_connectiontimeout: 'SMTP-Verbindung zu {0}: {1} Zeitüberschreitung, Überspringen
   von {2}: {3}'
 smtp_connection_failed: 'Die SMTP-Verbindung zu {0}: {1} ist fehlgeschlagen. Der gesamte
   Schritt [Prozess {2} von {3}] wurde übersprungen! gehe zum nächsten Schritt'
-ssh_connection_timeout: 'ssh-Verbindung zu {0}: {1} Zeitüberschreitung, Überspringen
+ssh_connectiontimeout: 'ssh-Verbindung zu {0}: {1} Zeitüberschreitung, Überspringen
   von {2}: {3}'
 ssh_connection_failed: 'ssh-Verbindung zu {0}: {1} ist fehlgeschlagen und hat den
   gesamten Schritt [Prozess {2} von {3}] übersprungen! gehe zum nächsten Schritt'
@@ -132,7 +132,7 @@ last_version: Sie benutzen die letzte Version von OWASP Nettacker ...
 directoy_listing: Verzeichnisliste in {0} gefunden
 insert_port_message: Bitte geben Sie den Port über den Schalter -g oder --methods-args
   anstelle der URL ein
-http_connection_timeout: http Verbindung {0} Zeitüberschreitung!
+http_connectiontimeout: http Verbindung {0} Zeitüberschreitung!
 wizard_mode: Starten Sie den Assistentenmodus
 directory_file_404: Kein Verzeichnis oder keine Datei für {0} in Port {1} gefunden
 open_error: "{0} kann nicht geöffnet werden"
@@ -207,7 +207,7 @@ host_down: Kann nicht {0} pingen!
 root_required: Dies muss als root ausgeführt werden
 admin_scan_get: admin_scan_http_method Wert muss GET oder HEAD sein, setzen Sie den
   Standardwert auf GET.
-telnet_connection_timeout: 'Telnet-Verbindung zu {0}: {1} Zeitüberschreitung, Überspringen
+telnet_connectiontimeout: 'Telnet-Verbindung zu {0}: {1} Zeitüberschreitung, Überspringen
   von {2}: {3}'
 telnet_connection_failed: 'Die Telnet-Verbindung zu {0}: {1} ist fehlgeschlagen. Der
   ganze Schritt [Prozess {2} von {3}] wurde übersprungen! gehe zum nächsten Schritt'

@@ -28,7 +28,7 @@ error_target: Tidak dapat menentukan target (s)
 error_target_file: 'Tidak dapat menentukan target (s), tidak dapat membuka file: {0}'
 thread_number_warning: lebih baik menggunakan nomor utas lebih rendah dari 100, BTW
   kami terus ...
-set_timeout: mengatur waktu tunggu hingga {0} detik, itu terlalu besar, bukan? dengan
+settimeout: mengatur waktu tunggu hingga {0} detik, itu terlalu besar, bukan? dengan
   cara kita melanjutkan ...
 scan_module_not_found: modul pemindaian ini [{0}] tidak ditemukan!
 error_exclude_all: Anda tidak dapat mengecualikan semua metode pemindaian
@@ -75,7 +75,7 @@ valid_socks_address: 'masukkan alamat dan port kaus kaki yang valid. contoh kaus
   kata sandi @ 127.0.0.1, socks4: // username: password@127.0.0.1, socks5: // username:
   password@127.0.0.1'
 connection_retries: Retries ketika batas waktu koneksi (default 3)
-ftp_connection_timeout: 'koneksi ftp ke {0}: {1} timeout, skipping {2}: {3}'
+ftp_connectiontimeout: 'koneksi ftp ke {0}: {1} timeout, skipping {2}: {3}'
 login_successful: DITERUKAN SECARA SUKSES!
 login_list_error: DITERUKAN SECARA SUKSES, IZIN DITOLAK UNTUK DAFTAR!
 ftp_connection_failed: 'koneksi ftp ke {0}: {1} gagal, melewati seluruh langkah [proses
@@ -85,10 +85,10 @@ input_target_error: target input untuk {0} modul harus DOMAIN, HTTP atau SINGLE_
 user_pass_found: 'pengguna: {0} lulus: {1} host: {2} port: {3} ditemukan!'
 file_listing_error: "(TIDAK ADA IZIN UNTUK DAFTAR DAFTAR)"
 trying_message: 'mencoba {0} dari {1} dalam proses {2} dari {3} {4}: {5} ({6})'
-smtp_connection_timeout: 'koneksi smtp ke {0}: {1} timeout, skipping {2}: {3}'
+smtp_connectiontimeout: 'koneksi smtp ke {0}: {1} timeout, skipping {2}: {3}'
 smtp_connection_failed: 'koneksi smtp ke {0}: {1} gagal, melewati seluruh langkah
   [proses {2} {3}]! akan ke langkah berikutnya'
-ssh_connection_timeout: 'koneksi ssh ke {0}: {1} timeout, skipping {2}: {3}'
+ssh_connectiontimeout: 'koneksi ssh ke {0}: {1} timeout, skipping {2}: {3}'
 ssh_connection_failed: 'koneksi ssh ke {0}: {1} gagal, melewati seluruh langkah [proses
   {2} {3}]! akan ke langkah berikutnya'
 port/type: "{0} / {1}"
@@ -125,7 +125,7 @@ last_version: Anda menggunakan versi terakhir OWASP Nettacker ...
 directoy_listing: daftar direktori ditemukan di {0}
 insert_port_message: tolong masukkan port melalui switch -g atau --methods-args sebagai
   ganti url
-http_connection_timeout: koneksi http {0} timeout!
+http_connectiontimeout: koneksi http {0} timeout!
 wizard_mode: mulai mode wizard
 directory_file_404: tidak ada direktori atau file yang ditemukan untuk {0} di port
   {1}
@@ -201,7 +201,7 @@ host_down: Tidak bisa melakukan ping {0}!
 root_required: ini harus dijalankan sebagai root
 admin_scan_get: admin_scan_http_method value harus GET atau HEAD, atur default ke
   GET.
-telnet_connection_timeout: 'koneksi telnet ke {0}: {1} timeout, skipping {2}: {3}'
+telnet_connectiontimeout: 'koneksi telnet ke {0}: {1} timeout, skipping {2}: {3}'
 telnet_connection_failed: 'koneksi telnet ke {0}: {1} gagal, melewati seluruh langkah
   [proses {2} dari {3}]! akan ke langkah berikutnya'
 http_auth_success: 'sukses otentikasi dasar http - host: {2}: {3}, pengguna: {0},

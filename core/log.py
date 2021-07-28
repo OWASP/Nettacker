@@ -7,8 +7,8 @@ import lockfile
 from core.alert import messages
 from core.alert import info
 from core import compatible
-from core._time import now
-from core._die import __die_failure
+from core.time import now
+from core.die import die_failure
 from database.db import submit_report_to_db
 from database.db import submit_logs_to_db
 from database.db import remove_old_logs
@@ -53,7 +53,7 @@ def build_graph(graph_flag, language,
                        fromlist=['start']),
             'start')
     except:
-        __die_failure(
+        die_failure(
             messages(language, "graph_module_unavailable").format(graph_flag))
 
     info(messages(language, "finish_build_graph"))
