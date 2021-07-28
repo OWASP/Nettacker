@@ -218,7 +218,7 @@ def api_key_check(app, flask_request, language):
     return
 
 
-def __languages():
+def languages():
     """
     define list of languages with country flag for API
 
@@ -256,7 +256,7 @@ def __languages():
     return res
 
 
-def __graphs():
+def graphs():
     """
     all available graphs for API
 
@@ -271,7 +271,7 @@ def __graphs():
     return res
 
 
-def __profiles():
+def profiles():
     """
     all available profiles for API
 
@@ -291,7 +291,7 @@ def __profiles():
     return res
 
 
-def __scan_methods():
+def scan_methods():
     """
     all available modules for API
 
@@ -311,7 +311,7 @@ def __scan_methods():
     return res
 
 
-def __rules(config, defaults, language):
+def rules(config, defaults, language):
     """
     Load ARGS from API requests and apply the rules
 

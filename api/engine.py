@@ -32,12 +32,12 @@ from api.api_core import get_value
 from api.api_core import root_dir
 from api.api_core import get_file
 from api.api_core import mime_types
-from api.api_core import __scan_methods
-from api.api_core import __profiles
-from api.api_core import __graphs
-from api.api_core import __languages
+from api.api_core import scan_methods
+from api.api_core import profiles
+from api.api_core import graphs
+from api.api_core import languages
 from api.api_core import remove_non_api_keys
-from api.api_core import __rules
+from api.api_core import rules
 from api.api_core import api_key_check
 from api.start_scan import __scan
 from database.db import __select_results
@@ -205,9 +205,9 @@ def index():
     """
     filename = _builder(_core_config(), _core_default_config())["log_in_file"]
 
-    return render_template("index.html", scan_method=__scan_methods(),
-                           profile=__profiles(), graphs=__graphs(),
-                           languages=__languages(), filename=filename)
+    return render_template("index.html", scan_method=scan_methods(),
+                           profile=profiles(), graphs=graphs(),
+                           languages=languages(), filename=filename)
 
 
 @app.route("/new/scan", methods=["GET", "POST"])
@@ -227,7 +227,7 @@ def new_scan():
         if get_value(flask_request, key) is not None:
             _start_scan_config[key] = escape(get_value(flask_request, key))
     _start_scan_config["backup_ports"] = get_value(flask_request, "ports")
-    _start_scan_config = __rules(remove_non_api_keys(_builder(
+    _start_scan_config = rules(remove_non_api_keys(_builder(
         _start_scan_config, _builder(_core_config(), _core_default_config()))),
         _core_default_config(), __language())
     _p = multiprocessing.Process(target=__scan, args=[_start_scan_config])
