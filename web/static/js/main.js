@@ -289,7 +289,6 @@ $(document).ready(function () {
             socks_proxy: $("#socks_proxy").val(),
             users: $("#users").val(),
             passwds: $("#passwds").val(),
-            methods_args: $("#methods_args").val().replaceAll("\n", "&")
 
         };
 

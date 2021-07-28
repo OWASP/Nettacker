@@ -31,7 +31,6 @@ def __scan(config):
     thread_number = config["thread_number"]
     ports = config["ports"]
     ping_flag = config["ping_flag"]
-    methods_args = config["methods_args"]
     thread_number_host = config["thread_number_host"]
     graph_flag = config["graph_flag"]
     profile = config["profile"]
@@ -42,6 +41,6 @@ def __scan(config):
                             time_sleep, language, verbose_level, retries,
                             socks_proxy, users, passwds, timeout_sec,
                             thread_number,
-                            ports, ping_flag, methods_args,
+                            ports, ping_flag,
                             backup_ports, scan_method, thread_number_host,
                             graph_flag, profile, True)

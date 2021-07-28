@@ -61,7 +61,6 @@ def load():
     graph_flag = options.graph_flag
     help_menu_flag = options.help_menu_flag
     ping_flag = options.ping_flag
-    methods_args = options.methods_args
     wizard_mode = options.wizard_mode
     profile = options.profile
     start_api = options.start_api
@@ -83,7 +82,7 @@ def load():
      passwds, passwds_list, timeout_sec, ports, parser, module_names,
      language, verbose_level, show_version,
      check_update, socks_proxy, retries, graph_flag,
-     help_menu_flag, methods_args, wizard_mode,
+     help_menu_flag, wizard_mode,
      profile, start_api, api_host, api_port,
      api_debug_mode, api_access_key, api_client_white_list,
      api_client_white_list_ips, api_access_log,
@@ -94,7 +93,7 @@ def load():
             passwds, passwds_list, timeout_sec, ports, parser,
             module_names, language, verbose_level, show_version,
             check_update, socks_proxy, retries, graph_flag,
-            help_menu_flag, methods_args, wizard_mode,
+            help_menu_flag, wizard_mode,
             profile, start_api, api_host, api_port, api_debug_mode,
             api_access_key, api_client_white_list,
             api_client_white_list_ips, api_access_log,
@@ -112,7 +111,7 @@ def load():
     __go_for_attacks(targets, check_ranges, check_subdomains,
                      log_in_file, time_sleep, language, verbose_level, retries,
                      socks_proxy, users, passwds, timeout_sec,
-                     thread_number, ports, ping_flag, methods_args,
+                     thread_number, ports, ping_flag,
                      backup_ports, scan_method, thread_number_host,
                      graph_flag, profile, False)
     return True

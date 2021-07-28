@@ -232,10 +232,6 @@ def new_scan():
         _core_default_config(), __language())
     _p = multiprocessing.Process(target=__scan, args=[_start_scan_config])
     _p.start()
-    # Sometimes method_args is too big!
-    _start_scan_config["methods_args"] = {
-        "as_user_set": "set_successfully"
-    }
     return jsonify(_start_scan_config), 200
 
 

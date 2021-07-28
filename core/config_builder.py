@@ -116,7 +116,6 @@ def _core_default_config():
         "socks_proxy": None,
         "retries": 3,
         "ping_flag": False,
-        "methods_args": None,
         "startup_check_for_update": True,
         "wizard_mode": False,
         "profile": None,

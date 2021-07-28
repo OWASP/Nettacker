@@ -44,7 +44,6 @@ def start_attack(
     socks_proxy,
     retries,
     ping_flag,
-    methods_args,
     scan_id,
     scan_cmd,
 ):
@@ -68,7 +67,6 @@ def start_attack(
         socks_proxy: socks proxy
         retries: number of retries
         ping_flag: ping before scan flag
-        methods_args: module name
         scan_id: scan hash id
         scan_cmd: scan cmd
 
@@ -148,7 +146,6 @@ def start_attack(
         verbose_level,
         socks_proxy,
         retries,
-        methods_args,
         scan_id,
         scan_cmd,
     )
@@ -171,7 +168,6 @@ def __go_for_attacks(
     thread_number,
     ports,
     ping_flag,
-    methods_args,
     backup_ports,
     scan_method,
     thread_number_host,
@@ -199,7 +195,6 @@ def __go_for_attacks(
         thread_number: thread numbers
         ports: port numbers
         ping_flag: ping before scan flag
-        methods_args: method args for modules
         backup_ports: port numbers (backup)
         scan_method: selected module names
         thread_number_host: threads for hosts scan
@@ -285,7 +280,6 @@ def __go_for_attacks(
                     socks_proxy,
                     retries,
                     ping_flag,
-                    methods_args,
                     scan_id,
                     scan_cmd,
                 ),

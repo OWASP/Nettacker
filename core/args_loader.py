@@ -313,13 +313,6 @@ def load_all_args(module_names, graph_names):
         default=default_config["ping_flag"],
         help=messages(language, "ping_before_scan"),
     )
-    method.add_argument(
-        "--method-args",
-        action="store",
-        dest="methods_args",
-        default=default_config["methods_args"],
-        help=messages(language, "method_inputs"),
-    )
     # API Options
     api = parser.add_argument_group(
         messages(language, "API"), messages(language, "API_options"))
@@ -377,7 +370,7 @@ def check_all_required(targets, targets_list, thread_number,
                        passwds, passwds_list, timeout_sec, ports,
                        parser, module_names, language, verbose_level,
                        show_version, check_update, socks_proxy, retries,
-                       graph_flag, help_menu_flag, methods_args,
+                       graph_flag, help_menu_flag,
                        wizard_mode, profile,
                        start_api, api_host, api_port, api_debug_mode,
                        api_access_key, api_client_white_list,
@@ -410,7 +403,6 @@ def check_all_required(targets, targets_list, thread_number,
         retries: retries from from CLI
         graph_flag: graph name from CLI
         help_menu_flag: help menu flag from CLI
-        methods_args: modules ARGS flag from CLI
         wizard_mode: wizard mode flag from CLI
         profile: profiles from CLI
         start_api: start API flag from CLI
@@ -770,33 +762,6 @@ def check_all_required(targets, targets_list, thread_number,
         if not (log_in_file.endswith(".html") or log_in_file.endswith(".htm")):
             warn(messages(language, "graph_output"))
             graph_flag = None
-    # Check Methods ARGS
-    if methods_args is not None:
-        new_methods_args = {}
-        methods_args = methods_args.rsplit("&")
-        for imethod_args in methods_args:
-            if len(imethod_args.rsplit("=")) == 2:
-                if imethod_args.rsplit("=")[1].startswith("read_from_file:"):
-                    try:
-                        read_data = list(
-                            set(
-                                open(
-                                    imethod_args.rsplit("=read_from_file:")[1]
-                                )
-                                .read()
-                                .rsplit("\n")
-                            )
-                        )
-                    except Exception:
-                        __die_failure(messages(language, "error_reading_file"))
-                    new_methods_args[imethod_args.rsplit("=")[0]] = read_data
-                else:
-                    new_methods_args[
-                        imethod_args.rsplit("=")[0]
-                    ] = imethod_args.rsplit("=")[1].rsplit(",")
-            else:
-                new_methods_args[imethod_args] = ["True"]
-        methods_args = new_methods_args
     # Return the values
 
     return [targets, targets_list, thread_number,
@@ -806,7 +771,7 @@ def check_all_required(targets, targets_list, thread_number,
             passwds, passwds_list, timeout_sec, ports,
             parser, module_names, language, verbose_level,
             show_version, check_update, socks_proxy,
-            retries, graph_flag, help_menu_flag, methods_args,
+            retries, graph_flag, help_menu_flag,
             wizard_mode, profile,
             start_api, api_host, api_port, api_debug_mode,
             api_access_key, api_client_white_list,
