@@ -86,7 +86,7 @@ def load_all_modules():
     """
     # Search for Modules
     module_names = []
-    for _lib in glob(os.path.dirname(inspect.getfile(lib)) + '/*/*/engine.py'):
+    for _lib in glob(os.path.dirname(inspect.getfile(lib)) + '/modules/*/*.yaml'):
         libname = _lib.rsplit('\\' if is_windows() else '/')[-2]
         category = _lib.rsplit('\\' if is_windows() else '/')[-3]
         if (category != 'graph' and
@@ -95,54 +95,6 @@ def load_all_modules():
     module_names.append('all')
     return module_names
 
-
-def load_all_method_args(language, API=False):
-    """
-    load all ARGS method for each module
-
-    Args:
-        language: language
-        API: API Flag (default False)
-
-    Returns:
-        all ARGS method in JSON
-    """
-    module_names = []
-    modules_args = {}
-    # get module names
-    for _lib in glob(os.path.dirname(inspect.getfile(lib)) + '/*/*/engine.py'):
-        _lib = _lib.replace('/', '.').replace('\\', '.')
-        if '.lib.brute.' in _lib or \
-                '.lib.scan.' in _lib or '.lib.vuln.' in _lib:
-            _lib = 'lib.' + _lib.rsplit('.lib.')[-1].rsplit('.py')[0]
-            if _lib not in module_names:
-                module_names.append(_lib)
-    # get args
-    res = ""
-    for imodule in module_names:
-        _ERROR = False
-        try:
-            extra_requirements_dict = getattr(__import__(
-                imodule,
-                fromlist=['extra_requirements_dict']),
-                'extra_requirements_dict')
-        except:
-            warn(messages(language, "module_args_error").format(imodule))
-            _ERROR = True
-        if not _ERROR:
-            imodule_args = extra_requirements_dict()
-            modules_args[imodule] = []
-            for imodule_arg in imodule_args:
-                if API:
-                    res += imodule_arg + "=" + \
-                           ",".join(map(str, imodule_args[imodule_arg])) + "\n"
-                modules_args[imodule].append(imodule_arg)
-    if API:
-        return res
-    for imodule in modules_args:
-        info(imodule.rsplit('.')[2] + '_' + imodule.rsplit('.')[1] + ' --> '
-             + ", ".join(modules_args[imodule]))
-    return module_names
 
 def load_file_path():
     """

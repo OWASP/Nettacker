@@ -320,13 +320,6 @@ def load_all_args(module_names, graph_names):
         default=default_config["methods_args"],
         help=messages(language, "method_inputs"),
     )
-    method.add_argument(
-        "--method-args-list",
-        action="store_true",
-        dest="method_args_list",
-        default=default_config["method_args_list"],
-        help=messages(language, "list_methods"),
-    )
     # API Options
     api = parser.add_argument_group(
         messages(language, "API"), messages(language, "API_options"))
@@ -385,7 +378,7 @@ def check_all_required(targets, targets_list, thread_number,
                        parser, module_names, language, verbose_level,
                        show_version, check_update, socks_proxy, retries,
                        graph_flag, help_menu_flag, methods_args,
-                       method_args_list, wizard_mode, profile,
+                       wizard_mode, profile,
                        start_api, api_host, api_port, api_debug_mode,
                        api_access_key, api_client_white_list,
                        api_client_white_list_ips, api_access_log,
@@ -418,7 +411,6 @@ def check_all_required(targets, targets_list, thread_number,
         graph_flag: graph name from CLI
         help_menu_flag: help menu flag from CLI
         methods_args: modules ARGS flag from CLI
-        method_args_list: modules ARGS from CLI
         wizard_mode: wizard mode flag from CLI
         profile: profiles from CLI
         start_api: start API flag from CLI
@@ -443,12 +435,6 @@ def check_all_required(targets, targets_list, thread_number,
         parser.print_help()
         write("\n\n")
         write(messages(language, "license"))
-        __die_success()
-    # Check if method args list called
-    if method_args_list:
-        from core.load_modules import load_all_method_args
-
-        load_all_method_args(language)
         __die_success()
     # Check version
     if show_version:
@@ -821,7 +807,7 @@ def check_all_required(targets, targets_list, thread_number,
             parser, module_names, language, verbose_level,
             show_version, check_update, socks_proxy,
             retries, graph_flag, help_menu_flag, methods_args,
-            method_args_list, wizard_mode, profile,
+            wizard_mode, profile,
             start_api, api_host, api_port, api_debug_mode,
             api_access_key, api_client_white_list,
             api_client_white_list_ips, api_access_log,

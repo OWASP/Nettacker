@@ -24,7 +24,6 @@ from core.alert import messages
 from core._die import __die_success
 from core._die import __die_failure
 from core._time import now
-from core.load_modules import load_all_method_args
 from core.config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
@@ -208,9 +207,7 @@ def index():
 
     return render_template("index.html", scan_method=__scan_methods(),
                            profile=__profiles(), graphs=__graphs(),
-                           languages=__languages(), filename=filename,
-                           method_args_list=load_all_method_args(
-        __language(), API=True))
+                           languages=__languages(), filename=filename)
 
 
 @app.route("/new/scan", methods=["GET", "POST"])

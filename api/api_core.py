@@ -65,8 +65,12 @@ def __remove_non_api_keys(config):
     Returns:
         removed non-api keys in all keys in JSON
     """
-    non_api_keys = ["start_api", "api_host", "api_port", "api_debug_mode", "api_access_key", "api_client_white_list",
-                    "api_client_white_list_ips", "api_access_log", "api_access_log", "api_access_log_filename", "api_cert", "api_cert_key", "show_version", "check_update", "help_menu_flag", "targets_list", "users_list", "passwds_list", "method_args_list", "startup_check_for_update", "wizard_mode", "exclude_method"]
+    non_api_keys = [
+        "start_api", "api_host", "api_port", "api_debug_mode", "api_access_key", "api_client_white_list",
+        "api_client_white_list_ips", "api_access_log", "api_access_log", "api_access_log_filename", 
+        "api_cert", "api_cert_key", "show_version", "check_update", "help_menu_flag", "targets_list", 
+        "users_list", "passwds_list", "startup_check_for_update", "wizard_mode", "exclude_method"
+    ]
     new_config = {}
     for key in config:
         if key not in non_api_keys:
@@ -343,19 +347,6 @@ def __rules(config, defaults, language):
     except:
         abort(400, messages(language, "file_write_error").format(
             config["log_in_file"]))
-    # Check Method ARGS
-    methods_args = config["methods_args"]
-    if methods_args is not None:
-        new_methods_args = {}
-        methods_args = methods_args.rsplit("&")
-        for imethod_args in methods_args:
-            if len(imethod_args.rsplit("=")) == 2:
-                new_methods_args[imethod_args.rsplit("=")[0]] = imethod_args.rsplit("=")[
-                    1].rsplit(",")
-            else:
-                new_methods_args[imethod_args] = ["True"]
-        methods_args = new_methods_args
-    config["methods_args"] = methods_args
 
     # Check Passwords
     config["passwds"] = config["passwds"].rsplit(

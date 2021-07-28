@@ -62,7 +62,6 @@ def load():
     help_menu_flag = options.help_menu_flag
     ping_flag = options.ping_flag
     methods_args = options.methods_args
-    method_args_list = options.method_args_list
     wizard_mode = options.wizard_mode
     profile = options.profile
     start_api = options.start_api
@@ -84,7 +83,7 @@ def load():
      passwds, passwds_list, timeout_sec, ports, parser, module_names,
      language, verbose_level, show_version,
      check_update, socks_proxy, retries, graph_flag,
-     help_menu_flag, methods_args, method_args_list, wizard_mode,
+     help_menu_flag, methods_args, wizard_mode,
      profile, start_api, api_host, api_port,
      api_debug_mode, api_access_key, api_client_white_list,
      api_client_white_list_ips, api_access_log,
@@ -95,7 +94,7 @@ def load():
             passwds, passwds_list, timeout_sec, ports, parser,
             module_names, language, verbose_level, show_version,
             check_update, socks_proxy, retries, graph_flag,
-            help_menu_flag, methods_args, method_args_list, wizard_mode,
+            help_menu_flag, methods_args, wizard_mode,
             profile, start_api, api_host, api_port, api_debug_mode,
             api_access_key, api_client_white_list,
             api_client_white_list_ips, api_access_log,
