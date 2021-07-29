@@ -19,7 +19,7 @@ from core.load_modules import load_file_path
 from core.log import sort_logs
 from core.targets import analysis
 from core.alert import write
-from core.color import finish
+from core.color import reset_color
 from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core.alert import warn
@@ -75,7 +75,7 @@ def start_attack(
     """
     if verbose_level >= 1:
         info(
-            messages(language, "start_attack").format(
+            messages("start_attack").format(
                 str(target), str(num), str(total)
             )
         )
@@ -110,7 +110,7 @@ def start_attack(
         if do_one_ping(target, timeout_sec, 8) is None:
             if verbose_level >= 3:
                 warn(
-                    messages(language, "skipping_target").format(
+                    messages("skipping_target").format(
                         target, scan_method
                     )
                 )
@@ -129,7 +129,7 @@ def start_attack(
         )
     except Exception:
         die_failure(
-            messages(language, "module_not_available").format(scan_method)
+            messages("module_not_available").format(scan_method)
         )
     start(
         target,
@@ -152,55 +152,12 @@ def start_attack(
     return True
 
 
-def __go_for_attacks(
-    targets,
-    check_ranges,
-    check_subdomains,
-    log_in_file,
-    time_sleep,
-    language,
-    verbose_level,
-    retries,
-    socks_proxy,
-    users,
-    passwds,
-    timeout_sec,
-    thread_number,
-    ports,
-    ping_flag,
-    backup_ports,
-    scan_method,
-    thread_number_host,
-    graph_flag,
-    profile,
-    api_flag,
-    scan_id=None,
-):
+def start_scan_processes(options):
     """
     preparing for attacks and managing multi-processing for host
 
     Args:
-        targets: list of calculated targets
-        check_ranges: check IP range flag
-        check_subdomains: check subdomain flag
-        log_in_file: output filename
-        time_sleep: time sleep seconds
-        language: language
-        verbose_level: verbose level number
-        retries: retries number
-        socks_proxy: socks proxy address
-        users: usernames
-        passwds: passwords
-        timeout_sec: timeout seconds
-        thread_number: thread numbers
-        ports: port numbers
-        ping_flag: ping before scan flag
-        backup_ports: port numbers (backup)
-        scan_method: selected module names
-        thread_number_host: threads for hosts scan
-        graph_flag: graph name
-        profile: profile name
-        api_flag: API flag
+        options: all options
 
     Returns:
         True when it ends
@@ -256,7 +213,7 @@ def __go_for_attacks(
     if scan_id is None:
         scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
     scan_cmd = (
-        messages(language, "through_API") if api_flag else " ".join(sys.argv)
+        messages("through_API") if api_flag else " ".join(sys.argv)
     )
     for target in targets:
         for sm in scan_method:
@@ -308,7 +265,7 @@ def __go_for_attacks(
             if _waiting_for > 3000:
                 _waiting_for = 0
                 info(
-                    messages(language, "waiting").format(
+                    messages("waiting").format(
                         ", ".join(
                             [t.name for t in multiprocessing.active_children()]
                         )
@@ -321,10 +278,10 @@ def __go_for_attacks(
             for process in multiprocessing.active_children():
                 process.terminate()
             break
-    info(messages(language, "remove_temp"))
+    info(messages("remove_temp"))
     os.remove(subs_temp)
     os.remove(range_temp)
-    info(messages(language, "sorting_results"))
+    info(messages("sorting_results"))
     sort_logs(
         log_in_file,
         language,
@@ -338,7 +295,7 @@ def __go_for_attacks(
         backup_ports,
     )
     write("\n")
-    info(messages(language, "done"))
+    info(messages("done"))
     write("\n\n")
-    finish()
+    reset_color()
     return True

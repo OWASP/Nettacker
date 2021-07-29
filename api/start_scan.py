@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from core.attack import __go_for_attacks
+from core.scan_targers import __go_for_attacks
 
 
 def __scan(config):
