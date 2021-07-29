@@ -4,19 +4,17 @@
 import sys
 from core.alert import messages
 from core.die import die_failure
-
-__version__ = '0.0.2'
-__code_name__ = 'BIST'
+from config import nettacker_paths
 
 
-def _version_info():
+def version_info():
     """
     version information of the framework
 
     Returns:
         an array of version and code name
     """
-    return [__version__, __code_name__]
+    return open(nettacker_paths()['version_file']).read().split()
 
 
 def logo():
@@ -25,32 +23,29 @@ def logo():
     """
     from core.alert import write_to_api_console
     from core import color
-    from core.color import finish
-    write_to_api_console('''
-   ______          __      _____ _____
-  / __ \ \        / /\    / ____|  __ \ 
- | |  | \ \  /\  / /  \  | (___ | |__) |
- | |  | |\ \/  \/ / /\ \  \___ \|  ___/ 
- | |__| | \  /\  / ____ \ ____) | |     {2}Version {0}{3}  
-  \____/   \/  \/_/    \_\_____/|_|     {4}{1}{5}
-                          _   _      _   _             _            
-                         | \ | |    | | | |           | |            
-  {6}github.com/OWASP     {7}  |  \| | ___| |_| |_ __ _  ___| | _____ _ __ 
-  {8}owasp.org{9}              | . ` |/ _ \ __| __/ _` |/ __| |/ / _ \ '__|
-  {10}zdresearch.com{11}         | |\  |  __/ |_| || (_| | (__|   <  __/ |   
-                         |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|   
-
-    \n\n'''.format(__version__,
-                   __code_name__, color.color('red'),
-                   color.color('reset'), color.color('yellow'),
-                   color.color('reset'), color.color('cyan'),
-                   color.color('reset'), color.color('cyan'),
-                   color.color('reset'), color.color('cyan'),
-                   color.color('reset')))
-    finish()
+    from core.color import reset_color
+    write_to_api_console(
+        open(
+            nettacker_paths()['logo_file']
+        ).read().format(
+            version_info()[0],
+            version_info()[1],
+            color.color('red'),
+            color.color('reset'),
+            color.color('yellow'),
+            color.color('reset'),
+            color.color('cyan'),
+            color.color('reset'),
+            color.color('cyan'),
+            color.color('reset'),
+            color.color('cyan'),
+            color.color('reset')
+        )
+    )
+    reset_color()
 
 
-def version():
+def python_version():
     """
     version of python
 
@@ -60,31 +55,16 @@ def version():
     return int(sys.version_info[0])
 
 
-def check(language):
+def check_os_compatibility():
     """
     check if framework compatible with the OS
-    Args:
-        language: language
 
     Returns:
         True if compatible otherwise None
     """
     # from core.color import finish
-    if 'linux' in os_name() or 'darwin' in os_name():
-        pass
-        # os.system('clear')
-    elif 'win32' == os_name() or 'win64' == os_name():
-        # if language != 'en':
-        #    from core.color import finish
-        #    from core.alert import error
-        #   error('please use english language on windows!')
-        #    finish()
-        #    sys.exit(1)
-        # os.system('cls')
-        pass
-    else:
-        die_failure(messages(language, "error_platform"))
-
+    if not ('linux' in os_name() or 'darwin' in os_name()):
+        die_failure(messages("error_platform"))
     return True
 
 
@@ -96,15 +76,3 @@ def os_name():
         OS name in string
     """
     return sys.platform
-
-
-def is_windows():
-    """
-    check if the framework run in Windows OS
-
-    Returns:
-        True if its running on windows otherwise False
-    """
-    if 'win32' == os_name() or 'win64' == os_name():
-        return True
-    return False

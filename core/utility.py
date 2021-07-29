@@ -3,6 +3,45 @@
 
 import numpy
 import copy
+import random
+import string
+import sys
+from core.alert import warn
+from core.load_modules import load_all_languages
+from config import nettacker_global_config
+
+
+def application_language():
+    languages_list = load_all_languages()
+    nettacker_global_configuration = nettacker_global_config()
+    if "-L" in sys.argv:
+        try:
+            language = sys.argv[sys.argv.index("-L") + 1]
+            if language not in languages_list:
+                language = nettacker_global_configuration['nettacker_user_application_config']['language']
+                warn("default language {language} selected!".format(language=language))
+        except Exception:
+            language = nettacker_global_configuration['nettacker_user_application_config']['language']
+            warn("default language {language} selected!".format(language=language))
+
+    elif "--language" in sys.argv:
+        try:
+            language = sys.argv[sys.argv.index("--language") + 1]
+            if language not in languages_list:
+                language = nettacker_global_configuration['nettacker_user_application_config']['language']
+                warn("default language {language} selected!".format(language=language))
+        except Exception:
+            language = nettacker_global_configuration['nettacker_user_application_config']['language']
+            warn("default language {language} selected!".format(language=language))
+    else:
+        language = nettacker_global_configuration['nettacker_user_application_config']['language']
+    return language
+
+
+def generate_random_token(length=10):
+    return "".join(
+        random.choice(string.ascii_lowercase) for _ in range(length)
+    )
 
 
 def re_address_repeaters_key_name(key_name):

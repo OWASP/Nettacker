@@ -11,9 +11,6 @@ from core.load_modules import load_all_modules
 from core.load_modules import load_all_graphs
 from core.args_loader import load_all_args
 from core.args_loader import check_all_required
-from core.update import _check
-from core.compatible import _version_info
-from core.color import finish
 
 
 def load():
@@ -27,14 +24,7 @@ def load():
     # load all modules in lib/brute, lib/scan, lib/graph
     module_names = load_all_modules()
     graph_names = load_all_graphs()
-
-    # Parse ARGVs
-    try:
-        parser, options, startup_update_flag = load_all_args(
-            module_names, graph_names)
-    except SystemExit:
-        finish()
-        sys.exit(1)
+    options = check_all_required(load_all_args())
     # Filling Options
     check_ranges = options.check_ranges
     check_subdomains = options.check_subdomains
@@ -76,36 +66,8 @@ def load():
     api_cert_key = options.api_cert_key
     backup_ports = ports
 
-    # Checking Requirements
-    (targets, targets_list, thread_number, thread_number_host,
-     log_in_file, scan_method, exclude_method, users, users_list,
-     passwds, passwds_list, timeout_sec, ports, parser, module_names,
-     language, verbose_level, show_version,
-     check_update, socks_proxy, retries, graph_flag,
-     help_menu_flag, wizard_mode,
-     profile, start_api, api_host, api_port,
-     api_debug_mode, api_access_key, api_client_white_list,
-     api_client_white_list_ips, api_access_log,
-     api_access_log_filename, api_cert, api_cert_key) = \
-        check_all_required(
-            targets, targets_list, thread_number, thread_number_host,
-            log_in_file, scan_method, exclude_method, users, users_list,
-            passwds, passwds_list, timeout_sec, ports, parser,
-            module_names, language, verbose_level, show_version,
-            check_update, socks_proxy, retries, graph_flag,
-            help_menu_flag, wizard_mode,
-            profile, start_api, api_host, api_port, api_debug_mode,
-            api_access_key, api_client_white_list,
-            api_client_white_list_ips, api_access_log,
-            api_access_log_filename, api_cert, api_cert_key
-    )
 
     info(messages(language, "scan_started"))
-    # check for update
-    if startup_update_flag:
-        __version__, __code_name__ = _version_info()
-        _check(__version__, __code_name__, language, socks_proxy)
-
     info(messages(language, "loaded_modules").format(
         len(load_all_modules()) - 1 + len(load_all_graphs())))
     __go_for_attacks(targets, check_ranges, check_subdomains,

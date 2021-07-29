@@ -65,6 +65,19 @@ def load_all_graphs():
     return graph_names
 
 
+def load_all_languages():
+    """
+    load all available languages
+
+    Returns:
+        an array of languages
+    """
+    languages_list = []
+    for language in glob(os.path.dirname(inspect.getfile(lib)) + '/messages/*.yaml'):
+        languages_list.append(language.split('/')[-1].split('.')[0])
+    return languages_list
+
+
 def load_all_modules():
     """
     load all available modules

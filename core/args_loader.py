@@ -1,773 +1,435 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
 import argparse
 from core.alert import write
 from core.alert import warn
 from core.alert import info
 from core.alert import messages
-from core.compatible import check
-from core.load_modules import load_all_graphs
-from config import _core_config
-from core.config_builder import _builder
+from core.color import color
+from core.compatible import check_os_compatibility
+from core.compatible import version_info
+from config import nettacker_global_config
+from core.load_modules import load_all_languages
+from core.utility import application_language
 from core.die import die_success
 from core.die import die_failure
-from core.color import finish
-from core.wizard import __wizard
-from core.config_builder import _core_default_config
-from core.config_builder import default_profiles
-from config import _profiles
-from core.alert import write_to_api_console
-from core.update import _update_check
+from core.color import reset_color
+from core.load_modules import load_all_modules
+from core.load_modules import load_all_graphs
+from api.engine import start_api_server
 
 
-def load_all_args(module_names, graph_names):
+def load_all_args():
     """
     create the ARGS and help menu
-
-    Args:
-        module_names: all module names
-        graph_names: all graph names
 
     Returns:
         the parser, the ARGS
     """
+
+    nettacker_global_configuration = nettacker_global_config()
+
     # Language Options
-    # import libs
-    default_config = _builder(_core_config(), _core_default_config())
-    _all_profiles = [key for key in _builder(_profiles(), default_profiles())]
-    _all_profiles.append("all")
-    language_list = [lang for lang in messages(-1, 0)]
-    if "-L" in sys.argv or "--language" in sys.argv:
-        try:
-            index = sys.argv.index("-L") + 1
-        except Exception:
-            index = sys.argv.index("--language") + 1
-    else:
-        index = -1
-    if index == -1:
-        language = "en"
-    else:
-        _error_flag = False
-        try:
-            language = sys.argv[index]
-        except Exception:
-            _error_flag = True
-        if _error_flag or language not in language_list:
-            die_failure(
-                "Please select one of these languages {0}".format(
-                    language_list
-                )
+    language = application_language()
+    languages_list = load_all_languages()
+    if language not in languages_list:
+        die_failure(
+            "Please select one of these languages {0}".format(
+                languages_list
             )
+        )
 
     # Check if compatible
-    check(language)
-    finish()
+    check_os_compatibility()
+    reset_color()
     # Start Parser
     parser = argparse.ArgumentParser(prog="Nettacker", add_help=False)
 
-    # parser = OptionParser(usage=messages(language,"options"),
-    #                      description=messages(language,"help_menu"),
-    #                      epilog=messages(language,"license"))
-
     # Engine Options
     engineOpt = parser.add_argument_group(
-        messages(language, "engine"), messages(language, "engine_input")
+        messages("engine"), messages("engine_input")
     )
     engineOpt.add_argument(
         "-L",
         "--language",
         action="store",
         dest="language",
-        default=default_config["language"],
-        help=messages(language, "select_language").format(language_list),
+        default=nettacker_global_configuration['nettacker_user_application_config']["language"],
+        help=messages("select_language").format(languages_list),
     )
     engineOpt.add_argument(
         "-v",
         "--verbose",
-        action="store",
-        type=int,
-        dest="verbose_level",
-        default=default_config["verbose_level"],
-        help=messages(language, "verbose_level"),
+        action="store_true",
+        dest="verbose_mode",
+        default=nettacker_global_configuration['nettacker_user_application_config']['verbose_mode'],
+        help=messages("verbose_level"),
     )
     engineOpt.add_argument(
         "-V",
         "--version",
         action="store_true",
-        default=default_config["show_version"],
+        default=nettacker_global_configuration['nettacker_user_application_config']['show_version'],
         dest="show_version",
-        help=messages(language, "software_version"),
-    )
-    engineOpt.add_argument(
-        "-c",
-        "--update",
-        action="store_true",
-        default=default_config["check_update"],
-        dest="check_update",
-        help=messages(language, "check_updates"),
+        help=messages("software_version"),
     )
     engineOpt.add_argument(
         "-o",
         "--output",
         action="store",
-        default=default_config["log_in_file"],
+        default=nettacker_global_configuration['nettacker_user_application_config']['output_file'],
         dest="log_in_file",
-        help=messages(language, "save_logs"),
+        help=messages("save_logs"),
     )
     engineOpt.add_argument(
         "--graph",
         action="store",
-        default=default_config["graph_flag"],
-        dest="graph_flag",
-        help=messages(language, "available_graph").format(graph_names),
+        default=nettacker_global_configuration['nettacker_user_application_config']["graph_name"],
+        dest="graph_name",
+        help=messages("available_graph").format(load_all_graphs()),
     )
     engineOpt.add_argument(
         "-h",
         "--help",
         action="store_true",
-        default=default_config["help_menu_flag"],
-        dest="help_menu_flag",
-        help=messages(language, "help_menu"),
-    )
-    engineOpt.add_argument(
-        "-W",
-        "--wizard",
-        action="store_true",
-        default=default_config["wizard_mode"],
-        dest="wizard_mode",
-        help=messages(language, "wizard_mode"),
-    )
-    engineOpt.add_argument(
-        "--profile",
-        action="store",
-        default=default_config["profile"],
-        dest="profile",
-        help=messages(language, "select_profile").format(_all_profiles),
+        default=nettacker_global_configuration['nettacker_user_application_config']["show_help_menu"],
+        dest="show_help_menu",
+        help=messages("help_menu"),
     )
 
     # Target Options
     target = parser.add_argument_group(
-        messages(language, "target"), messages(language, "target_input")
+        messages("target"), messages("target_input")
     )
     target.add_argument(
         "-i",
         "--targets",
         action="store",
         dest="targets",
-        default=default_config["targets"],
-        help=messages(language, "target_list"),
+        default=nettacker_global_configuration['nettacker_user_application_config']["targets"],
+        help=messages("target_list"),
     )
     target.add_argument(
         "-l",
         "--targets-list",
         action="store",
         dest="targets_list",
-        default=default_config["targets_list"],
-        help=messages(language, "read_target"),
+        default=nettacker_global_configuration['nettacker_user_application_config']["targets_list"],
+        help=messages("read_target"),
     )
 
     # Exclude Module Name
-    exclude_names = module_names[:]
-    exclude_names.remove("all")
+    exclude_modules = load_all_modules()
+    exclude_modules.remove("all")
 
     # Methods Options
-    method = parser.add_argument_group(
-        messages(language, "Method"), messages(language, "scan_method_options")
+    modules = parser.add_argument_group(
+        messages("Method"), messages("scan_method_options")
     )
-    method.add_argument(
+    modules.add_argument(
         "-m",
-        "--method",
+        "--modules",
         action="store",
-        dest="scan_method",
-        default=default_config["scan_method"],
-        help=messages(language, "choose_scan_method").format(module_names),
+        dest="selected_modules",
+        default=nettacker_global_configuration['nettacker_user_application_config']["selected_modules"],
+        help=messages("choose_scan_method").format(load_all_modules()),
     )
-    method.add_argument(
+    modules.add_argument(
         "-x",
         "--exclude",
         action="store",
-        dest="exclude_method",
-        default=default_config["exclude_method"],
-        help=messages(language, "exclude_scan_method").format(exclude_names),
+        dest="excluded_modules",
+        default=nettacker_global_configuration['nettacker_user_application_config']["exclude_method"],
+        help=messages("exclude_scan_method").format(exclude_modules),
     )
-    method.add_argument(
+    modules.add_argument(
         "-u",
         "--usernames",
         action="store",
-        dest="users",
-        default=default_config["users"],
-        help=messages(language, "username_list"),
+        dest="usernames",
+        default=nettacker_global_configuration['nettacker_user_application_config']["usernames"],
+        help=messages("username_list"),
     )
-    method.add_argument(
+    modules.add_argument(
         "-U",
         "--users-list",
         action="store",
-        dest="users_list",
-        default=default_config["users_list"],
-        help=messages(language, "username_from_file"),
+        dest="usernames_list",
+        default=nettacker_global_configuration['nettacker_user_application_config']["usernames_list"],
+        help=messages("username_from_file"),
     )
-    method.add_argument(
+    modules.add_argument(
         "-p",
         "--passwords",
         action="store",
-        dest="passwds",
-        default=default_config["passwds"],
-        help=messages(language, "password_seperator"),
+        dest="passwords",
+        default=nettacker_global_configuration['nettacker_user_application_config']["passwords"],
+        help=messages("password_seperator"),
     )
-    method.add_argument(
+    modules.add_argument(
         "-P",
         "--passwords-list",
         action="store",
-        dest="passwds_list",
-        default=default_config["passwds_list"],
-        help=messages(language, "read_passwords"),
+        dest="passwords_list",
+        default=nettacker_global_configuration['nettacker_user_application_config']["passwords_list"],
+        help=messages("read_passwords"),
     )
-    method.add_argument(
+    modules.add_argument(
         "-g",
         "--ports",
         action="store",
         dest="ports",
-        default=default_config["ports"],
-        help=messages(language, "port_seperator"),
+        default=nettacker_global_configuration['nettacker_user_application_config']["ports"],
+        help=messages("port_seperator"),
     )
-    method.add_argument(
+    modules.add_argument(
         "-T",
         "--timeout",
         action="store",
         dest="timeout_sec",
-        default=default_config["timeout_sec"],
+        default=nettacker_global_configuration['nettacker_user_application_config']["timeout_sec"],
         type=float,
-        help=messages(language, "read_passwords"),
+        help=messages("read_passwords"),
     )
-    method.add_argument(
+    modules.add_argument(
         "-w",
-        "--time-sleep",
+        "--time-sleep-between-requests",
         action="store",
-        dest="time_sleep",
-        default=default_config["time_sleep"],
+        dest="time_sleep_between_requests",
+        default=nettacker_global_configuration['nettacker_user_application_config']["time_sleep_between_requests"],
         type=float,
-        help=messages(language, "time_to_sleep"),
+        help=messages("time_to_sleep"),
     )
-    method.add_argument(
+    modules.add_argument(
         "-r",
         "--range",
         action="store_true",
-        default=default_config["check_ranges"],
-        dest="check_ranges",
-        help=messages(language, "range"),
+        default=nettacker_global_configuration['nettacker_user_application_config']["scan_ip_range"],
+        dest="scan_ip_range",
+        help=messages("range"),
     )
-    method.add_argument(
+    modules.add_argument(
         "-s",
         "--sub-domains",
         action="store_true",
-        default=default_config["check_subdomains"],
-        dest="check_subdomains",
-        help=messages(language, "subdomains"),
+        default=nettacker_global_configuration['nettacker_user_application_config']["scan_subdomains"],
+        dest="scan_subdomains",
+        help=messages("subdomains"),
     )
-    method.add_argument(
+    modules.add_argument(
         "-t",
-        "--thread-connection",
+        "--thread-per-host",
         action="store",
-        default=default_config["thread_number"],
+        default=nettacker_global_configuration['nettacker_user_application_config']["threat_per_host"],
         type=int,
-        dest="thread_number",
-        help=messages(language, "thread_number_connections"),
+        dest="threat_per_host",
+        help=messages("thread_number_connections"),
     )
-    method.add_argument(
+    modules.add_argument(
         "-M",
-        "--thread-hostscan",
+        "--parallel-host-scan",
         action="store",
-        default=default_config["thread_number_host"],
+        default=nettacker_global_configuration['nettacker_user_application_config']["parallel_host_scan"],
         type=int,
-        dest="thread_number_host",
-        help=messages(language, "thread_number_hosts"),
+        dest="parallel_host_scan",
+        help=messages("thread_number_hosts"),
     )
-    method.add_argument(
+    modules.add_argument(
         "-R",
         "--socks-proxy",
         action="store",
         dest="socks_proxy",
-        default=default_config["socks_proxy"],
-        help=messages(language, "outgoing_proxy"),
+        default=nettacker_global_configuration['nettacker_user_application_config']["socks_proxy"],
+        help=messages("outgoing_proxy"),
     )
-    method.add_argument(
+    modules.add_argument(
         "--retries",
         action="store",
         dest="retries",
         type=int,
-        default=default_config["retries"],
-        help=messages(language, "connection_retries"),
+        default=nettacker_global_configuration['nettacker_user_application_config']["retries"],
+        help=messages("connection_retries"),
     )
-    method.add_argument(
+    modules.add_argument(
         "--ping-before-scan",
         action="store_true",
-        dest="ping_flag",
-        default=default_config["ping_flag"],
-        help=messages(language, "ping_before_scan"),
+        dest="ping_before_scan",
+        default=nettacker_global_configuration['nettacker_user_application_config']["ping_before_scan"],
+        help=messages("ping_before_scan"),
     )
     # API Options
     api = parser.add_argument_group(
-        messages(language, "API"), messages(language, "API_options"))
+        messages("API"), messages("API_options"))
     api.add_argument("--start-api", action="store_true",
-                     dest="start_api", default=default_config["start_api"],
-                     help=messages(language, "start_API"))
+                     dest="start_api_server",
+                     default=nettacker_global_configuration['nettacker_api_config']["start_api_server"],
+                     help=messages("start_API"))
     api.add_argument("--api-host", action="store",
-                     dest="api_host", default=default_config["api_host"],
-                     help=messages(language, "API_host"))
+                     dest="api_hostname",
+                     default=nettacker_global_configuration['nettacker_api_config']["api_hostname"],
+                     help=messages("API_host"))
     api.add_argument("--api-port", action="store",
-                     dest="api_port", default=default_config["api_port"],
-                     help=messages(language, "API_port"))
+                     dest="api_port",
+                     default=nettacker_global_configuration['nettacker_api_config']["api_port"],
+                     help=messages("API_port"))
     api.add_argument("--api-debug-mode", action="store_true",
                      dest="api_debug_mode",
-                     default=default_config["api_debug_mode"],
-                     help=messages(language, "API_debug"))
+                     default=nettacker_global_configuration['nettacker_api_config']["api_debug_mode"],
+                     help=messages("API_debug"))
     api.add_argument("--api-access-key", action="store",
                      dest="api_access_key",
-                     default=default_config["api_access_key"],
-                     help=messages(language, "API_access_key"))
-    api.add_argument("--api-client-white-list", action="store_true",
-                     dest="api_client_white_list",
-                     default=default_config["api_client_white_list"],
-                     help=messages(language, "white_list_API"))
-    api.add_argument("--api-client-white-list-ips", action="store",
-                     dest="api_client_white_list_ips",
-                     default=default_config["api_client_white_list_ips"],
-                     help=messages(language, "define_whie_list"))
-    api.add_argument("--api-access-log", action="store_true",
+                     default=nettacker_global_configuration['nettacker_api_config']["api_access_key"],
+                     help=messages("API_access_key"))
+    api.add_argument("--api-client-whitelisted-ips", action="store",
+                     dest="api_client_whitelisted_ips",
+                     default=nettacker_global_configuration['nettacker_api_config']["api_client_whitelisted_ips"],
+                     help=messages("define_whie_list"))
+    api.add_argument("--api-access-log", action="store",
                      dest="api_access_log",
-                     default=default_config["api_access_log"],
-                     help=messages(language, "gen_API_access_log"))
-    api.add_argument("--api-access-log-filename", action="store",
-                     dest="api_access_log_filename",
-                     default=default_config["api_access_log_filename"],
-                     help=messages(language, "API_access_log_file"))
+                     default=nettacker_global_configuration['nettacker_api_config'][
+                         "api_access_log"],
+                     help=messages("API_access_log_file"))
     api.add_argument("--api-cert",
                      action="store", dest="api_cert",
-                     help=messages(language, "API_cert"))
+                     help=messages("API_cert"))
     api.add_argument("--api-cert-key",
                      action="store", dest="api_cert_key",
-                     help=messages(language, "API_cert_key"))
+                     help=messages("API_cert_key"))
     # Return Options
-    return [
-        parser,
-        parser.parse_args(),
-        default_config["startup_check_for_update"],
-    ]
+    return parser
 
 
-def check_all_required(targets, targets_list, thread_number,
-                       thread_number_host,
-                       log_in_file, scan_method, exclude_method,
-                       users, users_list,
-                       passwds, passwds_list, timeout_sec, ports,
-                       parser, module_names, language, verbose_level,
-                       show_version, check_update, socks_proxy, retries,
-                       graph_flag, help_menu_flag,
-                       wizard_mode, profile,
-                       start_api, api_host, api_port, api_debug_mode,
-                       api_access_key, api_client_white_list,
-                       api_client_white_list_ips, api_access_log,
-                       api_access_log_filename, api_cert, api_cert_key):
+def check_all_required(parser):
     """
     check all rules and requirements for ARGS
 
     Args:
-        targets: targets from CLI
-        targets_list: targets_list from CLI
-        thread_number: thread numbers from CLI
-        thread_number_host: thread number for hosts from CLI
-        log_in_file: output file from CLI
-        scan_method: modules from CLI
-        exclude_method: exclude modules from CLI
-        users: usernames from CLI
-        users_list: username file from CLI
-        passwds: passwords from CLI
-        passwds_list: passwords file from CLI
-        timeout_sec: timeout seconds from CLI
-        ports: ports from CLI
-        parser: parser (argparse)
-        module_names: all module names
-        language: language from CLI
-        verbose_level: verbose level from CLI
-        show_version: show version flag from CLI
-        check_update: check for update flag from CLI
-        socks_proxy: socks proxy from CLI
-        retries: retries from from CLI
-        graph_flag: graph name from CLI
-        help_menu_flag: help menu flag from CLI
-        wizard_mode: wizard mode flag from CLI
-        profile: profiles from CLI
-        start_api: start API flag from CLI
-        api_host: API host from CLI
-        api_port: API port from CLI
-        api_debug_mode: API debug mode flag from CLI
-        api_access_key: API access key from CLI
-        api_client_white_list: API client white list flag from CLI
-        api_client_white_list_ips: API client white list IPs from CLI
-        api_access_log: API access log log flag from CLI
-        api_access_log_filename: API access log filename from CLI
+        parser: parser from argparse
 
     Returns:
         all ARGS with applied rules
     """
     # Checking Requirements
-    # import libs
-    from core import compatible
+    options = parser.parse_args()
+    modules_list = load_all_modules()
 
     # Check Help Menu
-    if help_menu_flag:
+    if options.help_menu_flag:
         parser.print_help()
         write("\n\n")
-        write(messages(language, "license"))
+        write(messages("license"))
         die_success()
-    # Check version
-    if show_version:
-        from core import color
 
+    # Check version
+    if options.show_version:
         info(
-            messages(language, "current_version").format(
-                color.color("yellow"),
-                compatible.__version__,
-                color.color("reset"),
-                color.color("cyan"),
-                compatible.__code_name__,
-                color.color("reset"),
-                color.color("green"),
+            messages("current_version").format(
+                color("yellow"),
+                version_info()[0],
+                color("reset"),
+                color("cyan"),
+                version_info()[1],
+                color("reset"),
+                color("green"),
             )
         )
         die_success()
     # API mode
-    if start_api:
-        from api.engine import _start_api
-        from core.targets import target_type
-        from core.ip import _generate_IPRange
+    if options.start_api_server:
+        start_api_server(options)
 
-        try:
-            api_port = int(api_port)
-        except Exception:
-            die_failure(messages(language, "API_port_int"))
-        if api_client_white_list:
-            if type(api_client_white_list_ips) != type([]):
-                api_client_white_list_ips = list(
-                    set(api_client_white_list_ips.rsplit(","))
-                )
-            hosts = []
-            for data in api_client_white_list_ips:
-                if target_type(data) == "SINGLE_IPv4":
-                    if data not in hosts:
-                        hosts.append(data)
-                elif target_type(data) == "RANGE_IPv4":
-                    for cidr in _generate_IPRange(data):
-                        for ip in cidr:
-                            if ip not in hosts:
-                                hosts.append(ip)
-                elif target_type(data) == "CIDR_IPv4":
-                    for ip in _generate_IPRange(data):
-                        if ip not in hosts:
-                            hosts.append(str(ip))
-                else:
-                    die_failure(messages(language, "unknown_ip_input"))
-            api_client_white_list_ips = hosts[:]
-        if api_access_log:
-            try:
-                open(api_access_log_filename, "a")
-            except Exception:
-                write_to_api_console(
-                    " * "
-                    + messages(language, "file_write_error").format(
-                        api_access_log_filename
-                    )
-                    + "\n"
-                )
-                die_failure("")
-
-        _start_api(api_host, api_port,
-                   api_debug_mode, api_access_key,
-                   api_client_white_list,
-                   api_client_white_list_ips, api_access_log,
-                   api_access_log_filename, api_cert,
-                   api_cert_key, language)
-    # Wizard mode
-    if wizard_mode:
-        (
-            targets,
-            thread_number,
-            thread_number_host,
-            log_in_file,
-            scan_method,
-            exclude_method,
-            users,
-            passwds,
-            timeout_sec,
-            ports,
-            verbose_level,
-            socks_proxy,
-            retries,
-            graph_flag,
-        ) = __wizard(
-            targets,
-            thread_number,
-            thread_number_host,
-            log_in_file,
-            module_names,
-            exclude_method,
-            users,
-            passwds,
-            timeout_sec,
-            ports,
-            verbose_level,
-            socks_proxy,
-            retries,
-            load_all_graphs(),
-            language,
-        )
     # Check the target(s)
-    if targets is None and targets_list is None:
+    if not (options.targets or options.targets_list) or (options.targets and options.targets_list):
         parser.print_help()
         write("\n")
-        die_failure(messages(language, "error_target"))
-    # Select a Profile
-    if scan_method is None and profile is None:
-        die_failure(messages(language, "scan_method_select"))
-    if profile is not None:
-        if scan_method is None:
-            scan_method = ""
-        else:
-            scan_method += ","
-        _all_profiles = _builder(_profiles(), default_profiles())
-        if "all" in profile.rsplit(","):
-            profile = ",".join(_all_profiles)
-        tmp_sm = scan_method
-        for pr in profile.rsplit(","):
-            try:
-                for sm in _all_profiles[pr]:
-                    if sm not in tmp_sm.rsplit(","):
-                        tmp_sm += sm + ","
-            except Exception:
-                die_failure(messages(language, "profile_404").format(pr))
-        if tmp_sm[-1] == ",":
-            tmp_sm = tmp_sm[0:-1]
-        scan_method = ",".join(list(set(tmp_sm.rsplit(","))))
-    # Check Socks
-    if socks_proxy is not None:
-        e = False
-        if socks_proxy.startswith("socks://"):
-            socks_flag = 5
-            socks_proxy = socks_proxy.replace("socks://", "")
-        elif socks_proxy.startswith("socks5://"):
-            socks_flag = 5
-            socks_proxy = socks_proxy.replace("socks5://", "")
-        elif socks_proxy.startswith("socks4://"):
-            socks_flag = 4
-            socks_proxy = socks_proxy.replace("socks4://", "")
-        else:
-            socks_flag = 5
-        if "://" in socks_proxy:
-            socks_proxy = socks_proxy.rsplit("://")[1].rsplit("/")[0]
+        die_failure(messages("error_target"))
+    if options.targets:
+        options.targets = list(set(options.targets.split(",")))
+    if options.targets_list:
         try:
-            if (
-                len(socks_proxy.rsplit(":")) < 2
-                or len(socks_proxy.rsplit(":")) > 3
-            ):
-                e = True
-            elif (
-                len(socks_proxy.rsplit(":")) == 2
-                and socks_proxy.rsplit(":")[1] == ""
-            ):
-                e = True
-            elif (
-                len(socks_proxy.rsplit(":")) == 3
-                and socks_proxy.rsplit(":")[2] == ""
-            ):
-                e = True
+            options.targets = list(set(open(options.targets_list, "rb").read().decode().split()))
         except Exception:
-            e = True
-        if e:
-            die_failure(messages(language, "valid_socks_address"))
-        if socks_flag == 4:
-            socks_proxy = "socks4://" + socks_proxy
-        if socks_flag == 5:
-            socks_proxy = "socks5://" + socks_proxy
-    # Check update
-    if check_update and _update_check(language):
-        from core.update import _update
-
-        _update(
-            compatible.__version__,
-            compatible.__code_name__,
-            language,
-            socks_proxy,
-        )
-        die_success()
-    else:
-        if targets is not None:
-            targets = list(set(targets.rsplit(",")))
-        elif targets_list is not None:
-            try:
-                targets = list(set(open(
-                    targets_list, "rb").read().decode().rsplit()))
-            except Exception:
-                die_failure(
-                    messages(language, "error_target_file").format(
-                        targets_list
-                    )
-                )
-    # Check thread number
-    if thread_number > 101 or thread_number_host > 101:
-        warn(messages(language, "thread_number_warning"))
-    # Check timeout number
-    if timeout_sec is not None and timeout_sec >= 15:
-        warn(messages(language, "settimeout").format(timeout_sec))
-    # Check scanning method
-    if scan_method is not None and "all" in scan_method.rsplit(","):
-        scan_method = module_names
-        scan_method.remove("all")
-    elif (
-        scan_method is not None
-        and len(scan_method.rsplit(",")) == 1
-        and "*_" not in scan_method
-    ):
-        if scan_method in module_names:
-            scan_method = scan_method.rsplit()
-        else:
             die_failure(
-                messages(language, "scan_module_not_found").format(scan_method)
+                messages("error_target_file").format(
+                    options.targets_list
+                )
             )
+
+    if not options.selected_modules:
+        die_failure(messages("scan_method_select"))
+
+    if options.selected_modules == 'all':
+        options.selected_modules = modules_list
     else:
-        if scan_method is not None:
-            if scan_method not in module_names:
-                if "*_" in scan_method or "," in scan_method:
-                    scan_method = scan_method.rsplit(",")
-                    scan_method_tmp = scan_method[:]
-                    for sm in scan_method_tmp:
-                        scan_method_error = True
-                        if sm.startswith("*_"):
-                            scan_method.remove(sm)
-                            found_flag = False
-                            for mn in module_names:
-                                if mn.endswith("_" + sm.rsplit("*_")[1]):
-                                    scan_method.append(mn)
-                                    scan_method_error = False
-                                    found_flag = True
-                            if found_flag is False:
-                                die_failure(
-                                    messages(
-                                        language, "module_pattern_404"
-                                    ).format(sm)
-                                )
-                        elif sm == "all":
-                            scan_method = module_names
-                            scan_method_error = False
-                            scan_method.remove("all")
-                            break
-                        elif sm in module_names:
-                            scan_method_error = False
-                        elif sm not in module_names:
-                            die_failure(
-                                messages(
-                                    language, "scan_module_not_found"
-                                ).format(sm)
-                            )
-                else:
-                    scan_method_error = True
-            if scan_method_error:
-                die_failure(
-                    messages(language, "scan_module_not_found").format(
-                        scan_method
-                    )
+        options.selected_modules = list(set(options.selected_modules.split(',')))
+    for module_name in options.selected_modules:
+        if module_name not in modules_list:
+            die_failure(
+                messages("scan_module_not_found").format(
+                    module_name
                 )
-        else:
-            die_failure(messages(language, "scan_method_select"))
-    scan_method = list(set(scan_method))
+            )
+
     # Check for exluding scanning method
-    if exclude_method is not None:
-        exclude_method = exclude_method.rsplit(",")
-        for exm in exclude_method:
-            if exm in scan_method:
-                if "all" == exm:
-                    die_failure(messages(language, "error_exclude_all"))
-                else:
-                    scan_method.remove(exm)
-                    if len(scan_method) == 0:
-                        die_failure(messages(language, "error_exclude_all"))
-            else:
-                die_failure(
-                    messages(language, "exclude_module_error").format(exm)
-                )
+    if options.excluded_modules:
+        options.excluded_modules = options.excluded_modules.split(",")
+        if 'all' in options.excluded_modules:
+            die_failure(messages("error_exclude_all"))
+        for excluded_module in options.excluded_modules:
+            if excluded_module in options.selected_modules:
+                options.selected_modules.remove(excluded_module)
     # Check port(s)
-    if type(ports) is not list and ports is not None:
+    if options.ports:
         tmp_ports = []
-        for port in ports.rsplit(","):
+        for port in options.ports.split(","):
             try:
-                if "-" not in port:
+                if "-" in port:
+                    for port_number in range(int(port.split('-')[0]), int(port.split('-')[1]) + 1):
+                        if port_number not in tmp_ports:
+                            tmp_ports.append(port_number)
+                else:
                     if int(port) not in tmp_ports:
                         tmp_ports.append(int(port))
-                else:
-                    t_ports = range(
-                        int(port.rsplit("-")[0]), int(port.rsplit("-")[1]) + 1
-                    )
-                    for p in t_ports:
-                        if p not in tmp_ports:
-                            tmp_ports.append(p)
             except Exception:
-                die_failure(messages(language, "ports_int"))
-        if len(tmp_ports) == 0:
-            ports = None
-        else:
-            ports = tmp_ports[:]
+                die_failure(messages("ports_int"))
+        options.ports = tmp_ports
+
     # Check user list
-    if users is not None:
-        users = list(set(users.rsplit(",")))
-    elif users_list is not None:
+    if options.usernames:
+        options.usernames = list(set(options.usernames.split(",")))
+    elif options.usernames_list:
         try:
-            # fix later
-            users = list(set(open(users_list).read().rsplit("\n")))
+            options.usernames = list(set(open(options.usernames_list).read().split("\n")))
         except Exception:
             die_failure(
-                messages(language, "error_username").format(targets_list)
+                messages("error_username").format(options.usernames_list)
             )
     # Check password list
-    if passwds is not None:
-        passwds = list(set(passwds.rsplit(",")))
-    if passwds_list is not None:
+    if options.passwords:
+        options.passwords = list(set(options.passwords.split(",")))
+    elif options.passwords_list:
         try:
-            passwds = list(
-                set(open(passwds_list).read().rsplit("\n"))
-            )  # fix later
+            options.passwords = list(set(open(options.passwords_list).read().split("\n")))
         except Exception:
             die_failure(
-                messages(language, "error_password_file").format(targets_list)
+                messages("error_passwords").format(options.passwords_list)
             )
     # Check output file
     try:
-        open(log_in_file, "w")
+        temp_file = open(options.log_in_file, "w")
+        temp_file.close()
     except Exception:
         die_failure(
-            messages(language, "file_write_error").format(log_in_file)
+            messages("file_write_error").format(options.log_in_file)
         )
     # Check Graph
-    if graph_flag is not None:
-        if graph_flag not in load_all_graphs():
+    if options.graph_name:
+        if options.graph_name not in load_all_graphs():
             die_failure(
-                messages(language, "graph_module_404").format(graph_flag)
+                messages("graph_module_404").format(options.graph_name)
             )
-        if not (log_in_file.endswith(".html") or log_in_file.endswith(".htm")):
-            warn(messages(language, "graph_output"))
-            graph_flag = None
-    # Return the values
-
-    return [targets, targets_list, thread_number,
-            thread_number_host,
-            log_in_file, scan_method,
-            exclude_method, users, users_list,
-            passwds, passwds_list, timeout_sec, ports,
-            parser, module_names, language, verbose_level,
-            show_version, check_update, socks_proxy,
-            retries, graph_flag, help_menu_flag,
-            wizard_mode, profile,
-            start_api, api_host, api_port, api_debug_mode,
-            api_access_key, api_client_white_list,
-            api_client_white_list_ips, api_access_log,
-            api_access_log_filename, api_cert, api_cert_key]
+        if not (options.log_in_file.endswith(".html") or options.log_in_file.endswith(".htm")):
+            warn(messages("graph_output"))
+            options.graph_flag = None
+    return options

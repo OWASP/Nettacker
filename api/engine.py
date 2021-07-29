@@ -48,7 +48,6 @@ from database.db import __search_logs
 from database.db import __logs_to_report_html
 from core.targets import target_type
 
-
 TEMPLATE_DIR = os.path.join(os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "web"), "static")
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
@@ -122,9 +121,9 @@ def error_404(error):
         404 JSON error
     """
     return jsonify(structure(status="error",
-                               msg=messages(app.config[
-                                   "OWASP_NETTACKER_CONFIG"]["language"],
-                                   "not_found"))), 404
+                             msg=messages(app.config[
+                                              "OWASP_NETTACKER_CONFIG"]["language"],
+                                          "not_found"))), 404
 
 
 @app.before_request
@@ -138,7 +137,7 @@ def limit_remote_addr():
     # IP Limitation
     if app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list"]:
         if flask_request.remote_addr not in app.config[
-                "OWASP_NETTACKER_CONFIG"]["api_client_white_list_ips"]:
+            "OWASP_NETTACKER_CONFIG"]["api_client_white_list_ips"]:
             abort(403, messages(__language(), "unauthorized_IP"))
     return
 
@@ -156,7 +155,7 @@ def access_log(response):
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"]:
         r_log = open(app.config["OWASP_NETTACKER_CONFIG"][
-            "api_access_log_filename"], "ab")
+                         "api_access_log_filename"], "ab")
         # if you need to log POST data
         # r_log.write(
         #     "{0} [{1}] {2} \"{3} {4}\" {5} {6} {7}\r\n".format(
@@ -192,7 +191,7 @@ def get_statics(path):
     static_types = mime_types()
     return Response(get_file(os.path.join(root_dir(), path)),
                     mimetype=static_types.get(os.path.splitext(path)[1],
-                    "text/html"))
+                                              "text/html"))
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -221,7 +220,7 @@ def new_scan():
     _start_scan_config = {}
     api_key_check(app, flask_request, __language())
     targetValue = get_value(flask_request, "targets")
-    if(target_type(targetValue) == "UNKNOWN"):
+    if (target_type(targetValue) == "UNKNOWN"):
         return jsonify({"error": "Please input correct target"}), 400
     for key in _core_default_config():
         if get_value(flask_request, key) is not None:
@@ -311,7 +310,7 @@ def __get_result_content():
         _id = int(get_value(flask_request, "id"))
     except Exception:
         return jsonify(structure(status="error",
-                       msg="your scan id is not valid!")), 400
+                                 msg="your scan id is not valid!")), 400
     return __get_result(__language(), _id)
 
 
@@ -330,27 +329,27 @@ def __get_results_json():
         scan_id_temp = session.query(Report).filter(Report.id == _id).all()
     except Exception as _:
         _id = ""
-    if(scan_id_temp):
+    if (scan_id_temp):
         result_id = session.query(Report).join(
-                    HostsLog, Report.scan_id == HostsLog.scan_id).filter(
-                    Report.scan_id == scan_id_temp[0].scan_id).all()
+            HostsLog, Report.scan_id == HostsLog.scan_id).filter(
+            Report.scan_id == scan_id_temp[0].scan_id).all()
     else:
         result_id = []
     json_object = {}
-    if(result_id):
+    if (result_id):
         scan_id = result_id[0].scan_id
         data = __logs_by_scan_id(scan_id, __language())
         json_object = json.dumps(data)
     date_from_db = scan_id_temp[0].date
     date_format = datetime.strptime(date_from_db, "%Y-%m-%d %H:%M:%S")
     date_format = str(date_format).replace(
-                  "-", "_").replace(":", "_").replace(" ", "_")
+        "-", "_").replace(":", "_").replace(" ", "_")
     filename = "report-" + date_format + "".join(
         random.choice(string.ascii_lowercase) for x in range(10))
     return Response(json_object,
                     mimetype='application/json',
                     headers={'Content-Disposition':
-                             'attachment;filename='+filename+'.json'})
+                                 'attachment;filename=' + filename + '.json'})
 
 
 @app.route("/results/get_csv", methods=["GET"])
@@ -368,7 +367,7 @@ def __get_results_csv():
         scan_id_temp = session.query(Report).filter(Report.id == _id).all()
     except Exception as _:
         _id = ""
-    if(scan_id_temp):
+    if (scan_id_temp):
         result_id = session.query(Report).join(
             HostsLog, Report.scan_id == HostsLog.scan_id).filter(
             Report.scan_id == scan_id_temp[0].scan_id).all()
@@ -378,10 +377,10 @@ def __get_results_csv():
     date_format = datetime.strptime(date_from_db, "%Y-%m-%d %H:%M:%S")
     date_format = str(date_format).replace(
         "-", "_").replace(":", "_").replace(" ", "_")
-    filename = "report-" + date_format+"".join(
+    filename = "report-" + date_format + "".join(
         random.choice(string.ascii_lowercase) for x in range(10))
     _reader = ''
-    if(result_id):
+    if (result_id):
         scan_id = result_id[0].scan_id
         data = __logs_by_scan_id(scan_id, __language())
         keys = data[0].keys()
@@ -397,7 +396,7 @@ def __get_results_csv():
             _reader = output_file.read()
     return Response(_reader, mimetype='text/csv',
                     headers={'Content-Disposition':
-                             'attachment;filename='+filename+'.csv'})
+                                 'attachment;filename=' + filename + '.csv'})
 
 
 @app.route("/logs/get_list", methods=["GET"])
@@ -448,11 +447,11 @@ def __get_logs():
     data = __logs_to_report_json(host, __language())
     json_object = json.dumps(data)
     filename = "report-" + now(
-        model="%Y_%m_%d_%H_%M_%S")+"".join(
+        model="%Y_%m_%d_%H_%M_%S") + "".join(
         random.choice(string.ascii_lowercase) for x in range(10))
     return Response(json_object, mimetype='application/json',
                     headers={'Content-Disposition':
-                             'attachment;filename='+filename+'.json'})
+                                 'attachment;filename=' + filename + '.json'})
 
 
 @app.route("/logs/get_csv", methods=["GET"])
@@ -471,8 +470,8 @@ def __get_logs_csv():
     data = __logs_to_report_json(host, __language())
     keys = data[0].keys()
     filename = "report-" + now(
-        model="%Y_%m_%d_%H_%M_%S")+"".join(random.choice(
-            string.ascii_lowercase) for x in range(10))
+        model="%Y_%m_%d_%H_%M_%S") + "".join(random.choice(
+        string.ascii_lowercase) for x in range(10))
     with open(filename, "w") as output_file:
         dict_writer = csv.DictWriter(
             output_file, fieldnames=keys, quoting=csv.QUOTE_ALL)
@@ -485,7 +484,7 @@ def __get_logs_csv():
         reader = output_file.read()
     return Response(reader, mimetype='text/csv',
                     headers={'Content-Disposition':
-                             'attachment;filename='+filename+'.csv'})
+                                 'attachment;filename=' + filename + '.csv'})
 
 
 @app.route("/logs/search", methods=["GET"])
@@ -508,103 +507,64 @@ def ___go_for_search_logs():
     return jsonify(__search_logs(__language(), page, query)), 200
 
 
-def __process_it(api_host, api_port, api_debug_mode, api_access_key,
-                 api_client_white_list, api_client_white_list_ips,
-                 api_access_log, api_access_log_filename, api_cert,
-                 api_cert_key, language):
+def start_api_subprocess(options):
     """
     a function to run flask in a subprocess to make kill signal in a better
     way!
 
     Args:
-        api_host: host/IP to bind address
-        api_port: bind port
-        api_debug_mode: debug mode flag
-        api_access_key: API access key
-        api_client_white_list: clients while list flag
-        api_client_white_list_ips: clients white list IPs
-        api_access_log: access log flag
-        api_access_log_filename: access log filename
-        api_cert: SSL certificate
-        api_cert_key: SSL Private key
-
-        language: language
+        options: all options
     """
     app.config["OWASP_NETTACKER_CONFIG"] = {
-        "api_access_key": api_access_key,
-        "api_client_white_list": api_client_white_list,
-        "api_client_white_list_ips": api_client_white_list_ips,
-        "api_access_log": api_access_log,
-        "api_access_log_filename": api_access_log_filename,
-        "api_cert": api_cert,
-        "api_cert_key": api_cert_key,
-        "language": language
+        "api_access_key": options.api_access_key,
+        "api_client_whitelisted_ips": options.api_client_whitelisted_ips,
+        "api_access_log": options.api_access_log,
+        "api_access_log_filename": options.api_access_log_filename,
+        "api_cert": options.api_cert,
+        "api_cert_key": options.api_cert_key,
+        "language": options.language
     }
-    try:
-        if api_cert:
-            if api_cert_key:
-                app.run(host=api_host, port=api_port, debug=api_debug_mode,
-                        ssl_context=(api_cert, api_cert_key), threaded=True)
-            else:
-                die_failure(messages(language, "api_cert_key"))
-
-        if api_cert_key:
-            if api_cert:
-                app.run(host=api_host, port=api_port, debug=api_debug_mode,
-                        ssl_context=(api_cert, api_cert_key), threaded=True)
-            else:
-                die_failure(messages(language, "api_cert"))
-
-        else:
-            app.run(host=api_host,
-                    port=api_port, debug=api_debug_mode,
-                    ssl_context="adhoc", threaded=True)
-    except Exception:
-        die_failure(messages(language, "wrong_values"))
+    if options.api_cert and options.api_cert_key:
+        app.run(
+            host=options.api_hostname,
+            port=options.api_port,
+            debug=options.api_debug_mode,
+            ssl_context=(
+                options.api_cert,
+                options.api_cert_key
+            ),
+            threaded=True
+        )
+    else:
+        app.run(
+            host=options.api_hostname,
+            port=options.api_port,
+            debug=options.api_debug_mode,
+            threaded=True
+        )
 
 
-def _start_api(api_host, api_port, api_debug_mode, api_access_key,
-               api_client_white_list, api_client_white_list_ips,
-               api_access_log, api_access_log_filename, api_cert,
-               api_cert_key, language):
+def start_api_server(options):
     """
     entry point to run the API through the flask
 
     Args:
-        api_host: host/IP to bind address
-        api_port: bind port
-        api_debug_mode: debug mode
-        api_access_key: API access key
-        api_client_white_list: clients while list flag
-        api_client_white_list_ips: clients white list IPs
-        api_access_log: access log flag
-        api_access_log_filename: access log filename
-        api_cert: SSL certificate
-        api_cert_key: SSL Private key
-        language: language
+        options: all options
     """
     # Starting the API
-    write_to_api_console(messages(language, "API_key").format(api_access_key))
-    p = multiprocessing.Process(target=__process_it,
-                                args=(api_host, api_port, api_debug_mode,
-                                      api_access_key, api_client_white_list,
-                                      api_client_white_list_ips,
-                                      api_access_log, api_access_log_filename,
-                                      api_cert, api_cert_key, language))
+    write_to_api_console(messages("API_key").format(options.api_access_key))
+    p = multiprocessing.Process(
+        target=start_api_subprocess,
+        args=(options,)
+    )
     p.start()
     # Sometimes it's take much time to terminate flask with CTRL+C
     # So It's better to use KeyboardInterrupt to terminate!
-    while 1:
+    while len(multiprocessing.active_children()) != 0:
         try:
-            exitflag = True
-            if len(multiprocessing.active_children()) != 0:
-                exitflag = False
             time.sleep(0.3)
-            if exitflag:
-                break
         except KeyboardInterrupt:
             for process in multiprocessing.active_children():
                 process.terminate()
             break
-
     die_success()

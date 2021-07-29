@@ -4,6 +4,7 @@
 import re
 import requests
 
+
 def reverse_and_regex_condition(regex, reverse):
     if regex:
         if reverse:
