@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
 import sys
 import json
 from core import color
+from config import nettacker_global_config
 
 pyversion = int(sys.version_info[0])
 
@@ -23,12 +23,11 @@ def is_not_run_from_api():
     return True
 
 
-def messages(language, msg_id):
+def messages(msg_id):
     """
     load a message from message library with specified language
 
     Args:
-        language: language
         msg_id: message id
 
     Returns:
@@ -37,6 +36,7 @@ def messages(language, msg_id):
     """
     import yaml
     from io import StringIO
+    language = nettacker_global_config()['nettacker_user_application_config']['language']
     try:
         msgs = yaml.load(
             StringIO(

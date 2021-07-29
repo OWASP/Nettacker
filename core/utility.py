@@ -6,12 +6,12 @@ import copy
 import random
 import string
 import sys
-from core.alert import warn
 from core.load_modules import load_all_languages
-from config import nettacker_global_config
 
 
 def application_language():
+    from config import nettacker_global_config
+    from core.alert import warn
     languages_list = load_all_languages()
     nettacker_global_configuration = nettacker_global_config()
     if "-L" in sys.argv:

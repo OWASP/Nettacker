@@ -8,8 +8,8 @@ def die_success():
     """
     exit the framework with code 0
     """
-    from core.color import finish
-    finish()
+    from core.color import reset_color
+    reset_color()
     sys.exit(0)
 
 
@@ -20,8 +20,8 @@ def die_failure(msg):
     Args:
         msg: the error message
     """
-    from core.color import finish
+    from core.color import reset_color
     from core.alert import error
     error(msg)
-    finish()
+    reset_color()
     sys.exit(1)

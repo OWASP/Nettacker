@@ -24,7 +24,7 @@ from core.alert import messages
 from core.die import die_success
 from core.die import die_failure
 from core.time import now
-from config import _core_config
+from config import nettacker_global_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
 from api.api_core import structure

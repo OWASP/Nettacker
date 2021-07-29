@@ -15,7 +15,7 @@ from core.alert import info
 from core.targets import target_type
 from core.alert import messages
 from core.time import now
-from core.load_modules import load_file_path
+from config import nettacker_global_config
 from core.log import sort_logs
 from core.targets import analysis
 from core.alert import write

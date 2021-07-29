@@ -140,7 +140,7 @@ def load_all_args():
         "--exclude",
         action="store",
         dest="excluded_modules",
-        default=nettacker_global_configuration['nettacker_user_application_config']["exclude_method"],
+        default=nettacker_global_configuration['nettacker_user_application_config']["excluded_modules"],
         help=messages("exclude_scan_method").format(exclude_modules),
     )
     modules.add_argument(
@@ -315,7 +315,7 @@ def check_all_required(parser):
     modules_list = load_all_modules()
 
     # Check Help Menu
-    if options.help_menu_flag:
+    if options.show_help_menu:
         parser.print_help()
         write("\n\n")
         write(messages("license"))

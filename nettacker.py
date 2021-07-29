@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import sys
-from core.load_modules import main
+
 from core.parse import load
 
 """

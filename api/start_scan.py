@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from core.scan_targers import __go_for_attacks
+from core.scan_targers import start_scan_processes
 
 
 def __scan(config):
@@ -36,7 +36,7 @@ def __scan(config):
     profile = config["profile"]
     backup_ports = config["backup_ports"]
 
-    return __go_for_attacks(targets, check_ranges, check_subdomains,
+    return start_scan_processes(targets, check_ranges, check_subdomains,
                             log_in_file,
                             time_sleep, language, verbose_level, retries,
                             socks_proxy, users, passwds, timeout_sec,

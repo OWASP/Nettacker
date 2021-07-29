@@ -13,21 +13,14 @@ from core.alert import messages
 from core.time import now
 from core import compatible
 from api.api_core import structure
-from config import _database_config
+from config import nettacker_database_config
 
-DB = _database_config()["DB"]
-USER = _database_config()["USERNAME"]
-PASSWORD = _database_config()["PASSWORD"]
-HOST = _database_config()["HOST"]
-PORT = _database_config()["PORT"]
-DATABASE = _database_config()["DATABASE"]
-
-# Python2 hack for flake8
-try:
-    reload
-except NameError:
-    def reload(dummy):
-        return dummy
+DB = nettacker_database_config()["DB"]
+USER = nettacker_database_config()["USERNAME"]
+PASSWORD = nettacker_database_config()["PASSWORD"]
+HOST = nettacker_database_config()["HOST"]
+PORT = nettacker_database_config()["PORT"]
+DATABASE = nettacker_database_config()["DATABASE"]
 
 
 def db_inputs(connection_type):
@@ -296,7 +289,7 @@ def __last_host_logs(language, page):
     }
     selected = []
     try:
-        for host in session.query(HostsLog).group_by(HostsLog.host).order_by(HostsLog.id.desc())[page:page+11]:
+        for host in session.query(HostsLog).group_by(HostsLog.host).order_by(HostsLog.id.desc())[page:page + 11]:
             for data in session.query(HostsLog).filter(HostsLog.host == host).group_by(
                     HostsLog.type, HostsLog.port, HostsLog.username, HostsLog.password,
                     HostsLog.description).order_by(HostsLog.id.desc()):
@@ -473,20 +466,20 @@ def __search_logs(language, page, query):
     selected = []
     try:
         for host in session.query(HostsLog).filter(
-                (HostsLog.host.like("%"+str(query)+"%"))
-                | (HostsLog.date.like("%"+str(query)+"%"))
-                | (HostsLog.port.like("%"+str(query)+"%"))
-                | (HostsLog.type.like("%"+str(query)+"%"))
-                | (HostsLog.category.like("%"+str(query)+"%"))
-                | (HostsLog.description.like("%"+str(query)+"%"))
-                | (HostsLog.username.like("%"+str(query)+"%"))
+                (HostsLog.host.like("%" + str(query) + "%"))
+                | (HostsLog.date.like("%" + str(query) + "%"))
+                | (HostsLog.port.like("%" + str(query) + "%"))
+                | (HostsLog.type.like("%" + str(query) + "%"))
+                | (HostsLog.category.like("%" + str(query) + "%"))
+                | (HostsLog.description.like("%" + str(query) + "%"))
+                | (HostsLog.username.like("%" + str(query) + "%"))
                 | (HostsLog.password.like("%" + str(query) + "%"))
                 | (HostsLog.scan_id.like("%" + str(query) + "%"))
                 | (HostsLog.scan_cmd.like("%" + str(query) + "%"))
-        ).group_by(HostsLog.host).order_by(HostsLog.id.desc())[page:page+11]:
+        ).group_by(HostsLog.host).order_by(HostsLog.id.desc())[page:page + 11]:
             for data in session.query(HostsLog).filter(HostsLog.host == str(host.host)).group_by(
                     HostsLog.type, HostsLog.port, HostsLog.username, HostsLog.password, HostsLog.description).order_by(
-                                                    HostsLog.id.desc()).all():
+                HostsLog.id.desc()).all():
                 n = 0
                 capture = None
                 for selected_data in selected:

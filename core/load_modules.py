@@ -5,9 +5,6 @@ import os
 import lib
 import inspect
 from glob import glob
-from config import _core_config
-from core.config_builder import _core_default_config
-from core.config_builder import _builder
 from core import module_protocols
 from io import StringIO
 
@@ -95,17 +92,9 @@ def load_all_modules():
     return module_names
 
 
-def load_file_path():
-    """
-    load home path
-
-    Returns:
-        value of home path
-    """
-    return _builder(_core_config(), _core_default_config())["home_path"]
-
-
 def main():
+    from core.compatible import check_dependencies
+    check_dependencies()
     for directory in os.listdir('modules/scan/'):
         if 'dir_scan.yaml' in directory:
             validate_module = module()
