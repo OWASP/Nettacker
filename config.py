@@ -8,7 +8,7 @@ import sys
 from core.time import now
 
 
-def _paths():
+def nettacker_paths():
     """
     home path for the framework (could be modify by user)
 
@@ -18,13 +18,15 @@ def _paths():
     return {
         "requirements_path": os.path.join(sys.path[0], 'requirements.txt'),
         "requirements_dev_path": os.path.join(sys.path[0], 'requirements-dev.txt'),
-        "home_path": os.path.join(sys.path[0], '.data'),
+        "home_path": os.path.join(sys.path[0]),
+        "data_path": os.path.join(sys.path[0]) + '.data',
         "tmp_path": os.path.join(sys.path[0], '.data/tmp'),
-        "results_path": os.path.join(sys.path[0], '.data/results')
+        "results_path": os.path.join(sys.path[0], '.data/results'),
+        "database_path": os.path.join(sys.path[0], '.data/nettacker.db')
     }
 
 
-def _profiles():
+def nettacker_profiles():
     """
     a shortcut and users profile to run customize scans
     (could be modify by user)
@@ -39,35 +41,33 @@ def _profiles():
         "vuln": ["*_vuln"],
         "scan": ["*_scan"],
         "brute": ["*_brute"],
-        "wp": ["wp_plugin_scan",
-               "wp_theme_scan",
-               "wp_timthumbs_scan",
-               "wp_user_enum_scan",
-               "wordpress_dos_cve_2018_6389_vuln",
-               "wp_xmlrpc_bruteforce_vuln",
-               "wp_xmlrpc_pingback_vuln"],
-        "wordpress": ["wp_plugin_scan",
-                      "wp_theme_scan",
-                      "wp_timthumbs_scan",
-                      "wp_user_enum_scan",
-                      "wordpress_dos_cve_2018_6389_vuln",
-                      "wp_xmlrpc_bruteforce_vuln",
-                      "wp_xmlrpc_pingback_vuln"],
-        "joomla": ["joomla_template_scan",
-                   "joomla_user_enum_scan",
-                   "joomla_version_scan"]
+        "wp": [
+            "wp_plugin_scan",
+            "wp_theme_scan",
+            "wp_timthumbs_scan",
+            "wp_user_enum_scan",
+            "wordpress_dos_cve_2018_6389_vuln",
+            "wp_xmlrpc_bruteforce_vuln",
+            "wp_xmlrpc_pingback_vuln"
+        ],
+        "wordpress": [
+            "wp_plugin_scan",
+            "wp_theme_scan",
+            "wp_timthumbs_scan",
+            "wp_user_enum_scan",
+            "wordpress_dos_cve_2018_6389_vuln",
+            "wp_xmlrpc_bruteforce_vuln",
+            "wp_xmlrpc_pingback_vuln"
+        ],
+        "joomla": [
+            "joomla_template_scan",
+            "joomla_user_enum_scan",
+            "joomla_version_scan"
+        ]
     }
 
 
-def _synonym_profile():
-    return {
-        "info": "information_gathering",
-        "vuln": "vulnerability",
-        "wp": "wordpress"
-    }
-
-
-def _api_config():
+def nettacker_api_config():
     """
     API Config (could be modify by user)
 
@@ -82,7 +82,11 @@ def _api_config():
             random.choice("0123456789abcdef") for x in range(32)),
         "api_client_white_list": {
             "enabled": False,
-            "ips": ["127.0.0.1", "10.0.0.0/24", "192.168.1.1-192.168.1.255"]
+            "ips": [
+                "127.0.0.1",
+                "10.0.0.0/24",
+                "192.168.1.1-192.168.1.255"
+            ]
         },
         "api_access_log": {
             "enabled": False,
@@ -91,7 +95,7 @@ def _api_config():
     }
 
 
-def _database_config():
+def nettacker_database_config():
     """
     Database Config (could be modified by user)
     For sqlite database:
@@ -110,7 +114,7 @@ def _database_config():
     return {
         "DB": "sqlite",
         # "DB":"mysql", "DB": "postgres"
-        "DATABASE": _paths()["home_path"] + "/nettacker.db",
+        "DATABASE": nettacker_paths()["database_path"],
         # Name of the database
         "USERNAME": "",
         "PASSWORD": "",
@@ -119,7 +123,7 @@ def _database_config():
     }
 
 
-def _core_config():
+def nettacker_user_config():
     """
     core framework default config (could be modify by user)
 
@@ -131,10 +135,13 @@ def _core_config():
         "verbose_level": 0,
         "show_version": False,
         "check_update": False,
-        "log_in_file": "{0}/results_{1}_{2}.html".format(_paths()[
-            "results_path"],
+        "log_in_file": "{0}/results_{1}_{2}.html".format(
+            nettacker_paths()["results_path"],
             now(model="%Y_%m_%d_%H_%M_%S"),
-            "".join(random.choice(string.ascii_lowercase) for x in range(10))),
+            "".join(
+                random.choice(string.ascii_lowercase) for x in range(10)
+            )
+        ),
         "graph_flag": "d3_tree_v2_graph",
         "help_menu_flag": False,
         "targets": None,
@@ -158,23 +165,15 @@ def _core_config():
         "startup_check_for_update": True,
         "wizard_mode": False,
         "profile": None,
-        "start_api": False,
-        "api_host": _api_config()["api_host"],
-        "api_port": _api_config()["api_port"],
-        "api_debug_mode": _api_config()["api_debug_mode"],
-        "api_access_key": _api_config()["api_access_key"],
-        "api_client_white_list": _api_config()[
-            "api_client_white_list"]["enabled"],
-        "api_client_white_list_ips": _api_config()[
-            "api_client_white_list"]["ips"],
-        "api_access_log": _api_config()["api_access_log"]["enabled"],
-        "api_access_log_filename": _api_config()["api_access_log"]["filename"],
-        "database_type": _database_config()["DB"],
-        "database_name": _database_config()["DATABASE"],
-        "database_username": _database_config()["USERNAME"],
-        "database_password": _database_config()["PASSWORD"],
-        "database_host": _database_config()["HOST"],
-        "database_port": _database_config()["PORT"],
-        **_paths(),
+        "start_api": False
+    }
 
+
+def nettacker_global_config():
+    return {
+        "nettacker_paths": nettacker_paths(),
+        "nettacker_profiles": nettacker_profiles(),
+        "nettacker_api_config": nettacker_api_config(),
+        "nettacker_database_config": nettacker_database_config(),
+        "nettacker_user_config": nettacker_user_config()
     }

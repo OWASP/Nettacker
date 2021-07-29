@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import create_engine
-from core.config import _database_config
+from config import _database_config
 from database.models import Base
 from sqlalchemy.exc import OperationalError
 

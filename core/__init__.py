@@ -11,7 +11,7 @@ logo()
 import os
 from core.alert import messages
 from core.die import die_failure
-from core.config import _core_config
+from config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
 

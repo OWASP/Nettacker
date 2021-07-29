@@ -6,7 +6,7 @@ from core.load_modules import load_all_modules
 from core.load_modules import load_all_graphs
 from core.alert import messages
 from core.config_builder import default_profiles
-from core.config import _profiles, _synonym_profile
+from config import _profiles, _synonym_profile
 from core.config_builder import _builder
 from flask import abort
 

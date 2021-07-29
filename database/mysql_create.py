@@ -3,7 +3,7 @@
 
 from sqlalchemy import create_engine
 
-from core.config import _database_config
+from config import _database_config
 from database.models import Base
 
 

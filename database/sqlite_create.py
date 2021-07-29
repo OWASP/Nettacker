@@ -4,7 +4,7 @@
 from sqlalchemy import create_engine
 
 from database.models import Base
-from core.config import _database_config
+from config import _database_config
 
 
 DATABASE = _database_config()["DATABASE"]

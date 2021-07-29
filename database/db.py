@@ -13,7 +13,7 @@ from core.alert import messages
 from core.time import now
 from core import compatible
 from api.api_core import structure
-from core.config import _database_config
+from config import _database_config
 
 DB = _database_config()["DB"]
 USER = _database_config()["USERNAME"]

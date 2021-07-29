@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from core.config_builder import _builder
-from core.config import _core_config
+from config import _core_config
 from core.config_builder import _core_default_config
 from core.get_input import __input
 from core.alert import messages

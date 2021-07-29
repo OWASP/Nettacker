@@ -5,18 +5,9 @@ import os
 import lib
 import inspect
 from glob import glob
-from core.alert import messages
-from core.alert import info
-from core.alert import warn
-from core.die import die_failure
-from core.compatible import version
-from core.compatible import is_windows
-from core.compatible import logo
-from core.config import _core_config
+from config import _core_config
 from core.config_builder import _core_default_config
 from core.config_builder import _builder
-import json
-import sys
 from core import module_protocols
 from io import StringIO
 
@@ -69,11 +60,8 @@ def load_all_graphs():
         an array of graph names
     """
     graph_names = []
-    for _lib in glob(os.path.dirname(inspect.getfile(lib)) + '/graph/*/engine.py'):
-        if os.path.dirname(_lib).rsplit('\\' if is_windows() else '/')[
-            -2] == "graph" and _lib + '_graph' not in graph_names:
-            _lib = _lib.rsplit('\\' if is_windows() else '/')[-2]
-            graph_names.append(_lib + '_graph')
+    for graph_library in glob(os.path.dirname(inspect.getfile(lib)) + '/graph/*/engine.py'):
+        graph_names.append(graph_library.split('/')[-2] + '_graph')
     return graph_names
 
 
@@ -86,12 +74,10 @@ def load_all_modules():
     """
     # Search for Modules
     module_names = []
-    for _lib in glob(os.path.dirname(inspect.getfile(lib)) + '/modules/*/*.yaml'):
-        libname = _lib.rsplit('\\' if is_windows() else '/')[-2]
-        category = _lib.rsplit('\\' if is_windows() else '/')[-3]
-        if (category != 'graph' and
-                libname + '_' + category not in module_names):
-            module_names.append(libname + '_' + category)
+    for module_name in glob('/modules/*/*.yaml'):
+        libname = module_name.split('/')[-1].split('.')[0]
+        category = module_name.split('/')[-2]
+        module_names.append(libname + '_' + category)
     module_names.append('all')
     return module_names
 

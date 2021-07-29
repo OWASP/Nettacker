@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import argparse
 from core.alert import write
 from core.alert import warn
 from core.alert import info
 from core.alert import messages
 from core.compatible import check
-from core.compatible import os_name
 from core.load_modules import load_all_graphs
-from core.config import _core_config
+from config import _core_config
 from core.config_builder import _builder
 from core.die import die_success
 from core.die import die_failure
@@ -17,15 +17,9 @@ from core.color import finish
 from core.wizard import __wizard
 from core.config_builder import _core_default_config
 from core.config_builder import default_profiles
-from core.config import _profiles
+from config import _profiles
 from core.alert import write_to_api_console
 from core.update import _update_check
-
-# temporary use fixed version of argparse
-if os_name() == "win32" or os_name() == "win64":
-    from lib.argparse.v3 import argparse
-else:
-    import argparse
 
 
 def load_all_args(module_names, graph_names):
