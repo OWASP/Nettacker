@@ -7,12 +7,17 @@ import inspect
 from glob import glob
 from core import module_protocols
 from io import StringIO
+from config import nettacker_paths
+from core.alert import (info,
+                        warn)
 
 
-class module:
+class NettackerModules:
     def __init__(self):
-        self.module_path = None
+        self.module_name = None
         self.module_content = None
+        self.scan_unique_id = None
+        self.target = None
         self.module_inputs = {}
         self.libraries = dir(module_protocols)
 
@@ -20,7 +25,12 @@ class module:
         import yaml
         self.module_content = yaml.load(
             StringIO(
-                open(self.module_path, 'r').read().format(
+                open(
+                    nettacker_paths()['modules_path'] +
+                    self.module_name.split('_')[-1].split('.yaml')[0] +
+                    '_'.join(self.module_name.split('_')[:-1]) + 'yaml',
+                    'r'
+                ).read().format(
                     **self.module_inputs
                 )
             ),
@@ -32,9 +42,10 @@ class module:
         self.module_content['payloads'] = expand_module_steps(self.module_content['payloads'])
 
     def start(self):
+        # todo: multi thread here
         for payload in self.module_content['payloads']:
             if payload['library'] not in self.libraries:
-                print('library [{library}] is not support!'.format(library=payload['library']))
+                warn('library [{library}] is not support!'.format(library=payload['library']))
                 return None
             protocol = getattr(
                 __import__(
@@ -92,16 +103,14 @@ def load_all_modules():
     return module_names
 
 
-def main():
-    for directory in os.listdir('modules/scan/'):
-        if 'dir_scan.yaml' in directory:
-            validate_module = module()
-            validate_module.module_path = "modules/scan/{}".format(directory)
-            validate_module.module_inputs = {
-                "BaseURL": 'https://evil.com',
-                'TimeOut': 2
-            }
-            validate_module.load()
-            validate_module.generate_loops()
-            validate_module.start()
+def perform_scan(options, target, module_name, scan_unique_id):
+    validate_module = NettackerModules()
+    validate_module.module_name = module_name
+    validate_module.module_inputs = options
+    validate_module.scan_unique_id = scan_unique_id
+    validate_module.target = target
+    validate_module.load()
+    validate_module.generate_loops()
+    info(f"starting scan {target} - {module_name}")
+    validate_module.start()
     return os.EX_OK

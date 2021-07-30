@@ -1,0 +1,29 @@
+info:
+  id: admin-scan
+  name: Divyansh
+  author: y
+  severity: z
+  description: gg
+  reference: oo
+  tags:
+    - scan
+    - information_gathering
+    - infortmation
+    - info
+    - domain
+
+payloads:
+  - library: http
+    session: false
+    verify: false
+    steps:
+      - method: get
+        url: "https://jldc.me/anubis/subdomains/{target}"
+        response:
+          condition_type: or
+          conditions:
+            status_code:
+              regex: ^[2-3][0-9][0-9]
+              reverse: false
+
+

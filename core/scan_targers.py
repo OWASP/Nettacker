@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from core.alert import info
-from core.alert import messages
-from core.log import sort_logs
 from core.targets import expand_targets
-from core.alert import write
-from core.color import reset_color
 from core.utility import generate_random_token
+from core.load_modules import perform_scan
 
 
 def start_scan_processes(options):
@@ -23,22 +19,8 @@ def start_scan_processes(options):
     scan_unique_id = generate_random_token(32)
     # find total number of targets + types + expand (subdomain, IPRanges, etc)
     options.targets = expand_targets(options)
-
-    info(messages("sorting_results"))
-    sort_logs(
-        output_file,
-        language,
-        graph_name,
-        scan_id,
-        scan_cmd,
-        verbose_mode,
-        0,
-        None,
-        selected_modules,
-        backup_ports,
-    )
-    write("\n")
-    info(messages("done"))
-    write("\n\n")
-    reset_color()
+    # todo: multi process here
+    for target in options.targets:
+        for module_name in options.selected_module:
+            perform_scan(options, target, module_name, scan_unique_id)
     return True

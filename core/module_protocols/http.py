@@ -3,6 +3,7 @@
 
 import re
 import requests
+import copy
 
 
 def reverse_and_regex_condition(regex, reverse):
@@ -16,9 +17,9 @@ def reverse_and_regex_condition(regex, reverse):
         return False
 
 
-def response_conditions(response, conditions):
-    condition_type = conditions['condition_type']
-    conditions = conditions['conditions']
+def response_conditions_matched(response):
+    condition_type = response['response']['condition_type']
+    conditions = response['response']['conditions']
     condition_results = []
     if 'reason' in conditions:
         regex = re.search(str(conditions['reason']['regex']).encode(), response.reason.encode())
@@ -69,8 +70,14 @@ class engine:
     def run(sub_step, payload):
         request_lib = requests.session() if payload['session'] is True else requests
         action = getattr(request_lib, sub_step['method'], None)
+
+        backup_method = copy.deepcopy(sub_step['method'])
+        backup_response = copy.deepcopy(sub_step['response'])
         del sub_step['method']
-        conditions = sub_step['response']
         del sub_step['response']
-        # legacy code must be here
-        print(sub_step, response_conditions(action(**sub_step), conditions))
+        response = action(**sub_step)
+        sub_step['method'] = backup_method
+        sub_step['response'] = backup_response
+        if response_conditions_matched(response):
+            pass
+        print(sub_step, response)

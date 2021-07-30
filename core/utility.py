@@ -80,7 +80,6 @@ class value_to_class:
         self.value = value
 
 
-# le fucking gacy
 def class_to_value(arrays):
     original_arrays = copy.deepcopy(arrays)
     array_index = 0

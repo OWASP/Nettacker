@@ -25,6 +25,7 @@ def nettacker_paths():
         "version_file": os.path.join(sys.path[0], 'version.txt'),
         "logo_file": os.path.join(sys.path[0], 'logo.txt'),
         "messages_path": os.path.join(sys.path[0], 'lib/messages'),
+        "modules_path": os.path.join(sys.path[0], 'modules')
     }
 
 

@@ -9,6 +9,7 @@ from core.ip import (get_ip_range,
                      is_single_ipv6,
                      is_ipv6_range,
                      is_ipv6_cidr)
+from core.module_protocols import http
 
 
 def expand_targets(options):
@@ -38,7 +39,7 @@ def expand_targets(options):
             targets += generate_ip_range(target)
         # domains
         if options.scan_subdomains:
-            pass  # todo: fix here
+            targets.append(target)  # todo: fix here
         else:
             targets.append(target)
     return targets
