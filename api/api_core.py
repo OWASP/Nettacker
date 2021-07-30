@@ -63,10 +63,10 @@ def remove_non_api_keys(config):
         removed non-api keys in all keys in JSON
     """
     non_api_keys = [
-        "start_api", "api_host", "api_port", "api_debug_mode", "api_access_key", "api_client_white_list",
+        "start_api_server", "api_host", "api_port", "api_debug_mode", "api_access_key", "api_client_white_list",
         "api_client_white_list_ips", "api_access_log", "api_access_log", "api_access_log_filename", 
-        "api_cert", "api_cert_key", "show_version", "check_update", "help_menu_flag", "targets_list", 
-        "users_list", "passwds_list", "startup_check_for_update", "wizard_mode", "exclude_method"
+        "api_cert", "api_cert_key", "show_version", "check_update", "show_help_menu", "targets_list", 
+        "usernames_list", "passwds_list", "excluded_modules"
     ]
     new_config = {}
     for key in config:
@@ -211,7 +211,7 @@ def api_key_check(app, flask_request, language):
 
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != get_value(flask_request, "key"):
-        abort(401, messages(language, "API_invalid"))
+        abort(401, messages( "API_invalid"))
     return
 
 
@@ -260,10 +260,10 @@ def graphs():
     Returns:
         HTML content or available graphs
     """
-    res = """<label><input id="" type="radio" name="graph_flag" value="" class="radio"><a
+    res = """<label><input id="" type="radio" name="graph_name" value="" class="radio"><a
                             class="label label-default">None</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""
     for graph in load_all_graphs():
-        res += """<label><input id="{0}" type="radio" name="graph_flag" value="{0}" class="radio"><a
+        res += """<label><input id="{0}" type="radio" name="graph_name" value="{0}" class="radio"><a
                             class="label label-default">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(graph)
     return res
 
@@ -321,14 +321,14 @@ def rules(config, defaults, language):
         config with applied rules
     """
     # Check Ranges
-    config["check_ranges"] = True if config[
-                                         "check_ranges"] is not False else False
+    config["scan_ip_range"] = True if config[
+                                         "scan_ip_range"] is not False else False
     # Check Subdomains
-    config["check_subdomains"] = True if config[
-                                             "check_subdomains"] is not False else False
+    config["scan_subdomains"] = True if config[
+                                             "scan_subdomains"] is not False else False
     # Check Graph
-    config["graph_flag"] = config["graph_flag"] if config[
-                                                       "graph_flag"] in load_all_graphs() else None
+    config["graph_name"] = config["graph_name"] if config[
+                                                       "graph_name"] in load_all_graphs() else None
     # Check Language
     config["language"] = config["language"] if config[
                                                    "language"] in [lang for lang in messages(-1, 0)] else "en"
@@ -336,20 +336,20 @@ def rules(config, defaults, language):
     if config["targets"] is not None:
         config["targets"] = list(set(config["targets"].rsplit(",")))
     else:
-        abort(400, messages(language, "error_target"))
+        abort(400, messages( "error_target"))
     # Check Log File
     try:
-        f = open(config["log_in_file"], "a")
+        f = open(config["output_file"], "a")
         f.close()
     except:
-        abort(400, messages(language, "file_write_error").format(
-            config["log_in_file"]))
+        abort(400, messages( "file_write_error").format(
+            config["output_file"]))
 
     # Check Passwords
-    config["passwds"] = config["passwds"].rsplit(
-        ',') if config["passwds"] is not None else None
+    config["passwords"] = config["passwords"].rsplit(
+        ',') if config["passwords"] is not None else None
     # Check Ping Before Scan
-    config["ping_flag"] = True if config["ping_flag"] is not False else False
+    config["ping_before_scan"] = True if config["ping_before_scan"] is not False else False
     # Check Ports
     ports = config["ports"]
     if type(ports) is not list and ports is not None:
@@ -366,7 +366,7 @@ def rules(config, defaults, language):
                         if p not in tmp_ports:
                             tmp_ports.append(p)
             except:
-                abort(400, messages(language, "ports_int"))
+                abort(400, messages( "ports_int"))
         if len(tmp_ports) == 0:
             ports = None
         else:
@@ -378,76 +378,76 @@ def rules(config, defaults, language):
         synonyms = _synonym_profile().keys()
         for synonym in synonyms:
             del (_all_profiles[synonym])
-        if config["scan_method"] is None:
-            config["scan_method"] = ""
+        if config["selected_modules"] is None:
+            config["selected_modules"] = ""
         else:
-            config["scan_method"] += ","
+            config["selected_modules"] += ","
         if "all" in config["profile"].rsplit(","):
             config["profile"] = ",".join(_all_profiles)
-        tmp_sm = config["scan_method"]
+        tmp_sm = config["selected_modules"]
         for pr in config["profile"].rsplit(","):
             try:
                 for sm in _all_profiles[pr]:
                     if sm not in tmp_sm.rsplit(","):
                         tmp_sm += sm + ","
             except:
-                abort(400, messages(language, "profile_404").format(pr))
+                abort(400, messages( "profile_404").format(pr))
         if tmp_sm[-1] == ",":
             tmp_sm = tmp_sm[0:-1]
-        config["scan_method"] = ",".join(list(set(tmp_sm.rsplit(","))))
+        config["selected_modules"] = ",".join(list(set(tmp_sm.rsplit(","))))
     # Check retries
     try:
         config["retries"] = int(config["retries"])
     except:
         config["retries"] = defaults["retries"]
     # Check Scanning Method
-    if config["scan_method"] is not None and "all" in config["scan_method"].rsplit(","):
-        config["scan_method"] = load_all_modules()
-        config["scan_method"].remove("all")
-    elif config["scan_method"] is not None and len(config["scan_method"].rsplit(",")) == 1 and "*_" not in config[
-        "scan_method"]:
-        if config["scan_method"] in load_all_modules():
-            config["scan_method"] = config["scan_method"].rsplit()
+    if config["selected_modules"] is not None and "all" in config["selected_modules"].rsplit(","):
+        config["selected_modules"] = load_all_modules()
+        config["selected_modules"].remove("all")
+    elif config["selected_modules"] is not None and len(config["selected_modules"].rsplit(",")) == 1 and "*_" not in config[
+        "selected_modules"]:
+        if config["selected_modules"] in load_all_modules():
+            config["selected_modules"] = config["selected_modules"].rsplit()
         else:
-            abort(400, messages(language, "scan_module_not_found").format(
-                config["scan_method"]))
+            abort(400, messages( "scan_module_not_found").format(
+                config["selected_modules"]))
     else:
-        if config["scan_method"] is not None:
-            if config["scan_method"] not in load_all_modules():
-                if "*_" in config["scan_method"] or "," in config["scan_method"]:
-                    config["scan_method"] = config["scan_method"].rsplit(",")
-                    scan_method_tmp = config["scan_method"][:]
+        if config["selected_modules"] is not None:
+            if config["selected_modules"] not in load_all_modules():
+                if "*_" in config["selected_modules"] or "," in config["selected_modules"]:
+                    config["selected_modules"] = config["selected_modules"].rsplit(",")
+                    scan_method_tmp = config["selected_modules"][:]
                     for sm in scan_method_tmp:
                         scan_method_error = True
                         if sm.startswith("*_"):
-                            config["scan_method"].remove(sm)
+                            config["selected_modules"].remove(sm)
                             found_flag = False
                             for mn in load_all_modules():
                                 if mn.endswith("_" + sm.rsplit("*_")[1]):
-                                    config["scan_method"].append(mn)
+                                    config["selected_modules"].append(mn)
                                     scan_method_error = False
                                     found_flag = True
                             if found_flag is False:
                                 abort(400, messages(
-                                    language, "module_pattern_404").format(sm))
+                                    "module_pattern_404").format(sm))
                         elif sm == "all":
-                            config["scan_method"] = load_all_modules()
+                            config["selected_modules"] = load_all_modules()
                             scan_method_error = False
-                            config["scan_method"].remove("all")
+                            config["selected_modules"].remove("all")
                             break
                         elif sm in load_all_modules():
                             scan_method_error = False
                         elif sm not in load_all_modules():
                             abort(400, messages(
-                                language, "scan_module_not_found").format(sm))
+                                "scan_module_not_found").format(sm))
                 else:
                     scan_method_error = True
             if scan_method_error:
-                abort(400, messages(language, "scan_module_not_found").format(
-                    config["scan_method"]))
+                abort(400, messages( "scan_module_not_found").format(
+                    config["selected_modules"]))
         else:
-            abort(400, messages(language, "scan_method_select"))
-        config["scan_method"] = list(set(config["scan_method"]))
+            abort(400, messages( "scan_method_select"))
+        config["selected_modules"] = list(set(config["selected_modules"]))
 
     # Check Socks Proxy
     socks_proxy = config["socks_proxy"]
@@ -476,7 +476,7 @@ def rules(config, defaults, language):
         except:
             e = True
         if e:
-            abort(400, messages(language, "valid_socks_address"))
+            abort(400, messages( "valid_socks_address"))
         if socks_flag == 4:
             socks_proxy = "socks4://" + socks_proxy
         if socks_flag == 5:
@@ -484,25 +484,25 @@ def rules(config, defaults, language):
     config["socks_proxy"] = socks_proxy
     # Check thread numbers
     try:
-        config["thread_number"] = int(config["thread_number"])
+        config["thread_per_host"] = int(config["thread_per_host"])
     except:
-        config["thread_number"] = defaults["thread_number"]
+        config["thread_per_host"] = defaults["thread_per_host"]
     # Check thread number for hosts
     try:
-        config["thread_number_host"] = int(config["thread_number_host"])
+        config["parallel_host_scan"] = int(config["parallel_host_scan"])
     except:
-        config["thread_number_host"] = defaults["thread_number_host"]
+        config["parallel_host_scan"] = defaults["parallel_host_scan"]
     # Check time sleep
     try:
-        config["time_sleep"] = float(config["time_sleep"])
+        config["time_sleep_between_requests"] = float(config["time_sleep_between_requests"])
     except:
-        config["time_sleep"] = defaults["time_sleep"]
+        config["time_sleep_between_requests"] = defaults["time_sleep_between_requests"]
     # Check timeout sec
     try:
         config["timeout_sec"] = int(config["timeout_sec"])
     except:
-        config["thread_number_host"] = defaults["thread_number_host"]
-    # Check users
-    config["users"] = config["users"].rsplit(
-        ',') if config["users"] is not None else None
+        config["parallel_host_scan"] = defaults["parallel_host_scan"]
+    # Check usernames
+    config["usernames"] = config["usernames"].rsplit(
+        ',') if config["usernames"] is not None else None
     return config

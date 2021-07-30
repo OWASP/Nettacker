@@ -15,7 +15,7 @@ from core.alert import info
 from core.targets import target_type
 from core.alert import messages
 from core.time import now
-from config import nettacker_global_config
+from config import nettacker_paths
 from core.log import sort_logs
 from core.targets import analysis
 from core.alert import write
@@ -31,19 +31,19 @@ def start_attack(
     target,
     num,
     total,
-    scan_method,
-    users,
-    passwds,
+    selected_modules,
+    usernames,
+    passwords,
     timeout_sec,
-    thread_number,
+    thread_per_host,
     ports,
-    log_in_file,
-    time_sleep,
+    output_file,
+    time_sleep_between_requests,
     language,
-    verbose_level,
+    verbose_mode,
     socks_proxy,
     retries,
-    ping_flag,
+    ping_before_scan,
     scan_id,
     scan_cmd,
 ):
@@ -54,32 +54,32 @@ def start_attack(
         target: target
         num: number of process
         total: number of total processes
-        scan_method: module name
-        users: usernames
-        passwds: passwords
+        selected_modules: module name
+        usernames: usernames
+        passwords: passwords
         timeout_sec: timeout seconds
-        thread_number: thread number
+        thread_per_host: thread number
         ports: port numbers
-        log_in_file: output filename
-        time_sleep: time sleep
+        output_file: output filename
+        time_sleep_between_requests: time sleep
         language: language
-        verbose_level: verbose level number
+        verbose_mode: verbose level number
         socks_proxy: socks proxy
         retries: number of retries
-        ping_flag: ping before scan flag
+        ping_before_scan: ping before scan flag
         scan_id: scan hash id
         scan_cmd: scan cmd
 
     Returns:
         True of success otherwise None
     """
-    if verbose_level >= 1:
+    if verbose_mode >= 1:
         info(
             messages("start_attack").format(
                 str(target), str(num), str(total)
             )
         )
-    if ping_flag:
+    if ping_before_scan:
         if socks_proxy is not None:
             socks_version = (
                 socks.SOCKS5
@@ -108,10 +108,10 @@ def start_attack(
                 socket.socket = socks.socksocket
                 socket.getaddrinfo = getaddrinfo
         if do_one_ping(target, timeout_sec, 8) is None:
-            if verbose_level >= 3:
+            if verbose_mode >= 3:
                 warn(
                     messages("skipping_target").format(
-                        target, scan_method
+                        target, selected_modules
                     )
                 )
             return None
@@ -120,8 +120,8 @@ def start_attack(
         start = getattr(
             __import__(
                 "lib.{0}.{1}.engine".format(
-                    scan_method.rsplit("_")[-1],
-                    "_".join(scan_method.rsplit("_")[:-1]),
+                    selected_modules.rsplit("_")[-1],
+                    "_".join(selected_modules.rsplit("_")[:-1]),
                 ),
                 fromlist=["start"],
             ),
@@ -129,21 +129,21 @@ def start_attack(
         )
     except Exception:
         die_failure(
-            messages("module_not_available").format(scan_method)
+            messages("module_not_available").format(selected_modules)
         )
     start(
         target,
-        users,
-        passwds,
+        usernames,
+        passwords,
         ports,
         timeout_sec,
-        thread_number,
+        thread_per_host,
         num,
         total,
-        log_in_file,
-        time_sleep,
+        output_file,
+        time_sleep_between_requests,
         language,
-        verbose_level,
+        verbose_mode,
         socks_proxy,
         retries,
         scan_id,
@@ -165,20 +165,46 @@ def start_scan_processes(options):
     suff = now(model="%Y_%m_%d_%H_%M_%S") + "".join(
         random.choice(string.ascii_lowercase) for x in range(10)
     )
-    subs_temp = "{}/tmp/subs_temp_".format(load_file_path()) + suff
-    range_temp = "{}/tmp/ranges_".format(load_file_path()) + suff
+    subs_temp = "{}/tmp/subs_temp_".format(nettacker_paths()["data_path"]) + suff
+    range_temp = "{}/tmp/ranges_".format(nettacker_paths()["data_path"]) + suff
+    scan_id = None
+    scan_cmd = False
     total_targets = -1
+    
+    # print(options)
+
+    ### store options
+    targets = options.targets
+    scan_ip_range = options.scan_ip_range,
+    scan_subdomains = options.scan_subdomains
+    output_file = options.output_file
+    time_sleep_between_requests = options.time_sleep_between_requests
+    language = options.language
+    verbose_mode = options.verbose_mode
+    retries = options.retries
+    socks_proxy = options.socks_proxy
+    selected_modules = options.selected_modules
+    usernames = options.usernames
+    passwords = options.passwords
+    timeout_sec = options.timeout_sec
+    thread_per_host = options.thread_per_host
+    parallel_host_scan = options.parallel_host_scan
+    graph_name = options.graph_name
+    ports = options.ports
+    ping_before_scan = options.ping_before_scan
+    backup_ports = None
+
     for total_targets, _ in enumerate(
         analysis(
             targets,
-            check_ranges,
-            check_subdomains,
+            scan_ip_range,
+            scan_subdomains,
             subs_temp,
             range_temp,
-            log_in_file,
-            time_sleep,
+            output_file,
+            time_sleep_between_requests,
             language,
-            verbose_level,
+            verbose_mode,
             retries,
             socks_proxy,
             True,
@@ -189,34 +215,34 @@ def start_scan_processes(options):
         if target_type(i) == "RANGE_IPv4" or target_type(i) == "CIDR_IPv4":
             total_targets = _
     total_targets += 1
-    total_targets = total_targets * len(scan_method)
+    total_targets = total_targets * len(selected_modules)
     try:
         os.remove(range_temp)
     except Exception:
         pass
-    range_temp = "{}/tmp/ranges_".format(load_file_path()) + suff
+    range_temp = "{}/tmp/ranges_".format(nettacker_paths()["data_path"]) + suff
     targets = analysis(
-        targets,
-        check_ranges,
-        check_subdomains,
-        subs_temp,
-        range_temp,
-        log_in_file,
-        time_sleep,
-        language,
-        verbose_level,
-        retries,
-        socks_proxy,
-        False,
-    )
+            targets,
+            scan_ip_range,
+            scan_subdomains,
+            subs_temp,
+            range_temp,
+            output_file,
+            time_sleep_between_requests,
+            language,
+            verbose_mode,
+            retries,
+            socks_proxy,
+            True,
+        )
     trying = 0
     if scan_id is None:
         scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
     scan_cmd = (
-        messages("through_API") if api_flag else " ".join(sys.argv)
+        messages("through_API") if options.start_api_server else " ".join(sys.argv)
     )
     for target in targets:
-        for sm in scan_method:
+        for sm in options.selected_modules:
             trying += 1
             p = multiprocessing.Process(
                 target=start_attack,
@@ -225,18 +251,18 @@ def start_scan_processes(options):
                     trying,
                     total_targets,
                     sm,
-                    users,
-                    passwds,
+                    usernames,
+                    passwords,
                     timeout_sec,
-                    thread_number,
+                    thread_per_host,
                     ports,
-                    log_in_file,
-                    time_sleep,
+                    output_file,
+                    time_sleep_between_requests,
                     language,
-                    verbose_level,
+                    verbose_mode,
                     socks_proxy,
                     retries,
-                    ping_flag,
+                    ping_before_scan,
                     scan_id,
                     scan_cmd,
                 ),
@@ -251,7 +277,7 @@ def start_scan_processes(options):
                         n += 1
                     else:
                         processes.remove(process)
-                if n >= thread_number_host:
+                if n >= parallel_host_scan:
                     time.sleep(0.01)
                 else:
                     break
@@ -283,15 +309,15 @@ def start_scan_processes(options):
     os.remove(range_temp)
     info(messages("sorting_results"))
     sort_logs(
-        log_in_file,
+        output_file,
         language,
-        graph_flag,
+        graph_name,
         scan_id,
         scan_cmd,
-        verbose_level,
+        verbose_mode,
         0,
-        profile,
-        scan_method,
+        None,
+        selected_modules,
         backup_ports,
     )
     write("\n")

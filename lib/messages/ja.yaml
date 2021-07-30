@@ -55,12 +55,14 @@ PASSWORD: パスワード
 PORT: ポート
 TYPE: タイプ
 DESCRIPTION: DESCRIPTION
-verbose_level: 冗長モードレベル（0〜5）（デフォルトは0）
+verbose_mode: 冗長モードレベル（0〜5）（デフォルトは0）
 software_version: ショーソフトウェアバージョン
 check_updates: 更新を確認
-outgoing_proxy: 発信接続プロキシ（ソックス）。例：socks5：127.0.0.1:9050、socks：//127.0.0.1：9050 socks5：//127.0.0.1：9050またはsocks4：socks4：//127.0.0.1：9050、認証：socks：//
+outgoing_proxy:
+  発信接続プロキシ（ソックス）。例：socks5：127.0.0.1:9050、socks：//127.0.0.1：9050 socks5：//127.0.0.1：9050またはsocks4：socks4：//127.0.0.1：9050、認証：socks：//
   username：password @ 127.0.0.1、socks4：// username：password@127.0.0.1、socks5：// username：password@127.0.0.1
-valid_socks_address: 有効な靴下のアドレスとポートを入力してください。例socks5：127.0.0.1:9050、socks：//127.0.0.1：9050、socks5：//127.0.0.1：9050またはsocks4：socks4：//127.0.0.1：9050、認証：socks：//
+valid_socks_address:
+  有効な靴下のアドレスとポートを入力してください。例socks5：127.0.0.1:9050、socks：//127.0.0.1：9050、socks5：//127.0.0.1：9050またはsocks4：socks4：//127.0.0.1：9050、認証：socks：//
   username：password @ 127.0.0.1、socks4：// username：password@127.0.0.1、socks5：// username：password@127.0.0.1
 connection_retries: 接続タイムアウト（デフォルトは3）
 ftp_connectiontimeout: "{0}へのFTP接続：{1}タイムアウト、{2}をスキップ：{3}"
@@ -79,7 +81,8 @@ port/type: "{0} / {1}"
 port_found: ホスト：{0}ポート：{1}（{2}）が見つかりました！
 target_submitted: ターゲット{0}が送信されました。
 current_version: OWASP Nettackerのバージョン{0} {1} {2} {6}をコード名{3} {4} {5}で実行しています。
-feature_unavailable: この機能はまだ利用できません。 「git clone https://github.com/OWASP/Nettacker.git」または「pip
+feature_unavailable:
+  この機能はまだ利用できません。 「git clone https://github.com/OWASP/Nettacker.git」または「pip
   install -U OWASP-Nettacker」を実行して、最新バージョンを入手してください。
 available_graph: すべての活動と情報のグラフを作成するには、HTML出力を使用する必要があります。利用可能なグラフ：{0}
 graph_output: グラフフィーチャを使用するには、出力ファイル名が ".html"または ".htm"で終わる必要があります。
@@ -138,7 +141,7 @@ no_vulnerability_found: 脆弱性が見つかりません！ （{0}）
 Method: 方法
 API: API
 API_options: APIオプション
-start_API: APIサービスを開始する
+start_api_server: APIサービスを開始する
 API_host: APIホストアドレス
 API_port: APIポート番号
 API_debug: APIデバッグモード

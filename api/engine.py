@@ -138,7 +138,7 @@ def limit_remote_addr():
     if app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list"]:
         if flask_request.remote_addr not in app.config[
             "OWASP_NETTACKER_CONFIG"]["api_client_white_list_ips"]:
-            abort(403, messages(__language(), "unauthorized_IP"))
+            abort(403, messages( "unauthorized_IP"))
     return
 
 
@@ -202,9 +202,9 @@ def index():
     Returns:
         rendered HTML page
     """
-    filename = _builder(_core_config(), _core_default_config())["log_in_file"]
+    filename = _builder(_core_config(), _core_default_config())["output_file"]
 
-    return render_template("index.html", scan_method=scan_methods(),
+    return render_template("index.html", selected_modules=scan_methods(),
                            profile=profiles(), graphs=graphs(),
                            languages=languages(), filename=filename)
 
@@ -244,7 +244,7 @@ def __session_check():
     """
     api_key_check(app, flask_request, __language())
     return jsonify(structure(status="ok", msg=messages(
-        __language(), "browser_session_valid"))), 200
+        "browser_session_valid"))), 200
 
 
 @app.route("/session/set", methods=["GET"])
@@ -259,7 +259,7 @@ def __session_set():
     api_key_check(app, flask_request, __language())
     res = make_response(
         jsonify(structure(status="ok", msg=messages(
-            __language(), "browser_session_valid"))))
+            "browser_session_valid"))))
     res.set_cookie("key", value=app.config[
         "OWASP_NETTACKER_CONFIG"]["api_access_key"])
     return res
@@ -276,7 +276,7 @@ def __session_kill():
     """
     res = make_response(
         jsonify(structure(status="ok", msg=messages(
-            __language(), "browser_session_killed"))))
+            "browser_session_killed"))))
     res.set_cookie("key", "", expires=0)
     return res
 

@@ -6,12 +6,12 @@ import json
 from core.alert import messages
 
 
-def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
+def start(graph_name, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
     """
     generate the jit_circle_v1_graph with events
 
     Args:
-        graph_flag: graph name
+        graph_name: graph name
         language: language
         data: events in JSON
         _HOST: host key
@@ -14801,7 +14801,7 @@ __title_to_replace__
 </div>
 </body>
 </html>'''.replace('__data_will_locate_here__', json.dumps(dgraph)) \
-        .replace('__title_to_replace__', messages(language, "pentest_graphs")) \
-        .replace('__description_to_replace__', messages(language, "graph_message")) \
-        .replace('__html_title_to_replace__', messages(language, "nettacker_report"))
+        .replace('__title_to_replace__', messages( "pentest_graphs")) \
+        .replace('__description_to_replace__', messages( "graph_message")) \
+        .replace('__html_title_to_replace__', messages( "nettacker_report"))
     return data

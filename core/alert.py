@@ -7,6 +7,7 @@ from core import color
 from config import nettacker_global_config
 
 pyversion = int(sys.version_info[0])
+message_cache = False
 
 
 def is_not_run_from_api():
@@ -22,6 +23,24 @@ def is_not_run_from_api():
         return False
     return True
 
+def load_message():
+    import yaml
+    from io import StringIO
+    language = nettacker_global_config()['nettacker_user_application_config']['language']
+    try:
+        return yaml.load(
+            StringIO(
+                open("lib/messages/{0}.yaml".format(language), 'r').read()
+            ),
+            Loader=yaml.FullLoader
+        )
+    except Exception:
+        return yaml.load(
+            StringIO(
+                open("lib/messages/en.yaml".format(language), 'r').read()
+            ),
+            Loader=yaml.FullLoader
+        )
 
 def messages(msg_id):
     """
@@ -34,29 +53,15 @@ def messages(msg_id):
         the message content in the selected language if
         message found otherwise return message in English
     """
-    import yaml
-    from io import StringIO
-    language = nettacker_global_config()['nettacker_user_application_config']['language']
-    try:
-        msgs = yaml.load(
-            StringIO(
-                open("lib/messages/{0}.yaml".format(language), 'r').read()
-            ),
-            Loader=yaml.FullLoader
-        )[str(msg_id)]
-    except Exception:
-        msgs = yaml.load(
-            StringIO(
-                open("lib/messages/en.yaml".format(language), 'r').read()
-            ),
-            Loader=yaml.FullLoader
-        )[str(msg_id)]
-    return msgs
+    global message_cache
+    if not message_cache:
+        message_cache = load_message() 
+    return message_cache[str(msg_id)]
 
 
 def __input_msg(content):
     """
-    build the input message to get input from users
+    build the input message to get input from usernames
 
     Args:
         content: content of the message
@@ -76,7 +81,7 @@ def __input_msg(content):
 
 def info(
         content,
-        log_in_file=None,
+        output_file=None,
         mode=None,
         event=None,
         language=None,
@@ -88,7 +93,7 @@ def info(
 
     Args:
         content: content of the message
-        log_in_file: log filename name
+        output_file: log filename name
         mode: write mode, [w, w+, wb, a, ab, ...]
         event: standard event in JSON structure
         language: the language
@@ -112,7 +117,7 @@ def info(
     if event:  # if an event is present log it
         from core.log import __log_into_file
 
-        __log_into_file(log_in_file, mode, json.dumps(event), language)
+        __log_into_file(output_file, mode, json.dumps(event), language)
         if (
                 thread_tmp_filename
         ):  # if thread temporary filename present, rewrite it

@@ -63,7 +63,7 @@ def create_connection(language):
             except Exception as _:
                 time.sleep(0.01)
     except Exception as _:
-        warn(messages(language, "database_connect_fail"))
+        warn(messages( "database_connect_fail"))
     return False
 
 
@@ -87,13 +87,13 @@ def send_submit_query(session, language):
             except Exception as _:
                 time.sleep(0.01)
     except Exception as _:
-        warn(messages(language, "database_connect_fail"))
+        warn(messages( "database_connect_fail"))
         return False
     return False
 
 
-def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api_flag, report_type, graph_flag,
-                        category, profile, scan_method, language, scan_cmd, ports):
+def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, start_api_server, report_type, graph_name,
+                        category, profile, selected_modules, language, scan_cmd, ports):
     """
     this function created to submit the generated reports into db, the files are not stored in db, just the path!
 
@@ -103,25 +103,25 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, api
         report_filename: report full path and filename
         events_num: length of events in the report
         verbose: verbose level used to generated the report
-        api_flag: 0 (False) if scan run from CLI and 1 (True) if scan run from API
+        start_api_server: 0 (False) if scan run from CLI and 1 (True) if scan run from API
         report_type: could be TEXT, JSON or HTML
-        graph_flag: name of the graph used (if it's HTML type)
+        graph_name: name of the graph used (if it's HTML type)
         category: category of the modules used in scan (vuln, scan, brute)
         profile: profiles used in scan
-        scan_method: modules used in scan
+        selected_modules: modules used in scan
         language: scan report language
-        scan_cmd: scan command line if run in CLI otherwise messages(language,"through_API")
+        scan_cmd: scan command line if run in CLI otherwise messages("through_API")
         ports: selected port otherwise None
 
     Returns:
         return True if submitted otherwise False
     """
-    info(messages(language, "inserting_report_db"))
+    info(messages( "inserting_report_db"))
     session = create_connection(language)
     session.add(Report(
         date=date, scan_id=scan_id, report_filename=report_filename, events_num=events_num, verbose=verbose,
-        api_flag=api_flag, report_type=report_type, graph_flag=graph_flag, category=category, profile=profile,
-        scan_method=scan_method, language=language, scan_cmd=scan_cmd, ports=ports
+        start_api_server=start_api_server, report_type=report_type, graph_name=graph_name, category=category, profile=profile,
+        selected_modules=selected_modules, language=language, scan_cmd=scan_cmd, ports=ports
     ))
     return send_submit_query(session, language)
 
@@ -197,7 +197,7 @@ def submit_logs_to_db(language, log):
         ))
         return send_submit_query(session, language)
     else:
-        warn(messages(language, "invalid_json_type_to_db").format(log))
+        warn(messages( "invalid_json_type_to_db").format(log))
         return False
 
 
@@ -226,12 +226,12 @@ def __select_results(language, page):
                 "report_filename": data.report_filename,
                 "events_num": data.events_num,
                 "verbose": data.verbose,
-                "api_flag": data.api_flag,
+                "start_api_server": data.start_api_server,
                 "report_type": data.report_type,
-                "graph_flag": data.graph_flag,
+                "graph_name": data.graph_name,
                 "category": data.category,
                 "profile": data.profile,
-                "scan_method": data.scan_method,
+                "selected_modules": data.selected_modules,
                 "language": data.language,
                 "scan_cmd": data.scan_cmd,
                 "ports": data.ports

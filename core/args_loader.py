@@ -53,9 +53,9 @@ def load_all_args():
     engineOpt.add_argument(
         "-L",
         "--language",
-        action="store",
-        dest="language",
-        default=nettacker_global_configuration['nettacker_user_application_config']["language"],
+        # action="store",
+        # dest="language",
+        # default=nettacker_global_configuration['nettacker_user_application_config']["language"],
         help=messages("select_language").format(languages_list),
     )
     engineOpt.add_argument(
@@ -64,7 +64,7 @@ def load_all_args():
         action="store_true",
         dest="verbose_mode",
         default=nettacker_global_configuration['nettacker_user_application_config']['verbose_mode'],
-        help=messages("verbose_level"),
+        help=messages("verbose_mode"),
     )
     engineOpt.add_argument(
         "-V",
@@ -79,7 +79,7 @@ def load_all_args():
         "--output",
         action="store",
         default=nettacker_global_configuration['nettacker_user_application_config']['output_file'],
-        dest="log_in_file",
+        dest="output_file",
         help=messages("save_logs"),
     )
     engineOpt.add_argument(
@@ -221,9 +221,9 @@ def load_all_args():
         "-t",
         "--thread-per-host",
         action="store",
-        default=nettacker_global_configuration['nettacker_user_application_config']["threat_per_host"],
+        default=nettacker_global_configuration['nettacker_user_application_config']["thread_per_host"],
         type=int,
-        dest="threat_per_host",
+        dest="thread_per_host",
         help=messages("thread_number_connections"),
     )
     modules.add_argument(
@@ -264,7 +264,7 @@ def load_all_args():
     api.add_argument("--start-api", action="store_true",
                      dest="start_api_server",
                      default=nettacker_global_configuration['nettacker_api_config']["start_api_server"],
-                     help=messages("start_API"))
+                     help=messages("start_api_server"))
     api.add_argument("--api-host", action="store",
                      dest="api_hostname",
                      default=nettacker_global_configuration['nettacker_api_config']["api_hostname"],
@@ -417,11 +417,11 @@ def check_all_required(parser):
             )
     # Check output file
     try:
-        temp_file = open(options.log_in_file, "w")
+        temp_file = open(options.output_file, "w")
         temp_file.close()
     except Exception:
         die_failure(
-            messages("file_write_error").format(options.log_in_file)
+            messages("file_write_error").format(options.output_file)
         )
     # Check Graph
     if options.graph_name:
@@ -429,7 +429,7 @@ def check_all_required(parser):
             die_failure(
                 messages("graph_module_404").format(options.graph_name)
             )
-        if not (options.log_in_file.endswith(".html") or options.log_in_file.endswith(".htm")):
+        if not (options.output_file.endswith(".html") or options.output_file.endswith(".htm")):
             warn(messages("graph_output"))
-            options.graph_flag = None
+            options.graph_name = None
     return options

@@ -20,7 +20,7 @@ def nettacker_paths():
         "requirements_path": os.path.join(sys.path[0], 'requirements.txt'),
         "requirements_dev_path": os.path.join(sys.path[0], 'requirements-dev.txt'),
         "home_path": os.path.join(sys.path[0]),
-        "data_path": os.path.join(sys.path[0]) + '.data',
+        "data_path": os.path.join(sys.path[0], '.data'),
         "tmp_path": os.path.join(sys.path[0], '.data/tmp'),
         "results_path": os.path.join(sys.path[0], '.data/results'),
         "database_path": os.path.join(sys.path[0], '.data/nettacker.db'),

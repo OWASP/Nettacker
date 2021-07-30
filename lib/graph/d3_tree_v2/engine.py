@@ -5,12 +5,12 @@ import random
 import json
 
 
-def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
+def start(graph_name, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
     """
     generate the d3_tree_v2_graph with events (using d3_tree_v1_graph)
 
     Args:
-        graph_flag: graph name
+        graph_name: graph name
         language: language
         data: events in JSON
         _HOST: host key
@@ -24,7 +24,7 @@ def start(graph_flag, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
         a graph in HTML
     """
     from lib.graph.d3_tree_v1.engine import start
-    return start(graph_flag, language, data, _HOST, _USERNAME,
+    return start(graph_name, language, data, _HOST, _USERNAME,
                  _PASSWORD, _PORT, _TYPE, _DESCRIPTION).replace('''\t root.children.forEach(function(child){
      collapse(child);
 \t });''', '')

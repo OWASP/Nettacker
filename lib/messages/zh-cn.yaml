@@ -55,12 +55,14 @@ PASSWORD: 密码
 PORT: 港口
 TYPE: 类型
 DESCRIPTION: 描述
-verbose_level: 详细模式级别（0-5）（默认0）
+verbose_mode: 详细模式级别（0-5）（默认0）
 software_version: 显示软件版本
 check_updates: 检查更新
-outgoing_proxy: 传出连接代理（socks）。例如 socks5：127.0.0.1:9050，socks：//127.0.0.1：9050 socks5：//127.0.0.1：9050或socks4：socks4：//127.0.0.1：9050，authentication：socks：//
+outgoing_proxy:
+  传出连接代理（socks）。例如 socks5：127.0.0.1:9050，socks：//127.0.0.1：9050 socks5：//127.0.0.1：9050或socks4：socks4：//127.0.0.1：9050，authentication：socks：//
   username：password @ 127.0.0.1，socks4：//用户名：password@127.0.0.1，socks5：//用户名：password@127.0.0.1
-valid_socks_address: 请输入有效的 socks 地址和端口。示例socks5：127.0.0.1:9050，socks：//127.0.0.1：9050，socks5：//127.0.0.1：9050或socks4：socks4：//127.0.0.1：9050，身份验证：socks：//用户名：密码@
+valid_socks_address:
+  请输入有效的 socks 地址和端口。示例socks5：127.0.0.1:9050，socks：//127.0.0.1：9050，socks5：//127.0.0.1：9050或socks4：socks4：//127.0.0.1：9050，身份验证：socks：//用户名：密码@
   127.0.0.1，socks4：//用户名：password@127.0.0.1，socks5：//用户名：password@127.0.0.1
 connection_retries: 连接超时时重试（默认3）
 ftp_connectiontimeout: 到{0}的 FTP 连接：{1}超时，跳过{2}：{3}
@@ -79,7 +81,8 @@ port/type: "{0} / {1}"
 port_found: 主机：{0}端口：{1}（{2}）找到了！
 target_submitted: 目标{0}已提交！
 current_version: 您正在运行代码为{3} {4} {5}的 OWASP Nettacker 版本{0} {1} {2} {6}
-feature_unavailable: 此功能尚未提供！请运行“git clone https://github.com/OWASP/Nettacker.git或
+feature_unavailable:
+  此功能尚未提供！请运行“git clone https://github.com/OWASP/Nettacker.git或
   pip install -U OWASP-Nettacker 来获取最新版本。
 available_graph: 建立所有活动和信息的图表，您必须使用 HTML 输出。可用图表：{0}
 graph_output: 要使用图表功能，您的输出文件名必须以“.html”或“.htm”结尾！
@@ -138,7 +141,7 @@ no_vulnerability_found: 没有发现漏洞！ （{0}）
 Method: 方法
 API: API
 API_options: API 选项
-start_API: 启动 API 服务
+start_api_server: 启动 API 服务
 API_host: API 主机地址
 API_port: API 端口号
 API_debug: API 调试模式
