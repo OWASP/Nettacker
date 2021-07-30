@@ -9,32 +9,24 @@ import sys
 from core.load_modules import load_all_languages
 
 
+def find_args_value(args_name):
+    try:
+        return sys.argv[sys.argv.index(args_name) + 1]
+    except Exception:
+        return None
+
+
 def application_language():
     from config import nettacker_global_config
-    from core.alert import warn
-    languages_list = load_all_languages()
     nettacker_global_configuration = nettacker_global_config()
     if "-L" in sys.argv:
-        try:
-            language = sys.argv[sys.argv.index("-L") + 1]
-            if language not in languages_list:
-                language = nettacker_global_configuration['nettacker_user_application_config']['language']
-                warn("default language {language} selected!".format(language=language))
-        except Exception:
-            language = nettacker_global_configuration['nettacker_user_application_config']['language']
-            warn("default language {language} selected!".format(language=language))
-
+        language = find_args_value('-L') or 'en'
     elif "--language" in sys.argv:
-        try:
-            language = sys.argv[sys.argv.index("--language") + 1]
-            if language not in languages_list:
-                language = nettacker_global_configuration['nettacker_user_application_config']['language']
-                warn("default language {language} selected!".format(language=language))
-        except Exception:
-            language = nettacker_global_configuration['nettacker_user_application_config']['language']
-            warn("default language {language} selected!".format(language=language))
+        language = find_args_value('--language') or 'en'
     else:
         language = nettacker_global_configuration['nettacker_user_application_config']['language']
+    if language not in load_all_languages():
+        language = 'en'
     return language
 
 

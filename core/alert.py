@@ -4,10 +4,10 @@
 import sys
 import json
 from core import color
-from config import nettacker_global_config
+from core.messages import load_message
 
 pyversion = int(sys.version_info[0])
-message_cache = False
+message_cache = load_message().messages
 
 
 def is_not_run_from_api():
@@ -23,24 +23,6 @@ def is_not_run_from_api():
         return False
     return True
 
-def load_message():
-    import yaml
-    from io import StringIO
-    language = nettacker_global_config()['nettacker_user_application_config']['language']
-    try:
-        return yaml.load(
-            StringIO(
-                open("lib/messages/{0}.yaml".format(language), 'r').read()
-            ),
-            Loader=yaml.FullLoader
-        )
-    except Exception:
-        return yaml.load(
-            StringIO(
-                open("lib/messages/en.yaml".format(language), 'r').read()
-            ),
-            Loader=yaml.FullLoader
-        )
 
 def messages(msg_id):
     """
@@ -53,9 +35,6 @@ def messages(msg_id):
         the message content in the selected language if
         message found otherwise return message in English
     """
-    global message_cache
-    if not message_cache:
-        message_cache = load_message() 
     return message_cache[str(msg_id)]
 
 
