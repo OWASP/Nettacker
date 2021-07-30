@@ -356,6 +356,7 @@ def check_all_required(parser):
                 )
             )
 
+    # check for modules
     if not options.selected_modules:
         die_failure(messages("scan_method_select"))
 
@@ -371,7 +372,7 @@ def check_all_required(parser):
                 )
             )
 
-    # Check for exluding scanning method
+    # Check for excluding modules
     if options.excluded_modules:
         options.excluded_modules = options.excluded_modules.split(",")
         if 'all' in options.excluded_modules:

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import csv
 import texttable
 import lockfile
 from core.alert import messages
@@ -15,13 +16,8 @@ from database.db import remove_old_logs
 import html
 from database.db import __logs_by_scan_id
 from core.alert import write
-import csv
 
-try:
-    reload
-except NameError:
-    def reload(dummy):
-        return dummy
+
 
 
 def build_graph(graph_name, language,
@@ -251,43 +247,4 @@ def sort_logs(output_file, language,
     return True
 
 
-def __log_into_file(filename, mode, data, language, final=False):
-    """
-    write a content into a file (support unicode) and
-    submit logs in database. if final=False its writing log in
-    the database.
 
-    Args:
-        filename: the filename
-        mode: writing mode (a, ab, w, wb, etc.)
-        data: content
-        language: language
-        final: True if it's final report otherwise False (default False)
-
-    Returns:
-        True if success otherwise None
-    """
-
-    log = ''
-    if isinstance(data, str):
-        try:
-            log = json.loads(data)
-        except ValueError:
-            log = ''
-
-    if isinstance(log, dict):
-        if final:
-            with open(filename, mode, encoding='utf-8') as save:
-                save.write(data + '\n')
-        else:
-            submit_logs_to_db(language, data)
-    else:
-        if not final:
-            flock = lockfile.FileLock(filename)
-            flock.acquire()
-        with open(filename, mode, encoding='utf-8') as save:
-            save.write(data + '\n')
-        if not final:
-            flock.release()
-
-    return True

@@ -4,18 +4,12 @@
 import multiprocessing
 import time
 import os
-import random
-import string
 import sys
 import socks
 import socket
-import urllib3
 from core.die import die_failure
 from core.alert import info
-from core.targets import target_type
 from core.alert import messages
-from core.time import now
-from config import nettacker_paths
 from core.log import sort_logs
 from core.targets import analysis
 from core.alert import write
@@ -23,29 +17,28 @@ from core.color import reset_color
 from lib.icmp.engine import do_one as do_one_ping
 from lib.socks_resolver.engine import getaddrinfo
 from core.alert import warn
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+from core.utility import generate_random_token
 
 
 def start_attack(
-    target,
-    num,
-    total,
-    selected_modules,
-    usernames,
-    passwords,
-    timeout_sec,
-    thread_per_host,
-    ports,
-    output_file,
-    time_sleep_between_requests,
-    language,
-    verbose_mode,
-    socks_proxy,
-    retries,
-    ping_before_scan,
-    scan_id,
-    scan_cmd,
+        target,
+        num,
+        total,
+        selected_modules,
+        usernames,
+        passwords,
+        timeout_sec,
+        thread_per_host,
+        ports,
+        output_file,
+        time_sleep_between_requests,
+        language,
+        verbose_mode,
+        socks_proxy,
+        retries,
+        ping_before_scan,
+        scan_id,
+        scan_cmd,
 ):
     """
     start new attack for each target
@@ -162,82 +155,10 @@ def start_scan_processes(options):
     Returns:
         True when it ends
     """
-    suff = now(model="%Y_%m_%d_%H_%M_%S") + "".join(
-        random.choice(string.ascii_lowercase) for x in range(10)
-    )
-    subs_temp = "{}/tmp/subs_temp_".format(nettacker_paths()["data_path"]) + suff
-    range_temp = "{}/tmp/ranges_".format(nettacker_paths()["data_path"]) + suff
-    scan_id = None
-    scan_cmd = False
-    total_targets = -1
-    
-    # print(options)
-
-    ### store options
-    targets = options.targets
-    scan_ip_range = options.scan_ip_range,
-    scan_subdomains = options.scan_subdomains
-    output_file = options.output_file
-    time_sleep_between_requests = options.time_sleep_between_requests
-    language = options.language
-    verbose_mode = options.verbose_mode
-    retries = options.retries
-    socks_proxy = options.socks_proxy
-    selected_modules = options.selected_modules
-    usernames = options.usernames
-    passwords = options.passwords
-    timeout_sec = options.timeout_sec
-    thread_per_host = options.thread_per_host
-    parallel_host_scan = options.parallel_host_scan
-    graph_name = options.graph_name
-    ports = options.ports
-    ping_before_scan = options.ping_before_scan
-    backup_ports = None
-
-    for total_targets, _ in enumerate(
-        analysis(
-            targets,
-            scan_ip_range,
-            scan_subdomains,
-            subs_temp,
-            range_temp,
-            output_file,
-            time_sleep_between_requests,
-            language,
-            verbose_mode,
-            retries,
-            socks_proxy,
-            True,
-        )
-    ):
-        pass
-    for i in targets:
-        if target_type(i) == "RANGE_IPv4" or target_type(i) == "CIDR_IPv4":
-            total_targets = _
-    total_targets += 1
-    total_targets = total_targets * len(selected_modules)
-    try:
-        os.remove(range_temp)
-    except Exception:
-        pass
-    range_temp = "{}/tmp/ranges_".format(nettacker_paths()["data_path"]) + suff
-    targets = analysis(
-            targets,
-            scan_ip_range,
-            scan_subdomains,
-            subs_temp,
-            range_temp,
-            output_file,
-            time_sleep_between_requests,
-            language,
-            verbose_mode,
-            retries,
-            socks_proxy,
-            True,
-        )
+    scan_unique_id = generate_random_token(32)
+    # find total number of targets + types + expand (subdomain, IPRanges, etc)
+    targets = analysis(options)
     trying = 0
-    if scan_id is None:
-        scan_id = "".join(random.choice("0123456789abcdef") for x in range(32))
     scan_cmd = (
         messages("through_API") if options.start_api_server else " ".join(sys.argv)
     )
