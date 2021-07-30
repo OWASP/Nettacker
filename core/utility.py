@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import numpy
 import copy
 import random
 import string
@@ -96,6 +95,7 @@ def class_to_value(arrays):
 
 
 def arrays_to_matrix(arrays):
+    import numpy
     return numpy.array(
         numpy.meshgrid(*[
             arrays[array_name] for array_name in arrays

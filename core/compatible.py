@@ -70,12 +70,7 @@ def check_dependencies():
         sys.exit("Python2 is No longer supported!")
 
     # check os compatibility
-    logo()
-    from core.alert import messages
-    if not ('linux' in os_name() or 'darwin' in os_name()):
-        die_failure(messages("error_platform"))
-
-    external_modules = open(nettacker_paths["requirements_path"]).read().split('\n')
+    external_modules = open(nettacker_paths()["requirements_path"]).read().split('\n')
     for module_name in external_modules:
         try:
             __import__(
@@ -84,10 +79,15 @@ def check_dependencies():
             )
         except Exception:
             if 'is_optional=true' not in module_name:
-                die_failure(
+                sys.exit(
                     "pip3 install -r requirements.txt ---> " +
                     module_name + " not installed!"
                 )
+    logo()
+
+    from core.alert import messages
+    if not ('linux' in os_name() or 'darwin' in os_name()):
+        die_failure(messages("error_platform"))
 
     if not os.path.exists(nettacker_paths["home_path"]):
         try:
