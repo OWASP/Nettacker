@@ -295,7 +295,7 @@ $(document).ready(function () {
       retries: $("#retries").val(),
       time_sleep_between_requests: $("#time_sleep_between_requests").val(),
       timeout_sec: $("#timeout_sec").val(),
-     verbose_mode: $("#verbose_mode").val(),
+      verbose_mode: $("#verbose_mode").val(),
       ports: $("#ports").val(),
       socks_proxy: $("#socks_proxy").val(),
       usernames: $("#usernames").val(),

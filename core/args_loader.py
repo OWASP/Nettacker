@@ -53,9 +53,9 @@ def load_all_args():
     engineOpt.add_argument(
         "-L",
         "--language",
-        # action="store",
-        # dest="language",
-        # default=nettacker_global_configuration['nettacker_user_application_config']["language"],
+        action="store",
+        dest="language",
+        default=nettacker_global_configuration['nettacker_user_application_config']["language"],
         help=messages("select_language").format(languages_list),
     )
     engineOpt.add_argument(
