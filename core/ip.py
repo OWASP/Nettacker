@@ -4,7 +4,6 @@
 import json
 import netaddr
 import requests
-# from core.alert import warn, messages
 from netaddr import iprange_to_cidrs
 from netaddr import IPNetwork
 
@@ -53,7 +52,7 @@ def get_ip_range(ip):
         return [ip]
 
 
-def is_ipv4(ip):
+def is_single_ipv4(ip):
     """
     to check a value if its IPv4 address
 
@@ -66,40 +65,21 @@ def is_ipv4(ip):
     return netaddr.valid_ipv4(str(ip))
 
 
-def IPRange(Range, range_temp, language):
-    """
-    IP range string to IPNetwork type
-
-    Args:
-        Range: IP range string
-        range_temp: range_temp filename
-        language: language
-
-    Returns:
-        an array of IP range in IPNetwork type
-    """
-    myranges_now = open(range_temp).read().rsplit()
-    if Range not in myranges_now:
-        __log_into_file(range_temp, 'a', Range + '\n', language)
-        if len(Range.rsplit('.')) == 7 and '-' in Range and '/' not in Range:
-            if len(Range.rsplit('-')) == 2:
-                start_ip, stop_ip = Range.rsplit('-')
-                if isIP(start_ip) and isIP(stop_ip):
-                    return iprange_to_cidrs(start_ip, stop_ip)
-                else:
-                    return []
-            else:
-                return []
-        elif len(Range.rsplit('.')) == 4 and '-' not in Range and '/' in Range:
-            return IPNetwork(Range)
-        else:
-            return []
-    else:
-        warn(messages("skip_duplicate_target"))
-        return []
+def is_ipv4_range(ip_range):
+    try:
+        return '/' in ip_range and '.' in ip_range and '-' not in ip_range and netaddr.IPNetwork(ip_range)
+    except Exception:
+        return False
 
 
-def is_ipv6(ip):
+def is_ipv4_cidr(ip_range):
+    try:
+        return '/' not in ip_range and '.' in ip_range and '-' in ip_range and iprange_to_cidrs(*ip_range.split('-'))
+    except Exception:
+        return False
+
+
+def is_single_ipv6(ip):
     """
     to check a value if its IPv6 address
 
@@ -110,3 +90,17 @@ def is_ipv6(ip):
          True if it's IPv6 otherwise False
     """
     return netaddr.valid_ipv6(str(ip))
+
+
+def is_ipv6_range(ip_range):
+    try:
+        return '/' not in ip_range and ':' in ip_range and '-' in ip_range and iprange_to_cidrs(*ip_range.split('-'))
+    except Exception:
+        return False
+
+
+def is_ipv6_cidr(ip_range):
+    try:
+        return '/' in ip_range and ':' in ip_range and '-' not in ip_range and netaddr.IPNetwork(ip_range)
+    except Exception:
+        return False

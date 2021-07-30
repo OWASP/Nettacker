@@ -7,77 +7,17 @@ import netaddr.ip
 import re
 import copy
 import ipaddress
-from core.ip import (getIPRange,
-                     IPRange,
-                     is_ipv4,
-                     is_ipv6)
+from core.ip import (get_ip_range,
+                     generate_ip_range,
+                     is_single_ipv4,
+                     is_ipv4_range,
+                     is_ipv4_cidr,
+                     is_single_ipv6,
+                     is_ipv6_range,
+                     is_ipv6_cidr)
 from core.alert import (messages,
                         info)
 from core.die import die_failure
-
-temp = 0
-
-
-def target_to_host(target):
-    """
-    convert a target to host, example http://owasp.org to \
-        owasp.org or http://127.0.0.1 to 127.0.0.1
-    Args:
-        target: the target
-
-    Returns:
-        the host target
-    """
-    if target_type(target) == "HTTP":
-        target = (
-            target.lower()
-                .replace("http://", "")
-                .replace("https://", "")
-                .rsplit("/")[0]
-        )
-        if ":" in target:
-            target = target.rsplit(":")[0]
-    return target
-
-
-def target_type(target):
-    """
-    define the target type
-
-    Args:
-        target: the target
-
-    Returns:
-        the target type (SINGLE_IPv4, SINGLE_IPv6, RANGE_IPv4, \
-            DOMAIN, HTTP, CIDR_IPv4, UNKNOWN)
-    """
-    regex = '^([a-zA-Z0-9]+(-|_[a-zA-Z0-9]+)*\.?)+[a-zA-Z]{2,}$'
-    targets_protocols = {
-        'http': 'HTTP',
-        'https': 'HTTP',
-        'ftp': 'FTP',
-        'ssh': 'SSH',
-        'smtp': 'SMTP'
-    }
-
-    if isIP(target):
-        return "SINGLE_IPv4"
-    elif isIP6(target):
-        return "SINGLE_IPv6"
-    elif True in [target.lower().startswith(key + '://') for key in targets_protocols]:
-        scheme = target.split("://")[0].lower()
-        return targets_protocols[scheme]
-    elif len(target.rsplit(".")) == 7 and "-" in target and "/" not in target:
-        start_ip, stop_ip = target.rsplit("-")
-        if isIP(start_ip) and isIP(stop_ip):
-            return 'RANGE_IPv4'
-    elif len(target.rsplit('.')) == 4 and '-' not in target and '/' in target:
-        IP, CIDR = target.rsplit('/')
-        if isIP(IP) and (int(CIDR) >= 0 and int(CIDR) <= 32):
-            return 'CIDR_IPv4'
-    elif re.match(regex, target):
-        return 'DOMAIN'
-    return 'UNKNOWN'
 
 
 def analysis(options):
@@ -93,221 +33,21 @@ def analysis(options):
 
     targets = []
     for target in options.targets:
-        if is_ipv4(target) or is_ipv6(target):
+        if '://' in target:
+            # remove url proto; uri; port
+            target = target.split('://')[1].split('/')[0].split(':')[0]
+        # single IPs
+        if is_single_ipv4(target) or is_single_ipv6(target):
             if options.scan_ip_range:
-
+                targets += get_ip_range(target)
             else:
                 targets.append(target)
-
-
-
-    for target in targets:
-        if target_type(target) == "SINGLE_IPv4":
-            if scan_ip_range:
-                if not enumerate_flag:
-                    info(messages("checking_range").format(target))
-                IPs = IPRange(getIPRange(target), range_temp, language)
-                if type(IPs) == netaddr.ip.IPNetwork:
-                    for IPm in IPs:
-                        yield IPm
-                elif type(IPs) == list:
-                    for IPm in IPs:
-                        for IP in IPm:
-                            yield IP
-            else:
-                if not enumerate_flag:
-                    info(messages("target_submitted").format(target))
-                yield target
-        elif target_type(target) == "SINGLE_IPv6":
-            yield target
-
-        elif (
-                target_type(target) == "RANGE_IPv4"
-                or target_type(target) == "CIDR_IPv4"
-        ):
-            IPs = IPRange(target, range_temp, language)
-            global temp
-            if target_type(target) == "CIDR_IPv4" and temp == 0:
-                net = ipaddress.ip_network(target)
-                start = net[0]
-                end = net[-1]
-                ip1 = int(ipaddress.IPv4Address(start))
-                ip2 = int(ipaddress.IPv4Address(end))
-                yield ip2 - ip1
-                temp = 1
-                break
-            if target_type(target) == "RANGE_IPv4" and temp == 0:
-                start, end = target.rsplit("-")
-                ip1 = int(ipaddress.IPv4Address(start))
-                ip2 = int(ipaddress.IPv4Address(end))
-                yield ip2 - ip1
-                temp = 1
-                break
-            if not enumerate_flag:
-                info(messages("checking").format(target))
-            if type(IPs) == netaddr.ip.IPNetwork:
-                for IPm in IPs:
-                    yield IPm
-            elif type(IPs) == list:
-                for IPm in IPs:
-                    for IP in IPm:
-                        yield IP
-
-        elif target_type(target) == "DOMAIN":
-            if scan_subdomains:
-                if scan_ip_range:
-                    if enumerate_flag:
-                        info(messages("checking").format(target))
-                    sub_domains = (
-                        json.loads(open(subs_temp).read())
-                        if len(open(subs_temp).read()) > 2
-                        else 1
-                        # else __get_subs(
-                        #     target, 3, "", 0, language, 0, socks_proxy, 3, 0, 0
-                        # )
-                    )
-                    if len(open(subs_temp).read()) == 0:
-                        __log_into_file(
-                            subs_temp, "a", json.dumps(sub_domains), language
-                        )
-                    if target not in sub_domains:
-                        sub_domains.append(target)
-                    for target in sub_domains:
-                        if not enumerate_flag:
-                            info(
-                                messages("target_submitted").format(
-                                    target
-                                )
-                            )
-                        yield target
-                        n = 0
-                        err = 0
-                        IPs = []
-                        while True:
-                            try:
-                                IPs.append(socket.gethostbyname(target))
-                                err = 0
-                                n += 1
-                                if n == 12:
-                                    break
-                            except Exception:
-                                err += 1
-                                if err == 3 or n == 12:
-                                    break
-                        IPz = list(set(IPs))
-                        for IP in IPz:
-                            if not enumerate_flag:
-                                info(
-                                    messages("checking_range").format(IP))
-                            IPs = IPRange(getIPRange(IP), range_temp, language)
-                            if type(IPs) == netaddr.ip.IPNetwork:
-                                for IPm in IPs:
-                                    yield IPm
-                            elif type(IPs) == list:
-                                for IPm in IPs:
-                                    for IPn in IPm:
-                                        yield IPn
-                else:
-                    if enumerate_flag:
-                        info(messages("checking").format(target))
-                    sub_domains = (
-                        json.loads(open(subs_temp).read())
-                        if len(open(subs_temp).read()) > 2
-                        else 1
-                        # else __get_subs(
-                        #     target, 3, "", 0, language, 0, socks_proxy, 3, 0, 0
-                        # )
-                    )
-                    if len(open(subs_temp).read()) == 0:
-                        __log_into_file(
-                            subs_temp, "a", json.dumps(sub_domains), language
-                        )
-                    if target not in sub_domains:
-                        sub_domains.append(target)
-                    for target in sub_domains:
-                        if not enumerate_flag:
-                            info(
-                                messages("target_submitted").format(
-                                    target
-                                )
-                            )
-                        yield target
-            else:
-                if scan_ip_range:
-                    if not enumerate_flag:
-                        info(messages("checking").format(target))
-                    yield target
-                    n = 0
-                    err = 0
-                    IPs = []
-                    while True:
-                        try:
-                            IPs.append(socket.gethostbyname(target))
-                            err = 0
-                            n += 1
-                            if n == 12:
-                                break
-                        except Exception:
-                            err += 1
-                            if err == 3 or n == 12:
-                                break
-                    IPz = list(set(IPs))
-                    for IP in IPz:
-                        if not enumerate_flag:
-                            info(
-                                messages("checking_range").format(IP)
-                            )
-                        IPs = IPRange(getIPRange(IP), range_temp, language)
-                        if type(IPs) == netaddr.ip.IPNetwork:
-                            for IPm in IPs:
-                                yield IPm
-                        elif type(IPs) == list:
-                            for IPm in IPs:
-                                for IPn in IPm:
-                                    yield IPn
-                else:
-                    if not enumerate_flag:
-                        info(
-                            messages("target_submitted").format(
-                                target
-                            )
-                        )
-                    yield target
-
-        elif target_type(target) == "HTTP":
-            if not enumerate_flag:
-                info(messages("checking").format(target))
-            yield target
-            if scan_ip_range:
-                if "http://" == target[:7].lower():
-                    target = target[7:].rsplit("/")[0]
-                if "https://" == target[:8].lower():
-                    target = target[8:].rsplit("/")[0]
-                yield target
-                IPs = []
-                while True:
-                    try:
-                        IPs.append(socket.gethostbyname(target))
-                        err = 0
-                        n += 1
-                        if n == 12:
-                            break
-                    except Exception:
-                        err += 1
-                        if err == 3 or n == 12:
-                            break
-                IPz = list(set(IPs))
-                for IP in IPz:
-                    if not enumerate_flag:
-                        info(messages("checking_range").format(IP))
-                    IPs = IPRange(getIPRange(IP), range_temp, language)
-                    if type(IPs) == netaddr.ip.IPNetwork:
-                        for IPm in IPs:
-                            yield IPm
-                    elif type(IPs) == list:
-                        for IPm in IPs:
-                            for IPn in IPm:
-                                yield IPn
-
+        # IP ranges
+        if is_ipv4_range(target) or is_ipv6_range(target) or is_ipv4_cidr(target) or is_ipv6_cidr(target):
+            targets += generate_ip_range(target)
+        # domains
+        if options.scan_subdomains:
+            pass  # todo: fix here
         else:
-            die_failure(messages("unknown_target").format(target))
+            targets.append(target)
+    return targets
