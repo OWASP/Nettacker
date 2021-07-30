@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from core.die import die_failure
 import sys
 import json
 from core import color
-from core.messages import load_message
 
 pyversion = int(sys.version_info[0])
-message_cache = load_message().messages
 
+message_cache = False
 
 def is_not_run_from_api():
     """
@@ -25,6 +25,10 @@ def is_not_run_from_api():
 
 
 def messages(msg_id):
+    global message_cache
+    if (not message_cache):
+        from core.messages import load_message
+        message_cache = load_message().messages
     """
     load a message from message library with specified language
 

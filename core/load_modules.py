@@ -93,8 +93,8 @@ def load_all_modules():
 
 
 def main():
-    from core.compatible import check_dependencies
-    check_dependencies()
+    # from core.compatible import check_dependencies
+    # check_dependencies()
     for directory in os.listdir('modules/scan/'):
         if 'dir_scan.yaml' in directory:
             validate_module = module()
