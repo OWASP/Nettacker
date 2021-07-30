@@ -3,6 +3,7 @@
 
 import sys
 
+
 def die_success():
     """
     exit the framework with code 0

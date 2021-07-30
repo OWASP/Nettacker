@@ -5,10 +5,10 @@ import sys
 import os
 from core.alert import messages
 from core.die import die_failure
+from config import nettacker_paths
 
 
 def version_info():
-    from config import nettacker_paths
     """
     version information of the framework
 
@@ -19,8 +19,6 @@ def version_info():
 
 
 def logo():
-    from config import nettacker_paths
-
     """
     OWASP Nettacker Logo
     """
@@ -55,7 +53,6 @@ def python_version():
     Returns:
         integer version of python (2 or 3)
     """
-    
     return int(sys.version_info[0])
 
 
@@ -83,12 +80,11 @@ def os_name():
 
 
 def check_dependencies():
+    logo()
     if python_version() == 2:
         die_failure("Python2 is No longer supported")
 
-    from config import nettacker_paths
-
-    external_modules = open(nettacker_paths()["requirements_path"]).read().split('\n')
+    external_modules = open(nettacker_paths["requirements_path"]).read().split('\n')
     for module_name in external_modules:
         try:
             __import__(
@@ -102,40 +98,40 @@ def check_dependencies():
                     module_name + " not installed!"
                 )
 
-    if not os.path.exists(nettacker_paths()["home_path"]):
+    if not os.path.exists(nettacker_paths["home_path"]):
         try:
-            os.mkdir(nettacker_paths()["home_path"])
-            os.mkdir(nettacker_paths()["tmp_path"])
-            os.mkdir(nettacker_paths()["results_path"])
+            os.mkdir(nettacker_paths["home_path"])
+            os.mkdir(nettacker_paths["tmp_path"])
+            os.mkdir(nettacker_paths["results_path"])
         except Exception:
             die_failure("cannot access the directory {0}".format(
-                nettacker_paths()["home_path"])
+                nettacker_paths["home_path"])
             )
-    if not os.path.exists(nettacker_paths()["tmp_path"]):
+    if not os.path.exists(nettacker_paths["tmp_path"]):
         try:
-            os.mkdir(nettacker_paths()["tmp_path"])
+            os.mkdir(nettacker_paths["tmp_path"])
         except Exception:
             die_failure("cannot access the directory {0}".format(
-                nettacker_paths()["results_path"])
+                nettacker_paths["results_path"])
             )
-    if not os.path.exists(nettacker_paths()["results_path"]):
+    if not os.path.exists(nettacker_paths["results_path"]):
         try:
-            os.mkdir(nettacker_paths()["results_path"])
+            os.mkdir(nettacker_paths["results_path"])
         except Exception:
             die_failure("cannot access the directory {0}".format(
-                nettacker_paths()["results_path"])
+                nettacker_paths["results_path"])
             )
-    from config import nettacker_database_config
-    if nettacker_database_config()["DB"] == "sqlite":
+
+    if nettacker_paths["database_type"] == "sqlite":
         try:
-            if not os.path.isfile(nettacker_paths()["database_path"]):
+            if not os.path.isfile(nettacker_paths["database_path"]):
                 from database.sqlite_create import sqlite_create_tables
                 sqlite_create_tables()
         except Exception:
             die_failure("cannot access the directory {0}".format(
-                nettacker_paths()["home_path"])
+                nettacker_paths["home_path"])
             )
-    elif nettacker_paths()["database_type"] == "mysql":
+    elif nettacker_paths["database_type"] == "mysql":
         try:
             from database.mysql_create import (
                 mysql_create_tables,
@@ -145,7 +141,7 @@ def check_dependencies():
             mysql_create_tables()
         except Exception:
             die_failure(messages("en", "database_connection_failed"))
-    elif nettacker_paths()["database_type"] == "postgres":
+    elif nettacker_paths["database_type"] == "postgres":
         try:
             from database.postgres_create import postgres_create_database
             postgres_create_database()
@@ -153,5 +149,3 @@ def check_dependencies():
             die_failure(messages("en", "database_connection_failed"))
     else:
         die_failure(messages("en", "invalid_database"))
-
-    return True

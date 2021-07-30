@@ -9,7 +9,7 @@ from core.alert import messages
 from core.load_modules import load_all_modules
 from core.args_loader import load_all_args
 from core.args_loader import check_all_required
-from core.compatible import logo
+
 
 def load():
     """
@@ -18,7 +18,6 @@ def load():
     Returns:
         True if success otherwise None
     """
-    logo()
     write("\n\n")
     options = check_all_required(load_all_args())
 
