@@ -11,7 +11,7 @@ from core.ip import (get_ip_range,
                      is_ipv6_cidr)
 
 
-def analysis(options):
+def expand_targets(options):
     """
     analysis and calulcate targets.
 
