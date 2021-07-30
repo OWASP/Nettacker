@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import socket
-import json
-import netaddr.ip
-import re
-import copy
-import ipaddress
 from core.ip import (get_ip_range,
                      generate_ip_range,
                      is_single_ipv4,
@@ -15,9 +9,6 @@ from core.ip import (get_ip_range,
                      is_single_ipv6,
                      is_ipv6_range,
                      is_ipv6_cidr)
-from core.alert import (messages,
-                        info)
-from core.die import die_failure
 
 
 def analysis(options):

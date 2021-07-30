@@ -22,11 +22,7 @@ from flask import make_response
 from core.alert import write_to_api_console
 from core.alert import messages
 from core.die import die_success
-from core.die import die_failure
 from core.time import now
-from config import nettacker_global_config
-from core.config_builder import _core_default_config
-from core.config_builder import _builder
 from api.api_core import structure
 from api.api_core import get_value
 from api.api_core import root_dir
@@ -46,7 +42,6 @@ from database.db import __last_host_logs
 from database.db import __logs_to_report_json
 from database.db import __search_logs
 from database.db import __logs_to_report_html
-from core.targets import target_type
 
 TEMPLATE_DIR = os.path.join(os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "web"), "static")
