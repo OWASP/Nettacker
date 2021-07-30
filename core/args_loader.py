@@ -7,7 +7,6 @@ from core.alert import warn
 from core.alert import info
 from core.alert import messages
 from core.color import color
-from core.compatible import check_os_compatibility
 from core.compatible import version_info
 from config import nettacker_global_config
 from core.load_modules import load_all_languages
@@ -40,8 +39,6 @@ def load_all_args():
             )
         )
 
-    # Check if compatible
-    check_os_compatibility()
     reset_color()
     # Start Parser
     parser = argparse.ArgumentParser(prog="Nettacker", add_help=False)

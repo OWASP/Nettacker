@@ -3,7 +3,6 @@
 
 import sys
 import os
-from core.alert import messages
 from core.die import die_failure
 from config import nettacker_paths
 
@@ -56,19 +55,6 @@ def python_version():
     return int(sys.version_info[0])
 
 
-def check_os_compatibility():
-    """
-    check if framework compatible with the OS
-
-    Returns:
-        True if compatible otherwise None
-    """
-    # from core.color import finish
-    if not ('linux' in os_name() or 'darwin' in os_name()):
-        die_failure(messages("error_platform"))
-    return True
-
-
 def os_name():
     """
     OS name
@@ -80,9 +66,14 @@ def os_name():
 
 
 def check_dependencies():
-    logo()
     if python_version() == 2:
-        die_failure("Python2 is No longer supported")
+        sys.exit("Python2 is No longer supported!")
+
+    # check os compatibility
+    logo()
+    from core.alert import messages
+    if not ('linux' in os_name() or 'darwin' in os_name()):
+        die_failure(messages("error_platform"))
 
     external_modules = open(nettacker_paths["requirements_path"]).read().split('\n')
     for module_name in external_modules:
