@@ -10,7 +10,8 @@ from core.color import color
 from core.compatible import version_info
 from config import nettacker_global_config
 from core.load_modules import load_all_languages
-from core.utility import application_language
+from core.utility import (application_language,
+                          select_maximum_cpu_core)
 from core.die import die_success
 from core.die import die_failure
 from core.color import reset_color
@@ -225,12 +226,19 @@ def load_all_args():
     )
     modules.add_argument(
         "-M",
-        "--parallel-host-scan",
+        "--parallel-module-scan",
         action="store",
-        default=nettacker_global_configuration['nettacker_user_application_config']["parallel_host_scan"],
+        default=nettacker_global_configuration['nettacker_user_application_config']["parallel_module_scan"],
         type=int,
-        dest="parallel_host_scan",
-        help=messages("thread_number_hosts"),
+        dest="parallel_module_scan",
+        help=messages("thread_number_modules"),
+    )
+    modules.add_argument(
+        "--set-hardware-usage",
+        action="store",
+        dest="set_hardware_usage",
+        default=nettacker_global_configuration['nettacker_user_application_config']['set_hardware_usage'],
+        help=messages("set_hardware_usage")
     )
     modules.add_argument(
         "-R",
@@ -368,6 +376,18 @@ def check_all_required(parser):
                     module_name
                 )
             )
+    # threading & processing
+    if options.set_hardware_usage not in ['low', 'normal', 'high', 'maximum']:
+        die_failure(
+            messages("wrong_hardware_usage")
+        )
+    options.set_hardware_usage = select_maximum_cpu_core(options.set_hardware_usage)
+
+    if not options.thread_per_host >= 1:
+        options.thread_per_host = 1
+
+    if not options.parallel_module_scan >= 1:
+        options.parallel_module_scan = 1
 
     # Check for excluding modules
     if options.excluded_modules:

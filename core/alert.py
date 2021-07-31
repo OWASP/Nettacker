@@ -37,45 +37,13 @@ def messages(msg_id):
     return message_cache[str(msg_id)]
 
 
-def __input_msg(content):
-    """
-    build the input message to get input from usernames
-
-    Args:
-        content: content of the message
-
-    Returns:
-        the message in input structure
-    """
-
-    return (
-            color.color("yellow")
-            + "[+] "
-            + color.color("green")
-            + content
-            + color.color("reset")
-    )
-
-
-def info(
-        content,
-        output_file=None,
-        mode=None,
-        event=None,
-        language=None,
-        thread_tmp_filename=None,
-):
+def info(content):
     """
     build the info message, log the message in database if requested,
     rewrite the thread temporary file
 
     Args:
         content: content of the message
-        output_file: log filename name
-        mode: write mode, [w, w+, wb, a, ab, ...]
-        event: standard event in JSON structure
-        language: the language
-        thread_tmp_filename: thread temporary filename
 
     Returns:
         None
@@ -92,14 +60,33 @@ def info(
                 "utf8",
             )
         )
-    if event:  # if an event is present log it
-        from core.log import __log_into_file
+    sys.stdout.flush()
 
-        __log_into_file(output_file, mode, json.dumps(event), language)
-        if (
-                thread_tmp_filename
-        ):  # if thread temporary filename present, rewrite it
-            __log_into_file(thread_tmp_filename, "w", "0", language)
+
+def verbose_info(content):
+    """
+    build the info message, log the message in database if requested,
+    rewrite the thread temporary file
+
+    Args:
+        content: content of the message
+
+    Returns:
+        None
+    """
+    if is_not_run_from_api() and '--verbose' in sys.argv or '-v' in sys.argv:
+        sys.stdout.buffer.write(
+            bytes(
+                color.color("yellow")
+                + "[+] "
+                + color.color("purple")
+                + content
+                + color.color("reset")
+                + "\n",
+                "utf8",
+            )
+        )
+    sys.stdout.flush()
 
 
 def write(content):
@@ -116,6 +103,7 @@ def write(content):
         sys.stdout.buffer.write(
             bytes(content, "utf8") if isinstance(content, str) else content
         )
+    sys.stdout.flush()
 
 
 def warn(content):
@@ -140,6 +128,7 @@ def warn(content):
                 "utf8",
             )
         )
+    sys.stdout.flush()
 
 
 def error(content):
@@ -153,14 +142,15 @@ def error(content):
         the message in error structure - None
     """
     data = (
-        color.color("red")
-        + "[X] "
-        + color.color("yellow")
-        + content
-        + color.color("reset")
-        + "\n"
+            color.color("red")
+            + "[X] "
+            + color.color("yellow")
+            + content
+            + color.color("reset")
+            + "\n"
     )
     sys.stdout.buffer.write(data.encode("utf8"))
+    sys.stdout.flush()
 
 
 def write_to_api_console(content):
@@ -174,3 +164,4 @@ def write_to_api_console(content):
         None
     """
     sys.stdout.buffer.write(bytes(content, "utf8"))
+    sys.stdout.flush()

@@ -112,11 +112,12 @@ def nettacker_user_application_config():
         "scan_ip_range": False,
         "scan_subdomains": False,
         "thread_per_host": 100,
-        "parallel_host_scan": 10,
+        "parallel_module_scan": 10,
         "scan": "",
         "socks_proxy": None,
         "retries": 3,
-        "ping_before_scan": False
+        "ping_before_scan": False,
+        "set_hardware_usage": "normal"
     }
 
 

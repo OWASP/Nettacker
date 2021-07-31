@@ -4,6 +4,9 @@
 import re
 import requests
 import copy
+import json
+from core.alert import (info,
+                        verbose_info)
 
 
 def reverse_and_regex_condition(regex, reverse):
@@ -17,9 +20,9 @@ def reverse_and_regex_condition(regex, reverse):
         return False
 
 
-def response_conditions_matched(response):
-    condition_type = response['response']['condition_type']
-    conditions = response['response']['conditions']
+def response_conditions_matched(sub_step, response):
+    condition_type = sub_step['response']['condition_type']
+    conditions = sub_step['response']['conditions']
     condition_results = []
     if 'reason' in conditions:
         regex = re.search(str(conditions['reason']['regex']).encode(), response.reason.encode())
@@ -75,9 +78,15 @@ class engine:
         backup_response = copy.deepcopy(sub_step['response'])
         del sub_step['method']
         del sub_step['response']
-        response = action(**sub_step)
+        try:
+            response = action(**sub_step)
+        except Exception:
+            return False
         sub_step['method'] = backup_method
         sub_step['response'] = backup_response
-        if response_conditions_matched(response):
-            pass
-        print(sub_step, response)
+        if response_conditions_matched(sub_step, response):
+            info(json.dumps(sub_step) + ' ' + json.dumps(vars(response.headers)) + ' ' + str(response.status_code))
+            return True
+        else:
+            verbose_info(json.dumps(sub_step) + ' ' + json.dumps(vars(response.headers)) + ' ' + str(response.status_code))
+            return False

@@ -22,19 +22,20 @@ payloads:
         url:
           nettacker_fuzzer:
             input_format: "{{urls}}"
-            prefix: "{BaseURL}/"
+            prefix:
             suffix:
             interceptors:
             data:
               urls:
-                - administrator
-                - admin
-                - old
-                - _vti_bin
-                - _private
-                - cgi-bin
-                - public_html
-                - images
+                - "https://{target}/administrator"
+                - "https://{target}/admin"
+                - "https://{target}/old"
+                - "https://{target}/_vti_bin"
+                - "https://{target}/_private"
+                - "https://{target}/cgi-bin"
+                - "https://{target}/public_html"
+                - "https://{target}/images"
+                - "https://{target}/"
         response:
           condition_type: or
           conditions:

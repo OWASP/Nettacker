@@ -29,16 +29,16 @@ def expand_targets(options):
             # remove url proto; uri; port
             target = target.split('://')[1].split('/')[0].split(':')[0]
         # single IPs
-        if is_single_ipv4(target) or is_single_ipv6(target):
+        elif is_single_ipv4(target) or is_single_ipv6(target):
             if options.scan_ip_range:
                 targets += get_ip_range(target)
             else:
                 targets.append(target)
         # IP ranges
-        if is_ipv4_range(target) or is_ipv6_range(target) or is_ipv4_cidr(target) or is_ipv6_cidr(target):
+        elif is_ipv4_range(target) or is_ipv6_range(target) or is_ipv4_cidr(target) or is_ipv6_cidr(target):
             targets += generate_ip_range(target)
         # domains
-        if options.scan_subdomains:
+        elif options.scan_subdomains:
             targets.append(target)  # todo: fix here
         else:
             targets.append(target)

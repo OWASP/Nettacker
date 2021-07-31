@@ -14,7 +14,10 @@ Invalid_whatcms_api_key: "{0}"
 searching_whatcms_database: Searching for CMS on whatcms.org...
 whatcms_monthly_quota_exceeded: You have exceeded your monthly WHATCMS request quota
 thread_number_connections: thread numbers for connections to a host
-thread_number_hosts: thread numbers for scan hosts
+thread_number_modules: parallel module scan for hosts
+start_multi_process: starting {0} process(es).
+start_parallel_module_scan: started {0} module towards the target {1}
+finished_module: finished module {0} towards the target {1}
 save_logs: save all logs in file (results.txt, results.csv, results.html, results.json)
 target: Target
 target_input: Target input options
@@ -267,6 +270,6 @@ fuzzer_no_response: The http fuzzer did not find any output for {0}
 summary_report: summary report table
 file_saved: report saved in {0} and database
 no_event_found: no event found in this scan
-invalid_json_type_to_db:
-  Invalid type of JSON data for the database. Skipping the
-  submission to database. Data:{0}
+invalid_json_type_to_db: Invalid type of JSON data for the database. Skipping the submission to database. Data:{0}
+set_hardware_usage: Set hardware usage while scanning. (low, normal, high, maximum)
+wrong_hardware_usage: You must select one of these profiles for hardware usage. (low, normal, high, maximum)

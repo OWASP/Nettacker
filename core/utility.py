@@ -5,7 +5,71 @@ import copy
 import random
 import string
 import sys
+import ctypes
+import time
+import multiprocessing
 from core.load_modules import load_all_languages
+
+
+def select_maximum_cpu_core(mode):
+    if mode == 'maximum':
+        return int(multiprocessing.cpu_count() - 1) if int(multiprocessing.cpu_count() - 1) >= 1 else 1
+    elif mode == 'high':
+        return int(multiprocessing.cpu_count() / 2) if int(multiprocessing.cpu_count() - 1) >= 1 else 1
+    elif mode == 'normal':
+        return int(multiprocessing.cpu_count() / 4) if int(multiprocessing.cpu_count() - 1) >= 1 else 1
+    elif mode == 'low':
+        return int(multiprocessing.cpu_count() / 8) if int(multiprocessing.cpu_count() - 1) >= 1 else 1
+    else:
+        return 1
+
+
+def wait_for_threads_to_finish(threads, maximum=None, terminable=False):
+    while threads:
+        try:
+            for thread in threads[:]:
+                if not thread.is_alive():
+                    threads.remove(thread)
+                time.sleep(0.1)
+            time.sleep(0.1)
+            if maximum and len(threads) < maximum:
+                break
+        except KeyboardInterrupt:
+            if terminable:
+                for thread in threads:
+                    terminate_thread(thread)
+            return False
+    return True
+
+
+def terminate_thread(thread, verbose=True):
+    """
+    kill a thread https://stackoverflow.com/a/15274929
+    Args:
+        thread: an alive thread
+        verbose: verbose mode/boolean
+    Returns:
+        True/None
+    """
+    from core.alert import info
+    if verbose:
+        info("killing {0}".format(thread.name))
+    if not thread.is_alive():
+        return
+
+    exc = ctypes.py_object(SystemExit)
+    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
+        ctypes.c_long(thread.ident),
+        exc
+    )
+    if res == 0:
+        raise ValueError("nonexistent thread id")
+    elif res > 1:
+        # if it returns a number greater than one, you're in trouble,
+        # and you should call it again with exc=NULL to revert the effect
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(thread.ident, None)
+        raise SystemError("PyThreadState_SetAsyncExc failed")
+    return True
 
 
 def find_args_value(args_name):
