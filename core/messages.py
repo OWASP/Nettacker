@@ -3,8 +3,6 @@
 
 import yaml
 from io import StringIO
-from config import nettacker_global_config
-from core.utility import application_language
 
 
 def load_yaml(filename):
@@ -18,6 +16,8 @@ def load_yaml(filename):
 
 class load_message:
     def __init__(self):
+        from core.utility import application_language
+        from config import nettacker_global_config
         self.language = application_language()
         self.messages = load_yaml(
             "{messages_path}/{language}.yaml".format(

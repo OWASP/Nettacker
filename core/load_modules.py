@@ -2,14 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-import lib
-import inspect
 from glob import glob
 from core import module_protocols
 from io import StringIO
-from config import nettacker_paths
-from core.alert import (info,
-                        warn)
 
 
 class NettackerModules:
@@ -23,6 +18,7 @@ class NettackerModules:
 
     def load(self):
         import yaml
+        from config import nettacker_paths
         self.module_content = yaml.load(
             StringIO(
                 open(
@@ -67,8 +63,9 @@ def load_all_graphs():
     Returns:
         an array of graph names
     """
+    from config import nettacker_paths
     graph_names = []
-    for graph_library in glob(os.path.dirname(inspect.getfile(lib)) + '/graph/*/engine.py'):
+    for graph_library in glob(os.path.join(nettacker_paths()['home_path'] + '/lib/graph/*/engine.py')):
         graph_names.append(graph_library.split('/')[-2] + '_graph')
     return graph_names
 
@@ -81,7 +78,8 @@ def load_all_languages():
         an array of languages
     """
     languages_list = []
-    for language in glob(os.path.dirname(inspect.getfile(lib)) + '/messages/*.yaml'):
+    from config import nettacker_paths
+    for language in glob(os.path.join(nettacker_paths()['home_path'] + '/lib/messages/*.yaml')):
         languages_list.append(language.split('/')[-1].split('.')[0])
     return languages_list
 
@@ -94,8 +92,9 @@ def load_all_modules():
         an array of all module names
     """
     # Search for Modules
+    from config import nettacker_paths
     module_names = []
-    for module_name in glob('/modules/*/*.yaml'):
+    for module_name in glob(os.path.join(nettacker_paths()['home_path'] + '/modules/*/*.yaml')):
         libname = module_name.split('/')[-1].split('.')[0]
         category = module_name.split('/')[-2]
         module_names.append(libname + '_' + category)
@@ -104,6 +103,7 @@ def load_all_modules():
 
 
 def perform_scan(options, target, module_name, scan_unique_id):
+    from core.alert import info
     validate_module = NettackerModules()
     validate_module.module_name = module_name
     validate_module.module_inputs = options
