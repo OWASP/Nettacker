@@ -84,7 +84,7 @@ def check_dependencies():
             if 'is_optional=true' not in module_name:
                 sys.exit(
                     color.color("red") + "[X] " + color.color("yellow") + "pip3 install -r requirements.txt ---> " +
-                    module_name + " not installed!" + color.color("reset")
+                    module_name.split('#')[0].strip() + " not installed!" + color.color("reset")
                 )
     logo()
 
