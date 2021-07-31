@@ -42,7 +42,6 @@ class NettackerModules:
         self.module_content['payloads'] = expand_module_steps(self.module_content['payloads'])
 
     def start(self):
-        # todo: multi thread here
         from core.utility import wait_for_threads_to_finish
         active_threads = []
         from core.alert import warn
