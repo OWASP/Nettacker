@@ -4,6 +4,7 @@
 import sys
 import os
 from core.die import die_failure
+from core import color
 
 
 def version_info():
@@ -68,7 +69,7 @@ def os_name():
 
 def check_dependencies():
     if python_version() == 2:
-        sys.exit("Python2 is No longer supported!")
+        sys.exit(color.color("red") + "[X] " + color.color("yellow") + "Python2 is No longer supported!" + color.color("reset"))
 
     # check os compatibility
     from config import nettacker_paths, nettacker_database_config
@@ -82,8 +83,8 @@ def check_dependencies():
         except Exception:
             if 'is_optional=true' not in module_name:
                 sys.exit(
-                    "pip3 install -r requirements.txt ---> " +
-                    module_name + " not installed!"
+                    color.color("red") + "[X] " + color.color("yellow") + "pip3 install -r requirements.txt ---> " +
+                    module_name + " not installed!" + color.color("reset")
                 )
     logo()
 
