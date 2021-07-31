@@ -6,7 +6,6 @@ import json
 from core import color
 from core.messages import load_message
 
-pyversion = int(sys.version_info[0])
 message_cache = load_message().messages
 
 
@@ -101,7 +100,6 @@ def info(
                 thread_tmp_filename
         ):  # if thread temporary filename present, rewrite it
             __log_into_file(thread_tmp_filename, "w", "0", language)
-    return
 
 
 def write(content):
@@ -118,7 +116,6 @@ def write(content):
         sys.stdout.buffer.write(
             bytes(content, "utf8") if isinstance(content, str) else content
         )
-    return
 
 
 def warn(content):
@@ -143,7 +140,6 @@ def warn(content):
                 "utf8",
             )
         )
-    return
 
 
 def error(content):
@@ -156,26 +152,15 @@ def error(content):
     Returns:
         the message in error structure - None
     """
-    if pyversion == 2:
-        sys.stdout.write(
-            color.color("red")
-            + "[X] "
-            + color.color("yellow")
-            + content.encode("utf8")
-            + color.color("reset")
-            + "\n"
-        )
-    else:
-        data = (
-                color.color("red")
-                + "[X] "
-                + color.color("yellow")
-                + content
-                + color.color("reset")
-                + "\n"
-        )
-        sys.stdout.buffer.write(data.encode("utf8"))
-    return
+    data = (
+        color.color("red")
+        + "[X] "
+        + color.color("yellow")
+        + content
+        + color.color("reset")
+        + "\n"
+    )
+    sys.stdout.buffer.write(data.encode("utf8"))
 
 
 def write_to_api_console(content):
@@ -188,8 +173,4 @@ def write_to_api_console(content):
     Returns:
         None
     """
-    if pyversion == 2:
-        sys.stdout.write(content.encode("utf8"))
-    else:
-        sys.stdout.buffer.write(bytes(content, "utf8"))
-    return
+    sys.stdout.buffer.write(bytes(content, "utf8"))

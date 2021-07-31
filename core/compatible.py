@@ -4,7 +4,6 @@
 import sys
 import os
 from core.die import die_failure
-from config import nettacker_paths
 
 
 def version_info():
@@ -14,6 +13,7 @@ def version_info():
     Returns:
         an array of version and code name
     """
+    from config import nettacker_paths
     return open(nettacker_paths()['version_file']).read().split()
 
 
@@ -24,6 +24,7 @@ def logo():
     from core.alert import write_to_api_console
     from core import color
     from core.color import reset_color
+    from config import nettacker_paths
     write_to_api_console(
         open(
             nettacker_paths()['logo_file']
@@ -70,6 +71,7 @@ def check_dependencies():
         sys.exit("Python2 is No longer supported!")
 
     # check os compatibility
+    from config import nettacker_paths, nettacker_database_config
     external_modules = open(nettacker_paths()["requirements_path"]).read().split('\n')
     for module_name in external_modules:
         try:
@@ -89,40 +91,40 @@ def check_dependencies():
     if not ('linux' in os_name() or 'darwin' in os_name()):
         die_failure(messages("error_platform"))
 
-    if not os.path.exists(nettacker_paths["home_path"]):
+    if not os.path.exists(nettacker_paths()["home_path"]):
         try:
-            os.mkdir(nettacker_paths["home_path"])
-            os.mkdir(nettacker_paths["tmp_path"])
-            os.mkdir(nettacker_paths["results_path"])
+            os.mkdir(nettacker_paths()["home_path"])
+            os.mkdir(nettacker_paths()["tmp_path"])
+            os.mkdir(nettacker_paths()["results_path"])
         except Exception:
             die_failure("cannot access the directory {0}".format(
-                nettacker_paths["home_path"])
+                nettacker_paths()["home_path"])
             )
-    if not os.path.exists(nettacker_paths["tmp_path"]):
+    if not os.path.exists(nettacker_paths()["tmp_path"]):
         try:
-            os.mkdir(nettacker_paths["tmp_path"])
+            os.mkdir(nettacker_paths()["tmp_path"])
         except Exception:
             die_failure("cannot access the directory {0}".format(
-                nettacker_paths["results_path"])
+                nettacker_paths()["results_path"])
             )
-    if not os.path.exists(nettacker_paths["results_path"]):
+    if not os.path.exists(nettacker_paths()["results_path"]):
         try:
-            os.mkdir(nettacker_paths["results_path"])
+            os.mkdir(nettacker_paths()["results_path"])
         except Exception:
             die_failure("cannot access the directory {0}".format(
-                nettacker_paths["results_path"])
+                nettacker_paths()["results_path"])
             )
 
-    if nettacker_paths["database_type"] == "sqlite":
+    if nettacker_database_config()["DB"] == "sqlite":
         try:
-            if not os.path.isfile(nettacker_paths["database_path"]):
+            if not os.path.isfile(nettacker_paths()["database_path"]):
                 from database.sqlite_create import sqlite_create_tables
                 sqlite_create_tables()
         except Exception:
             die_failure("cannot access the directory {0}".format(
-                nettacker_paths["home_path"])
+                nettacker_paths()["home_path"])
             )
-    elif nettacker_paths["database_type"] == "mysql":
+    elif nettacker_database_config()["DB"] == "mysql":
         try:
             from database.mysql_create import (
                 mysql_create_tables,
@@ -132,7 +134,7 @@ def check_dependencies():
             mysql_create_tables()
         except Exception:
             die_failure(messages("en", "database_connection_failed"))
-    elif nettacker_paths["database_type"] == "postgres":
+    elif nettacker_database_config()["DB"] == "postgres":
         try:
             from database.postgres_create import postgres_create_database
             postgres_create_database()
