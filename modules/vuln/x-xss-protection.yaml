@@ -1,0 +1,30 @@
+info:
+  id: X-XSS-protection
+  name: Divyansh
+  author: Divyansh
+  severity: low to high
+  description: #description for x-xss-protection
+  reference: #needs to be done
+  tags:
+    - zx
+    - zz
+
+payloads:
+  - library: http
+    session: false
+    verify: false
+    timeout: 1
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        url:
+          - "https://{target}/"
+        response:
+          condition_type: or
+          conditions:
+            headers:
+              x-xss-protection:
+                regex: 1;\ ?report='?https?:\/\/(www\.)?[-a-zA-Z0-9]{{1,256}}\.[-a-zA-Z0-9]{{1,6}}'?|^1;\ ?mode=block$|1
+                reverse: true

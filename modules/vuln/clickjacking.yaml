@@ -20,7 +20,7 @@ payloads:
     steps:
       - method: get
         url:
-          - "{BaseURL}/"
+          - "https://{target}/"
         response:
           condition_type: and
           conditions:

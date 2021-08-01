@@ -5,7 +5,6 @@ import os
 from glob import glob
 from core import module_protocols
 from io import StringIO
-from terminable_thread import Thread
 
 
 class NettackerModules:
@@ -42,6 +41,7 @@ class NettackerModules:
         self.module_content['payloads'] = expand_module_steps(self.module_content['payloads'])
 
     def start(self):
+        from terminable_thread import Thread
         from core.utility import wait_for_threads_to_finish
         active_threads = []
         from core.alert import warn
