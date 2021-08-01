@@ -13,10 +13,10 @@ def reverse_and_regex_condition(regex, reverse):
     if regex:
         if reverse:
             return []
-        return regex
+        return list(set(regex))
     else:
         if reverse:
-            return regex
+            return list(set(regex))
         return []
 
 
