@@ -20,10 +20,13 @@ payloads:
       - method: get
         url: "https://jldc.me/anubis/subdomains/{target}"
         response:
-          condition_type: or
+          condition_type: and
           conditions:
             status_code:
               regex: ^[2-3][0-9][0-9]
+              reverse: false
+            content:
+              regex: "\"([a-zA-Z0-9\\-\\_.\\s]+)\""
               reverse: false
 
 
