@@ -86,7 +86,7 @@ def response_conditions_matched(sub_step, response):
 
 
 class engine:
-    def run(sub_step, payload):
+    def run(sub_step, payload, module_name, target, scan_unique_id, ):
         request_lib = requests.session() if payload['session'] is True else requests
         action = getattr(request_lib, sub_step['method'], None)
 
@@ -102,6 +102,8 @@ class engine:
         sub_step['response'] = backup_response
         conditions_results = response_conditions_matched(sub_step, response)
         if conditions_results:
+            # todo: save_to_database(id=int_auto_inc, sub_step, conditions_results,
+            # module_name, target, scan_unique_id, timestamp=now())
             info(
                 json.dumps(sub_step) + ' ' + json.dumps(conditions_results)
             )

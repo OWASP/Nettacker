@@ -58,10 +58,15 @@ class NettackerModules:
             )
             for step in payload['steps']:
                 for sub_step in step:
-                    # must be multi thread here!
                     thread = Thread(
                         target=protocol.run,
-                        args=(sub_step, payload,)
+                        args=(
+                            sub_step,
+                            payload,
+                            self.module_name,
+                            self.target,
+                            self.scan_unique_id,
+                        )
                     )
                     thread.name = f"{self.target} -> {self.module_name} -> {sub_step}"
                     thread.start()

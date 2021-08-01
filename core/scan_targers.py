@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import numpy
-import time
 import multiprocessing
 from core.alert import (info,
                         messages)
@@ -17,6 +16,7 @@ def parallel_scan_process(options, targets, scan_unique_id):
     active_threads = []
     for target in targets:
         for module_name in options.selected_modules:
+            # todo: remove_from_database( target, module_name) where scan_unique_id != scan_unique_id
             thread = Thread(
                 target=perform_scan,
                 args=(options, target, module_name, scan_unique_id,)
