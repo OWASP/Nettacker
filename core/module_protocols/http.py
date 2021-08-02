@@ -4,20 +4,8 @@
 import re
 import requests
 import copy
-import json
-from core.alert import (info,
-                        verbose_info)
-
-
-def reverse_and_regex_condition(regex, reverse):
-    if regex:
-        if reverse:
-            return []
-        return list(set(regex))
-    else:
-        if reverse:
-            return list(set(regex))
-        return []
+from core.utility import reverse_and_regex_condition
+from core.utility import process_conditions
 
 
 def response_conditions_matched(sub_step, response):
@@ -86,30 +74,23 @@ def response_conditions_matched(sub_step, response):
 
 
 class engine:
-    def run(sub_step, payload, module_name, target, scan_unique_id, ):
-        request_lib = requests.session() if payload['session'] is True else requests
-        action = getattr(request_lib, sub_step['method'], None)
-
+    def run(sub_step, payload, module_name, target, scan_unique_id):
         backup_method = copy.deepcopy(sub_step['method'])
         backup_response = copy.deepcopy(sub_step['response'])
+        action = getattr(requests, backup_method, None)
         del sub_step['method']
         del sub_step['response']
         try:
             response = action(**sub_step)
         except Exception:
-            return False
+            response = None
         sub_step['method'] = backup_method
         sub_step['response'] = backup_response
-        conditions_results = response_conditions_matched(sub_step, response)
-        if conditions_results:
-            # todo: save_to_database(id=int_auto_inc, sub_step, conditions_results,
-            # module_name, target, scan_unique_id, timestamp=now())
-            info(
-                json.dumps(sub_step) + ' ' + json.dumps(conditions_results)
-            )
-            return True
-        else:
-            verbose_info(
-                json.dumps(sub_step) + ' ' + str(conditions_results)
-            )
-            return False
+        return process_conditions(
+            sub_step,
+            response_conditions_matched(sub_step, response),
+            payload,
+            module_name,
+            target,
+            scan_unique_id
+        )

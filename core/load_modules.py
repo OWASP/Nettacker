@@ -3,7 +3,6 @@
 
 import os
 from glob import glob
-from core import module_protocols
 from io import StringIO
 
 
@@ -14,7 +13,10 @@ class NettackerModules:
         self.scan_unique_id = None
         self.target = None
         self.module_inputs = {}
-        self.libraries = dir(module_protocols)
+        self.libraries = [
+            'http',
+            'socket'
+        ]
 
     def load(self):
         import yaml
@@ -45,6 +47,7 @@ class NettackerModules:
         from core.utility import wait_for_threads_to_finish
         active_threads = []
         from core.alert import warn
+
         for payload in self.module_content['payloads']:
             if payload['library'] not in self.libraries:
                 warn('library [{library}] is not support!'.format(library=payload['library']))

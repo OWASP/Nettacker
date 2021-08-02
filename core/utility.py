@@ -7,8 +7,37 @@ import string
 import sys
 import ctypes
 import time
+import json
 import multiprocessing
 from core.load_modules import load_all_languages
+
+
+def process_conditions(sub_step, conditions_results, payload, module_name, target, scan_unique_id):
+    from core.alert import (info,
+                            verbose_info)
+    if conditions_results:
+        # todo: save_to_database(id=int_auto_inc, sub_step, conditions_results,
+        # module_name, target, scan_unique_id, timestamp=now())
+        info(
+            json.dumps(sub_step) + ' ' + json.dumps(conditions_results)
+        )
+        return True
+    else:
+        verbose_info(
+            json.dumps(sub_step) + ' ' + str(conditions_results)
+        )
+        return False
+
+
+def reverse_and_regex_condition(regex, reverse):
+    if regex:
+        if reverse:
+            return []
+        return list(set(regex))
+    else:
+        if reverse:
+            return list(set(regex))
+        return []
 
 
 def select_maximum_cpu_core(mode):
@@ -30,10 +59,9 @@ def wait_for_threads_to_finish(threads, maximum=None, terminable=False):
             for thread in threads[:]:
                 if not thread.is_alive():
                     threads.remove(thread)
-                time.sleep(0.1)
-            time.sleep(0.1)
             if maximum and len(threads) < maximum:
                 break
+            time.sleep(0.01)
         except KeyboardInterrupt:
             if terminable:
                 for thread in threads:

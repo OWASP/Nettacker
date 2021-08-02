@@ -14,7 +14,6 @@ info:
 
 payloads:
   - library: http
-    session: false
     verify: false
     steps:
       - method: get
