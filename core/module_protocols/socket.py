@@ -21,7 +21,8 @@ class NettackerSocket:
         socket_connection.settimeout(timeout)
         socket_connection.connect((host, int(port)))
         return {
-            "peer_name": socket_connection.getpeername()
+            "peer_name": socket_connection.getpeername(),
+            "service": socket.getservbyport(int(port))
         }
 
 
