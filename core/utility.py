@@ -12,11 +12,12 @@ import multiprocessing
 from core.load_modules import load_all_languages
 
 
-def process_conditions(sub_step, conditions_results, payload, module_name, target, scan_unique_id):
+def process_conditions(sub_step, conditions_results, payload, module_name, target, scan_unique_id, options):
     from core.alert import (info,
                             verbose_info)
     if conditions_results:
-        # todo: save_to_database(id=int_auto_inc, sub_step, conditions_results,
+        # target = options['target']
+        # todo: save_to_database(id=int_auto_inc, sub_step, conditions_results, options
         # module_name, target, scan_unique_id, timestamp=now())
         info(
             json.dumps(sub_step) + ' ' + json.dumps(conditions_results)

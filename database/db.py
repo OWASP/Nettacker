@@ -6,7 +6,7 @@ import time
 from flask import jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database.models import HostsLog, Report, Update_Log
+from database.models import HostsLog, Report
 from core.alert import warn
 from core.alert import info
 from core.alert import messages

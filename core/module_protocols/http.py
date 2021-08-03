@@ -76,7 +76,7 @@ def response_conditions_matched(sub_step, response):
 
 
 class engine:
-    def run(sub_step, payload, module_name, target, scan_unique_id):
+    def run(sub_step, payload, module_name, target, scan_unique_id, options):
         backup_method = copy.deepcopy(sub_step['method'])
         backup_response = copy.deepcopy(sub_step['response'])
         action = getattr(requests, backup_method, None)
@@ -94,5 +94,6 @@ class engine:
             payload,
             module_name,
             target,
-            scan_unique_id
+            scan_unique_id,
+            options
         )

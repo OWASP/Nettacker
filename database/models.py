@@ -37,7 +37,6 @@ class HostsLog(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     date = Column(DateTime)
     target = Column(Text)
-    port = Column(Text)
     module_name = Column(Text)
     scan_unique_id = Column(Text)
     options = Column(Text)

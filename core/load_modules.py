@@ -69,6 +69,7 @@ class NettackerModules:
                             self.module_name,
                             self.target,
                             self.scan_unique_id,
+                            self.module_inputs
                         )
                     )
                     thread.name = f"{self.target} -> {self.module_name} -> {sub_step}"
