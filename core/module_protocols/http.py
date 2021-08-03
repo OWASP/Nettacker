@@ -32,7 +32,9 @@ def response_conditions_matched(sub_step, response):
                     response.headers[header]
                 )
                 reverse = conditions['headers'][header]['reverse']
-                condition_results['headers'] = reverse_and_regex_condition(regex, reverse)
+                condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
+            else:
+                condition_results['headers'][header] = []
     if 'responsetime' in conditions:
         if conditions['responsetime'].startswith(">="):
             condition_results['responsetime'] = response.elapsed.total_seconds() if (
