@@ -65,7 +65,6 @@ class NettackerModules:
                         target=protocol.run,
                         args=(
                             sub_step,
-                            payload,
                             self.module_name,
                             self.target,
                             self.scan_unique_id,

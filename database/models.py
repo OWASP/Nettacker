@@ -40,8 +40,7 @@ class HostsLog(Base):
     module_name = Column(Text)
     scan_unique_id = Column(Text)
     options = Column(Text)
-    sub_step = Column(Text)
-    conditions_results = Column(Text)
+    event = Column(Text)
 
     def __repr__(self):
         """
