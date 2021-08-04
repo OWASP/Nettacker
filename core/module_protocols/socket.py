@@ -20,6 +20,7 @@ class NettackerSocket:
         socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         socket_connection.settimeout(timeout)
         socket_connection.connect((host, int(port)))
+        socket_connection.close()
         return {
             "peer_name": socket_connection.getpeername(),
             "service": socket.getservbyport(int(port))
@@ -35,7 +36,7 @@ class engine:
         action = getattr(NettackerSocket, backup_method, None)
         try:
             response = action(**sub_step)
-        except Exception as e:
+        except Exception:
             response = None
         sub_step['method'] = backup_method
         sub_step['response'] = backup_response

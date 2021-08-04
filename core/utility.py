@@ -16,7 +16,6 @@ def process_conditions(event, module_name, target, scan_unique_id, options):
     from core.alert import (info,
                             verbose_info)
     if event['response']['conditions_results']:
-        # target = options['target']
         # todo: save_to_database(id=int_auto_inc, event, options
         # module_name, target, scan_unique_id, timestamp=now())
         info(

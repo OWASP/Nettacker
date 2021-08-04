@@ -44,16 +44,18 @@ def start_scan_processes(options):
     scan_unique_id = generate_random_token(32)
     # find total number of targets + types + expand (subdomain, IPRanges, etc)
     # optimize CPU usage
-    options.targets = numpy.array_split(
-        expand_targets(options),
-        options.set_hardware_usage if options.set_hardware_usage >= len(options.targets) else len(options.targets)
-    )
+    options.targets = [
+        targets.tolist() for targets in numpy.array_split(
+            expand_targets(options),
+            options.set_hardware_usage if options.set_hardware_usage >= len(options.targets) else len(options.targets)
+        )
+    ]
     active_processes = []
     info(messages("start_multi_process").format(len(options.targets)))
     for targets in options.targets:
         process = multiprocessing.Process(
             target=parallel_scan_process,
-            args=(options, targets.tolist(), scan_unique_id,)
+            args=(options, targets, scan_unique_id,)
         )
         process.start()
         active_processes.append(process)
