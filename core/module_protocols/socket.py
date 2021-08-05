@@ -230,7 +230,6 @@ class engine:
         del sub_step['method']
         del sub_step['response']
         action = getattr(NettackerSocket, backup_method, None)
-        response = action(**sub_step)
         try:
             response = action(**sub_step)
         except Exception as e:
