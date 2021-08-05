@@ -182,11 +182,18 @@ def load_all_args():
         help=messages("port_seperator"),
     )
     modules.add_argument(
+        "--user-agent",
+        action="store",
+        dest="user_agent",
+        default=nettacker_global_configuration['nettacker_user_application_config']["user_agent"],
+        help=messages("select_user_agent"),
+    )
+    modules.add_argument(
         "-T",
         "--timeout",
         action="store",
-        dest="timeout_sec",
-        default=nettacker_global_configuration['nettacker_user_application_config']["timeout_sec"],
+        dest="timeout",
+        default=nettacker_global_configuration['nettacker_user_application_config']["timeout"],
         type=float,
         help=messages("read_passwords"),
     )
@@ -412,6 +419,11 @@ def check_all_required(parser):
             except Exception:
                 die_failure(messages("ports_int"))
         options.ports = tmp_ports
+
+    if options.user_agent == 'random_user_agent':
+        options.user_agents = open(
+            nettacker_global_config()['nettacker_paths']['web_browser_user_agents']
+        ).read().split('\n')
 
     # Check user list
     if options.usernames:

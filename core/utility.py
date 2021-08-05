@@ -178,6 +178,24 @@ def find_repeaters(sub_content, root, arrays):
     return (sub_content, root, arrays) if root != '' else arrays
 
 
+def find_and_replace_configuration_keys(module_content, module_inputs):
+    if type(module_content) == dict:
+        for key in copy.deepcopy(module_content):
+            if key in module_inputs:
+                if module_inputs[key]:
+                    module_content[key] = module_inputs[key]
+            elif type(module_content[key]) in [dict, list]:
+                module_content[key] = find_and_replace_configuration_keys(module_content[key], module_inputs)
+    elif type(module_content) == list:
+        array_index = 0
+        for key in copy.deepcopy(module_content):
+            module_content[array_index] = find_and_replace_configuration_keys(key, module_inputs)
+            array_index += 1
+    else:
+        return module_content
+    return module_content
+
+
 class value_to_class:
     def __init__(self, value):
         self.value = value

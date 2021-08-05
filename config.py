@@ -25,7 +25,8 @@ def nettacker_paths():
         "version_file": os.path.join(sys.path[0], 'version.txt'),
         "logo_file": os.path.join(sys.path[0], 'logo.txt'),
         "messages_path": os.path.join(sys.path[0], 'lib/messages'),
-        "modules_path": os.path.join(sys.path[0], 'modules')
+        "modules_path": os.path.join(sys.path[0], 'modules'),
+        "web_browser_user_agents": os.path.join(sys.path[0], 'lib/payload/User-Agents/web_browsers_user_agents.txt')
     }
 
 
@@ -42,7 +43,7 @@ def nettacker_api_config():
         "api_port": 5000,
         "api_debug_mode": False,
         "api_access_key": generate_random_token(32),
-        "api_client_whitelisted_ips": [],  # disabled
+        "api_client_whitelisted_ips": [],  # disabled - to enable please put an array with list of ips/cidr/ranges
         # [
         #     "127.0.0.1",
         #     "10.0.0.0/24",
@@ -87,6 +88,7 @@ def nettacker_user_application_config():
     Returns:
         a JSON with all user default configurations
     """
+    from core.compatible import version_info
     return {  # OWASP Nettacker Default Configuration
         "language": "en",
         "verbose_mode": False,
@@ -107,7 +109,7 @@ def nettacker_user_application_config():
         "passwords": None,
         "passwords_list": None,
         "ports": None,
-        "timeout_sec": 3.0,
+        "timeout": 3.0,
         "time_sleep_between_requests": 0.0,
         "scan_ip_range": False,
         "scan_subdomains": False,
@@ -117,7 +119,10 @@ def nettacker_user_application_config():
         "socks_proxy": None,
         "retries": 3,
         "ping_before_scan": False,
-        "set_hardware_usage": "normal"
+        "set_hardware_usage": "normal",
+        "user_agent": "Nettacker {version_number} {version_code} - https://github.com/OWASP/Nettacker".format(
+            version_number=version_info()[0], version_code=version_info()[1]
+        )
     }
 
 

@@ -4,6 +4,7 @@
 import re
 import requests
 import copy
+import random
 from core.utility import reverse_and_regex_condition
 from core.utility import process_conditions
 
@@ -105,6 +106,8 @@ class engine:
         backup_method = copy.deepcopy(sub_step['method'])
         backup_response = copy.deepcopy(sub_step['response'])
         action = getattr(requests, backup_method, None)
+        if options['user_agent'] == 'random_user_agent':
+            sub_step['headers']['User-Agent'] = random.choice(options['user_agents'])
         del sub_step['method']
         del sub_step['response']
         try:

@@ -21,21 +21,25 @@ class NettackerModules:
     def load(self):
         import yaml
         from config import nettacker_paths
-        self.module_content = yaml.load(
-            StringIO(
-                open(
-                    nettacker_paths()['modules_path'] +
-                    '/' +
-                    self.module_name.split('_')[-1].split('.yaml')[0] +
-                    '/' +
-                    '_'.join(self.module_name.split('_')[:-1]) +
-                    '.yaml',
-                    'r'
-                ).read().format(
-                    **self.module_inputs
-                )
+        from core.utility import find_and_replace_configuration_keys
+        self.module_content = find_and_replace_configuration_keys(
+            yaml.load(
+                StringIO(
+                    open(
+                        nettacker_paths()['modules_path'] +
+                        '/' +
+                        self.module_name.split('_')[-1].split('.yaml')[0] +
+                        '/' +
+                        '_'.join(self.module_name.split('_')[:-1]) +
+                        '.yaml',
+                        'r'
+                    ).read().format(
+                        **self.module_inputs
+                    )
+                ),
+                Loader=yaml.FullLoader
             ),
-            Loader=yaml.FullLoader
+            self.module_inputs
         )
 
     def generate_loops(self):
