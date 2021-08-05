@@ -47,7 +47,7 @@ def reverse_and_regex_condition(regex, reverse):
         return list(set(regex))
     else:
         if reverse:
-            return list(set(regex))
+            return True
         return []
 
 

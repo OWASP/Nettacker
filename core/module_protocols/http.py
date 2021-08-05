@@ -21,56 +21,77 @@ def response_conditions_matched(sub_step, response):
         reverse = conditions['status_code']['reverse']
         condition_results['status_code'] = reverse_and_regex_condition(regex, reverse)
     if 'content' in conditions:
-        regex = re.findall(re.compile(conditions['content']['regex']), response.content.decode())
+        regex = re.findall(re.compile(conditions['content']['regex']), response.content.decode(errors='ignore'))
         reverse = conditions['content']['reverse']
         condition_results['content'] = reverse_and_regex_condition(regex, reverse)
     if 'headers' in conditions:
         condition_results['headers'] = {}
         for header in conditions['headers']:
+            reverse = conditions['headers'][header]['reverse']
             if header in response.headers:
                 regex = re.findall(
                     re.compile(conditions['headers'][header]['regex']),
                     response.headers[header]
                 )
-                reverse = conditions['headers'][header]['reverse']
-                condition_results['headers'] = reverse_and_regex_condition(regex, reverse)
-                # condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
+                condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
             else:
-                condition_results['headers'][list(conditions['headers'].keys())[0]]= []
+                regex = re.findall(
+                    re.compile(conditions['headers'][header]['regex']),
+                    ""
+                )
+                condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse) if reverse else []
     if 'responsetime' in conditions:
         if conditions['responsetime'].startswith(">="):
             condition_results['responsetime'] = response.elapsed.total_seconds() if (
                     response.elapsed.total_seconds() >= float(conditions['responsetime'].split()[-1])
-            ) else False
+            ) else []
         if conditions['responsetime'].startswith("=="):
             condition_results['responsetime'] = response.elapsed.total_seconds() if (
                     response.elapsed.total_seconds() == float(conditions['responsetime'].split()[-1])
-            ) else False
+            ) else []
         if conditions['responsetime'].startswith("<="):
             condition_results['responsetime'] = response.elapsed.total_seconds() if (
                     response.elapsed.total_seconds() <= float(conditions['responsetime'].split()[-1])
-            ) else False
+            ) else []
         if conditions['responsetime'].startswith("!="):
             condition_results['responsetime'] = response.elapsed.total_seconds() if (
                     response.elapsed.total_seconds() != float(conditions['responsetime'].split()[-1])
-            ) else False
+            ) else []
         if conditions['responsetime'].startswith("<"):
             condition_results['responsetime'] = response.elapsed.total_seconds() if (
                     response.elapsed.total_seconds() < float(conditions['responsetime'].split()[-1])
-            ) else False
+            ) else []
         if conditions['responsetime'].startswith(">"):
             condition_results['responsetime'] = response.elapsed.total_seconds() if (
                     response.elapsed.total_seconds() > float(conditions['responsetime'].split()[-1])
-            ) else False
+            ) else []
     if condition_type.lower() == "or":
         # if one of the values are matched, it will be a string or float object in the array
         # we count False in the array and if it's not all []; then we know one of the conditions is matched.
-        if list(condition_results.values()).count([]) != len(list(condition_results.values())):
+        if (
+                'headers' not in condition_results and
+                (
+                        list(condition_results.values()).count([]) != len(list(condition_results.values()))
+                )
+        ) or (
+                'headers' in condition_results and
+                (
+                        (
+                                list(condition_results.values()).count([]) - 1 !=
+                                len(list(condition_results.values()))
+                        ) and
+                        (
+                                list(condition_results['headers'].values()).count([]) !=
+                                len(list(condition_results['headers'].values()))
+                        )
+                )
+        ):
             return condition_results
         else:
             return []
     if condition_type.lower() == "and":
-        if [] in condition_results.values():
+        if [] in condition_results.values() or \
+                ('headers' in condition_results and [] in condition_results['headers'].values()):
             return []
         else:
             return condition_results
