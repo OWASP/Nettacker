@@ -18,7 +18,7 @@ payloads:
       - method: tcp_connect_send_and_receive
         timeout: 3
         host: {target}
-        port:
+        ports:
           - 1
           - 3
           - 4
