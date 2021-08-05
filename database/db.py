@@ -41,12 +41,9 @@ def db_inputs(connection_type):
     }[connection_type]
 
 
-def create_connection(language):
+def create_connection():
     """
     a function to create connections to db, it retries 100 times if connection returned an error
-
-    Args:
-        language: language
 
     Returns:
         connection if success otherwise False
@@ -54,28 +51,29 @@ def create_connection(language):
     try:
         for i in range(0, 100):
             try:
-                db_engine = create_engine(db_inputs(DB),
-                                          connect_args={
-                                              'check_same_thread': False}
-                                          )
+                db_engine = create_engine(
+                    db_inputs(DB),
+                    connect_args={
+                        'check_same_thread': False
+                    }
+                )
                 Session = sessionmaker(bind=db_engine)
                 session = Session()
                 return session
-            except Exception as _:
+            except Exception:
                 time.sleep(0.01)
-    except Exception as _:
+    except Exception:
         warn(messages("database_connect_fail"))
     return False
 
 
-def send_submit_query(session, language=None):
+def send_submit_query(session):
     """
     a function to send submit based queries to db (such as insert and update or delete), it retries 100 times if
     connection returned an error.
 
     Args:
         session: session to commit
-        language: language
 
     Returns:
         True if submitted success otherwise False
@@ -85,7 +83,7 @@ def send_submit_query(session, language=None):
             try:
                 session.commit()
                 return True
-            except Exception as _:
+            except Exception:
                 time.sleep(0.01)
     except Exception as _:
         warn(messages("database_connect_fail"))
@@ -118,63 +116,57 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, sta
         return True if submitted otherwise False
     """
     info(messages("inserting_report_db"))
-    session = create_connection(language)
+    session = create_connection()
     session.add(Report(
         date=date, scan_id=scan_id, report_filename=report_filename, events_num=events_num, verbose=verbose,
-        start_api_server=start_api_server, report_type=report_type, graph_name=graph_name, category=category, profile=profile,
+        start_api_server=start_api_server, report_type=report_type, graph_name=graph_name, category=category,
+        profile=profile,
         selected_modules=selected_modules, language=language, scan_cmd=scan_cmd, ports=ports
     ))
-    return send_submit_query(session, language)
+    return send_submit_query(session)
 
 
-def remove_old_logs(log, language=None):
+def remove_old_logs(options):
     """
     this function remove old events (and duplicated) from database based on target, module, scan_id
 
     Args:
-        target: target
-        type: module name
-        scan_id: scan id hash
-        language: language
+        options: identifiers
 
     Returns:
         True if success otherwise False
     """
-    session = create_connection(language)
+    session = create_connection()
     old_logs = session.query(HostsLog).filter(
-        HostsLog.target == log["target"],
-        HostsLog.module_name == log["module_name"],
-        HostsLog.scan_unique_id != log["scan_unique_id"]
+        HostsLog.target == options["target"],
+        HostsLog.module_name == options["module_name"],
+        HostsLog.scan_unique_id != options["scan_unique_id"]
     )
     old_logs.delete(synchronize_session=False)
-    return send_submit_query(session, language)
+    return send_submit_query(session)
 
 
-def submit_logs_to_db(log, language=None):
+def submit_logs_to_db(log):
     """
     this function created to submit new events into database
 
     Args:
-        language: language
         log: log event in JSON type
 
     Returns:
         True if success otherwise False
     """
-    if isinstance(log, str):
-        log = json.loads(log)
-
     if isinstance(log, dict):
-        session = create_connection(language)
+        session = create_connection()
         session.add(HostsLog(
             target=log["target"],
             date=log["date"],
             module_name=log["module_name"],
             scan_unique_id=log["scan_unique_id"],
-            options=log["options"],
-            event=log["event"]
+            options=json.dumps(log["options"]),
+            event=json.dumps(log["event"])
         ))
-        return send_submit_query(session, language)
+        return send_submit_query(session)
     else:
         warn(messages("invalid_json_type_to_db").format(log))
         return False
@@ -194,7 +186,7 @@ def __select_results(language, page):
     """
     page = int(page * 10 if page > 0 else page * -10) - 10
     selected = []
-    session = create_connection(language)
+    session = create_connection()
     try:
         search_data = session.query(Report).order_by(
             Report.id.desc())[page:page + 11]
@@ -233,7 +225,7 @@ def __get_result(language, id):
     Returns:
         result file content (TEXT, HTML, JSON) if success otherwise and error in JSON type.
     """
-    session = create_connection(language)
+    session = create_connection()
     try:
         try:
             file_obj = session.query(Report).filter_by(id=id).first()
@@ -256,7 +248,7 @@ def __last_host_logs(language, page):
     Returns:
         an array of events in JSON type if success otherwise an error in JSON type
     """
-    session = create_connection(language)
+    session = create_connection()
     page = int(page * 10 if page > 0 else page * -10) - 10
     data_structure = {
         "host": "",
@@ -326,7 +318,7 @@ def __logs_by_scan_id(scan_id, language):
     Returns:
         an array with JSON events or an empty array
     """
-    session = create_connection(language)
+    session = create_connection()
     # try:
     return_logs = []
     logs = session.query(HostsLog).filter(HostsLog.scan_id == scan_id).all()
@@ -359,7 +351,7 @@ def __logs_to_report_json(host, language):
         an array with JSON events or an empty array
     """
     try:
-        session = create_connection(language)
+        session = create_connection()
         return_logs = []
         logs = session.query(HostsLog).filter(HostsLog.host == host)
         for log in logs:
@@ -390,7 +382,7 @@ def __logs_to_report_html(host, language):
     Returns:
         HTML report
     """
-    session = create_connection(language)
+    session = create_connection()
     try:
         logs = []
         logs_data = session.query(HostsLog).filter(HostsLog.host == host).all()
@@ -434,7 +426,7 @@ def __search_logs(language, page, query):
     Returns:
         an array with JSON structure of founded events or an empty array
     """
-    session = create_connection(language)
+    session = create_connection()
     page = int(page * 10 if page > 0 else page * -10) - 10
     data_structure = {
         "host": "",
@@ -460,8 +452,8 @@ def __search_logs(language, page, query):
                 | (HostsLog.scan_cmd.like("%" + str(query) + "%"))
         ).group_by(HostsLog.host).order_by(HostsLog.id.desc())[page:page + 11]:
             for data in session.query(HostsLog).filter(HostsLog.host == str(host.host)).group_by(
-                HostsLog.type, HostsLog.port, HostsLog.username, HostsLog.password, HostsLog.description).order_by(
-                    HostsLog.id.desc()).all():
+                    HostsLog.type, HostsLog.port, HostsLog.username, HostsLog.password, HostsLog.description).order_by(
+                HostsLog.id.desc()).all():
                 n = 0
                 capture = None
                 for selected_data in selected:

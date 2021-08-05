@@ -16,14 +16,14 @@ def parallel_scan_process(options, targets, scan_unique_id):
     active_threads = []
     for target in targets:
         for module_name in options.selected_modules:
-            # todo: remove_from_database( target, module_name) where scan_unique_id != scan_unique_id
             from database.db import remove_old_logs
-            update_log = {
-                "target": target,
-                "module_name": module_name,
-                "scan_unique_id": scan_unique_id,
-            }
-            remove_old_logs(update_log)
+            remove_old_logs(
+                {
+                    "target": target,
+                    "module_name": module_name,
+                    "scan_unique_id": scan_unique_id,
+                }
+            )
             thread = Thread(
                 target=perform_scan,
                 args=(options, target, module_name, scan_unique_id,)
