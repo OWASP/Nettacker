@@ -28,6 +28,7 @@ def expand_targets(options):
         if '://' in target:
             # remove url proto; uri; port
             target = target.split('://')[1].split('/')[0].split(':')[0]
+            targets.append(target)
         # single IPs
         elif is_single_ipv4(target) or is_single_ipv6(target):
             if options.scan_ip_range:
