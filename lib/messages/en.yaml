@@ -273,4 +273,4 @@ no_event_found: no event found in this scan
 invalid_json_type_to_db: Invalid type of JSON data for the database. Skipping the submission to database. Data:{0}
 set_hardware_usage: Set hardware usage while scanning. (low, normal, high, maximum)
 wrong_hardware_usage: You must select one of these profiles for hardware usage. (low, normal, high, maximum)
-select_user_agent: Select a user agent to send with HTTP requests or write random_user_agent to randomize the User-Agent in the requests.
+select_user_agent: Select a user agent to send with HTTP requests or enter "random_user_agent" to randomize the User-Agent in the requests.
