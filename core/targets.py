@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import copy
 
 from core.ip import (get_ip_range,
                      generate_ip_range,
@@ -10,6 +11,7 @@ from core.ip import (get_ip_range,
                      is_ipv6_range,
                      is_ipv6_cidr)
 from core.module_protocols import http
+from core.module_protocols import socket
 
 
 def expand_targets(options):
@@ -40,7 +42,15 @@ def expand_targets(options):
             targets += generate_ip_range(target)
         # domains
         elif options.scan_subdomains:
-            targets.append(target)  # todo: fix here
+            # todo: add subdoamin scan here
+            # run: subdomain_scan(target)
+            # targets += targets
+            targets.append(target)
         else:
             targets.append(target)
+    if options.ping_before_scan:
+        for target in copy.deepcopy(targets):
+            # todo: add icmp scan here
+            # if ping failed;  targets.remove(target)
+            pass
     return targets
