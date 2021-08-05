@@ -111,14 +111,13 @@ def nettacker_user_application_config():
         "ports": None,
         "timeout": 3.0,
         "time_sleep_between_requests": 0.0,
-        "scan_ip_range": False,
-        "scan_subdomains": False,
+        "scan_ip_range": False,  # todo: implement
+        "scan_subdomains": False,  # todo: implement
         "thread_per_host": 100,
         "parallel_module_scan": 10,
-        "scan": "",
         "socks_proxy": None,
         "retries": 3,
-        "ping_before_scan": False,
+        "ping_before_scan": False,  # todo: implement
         "set_hardware_usage": "normal",
         "user_agent": "Nettacker {version_number} {version_code} - https://github.com/OWASP/Nettacker".format(
             version_number=version_info()[0], version_code=version_info()[1]

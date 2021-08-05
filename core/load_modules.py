@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import os
-from glob import glob
-from io import StringIO
 import socks
 import socket
+import time
+from glob import glob
+from io import StringIO
 
 
 def getaddrinfo(*args):
@@ -117,6 +118,7 @@ class NettackerModules:
                     )
                     thread.name = f"{self.target} -> {self.module_name} -> {sub_step}"
                     thread.start()
+                    time.sleep(self.module_inputs['time_sleep_between_requests'])
                     active_threads.append(thread)
                     wait_for_threads_to_finish(
                         active_threads,
