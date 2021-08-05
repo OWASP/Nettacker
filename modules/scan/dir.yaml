@@ -19,12 +19,12 @@ payloads:
     steps:
       - method: get
         headers:
-          User-Agent: {user_agent}
+          User-Agent: "{user_agent}"
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/{{urls}}"
-            prefix: ''
-            suffix: ''
+            prefix: ""
+            suffix: ""
             interceptors:
             data:
               urls:
