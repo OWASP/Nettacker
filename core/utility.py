@@ -172,7 +172,7 @@ def find_repeaters(sub_content, root, arrays):
             temprory_content[key], _root, arrays = find_repeaters(sub_content[key], root, arrays)
         sub_content = copy.deepcopy(temprory_content)
         root = original_root
-    if (type(sub_content) != int and type(sub_content) != bool) and (
+    if (type(sub_content) not in [bool, int, float]) and (
             type(sub_content) == list or 'nettacker_fuzzer' in sub_content):
         arrays[root] = sub_content
     return (sub_content, root, arrays) if root != '' else arrays

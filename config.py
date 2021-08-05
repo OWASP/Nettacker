@@ -111,7 +111,7 @@ def nettacker_user_application_config():
         "ports": None,
         "timeout": 3.0,
         "time_sleep_between_requests": 0.0,
-        "scan_ip_range": False,  # todo: implement
+        "scan_ip_range": False,
         "scan_subdomains": False,  # todo: implement
         "thread_per_host": 100,
         "parallel_module_scan": 10,

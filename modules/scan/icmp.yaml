@@ -1,0 +1,27 @@
+info:
+  id: admin-scan
+  name: Divyansh
+  author: y
+  severity: z
+  description: gg
+  reference: oo
+  tags:
+    - scan
+    - information_gathering
+    - infortmation
+    - info
+    - domain
+
+payloads:
+  - library: socket
+    steps:
+      - method: socket_icmp
+        timeout: 3
+        host: "{target}"
+        port: ""
+        response:
+          condition_type: or
+          conditions:
+            time_response:
+              regex: ""
+              reverse: false
