@@ -15,8 +15,14 @@ info:
 payloads:
   - library: http
     verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
     steps:
       - method: get
+        headers:
+          User-Agent: { user_agent }
         url: "https://jldc.me/anubis/subdomains/{target}"
         response:
           condition_type: and
