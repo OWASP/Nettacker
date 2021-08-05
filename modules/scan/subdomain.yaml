@@ -22,7 +22,7 @@ payloads:
     steps:
       - method: get
         headers:
-          User-Agent: { user_agent }
+          User-Agent: "{user_agent}"
         url: "https://jldc.me/anubis/subdomains/{target}"
         response:
           condition_type: and

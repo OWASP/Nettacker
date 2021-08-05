@@ -17,6 +17,7 @@ from core.die import die_failure
 from core.color import reset_color
 from core.load_modules import load_all_modules
 from core.load_modules import load_all_graphs
+from core.load_modules import load_all_profiles
 from api.engine import start_api_server
 
 
@@ -132,6 +133,13 @@ def load_all_args():
         dest="selected_modules",
         default=nettacker_global_configuration['nettacker_user_application_config']["selected_modules"],
         help=messages("choose_scan_method").format(load_all_modules()),
+    )
+    modules.add_argument(
+        "--profile",
+        action="store",
+        default=nettacker_global_configuration['nettacker_user_application_config']["profiles"],
+        dest="profiles",
+        help=messages("select_profile").format(load_all_profiles()),
     )
     modules.add_argument(
         "-x",
@@ -325,6 +333,7 @@ def check_all_required(parser):
     # Checking Requirements
     options = parser.parse_args()
     modules_list = load_all_modules()
+    profiles_list = load_all_profiles()
 
     # Check Help Menu
     if options.show_help_menu:
@@ -369,20 +378,40 @@ def check_all_required(parser):
             )
 
     # check for modules
-    if not options.selected_modules:
+    if not (options.selected_modules or options.profiles):
         die_failure(messages("scan_method_select"))
-
-    if options.selected_modules == 'all':
-        options.selected_modules = modules_list
-    else:
-        options.selected_modules = list(set(options.selected_modules.split(',')))
-    for module_name in options.selected_modules:
-        if module_name not in modules_list:
-            die_failure(
-                messages("scan_module_not_found").format(
-                    module_name
+    if options.selected_modules:
+        if options.selected_modules == 'all':
+            options.selected_modules = modules_list
+            options.selected_modules.remove('all')
+        else:
+            options.selected_modules = list(set(options.selected_modules.split(',')))
+        for module_name in options.selected_modules:
+            if module_name not in modules_list:
+                die_failure(
+                    messages("scan_module_not_found").format(
+                        module_name
+                    )
                 )
-            )
+    if options.profiles:
+        if not options.selected_modules:
+            options.selected_modules = []
+        if options.profiles == 'all':
+            options.selected_modules = modules_list
+            options.selected_modules.remove('all')
+        else:
+            options.profiles = list(set(options.profiles.split(',')))
+            for profile in options.profiles:
+                if profile not in profiles_list:
+                    die_failure(
+                        messages("profile_404").format(
+                            profile
+                        )
+                    )
+                for module_name in modules_list:
+                    if module_name.endswith(profile):
+                        options.selected_modules.append(module_name)
+
     # threading & processing
     if options.set_hardware_usage not in ['low', 'normal', 'high', 'maximum']:
         die_failure(

@@ -178,6 +178,23 @@ def load_all_modules():
     return module_names
 
 
+def load_all_profiles():
+    """
+    load all available profiles
+
+    Returns:
+        an array of all profile names
+    """
+    from config import nettacker_paths
+    profiles = []
+    for module_name in glob(os.path.join(nettacker_paths()['home_path'] + '/modules/*/*.yaml')):
+        category = module_name.split('/')[-2]
+        if category not in profiles:
+            profiles.append(category)
+    profiles.append('all')
+    return profiles
+
+
 def perform_scan(options, target, module_name, scan_unique_id):
     from core.alert import (info,
                             messages)
