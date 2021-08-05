@@ -20,21 +20,27 @@ payloads:
       - method: get
         url:
           nettacker_fuzzer:
-            input_format: "{{urls}}"
-            prefix:
-            suffix:
+            input_format: "{{schema}}://{target}:{{ports}}/{{urls}}"
+            prefix: ''
+            suffix: ''
             interceptors:
             data:
               urls:
-                - "https://{target}/administrator"
-                - "https://{target}/admin"
-                - "https://{target}/old"
-                - "https://{target}/_vti_bin"
-                - "https://{target}/_private"
-                - "https://{target}/cgi-bin"
-                - "https://{target}/public_html"
-                - "https://{target}/images"
-                - "https://{target}/"
+                - "administrator"
+                - "admin"
+                - "old"
+                - "_vti_bin"
+                - "_private"
+                - "cgi-bin"
+                - "public_html"
+                - "images"
+                - ""
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - "80"
+                - "443"
         response:
           condition_type: or
           conditions:

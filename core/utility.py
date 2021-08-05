@@ -257,6 +257,7 @@ def nettacker_fuzzer_repeater_perform(arrays):
                         ')' * interceptors_function.count('('))
                     expected_variables = {}
                     globals().update(locals())
+                    print(interceptors_function)
                     exec(interceptors_function, globals(), expected_variables)
                     interceptors_function_processed = expected_variables['interceptors_function_processed']
                 else:

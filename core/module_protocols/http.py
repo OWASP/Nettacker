@@ -9,6 +9,8 @@ from core.utility import process_conditions
 
 
 def response_conditions_matched(sub_step, response):
+    if not response:
+        return []
     condition_type = sub_step['response']['condition_type']
     conditions = sub_step['response']['conditions']
     condition_results = {}
