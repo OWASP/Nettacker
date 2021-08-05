@@ -3,15 +3,15 @@
 
 from sqlalchemy import create_engine
 
-from config import _database_config
+from config import nettacker_database_config
 from database.models import Base
 
 
-USER = _database_config()["USERNAME"]
-PASSWORD = _database_config()["PASSWORD"]
-HOST = _database_config()["HOST"]
-PORT = _database_config()["PORT"]
-DATABASE = _database_config()["DATABASE"]
+USER = nettacker_database_config()["USERNAME"]
+PASSWORD = nettacker_database_config()["PASSWORD"]
+HOST = nettacker_database_config()["HOST"]
+PORT = nettacker_database_config()["PORT"]
+DATABASE = nettacker_database_config()["DATABASE"]
 
 
 def mysql_create_database():

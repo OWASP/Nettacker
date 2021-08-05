@@ -25,6 +25,7 @@ def response_conditions_matched(sub_step, response):
         reverse = conditions['content']['reverse']
         condition_results['content'] = reverse_and_regex_condition(regex, reverse)
     if 'headers' in conditions:
+        condition_results['headers'] = {}
         for header in conditions['headers']:
             if header in response.headers:
                 regex = re.findall(
@@ -32,9 +33,10 @@ def response_conditions_matched(sub_step, response):
                     response.headers[header]
                 )
                 reverse = conditions['headers'][header]['reverse']
-                condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
+                condition_results['headers'] = reverse_and_regex_condition(regex, reverse)
+                # condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
             else:
-                condition_results['headers'][header] = []
+                condition_results['headers'][list(conditions['headers'].keys())[0]]= []
     if 'responsetime' in conditions:
         if conditions['responsetime'].startswith(">="):
             condition_results['responsetime'] = response.elapsed.total_seconds() if (

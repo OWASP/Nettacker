@@ -6,6 +6,7 @@ from sqlalchemy import (Column,
                         Integer,
                         Text,
                         DateTime)
+from sqlalchemy.sql.sqltypes import VARCHAR
 
 Base = declarative_base()
 

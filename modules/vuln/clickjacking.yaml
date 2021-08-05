@@ -21,7 +21,7 @@ payloads:
         url:
           - "https://{target}/"
         response:
-          condition_type: and
+          condition_type: or
           conditions:
             headers:
               x-frame-options:

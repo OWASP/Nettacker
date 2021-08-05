@@ -18,6 +18,17 @@ def process_conditions(event, module_name, target, scan_unique_id, options):
     if event['response']['conditions_results']:
         # todo: save_to_database(id=int_auto_inc, event, options
         # module_name, target, scan_unique_id, timestamp=now())
+        import datetime
+        log = {
+            "date": datetime.datetime.now(),
+            "target": target,
+            "module_name": module_name,
+            "scan_unique_id": scan_unique_id,
+            "options": str(options),
+            "event": str(event)
+        }
+        from database.db import submit_logs_to_db
+        submit_logs_to_db(log)
         info(
             json.dumps(event)
         )

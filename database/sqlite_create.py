@@ -4,10 +4,10 @@
 from sqlalchemy import create_engine
 
 from database.models import Base
-from config import _database_config
+from config import nettacker_database_config
 
 
-DATABASE = _database_config()["DATABASE"]
+DATABASE = nettacker_database_config()["DATABASE"]
 
 
 def sqlite_create_tables():

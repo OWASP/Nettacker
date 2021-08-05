@@ -55,7 +55,8 @@ def create_connection(language):
         for i in range(0, 100):
             try:
                 db_engine = create_engine(db_inputs(DB),
-                                          connect_args={'check_same_thread': False}
+                                          connect_args={
+                                              'check_same_thread': False}
                                           )
                 Session = sessionmaker(bind=db_engine)
                 session = Session()
@@ -63,11 +64,11 @@ def create_connection(language):
             except Exception as _:
                 time.sleep(0.01)
     except Exception as _:
-        warn(messages( "database_connect_fail"))
+        warn(messages("database_connect_fail"))
     return False
 
 
-def send_submit_query(session, language):
+def send_submit_query(session, language=None):
     """
     a function to send submit based queries to db (such as insert and update or delete), it retries 100 times if
     connection returned an error.
@@ -87,7 +88,7 @@ def send_submit_query(session, language):
             except Exception as _:
                 time.sleep(0.01)
     except Exception as _:
-        warn(messages( "database_connect_fail"))
+        warn(messages("database_connect_fail"))
         return False
     return False
 
@@ -116,7 +117,7 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, sta
     Returns:
         return True if submitted otherwise False
     """
-    info(messages( "inserting_report_db"))
+    info(messages("inserting_report_db"))
     session = create_connection(language)
     session.add(Report(
         date=date, scan_id=scan_id, report_filename=report_filename, events_num=events_num, verbose=verbose,
@@ -126,41 +127,12 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, sta
     return send_submit_query(session, language)
 
 
-def save_update_log(language):
+def remove_old_logs(log, language=None):
     """
-    This Function Saves date of previous time the Nettacker Update happened
+    this function remove old events (and duplicated) from database based on target, module, scan_id
 
     Args:
-        language
-    Return:
-        True or False if the data got saved in the db or not
-    """
-    session = create_connection(language)
-    datetime = now()
-    session.add(Update_Log(last_updatetime=datetime))
-    return send_submit_query(session, language)
-
-
-def get_update_log(language):
-    """
-    This function Fetches last update time
-
-    Args:
-        language
-    Return:
-        Return date in string format
-    """
-    session = create_connection(language)
-    logs = session.query(Update_Log).all()
-    return logs
-
-
-def remove_old_logs(host, type, scan_id, language):
-    """
-    this function remove old events (and duplicated) from database based on host, module, scan_id
-
-    Args:
-        host: host
+        target: target
         type: module name
         scan_id: scan id hash
         language: language
@@ -169,12 +141,16 @@ def remove_old_logs(host, type, scan_id, language):
         True if success otherwise False
     """
     session = create_connection(language)
-    old_logs = session.query(HostsLog).filter(HostsLog.host == host, HostsLog.type == type, HostsLog.scan_id != scan_id)
+    old_logs = session.query(HostsLog).filter(
+        HostsLog.target == log["target"],
+        HostsLog.module_name == log["module_name"],
+        HostsLog.scan_unique_id != log["scan_unique_id"]
+    )
     old_logs.delete(synchronize_session=False)
     return send_submit_query(session, language)
 
 
-def submit_logs_to_db(language, log):
+def submit_logs_to_db(log, language=None):
     """
     this function created to submit new events into database
 
@@ -191,13 +167,16 @@ def submit_logs_to_db(language, log):
     if isinstance(log, dict):
         session = create_connection(language)
         session.add(HostsLog(
-            host=log["HOST"], date=log["TIME"], port=log["PORT"], type=log["TYPE"], category=log["CATEGORY"],
-            description=log["DESCRIPTION"],
-            username=log["USERNAME"], password=log["PASSWORD"], scan_id=log["SCAN_ID"], scan_cmd=log["SCAN_CMD"]
+            target=log["target"],
+            date=log["date"],
+            module_name=log["module_name"],
+            scan_unique_id=log["scan_unique_id"],
+            options=log["options"],
+            event=log["event"]
         ))
         return send_submit_query(session, language)
     else:
-        warn(messages( "invalid_json_type_to_db").format(log))
+        warn(messages("invalid_json_type_to_db").format(log))
         return False
 
 
@@ -217,7 +196,8 @@ def __select_results(language, page):
     selected = []
     session = create_connection(language)
     try:
-        search_data = session.query(Report).order_by(Report.id.desc())[page:page + 11]
+        search_data = session.query(Report).order_by(
+            Report.id.desc())[page:page + 11]
         for data in search_data:
             tmp = {  # fix later, junks
                 "id": data.id,
@@ -317,12 +297,14 @@ def __last_host_logs(language, page):
                         n += 1
                 if data.host == selected[capture]["host"]:
                     if data.port not in selected[capture]["info"]["open_ports"] and isinstance(data.port, int):
-                        selected[capture]["info"]["open_ports"].append(data.port)
+                        selected[capture]["info"]["open_ports"].append(
+                            data.port)
                     if data.type not in selected[capture]["info"]["scan_methods"]:
                         selected[capture]["info"][
                             "scan_methods"].append(data.type)
                     if data.category not in selected[capture]["info"]["category"]:
-                        selected[capture]["info"]["category"].append(data.category)
+                        selected[capture]["info"]["category"].append(
+                            data.category)
                     if data.description not in selected[capture]["info"]["descriptions"]:
                         selected[capture]["info"][
                             "descriptions"].append(data.description)
@@ -478,8 +460,8 @@ def __search_logs(language, page, query):
                 | (HostsLog.scan_cmd.like("%" + str(query) + "%"))
         ).group_by(HostsLog.host).order_by(HostsLog.id.desc())[page:page + 11]:
             for data in session.query(HostsLog).filter(HostsLog.host == str(host.host)).group_by(
-                    HostsLog.type, HostsLog.port, HostsLog.username, HostsLog.password, HostsLog.description).order_by(
-                HostsLog.id.desc()).all():
+                HostsLog.type, HostsLog.port, HostsLog.username, HostsLog.password, HostsLog.description).order_by(
+                    HostsLog.id.desc()).all():
                 n = 0
                 capture = None
                 for selected_data in selected:
@@ -504,12 +486,14 @@ def __search_logs(language, page, query):
                         n += 1
                 if data.host == selected[capture]["host"]:
                     if data.port not in selected[capture]["info"]["open_ports"] and isinstance(data.port, int):
-                        selected[capture]["info"]["open_ports"].append(data.port)
+                        selected[capture]["info"]["open_ports"].append(
+                            data.port)
                     if data.type not in selected[capture]["info"]["scan_methods"]:
                         selected[capture]["info"][
                             "scan_methods"].append(data.type)
                     if data.category not in selected[capture]["info"]["category"]:
-                        selected[capture]["info"]["category"].append(data.category)
+                        selected[capture]["info"]["category"].append(
+                            data.category)
                     if data.description not in selected[capture]["info"]["descriptions"]:
                         selected[capture]["info"][
                             "descriptions"].append(data.description)
