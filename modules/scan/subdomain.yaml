@@ -33,5 +33,32 @@ payloads:
             content:
               regex: "\"([a-zA-Z0-9\\-\\_.\\s]+)\""
               reverse: false
+      - method: post
+        headers:
+          User-Agent: "{user_agent}"
+        url: "https://api.certspotter.com/v1/issuances?domain={target}&expand=dns_names&expand=issuer"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: ^[2-3][0-9][0-9]
+              reverse: false
+            content:
+              regex: "\"([a-zA-Z0-9\\-\\_.\\s]+.{target})\""
+              reverse: false
+
+#      "subdomain_scan_use_dnsdumpster": ["True"],
+#      "subdomain_scan_use_netcraft": [ "True" ],
+#      "subdomain_scan_use_virustotal": [ "True" ],
+#      "subdomain_scan_use_threatcrowd": [ "True" ],
+#      "subdomain_scan_use_comodo_crt": [ "True" ],
+#      "subdomain_scan_use_ptrarchive": [ "True" ],
+#      "subdomain_scan_use_google_dig": [ "True" ],
+#      "subdomain_scan_use_censys": [ "True" ],
+#      "subdomain_scan_use_threatminer": [ "True" ],
+#      "subdomain_scan_use_otx_alienvault": [ "True" ],
+#      "subdomain_scan_use_bufferover_run": [ "True" ],
+#      "subdomain_scan_use_urlscan_io": [ "True" ],
+#      "subdomain_scan_time_limit_seconds": [ "-1" ]
 
 
