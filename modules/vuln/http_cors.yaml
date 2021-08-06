@@ -284,7 +284,7 @@ payloads:
           conditions:
             headers:
               Access-Control-Allow-Origin:
-                regex: "\*"
+                regex: "\\*"
                 reverse: false
 
       - method: get # origin reflected
