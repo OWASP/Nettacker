@@ -22,7 +22,7 @@ payloads:
           User-Agent: "{user_agent}"
           Origin:
             nettacker_fuzzer:
-              input_format: "{{schema}}://{target}.example.com/" #origin: owasp.org.example.com
+              input_format: "{{schema}}://{target}.example.com/" # origin: owasp.org.example.com
               prefix: ""
               suffix: ""
               interceptors:
@@ -49,7 +49,7 @@ payloads:
           conditions:
             headers:
               Access-Control-Allow-Origin:
-                regex: "http://{target}.example.com|https://{target}.example.com"
+                regex: "(http|https):\\/\\/{target}.example.com"
                 reverse: false
 
       - method: get # pre-domain
@@ -84,7 +84,7 @@ payloads:
           conditions:
             headers:
               Access-Control-Allow-Origin:
-                regex: "http://example.com.{target}|https://example.com.{target}"
+                regex: "(http|https):\\/\\/example.com.{target}"
                 reverse: false
 
       #Unescaped Regex needs to be improved. WIP.
@@ -120,7 +120,7 @@ payloads:
           conditions:
             headers:
               Access-Control-Allow-Origin:
-                regex: "http://x{target}|https://x{target}"
+                regex: "(http|https):\\/\\/x{target}"
                 reverse: false
 
       - method: get # unrecognized underscore
@@ -155,7 +155,7 @@ payloads:
           conditions:
             headers:
               Access-Control-Allow-Origin:
-                regex: "http://{target}_.example.com|https://{target}_.example.com"
+                regex: "(http|https):\\/\\/{target}_.example.com"
                 reverse: false
 
       - method: get # broken parser
@@ -190,7 +190,7 @@ payloads:
           conditions:
             headers:
               Access-Control-Allow-Origin:
-                regex: "http://{target}%60.example.com|https://{target}%60.example.com"
+                regex: "(http|https):\\/\\/{target}%60.example.com"
                 reverse: false
 
       - method: get # Null origin
@@ -284,7 +284,7 @@ payloads:
           conditions:
             headers:
               Access-Control-Allow-Origin:
-                regex: \*
+                regex: "\*"
                 reverse: false
 
       - method: get # origin reflected
@@ -318,5 +318,5 @@ payloads:
           conditions:
             headers:
               Access-Control-Allow-Origin:
-                regex: "http://evil.com|https://evil.com"
+                regex: "(http|https):\\/\\/evil.com "
                 reverse: false
