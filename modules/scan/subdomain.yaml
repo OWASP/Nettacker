@@ -46,19 +46,94 @@ payloads:
             content:
               regex: "\"([a-zA-Z0-9\\-\\_.\\s]+.{target})\""
               reverse: false
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url: "https://www.threatcrowd.org/searchApi/v2/domain/report/?domain={target}"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: ^[2-3][0-9][0-9]
+              reverse: false
+            content:
+              regex: "\"([a-zA-Z0-9\\-\\_.\\s]+.{target})\""
+              reverse: false
 
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url: "https://urlscan.io/api/v1/search/?q=domain:{target}"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: ^[2-3][0-9][0-9]
+              reverse: false
+            content:
+              regex: "\"([a-zA-Z0-9\\-\\_.\\s]+.{target})\""
+              reverse: false
+
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url: "https://dns.bufferover.run/dns?q={target}"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: ^[2-3][0-9][0-9]
+              reverse: false
+            content:
+              regex: "[a-zA-Z0-9\\-\\_.\\s]+\\.{target}"
+              reverse: false
+
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url: "https://otx.alienvault.com/api/v1/indicator/domain/{target}/passive_dns"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: ^[2-3][0-9][0-9]
+              reverse: false
+            content:
+              regex: "[a-zA-Z0-9\\-\\_.\\s]+\\.{target}"
+              reverse: false
+
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url: "https://api.threatminer.org/v2/domain.php?q={target}&api=True&rt=5"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: ^[2-3][0-9][0-9]
+              reverse: false
+            content:
+              regex: "[a-zA-Z0-9\\-\\_.\\s]+\\.{target}"
+              reverse: false
+
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url: "https://crt.sh/?q=%.{target}"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: ^[2-3][0-9][0-9]
+              reverse: false
+            content:
+              regex: "[a-zA-Z0-9\\-\\_\\s]+[\\.]+[a-zA-Z0-9\\-\\_\\s]+\\.{target}"
+              reverse: false
+
+# todo: later
 #      "subdomain_scan_use_dnsdumpster": ["True"],
 #      "subdomain_scan_use_netcraft": [ "True" ],
-#      "subdomain_scan_use_virustotal": [ "True" ],
-#      "subdomain_scan_use_threatcrowd": [ "True" ],
-#      "subdomain_scan_use_comodo_crt": [ "True" ],
 #      "subdomain_scan_use_ptrarchive": [ "True" ],
 #      "subdomain_scan_use_google_dig": [ "True" ],
 #      "subdomain_scan_use_censys": [ "True" ],
-#      "subdomain_scan_use_threatminer": [ "True" ],
-#      "subdomain_scan_use_otx_alienvault": [ "True" ],
-#      "subdomain_scan_use_bufferover_run": [ "True" ],
-#      "subdomain_scan_use_urlscan_io": [ "True" ],
-#      "subdomain_scan_time_limit_seconds": [ "-1" ]
-
 
