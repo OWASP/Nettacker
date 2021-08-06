@@ -23,6 +23,7 @@ def load():
 
     info(messages("scan_started"))
     info(messages("loaded_modules").format(len(load_all_modules())))
-    start_scan_processes(options)
-
-    return True
+    exit_code = start_scan_processes(options)
+    info(messages("finish_build_graph"))
+    # todo: add graph and report stuff here
+    return exit_code
