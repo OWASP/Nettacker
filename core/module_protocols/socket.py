@@ -86,7 +86,7 @@ class NettackerSocket:
             "response": response
         }
 
-    def socket_icmp(host, port, timeout):
+    def socket_icmp(host, ports, timeout):
         """
             A pure python ping implementation using raw socket.
             Note that ICMP messages can only be sent from processes running as root.
