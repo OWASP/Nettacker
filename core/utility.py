@@ -20,7 +20,7 @@ def process_conditions(event, module_name, target, scan_unique_id, options):
         from database.db import submit_logs_to_db
         submit_logs_to_db(
             {
-                "date": now(),
+                "date": now(model=None),
                 "target": target,
                 "module_name": module_name,
                 "scan_unique_id": scan_unique_id,

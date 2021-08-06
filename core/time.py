@@ -13,4 +13,4 @@ def now(model="%Y-%m-%d %H:%M:%S"):
     Returns:
         the date and time of now
     """
-    return datetime.datetime.now().strftime(model)
+    return datetime.datetime.now().strftime(model) if model else datetime.datetime.now()
