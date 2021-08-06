@@ -1,0 +1,42 @@
+info:
+  id: X-powered-by
+  name: Divyansh
+  author: Divyansh
+  severity: low ##not confirmed
+  description:
+  reference:
+  tags:
+    - zx
+    - zz
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            headers:
+              Xdebug:
+                regex: "2.5.5"
+                reverse: false
