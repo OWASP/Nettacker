@@ -63,7 +63,7 @@ def select_maximum_cpu_core(mode):
         return 1
 
 
-def wait_for_threads_to_finish(threads, maximum=None, terminable=False):
+def wait_for_threads_to_finish(threads, maximum=None, terminable=False, sub_process=False):
     while threads:
         try:
             for thread in threads[:]:
@@ -76,6 +76,9 @@ def wait_for_threads_to_finish(threads, maximum=None, terminable=False):
             if terminable:
                 for thread in threads:
                     terminate_thread(thread)
+            if sub_process:
+                for thread in threads:
+                    thread.kill()
             return False
     return True
 

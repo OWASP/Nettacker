@@ -66,6 +66,4 @@ def start_scan_processes(options):
         )
         process.start()
         active_processes.append(process)
-
-    wait_for_threads_to_finish(active_processes)
-    return True
+    return wait_for_threads_to_finish(active_processes, sub_process=True)
