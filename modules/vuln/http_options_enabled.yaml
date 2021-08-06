@@ -1,0 +1,42 @@
+info:
+  id: Http-options-enabled
+  name: Divyansh
+  author: Divyansh
+  severity: low
+  description:
+  reference:
+  tags:
+    - zx
+    - zz
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: options
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            headers:
+              allow:
+                regex: ".*"
+                reverse: false
