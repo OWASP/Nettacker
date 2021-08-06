@@ -117,12 +117,14 @@ def submit_report_to_db(date, scan_id, report_filename, events_num, verbose, sta
     """
     info(messages("inserting_report_db"))
     session = create_connection()
-    session.add(Report(
-        date=date, scan_id=scan_id, report_filename=report_filename, events_num=events_num, verbose=verbose,
-        start_api_server=start_api_server, report_type=report_type, graph_name=graph_name, category=category,
-        profile=profile,
-        selected_modules=selected_modules, language=language, scan_cmd=scan_cmd, ports=ports
-    ))
+    session.add(
+        Report(
+            date=date, scan_id=scan_id, report_filename=report_filename, events_num=events_num, verbose=verbose,
+            start_api_server=start_api_server, report_type=report_type, graph_name=graph_name, category=category,
+            profile=profile,
+            selected_modules=selected_modules, language=language, scan_cmd=scan_cmd, ports=ports
+        )
+    )
     return send_submit_query(session)
 
 
@@ -137,12 +139,11 @@ def remove_old_logs(options):
         True if success otherwise False
     """
     session = create_connection()
-    old_logs = session.query(HostsLog).filter(
+    session.query(HostsLog).filter(
         HostsLog.target == options["target"],
         HostsLog.module_name == options["module_name"],
         HostsLog.scan_unique_id != options["scan_unique_id"]
-    )
-    old_logs.delete(synchronize_session=False)
+    ).delete(synchronize_session=False)
     return send_submit_query(session)
 
 
@@ -158,18 +159,41 @@ def submit_logs_to_db(log):
     """
     if isinstance(log, dict):
         session = create_connection()
-        session.add(HostsLog(
-            target=log["target"],
-            date=log["date"],
-            module_name=log["module_name"],
-            scan_unique_id=log["scan_unique_id"],
-            options=json.dumps(log["options"]),
-            event=json.dumps(log["event"])
-        ))
+        session.add(
+            HostsLog(
+                target=log["target"],
+                date=log["date"],
+                module_name=log["module_name"],
+                scan_unique_id=log["scan_unique_id"],
+                options=json.dumps(log["options"]),
+                event=json.dumps(log["event"])
+            )
+        )
         return send_submit_query(session)
     else:
         warn(messages("invalid_json_type_to_db").format(log))
         return False
+
+
+def find_events(target, module_name, scan_unique_id):
+    """
+    select all events by scan_unique id, target, module_name
+
+    Args:
+        target: target
+        module_name: module name
+        scan_unique_id: unique scan identifier
+        return_target_only: only return targets
+
+    Returns:
+        an array with JSON events or an empty array
+    """
+    session = create_connection()
+    return session.query(HostsLog).filter(
+        HostsLog.target == target,
+        HostsLog.module_name == module_name,
+        HostsLog.scan_unique_id == scan_unique_id
+    ).all()
 
 
 def __select_results(language, page):
