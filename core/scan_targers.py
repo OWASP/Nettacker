@@ -53,7 +53,7 @@ def start_scan_processes(options):
     # optimize CPU usage
     options.targets = [
         targets.tolist() for targets in numpy.array_split(
-            expand_targets(options),
+            expand_targets(options, scan_unique_id),
             options.set_hardware_usage if options.set_hardware_usage >= len(options.targets) else len(options.targets)
         )
     ]
