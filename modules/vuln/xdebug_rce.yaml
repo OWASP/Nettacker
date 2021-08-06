@@ -1,5 +1,5 @@
 info:
-  id: X-powered-by
+  id: X-debug-rce
   name: Divyansh
   author: Divyansh
   severity: low ##not confirmed

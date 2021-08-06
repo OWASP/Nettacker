@@ -1,8 +1,8 @@
 info:
-  id: Http-trace-enabled
+  id: Http-cors
   name: Divyansh
   author: Divyansh
-  severity: low
+  severity: low to high
   description:
   reference:
   tags:
@@ -87,8 +87,7 @@ payloads:
                 regex: "http://example.com.{target}|https://example.com.{target}"
                 reverse: false
 
-
-#Unescaped Regex needs to be improved. WIP.
+      #Unescaped Regex needs to be improved. WIP.
       - method: get # unescaped regex
         headers:
           User-Agent: "{user_agent}"
@@ -287,7 +286,6 @@ payloads:
               Access-Control-Allow-Origin:
                 regex: \*
                 reverse: false
-
 
       - method: get # origin reflected
         headers:
