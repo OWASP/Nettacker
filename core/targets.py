@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import copy
-
+import json
 from core.ip import (get_ip_range,
                      generate_ip_range,
                      is_single_ipv4,
@@ -10,6 +10,7 @@ from core.ip import (get_ip_range,
                      is_single_ipv6,
                      is_ipv6_range,
                      is_ipv6_cidr)
+from database.db import find_events
 
 
 def expand_targets(options, scan_unique_id):
@@ -41,17 +42,17 @@ def expand_targets(options, scan_unique_id):
             targets += generate_ip_range(target)
         # domains
         elif options.scan_subdomains:
-            perform_scan(options, target, 'subdomain_scan', scan_unique_id)
-            # read_from_database where scan_unique_id = scan_unique_id and module_name = subdomain_scan
-            # and target = target
-            # for target in database results: if target not in targets: targets.append(target)
             targets.append(target)
+            perform_scan(options, target, 'subdomain_scan', scan_unique_id)
+            for row in find_events(target, 'subdomain_scan', scan_unique_id):
+                for sub_domain in json.loads(row.event)['response']['conditions_results']['content']:
+                    if sub_domain not in targets:
+                        targets.append(sub_domain)
         else:
             targets.append(target)
     if options.ping_before_scan:
         for target in copy.deepcopy(targets):
             perform_scan(options, target, 'icmp_scan', scan_unique_id)
-            # read_from_database where scan_unique_id = scan_unique_id and module_name = subdomain_scan
-            # and target = target
-            # if target  not in database_results: targets.remove(target)
-    return targets
+            if not find_events(target, 'icmp_scan', scan_unique_id):
+                targets.remove(target)
+    return list(set(targets))
