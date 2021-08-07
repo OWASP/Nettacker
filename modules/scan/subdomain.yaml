@@ -28,7 +28,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: ^[2-3][0-9][0-9]
+              regex: "^[2-3][0-9][0-9]"
               reverse: false
             content:
               regex: "\"([a-zA-Z0-9\\-\\_.\\s]+)\""
@@ -41,7 +41,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: ^[2-3][0-9][0-9]
+              regex: "^[2-3][0-9][0-9]"
               reverse: false
             content:
               regex: "\"([a-zA-Z0-9\\-\\_.\\s]+.{target})\""
@@ -54,7 +54,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: ^[2-3][0-9][0-9]
+              regex: "^[2-3][0-9][0-9]"
               reverse: false
             content:
               regex: "\"([a-zA-Z0-9\\-\\_.\\s]+.{target})\""
@@ -68,7 +68,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: ^[2-3][0-9][0-9]
+              regex: "^[2-3][0-9][0-9]"
               reverse: false
             content:
               regex: "\"([a-zA-Z0-9\\-\\_.\\s]+.{target})\""
@@ -82,7 +82,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: ^[2-3][0-9][0-9]
+              regex: "^[2-3][0-9][0-9]"
               reverse: false
             content:
               regex: "[a-zA-Z0-9\\-\\_.\\s]+\\.{target}"
@@ -96,7 +96,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: ^[2-3][0-9][0-9]
+              regex: "^[2-3][0-9][0-9]"
               reverse: false
             content:
               regex: "[a-zA-Z0-9\\-\\_.\\s]+\\.{target}"
@@ -110,7 +110,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: ^[2-3][0-9][0-9]
+              regex: "^[2-3][0-9][0-9]"
               reverse: false
             content:
               regex: "[a-zA-Z0-9\\-\\_.\\s]+\\.{target}"
@@ -124,11 +124,62 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: ^[2-3][0-9][0-9]
+              regex: "^[2-3][0-9][0-9]"
               reverse: false
             content:
               regex: "[a-zA-Z0-9\\-\\_\\s]+[\\.]+[a-zA-Z0-9\\-\\_\\s]+\\.{target}"
               reverse: false
+      - method: post
+        headers:
+          User-Agent: "{user_agent}"
+        url: "https://hackertarget.com/find-dns-host-records/"
+        data:
+          theinput: "{target}"
+          thetest: "hostsearch"
+          name_of_nonce_field: "b4b6cc419d"
+          "_wp_http_referer": "/find-dns-host-records/"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^[2-3][0-9][0-9]"
+              reverse: false
+            content:
+              regex: "[a-zA-Z0-9\\-\\_.]+\\.{target}"
+              reverse: false
+
+#      - method: get
+#        headers:
+#          User-Agent: "{user_agent}"
+#        url: "https://dnsdumpster.com/"
+#        response:
+#          save_to_temp_events: "dnsdumpster_csrf_token_and_cookies"
+#          condition_type: and
+#          conditions:
+#            status_code:
+#              regex: "^[2-3][0-9][0-9]"
+#              reverse: false
+#
+#      - method: post
+#        headers:
+#          User-Agent: "{user_agent}"
+#          Referer: "https://dnsdumpster.com/"
+#        url: "https://dnsdumpster.com/"
+#        cookies:
+#          csrftoken: csrf_middleware
+#        data:
+#          csrfmiddlewaretoken: csrf_middleware
+#          targetip': "{target}"
+#        response:
+#          depend_on_temp_event: "dnsdumpster_csrf_token_and_cookies"
+#          condition_type: and
+#          conditions:
+#            status_code:
+#              regex: "^[2-3][0-9][0-9]"
+#              reverse: false
+#            content:
+#              regex: "[a-zA-Z0-9\\-\\_\\s]+[\\.]+[a-zA-Z0-9\\-\\_\\s]+\\.{target}"
+#              reverse: false
 
 # todo: later
 #      "subdomain_scan_use_dnsdumpster": ["True"],
