@@ -167,7 +167,7 @@ $(document).ready(function () {
           position: "right",
         },
         {
-          element: document.querySelectorAll("#graph_flags")[0],
+          element: document.querySelectorAll("#graph_name")[0],
           intro:
             "Select the output type of graph. The default is d3_tree_v2_graph.",
           position: "right",
@@ -275,7 +275,7 @@ $(document).ready(function () {
 
     // graph_name
     var graph_name = "";
-    $("#graph_flags input:checked").each(function () {
+    $("#graph_name input:checked").each(function () {
       graph_name = this.id;
     });
 
@@ -379,59 +379,59 @@ $(document).ready(function () {
     var i;
     var id;
     var date;
-    var scan_id;
-    var report_filename;
-    var events_num;
-    var verbose;
-    var start_api_server;
-    var report_type;
-    var graph_name;
-    var category;
-    var profile;
-    var selected_modules;
-    var language;
-    var scan_cmd;
-    var ports;
-    var flags = {
-      el: "gr",
-      fr: "fr",
-      en: "us",
-      nl: "nl",
-      ps: "ps",
-      tr: "tr",
-      de: "de",
-      ko: "kr",
-      it: "it",
-      ja: "jp",
-      fa: "ir",
-      hy: "am",
-      ar: "sa",
-      "zh-cn": "cn",
-      vi: "vi",
-      ru: "ru",
-      hi: "in",
-      ur: "pk",
-      id: "id",
-      es: "es",
-    };
+    var scan_unique_id;
+    // var report_filename;
+    // var events_num;
+    // var verbose;
+    // var start_api_server;
+    // var report_type;
+    // var graph_name;
+    // var category;
+    // var profile;
+    // var selected_modules;
+    // var language;
+    // var scan_cmd;
+    // var ports;
+    // var flags = {
+    //   el: "gr",
+    //   fr: "fr",
+    //   en: "us",
+    //   nl: "nl",
+    //   ps: "ps",
+    //   tr: "tr",
+    //   de: "de",
+    //   ko: "kr",
+    //   it: "it",
+    //   ja: "jp",
+    //   fa: "ir",
+    //   hy: "am",
+    //   ar: "sa",
+    //   "zh-cn": "cn",
+    //   vi: "vi",
+    //   ru: "ru",
+    //   hi: "in",
+    //   ur: "pk",
+    //   id: "id",
+    //   es: "es",
+    // };
 
     for (i = 0; i < res.length; i++) {
       id = res[i]["id"];
       date = res[i]["date"];
-      scan_id = res[i]["scan_id"];
-      report_filename = res[i]["report_filename"];
-      events_num = res[i]["events_num"];
-      verbose = res[i]["verbose"];
-      start_api_server = res[i]["start_api_server"];
-      report_type = res[i]["report_type"];
-      graph_name = res[i]["graph_name"];
-      category = res[i]["category"];
-      profile = res[i]["profile"];
-      selected_modules = res[i]["selected_modules"];
-      language = res[i]["language"];
-      scan_cmd = res[i]["scan_cmd"];
-      ports = res[i]["ports"];
-      host = scan_cmd.split(" ")[2];
+      scan_unique_id = res[i]["scan_unique_id"];
+      // report_filename = res[i]["report_filename"];
+      // events_num = res[i]["events_num"];
+      // verbose = res[i]["verbose"];
+      // start_api_server = res[i]["start_api_server"];
+      // report_type = res[i]["report_type"];
+      // graph_name = res[i]["graph_name"];
+      // category = res[i]["category"];
+      // profile = res[i]["profile"];
+      // selected_modules = res[i]["selected_modules"];
+      // language = res[i]["language"];
+      // // scan_cmd = res[i]["scan_cmd"];
+      // ports = res[i]["ports"];
+      // host = scan_cmd.split(" ")[2];
       HTMLData +=
         "<a target='_blank' href=\"/results/get?id=" +
         id +
@@ -446,49 +446,50 @@ $(document).ready(function () {
         "</small></h3>" +
         "</div></div>" +
         "<hr class='card-hr'>" +
-        "<p class='mb-1  bold label label-default'>scan_id:" +
-        scan_id +
-        "</p><br>" +
-        "<p class='mb-1  bold label label-info'>report_filename:" +
-        report_filename +
-        "</p><br>" +
-        "<p class='mb-1 bold label label-success'>events_num:" +
-        events_num +
-        "</p><br>" +
-        "<p class='mb-1 bold label label-danger'>ports:" +
-        ports +
-        "</p><br>" +
-        "<p class='mb-1 bold label label-info'>category:" +
-        category +
-        "</p><br>" +
-        "<p class='mb-1 bold label label-success'>profile:" +
-        profile +
-        "</p><br>" +
-        "<p class='mb-1 bold label label-warning'>selected_modules:" +
-        selected_modules +
-        "</p><br>" +
-        "<p class='mb-1 bold  label label-primary'>start_api_server:" +
-        start_api_server +
-        "</p><br>" +
-        "<p class='mb-1 bold label label-warning'>verbose:" +
-        verbose +
-        "</p><br>" +
-        "<p class='mb-1 bold label label-info'>report_type:" +
-        report_type +
-        "</p><br>" +
-        "<p class='mb-1 bold label label-primary'>graph_name:" +
-        graph_name +
-        "</p><br>" +
-        "<p class='mb-1 bold label label-success'>language:" +
-        language +
-        "</p>" +
-        "<span class='card-flag flag-icon flag-icon-" +
-        flags[language] +
-        "'></span><br>" +
-        "<p class='mb-1 bold label label-default'>scan_cmd:" +
-        scan_cmd +
-        "</p>" +
-        '</p>\n </a><button class="mb-1 bold label card-date""><a href="/results/get_json?id=' +
+        "<p class='mb-1  bold label label-default'>scan_unique_id:" +
+        scan_unique_id +
+        "</p><br>"
+        // "<p class='mb-1  bold label label-info'>report_filename:" +
+        // report_filename +
+        // "</p><br>" +
+        // "<p class='mb-1 bold label label-success'>events_num:" +
+        // events_num +
+        // "</p><br>" +
+        // "<p class='mb-1 bold label label-danger'>ports:" +
+        // ports +
+        // "</p><br>" +
+        // "<p class='mb-1 bold label label-info'>category:" +
+        // category +
+        // "</p><br>" +
+        // "<p class='mb-1 bold label label-success'>profile:" +
+        // profile +
+        // "</p><br>" +
+        // "<p class='mb-1 bold label label-warning'>selected_modules:" +
+        // selected_modules +
+        // "</p><br>" +
+        // "<p class='mb-1 bold  label label-primary'>start_api_server:" +
+        // start_api_server +
+        // "</p><br>" +
+        // "<p class='mb-1 bold label label-warning'>verbose:" +
+        // verbose +
+        // "</p><br>" +
+        // "<p class='mb-1 bold label label-info'>report_type:" +
+        // report_type +
+        // "</p><br>" +
+        // "<p class='mb-1 bold label label-primary'>graph_name:" +
+        // graph_name +
+        // "</p><br>" +
+        // "<p class='mb-1 bold label label-success'>language:" +
+        // language +
+        // "</p>" +
+        // "<span class='card-flag flag-icon flag-icon-" +
+        // flags[language] +
+        // "'></span><br>" +
+        // "<p class='mb-1 bold label label-default'>scan_cmd:" +
+        // scan_cmd +
+        // "</p>" +
+        '</p>\n </a>' +
+        '<button class="mb-1 bold label card-date""><a href="/results/get_json?id=' +
         id +
         '">Get JSON</a></button>' +
         '<button class="mb-1 bold label card-date""><a href="/results/get_csv?id=' +
@@ -627,92 +628,157 @@ $(document).ready(function () {
 
   function show_crawler(res) {
     res = JSON.parse(res);
-    var HTMLData = "";
-    var host;
-    var category;
-    var html_categories;
-    var description;
-    var html_description;
-    var open_ports;
-    var html_open_ports;
-    var scan_methods;
-    var html_scan_methods;
-    var j;
+    // var HTMLData = "";
+    // var host;
+    // var category;
+    // var html_categories;
+    // var description;
+    // var html_description;
+    // var open_ports;
+    // var html_open_ports;
+    // var scan_methods;
+    // var html_scan_methods;
+    // var j;
+
+    var HTMLData;
+    var target;
+    var module_name;
+    var target_event;
+    var options;
+    var date;
+    var html_options;
+    var html_target_event;
+    var html_module_name;
+    var html_date;
+
+    
 
     for (i = 0; i < res.length; i++) {
-      host = res[i]["host"];
-      description = res[i]["info"]["descriptions"];
-      open_ports = res[i]["info"]["open_ports"];
-      scan_methods = res[i]["info"]["scan_methods"];
-      category = res[i]["info"]["category"];
-      html_categories = "";
-      html_scan_methods = "";
-      html_open_ports = "";
-      html_description = "";
-      for (j = 0; j < open_ports.length; j++) {
-        html_open_ports +=
-          "<p class='mb-1 bold label label-warning'>open_port:" +
-          open_ports[j] +
+      target = res[i]["target"];
+      target_event = res[i]["info"]["event"];
+      options = res[i]["info"]["options"];
+      date = res[i]["info"]["date"];
+      module_name = res[i]["info"]["module_name"]
+
+      // open_ports = res[i]["info"]["open_ports"];
+      // scan_methods = res[i]["info"]["scan_methods"];
+      // category = res[i]["info"]["category"];
+      
+      // html_categories = "";
+      // html_scan_methods = "";
+      // html_open_ports = "";
+      // html_description = "";
+      html_target_event = "";
+      html_options = "";
+      html_date = "";
+      html_module_name = "";
+
+      // for (j = 0; j < open_ports.length; j++) {
+      //   html_open_ports +=
+      //     "<p class='mb-1 bold label label-warning'>open_port:" +
+      //     open_ports[j] +
+      //     "</p> ";
+      //   if (j == 10) {
+      //     html_open_ports +=
+      //       "<p class='mb-1 bold label label-warning'>open_port: click to see more.</p> ";
+      //     break;
+      //   }
+      // }
+      // for (j = 0; j < category.length; j++) {
+      //   html_categories +=
+      //     "<p class='mb-1 bold label label-info'>category:" +
+      //     category[j] +
+      //     "</p> ";
+      //   if (j == 10) {
+      //     html_categories +=
+      //       "<p class='mb-1 bold label label-info'>category: click to see more.</p> ";
+      //     break;
+      //   }
+      // }
+      for (j = 0; j < module_name.length; j++) {
+          html_module_name +=
+            "<p class='mb-1 bold label label-primary'>selected_modules:" +
+            module_name[j] +
+            "</p> ";
+          if (j == 10) {
+            html_module_name +=
+              "<p class='mb-1 bold label label-primary'>selected_modules: click to see more.</p> ";
+            break;
+          }
+        }
+
+      
+      // html_scan_methods = "";
+      // for (j = 0; j < scan_methods.length; j++) {
+      //   html_scan_methods +=
+      //     "<p class='mb-1 bold label label-primary'>selected_modules:" +
+      //     scan_methods[j] +
+      //     "</p> ";
+      //   if (j == 10) {
+      //     html_scan_methods +=
+      //       "<p class='mb-1 bold label label-primary'>selected_modules: click to see more.</p> ";
+      //     break;
+      //   }
+      // }
+
+      for (j = 0; j < options.length; j++) {
+        html_options +=
+          "<p class='mb-1 bold label label-primary'>options" +
+          options[j] +
           "</p> ";
         if (j == 10) {
-          html_open_ports +=
-            "<p class='mb-1 bold label label-warning'>open_port: click to see more.</p> ";
+          html_options +=
+            "<p class='mb-1 bold label label-primary'>options list</p> ";
           break;
         }
       }
-      for (j = 0; j < category.length; j++) {
-        html_categories +=
-          "<p class='mb-1 bold label label-info'>category:" +
-          category[j] +
+
+      for (j = 0; j < target_event.length; j++) {
+        html_target_event +=
+          "<p class='mb-1 bold label label-primary'>event:" +
+          target_event[j] +
           "</p> ";
         if (j == 10) {
-          html_categories +=
-            "<p class='mb-1 bold label label-info'>category: click to see more.</p> ";
+          html_target_event +=
+            "<p class='mb-1 bold label label-primary'>event list</p> ";
           break;
         }
       }
-      html_scan_methods = "";
-      for (j = 0; j < scan_methods.length; j++) {
-        html_scan_methods +=
-          "<p class='mb-1 bold label label-primary'>selected_modules:" +
-          scan_methods[j] +
-          "</p> ";
-        if (j == 10) {
-          html_scan_methods +=
-            "<p class='mb-1 bold label label-primary'>selected_modules: click to see more.</p> ";
-          break;
-        }
-      }
-      for (j = 0; j < description.length; j++) {
-        html_description +=
-          "<p class='mb-1 bold label label-success'>description:" +
-          description[j] +
-          "</p> ";
-        if (j == 10) {
-          html_description +=
-            "<p class='mb-1 bold label label-success'>description: click to see more.</p> ";
-          break;
-        }
-      }
+
+      // for (j = 0; j < description.length; j++) {
+      //   html_description +=
+      //     "<p class='mb-1 bold label label-success'>description:" +
+      //     description[j] +
+      //     "</p> ";
+      //   if (j == 10) {
+      //     html_description +=
+      //       "<p class='mb-1 bold label label-success'>description: click to see more.</p> ";
+      //     break;
+      //   }
+      // }
 
       HTMLData +=
         '<div class="row myBox" ><div class="d-flex w-100 text-justify justify-content-between">\n' +
-        '<button class="mb-1 bold label card-date""><a target=\'_blank\' style="color: black" href="/logs/get_html?host=' +
-        host +
+        '<button class="mb-1 bold label card-date""><a target=\'_blank\' style="color: black" href="/logs/get_html?target=' +
+        target +
         '">' +
-        host +
-        '</a></button></span><button class="mb-1 bold label card-date""><a href="/logs/get_json?host=' +
-        host +
+        target +
+        '</a></button></span><button class="mb-1 bold label card-date""><a href="/logs/get_json?target=' +
+        target +
         '">Get JSON</a></button>' +
-        '<button class="mb-1 bold label card-date""><a href="/logs/get_csv?host=' +
-        host +
+        '<button class="mb-1 bold label card-date""><a href="/logs/get_csv?target=' +
+        target +
         '">Get CSV </a></button></h3>\n' +
         "</div>\n" +
         '<p class="mb-1"> ' +
-        html_categories +
-        html_scan_methods +
-        html_open_ports +
-        html_description +
+        html_options +
+        html_target_event +
+        html_module_name +
+        html_date +
+        // html_categories +
+        // html_scan_methods +
+        // html_open_ports +
+        // html_description +
         "</p></div>";
     }
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from core.load_modules import load_all_modules
+from core.load_modules import load_all_modules, load_all_profiles
 from core.load_modules import load_all_graphs
 from core.alert import messages
 from flask import abort
@@ -222,7 +222,8 @@ def languages():
     Returns:
         HTML code for each language with its country flag
     """
-    languages = [lang for lang in messages(-1, 0)]
+    from core.load_modules import load_all_languages
+    languages = load_all_languages()
     res = ""
     flags = {
         "el": "gr",
@@ -250,6 +251,7 @@ def languages():
     for lang in languages:
         res += """<option {2} id="{0}" data-content='<span class="flag-icon flag-icon-{1}" value="{0}"></span> {0}'></option>""" \
             .format(lang, flags[lang], "selected" if lang == "en" else "")
+    print(res)
     return res
 
 
@@ -275,8 +277,7 @@ def profiles():
     Returns:
         HTML content or available profiles
     """
-    profiles = _builder(_profiles(), default_profiles())
-    synonyms = _synonym_profile().keys()
+    #profiles = load_all_profiles()
     for synonym in synonyms:
         del (profiles[synonym])
     res = ""
@@ -296,6 +297,7 @@ def scan_methods():
         HTML content or available modules
     """
     methods = load_all_modules()
+    print(methods)
     methods.remove("all")
     res = ""
     for sm in methods:

@@ -96,11 +96,7 @@ def __build_texttable(JSON_FROM_DB, _HOST,
         now()).encode('utf8') + b"\n", events_num]
 
 
-def sort_logs(output_file, language,
-              graph_name, scan_id, scan_cmd,
-              verbose_mode, start_api_server,
-              profile, selected_modules,
-              ports):
+def sort_logs(logs):
     """
     sort all events, create log file in HTML/TEXT/JSON and remove old logs
 
@@ -108,7 +104,7 @@ def sort_logs(output_file, language,
         output_file: output filename
         language: language
         graph_name: graph name
-        scan_id: scan hash id
+        scan_unique_id: scan hash id
         scan_cmd: scan cmd
         verbose_mode: verbose level number
         start_api_server: API flag
@@ -119,131 +115,135 @@ def sort_logs(output_file, language,
     Returns:
         True if success otherwise None
     """
-    _HOST = messages( "HOST")
-    _USERNAME = messages( "USERNAME")
-    _PASSWORD = messages( "PASSWORD")
-    _PORT = messages( "PORT")
-    _TYPE = messages( "TYPE")
-    _DESCRIPTION = messages( "DESCRIPTION")
-    _TIME = messages( "TIME")
-    events_num = 0
-    report_type = ""
-    JSON_FROM_DB = __logs_by_scan_id(scan_id, language)
-    JSON_Data = sorted(JSON_FROM_DB, key=sorted)
+    # _HOST = messages( "HOST")
+    # _USERNAME = messages( "USERNAME")
+    # _PASSWORD = messages( "PASSWORD")
+    # _PORT = messages( "PORT")
+    # _TYPE = messages( "TYPE")
+    # _DESCRIPTION = messages( "DESCRIPTION")
+    # _TIME = messages( "TIME")
+    # events_num = 0
+    # report_type = ""
+    # JSON_FROM_DB = __logs_by_scan_id(scan_unique_id, language)
+    # JSON_Data = sorted(JSON_FROM_DB, key=sorted)
 
-    if (len(output_file) >= 5 and output_file[-5:] == '.html') or (
-            len(output_file) >= 4 and output_file[-4:] == '.htm'):
-        report_type = "HTML"
-        data = sorted(JSON_FROM_DB, key=lambda x: sorted(x.keys()))
-        # if user want a graph
-        _graph = ''
-        for i in data:
-            if(i["DESCRIPTION"]):
-                i["DESCRIPTION"] = html.escape(i["DESCRIPTION"])
-                break
-        if graph_name is not None:
-            _graph = build_graph(graph_name,
-                                 language, data, 'HOST',
-                                 'USERNAME', 'PASSWORD',
-                                 'PORT', 'TYPE',
-                                 'DESCRIPTION')
-        from lib.html_log import log_data
-        _css = log_data.css_1
-        _table = log_data.table_title.format(_graph, _css,
-                                              _HOST, _USERNAME,
-                                              _PASSWORD, _PORT,
-                                              _TYPE, _DESCRIPTION,
-                                              _TIME)
+    # if (len(output_file) >= 5 and output_file[-5:] == '.html') or (
+    #         len(output_file) >= 4 and output_file[-4:] == '.htm'):
+    #     report_type = "HTML"
+    #     data = sorted(JSON_FROM_DB, key=lambda x: sorted(x.keys()))
+    #     # if user want a graph
+    #     _graph = ''
+    #     for i in data:
+    #         if(i["DESCRIPTION"]):
+    #             i["DESCRIPTION"] = html.escape(i["DESCRIPTION"])
+    #             break
+    #     if graph_name is not None:
+    #         _graph = build_graph(graph_name,
+    #                              language, data, 'HOST',
+    #                              'USERNAME', 'PASSWORD',
+    #                              'PORT', 'TYPE',
+    #                              'DESCRIPTION')
+    #     from lib.html_log import log_data
+    #     _css = log_data.css_1
+    #     _table = log_data.table_title.format(_graph, _css,
+    #                                           _HOST, _USERNAME,
+    #                                           _PASSWORD, _PORT,
+    #                                           _TYPE, _DESCRIPTION,
+    #                                           _TIME)
 
-        for value in data:
-            _table += log_data.table_items.format(value['HOST'],
-                                                   value['USERNAME'],
-                                                   value['PASSWORD'],
-                                                   value['PORT'],
-                                                   value['TYPE'],
-                                                   value['DESCRIPTION'],
-                                                   value['TIME'])
-            events_num += 1
-        _table += log_data.table_end + '<p class="footer">' + messages("nettacker_version_details") \
-            .format(
-                version_info()[0],
-                version_info()[1],
-                now()) + '</p>'
-        __log_into_file(output_file,
-                        'w' if type(_table) == str else 'wb',
-                        _table, language, final=True)
-    elif len(output_file) >= 5 and output_file[-5:] == '.json':
-        graph_name = ""
-        report_type = "JSON"
-        data = json.dumps(JSON_Data)
-        events_num = len(JSON_Data)
-        __log_into_file(output_file, 'w', data, language, final=True)
+    #     for value in data:
+    #         _table += log_data.table_items.format(value['HOST'],
+    #                                                value['USERNAME'],
+    #                                                value['PASSWORD'],
+    #                                                value['PORT'],
+    #                                                value['TYPE'],
+    #                                                value['DESCRIPTION'],
+    #                                                value['TIME'])
+    #         events_num += 1
+    #     _table += log_data.table_end + '<p class="footer">' + messages("nettacker_version_details") \
+    #         .format(
+    #             version_info()[0],
+    #             version_info()[1],
+    #             now()) + '</p>'
+    #     __log_into_file(output_file,
+    #                     'w' if type(_table) == str else 'wb',
+    #                     _table, language, final=True)
+    # elif len(output_file) >= 5 and output_file[-5:] == '.json':
+    #     graph_name = ""
+    #     report_type = "JSON"
+    #     data = json.dumps(JSON_Data)
+    #     events_num = len(JSON_Data)
+    #     __log_into_file(output_file, 'w', data, language, final=True)
 
-    elif len(output_file) >= 5 and output_file[-4:] == '.csv':
-        graph_name = ""
-        report_type = "CSV"
-        keys = JSON_Data[0].keys()
-        data = json.dumps(JSON_Data)
-        events_num = len(JSON_Data)
-        with open(output_file, 'a') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=keys)
-            writer.writeheader()
-            for i in JSON_Data:
-                dicdata = {key: value for key, value in i.items()
-                           if key in keys}
-                writer.writerow(dicdata)
+    # elif len(output_file) >= 5 and output_file[-4:] == '.csv':
+    #     graph_name = ""
+    #     report_type = "CSV"
+    #     keys = JSON_Data[0].keys()
+    #     data = json.dumps(JSON_Data)
+    #     events_num = len(JSON_Data)
+    #     with open(output_file, 'a') as csvfile:
+    #         writer = csv.DictWriter(csvfile, fieldnames=keys)
+    #         writer.writeheader()
+    #         for i in JSON_Data:
+    #             dicdata = {key: value for key, value in i.items()
+    #                        if key in keys}
+    #             writer.writerow(dicdata)
 
-    else:
-        graph_name = ""
-        report_type = "TEXT"
-        data, events_num = __build_texttable(JSON_FROM_DB,
-                                             _HOST, _USERNAME,
-                                             _PASSWORD, _PORT,
-                                             _TYPE,
-                                             _DESCRIPTION,
-                                             _TIME, language)
-        __log_into_file(output_file, 'wb', data, language, final=True)
-    data = data if report_type == "TEXT" else __build_texttable(JSON_FROM_DB,
-                                                                _HOST,
-                                                                _USERNAME,
-                                                                _PASSWORD,
-                                                                _PORT,
-                                                                _TYPE,
-                                                                _DESCRIPTION,
-                                                                _TIME,
-                                                                language)[0]
-    info(messages( "updating_database"))
-    category = []
-    for sm in selected_modules:
-        if sm.rsplit("_")[-1] not in category:
-            category.append(sm.rsplit("_")[-1])
-    category = ",".join(list(set(category)))
-    selected_modules = ",".join(selected_modules)
-    if ports is None:
-        ports = "default"
-    submit_report_to_db(now(),
-                        scan_id, output_file, events_num,
-                        0 if verbose_mode == 0 else 1, start_api_server,
-                        report_type,
-                        graph_name, category, profile,
-                        selected_modules, language, scan_cmd, ports)
+    # else:
+    #     graph_name = ""
+    #     report_type = "TEXT"
+    #     data, events_num = __build_texttable(JSON_FROM_DB,
+    #                                          _HOST, _USERNAME,
+    #                                          _PASSWORD, _PORT,
+    #                                          _TYPE,
+    #                                          _DESCRIPTION,
+    #                                          _TIME, language)
+    #     __log_into_file(output_file, 'wb', data, language, final=True)
+    # data = data if report_type == "TEXT" else __build_texttable(JSON_FROM_DB,
+    #                                                             _HOST,
+    #                                                             _USERNAME,
+    #                                                             _PASSWORD,
+    #                                                             _PORT,
+    #                                                             _TYPE,
+    #                                                             _DESCRIPTION,
+    #                                                             _TIME,
+    #                                                             language)[0]
+    # info(messages( "updating_database"))
+    # category = []
+    # for sm in selected_modules:
+    #     if sm.rsplit("_")[-1] not in category:
+    #         category.append(sm.rsplit("_")[-1])
+    # category = ",".join(list(set(category)))
+    # selected_modules = ",".join(selected_modules)
+    # if ports is None:
+    #     ports = "default"
     info(messages( "removing_logs_db"))
-    hosts = []
-    for log in JSON_Data:
-        if log["HOST"] not in hosts:
-            hosts.append(log["HOST"])
-    for host in hosts:
-        for sm in selected_modules.rsplit(','):
-            remove_old_logs(host, sm, scan_id, language)
+    remove_old_logs(logs)
+    info(messages( "inserting_report_db"))
+    submit_report_to_db(logs)
+    info(messages("updating_database"))
+    submit_logs_to_db(logs)
+
+
+    info(
+            json.dumps(logs["event"])
+    )
+    # hosts = []
+    # for log in JSON_Data:
+    #     if log["HOST"] not in hosts:
+    #         hosts.append(log["HOST"])
+    # for host in hosts:
+    #     for sm in selected_modules.rsplit(','):
+    #         remove_old_logs(host, sm, scan_unique_id, language)
     # info(messages("inserting_logs_db"))
     # for log in JSON_Data:
     #     submit_logs_to_db(language, log)
-    if events_num:
-        info(messages( "summary_report"))
-        write(data)
-    else:
-        info(messages( "no_event_found"))
-    info(messages( "file_saved").format(output_file))
+    # if events_num:
+    #     info(messages( "summary_report"))
+    #     write(data)
+    # else:
+    #     info(messages( "no_event_found"))
+    # info(messages( "file_saved").format(output_file))
     return True
 
 

@@ -153,16 +153,16 @@
                 </div>
                 <h3>Scan Methods</h3>
                 <div class="form-group">
-                    <div id="scan_method" class="checkbox text-justify">
+                    <div id="selected_modules" class="checkbox text-justify">
                         <label><input id="all" type="checkbox" class="checkbox check-all-scans" ><a
                                 class="label label-info">Select all</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        {% autoescape off %}{{scan_method}}{% endautoescape %}
+                        {% autoescape off %}{{selected_modules}}{% endautoescape %}
                     </div>
                 </div>
                 </div>
                 <h3>Graph</h3>
                 <div class="form-group">
-                    <div id="graph_flags" class="radio text-justify">
+                    <div id="graph_name" class="radio text-justify">
                         {% autoescape off %}{{graphs}}{% endautoescape %}
                     </div>
                 </div>
@@ -178,7 +178,7 @@
                 <h3>Output</h3>
                 <div class="input-group col-xs-5">
                     <span class="input-group-addon">filename</span>
-                    <input id="log_in_file" type="text" class="form-control" placeholder="Additional Info"
+                    <input id="output_file" type="text" class="form-control" placeholder="Additional Info"
                            value="{% autoescape off %}{{filename}}{% endautoescape %}">
                 </div>
             </div>
@@ -186,12 +186,12 @@
                 <h3>Flags</h3>
                 <div id="scan_options" class="form-group">
                     <div class="checkbox text-justify">
-                        <label><input id="check_ranges" type="checkbox"><a
-                                class="label label-success">check_ranges</a></label>
-                        <label><input id="check_subdomains" type="checkbox"><a
-                                class="label label-success">check_subdomains</a></label>
-                        <label><input id="ping_flag" type="checkbox"><a
-                                class="label label-success">ping_flag</a></label>
+                        <label><input id="scan_ip_range" type="checkbox"><a
+                                class="label label-success">scan_ip_range</a></label>
+                        <label><input id="scan_subdomains" type="checkbox"><a
+                                class="label label-success">scan_subdomains</a></label>
+                        <label><input id="ping_before_scan" type="checkbox"><a
+                                class="label label-success">ping_before_scan</a></label>
                     </div>
                 </div>
                 <h3>Engine Options</h3>
@@ -199,14 +199,14 @@
                     <div class="col-md-6">
                         <div class="input-group">
                             <span class="input-group-addon">Thread numbers</span>
-                            <input id="thread_number" type="text" class="form-control" placeholder="100"
+                            <input id="thread_per_host" type="text" class="form-control" placeholder="100"
                                    value="100">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="input-group">
                             <span class="input-group-addon">Host thread number</span>
-                            <input id="thread_number_host" type="text" class="form-control" placeholder="30"
+                            <input id="thread_per_host" type="text" class="form-control" placeholder="30"
                                    value="30">
                         </div>
                     </div>
@@ -223,7 +223,7 @@
                     <div class="col-md-6">
                         <div class="input-group">
                             <span class="input-group-addon">Time sleep</span>
-                            <input id="time_sleep" type="text" class="form-control" placeholder="0"
+                            <input id="time_sleep_between_requests" type="text" class="form-control" placeholder="0"
                                    value="0">
                         </div>
                     </div>
@@ -240,7 +240,7 @@
                     <div class="col-md-6">
                         <div class="input-group">
                             <span class="input-group-addon">Verbose level</span>
-                            <input id="verbose_level" type="text" class="form-control" placeholder="0"
+                            <input id="verbose_mode" type="text" class="form-control" placeholder="0"
                                    value="0">
                         </div>
                     </div>
@@ -268,14 +268,14 @@
                 <br>
 
                 <div class="form-group col-md-6">
-                    <h3>Users</h3>
-                    <textarea class="input-mini form-control" rows="8" cols="50" id="users"
+                    <h3>Usernames</h3>
+                    <textarea class="input-mini form-control" rows="8" cols="50" id="usernames"
                               data-role="tagsinput" placeholder="separate with commas or new line">
                     </textarea>
                 </div>
                 <div class="form-group col-md-6">
                     <h3>Passwords</h3>
-                    <textarea class="form-control" rows="8" cols="50" id="passwds"
+                    <textarea class="form-control" rows="8" cols="50" id="passwords"
                                placeholder="separate with commas or new line"></textarea>
                 </div>
                 <br>

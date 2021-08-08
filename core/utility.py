@@ -17,21 +17,38 @@ def process_conditions(event, module_name, target, scan_unique_id, options):
     from core.alert import (info,
                             verbose_info)
     if event['response']['conditions_results']:
-        from database.db import submit_logs_to_db
-        submit_logs_to_db(
-            {
-                "date": now(model=None),
-                "target": target,
-                "module_name": module_name,
-                "scan_unique_id": scan_unique_id,
-                "options": options,
-                "event": event
+        from core.log import sort_logs
+        logs = {
+            "date": now(model=None),
+            "target": target,
+            "module_name": module_name,
+            "scan_unique_id": scan_unique_id,
+            "options": options,
+            "event": event
             }
-        )
-        info(
-            json.dumps(event)
-        )
-        return True
+        # from database.db import submit_logs_to_db
+        # submit_logs_to_db(
+        #     {
+        #         "date": now(model=None),
+        #         "target": target,
+        #         "module_name": module_name,
+        #         "scan_unique_id": scan_unique_id,
+        #         "options": options,
+        #         "event": event
+        #     }
+        # )
+        # submit_report_to_db(
+        #     {
+        #         "scan_unique_id": scan_unique_id,
+        #         "event": event,
+        #         "module_name": module_name,
+        #         "options": options
+        #     }
+        # )
+        # info(
+        #     json.dumps(event)
+        # )
+        return sort_logs(logs)
     else:
         verbose_info(
             json.dumps(event)

@@ -17,13 +17,14 @@ def parallel_scan_process(options, targets, scan_unique_id):
     for target in targets:
         for module_name in options.selected_modules:
             from database.db import remove_old_logs
-            remove_old_logs(
-                {
-                    "target": target,
-                    "module_name": module_name,
-                    "scan_unique_id": scan_unique_id,
-                }
-            )
+            # remove_old_logs(
+            #     {
+            #         "target": target,
+            #         "module_name": module_name,
+            #         "scan_unique_id": scan_unique_id,
+            #     }
+            # ) 
+            # todo: bug 
             thread = Thread(
                 target=perform_scan,
                 args=(options, target, module_name, scan_unique_id,)

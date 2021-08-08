@@ -26,7 +26,7 @@ class Report(Base):
         """
         returns a printable representation of the object of the class Report
         """
-        return "<Report(id={0}, scan_unique_id={1}, date={2})>".format(self.id, self.scan_id, self.date)
+        return "<Report(id={0}, scan_unique_id={1}, date={2})>".format(self.id, self.scan_unique_id, self.date)
 
 
 class HostsLog(Base):
@@ -47,4 +47,8 @@ class HostsLog(Base):
         """
         returns a printable representation of the object of the class HostsLog
         """
-        return "<scan_events(id={0}, host={1}, date={2})>".format(self.id, self.target, self.date)
+        return '''
+            <scan_events(id={0}, target={1}, date={2}, module_name={3}, scan_unqiue_id={4}, 
+            options={5}, event={6})>
+        '''.format(self.id, self.target, self.date, self.module_name, self.scan_unique_id,
+                   self.options, self.event)

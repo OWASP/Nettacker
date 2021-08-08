@@ -29,7 +29,7 @@ from api.api_core import root_dir
 from api.api_core import get_file
 from api.api_core import mime_types
 from api.api_core import scan_methods
-from api.api_core import profiles
+# from api.api_core import profiles
 from api.api_core import graphs
 from api.api_core import languages
 from api.api_core import remove_non_api_keys
@@ -130,9 +130,9 @@ def limit_remote_addr():
         None if it's in whitelist otherwise abort(403)
     """
     # IP Limitation
-    if app.config["OWASP_NETTACKER_CONFIG"]["api_client_white_list"]:
+    if app.config["OWASP_NETTACKER_CONFIG"]["api_client_whitelisted_ips"]:
         if flask_request.remote_addr not in app.config[
-            "OWASP_NETTACKER_CONFIG"]["api_client_white_list_ips"]:
+            "OWASP_NETTACKER_CONFIG"]["api_client_whitelisted_ips"]:
             abort(403, messages( "unauthorized_IP"))
     return
 
@@ -150,7 +150,7 @@ def access_log(response):
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"]:
         r_log = open(app.config["OWASP_NETTACKER_CONFIG"][
-                         "api_access_log_filename"], "ab")
+                         "api_access_log"], "ab")
         # if you need to log POST data
         # r_log.write(
         #     "{0} [{1}] {2} \"{3} {4}\" {5} {6} {7}\r\n".format(
@@ -166,7 +166,7 @@ def access_log(response):
             flask_request.remote_addr, now(),
             flask_request.host,
             flask_request.method, flask_request.full_path,
-            flask_request.user_agent, response.status_code))
+            flask_request.user_agent, response.status_code).encode())
         r_log.close()
     return response
 
@@ -197,11 +197,13 @@ def index():
     Returns:
         rendered HTML page
     """
-    filename = _builder(_core_config(), _core_default_config())["output_file"]
+    from config import nettacker_user_application_config
+    filename = nettacker_user_application_config()["output_file"]
 
     return render_template("index.html", selected_modules=scan_methods(),
-                           profile=profiles(), graphs=graphs(),
-                           languages=languages(), filename=filename)
+                           languages = languages(),
+                           graphs=graphs(),
+                           filename=filename)
 
 
 @app.route("/new/scan", methods=["GET", "POST"])
@@ -215,18 +217,28 @@ def new_scan():
     _start_scan_config = {}
     api_key_check(app, flask_request, __language())
     targetValue = get_value(flask_request, "targets")
-    if (target_type(targetValue) == "UNKNOWN"):
-        return jsonify({"error": "Please input correct target"}), 400
-    for key in _core_default_config():
+    # if (target_type(targetValue) == "UNKNOWN"):
+    #     return jsonify({"error": "Please input correct target"}), 400
+    options = app.config["OWASP_NETTACKER_CONFIG"]["options"]
+    for key in vars(app.config["OWASP_NETTACKER_CONFIG"]["options"]):
+        #print(key)
         if get_value(flask_request, key) is not None:
-            _start_scan_config[key] = escape(get_value(flask_request, key))
-    _start_scan_config["backup_ports"] = get_value(flask_request, "ports")
-    _start_scan_config = rules(remove_non_api_keys(_builder(
-        _start_scan_config, _builder(_core_config(), _core_default_config()))),
-        _core_default_config(), __language())
-    _p = multiprocessing.Process(target=__scan, args=[_start_scan_config])
+            print(escape(get_value(flask_request, key)))
+            print(key)
+            try:
+                options.__dict__[key] = int(str(escape(get_value(flask_request, key))))
+            except:
+                options.__dict__[key] = str(escape(get_value(flask_request, key)))
+    print(options)
+    app.config["OWASP_NETTACKER_CONFIG"]["options"] = options
+    #       _start_scan_config[key] = escape(get_value(flask_request, key))
+    # _start_scan_config["backup_ports"] = get_value(flask_request, "ports")
+    # _start_scan_config = rules(remove_non_api_keys(_builder(
+    #     _start_scan_config, _builder(_core_config(), _core_default_config()))),
+    #     _core_default_config(), __language())
+    _p = multiprocessing.Process(target=__scan, args=(app.config["OWASP_NETTACKER_CONFIG"]["options"],))
     _p.start()
-    return jsonify(_start_scan_config), 200
+    return jsonify(vars(options)), 200
 
 
 @app.route("/session/check", methods=["GET"])
@@ -289,7 +301,7 @@ def __get_results():
         page = int(get_value(flask_request, "page"))
     except Exception:
         page = 1
-    return jsonify(__select_results(__language(), page)), 200
+    return jsonify(__select_results(page)), 200
 
 
 @app.route("/results/get", methods=["GET"])
@@ -317,30 +329,36 @@ def __get_results_json():
     Returns:
         an array with JSON events
     """
-    session = create_connection(__language())
+    session = create_connection()
     api_key_check(app, flask_request, __language())
     try:
         _id = int(get_value(flask_request, "id"))
         scan_id_temp = session.query(Report).filter(Report.id == _id).all()
     except Exception as _:
         _id = ""
+        scan_id_temp = False
     if (scan_id_temp):
         result_id = session.query(Report).join(
-            HostsLog, Report.scan_id == HostsLog.scan_id).filter(
-            Report.scan_id == scan_id_temp[0].scan_id).all()
+            HostsLog, Report.scan_unique_id == HostsLog.scan_unique_id).filter(
+            Report.scan_unique_id == scan_id_temp[0].scan_unique_id).all()
     else:
         result_id = []
     json_object = {}
+    # print(result_id)
     if (result_id):
-        scan_id = result_id[0].scan_id
-        data = __logs_by_scan_id(scan_id, __language())
+        scan_unique_id = result_id[0].scan_unique_id
+        # print("amanguptss")
+        data = __logs_by_scan_id(scan_unique_id)
         json_object = json.dumps(data)
     date_from_db = scan_id_temp[0].date
-    date_format = datetime.strptime(date_from_db, "%Y-%m-%d %H:%M:%S")
+    #print(date_from_db, type(date_from_db))
+    date_format = "aman"
+    #date_format = datetime.strptime(str(date_from_db), "%Y-%m-%d %H:%M:%S").date()
     date_format = str(date_format).replace(
         "-", "_").replace(":", "_").replace(" ", "_")
     filename = "report-" + date_format + "".join(
         random.choice(string.ascii_lowercase) for x in range(10))
+    #print(json_object)
     return Response(json_object,
                     mimetype='application/json',
                     headers={'Content-Disposition':
@@ -355,7 +373,7 @@ def __get_results_csv():
     Returns:
         an array with JSON events
     """
-    session = create_connection(__language())
+    session = create_connection()
     api_key_check(app, flask_request, __language())
     try:
         _id = int(get_value(flask_request, "id"))
@@ -364,8 +382,8 @@ def __get_results_csv():
         _id = ""
     if (scan_id_temp):
         result_id = session.query(Report).join(
-            HostsLog, Report.scan_id == HostsLog.scan_id).filter(
-            Report.scan_id == scan_id_temp[0].scan_id).all()
+            HostsLog, Report.scan_unique_id == HostsLog.scan_unique_id).filter(
+            Report.scan_unique_id == scan_id_temp[0].scan_unique_id).all()
     else:
         result_id = []
     date_from_db = scan_id_temp[0].date
@@ -376,8 +394,8 @@ def __get_results_csv():
         random.choice(string.ascii_lowercase) for x in range(10))
     _reader = ''
     if (result_id):
-        scan_id = result_id[0].scan_id
-        data = __logs_by_scan_id(scan_id, __language())
+        scan_unique_id = result_id[0].scan_unique_id
+        data = __logs_by_scan_id(scan_unique_id, __language())
         keys = data[0].keys()
         with open(filename, "w") as output_file:
             dict_writer = csv.DictWriter(
@@ -436,10 +454,10 @@ def __get_logs():
     """
     api_key_check(app, flask_request, __language())
     try:
-        host = get_value(flask_request, "host")
+        target = get_value(flask_request, "target")
     except Exception:
-        host = ""
-    data = __logs_to_report_json(host, __language())
+        target = ""
+    data = __logs_to_report_json(target, __language())
     json_object = json.dumps(data)
     filename = "report-" + now(
         model="%Y_%m_%d_%H_%M_%S") + "".join(
@@ -452,17 +470,17 @@ def __get_logs():
 @app.route("/logs/get_csv", methods=["GET"])
 def __get_logs_csv():
     """
-    get host's logs through the API in JSON type
+    get target's logs through the API in JSON type
 
     Returns:
         an array with JSON events
     """
     api_key_check(app, flask_request, __language())
     try:
-        host = get_value(flask_request, "host")
+        target = get_value(flask_request, "target")
     except Exception:
-        host = ""
-    data = __logs_to_report_json(host, __language())
+        target = ""
+    data = __logs_to_report_json(target, __language())
     keys = data[0].keys()
     filename = "report-" + now(
         model="%Y_%m_%d_%H_%M_%S") + "".join(random.choice(
@@ -510,14 +528,16 @@ def start_api_subprocess(options):
     Args:
         options: all options
     """
+    print(options)
     app.config["OWASP_NETTACKER_CONFIG"] = {
         "api_access_key": options.api_access_key,
         "api_client_whitelisted_ips": options.api_client_whitelisted_ips,
         "api_access_log": options.api_access_log,
-        "api_access_log_filename": options.api_access_log_filename,
+        #"api_access_log_filename": options.api_access_log_filename,
         "api_cert": options.api_cert,
         "api_cert_key": options.api_cert_key,
-        "language": options.language
+        "language": options.language,
+        "options": options
     }
     if options.api_cert and options.api_cert_key:
         app.run(
