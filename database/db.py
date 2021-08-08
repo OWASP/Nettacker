@@ -6,7 +6,9 @@ import time
 from flask import jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database.models import HostsLog, Report
+from database.models import (HostsLog,
+                             Report,
+                             TempEvents)
 from core.alert import warn
 from core.alert import info
 from core.alert import messages
@@ -91,25 +93,12 @@ def send_submit_query(session):
     return False
 
 
-def submit_report_to_db(log):
+def submit_report_to_db(event):
     """
     this function created to submit the generated reports into db, the files are not stored in db, just the path!
 
     Args:
-        date: date and time
-        scan_unique_id: scan hash id
-        report_filename: report full path and filename
-        events_num: length of events in the report
-        verbose: verbose level used to generated the report
-        start_api_server: 0 (False) if scan run from CLI and 1 (True) if scan run from API
-        report_type: could be TEXT, JSON or HTML
-        graph_name: name of the graph used (if it's HTML type)
-        category: category of the modules used in scan (vuln, scan, brute)
-        profile: profiles used in scan
-        selected_modules: modules used in scan
-        language: scan report language
-        scan_cmd: scan command line if run in CLI otherwise messages("through_API")
-        ports: selected port otherwise None
+        event: event log
 
     Returns:
         return True if submitted otherwise False
@@ -118,11 +107,10 @@ def submit_report_to_db(log):
     session = create_connection()
     session.add(
         Report(
-            date=log["date"],
-            # module_name=log["module_name"],
-            scan_unique_id=log["scan_unique_id"],
-            options=json.dumps(log["options"]),
-            # event=json.dumps(log["event"])
+            date=event["date"],
+            scan_unique_id=event["scan_unique_id"],
+            report_path_filename=json.dumps(event["options"][""]),
+            options=json.dumps(event["options"]),
         )
     )
     return send_submit_query(session)
@@ -175,6 +163,58 @@ def submit_logs_to_db(log):
         return False
 
 
+def submit_temp_logs_to_db(log):
+    """
+    this function created to submit new events into database
+
+    Args:
+        log: log event in JSON type
+
+    Returns:
+        True if success otherwise False
+    """
+    if isinstance(log, dict):
+        session = create_connection()
+        session.add(
+            TempEvents(
+                target=log["target"],
+                date=log["date"],
+                module_name=log["module_name"],
+                scan_unique_id=log["scan_unique_id"],
+                event_name=log["event_name"],
+                options=json.dumps(log["options"]),
+                event=json.dumps(log["event"]),
+                data=json.dumps(log["data"])
+            )
+        )
+        return send_submit_query(session)
+    else:
+        warn(messages("invalid_json_type_to_db").format(log))
+        return False
+
+
+def find_temp_events(target, module_name, scan_unique_id, event_name):
+    """
+        select all events by scan_unique id, target, module_name
+
+        Args:
+            target: target
+            module_name: module name
+            scan_unique_id: unique scan identifier
+            event_name: event_name
+
+        Returns:
+            an array with JSON events or an empty array
+        """
+    session = create_connection()
+    return session.query(TempEvents).filter(
+        TempEvents.target == target,
+        TempEvents.module_name == module_name,
+        TempEvents.scan_unique_id == scan_unique_id,
+        TempEvents.event_name == event_name
+    ).first()
+
+
 def find_events(target, module_name, scan_unique_id):
     """
     select all events by scan_unique id, target, module_name
@@ -183,7 +223,6 @@ def find_events(target, module_name, scan_unique_id):
         target: target
         module_name: module name
         scan_unique_id: unique scan identifier
-        return_target_only: only return targets
 
     Returns:
         an array with JSON events or an empty array
@@ -202,7 +241,6 @@ def __select_results(page):
     you may change the page (default 1) to go to next/previous page.
 
     Args:
-        language: language
         page: page number
 
     Returns:
@@ -220,10 +258,9 @@ def __select_results(page):
                 "date": data.date,
                 "scan_unique_id": data.scan_unique_id,
                 "options": json.loads(data.options)
-                
             }
             selected.append(tmp)
-    except Exception as e:
+    except Exception:
         return structure(status="error", msg="database error!")
     return selected
 
@@ -243,7 +280,7 @@ def __get_result(language, id):
     try:
         try:
             file_obj = session.query(Report).filter_by(id=id).first()
-            filename = json.loads(file_obj.options)["output_file"]
+            filename = file_obj.report_path_filename
             return open(filename, 'rb').read(), 200
         except Exception as _:
             return jsonify(structure(status="error", msg="cannot find the file!")), 400
@@ -327,7 +364,6 @@ def __logs_by_scan_id(scan_unique_id):
 
     Args:
         scan_unique_id: scan id hash
-        language: language
 
     Returns:
         an array with JSON events or an empty array
@@ -336,21 +372,13 @@ def __logs_by_scan_id(scan_unique_id):
     # try:
     return_logs = []
     logs = session.query(HostsLog).filter(HostsLog.scan_unique_id == scan_unique_id).all()
-    
     for log in logs:
         data = {
             "scan_unique_id": scan_unique_id,
             "TARGET": log.target,
-            #"DATE": log.date,
+            # "DATE": log.date,
             "OPTIONS": json.loads(log.options),
             "EVENT": json.loads(log.event),
-            # "HOST": host,
-            # "USERNAME": log.username,
-            # "PASSWORD": log.password,
-            # "PORT": log.port,
-            # "TYPE": log.type,
-            # "TIME": log.date,
-            # "DESCRIPTION": log.description
         }
         return_logs.append(data)
     return return_logs
@@ -377,7 +405,7 @@ def __logs_to_report_json(target, language):
             data = {
                 "scan_unique_id": log.scan_unique_id,
                 "TARGET": log.target,
-                #"DATE": log.date,
+                # "DATE": log.date,
                 "OPTIONS": json.loads(log.options),
                 "EVENT": json.loads(log.event),
                 # "HOST": host,
@@ -469,16 +497,16 @@ def __search_logs(language, page, query):
         for host in session.query(HostsLog).filter(
                 (HostsLog.target.like("%" + str(query) + "%"))
                 | (HostsLog.date.like("%" + str(query) + "%"))
-                #| (HostsLog.port.like("%" + str(query) + "%"))
+                # | (HostsLog.port.like("%" + str(query) + "%"))
                 | (HostsLog.module_name.like("%" + str(query) + "%"))
                 | (HostsLog.options.like("%" + str(query) + "%"))
                 | (HostsLog.event.like("%" + str(query) + "%"))
-                #| (HostsLog.category.like("%" + str(query) + "%"))
-                #| (HostsLog.description.like("%" + str(query) + "%"))
-                #| (HostsLog.username.like("%" + str(query) + "%"))
-                #| (HostsLog.password.like("%" + str(query) + "%"))
+                # | (HostsLog.category.like("%" + str(query) + "%"))
+                # | (HostsLog.description.like("%" + str(query) + "%"))
+                # | (HostsLog.username.like("%" + str(query) + "%"))
+                # | (HostsLog.password.like("%" + str(query) + "%"))
                 | (HostsLog.scan_unique_id.like("%" + str(query) + "%"))
-                #| (HostsLog.scan_cmd.like("%" + str(query) + "%"))
+                # | (HostsLog.scan_cmd.like("%" + str(query) + "%"))
         ).group_by(HostsLog.target).order_by(HostsLog.id.desc())[page:page + 11]:
             for data in session.query(HostsLog).filter(HostsLog.target == str(host.target)).group_by(
                     HostsLog.module_name, HostsLog.options, HostsLog.scan_unique_id, HostsLog.event).order_by(
@@ -520,11 +548,9 @@ def __search_logs(language, page, query):
                         selected[capture]["info"][
                             "date"].append(data.date)
                     if data.options not in selected[capture]["info"]["options"]:
-                        selected[capture]["info"][
-                            "options"].append(json.loads(data.options))
+                        selected[capture]["info"]["options"].append(json.loads(data.options))
                     if data.event not in selected[capture]["info"]["event"]:
-                        selected[capture]["info"][
-                            "event"].append(json.loads(data.event))
+                        selected[capture]["info"]["event"].append(json.loads(data.event))
                     # if data.category not in selected[capture]["info"]["category"]:
                     #     selected[capture]["info"]["category"].append(
                     #         data.category)

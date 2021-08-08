@@ -10,6 +10,8 @@ import struct
 import time
 from core.utility import reverse_and_regex_condition
 from core.utility import process_conditions
+from core.utility import get_dependent_results_from_database
+from core.utility import replace_dependent_values
 
 
 def receive_all(socket_connection, limit=4196):
@@ -229,6 +231,17 @@ class engine:
         backup_response = copy.deepcopy(sub_step['response'])
         del sub_step['method']
         del sub_step['response']
+        if 'dependent_on_temp_event' in backup_response:
+            temp_event = get_dependent_results_from_database(
+                target,
+                module_name,
+                scan_unique_id,
+                backup_response['dependent_on_temp_event']
+            )
+            sub_step = replace_dependent_values(
+                sub_step,
+                temp_event
+            )
         action = getattr(NettackerSocket, backup_method, None)
         try:
             response = action(**sub_step)

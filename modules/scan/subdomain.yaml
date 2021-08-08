@@ -148,38 +148,45 @@ payloads:
               regex: "[a-zA-Z0-9\\-\\_.]+\\.{target}"
               reverse: false
 
-#      - method: get
-#        headers:
-#          User-Agent: "{user_agent}"
-#        url: "https://dnsdumpster.com/"
-#        response:
-#          save_to_temp_events: "dnsdumpster_csrf_token_and_cookies"
-#          condition_type: and
-#          conditions:
-#            status_code:
-#              regex: "^[2-3][0-9][0-9]"
-#              reverse: false
-#
-#      - method: post
-#        headers:
-#          User-Agent: "{user_agent}"
-#          Referer: "https://dnsdumpster.com/"
-#        url: "https://dnsdumpster.com/"
-#        cookies:
-#          csrftoken: csrf_middleware
-#        data:
-#          csrfmiddlewaretoken: csrf_middleware
-#          targetip': "{target}"
-#        response:
-#          depend_on_temp_event: "dnsdumpster_csrf_token_and_cookies"
-#          condition_type: and
-#          conditions:
-#            status_code:
-#              regex: "^[2-3][0-9][0-9]"
-#              reverse: false
-#            content:
-#              regex: "[a-zA-Z0-9\\-\\_\\s]+[\\.]+[a-zA-Z0-9\\-\\_\\s]+\\.{target}"
-#              reverse: false
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url: "https://dnsdumpster.com/"
+        response:
+          save_to_temp_events_only: "dnsdumpster_csrf_token"
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^[2-3][0-9][0-9]"
+              reverse: false
+            content:
+              regex: "([a-zA-Z0-9]+\\w{{63}})"
+              reverse: false
+            headers:
+              Set-Cookie:
+                regex: ".*"
+                reverse: false
+
+      - method: post
+        headers:
+          User-Agent: "{user_agent}"
+          Referer: "https://dnsdumpster.com/"
+          Cookie: "dependent_on_temp_event['headers']['Set-Cookie'][1]"
+        url: "https://dnsdumpster.com/"
+        data:
+          csrfmiddlewaretoken: "dependent_on_temp_event['content'][0]"
+          targetip: "{target}"
+          user: "free"
+        response:
+          dependent_on_temp_event: "dnsdumpster_csrf_token"
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^[2-3][0-9][0-9]"
+              reverse: false
+            content:
+              regex: "[a-zA-Z0-9\\-\\_.]+\\.{target}"
+              reverse: false
 
 # todo: later
 #      "subdomain_scan_use_dnsdumpster": ["True"],

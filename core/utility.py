@@ -13,47 +13,86 @@ from core.load_modules import load_all_languages
 from core.time import now
 
 
-def process_conditions(event, module_name, target, scan_unique_id, options):
+def process_conditions(event, module_name, target, scan_unique_id, options, response):
     from core.alert import (info,
                             verbose_info)
-    if event['response']['conditions_results']:
-        from core.log import sort_logs
-        logs = {
-            "date": now(model=None),
-            "target": target,
-            "module_name": module_name,
-            "scan_unique_id": scan_unique_id,
-            "options": options,
-            "event": event
+    if 'save_to_temp_events_only' in event['response']:
+        from database.db import submit_temp_logs_to_db
+        submit_temp_logs_to_db(
+            {
+                "date": now(model=None),
+                "target": target,
+                "module_name": module_name,
+                "scan_unique_id": scan_unique_id,
+                "event_name": event['response']['save_to_temp_events_only'],
+                "options": options,
+                "event": event,
+                "data": response
             }
-        # from database.db import submit_logs_to_db
-        # submit_logs_to_db(
-        #     {
-        #         "date": now(model=None),
-        #         "target": target,
-        #         "module_name": module_name,
-        #         "scan_unique_id": scan_unique_id,
-        #         "options": options,
-        #         "event": event
-        #     }
-        # )
-        # submit_report_to_db(
-        #     {
-        #         "scan_unique_id": scan_unique_id,
-        #         "event": event,
-        #         "module_name": module_name,
-        #         "options": options
-        #     }
-        # )
-        # info(
-        #     json.dumps(event)
-        # )
-        return sort_logs(logs)
+        )
+    if event['response']['conditions_results'] and 'save_to_temp_events_only' not in event['response']:
+        from database.db import submit_logs_to_db
+        submit_logs_to_db(
+            {
+                "date": now(model=None),
+                "target": target,
+                "module_name": module_name,
+                "scan_unique_id": scan_unique_id,
+                "options": options,
+                "event": event
+            }
+        )
+        info(
+            json.dumps(event)
+        )
+        return True
     else:
         verbose_info(
             json.dumps(event)
         )
-        return False
+        return 'save_to_temp_events_only' in event['response']
+
+
+def get_dependent_results_from_database(target, module_name, scan_unique_id, event_name):
+    from database.db import find_temp_events
+    while True:
+        event = find_temp_events(target, module_name, scan_unique_id, event_name)
+        if event:
+            break
+        time.sleep(0.1)
+    return json.loads(event.event)['response']['conditions_results']
+
+
+def find_and_replace_dependent_values(sub_step, dependent_on_temp_event):
+    if type(sub_step) == dict:
+        for key in copy.deepcopy(sub_step):
+            if type(sub_step[key]) not in [str, float, int, bytes]:
+                sub_step[key] = find_and_replace_dependent_values(
+                    copy.deepcopy(sub_step[key]), dependent_on_temp_event
+                )
+            else:
+                if type(sub_step[key]) == str:
+                    if 'dependent_on_temp_event' in sub_step[key]:
+                        globals().update(locals())
+                        exec('sub_step[key] = {sub_step}'.format(sub_step=sub_step[key]), globals(), {})
+    if type(sub_step) == list:
+        value_index = 0
+        for value in copy.deepcopy(sub_step):
+            if type(sub_step[value_index]) not in [str, float, int, bytes]:
+                sub_step[key] = find_and_replace_dependent_values(
+                    copy.deepcopy(sub_step[value_index]), dependent_on_temp_event
+                )
+            else:
+                if type(sub_step[value_index]) == str:
+                    if 'dependent_on_temp_event' in sub_step[value_index]:
+                        globals().update(locals())
+                        exec('sub_step[value_index] = {sub_step}'.format(sub_step=sub_step[value_index]), globals(), {})
+            value_index += 1
+    return sub_step
+
+
+def replace_dependent_values(sub_step, dependent_on_temp_event):
+    return find_and_replace_dependent_values(sub_step, dependent_on_temp_event)
 
 
 def reverse_and_regex_condition(regex, reverse):
@@ -294,7 +333,6 @@ def nettacker_fuzzer_repeater_perform(arrays):
                         ')' * interceptors_function.count('('))
                     expected_variables = {}
                     globals().update(locals())
-                    print(interceptors_function)
                     exec(interceptors_function, globals(), expected_variables)
                     interceptors_function_processed = expected_variables['interceptors_function_processed']
                 else:
