@@ -1,13 +1,12 @@
 info:
-  id: Server-version
-  name: Divyansh
-  author: Divyansh
-  severity: low
+  name: server_version_vuln
+  author: OWASP Nettacker Team
+  severity: 3
   description:
   reference:
   tags:
-    - zx
-    - zz
+    - vuln
+    - low_severity
 
 payloads:
   - library: http

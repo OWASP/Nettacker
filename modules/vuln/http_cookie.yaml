@@ -1,13 +1,12 @@
 info:
-  id: X-debug-rce
-  name: Divyansh
-  author: Divyansh
-  severity: low ##not confirmed
+  name: http_cookie_vuln
+  author: OWASP Nettacker Team
+  severity: 3
   description:
   reference:
   tags:
-    - zx
-    - zz
+    - vuln
+    - low_severity
 
 payloads:
   - library: http

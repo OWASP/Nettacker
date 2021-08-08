@@ -1,13 +1,12 @@
 info:
-  id: X-XSS-protection
-  name: Divyansh
-  author: Divyansh
-  severity: low to high
-  description: #description for x-xss-protection
-  reference: #needs to be done
+  name: x_xss_protection_vuln
+  author: OWASP Nettacker Team
+  severity: 3
+  description:
+  reference:
   tags:
-    - zx
-    - zz
+    - vuln
+    - low_severity
 
 payloads:
   - library: http

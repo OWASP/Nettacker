@@ -1,16 +1,15 @@
 info:
-  id: admin-scan
-  name: Divyansh
-  author: y
-  severity: z
-  description: gg
-  reference: oo
+  name: subdomain_scan
+  author: OWASP Nettacker Team
+  severity: 0
+  description: Find subdomains using different sources on internet
+  reference:
   tags:
     - scan
     - information_gathering
     - infortmation
     - info
-    - domain
+    - low_severity
 
 payloads:
   - library: http

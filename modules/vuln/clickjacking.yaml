@@ -1,13 +1,12 @@
 info:
-  id: Clickjacking
-  name: Aman
-  author: Aman
-  severity: Depends on the Feature(Maybe high or low)
-  description: #description for clickjacking
-  reference: #needs to be done
+  name: clickjacking_vuln
+  author: OWASP Nettacker Team
+  severity: 5
+  description: "Clickjacking, also known as a \"UI redress attack\", is when an attacker uses multiple transparent or opaque layers to trick a user into clicking on a button"
+  reference: "https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html"
   tags:
-    - zx
-    - zz
+    - vuln
+    - medium_severity
 
 payloads:
   - library: http

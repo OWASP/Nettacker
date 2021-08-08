@@ -1,13 +1,12 @@
 info:
-  id: Http-trace-enabled
-  name: Divyansh
-  author: Divyansh
-  severity: low
+  name: http_trace_enabled_vuln
+  author: OWASP Nettacker Team
+  severity: 3
   description:
   reference:
   tags:
-    - zx
-    - zz
+    - vuln
+    - low_severity
 
 payloads:
   - library: http

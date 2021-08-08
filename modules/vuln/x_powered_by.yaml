@@ -1,13 +1,12 @@
 info:
-  id: X-powered-by
-  name: Divyansh
-  author: Divyansh
-  severity: low
+  name: x_powered_by_vuln
+  author: OWASP Nettacker Team
+  severity: 3
   description:
   reference:
   tags:
-    - zx
-    - zz
+    - vuln
+    - low_severity
 
 payloads:
   - library: http

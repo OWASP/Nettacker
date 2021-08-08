@@ -1,13 +1,12 @@
 info:
-  id: Http-cors
-  name: Divyansh
-  author: Divyansh
-  severity: low to high
+  name: http_cors
+  author: OWASP Nettacker Team
+  severity: 3
   description:
   reference:
   tags:
-    - zx
-    - zz
+    - vuln
+    - low_severity
 
 payloads:
   - library: http

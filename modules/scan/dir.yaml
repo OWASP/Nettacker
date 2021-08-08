@@ -1,13 +1,13 @@
 info:
-  id: admin-scan
-  name: Divyansh
-  author: y
-  severity: z
-  description: gg
-  reference: oo
+  name: dir_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: Directory, Backup finder
+  reference: https://www.zaproxy.org/docs/alerts/10095/
   tags:
-    - zx
-    - zz
+    - scan
+    - backup
+    - low_severity
 
 payloads:
   - library: http

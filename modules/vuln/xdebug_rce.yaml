@@ -1,13 +1,12 @@
 info:
-  id: X-debug-rce
-  name: Divyansh
-  author: Divyansh
-  severity: low ##not confirmed
+  name: xdebug_rce_vuln
+  author: OWASP Nettacker Team
+  severity: 10
   description:
   reference:
   tags:
-    - zx
-    - zz
+    - vuln
+    - critical_severity
 
 payloads:
   - library: http
