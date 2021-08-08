@@ -233,7 +233,7 @@ class engine:
         try:
             response = action(**sub_step)
         except Exception:
-            response = None
+            response = []
         sub_step['method'] = backup_method
         sub_step['response'] = backup_response
         sub_step['response']['conditions_results'] = response_conditions_matched(sub_step, response)
@@ -242,5 +242,6 @@ class engine:
             module_name,
             target,
             scan_unique_id,
-            options
+            options,
+            response
         )

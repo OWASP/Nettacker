@@ -93,10 +93,10 @@ def nettacker_user_application_config():
         "language": "en",
         "verbose_mode": False,
         "show_version": False,
-        "output_file": "{0}/results_{1}_{2}.html".format(
-            nettacker_paths()["results_path"],
-            now(model="%Y_%m_%d_%H_%M_%S"),
-            generate_random_token(10)
+        "report_path_filename": "{results_path}/results_{date_time}_{random_chars}.html".format(
+            results_path=nettacker_paths()["results_path"],
+            date_time=now(model="%Y_%m_%d_%H_%M_%S"),
+            random_chars=generate_random_token(10)
         ),
         "graph_name": "d3_tree_v2_graph",
         "show_help_menu": False,

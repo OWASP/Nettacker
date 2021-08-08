@@ -112,8 +112,15 @@ class engine:
         del sub_step['response']
         try:
             response = action(**sub_step)
+            temp_response = {
+                "reason": response.reason,
+                "status_code": response.status_code,
+                "content": response.content.decode(errors="ignore"),
+                "headers": response.headers,
+                "responsetime": response.elapsed.total_seconds()
+            }
         except Exception:
-            response = None
+            response = []
         sub_step['method'] = backup_method
         sub_step['response'] = backup_response
         sub_step['response']['conditions_results'] = response_conditions_matched(sub_step, response)
@@ -122,5 +129,6 @@ class engine:
             module_name,
             target,
             scan_unique_id,
-            options
+            options,
+            response
         )

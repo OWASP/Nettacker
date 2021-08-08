@@ -77,8 +77,8 @@ def load_all_args():
         "-o",
         "--output",
         action="store",
-        default=nettacker_global_configuration['nettacker_user_application_config']['output_file'],
-        dest="output_file",
+        default=nettacker_global_configuration['nettacker_user_application_config']['report_path_filename'],
+        dest="report_path_filename",
         help=messages("save_logs"),
     )
     engineOpt.add_argument(
@@ -476,11 +476,11 @@ def check_all_required(parser):
             )
     # Check output file
     try:
-        temp_file = open(options.output_file, "w")
+        temp_file = open(options.report_path_filename, "w")
         temp_file.close()
     except Exception:
         die_failure(
-            messages("file_write_error").format(options.output_file)
+            messages("file_write_error").format(options.report_path_filename)
         )
     # Check Graph
     if options.graph_name:
@@ -488,7 +488,7 @@ def check_all_required(parser):
             die_failure(
                 messages("graph_module_404").format(options.graph_name)
             )
-        if not (options.output_file.endswith(".html") or options.output_file.endswith(".htm")):
+        if not (options.report_path_filename.endswith(".html") or options.report_path_filename.endswith(".htm")):
             warn(messages("graph_output"))
             options.graph_name = None
     return options
