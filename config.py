@@ -26,7 +26,7 @@ def nettacker_paths():
         "logo_file": os.path.join(sys.path[0], 'logo.txt'),
         "messages_path": os.path.join(sys.path[0], 'lib/messages'),
         "modules_path": os.path.join(sys.path[0], 'modules'),
-        "web_browser_user_agents": os.path.join(sys.path[0], 'lib/payload/User-Agents/web_browsers_user_agents.txt')
+        "web_browser_user_agents": os.path.join(sys.path[0], 'lib/payloads/User-Agents/web_browsers_user_agents.txt')
     }
 
 
