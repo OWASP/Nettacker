@@ -6,6 +6,7 @@ info:
   reference:
   tags:
     - vuln
+    - http
     - low_severity
 
 payloads:

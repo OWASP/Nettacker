@@ -24,8 +24,13 @@ target_input: Target input options
 target_list: target(s) list, separate with ","
 read_target: read target(s) from file
 scan_method_options: Scan method options
-choose_scan_method: choose scan method {0}
+choose_scan_method: choose modules {0} to see full list use --show-all-modules
+show_all_modules: show all modules and their information
 exclude_scan_method: choose scan method to exclude {0}
+loading_modules: loading all modules... it might get some time!
+loading_profiles: loading all profiles... it might get some time!
+show_all_profiles: show all profiles and their information
+module_profile_full_information: "{0}: {1}"
 username_list: username(s) list, separate with ","
 username_from_file: read username(s) from file
 password_seperator: password(s) list, separate with ","

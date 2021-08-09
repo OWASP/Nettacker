@@ -119,7 +119,7 @@ def load_all_args():
     )
 
     # Exclude Module Name
-    exclude_modules = load_all_modules()
+    exclude_modules = list(load_all_modules(limit=10).keys())
     exclude_modules.remove("all")
 
     # Methods Options
@@ -132,18 +132,32 @@ def load_all_args():
         action="store",
         dest="selected_modules",
         default=nettacker_global_configuration['nettacker_user_application_config']["selected_modules"],
-        help=messages("choose_scan_method").format(load_all_modules()),
+        help=messages("choose_scan_method").format(load_all_modules(limit=10).keys()),
+    )
+    modules.add_argument(
+        "--show-all-modules",
+        action="store_true",
+        dest="show_all_modules",
+        default=nettacker_global_configuration['nettacker_user_application_config']["show_all_modules"],
+        help=messages("show_all_modules"),
     )
     modules.add_argument(
         "--profile",
         action="store",
         default=nettacker_global_configuration['nettacker_user_application_config']["profiles"],
         dest="profiles",
-        help=messages("select_profile").format(load_all_profiles()),
+        help=messages("select_profile").format(list(load_all_profiles().keys())),
+    )
+    modules.add_argument(
+        "--show-all-profiles",
+        action="store_true",
+        dest="show_all_profiles",
+        default=nettacker_global_configuration['nettacker_user_application_config']["show_all_profiles"],
+        help=messages("show_all_profiles"),
     )
     modules.add_argument(
         "-x",
-        "--exclude",
+        "--exclude-modules",
         action="store",
         dest="excluded_modules",
         default=nettacker_global_configuration['nettacker_user_application_config']["excluded_modules"],
@@ -356,6 +370,33 @@ def check_all_required(parser):
             )
         )
         die_success()
+    if options.show_all_modules:
+        messages("loading_modules")
+        all_modules_with_details = load_all_modules(limit=-1, full_details=True)
+        for module in all_modules_with_details:
+            info(
+                messages("module_profile_full_information").format(
+                    module,
+                    ", ".join(
+                        [
+                            "{key}: {value}".format(
+                                key=key, value=all_modules_with_details[module][key]
+                            ) for key in all_modules_with_details[module]
+                        ]
+                    )
+                )
+            )
+        die_success()
+    if options.show_all_profiles:
+        messages("loading_profiles")
+        for profile in profiles_list:
+            info(
+                messages("module_profile_full_information").format(
+                    profile,
+                    ", ".join(profiles_list[profile])
+                )
+            )
+        die_success()
     # API mode
     if options.start_api_server:
         start_api_server(options)
@@ -401,6 +442,7 @@ def check_all_required(parser):
             options.selected_modules.remove('all')
         else:
             options.profiles = list(set(options.profiles.split(',')))
+            all_modules_with_details = load_all_modules(full_details=True)
             for profile in options.profiles:
                 if profile not in profiles_list:
                     die_failure(

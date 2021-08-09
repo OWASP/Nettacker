@@ -6,6 +6,7 @@ info:
   reference: https://www.zaproxy.org/docs/alerts/10095/
   tags:
     - scan
+    - http
     - backup
     - low_severity
 

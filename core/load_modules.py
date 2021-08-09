@@ -160,25 +160,46 @@ def load_all_languages():
     return languages_list
 
 
-def load_all_modules():
+def load_all_modules(limit=-1, full_details=False):
     """
     load all available modules
+
+    limit: return limited number of modules
+    full: with full details
 
     Returns:
         an array of all module names
     """
     # Search for Modules
     from config import nettacker_paths
-    module_names = []
-    for module_name in glob(os.path.join(nettacker_paths()['home_path'] + '/modules/*/*.yaml')):
+    if full_details:
+        import yaml
+    module_names = {}
+    for module_name in glob(os.path.join(nettacker_paths()['modules_path'] + '/*/*.yaml')):
         libname = module_name.split('/')[-1].split('.')[0]
         category = module_name.split('/')[-2]
-        module_names.append(libname + '_' + category)
-    module_names.append('all')
+        module_names[libname + '_' + category] = yaml.load(
+            StringIO(
+                open(
+                    nettacker_paths()['modules_path'] +
+                    '/' +
+                    category +
+                    '/' +
+                    libname +
+                    '.yaml',
+                    'r'
+                ).read().split('payload:')[0]
+            ),
+            Loader=yaml.FullLoader
+        )['info'] if full_details else None
+        if len(module_names) == limit:
+            module_names['...'] = {}
+            break
+    module_names['all'] = {}
     return module_names
 
 
-def load_all_profiles():
+def load_all_profiles(limit=-1):
     """
     load all available profiles
 
@@ -186,12 +207,23 @@ def load_all_profiles():
         an array of all profile names
     """
     from config import nettacker_paths
-    profiles = []
-    for module_name in glob(os.path.join(nettacker_paths()['home_path'] + '/modules/*/*.yaml')):
-        category = module_name.split('/')[-2]
-        if category not in profiles:
-            profiles.append(category)
-    profiles.append('all')
+    all_modules_with_details = load_all_modules(limit=limit, full_details=True)
+    profiles = {}
+    if '...' in all_modules_with_details:
+        del all_modules_with_details['...']
+    del all_modules_with_details['all']
+    for key in all_modules_with_details:
+        for tag in all_modules_with_details[key]['tags']:
+            if tag not in profiles:
+                profiles[tag] = []
+                profiles[tag].append(key)
+            else:
+                profiles[tag].append(key)
+            if len(profiles) == limit:
+                profiles['...'] = []
+                profiles['all'] = []
+                return profiles
+    profiles['all'] = []
     return profiles
 
 

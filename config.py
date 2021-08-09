@@ -122,7 +122,9 @@ def nettacker_user_application_config():
         "set_hardware_usage": "normal",
         "user_agent": "Nettacker {version_number} {version_code} - https://github.com/OWASP/Nettacker".format(
             version_number=version_info()[0], version_code=version_info()[1]
-        )
+        ),
+        "show_all_modules": False,
+        "show_all_profiles": False
     }
 
 

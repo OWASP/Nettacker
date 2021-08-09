@@ -6,6 +6,7 @@ info:
   reference: "https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html"
   tags:
     - vuln
+    - http
     - medium_severity
 
 payloads:
