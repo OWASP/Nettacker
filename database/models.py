@@ -26,7 +26,7 @@ class Report(Base):
         """
         returns a printable representation of the object of the class Report
         """
-        return "<Report(id={0}, scan_unique_id={1}, date={2})>".format(self.id, self.scan_unique_id, self.date)
+        return "<Report(id={0}, scan_unique_id={1}, date={2}, report_path_filename={3})>".format(self.id, self.scan_unique_id, self.date, self.report_path_filename)
 
 
 class TempEvents(Base):

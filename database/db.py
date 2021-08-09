@@ -109,7 +109,7 @@ def submit_report_to_db(event):
         Report(
             date=event["date"],
             scan_unique_id=event["scan_unique_id"],
-            report_path_filename=json.dumps(event["options"][""]),
+            report_path_filename=json.dumps(event["options"]["report_path_filename"]),
             options=json.dumps(event["options"]),
         )
     )
@@ -257,10 +257,11 @@ def __select_results(page):
                 "id": data.id,
                 "date": data.date,
                 "scan_unique_id": data.scan_unique_id,
+                "report_path_filename": data.report_path_filename,
                 "options": json.loads(data.options)
             }
             selected.append(tmp)
-    except Exception:
+    except Exception as e:
         return structure(status="error", msg="database error!")
     return selected
 
@@ -281,7 +282,8 @@ def __get_result(language, id):
         try:
             file_obj = session.query(Report).filter_by(id=id).first()
             filename = file_obj.report_path_filename
-            return open(filename, 'rb').read(), 200
+            filename = filename[1:-1]  # Todo: fix this
+            return open(str(filename), 'rb').read(), 200
         except Exception as _:
             return jsonify(structure(status="error", msg="cannot find the file!")), 400
     except Exception as _:
@@ -302,55 +304,94 @@ def __last_host_logs(language, page):
     session = create_connection()
     page = int(page * 10 if page > 0 else page * -10) - 10
     data_structure = {
-        "host": "",
+        "target": "",
         "info": {
-            "open_ports": [],
-            "scan_methods": [],
-            "category": [],
-            "descriptions": []
+            # "open_ports": [],
+            # "scan_methods": [],
+            "module_name": [],
+            # "category": [],
+            "options": [],
+            "date": [],
+            "event": [],
+            # "descriptions": []
         }
     }
+    # data_structure = {
+    #     "host": "",
+    #     "info": {
+    #         "open_ports": [],
+    #         "scan_methods": [],
+    #         "category": [],
+    #         "descriptions": []
+    #     }
+    # }
     selected = []
     try:
-        for host in session.query(HostsLog).group_by(HostsLog.host).order_by(HostsLog.id.desc())[page:page + 11]:
-            for data in session.query(HostsLog).filter(HostsLog.host == host).group_by(
-                    HostsLog.module_name, HostsLog.port, HostsLog.username, HostsLog.password,
-                    HostsLog.description).order_by(HostsLog.id.desc()):
+        for host in session.query(HostsLog).group_by(HostsLog.target).order_by(HostsLog.id.desc())[page:page + 11]:
+            for data in session.query(HostsLog).filter(HostsLog.target == host.target).group_by(
+                    HostsLog.module_name, HostsLog.event, HostsLog.options).order_by(HostsLog.id.desc()):
                 n = 0
                 capture = None
                 for selected_data in selected:
-                    if selected_data["host"] == host.host:
+                    if selected_data["target"] == host.target:
                         capture = n
                     n += 1
                 if capture is None:
+                    # tmp = {  # fix later, junks
+                    #     "host": data.host,
+                    #     "info": {
+                    #         "open_ports": [],
+                    #         "scan_methods": [],
+                    #         "category": [],
+                    #         "descriptions": []
+                    #     }
+                    # }
                     tmp = {  # fix later, junks
-                        "host": data.host,
+                        "target": data.target,
                         "info": {
-                            "open_ports": [],
-                            "scan_methods": [],
-                            "category": [],
-                            "descriptions": []
+                            # "open_ports": [],
+                            # "scan_methods": [],
+                            "module_name": [],
+                            # "category": [],
+                            "options": [],
+                            "date": [],
+                            "event": [],
+                            # "descriptions": []
                         }
                     }
                     selected.append(tmp)
                     n = 0
                     for selected_data in selected:
-                        if selected_data["host"] == host.host:
+                        if selected_data["target"] == host.target:
                             capture = n
                         n += 1
-                if data.host == selected[capture]["host"]:
-                    if data.port not in selected[capture]["info"]["open_ports"] and isinstance(data.port, int):
-                        selected[capture]["info"]["open_ports"].append(
-                            data.port)
-                    if data.type not in selected[capture]["info"]["scan_methods"]:
+                if data.target == selected[capture]["target"]:
+                    # if data.port not in selected[capture]["info"]["open_ports"] and isinstance(data.port, int):
+                    #     selected[capture]["info"]["open_ports"].append(
+                    #         data.port)
+                    if data.module_name not in selected[capture]["info"]["module_name"]:
                         selected[capture]["info"][
-                            "scan_methods"].append(data.type)
-                    if data.category not in selected[capture]["info"]["category"]:
-                        selected[capture]["info"]["category"].append(
-                            data.category)
-                    if data.description not in selected[capture]["info"]["descriptions"]:
+                            "module_name"].append(data.module_name)
+                    if data.date not in selected[capture]["info"]["date"]:
                         selected[capture]["info"][
-                            "descriptions"].append(data.description)
+                            "date"].append(data.date)
+                    if data.options not in selected[capture]["info"]["options"]:
+                        selected[capture]["info"]["options"].append(json.loads(data.options))
+                    if data.event not in selected[capture]["info"]["event"]:
+                        selected[capture]["info"]["event"].append(json.loads(data.event))
+                # if data.host == selected[capture]["host"]:
+                #     if data.port not in selected[capture]["info"]["open_ports"] and isinstance(data.port, int):
+                #         selected[capture]["info"]["open_ports"].append(
+                #             data.port)
+                #     if data.type not in selected[capture]["info"]["scan_methods"]:
+                #         selected[capture]["info"][
+                #             "scan_methods"].append(data.type)
+                #     if data.category not in selected[capture]["info"]["category"]:
+                #         selected[capture]["info"]["category"].append(
+                #             data.category)
+                #     if data.description not in selected[capture]["info"]["descriptions"]:
+                #         selected[capture]["info"][
+                #             "descriptions"].append(data.description)
     except Exception as _:
         return structure(status="error", msg="database error!")
     if len(selected) == 0:

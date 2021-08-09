@@ -130,11 +130,11 @@ def __scan(options):
             )
     # Check output file
     try:
-        temp_file = open(options.output_file, "w")
+        temp_file = open(options.report_path_filename, "w")
         temp_file.close()
     except Exception:
         die_failure(
-            messages("file_write_error").format(options.output_file)
+            messages("file_write_error").format(options.report_path_filename)
         )
     # Check Graph
     if options.graph_name:
@@ -142,14 +142,14 @@ def __scan(options):
             die_failure(
                 messages("graph_module_404").format(options.graph_name)
             )
-        if not (options.output_file.endswith(".html") or options.output_file.endswith(".htm")):
+        if not (options.report_path_filename.endswith(".html") or options.report_path_filename.endswith(".htm")):
             warn(messages("graph_output"))
             options.graph_name = None
     # Setting Variables
     # targets = config["targets"]
     # scan_ip_range = config["scan_ip_range"]
     # scan_subdomains = config["scan_subdomains"]
-    # output_file = config["output_file"]
+    # report_path_filename = config["report_path_filename"]
     # time_sleep_between_requests = config["time_sleep_between_requests"]
     # language = config["language"]
     # verbose_mode = config["verbose_mode"]

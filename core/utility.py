@@ -16,7 +16,7 @@ from core.time import now
 def process_conditions(event, module_name, target, scan_unique_id, options, response):
     from core.alert import (info,
                             verbose_info)
-    if 'save_to_temp_events_only' in event['response']:
+    if 'save_to_temp_events_only' in event.get('response',''):
         from database.db import submit_temp_logs_to_db
         submit_temp_logs_to_db(
             {
@@ -30,8 +30,8 @@ def process_conditions(event, module_name, target, scan_unique_id, options, resp
                 "data": response
             }
         )
-    if event['response']['conditions_results'] and 'save_to_temp_events_only' not in event['response']:
-        from database.db import submit_logs_to_db
+    if event['response']['conditions_results'] and 'save_to_temp_events_only' not in event.get('response',''):
+        from database.db import submit_logs_to_db, submit_report_to_db
         submit_logs_to_db(
             {
                 "date": now(model=None),
@@ -40,6 +40,13 @@ def process_conditions(event, module_name, target, scan_unique_id, options, resp
                 "scan_unique_id": scan_unique_id,
                 "options": options,
                 "event": event
+            }
+        )
+        submit_report_to_db(
+            {
+                "date": now(model=None),
+                "scan_unique_id": scan_unique_id,
+                "options": options,
             }
         )
         info(
