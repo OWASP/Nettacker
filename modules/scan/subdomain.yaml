@@ -4,7 +4,7 @@ info:
   severity: 0
   description: Find subdomains using different sources on internet
   reference:
-  tags:
+  profiles:
     - scan
     - information_gathering
     - infortmation

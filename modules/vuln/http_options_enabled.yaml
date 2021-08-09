@@ -4,7 +4,7 @@ info:
   severity: 3
   description:
   reference:
-  tags:
+  profiles:
     - vuln
     - http
     - low_severity

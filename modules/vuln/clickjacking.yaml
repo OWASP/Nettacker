@@ -4,7 +4,7 @@ info:
   severity: 5
   description: "Clickjacking, also known as a \"UI redress attack\", is when an attacker uses multiple transparent or opaque layers to trick a user into clicking on a button"
   reference: "https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html"
-  tags:
+  profiles:
     - vuln
     - http
     - medium_severity

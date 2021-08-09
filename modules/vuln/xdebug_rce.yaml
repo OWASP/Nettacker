@@ -4,7 +4,7 @@ info:
   severity: 10
   description:
   reference:
-  tags:
+  profiles:
     - vuln
     - http
     - critical_severity

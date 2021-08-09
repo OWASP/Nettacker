@@ -4,7 +4,7 @@ info:
   severity: 0
   description: check if host is alive through ICMP
   reference:
-  tags:
+  profiles:
     - scan
     - information_gathering
     - infortmation

@@ -213,7 +213,7 @@ def load_all_profiles(limit=-1):
         del all_modules_with_details['...']
     del all_modules_with_details['all']
     for key in all_modules_with_details:
-        for tag in all_modules_with_details[key]['tags']:
+        for tag in all_modules_with_details[key]['profiles']:
             if tag not in profiles:
                 profiles[tag] = []
                 profiles[tag].append(key)

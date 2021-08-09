@@ -4,7 +4,7 @@ info:
   severity: 3
   description: Directory, Backup finder
   reference: https://www.zaproxy.org/docs/alerts/10095/
-  tags:
+  profiles:
     - scan
     - http
     - backup

@@ -4,7 +4,7 @@ info:
   severity: 0
   description: Find open ports and services
   reference:
-  tags:
+  profiles:
     - scan
     - http
     - information_gathering
