@@ -109,7 +109,8 @@ def submit_report_to_db(event):
         Report(
             date=event["date"],
             scan_unique_id=event["scan_unique_id"],
-            report_path_filename=json.dumps(event["options"]["report_path_filename"]),
+            report_path_filename=json.dumps(
+                event["options"]["report_path_filename"]),
             options=json.dumps(event["options"]),
         )
     )
@@ -376,9 +377,11 @@ def __last_host_logs(language, page):
                         selected[capture]["info"][
                             "date"].append(data.date)
                     if data.options not in selected[capture]["info"]["options"]:
-                        selected[capture]["info"]["options"].append(json.loads(data.options))
+                        selected[capture]["info"]["options"].append(
+                            json.loads(data.options))
                     if data.event not in selected[capture]["info"]["event"]:
-                        selected[capture]["info"]["event"].append(json.loads(data.event))
+                        selected[capture]["info"]["event"].append(
+                            json.loads(data.event))
                 # if data.host == selected[capture]["host"]:
                 #     if data.port not in selected[capture]["info"]["open_ports"] and isinstance(data.port, int):
                 #         selected[capture]["info"]["open_ports"].append(
@@ -412,14 +415,17 @@ def __logs_by_scan_id(scan_unique_id):
     session = create_connection()
     # try:
     return_logs = []
-    logs = session.query(HostsLog).filter(HostsLog.scan_unique_id == scan_unique_id).all()
+    logs = session.query(HostsLog).filter(
+        HostsLog.scan_unique_id == scan_unique_id).all()
     for log in logs:
         data = {
             "scan_unique_id": scan_unique_id,
-            "TARGET": log.target,
+            "target": log.target,
             # "DATE": log.date,
-            "OPTIONS": json.loads(log.options),
-            "EVENT": json.loads(log.event),
+            "module_name": log.module_name,
+            "date": str(log.date),
+            "options": json.loads(log.options),
+            "event": json.loads(log.event),
         }
         return_logs.append(data)
     return return_logs
@@ -445,10 +451,10 @@ def __logs_to_report_json(target, language):
         for log in logs:
             data = {
                 "scan_unique_id": log.scan_unique_id,
-                "TARGET": log.target,
+                "target": log.target,
                 # "DATE": log.date,
-                "OPTIONS": json.loads(log.options),
-                "EVENT": json.loads(log.event),
+                "options": json.loads(log.options),
+                "event": json.loads(log.event),
                 # "HOST": host,
                 # "USERNAME": log.username,
                 # "PASSWORD": log.password,
@@ -463,7 +469,7 @@ def __logs_to_report_json(target, language):
         return []
 
 
-def __logs_to_report_html(host, language):
+def __logs_to_report_html(target, language=None):
     """
     generate HTML report with d3_tree_v2_graph for a host
 
@@ -477,30 +483,37 @@ def __logs_to_report_html(host, language):
     session = create_connection()
     try:
         logs = []
-        logs_data = session.query(HostsLog).filter(HostsLog.host == host).all()
+        logs_data = session.query(HostsLog).filter(
+            HostsLog.target == target).all()
         for log in logs_data:
             data = {
+                "date": log.date,
+                "target": log.target,
+                "module_name": log.module_name,
                 "scan_unique_id": log.scan_unique_id,
-                "HOST": host,
-                "USERNAME": log.username,
-                "PASSWORD": log.password,
-                "PORT": log.port,
-                "TYPE": log.type,
-                "TIME": log.date,
-                "DESCRIPTION": log.description
+                "options": log.options,
+                "event": log.event
+                # "USERNAME": log.username,
+                # "PASSWORD": log.password,
+                # "PORT": log.port,
+                # "TYPE": log.type,
+                # "TIME": log.date,
+                # "DESCRIPTION": log.description
             }
             logs.append(data)
         from core.log import build_graph
-        _graph = build_graph("d3_tree_v2_graph", "en", logs, 'HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE',
-                             'DESCRIPTION')
-        from lib.html_log import _log_data
-        _table = _log_data.table_title.format(_graph, _log_data.css_1, 'HOST', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE',
-                                              'DESCRIPTION', 'TIME')
+        # _graph = build_graph("d3_tree_v2_graph", "en", logs, 'target', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE',
+        #                      'DESCRIPTION')
+        _graph = build_graph("d3_tree_v2_graph", "en", logs, 'date',
+                             'target', 'module_name', 'scan_unique_id', 'options', 'event')
+        from lib.html_log import log_data
+        _table = log_data.table_title.format(
+            _graph, log_data.css_1, 'date', 'target', 'module_name', 'scan_unique_id', 'options', 'event')
         for value in logs:
-            _table += _log_data.table_items.format(value['HOST'], value['USERNAME'], value['PASSWORD'],
-                                                   value['PORT'], value['TYPE'], value['DESCRIPTION'], value['TIME'])
-        _table += _log_data.table_end + '<p class="footer">' + messages("en", "nettacker_report") \
-            .format(compatible.__version__, compatible.__code_name__, now()) + '</p>'
+            _table += log_data.table_items.format(value['date'], value["target"], value['module_name'], value['scan_unique_id'],
+                                                  value['options'], value['event'])
+        _table += log_data.table_end + '<p class="footer">' + \
+            messages("nettacker_report") + '</p>'
         return _table
     except Exception as _:
         return ""
@@ -550,8 +563,8 @@ def __search_logs(language, page, query):
                 # | (HostsLog.scan_cmd.like("%" + str(query) + "%"))
         ).group_by(HostsLog.target).order_by(HostsLog.id.desc())[page:page + 11]:
             for data in session.query(HostsLog).filter(HostsLog.target == str(host.target)).group_by(
-                    HostsLog.module_name, HostsLog.options, HostsLog.scan_unique_id, HostsLog.event).order_by(
-                HostsLog.id.desc()).all():
+                HostsLog.module_name, HostsLog.options, HostsLog.scan_unique_id, HostsLog.event).order_by(
+                    HostsLog.id.desc()).all():
                 n = 0
                 capture = None
                 for selected_data in selected:
@@ -589,9 +602,11 @@ def __search_logs(language, page, query):
                         selected[capture]["info"][
                             "date"].append(data.date)
                     if data.options not in selected[capture]["info"]["options"]:
-                        selected[capture]["info"]["options"].append(json.loads(data.options))
+                        selected[capture]["info"]["options"].append(
+                            json.loads(data.options))
                     if data.event not in selected[capture]["info"]["event"]:
-                        selected[capture]["info"]["event"].append(json.loads(data.event))
+                        selected[capture]["info"]["event"].append(
+                            json.loads(data.event))
                     # if data.category not in selected[capture]["info"]["category"]:
                     #     selected[capture]["info"]["category"].append(
                     #         data.category)

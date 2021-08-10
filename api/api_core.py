@@ -296,7 +296,6 @@ def scan_methods():
         HTML content or available modules
     """
     methods = load_all_modules()
-    print(methods)
     methods.pop("all")
     res = ""
     for sm in methods.keys():

@@ -5,7 +5,9 @@ import random
 import json
 from core.alert import messages
 
-def start(graph_name, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
+
+def start(graph_name, language,
+                 data, date, target, module_name, scan_unique_id, options, event):
     """
     generate the d3_tree_v1_graph with events
 
@@ -31,27 +33,27 @@ def start(graph_name, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
     }
     # get data for normalised_json
     for each_scan in data:
+        if each_scan['target'] not in normalisedjson['children']:
+            normalisedjson['children'].update({each_scan['target']: {}})
+            normalisedjson['children'][each_scan['target']].update(
+                {each_scan['module_name']: []})
 
-        if each_scan['HOST'] not in normalisedjson['children']:
-            normalisedjson['children'].update({each_scan['HOST']: {}})
-            normalisedjson['children'][each_scan['HOST']].update(
-                {each_scan['TYPE']: []})
-
-        if each_scan['TYPE'] not in normalisedjson['children'][each_scan['HOST']]:
-            normalisedjson['children'][each_scan['HOST']].update(
-                {each_scan['TYPE']: []})
-
-        normalisedjson['children'][each_scan['HOST']][each_scan['TYPE']].append("HOST: \"%s\", PORT:\"%s\", DESCRIPTION:\"%s\", USERNAME:\"%s\", PASSWORD:\"%s\"" % (
-            each_scan['HOST'], each_scan['PORT'], each_scan['DESCRIPTION'], each_scan['USERNAME'], each_scan['PASSWORD']))
-
+        if each_scan['module_name'] not in normalisedjson['children'][each_scan['target']]:
+            normalisedjson['children'][each_scan['target']].update(
+                {each_scan['module_name']: []})
+        normalisedjson['children'][each_scan['target']][each_scan['module_name']].append(
+            f"target: {each_scan['target']}, module_name: {each_scan['module_name']}, options: {each_scan['options']}, event: {each_scan['event']}")
     # define a d3_structure_json
     d3_structure = {"name": "Starting attack",
                     "children": []}
     # get data for normalised_json
-    for host in list(normalisedjson['children'].keys()):
-
-        d3_structure["children"].append({"name": host, "children": [{"name": otype, "children": [{"name": description}
-                                                                                                 for description in normalisedjson['children'][host][otype]]} for otype in list(normalisedjson['children'][host].keys())]})
+    for target in list(normalisedjson['children'].keys()):
+        for otype in list(normalisedjson['children'][target].keys()):
+            for description in normalisedjson["children"][target][otype]:
+                children_array = [{"name": otype, "children": [{"name": description}]}]
+                d3_structure["children"].append({"name": target, "children": children_array})            
+        # d3_structure["children"].append({"name": host, "children": [{"name": otype, "children": [{"name": description}
+        #                                                                                          for description in normalisedjson['children'][host][otype]]} for otype in list(normalisedjson['children'][host].keys())]})
 
     data = '''<!DOCTYPE html>
 <!-- THIS PAGE COPIED AND MODIFIED FROM http://bl.ocks.org/robschmuecker/7880033-->
@@ -11894,7 +11896,7 @@ treeJSON = d3.json("https://github.com/OWASP/Nettacker", function(error, treeDat
         <div id="tree-container"></div><br>
     </center>
 </body>'''.replace('__data_will_locate_here__', json.dumps(d3_structure)) \
-        .replace('__title_to_replace__', messages( "pentest_graphs")) \
-        .replace('__description_to_replace__', messages( "graph_message")) \
-        .replace('__html_title_to_replace__', messages( "nettacker_report"))
+        .replace('__title_to_replace__', messages("pentest_graphs")) \
+        .replace('__description_to_replace__', messages("graph_message")) \
+        .replace('__html_title_to_replace__', messages("nettacker_report"))
     return data
