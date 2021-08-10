@@ -7,7 +7,7 @@
 
 // the semi-colon before function invocation is a safety net against concatenated
 // scripts and/or other plugins which may not be closed properly.
-;(function ( $, window, document, undefined ) {
+; (function ($, window, document, undefined) {
     'use strict';
 
     // undefined is used here as the undefined global variable in ECMAScript 3 is
@@ -27,10 +27,10 @@
     };
 
     // The actual plugin constructor
-    function Plugin( element, options ) {
+    function Plugin(element, options) {
 
-        //SET OPTIONS
-        this.options = $.extend( {}, defaults, options );
+        //SET options
+        this.options = $.extend({}, defaults, options);
         this._defaults = defaults;
         this._name = pluginName;
 
@@ -44,14 +44,14 @@
     Plugin.prototype = {
         constructor: Plugin,
 
-        init: function() {
+        init: function () {
             // WE DON'T STOP PROPGATION SO CLICKS WILL AUTOMATICALLY
             // TOGGLE AND REMOVE THE DROPDOWN
             this.toggle();
         },
 
-        toggle: function(el, options) {
-            if(this.$element.data('dropdown') === 'show') {
+        toggle: function (el, options) {
+            if (this.$element.data('dropdown') === 'show') {
                 this.hideMenu();
             }
             else {
@@ -59,12 +59,12 @@
             }
         },
 
-        showMenu: function() {
+        showMenu: function () {
             this.$element.data('dropdown', 'show');
             this.$element.find('ul').show();
         },
 
-        hideMenu: function() {
+        hideMenu: function () {
             this.$element.data('dropdown', 'hide');
             this.$element.find('ul').hide();
         }
@@ -72,7 +72,7 @@
 
     // A really lightweight plugin wrapper around the constructor,
     // preventing against multiple instantiations
-    $.fn[pluginName] = function ( options ) {
+    $.fn[pluginName] = function (options) {
         return this.each(function () {
 
             // TOGGLE BUTTON IF IT EXISTS
@@ -81,14 +81,14 @@
             }
             // OTHERWISE CREATE A NEW INSTANCE
             else {
-                $.data(this, "plugin_" + pluginName, new Plugin( this, options ));
+                $.data(this, "plugin_" + pluginName, new Plugin(this, options));
             }
         });
     };
 
     //CLOSE OPEN DROPDOWN MENUS IF CLICKED SOMEWHERE ELSE
-    $(document).on('click', function(e) {
-        $.each($('[data-buttons=dropdown]'), function(i, value) {
+    $(document).on('click', function (e) {
+        $.each($('[data-buttons=dropdown]'), function (i, value) {
             if ($(e.target.offsetParent)[0] != $(this)[0]) {
                 if ($.data(this, "plugin_" + pluginName)) {
                     $.data(this, "plugin_" + pluginName).hideMenu();
@@ -99,14 +99,14 @@
     });
 
     //DELEGATE CLICK EVENT FOR DROPDOWN MENUS
-    $(document).on('click', '[data-buttons=dropdown]', function(e) {
+    $(document).on('click', '[data-buttons=dropdown]', function (e) {
         var $dropdown = $(e.currentTarget);
         $dropdown.menuButton();
     });
 
     //IGNORE CLICK EVENTS FROM DISPLAY BUTTON IN DROPDOWN
-    $(document).on('click', '[data-buttons=dropdown] > a', function(e) {
+    $(document).on('click', '[data-buttons=dropdown] > a', function (e) {
         e.preventDefault();
     });
 
-})( jQuery, window, document);
+})(jQuery, window, document);

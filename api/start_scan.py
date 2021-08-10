@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from api.api_core import profiles
 from core.scan_targers import start_scan_processes
 from core.utility import select_maximum_cpu_core
 from config import nettacker_global_config
 from core.load_modules import load_all_graphs
 from core.load_modules import load_all_modules
+from core.die import die_failure
+from core.alert import messages, warn
+from core.load_modules import load_all_profiles
 
 def __scan(options):
     """
@@ -55,6 +59,7 @@ def __scan(options):
             options.selected_modules.remove('all')
         else:
             options.profiles = list(set(options.profiles.split(',')))
+            profiles_list = load_all_profiles()
             for profile in options.profiles:
                 if profile not in profiles_list:
                     die_failure(

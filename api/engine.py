@@ -221,15 +221,11 @@ def new_scan(): ## working fine but required improve
     #     return jsonify({"error": "Please input correct target"}), 400
     options = app.config["OWASP_NETTACKER_CONFIG"]["options"]
     for key in vars(app.config["OWASP_NETTACKER_CONFIG"]["options"]):
-        #print(key)
         if get_value(flask_request, key) is not None:
-            print(escape(get_value(flask_request, key)))
-            print(key)
             try:
                 options.__dict__[key] = int(str(escape(get_value(flask_request, key))))
             except:
                 options.__dict__[key] = str(escape(get_value(flask_request, key)))
-    print(options)
     app.config["OWASP_NETTACKER_CONFIG"]["options"] = options
     #       _start_scan_config[key] = escape(get_value(flask_request, key))
     # _start_scan_config["backup_ports"] = get_value(flask_request, "ports")
@@ -315,7 +311,7 @@ def get_result_content():  ## todo: working now but improvement for filename
     api_key_check(app, flask_request, __language())
     try:
         _id = int(get_value(flask_request, "id"))
-    except Exception:
+    except Exception as e:
         return jsonify(structure(status="error",
                                  msg="your scan id is not valid!")), 400
     return __get_result(__language(), _id)
@@ -344,21 +340,17 @@ def get_results_json():  ##working fine
     else:
         result_id = []
     json_object = {}
-    # print(result_id)
     if (result_id):
         scan_unique_id = result_id[0].scan_unique_id
-        # print("amanguptss")
         data = __logs_by_scan_id(scan_unique_id)
         json_object = json.dumps(data)
     date_from_db = scan_id_temp[0].date
-    #print(date_from_db, type(date_from_db))
     date_format = "aman"
     #date_format = datetime.strptime(str(date_from_db), "%Y-%m-%d %H:%M:%S").date()
     date_format = str(date_format).replace(
         "-", "_").replace(":", "_").replace(" ", "_")
     filename = "report-" + date_format + "".join(
         random.choice(string.ascii_lowercase) for x in range(10))
-    #print(json_object)
     return Response(json_object,
                     mimetype='application/json',
                     headers={'Content-Disposition':
@@ -529,7 +521,6 @@ def start_api_subprocess(options):
     Args:
         options: all options
     """
-    print(options)
     app.config["OWASP_NETTACKER_CONFIG"] = {
         "api_access_key": options.api_access_key,
         "api_client_whitelisted_ips": options.api_client_whitelisted_ips,
