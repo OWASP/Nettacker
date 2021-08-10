@@ -2,25 +2,24 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import json
 from core import color
 from core.messages import load_message
 
 message_cache = load_message().messages
 
 
-def is_not_run_from_api():
+def run_from_api():
     """
     check if framework run from API to prevent any alert
 
     Returns:
         True if run from API otherwise False
     """
-    if "--start-api" in sys.argv or (
-            len(sys.argv) == 4 and "transforms" in sys.argv[1]
-    ):
-        return False
-    return True
+    return "--start-api" in sys.argv
+
+
+def verbose_mode_is_enabled():
+    return '--verbose' in sys.argv or '-v' in sys.argv
 
 
 def messages(msg_id):
@@ -48,7 +47,7 @@ def info(content):
     Returns:
         None
     """
-    if is_not_run_from_api():  # prevent to stdout if run from API
+    if (not run_from_api()) or verbose_mode_is_enabled():  # prevent to stdout if run from API
         sys.stdout.buffer.write(
             bytes(
                 color.color("yellow")
@@ -60,7 +59,7 @@ def info(content):
                 "utf8",
             )
         )
-    sys.stdout.flush()
+        sys.stdout.flush()
 
 
 def verbose_info(content):
@@ -74,7 +73,7 @@ def verbose_info(content):
     Returns:
         None
     """
-    if is_not_run_from_api() and '--verbose' in sys.argv or '-v' in sys.argv:
+    if verbose_mode_is_enabled():
         sys.stdout.buffer.write(
             bytes(
                 color.color("yellow")
@@ -86,7 +85,7 @@ def verbose_info(content):
                 "utf8",
             )
         )
-    sys.stdout.flush()
+        sys.stdout.flush()
 
 
 def write(content):
@@ -99,7 +98,7 @@ def write(content):
     Returns:
         None
     """
-    if is_not_run_from_api():
+    if not run_from_api():
         sys.stdout.buffer.write(
             bytes(content, "utf8") if isinstance(content, str) else content
         )
@@ -116,7 +115,7 @@ def warn(content):
     Returns:
         the message in warn structure - None
     """
-    if is_not_run_from_api():
+    if not run_from_api():
         sys.stdout.buffer.write(
             bytes(
                 color.color("blue")

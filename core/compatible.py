@@ -134,12 +134,12 @@ def check_dependencies():
             mysql_create_database()
             mysql_create_tables()
         except Exception:
-            die_failure(messages("en", "database_connection_failed"))
+            die_failure(messages("database_connection_failed"))
     elif nettacker_database_config()["DB"] == "postgres":
         try:
             from database.postgres_create import postgres_create_database
             postgres_create_database()
         except Exception:
-            die_failure(messages("en", "database_connection_failed"))
+            die_failure(messages("database_connection_failed"))
     else:
-        die_failure(messages("en", "invalid_database"))
+        die_failure(messages("invalid_database"))
