@@ -17,59 +17,52 @@ def response_conditions_matched(sub_step, response):
     condition_type = sub_step['response']['condition_type']
     conditions = sub_step['response']['conditions']
     condition_results = {}
-    if 'reason' in conditions:
-        regex = re.findall(re.compile(conditions['reason']['regex']), response['reason'])
-        reverse = conditions['reason']['reverse']
-        condition_results['reason'] = reverse_and_regex_condition(regex, reverse)
-    if 'status_code' in conditions:
-        regex = re.findall(re.compile(conditions['status_code']['regex']), response['status_code'])
-        reverse = conditions['status_code']['reverse']
-        condition_results['status_code'] = reverse_and_regex_condition(regex, reverse)
-    if 'content' in conditions:
-        regex = re.findall(re.compile(conditions['content']['regex']), response['content'])
-        reverse = conditions['content']['reverse']
-        condition_results['content'] = reverse_and_regex_condition(regex, reverse)
-    if 'headers' in conditions:
-        condition_results['headers'] = {}
-        for header in conditions['headers']:
-            reverse = conditions['headers'][header]['reverse']
-            if header in response['headers']:
-                regex = re.findall(
-                    re.compile(conditions['headers'][header]['regex']),
-                    response['headers'][header]
+    for condition in conditions:
+        if condition in ['reason', 'status_code', 'content']:
+            regex = re.findall(re.compile(conditions[condition]['regex']), response[condition])
+            reverse = conditions[condition]['reverse']
+            if 'reason' in conditions:
+                condition_results['reason'] = reverse_and_regex_condition(regex, reverse)
+            if 'status_code' in conditions:
+                condition_results['status_code'] = reverse_and_regex_condition(regex, reverse)
+            if 'content' in conditions:
+                condition_results['content'] = reverse_and_regex_condition(regex, reverse)
+        if condition == 'headers':
+            condition_results['headers'] = {}
+            for header in conditions['headers']:
+                reverse = conditions['headers'][header]['reverse']
+                if header in response['headers']:
+                    regex = re.findall(
+                        re.compile(conditions['headers'][header]['regex']),
+                        response['headers'][header]
+                    )
+                    condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
+                else:
+                    regex = re.findall(
+                        re.compile(conditions['headers'][header]['regex']),
+                        ""
+                    )
+                    condition_results['headers'][header] = reverse_and_regex_condition(regex,
+                                                                                       reverse) if reverse else []
+        if condition == 'responsetime':
+            if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
+                "==",
+                "!=",
+                ">=",
+                "<=",
+                ">",
+                "<"
+            ]:
+                exec(
+                    "condition_results['responsetime'] = response['responsetime'] if (" +
+                    "response['responsetime'] {0} float(conditions['responsetime'].split()[-1])".format(
+                        conditions['responsetime'].split()[0]
+                    ) +
+                    ") else []"
+
                 )
-                condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
             else:
-                regex = re.findall(
-                    re.compile(conditions['headers'][header]['regex']),
-                    ""
-                )
-                condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse) if reverse else []
-    if 'responsetime' in conditions:
-        if conditions['responsetime'].startswith(">="):
-            condition_results['responsetime'] = response['responsetime'] if (
-                    response['responsetime'] >= float(conditions['responsetime'].split()[-1])
-            ) else []
-        if conditions['responsetime'].startswith("=="):
-            condition_results['responsetime'] = response['responsetime'] if (
-                    response['responsetime'] == float(conditions['responsetime'].split()[-1])
-            ) else []
-        if conditions['responsetime'].startswith("<="):
-            condition_results['responsetime'] = response['responsetime'] if (
-                    response['responsetime'] <= float(conditions['responsetime'].split()[-1])
-            ) else []
-        if conditions['responsetime'].startswith("!="):
-            condition_results['responsetime'] = response['responsetime'] if (
-                    response['responsetime'] != float(conditions['responsetime'].split()[-1])
-            ) else []
-        if conditions['responsetime'].startswith("<"):
-            condition_results['responsetime'] = response['responsetime'] if (
-                    response['responsetime'] < float(conditions['responsetime'].split()[-1])
-            ) else []
-        if conditions['responsetime'].startswith(">"):
-            condition_results['responsetime'] = response['responsetime'] if (
-                    response['responsetime'] > float(conditions['responsetime'].split()[-1])
-            ) else []
+                condition_results['responsetime'] = []
     if condition_type.lower() == "or":
         # if one of the values are matched, it will be a string or float object in the array
         # we count False in the array and if it's not all []; then we know one of the conditions is matched.
@@ -103,7 +96,7 @@ def response_conditions_matched(sub_step, response):
     return []
 
 
-class engine:
+class Engine:
     def run(sub_step, module_name, target, scan_unique_id, options):
         backup_method = copy.deepcopy(sub_step['method'])
         backup_response = copy.deepcopy(sub_step['response'])

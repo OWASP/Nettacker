@@ -424,7 +424,7 @@ def check_all_required(parser):
     if options.selected_modules:
         if options.selected_modules == 'all':
             options.selected_modules = modules_list
-            options.selected_modules.remove('all')
+            del options.selected_modules['all']
         else:
             options.selected_modules = list(set(options.selected_modules.split(',')))
         for module_name in options.selected_modules:
@@ -439,7 +439,7 @@ def check_all_required(parser):
             options.selected_modules = []
         if options.profiles == 'all':
             options.selected_modules = modules_list
-            options.selected_modules.remove('all')
+            del options.selected_modules['all']
         else:
             options.profiles = list(set(options.profiles.split(',')))
             all_modules_with_details = load_all_modules(full_details=True)

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import socks
 import socket
 import time
 from glob import glob
@@ -24,6 +23,7 @@ def getaddrinfo(*args):
 
 def set_socks_proxy(socks_proxy):
     if socks_proxy:
+        import socks
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.split('://')[1] if '://' in socks_proxy else socks_proxy
         if '@' in socks_proxy:
@@ -100,9 +100,9 @@ class NettackerModules:
             protocol = getattr(
                 __import__(
                     'core.module_protocols.{library}'.format(library=payload['library']),
-                    fromlist=['engine']
+                    fromlist=['Engine']
                 ),
-                'engine'
+                'Engine'
             )
             for step in payload['steps']:
                 for sub_step in step:

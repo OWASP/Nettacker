@@ -14,35 +14,12 @@ from core.utility import get_dependent_results_from_database
 from core.utility import replace_dependent_values
 
 
-def receive_all(socket_connection, limit=4196):
-    """
-    receive all data from a socket
-    Args:
-        socket_connection: python socket
-        limit: limit size to get response
-    Returns:
-        response or b""
-    """
-    response_content = ""
-    while len(response_content) < limit:
-        try:
-            response_byte = socket_connection.recv(1)
-            if response_byte != b"":
-                response_content += response_byte.decode()
-            else:
-                break
-        except Exception:
-            break
-    return response_content
-
-
 def response_conditions_matched(sub_step, response):
     conditions = sub_step['response']['conditions']
     condition_type = sub_step['response']['condition_type']
     condition_results = {}
     if sub_step['method'] == 'tcp_connect_only':
-        if response:
-            return response
+        return response
     if sub_step['method'] == 'tcp_connect_send_and_receive':
         if response:
             received_content = response['response']
@@ -55,10 +32,14 @@ def response_conditions_matched(sub_step, response):
                     del condition_results[condition]
             if 'open_port' in condition_results and len(condition_results) > 1:
                 del condition_results['open_port']
-            return condition_results
+                del conditions['open_port']
+            if condition_type == 'and':
+                return condition_results if len(condition_results) == len(conditions) else []
+            if condition_type == 'or':
+                return condition_results if condition_results else []
+            return []
     if sub_step['method'] == 'socket_icmp':
-        if response:
-            return response
+        return response
     return []
 
 
@@ -80,12 +61,12 @@ class NettackerSocket:
         socket_connection.connect((host, int(ports)))
         peer_name = socket_connection.getpeername()
         socket_connection.send(b"ABC\x00\r\n" * 10)
-        response = receive_all(socket_connection)
+        response = socket_connection.recv(1024 * 1024 * 10)
         socket_connection.close()
         return {
             "peer_name": peer_name,
             "service": socket.getservbyport(int(ports)),
-            "response": response
+            "response": response.decode(errors='ignore')
         }
 
     def socket_icmp(host, ports, timeout):
@@ -225,7 +206,7 @@ class NettackerSocket:
         }
 
 
-class engine:
+class Engine:
     def run(sub_step, module_name, target, scan_unique_id, options):
         backup_method = copy.deepcopy(sub_step['method'])
         backup_response = copy.deepcopy(sub_step['response'])
