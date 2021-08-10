@@ -190,7 +190,7 @@ def get_statics(path):
 
 
 @app.route("/", methods=["GET", "POST"])
-def index():
+def index():  ## working fine
     """
     index page for WebUI
 
@@ -198,7 +198,7 @@ def index():
         rendered HTML page
     """
     from config import nettacker_user_application_config
-    filename = nettacker_user_application_config()["output_file"]
+    filename = nettacker_user_application_config()["report_path_filename"]
 
     return render_template("index.html", selected_modules=scan_methods(),
                            languages = languages(),
@@ -207,7 +207,7 @@ def index():
 
 
 @app.route("/new/scan", methods=["GET", "POST"])
-def new_scan():
+def new_scan(): ## working fine but required improve
     """
     new scan through the API
 
@@ -242,7 +242,7 @@ def new_scan():
 
 
 @app.route("/session/check", methods=["GET"])
-def __session_check():
+def session_check():  ## working fine
     """
     check the session if it's valid
 
@@ -255,7 +255,7 @@ def __session_check():
 
 
 @app.route("/session/set", methods=["GET"])
-def __session_set():
+def session_set():  ## working fine ## todo: mtehod requires to be POST
     """
     set session on the browser
 
@@ -273,7 +273,7 @@ def __session_set():
 
 
 @app.route("/session/kill", methods=["GET"])
-def __session_kill():
+def session_kill(): ## working fine
     """
     unset session on the browser
 
@@ -289,7 +289,7 @@ def __session_kill():
 
 
 @app.route("/results/get_list", methods=["GET"])
-def __get_results():
+def get_results():  ## WORKING FINE
     """
     get list of scan's results through the API
 
@@ -305,7 +305,7 @@ def __get_results():
 
 
 @app.route("/results/get", methods=["GET"])
-def __get_result_content():
+def get_result_content():  ## todo: working now but improvement for filename
     """
     get a result HTML/TEXT/JSON content
 
@@ -322,7 +322,7 @@ def __get_result_content():
 
 
 @app.route("/results/get_json", methods=["GET"])
-def __get_results_json():
+def get_results_json():  ##working fine
     """
     get host's logs through the API in JSON type
 
@@ -366,7 +366,7 @@ def __get_results_json():
 
 
 @app.route("/results/get_csv", methods=["GET"])
-def __get_results_csv():
+def get_results_csv():  #todo: need to fix time format
     """
     get host's logs through the API in JSON type
 
@@ -387,7 +387,8 @@ def __get_results_csv():
     else:
         result_id = []
     date_from_db = scan_id_temp[0].date
-    date_format = datetime.strptime(date_from_db, "%Y-%m-%d %H:%M:%S")
+    date_format = "aman"
+    #date_format = datetime.strptime(date_from_db, "%Y-%m-%d %H:%M:%S")
     date_format = str(date_format).replace(
         "-", "_").replace(":", "_").replace(" ", "_")
     filename = "report-" + date_format + "".join(
@@ -395,25 +396,25 @@ def __get_results_csv():
     _reader = ''
     if (result_id):
         scan_unique_id = result_id[0].scan_unique_id
-        data = __logs_by_scan_id(scan_unique_id, __language())
+        data = __logs_by_scan_id(scan_unique_id)
         keys = data[0].keys()
-        with open(filename, "w") as output_file:
+        with open(filename, "w") as report_path_filename:
             dict_writer = csv.DictWriter(
-                output_file, fieldnames=keys, quoting=csv.QUOTE_ALL)
+                report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL)
             dict_writer.writeheader()
             for i in data:
                 dictdata = {key: value for key, value in i.items()
                             if key in keys}
                 dict_writer.writerow(dictdata)
-        with open(filename, 'r') as output_file:
-            _reader = output_file.read()
+        with open(filename, 'r') as report_path_filename:
+            _reader = report_path_filename.read()
     return Response(_reader, mimetype='text/csv',
                     headers={'Content-Disposition':
                                  'attachment;filename=' + filename + '.csv'})
 
 
 @app.route("/logs/get_list", methods=["GET"])
-def __get_last_host_logs():
+def get_last_host_logs():  ## working
     """
     get list of logs through the API
 
@@ -429,7 +430,7 @@ def __get_last_host_logs():
 
 
 @app.route("/logs/get_html", methods=["GET"])
-def __get_logs_html():
+def get_logs_html():  ## todo: html needs to be added to solve this error
     """
     get host's logs through the API in HTML type
 
@@ -445,7 +446,7 @@ def __get_logs_html():
 
 
 @app.route("/logs/get_json", methods=["GET"])
-def __get_logs():
+def get_logs():  ## working fine
     """
     get host's logs through the API in JSON type
 
@@ -468,7 +469,7 @@ def __get_logs():
 
 
 @app.route("/logs/get_csv", methods=["GET"])
-def __get_logs_csv():
+def get_logs_csv(): ## working fine
     """
     get target's logs through the API in JSON type
 
@@ -485,23 +486,23 @@ def __get_logs_csv():
     filename = "report-" + now(
         model="%Y_%m_%d_%H_%M_%S") + "".join(random.choice(
         string.ascii_lowercase) for x in range(10))
-    with open(filename, "w") as output_file:
+    with open(filename, "w") as report_path_filename:
         dict_writer = csv.DictWriter(
-            output_file, fieldnames=keys, quoting=csv.QUOTE_ALL)
+            report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL)
         dict_writer.writeheader()
         for i in data:
             dictdata = {key: value for key, value in i.items()
                         if key in keys}
             dict_writer.writerow(dictdata)
-    with open(filename, 'r') as output_file:
-        reader = output_file.read()
+    with open(filename, 'r') as report_path_filename:
+        reader = report_path_filename.read()
     return Response(reader, mimetype='text/csv',
                     headers={'Content-Disposition':
                                  'attachment;filename=' + filename + '.csv'})
 
 
 @app.route("/logs/search", methods=["GET"])
-def ___go_for_search_logs():
+def go_for_search_logs(): ## working fine
     """
     search in all events
 

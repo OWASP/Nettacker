@@ -251,7 +251,6 @@ def languages():
     for lang in languages:
         res += """<option {2} id="{0}" data-content='<span class="flag-icon flag-icon-{1}" value="{0}"></span> {0}'></option>""" \
             .format(lang, flags[lang], "selected" if lang == "en" else "")
-    print(res)
     return res
 
 
@@ -298,9 +297,9 @@ def scan_methods():
     """
     methods = load_all_modules()
     print(methods)
-    methods.remove("all")
+    methods.pop("all")
     res = ""
-    for sm in methods:
+    for sm in methods.keys():
         label = "success" if sm.endswith("_scan") else "warning" if sm.endswith("_brute") else "danger" if sm.endswith(
             "_vuln") else "default"
         profile = "scan" if sm.endswith("_scan") else "brute" if sm.endswith("_brute") else "vuln" if sm.endswith(
@@ -341,11 +340,11 @@ def rules(config, defaults, language):
         abort(400, messages( "error_target"))
     # Check Log File
     try:
-        f = open(config["output_file"], "a")
+        f = open(config["report_path_filename"], "a")
         f.close()
     except:
         abort(400, messages( "file_write_error").format(
-            config["output_file"]))
+            config["report_path_filename"]))
 
     # Check Passwords
     config["passwords"] = config["passwords"].rsplit(

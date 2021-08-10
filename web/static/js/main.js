@@ -179,7 +179,7 @@ $(document).ready(function () {
           position: "right",
         },
         {
-          element: document.querySelectorAll("#output_file")[0],
+          element: document.querySelectorAll("#report_path_filename")[0],
           intro:
             "Enter the location of the file you want your output in or leave it to the default value.",
           position: "right",
@@ -286,7 +286,7 @@ $(document).ready(function () {
       selected_modules: selected_modules,
       graph_name: graph_name,
       language: language,
-      output_file: $("#output_file").val(),
+      report_path_filename: $("#report_path_filename").val(),
       scan_ip_range: p_1,
       scan_subdomains: p_3,
       ping_before_scan: p_2,
@@ -488,7 +488,7 @@ $(document).ready(function () {
         // "<p class='mb-1 bold label label-default'>scan_cmd:" +
         // scan_cmd +
         // "</p>" +
-        '</p>\n </a>' +
+        // '</p>\n </a>' +
         '<button class="mb-1 bold label card-date""><a href="/results/get_json?id=' +
         id +
         '">Get JSON</a></button>' +
