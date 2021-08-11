@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import sys
+
 from core.alert import write
 from core.alert import warn
 from core.alert import info
@@ -18,7 +20,6 @@ from core.color import reset_color
 from core.load_modules import load_all_modules
 from core.load_modules import load_all_graphs
 from core.load_modules import load_all_profiles
-from api.engine import start_api_server
 
 
 def load_all_args():
@@ -294,58 +295,87 @@ def load_all_args():
     )
     # API Options
     api = parser.add_argument_group(
-        messages("API"), messages("API_options"))
-    api.add_argument("--start-api", action="store_true",
-                     dest="start_api_server",
-                     default=nettacker_global_configuration['nettacker_api_config']["start_api_server"],
-                     help=messages("start_api_server"))
-    api.add_argument("--api-host", action="store",
-                     dest="api_hostname",
-                     default=nettacker_global_configuration['nettacker_api_config']["api_hostname"],
-                     help=messages("API_host"))
-    api.add_argument("--api-port", action="store",
-                     dest="api_port",
-                     default=nettacker_global_configuration['nettacker_api_config']["api_port"],
-                     help=messages("API_port"))
-    api.add_argument("--api-debug-mode", action="store_true",
-                     dest="api_debug_mode",
-                     default=nettacker_global_configuration['nettacker_api_config']["api_debug_mode"],
-                     help=messages("API_debug"))
-    api.add_argument("--api-access-key", action="store",
-                     dest="api_access_key",
-                     default=nettacker_global_configuration['nettacker_api_config']["api_access_key"],
-                     help=messages("API_access_key"))
-    api.add_argument("--api-client-whitelisted-ips", action="store",
-                     dest="api_client_whitelisted_ips",
-                     default=nettacker_global_configuration['nettacker_api_config']["api_client_whitelisted_ips"],
-                     help=messages("define_whie_list"))
-    api.add_argument("--api-access-log", action="store",
-                     dest="api_access_log",
-                     default=nettacker_global_configuration['nettacker_api_config'][
-                         "api_access_log"],
-                     help=messages("API_access_log_file"))
-    api.add_argument("--api-cert",
-                     action="store", dest="api_cert",
-                     help=messages("API_cert"))
-    api.add_argument("--api-cert-key",
-                     action="store", dest="api_cert_key",
-                     help=messages("API_cert_key"))
+        messages("API"),
+        messages("API_options")
+    )
+    api.add_argument(
+        "--start-api",
+        action="store_true",
+        dest="start_api_server",
+        default=nettacker_global_configuration['nettacker_api_config']["start_api_server"],
+        help=messages("start_api_server")
+    )
+    api.add_argument(
+        "--api-host",
+        action="store",
+        dest="api_hostname",
+        default=nettacker_global_configuration['nettacker_api_config']["api_hostname"],
+        help=messages("API_host")
+    )
+    api.add_argument(
+        "--api-port",
+        action="store",
+        dest="api_port",
+        default=nettacker_global_configuration['nettacker_api_config']["api_port"],
+        help=messages("API_port")
+    )
+    api.add_argument(
+        "--api-debug-mode",
+        action="store_true",
+        dest="api_debug_mode",
+        default=nettacker_global_configuration['nettacker_api_config']["api_debug_mode"],
+        help=messages("API_debug")
+    )
+    api.add_argument(
+        "--api-access-key",
+        action="store",
+        dest="api_access_key",
+        default=nettacker_global_configuration['nettacker_api_config']["api_access_key"],
+        help=messages("API_access_key")
+    )
+    api.add_argument(
+        "--api-client-whitelisted-ips",
+        action="store",
+        dest="api_client_whitelisted_ips",
+        default=nettacker_global_configuration['nettacker_api_config']["api_client_whitelisted_ips"],
+        help=messages("define_whie_list")
+    )
+    api.add_argument(
+        "--api-access-log",
+        action="store",
+        dest="api_access_log",
+        default=nettacker_global_configuration['nettacker_api_config']["api_access_log"],
+        help=messages("API_access_log_file")
+    )
+    api.add_argument(
+        "--api-cert",
+        action="store",
+        dest="api_cert",
+        help=messages("API_cert")
+    )
+    api.add_argument(
+        "--api-cert-key",
+        action="store",
+        dest="api_cert_key",
+        help=messages("API_cert_key")
+    )
     # Return Options
     return parser
 
 
-def check_all_required(parser):
+def check_all_required(parser, api_forms=None):
     """
     check all rules and requirements for ARGS
 
     Args:
         parser: parser from argparse
+        api_forms: values from API
 
     Returns:
         all ARGS with applied rules
     """
     # Checking Requirements
-    options = parser.parse_args()
+    options = parser.parse_args() if not api_forms else api_forms
     modules_list = load_all_modules(full_details=True)
     profiles_list = load_all_profiles()
 
@@ -398,6 +428,9 @@ def check_all_required(parser):
         die_success()
     # API mode
     if options.start_api_server:
+        if '--start-api' in sys.argv and api_forms:
+            die_failure(messages("cannot_run_api_server"))
+        from api.engine import start_api_server
         start_api_server(options)
 
     # Check the target(s)
@@ -458,9 +491,10 @@ def check_all_required(parser):
         )
     options.set_hardware_usage = select_maximum_cpu_core(options.set_hardware_usage)
 
+    options.thread_per_host = int(options.thread_per_host)
     if not options.thread_per_host >= 1:
         options.thread_per_host = 1
-
+    options.parallel_module_scan = int(options.parallel_module_scan)
     if not options.parallel_module_scan >= 1:
         options.parallel_module_scan = 1
 
@@ -530,4 +564,7 @@ def check_all_required(parser):
         if not (options.report_path_filename.endswith(".html") or options.report_path_filename.endswith(".htm")):
             warn(messages("graph_output"))
             options.graph_name = None
+    options.timeout = float(options.timeout)
+    options.time_sleep_between_requests = float(options.time_sleep_between_requests)
+    options.retries = int(options.retries)
     return options

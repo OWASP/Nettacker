@@ -64,8 +64,8 @@ def remove_non_api_keys(config):
     """
     non_api_keys = [
         "start_api_server", "api_host", "api_port", "api_debug_mode", "api_access_key", "api_client_white_list",
-        "api_client_white_list_ips", "api_access_log", "api_access_log", "api_access_log_filename", 
-        "api_cert", "api_cert_key", "show_version", "check_update", "show_help_menu", "targets_list", 
+        "api_client_white_list_ips", "api_access_log", "api_access_log", "api_access_log_filename",
+        "api_cert", "api_cert_key", "show_version", "check_update", "show_help_menu", "targets_list",
         "usernames_list", "passwds_list", "excluded_modules"
     ]
     new_config = {}
@@ -197,21 +197,20 @@ def get_file(filename):
         abort(404)
 
 
-def api_key_check(app, flask_request, language):
+def api_key_check(app, flask_request):
     """
     check the validity of API key
 
     Args:
         app: the flask app
         flask_request: the flask request
-        language: language
 
     Returns:
         200 HTTP code if it's valid otherwise 401 error
 
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != get_value(flask_request, "key"):
-        abort(401, messages( "API_invalid"))
+        abort(401, messages("API_invalid"))
     return
 
 
@@ -322,10 +321,10 @@ def rules(config, defaults, language):
     """
     # Check Ranges
     config["scan_ip_range"] = True if config[
-                                         "scan_ip_range"] is not False else False
+                                          "scan_ip_range"] is not False else False
     # Check Subdomains
     config["scan_subdomains"] = True if config[
-                                             "scan_subdomains"] is not False else False
+                                            "scan_subdomains"] is not False else False
     # Check Graph
     config["graph_name"] = config["graph_name"] if config[
                                                        "graph_name"] in load_all_graphs() else None
@@ -336,13 +335,13 @@ def rules(config, defaults, language):
     if config["targets"] is not None:
         config["targets"] = list(set(config["targets"].rsplit(",")))
     else:
-        abort(400, messages( "error_target"))
+        abort(400, messages("error_target"))
     # Check Log File
     try:
         f = open(config["report_path_filename"], "a")
         f.close()
     except:
-        abort(400, messages( "file_write_error").format(
+        abort(400, messages("file_write_error").format(
             config["report_path_filename"]))
 
     # Check Passwords
@@ -366,7 +365,7 @@ def rules(config, defaults, language):
                         if p not in tmp_ports:
                             tmp_ports.append(p)
             except:
-                abort(400, messages( "ports_int"))
+                abort(400, messages("ports_int"))
         if len(tmp_ports) == 0:
             ports = None
         else:
@@ -391,7 +390,7 @@ def rules(config, defaults, language):
                     if sm not in tmp_sm.rsplit(","):
                         tmp_sm += sm + ","
             except:
-                abort(400, messages( "profile_404").format(pr))
+                abort(400, messages("profile_404").format(pr))
         if tmp_sm[-1] == ",":
             tmp_sm = tmp_sm[0:-1]
         config["selected_modules"] = ",".join(list(set(tmp_sm.rsplit(","))))
@@ -404,12 +403,13 @@ def rules(config, defaults, language):
     if config["selected_modules"] is not None and "all" in config["selected_modules"].rsplit(","):
         config["selected_modules"] = load_all_modules()
         config["selected_modules"].remove("all")
-    elif config["selected_modules"] is not None and len(config["selected_modules"].rsplit(",")) == 1 and "*_" not in config[
-        "selected_modules"]:
+    elif config["selected_modules"] is not None and len(config["selected_modules"].rsplit(",")) == 1 and "*_" not in \
+            config[
+                "selected_modules"]:
         if config["selected_modules"] in load_all_modules():
             config["selected_modules"] = config["selected_modules"].rsplit()
         else:
-            abort(400, messages( "scan_module_not_found").format(
+            abort(400, messages("scan_module_not_found").format(
                 config["selected_modules"]))
     else:
         if config["selected_modules"] is not None:
@@ -443,10 +443,10 @@ def rules(config, defaults, language):
                 else:
                     scan_method_error = True
             if scan_method_error:
-                abort(400, messages( "scan_module_not_found").format(
+                abort(400, messages("scan_module_not_found").format(
                     config["selected_modules"]))
         else:
-            abort(400, messages( "scan_method_select"))
+            abort(400, messages("scan_method_select"))
         config["selected_modules"] = list(set(config["selected_modules"]))
 
     # Check Socks Proxy
@@ -476,7 +476,7 @@ def rules(config, defaults, language):
         except:
             e = True
         if e:
-            abort(400, messages( "valid_socks_address"))
+            abort(400, messages("valid_socks_address"))
         if socks_flag == 4:
             socks_proxy = "socks4://" + socks_proxy
         if socks_flag == 5:

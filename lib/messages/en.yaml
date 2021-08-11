@@ -31,6 +31,7 @@ loading_modules: loading all modules... it might get some time!
 loading_profiles: loading all profiles... it might get some time!
 show_all_profiles: show all profiles and their information
 module_profile_full_information: "{0}: {1}"
+cannot_run_api_server: You can't run API Server through itself!
 username_list: username(s) list, separate with ","
 username_from_file: read username(s) from file
 password_seperator: password(s) list, separate with ","

@@ -7,16 +7,16 @@ import random
 import csv
 import json
 import string
-from datetime import datetime
+import os
+import copy
+from types import SimpleNamespace
 from database.db import create_connection, __logs_by_scan_id
 from database.models import HostsLog, Report
-import os
 from flask import Flask
 from flask import jsonify
 from flask import request as flask_request
 from flask import render_template
 from flask import abort
-from flask import escape
 from flask import Response
 from flask import make_response
 from core.alert import write_to_api_console
@@ -32,21 +32,25 @@ from api.api_core import scan_methods
 from api.api_core import profiles
 from api.api_core import graphs
 from api.api_core import languages
-from api.api_core import remove_non_api_keys
-from api.api_core import rules
 from api.api_core import api_key_check
-from api.start_scan import __scan
 from database.db import __select_results
 from database.db import __get_result
 from database.db import __last_host_logs
 from database.db import __logs_to_report_json
 from database.db import __search_logs
 from database.db import __logs_to_report_html
+from config import nettacker_global_config
+from core.scan_targers import start_scan_processes
+from core.args_loader import check_all_required
 
-TEMPLATE_DIR = os.path.join(os.path.join(
-    os.path.dirname(os.path.dirname(__file__)), "web"), "static")
-app = Flask(__name__, template_folder=TEMPLATE_DIR)
+app = Flask(
+    __name__,
+    template_folder=nettacker_global_config()['nettacker_paths']['web_static_files_path']
+)
 app.config.from_object(__name__)
+nettacker_application_config = nettacker_global_config()['nettacker_user_application_config']
+nettacker_application_config.update(nettacker_global_config()['nettacker_api_config'])
+del nettacker_application_config['api_access_key']
 
 
 def __language(app=app):
@@ -133,7 +137,7 @@ def limit_remote_addr():
     if app.config["OWASP_NETTACKER_CONFIG"]["api_client_whitelisted_ips"]:
         if flask_request.remote_addr not in app.config[
             "OWASP_NETTACKER_CONFIG"]["api_client_whitelisted_ips"]:
-            abort(403, messages( "unauthorized_IP"))
+            abort(403, messages("unauthorized_IP"))
     return
 
 
@@ -149,25 +153,23 @@ def access_log(response):
         the flask response
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"]:
-        r_log = open(app.config["OWASP_NETTACKER_CONFIG"][
-                         "api_access_log"], "ab")
-        # if you need to log POST data
-        # r_log.write(
-        #     "{0} [{1}] {2} \"{3} {4}\" {5} {6} {7}\r\n".format(
-        #                                                      flask_request.remote_addr,
-        #                                                      now(),
-        #                                                      flask_request.host,
-        #                                                      flask_request.method,
-        #                                                      flask_request.full_path,
-        #                                                      flask_request.user_agent,
-        #                                                      response.status_code,
-        #                                                      json.dumps(flask_request.form)))
-        r_log.write("{0} [{1}] {2} \"{3} {4}\" {5} {6}\r\n".format(
-            flask_request.remote_addr, now(),
-            flask_request.host,
-            flask_request.method, flask_request.full_path,
-            flask_request.user_agent, response.status_code).encode())
-        r_log.close()
+        log_request = open(
+            app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"],
+            "ab"
+        )
+        log_request.write(
+            "{0} [{1}] {2} \"{3} {4}\" {5} {6} {7}\r\n".format(
+                flask_request.remote_addr,
+                now(),
+                flask_request.host,
+                flask_request.method,
+                flask_request.full_path,
+                flask_request.user_agent,
+                response.status_code,
+                json.dumps(flask_request.form)
+            ).encode()
+        )
+        log_request.close()
     return response
 
 
@@ -202,39 +204,31 @@ def index():  ## working fine
 
     return render_template("index.html",
                            selected_modules=scan_methods(),
-                           profile = profiles(),
-                           languages = languages(),
+                           profile=profiles(),
+                           languages=languages(),
                            graphs=graphs(),
                            filename=filename)
 
 
 @app.route("/new/scan", methods=["GET", "POST"])
-def new_scan(): ## working fine but required improve
+def new_scan():  ## working fine but required improve
     """
     new scan through the API
 
     Returns:
         a JSON message with scan details if success otherwise a JSON error
     """
-    _start_scan_config = {}
-    api_key_check(app, flask_request, __language())
-    targetValue = get_value(flask_request, "targets")
-    # if (target_type(targetValue) == "UNKNOWN"):
-    #     return jsonify({"error": "Please input correct target"}), 400
-    options = app.config["OWASP_NETTACKER_CONFIG"]["options"]
-    for key in vars(app.config["OWASP_NETTACKER_CONFIG"]["options"]):
-        if get_value(flask_request, key) is not None:
-            try:
-                options.__dict__[key] = int(str(escape(get_value(flask_request, key))))
-            except:
-                options.__dict__[key] = str(escape(get_value(flask_request, key)))
+    api_key_check(app, flask_request)
+    form_values = dict(flask_request.form)
+    for key in nettacker_application_config:
+        if key not in form_values:
+            form_values[key] = nettacker_application_config[key]
+    options = check_all_required(
+        None,
+        api_forms=SimpleNamespace(**copy.deepcopy(form_values))
+    )
     app.config["OWASP_NETTACKER_CONFIG"]["options"] = options
-    #       _start_scan_config[key] = escape(get_value(flask_request, key))
-    # _start_scan_config["backup_ports"] = get_value(flask_request, "ports")
-    # _start_scan_config = rules(remove_non_api_keys(_builder(
-    #     _start_scan_config, _builder(_core_config(), _core_default_config()))),
-    #     _core_default_config(), __language())
-    _p = multiprocessing.Process(target=__scan, args=(options,))
+    _p = multiprocessing.Process(target=start_scan_processes, args=(options,))
     _p.start()
     return jsonify(vars(options)), 200
 
@@ -247,7 +241,7 @@ def session_check():  ## working fine
     Returns:
         a JSON message if it's valid otherwise abort(401)
     """
-    api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request)
     return jsonify(structure(status="ok", msg=messages(
         "browser_session_valid"))), 200
 
@@ -261,7 +255,7 @@ def session_set():  ## working fine ## todo: mtehod requires to be POST
         200 HTTP response if session is valid and a set-cookie in the
         response if success otherwise abort(403)
     """
-    api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request)
     res = make_response(
         jsonify(structure(status="ok", msg=messages(
             "browser_session_valid"))))
@@ -271,7 +265,7 @@ def session_set():  ## working fine ## todo: mtehod requires to be POST
 
 
 @app.route("/session/kill", methods=["GET"])
-def session_kill(): ## working fine
+def session_kill():  ## working fine
     """
     unset session on the browser
 
@@ -294,7 +288,7 @@ def get_results():  ## WORKING FINE
     Returns:
         an array of JSON scan's results if success otherwise abort(403)
     """
-    api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request)
     try:
         page = int(get_value(flask_request, "page"))
     except Exception:
@@ -310,7 +304,7 @@ def get_result_content():  ## todo: working now but improvement for filename
     Returns:
         content of the scan result
     """
-    api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request)
     try:
         _id = int(get_value(flask_request, "id"))
     except Exception as e:
@@ -328,7 +322,7 @@ def get_results_json():  ##working fine
         an array with JSON events
     """
     session = create_connection()
-    api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request)
     try:
         _id = int(get_value(flask_request, "id"))
         scan_id_temp = session.query(Report).filter(Report.id == _id).all()
@@ -348,7 +342,7 @@ def get_results_json():  ##working fine
         json_object = json.dumps(data)
     date_from_db = scan_id_temp[0].date
     date_format = "aman"  ## todo: fix this
-    #date_format = datetime.strptime(str(date_from_db), "%Y-%m-%d %H:%M:%S").date()
+    # date_format = datetime.strptime(str(date_from_db), "%Y-%m-%d %H:%M:%S").date()
     date_format = str(date_format).replace(
         "-", "_").replace(":", "_").replace(" ", "_")
     filename = "report-" + date_format + "".join(
@@ -360,7 +354,7 @@ def get_results_json():  ##working fine
 
 
 @app.route("/results/get_csv", methods=["GET"])
-def get_results_csv():  #todo: need to fix time format
+def get_results_csv():  # todo: need to fix time format
     """
     get host's logs through the API in JSON type
 
@@ -368,7 +362,7 @@ def get_results_csv():  #todo: need to fix time format
         an array with JSON events
     """
     session = create_connection()
-    api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request)
     try:
         _id = int(get_value(flask_request, "id"))
         scan_id_temp = session.query(Report).filter(Report.id == _id).all()
@@ -382,7 +376,7 @@ def get_results_csv():  #todo: need to fix time format
         result_id = []
     date_from_db = scan_id_temp[0].date
     date_format = "aman"  ## todo: fix this
-    #date_format = datetime.strptime(date_from_db, "%Y-%m-%d %H:%M:%S")
+    # date_format = datetime.strptime(date_from_db, "%Y-%m-%d %H:%M:%S")
     date_format = str(date_format).replace(
         "-", "_").replace(":", "_").replace(" ", "_")
     filename = "report-" + date_format + "".join(
@@ -415,7 +409,7 @@ def get_last_host_logs():  ## working
     Returns:
         an array of JSON logs if success otherwise abort(403)
     """
-    api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request)
     try:
         page = int(get_value(flask_request, "page"))
     except Exception:
@@ -431,7 +425,7 @@ def get_logs_html():  ## todo: html needs to be added to solve this error
     Returns:
         HTML report
     """
-    api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request)
     try:
         target = get_value(flask_request, "target")
     except Exception:
@@ -447,7 +441,7 @@ def get_logs():  ## working fine
     Returns:
         an array with JSON events
     """
-    api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request)
     try:
         target = get_value(flask_request, "target")
     except Exception:
@@ -463,14 +457,14 @@ def get_logs():  ## working fine
 
 
 @app.route("/logs/get_csv", methods=["GET"])
-def get_logs_csv(): ## working fine
+def get_logs_csv():  ## working fine
     """
     get target's logs through the API in JSON type
 
     Returns:
         an array with JSON events
     """
-    api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request)
     try:
         target = get_value(flask_request, "target")
     except Exception:
@@ -496,14 +490,14 @@ def get_logs_csv(): ## working fine
 
 
 @app.route("/logs/search", methods=["GET"])
-def go_for_search_logs(): ## working fine
+def go_for_search_logs():  ## working fine
     """
     search in all events
 
     Returns:
         an array with JSON events
     """
-    api_key_check(app, flask_request, __language())
+    api_key_check(app, flask_request)
     try:
         page = int(get_value(flask_request, "page"))
     except Exception:
@@ -527,7 +521,7 @@ def start_api_subprocess(options):
         "api_access_key": options.api_access_key,
         "api_client_whitelisted_ips": options.api_client_whitelisted_ips,
         "api_access_log": options.api_access_log,
-        #"api_access_log_filename": options.api_access_log_filename,
+        # "api_access_log_filename": options.api_access_log_filename,
         "api_cert": options.api_cert,
         "api_cert_key": options.api_cert_key,
         "language": options.language,
