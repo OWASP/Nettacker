@@ -346,7 +346,7 @@ def check_all_required(parser):
     """
     # Checking Requirements
     options = parser.parse_args()
-    modules_list = load_all_modules()
+    modules_list = load_all_modules(full_details=True)
     profiles_list = load_all_profiles()
 
     # Check Help Menu
@@ -372,16 +372,15 @@ def check_all_required(parser):
         die_success()
     if options.show_all_modules:
         messages("loading_modules")
-        all_modules_with_details = load_all_modules(limit=-1, full_details=True)
-        for module in all_modules_with_details:
+        for module in modules_list:
             info(
                 messages("module_profile_full_information").format(
                     module,
                     ", ".join(
                         [
                             "{key}: {value}".format(
-                                key=key, value=all_modules_with_details[module][key]
-                            ) for key in all_modules_with_details[module]
+                                key=key, value=modules_list[module][key]
+                            ) for key in modules_list[module]
                         ]
                     )
                 )
@@ -442,7 +441,6 @@ def check_all_required(parser):
             del options.selected_modules['all']
         else:
             options.profiles = list(set(options.profiles.split(',')))
-            all_modules_with_details = load_all_modules(full_details=True)
             for profile in options.profiles:
                 if profile not in profiles_list:
                     die_failure(
@@ -450,10 +448,9 @@ def check_all_required(parser):
                             profile
                         )
                     )
-                for module_name in modules_list:
-                    if module_name.endswith(profile):
+                for module_name in profiles_list[profile]:
+                    if module_name not in options.selected_modules:
                         options.selected_modules.append(module_name)
-
     # threading & processing
     if options.set_hardware_usage not in ['low', 'normal', 'high', 'maximum']:
         die_failure(
