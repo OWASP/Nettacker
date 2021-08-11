@@ -40,7 +40,7 @@ def nettacker_api_config():
     """
     return {  # OWASP Nettacker API Default Configuration
         "start_api_server": False,
-        "api_hostname": "nettacker-api.z3r0d4y.com",  # pointed to 127.0.0.1
+        "api_hostname": "0.0.0.0" if os.environ.get("docker_env") == "true" else "nettacker-api.z3r0d4y.com",
         "api_port": 5000,
         "api_debug_mode": False,
         "api_access_key": generate_random_token(32),

@@ -219,7 +219,7 @@ API_port_int: API port must be an integer!
 unknown_ip_input:
   unknown input type, accepted types are SINGLE_IPv4, RANGE_IPv4,
   CIDR_IPv4
-API_key: " * API Key: {0}\n"
+API_key: " * API is accessible from http://nettacker-api.z3r0d4y.com/ via API Key: {0}\n"
 ports_int: ports must be integers! (e.g. 80 || 80,1080 || 80,1080-1300,9000,12000-15000)
 through_API: Through the OWASP Nettacker API
 API_invalid: invalid API key

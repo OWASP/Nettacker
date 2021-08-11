@@ -10,3 +10,5 @@ services:
       - 5000:5000
     volumes:
       - ./:/usr/src/owaspnettacker
+    environment:
+      - docker_env=true

@@ -8,4 +8,5 @@ RUN cat requirements-apt-get.txt | xargs aptitude install -y
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 RUN pip3 install -r requirements-dev.txt
+ENV docker_env=true
 CMD [ "python3", "./nettacker.py" ]

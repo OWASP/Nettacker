@@ -57,6 +57,9 @@ jobs:
       - name: lint check with flake8
         run: flake8 --extend-exclude '*.txt,*.js,*.md,*.html' --count --select=E9,F63,F7,F82 --show-source
 
+      - name: create .data directory
+        run: mkdir -p .data/results .data/tmp
+
       - name: Build the code with docker
         run: docker build . -t nettacker
 
