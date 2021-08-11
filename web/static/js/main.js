@@ -638,7 +638,8 @@ $(document).ready(function () {
     // var html_open_ports;
     // var scan_methods;
     // var html_scan_methods;
-    // var j;
+    var j;
+    var k;
 
     var HTMLData;
     var target;
@@ -654,10 +655,11 @@ $(document).ready(function () {
     
 
     for (i = 0; i < res.length; i++) {
+      console.log(res[i])
       target = res[i]["target"];
-      target_event = res[i]["info"]["event"];
+      //target_event = res[i]["info"]["event"];
       options = res[i]["info"]["options"];
-      date = res[i]["info"]["date"];
+      //date = res[i]["info"]["date"];
       module_name = res[i]["info"]["module_name"]
 
       // open_ports = res[i]["info"]["open_ports"];
@@ -697,12 +699,12 @@ $(document).ready(function () {
       // }
       for (j = 0; j < module_name.length; j++) {
           html_module_name +=
-            "<p class='mb-1 bold label label-primary'>selected_modules:" +
+            "<p class='mb-1 bold label label-info'>selected_modules:" +
             module_name[j] +
             "</p> ";
           if (j == 10) {
             html_module_name +=
-              "<p class='mb-1 bold label label-primary'>selected_modules: click to see more.</p> ";
+              "<p class='mb-1 bold label label-info'>selected_modules: click to see more.</p> ";
             break;
           }
         }
@@ -720,30 +722,33 @@ $(document).ready(function () {
       //     break;
       //   }
       // }
-
+      //console.log(options)
       for (j = 0; j < options.length; j++) {
-        html_options +=
-          "<p class='mb-1 bold label label-primary'>options" +
-          options[j] +
-          "</p> ";
-        if (j == 10) {
+        for (k=0; k < options[j]["profiles"].length; k++) {
+          //console.log(options[j]["profiles"])
           html_options +=
-            "<p class='mb-1 bold label label-primary'>options list</p> ";
-          break;
+            "<p class='mb-1 bold label label-primary'>options:" +
+            options[j]["profiles"][k] +
+            "</p> ";
+          if (j == 10) {
+            html_options +=
+              "<p class='mb-1 bold label label-primary'>options list</p> ";
+            break;
+          }
         }
       }
 
-      for (j = 0; j < target_event.length; j++) {
-        html_target_event +=
-          "<p class='mb-1 bold label label-primary'>event:" +
-          target_event[j] +
-          "</p> ";
-        if (j == 10) {
-          html_target_event +=
-            "<p class='mb-1 bold label label-primary'>event list</p> ";
-          break;
-        }
-      }
+      // for (j = 0; j < target_event.length; j++) {
+      //   html_target_event +=
+      //     "<p class='mb-1 bold label label-primary'>event:" +
+      //     target_event[j] +
+      //     "</p> ";
+      //   if (j == 10) {
+      //     html_target_event +=
+      //       "<p class='mb-1 bold label label-primary'>event list</p> ";
+      //     break;
+      //   }
+      // }
 
       // for (j = 0; j < description.length; j++) {
       //   html_description +=

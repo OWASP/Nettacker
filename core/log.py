@@ -127,7 +127,7 @@ def sort_logs(logs):
                                                   value["options"], value["event"])
             # events_num += 1
         _table += log_data.table_end + '<p class="footer">' + \
-            messages("nettacker_version_details") + '</p>'
+            messages("nettacker_version_details").format(version_info()[0], version_info()[1], now()) + '</p>'
         with open(report_path_filename, 'w', encoding='utf-8') as save:
             save.write(_table + '\n')
     elif len(report_path_filename) >= 5 and report_path_filename[-5:] == '.json':

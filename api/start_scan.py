@@ -56,10 +56,10 @@ def __scan(options):
             options.selected_modules = []
         if options.profiles == 'all':
             options.selected_modules = modules_list
-            options.selected_modules.remove('all')
+            del options.selected_modules['all']
         else:
             options.profiles = list(set(options.profiles.split(',')))
-            profiles_list = load_all_profiles()
+            all_modules_with_details = load_all_modules(full_details=True)
             for profile in options.profiles:
                 if profile not in profiles_list:
                     die_failure(
@@ -175,5 +175,6 @@ def __scan(options):
     # profile = config["profile"]
     # backup_ports = config["backup_ports"]
 
-    # print(options)
+    print("--++++++++")
+    print(options)
     return start_scan_processes(options)

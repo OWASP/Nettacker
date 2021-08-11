@@ -347,7 +347,7 @@ def get_results_json():  ##working fine
         data = __logs_by_scan_id(scan_unique_id)
         json_object = json.dumps(data)
     date_from_db = scan_id_temp[0].date
-    date_format = "aman"
+    date_format = "aman"  ## todo: fix this
     #date_format = datetime.strptime(str(date_from_db), "%Y-%m-%d %H:%M:%S").date()
     date_format = str(date_format).replace(
         "-", "_").replace(":", "_").replace(" ", "_")
@@ -381,7 +381,7 @@ def get_results_csv():  #todo: need to fix time format
     else:
         result_id = []
     date_from_db = scan_id_temp[0].date
-    date_format = "aman"
+    date_format = "aman"  ## todo: fix this
     #date_format = datetime.strptime(date_from_db, "%Y-%m-%d %H:%M:%S")
     date_format = str(date_format).replace(
         "-", "_").replace(":", "_").replace(" ", "_")
@@ -433,10 +433,10 @@ def get_logs_html():  ## todo: html needs to be added to solve this error
     """
     api_key_check(app, flask_request, __language())
     try:
-        host = get_value(flask_request, "host")
+        target = get_value(flask_request, "target")
     except Exception:
-        host = ""
-    return make_response(__logs_to_report_html(host, __language()))
+        target = ""
+    return make_response(__logs_to_report_html(target, __language()))
 
 
 @app.route("/logs/get_json", methods=["GET"])
