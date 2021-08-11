@@ -216,7 +216,6 @@ define_whie_list:
 gen_API_access_log: generate API access log
 API_access_log_file: API access log filename
 API_port_int: API port must be an integer!
-starting_scan: "starting scan {0} - {1} - sending {2} requests"
 unknown_ip_input:
   unknown input type, accepted types are SINGLE_IPv4, RANGE_IPv4,
   CIDR_IPv4

@@ -37,6 +37,7 @@ def build_graph(graph_name, language,
     Returns:
         graph in HTML type
     """
+    info(messages("build_graph"))
     try:
         start = getattr(
             __import__('lib.graph.{0}.engine'.format(
@@ -48,6 +49,7 @@ def build_graph(graph_name, language,
             messages("graph_module_unavailable").format(graph_name))
 
     # print(graph_name, language, data, date, target, module_name, scan_unique_id, options, event)
+    info(messages("finish_build_graph"))
     return start(graph_name, language,
                  data, date, target, module_name, scan_unique_id, options, event)
 

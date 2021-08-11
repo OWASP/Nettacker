@@ -10,8 +10,10 @@ from database.models import (HostsLog,
                              Report,
                              TempEvents)
 from core.alert import warn
-from core.alert import verbose_info
+from core.alert import info
 from core.alert import messages
+from core.time import now
+from core import compatible
 from api.api_core import structure
 from config import nettacker_database_config
 
@@ -101,7 +103,7 @@ def submit_report_to_db(event):
     Returns:
         return True if submitted otherwise False
     """
-    verbose_info(messages("inserting_report_db"))
+    info(messages("inserting_report_db"))
     session = create_connection()
     session.add(
         Report(
@@ -125,21 +127,12 @@ def remove_old_logs(options):
     Returns:
         True if success otherwise False
     """
-    try:
-        for _ in range(1, 100):
-            try:
-                session = create_connection()
-                session.query(HostsLog).filter(
-                    HostsLog.target == options["target"],
-                    HostsLog.module_name == options["module_name"],
-                    HostsLog.scan_unique_id != options["scan_unique_id"]
-                ).delete(synchronize_session=False)
-                return True
-            except Exception:
-                time.sleep(0.01)
-    except Exception as _:
-        warn(messages("database_connect_fail"))
-        return False
+    session = create_connection()
+    session.query(HostsLog).filter(
+        HostsLog.target == options["target"],
+        HostsLog.module_name == options["module_name"],
+        HostsLog.scan_unique_id != options["scan_unique_id"]
+    ).delete(synchronize_session=False)
     return send_submit_query(session)
 
 
@@ -259,7 +252,7 @@ def select_reports(page):
     try:
         search_data = session.query(Report).order_by(
             Report.id.desc()
-        ).offset(page * 10).limit(10)
+        ).offset(page*10).limit(10)
         for data in search_data:
             tmp = {
                 "id": data.id,

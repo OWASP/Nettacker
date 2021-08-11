@@ -240,12 +240,7 @@ def perform_scan(options, target, module_name, scan_unique_id):
     validate_module.target = target
     validate_module.load()
     validate_module.generate_loops()
-    number_of_steps = 0
-    for payload in validate_module.module_content['payloads']:
-        for step in payload['steps']:
-            for _ in step:
-                number_of_steps += 1
-    info(messages("starting_scan").format(target, module_name, number_of_steps))
+    info(f"starting scan {target} - {module_name}")
     validate_module.start()
     info(messages("finished_module").format(module_name, target))
     return os.EX_OK
