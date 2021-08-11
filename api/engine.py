@@ -25,7 +25,6 @@ from core.die import die_success
 from core.time import now
 from api.api_core import structure
 from api.api_core import get_value
-from api.api_core import root_dir
 from api.api_core import get_file
 from api.api_core import mime_types
 from api.api_core import scan_methods
@@ -186,9 +185,18 @@ def get_statics(path):
         file content and content type if file found otherwise abort(404)
     """
     static_types = mime_types()
-    return Response(get_file(os.path.join(root_dir(), path)),
-                    mimetype=static_types.get(os.path.splitext(path)[1],
-                                              "text/html"))
+    return Response(
+        get_file(
+            os.path.join(
+                nettacker_global_config()['nettacker_path']['web_static_files_path'],
+                path
+            )
+        ),
+        mimetype=static_types.get(
+            os.path.splitext(path)[1],
+            "text/html"
+        )
+    )
 
 
 @app.route("/", methods=["GET", "POST"])
