@@ -76,17 +76,17 @@ jobs:
         run: docker run -v $(pwd):/usr/src/owaspnettacker --rm nettacker python nettacker.py --show-all-profiles
 
       - name: Test all modules command + check if it's finish successfully + without graph
-        run: "docker run -v $(pwd):/usr/src/owaspnettacker --rm -i nettacker python nettacker.py  -i 127.0.0.1 -u
-        user1,user2 -p pass1,pass2 -m all -g 21,25,80,443 -t 1000 -T 3 -v"
+        run: docker run -v $(pwd):/usr/src/owaspnettacker --rm -i nettacker python nettacker.py  -i 127.0.0.1 -u
+        user1,user2 -p pass1,pass2 -m all -g 21,25,80,443 -t 1000 -T 3 -v
 
       - name: Test all modules command + check if it's finish successfully + with graph
-        run: "docker run -v $(pwd):/usr/src/owaspnettacker --rm -i nettacker python nettacker.py -i 127.0.0.1 -u
-        user1,user2 -p pass1,pass2 -m all -g 21,25,80,443 -t 1000 -T 3 --graph d3_tree_v2_graph -v"
+        run: docker run -v $(pwd):/usr/src/owaspnettacker --rm -i nettacker python nettacker.py -i 127.0.0.1 -u
+        user1,user2 -p pass1,pass2 -m all -g 21,25,80,443 -t 1000 -T 3 --graph d3_tree_v2_graph -v
 
       - name: Test all modules command + check if it's finish successfully + without graph + Persian
-        run: "docker run -v $(pwd):/usr/src/owaspnettacker --rm -i nettacker python nettacker.py  -i 127.0.0.1 -L fa
-        -u user1,user2 -p pass1,pass2 --profile all -g 21,25,80,443 -t 1000 -T 3 -v"
+        run: docker run -v $(pwd):/usr/src/owaspnettacker --rm -i nettacker python nettacker.py  -i 127.0.0.1 -L fa
+        -u user1,user2 -p pass1,pass2 --profile all -g 21,25,80,443 -t 1000 -T 3 -v
 
       - name: Test all modules command + check if it's finish successfully + with graph + Persian
-        run: "docker run -v $(pwd):/usr/src/owaspnettacker --rm -i nettacker python nettacker.py -i 127.0.0.1 -L fa -u
-          user1,user2 -p pass1,pass2 --profile all -g 21,25,80,443 -t 1000 -T 3 --graph d3_tree_v2_graph -v"
+        run: docker run -v $(pwd):/usr/src/owaspnettacker --rm -i nettacker python nettacker.py -i 127.0.0.1 -L fa -u
+          user1,user2 -p pass1,pass2 --profile all -g 21,25,80,443 -t 1000 -T 3 --graph d3_tree_v2_graph -v
