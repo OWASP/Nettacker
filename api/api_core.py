@@ -276,11 +276,11 @@ def profiles():
     Returns:
         HTML content or available profiles
     """
-    #profiles = load_all_profiles()
-    for synonym in synonyms:
-        del (profiles[synonym])
+    profiles = load_all_profiles()
+    # for synonym in synonyms:
+    #     del (profiles[synonym])
     res = ""
-    for profile in profiles:
+    for profile in profiles.keys():
         label = "success" if (profile == "scan") else "warning" if (profile == "brute") else "danger" if (profile ==
                                                                                                           "vulnerability") else "default"
         res += """<label><input id="{0}" type="checkbox" class="checkbox checkbox-{0}"><a class="label 
@@ -499,7 +499,7 @@ def rules(config, defaults, language):
         config["time_sleep_between_requests"] = defaults["time_sleep_between_requests"]
     # Check timeout sec
     try:
-        config["timeout_sec"] = int(config["timeout_sec"])
+        config["timeout"] = int(config["timeout"])
     except:
         config["parallel_host_scan"] = defaults["parallel_host_scan"]
     # Check usernames

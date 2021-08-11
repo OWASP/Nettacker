@@ -253,11 +253,11 @@ $(document).ready(function () {
     // profiles
     var p = [];
     var n = 0;
-    $("#profile input:checked").each(function () {
+    $("#profiles input:checked").each(function () {
       p[n] = this.id;
       n += 1;
     });
-    var profile = p.join(",");
+    var profiles = p.join(",");
 
     // scan_methods
     n = 0;
@@ -282,7 +282,7 @@ $(document).ready(function () {
     // build post data
     var tmp_data = {
       targets: $("#targets").val(),
-      profile: profile,
+      profiles: profiles,
       selected_modules: selected_modules,
       graph_name: graph_name,
       language: language,
@@ -294,7 +294,7 @@ $(document).ready(function () {
       parallel_host_scan: $("#parallel_host_scan").val(),
       retries: $("#retries").val(),
       time_sleep_between_requests: $("#time_sleep_between_requests").val(),
-      timeout_sec: $("#timeout_sec").val(),
+      timeout: $("#timeout").val(),
       verbose_mode: $("#verbose_mode").val(),
       ports: $("#ports").val(),
       socks_proxy: $("#socks_proxy").val(),

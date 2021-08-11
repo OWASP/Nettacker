@@ -95,15 +95,18 @@ def __scan(options):
     # Check port(s)
     if options.ports:
         tmp_ports = []
-        for port in options.ports.split(","):
-            # try:
-            if "-" in port:
-                for port_number in range(int(port.split('-')[0]), int(port.split('-')[1]) + 1):
-                    if port_number not in tmp_ports:
-                        tmp_ports.append(port_number)
-            else:
-                if int(port) not in tmp_ports:
-                    tmp_ports.append(int(port))
+        if isinstance(options.ports, int):
+            tmp_ports.append(options.ports)
+        else:
+            for port in options.ports.split(","):
+                # try:
+                if "-" in port:
+                    for port_number in range(int(port.split('-')[0]), int(port.split('-')[1]) + 1):
+                        if port_number not in tmp_ports:
+                            tmp_ports.append(port_number)
+                else:
+                    if int(port) not in tmp_ports:
+                        tmp_ports.append(int(port))
             # except Exception:
             #     die_failure(messages("ports_int"))  ##show error on api
         options.ports = tmp_ports
@@ -163,7 +166,7 @@ def __scan(options):
     # selected_modules = config["selected_modules"]
     # usernames = config["usernames"]
     # passwords = config["passwords"]
-    # timeout_sec = config["timeout_sec"]
+    # timeout = config["timeout"]
     # thread_per_host = config["thread_per_host"]
     # ports = config["ports"]
     # ping_before_scan = config["ping_before_scan"]
@@ -172,4 +175,5 @@ def __scan(options):
     # profile = config["profile"]
     # backup_ports = config["backup_ports"]
 
+    # print(options)
     return start_scan_processes(options)

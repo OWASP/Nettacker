@@ -29,7 +29,7 @@ from api.api_core import root_dir
 from api.api_core import get_file
 from api.api_core import mime_types
 from api.api_core import scan_methods
-# from api.api_core import profiles
+from api.api_core import profiles
 from api.api_core import graphs
 from api.api_core import languages
 from api.api_core import remove_non_api_keys
@@ -200,7 +200,9 @@ def index():  ## working fine
     from config import nettacker_user_application_config
     filename = nettacker_user_application_config()["report_path_filename"]
 
-    return render_template("index.html", selected_modules=scan_methods(),
+    return render_template("index.html",
+                           selected_modules=scan_methods(),
+                           profile = profiles(),
                            languages = languages(),
                            graphs=graphs(),
                            filename=filename)
@@ -232,7 +234,7 @@ def new_scan(): ## working fine but required improve
     # _start_scan_config = rules(remove_non_api_keys(_builder(
     #     _start_scan_config, _builder(_core_config(), _core_default_config()))),
     #     _core_default_config(), __language())
-    _p = multiprocessing.Process(target=__scan, args=(app.config["OWASP_NETTACKER_CONFIG"]["options"],))
+    _p = multiprocessing.Process(target=__scan, args=(options,))
     _p.start()
     return jsonify(vars(options)), 200
 
