@@ -236,7 +236,7 @@ def find_events(target, module_name, scan_unique_id):
     ).all()
 
 
-def __select_results(page):
+def select_reports(page):
     """
     this function created to crawl into submitted results, it shows last 10 results submitted in the database.
     you may change the page (default 1) to go to next/previous page.
@@ -247,14 +247,14 @@ def __select_results(page):
     Returns:
         list of events in array and JSON type, otherwise an error in JSON type.
     """
-    page = int(page * 10 if page > 0 else page * -10) - 10
     selected = []
     session = create_connection()
     try:
         search_data = session.query(Report).order_by(
-            Report.id.desc())
+            Report.id.desc()
+        ).offset(page*10).limit(10)
         for data in search_data:
-            tmp = {  # fix later, junks
+            tmp = {
                 "id": data.id,
                 "date": data.date,
                 "scan_unique_id": data.scan_unique_id,
@@ -262,18 +262,17 @@ def __select_results(page):
                 "options": json.loads(data.options)
             }
             selected.append(tmp)
-    except Exception as e:
+    except Exception:
         return structure(status="error", msg="database error!")
     return selected
 
 
-def __get_result(language, id):
+def get_scan_result(id):
     """
     this function created to download results by the result ID.
 
     Args:
-        language: language
-        id: result id
+        id: scan id
 
     Returns:
         result file content (TEXT, HTML, JSON) if success otherwise and error in JSON type.
@@ -510,10 +509,11 @@ def __logs_to_report_html(target, language=None):
         _table = log_data.table_title.format(
             _graph, log_data.css_1, 'date', 'target', 'module_name', 'scan_unique_id', 'options', 'event')
         for value in logs:
-            _table += log_data.table_items.format(value['date'], value["target"], value['module_name'], value['scan_unique_id'],
+            _table += log_data.table_items.format(value['date'], value["target"], value['module_name'],
+                                                  value['scan_unique_id'],
                                                   value['options'], value['event'])
         _table += log_data.table_end + '<p class="footer">' + \
-            messages("nettacker_report") + '</p>'
+                  messages("nettacker_report") + '</p>'
         return _table
     except Exception as _:
         return ""
@@ -563,8 +563,8 @@ def __search_logs(language, page, query):
                 # | (HostsLog.scan_cmd.like("%" + str(query) + "%"))
         ).group_by(HostsLog.target).order_by(HostsLog.id.desc())[page:page + 11]:
             for data in session.query(HostsLog).filter(HostsLog.target == str(host.target)).group_by(
-                HostsLog.module_name, HostsLog.options, HostsLog.scan_unique_id, HostsLog.event).order_by(
-                    HostsLog.id.desc()).all():
+                    HostsLog.module_name, HostsLog.options, HostsLog.scan_unique_id, HostsLog.event).order_by(
+                HostsLog.id.desc()).all():
                 n = 0
                 capture = None
                 for selected_data in selected:

@@ -6,6 +6,7 @@ info:
   reference:
   profiles:
     - vuln
+    - vulnerability
     - http
     - low_severity
 

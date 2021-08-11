@@ -30,10 +30,10 @@ from api.api_core import mime_types
 from api.api_core import scan_methods
 from api.api_core import profiles
 from api.api_core import graphs
-from api.api_core import languages
-from api.api_core import api_key_check
-from database.db import __select_results
-from database.db import __get_result
+from api.api_core import languages_to_country
+from api.api_core import api_key_is_valid
+from database.db import select_reports
+from database.db import get_scan_result
 from database.db import __last_host_logs
 from database.db import __logs_to_report_json
 from database.db import __search_logs
@@ -52,19 +52,6 @@ nettacker_application_config.update(nettacker_global_config()['nettacker_api_con
 del nettacker_application_config['api_access_key']
 
 
-def __language(app=app):
-    """
-    find the language in config
-
-    Args:
-        app: flask app
-
-    Returns:
-        the language in string
-    """
-    return app.config["OWASP_NETTACKER_CONFIG"]["language"]
-
-
 @app.errorhandler(400)
 def error_400(error):
     """
@@ -76,7 +63,12 @@ def error_400(error):
     Returns:
         400 JSON error
     """
-    return jsonify(structure(status="error", msg=error.description)), 400
+    return jsonify(
+        structure(
+            status="error",
+            msg=error.description
+        )
+    ), 400
 
 
 @app.errorhandler(401)
@@ -90,7 +82,12 @@ def error_401(error):
     Returns:
         401 JSON error
     """
-    return jsonify(structure(status="error", msg=error.description)), 401
+    return jsonify(
+        structure(
+            status="error",
+            msg=error.description
+        )
+    ), 401
 
 
 @app.errorhandler(403)
@@ -104,7 +101,12 @@ def error_403(error):
     Returns:
         403 JSON error
     """
-    return jsonify(structure(status="error", msg=error.description)), 403
+    return jsonify(
+        structure(
+            status="error",
+            msg=error.description
+        )
+    ), 403
 
 
 @app.errorhandler(404)
@@ -118,10 +120,12 @@ def error_404(error):
     Returns:
         404 JSON error
     """
-    return jsonify(structure(status="error",
-                             msg=messages(app.config[
-                                              "OWASP_NETTACKER_CONFIG"]["language"],
-                                          "not_found"))), 404
+    return jsonify(
+        structure(
+            status="error",
+            msg=messages("not_found")
+        )
+    ), 404
 
 
 @app.before_request
@@ -134,8 +138,7 @@ def limit_remote_addr():
     """
     # IP Limitation
     if app.config["OWASP_NETTACKER_CONFIG"]["api_client_whitelisted_ips"]:
-        if flask_request.remote_addr not in app.config[
-            "OWASP_NETTACKER_CONFIG"]["api_client_whitelisted_ips"]:
+        if flask_request.remote_addr not in app.config["OWASP_NETTACKER_CONFIG"]["api_client_whitelisted_ips"]:
             abort(403, messages("unauthorized_IP"))
     return
 
@@ -188,7 +191,7 @@ def get_statics(path):
     return Response(
         get_file(
             os.path.join(
-                nettacker_global_config()['nettacker_path']['web_static_files_path'],
+                nettacker_global_config()['nettacker_paths']['web_static_files_path'],
                 path
             )
         ),
@@ -200,7 +203,7 @@ def get_statics(path):
 
 
 @app.route("/", methods=["GET", "POST"])
-def index():  ## working fine
+def index():
     """
     index page for WebUI
 
@@ -209,24 +212,25 @@ def index():  ## working fine
     """
     from config import nettacker_user_application_config
     filename = nettacker_user_application_config()["report_path_filename"]
-
-    return render_template("index.html",
-                           selected_modules=scan_methods(),
-                           profile=profiles(),
-                           languages=languages(),
-                           graphs=graphs(),
-                           filename=filename)
+    return render_template(
+        "index.html",
+        selected_modules=scan_methods(),
+        profile=profiles(),
+        languages=languages_to_country(),
+        graphs=graphs(),
+        filename=filename
+    )
 
 
 @app.route("/new/scan", methods=["GET", "POST"])
-def new_scan():  ## working fine but required improve
+def new_scan():
     """
     new scan through the API
 
     Returns:
         a JSON message with scan details if success otherwise a JSON error
     """
-    api_key_check(app, flask_request)
+    api_key_is_valid(app, flask_request)
     form_values = dict(flask_request.form)
     for key in nettacker_application_config:
         if key not in form_values:
@@ -236,25 +240,33 @@ def new_scan():  ## working fine but required improve
         api_forms=SimpleNamespace(**copy.deepcopy(form_values))
     )
     app.config["OWASP_NETTACKER_CONFIG"]["options"] = options
-    _p = multiprocessing.Process(target=start_scan_processes, args=(options,))
-    _p.start()
-    return jsonify(vars(options)), 200
+    new_process = multiprocessing.Process(target=start_scan_processes, args=(options,))
+    new_process.start()
+    return jsonify(
+        vars(
+            options
+        )
+    ), 200
 
 
 @app.route("/session/check", methods=["GET"])
-def session_check():  ## working fine
+def session_check():
     """
     check the session if it's valid
 
     Returns:
         a JSON message if it's valid otherwise abort(401)
     """
-    api_key_check(app, flask_request)
-    return jsonify(structure(status="ok", msg=messages(
-        "browser_session_valid"))), 200
+    api_key_is_valid(app, flask_request)
+    return jsonify(
+        structure(
+            status="ok",
+            msg=messages("browser_session_valid")
+        )
+    ), 200
 
 
-@app.route("/session/set", methods=["GET"])
+@app.route("/session/set", methods=["GET", "POST"])
 def session_set():  ## working fine ## todo: mtehod requires to be POST
     """
     set session on the browser
@@ -263,17 +275,21 @@ def session_set():  ## working fine ## todo: mtehod requires to be POST
         200 HTTP response if session is valid and a set-cookie in the
         response if success otherwise abort(403)
     """
-    api_key_check(app, flask_request)
+    api_key_is_valid(app, flask_request)
     res = make_response(
-        jsonify(structure(status="ok", msg=messages(
-            "browser_session_valid"))))
-    res.set_cookie("key", value=app.config[
-        "OWASP_NETTACKER_CONFIG"]["api_access_key"])
+        jsonify(
+            structure(
+                status="ok",
+                msg=messages("browser_session_valid")
+            )
+        )
+    )
+    res.set_cookie("key", value=app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"])
     return res
 
 
 @app.route("/session/kill", methods=["GET"])
-def session_kill():  ## working fine
+def session_kill():
     """
     unset session on the browser
 
@@ -282,26 +298,33 @@ def session_kill():  ## working fine
         to unset the cookie on the browser
     """
     res = make_response(
-        jsonify(structure(status="ok", msg=messages(
-            "browser_session_killed"))))
+        jsonify(
+            structure(
+                status="ok",
+                msg=messages("browser_session_killed")
+            )
+        )
+    )
     res.set_cookie("key", "", expires=0)
     return res
 
 
 @app.route("/results/get_list", methods=["GET"])
-def get_results():  ## WORKING FINE
+def get_results():
     """
     get list of scan's results through the API
 
     Returns:
         an array of JSON scan's results if success otherwise abort(403)
     """
-    api_key_check(app, flask_request)
+    api_key_is_valid(app, flask_request)
     try:
         page = int(get_value(flask_request, "page"))
     except Exception:
         page = 1
-    return jsonify(__select_results(page)), 200
+    return jsonify(
+        select_reports(page)
+    ), 200
 
 
 @app.route("/results/get", methods=["GET"])
@@ -312,13 +335,17 @@ def get_result_content():  ## todo: working now but improvement for filename
     Returns:
         content of the scan result
     """
-    api_key_check(app, flask_request)
+    api_key_is_valid(app, flask_request)
     try:
-        _id = int(get_value(flask_request, "id"))
-    except Exception as e:
-        return jsonify(structure(status="error",
-                                 msg="your scan id is not valid!")), 400
-    return __get_result(__language(), _id)
+        scan_id = int(get_value(flask_request, "id"))
+    except Exception:
+        return jsonify(
+            structure(
+                status="error",
+                msg="your scan id is not valid!"
+            )
+        ), 400
+    return get_scan_result(scan_id)
 
 
 @app.route("/results/get_json", methods=["GET"])
@@ -330,7 +357,7 @@ def get_results_json():  ##working fine
         an array with JSON events
     """
     session = create_connection()
-    api_key_check(app, flask_request)
+    api_key_is_valid(app, flask_request)
     try:
         _id = int(get_value(flask_request, "id"))
         scan_id_temp = session.query(Report).filter(Report.id == _id).all()
@@ -370,7 +397,7 @@ def get_results_csv():  # todo: need to fix time format
         an array with JSON events
     """
     session = create_connection()
-    api_key_check(app, flask_request)
+    api_key_is_valid(app, flask_request)
     try:
         _id = int(get_value(flask_request, "id"))
         scan_id_temp = session.query(Report).filter(Report.id == _id).all()
@@ -417,7 +444,7 @@ def get_last_host_logs():  ## working
     Returns:
         an array of JSON logs if success otherwise abort(403)
     """
-    api_key_check(app, flask_request)
+    api_key_is_valid(app, flask_request)
     try:
         page = int(get_value(flask_request, "page"))
     except Exception:
@@ -433,7 +460,7 @@ def get_logs_html():  ## todo: html needs to be added to solve this error
     Returns:
         HTML report
     """
-    api_key_check(app, flask_request)
+    api_key_is_valid(app, flask_request)
     try:
         target = get_value(flask_request, "target")
     except Exception:
@@ -449,7 +476,7 @@ def get_logs():  ## working fine
     Returns:
         an array with JSON events
     """
-    api_key_check(app, flask_request)
+    api_key_is_valid(app, flask_request)
     try:
         target = get_value(flask_request, "target")
     except Exception:
@@ -472,7 +499,7 @@ def get_logs_csv():  ## working fine
     Returns:
         an array with JSON events
     """
-    api_key_check(app, flask_request)
+    api_key_is_valid(app, flask_request)
     try:
         target = get_value(flask_request, "target")
     except Exception:
@@ -505,7 +532,7 @@ def go_for_search_logs():  ## working fine
     Returns:
         an array with JSON events
     """
-    api_key_check(app, flask_request)
+    api_key_is_valid(app, flask_request)
     try:
         page = int(get_value(flask_request, "page"))
     except Exception:

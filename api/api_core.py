@@ -26,70 +26,24 @@ def structure(status="", msg=""):
     }
 
 
-def get_value(flask_request, _key):
+def get_value(flask_request, key):
     """
     get a value from GET, POST or CCOKIES
 
     Args:
         flask_request: the flask request
-        _key: the value name to find
+        key: the value name to find
 
     Returns:
         the value content if found otherwise None
     """
-    try:
-        key = flask_request.args[_key]
-    except:
-        try:
-            key = flask_request.form[_key]
-        except:
-            try:
-                key = flask_request.cookies[_key]
-            except:
-                key = None
-    if key is not None:
-        # fix it later
-        key = key.replace("\\\"", "\"").replace("\\\'", "\'")
-    return key
-
-
-def remove_non_api_keys(config):
-    """
-    a function to remove non-api keys while loading ARGV
-
-    Args:
-        config: all keys in JSON
-
-    Returns:
-        removed non-api keys in all keys in JSON
-    """
-    non_api_keys = [
-        "start_api_server", "api_host", "api_port", "api_debug_mode", "api_access_key", "api_client_white_list",
-        "api_client_white_list_ips", "api_access_log", "api_access_log", "api_access_log_filename",
-        "api_cert", "api_cert_key", "show_version", "check_update", "show_help_menu", "targets_list",
-        "usernames_list", "passwds_list", "excluded_modules"
-    ]
-    new_config = {}
-    for key in config:
-        if key not in non_api_keys:
-            new_config[key] = config[key]
-    return new_config
-
-
-def is_login(app, flask_request):
-    """
-    check if session is valid
-
-    Args:
-        app: flask app
-        flask_request: flask request
-
-    Returns:
-        True if session is valid otherwise False
-    """
-    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] == get_value(flask_request, "key"):
-        return True
-    return False
+    return dict(
+        flask_request.args
+    ).get(key) or dict(
+        flask_request.form
+    ).get(key) or dict(
+        flask_request.cookies
+    ).get(key) or ""
 
 
 def mime_types():
@@ -182,18 +136,13 @@ def get_file(filename):
         content of the file or abort(404)
     """
     try:
-        return open(
-            os.path.join(
-                nettacker_paths()['web_static_files_path'],
-                filename
-            ),
-            'rb'
-        ).read()
+        return open(filename, 'rb').read()
     except IOError:
+        print(filename)
         abort(404)
 
 
-def api_key_check(app, flask_request):
+def api_key_is_valid(app, flask_request):
     """
     check the validity of API key
 
@@ -210,7 +159,7 @@ def api_key_check(app, flask_request):
     return
 
 
-def languages():
+def languages_to_country():
     """
     define list of languages with country flag for API
 
@@ -243,9 +192,13 @@ def languages():
         "es": "es",
         "iw": "il"
     }
-    for lang in languages:
-        res += """<option {2} id="{0}" data-content='<span class="flag-icon flag-icon-{1}" value="{0}"></span> {0}'></option>""" \
-            .format(lang, flags[lang], "selected" if lang == "en" else "")
+    for language in languages:
+        res += """<option {2} id="{0}" data-content='<span class="flag-icon flag-icon-{1}" 
+        value="{0}"></span> {0}'></option>""".format(
+            language,
+            flags[language],
+            "selected" if language == "en" else ""
+        )
     return res
 
 
@@ -271,13 +224,15 @@ def profiles():
     Returns:
         HTML content or available profiles
     """
-    profiles = load_all_profiles()
-    # for synonym in synonyms:
-    #     del (profiles[synonym])
     res = ""
-    for profile in profiles.keys():
-        label = "success" if (profile == "scan") else "warning" if (profile == "brute") else "danger" if (profile ==
-                                                                                                          "vulnerability") else "default"
+    for profile in load_all_profiles().keys():
+        label = "success" if (
+                profile == "scan"
+        ) else "warning" if (
+                profile == "brute"
+        ) else "danger" if (
+                profile == "vulnerability"
+        ) else "default"
         res += """<label><input id="{0}" type="checkbox" class="checkbox checkbox-{0}"><a class="label 
             label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(profile, label)
     return res
@@ -294,10 +249,20 @@ def scan_methods():
     methods.pop("all")
     res = ""
     for sm in methods.keys():
-        label = "success" if sm.endswith("_scan") else "warning" if sm.endswith("_brute") else "danger" if sm.endswith(
-            "_vuln") else "default"
-        profile = "scan" if sm.endswith("_scan") else "brute" if sm.endswith("_brute") else "vuln" if sm.endswith(
-            "_vuln") else "default"
+        label = "success" if sm.endswith(
+            "_scan"
+        ) else "warning" if sm.endswith(
+            "_brute"
+        ) else "danger" if sm.endswith(
+            "_vuln"
+        ) else "default"
+        profile = "scan" if sm.endswith(
+            "_scan"
+        ) else "brute" if sm.endswith(
+            "_brute"
+        ) else "vuln" if sm.endswith(
+            "_vuln"
+        ) else "default"
         res += """<label><input id="{0}" type="checkbox" class="checkbox checkbox-{2}-module">
         <a class="label label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(sm, label, profile)
     return res
