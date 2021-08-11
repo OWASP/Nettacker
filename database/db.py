@@ -290,12 +290,11 @@ def get_scan_result(id):
         return jsonify(structure(status="error", msg="database error!")), 200
 
 
-def __last_host_logs(language, page):
+def last_host_logs(page):
     """
     this function created to select the last 10 events from the database. you can goto next page by changing page value.
 
     Args:
-        language: language
         page: page number
 
     Returns:
@@ -432,13 +431,12 @@ def __logs_by_scan_id(scan_unique_id):
     #     return []
 
 
-def __logs_to_report_json(target, language):
+def logs_to_report_json(target):
     """
     select all reports of a host
 
     Args:
         host: the host to search
-        language: language
 
     Returns:
         an array with JSON events or an empty array
@@ -468,13 +466,12 @@ def __logs_to_report_json(target, language):
         return []
 
 
-def __logs_to_report_html(target, language=None):
+def logs_to_report_html(target):
     """
     generate HTML report with d3_tree_v2_graph for a host
 
     Args:
         host: the host
-        language: language
 
     Returns:
         HTML report
@@ -519,12 +516,11 @@ def __logs_to_report_html(target, language=None):
         return ""
 
 
-def __search_logs(language, page, query):
+def search_logs(page, query):
     """
     search in events (host, date, port, module, category, description, username, password, scan_unique_id, scan_cmd)
 
     Args:
-        language: language
         page: page number
         query: query to search
 

@@ -34,10 +34,10 @@ from api.api_core import languages_to_country
 from api.api_core import api_key_is_valid
 from database.db import select_reports
 from database.db import get_scan_result
-from database.db import __last_host_logs
-from database.db import __logs_to_report_json
-from database.db import __search_logs
-from database.db import __logs_to_report_html
+from database.db import last_host_logs
+from database.db import logs_to_report_json
+from database.db import search_logs
+from database.db import logs_to_report_html
 from config import nettacker_global_config
 from core.scan_targers import start_scan_processes
 from core.args_loader import check_all_required
@@ -449,7 +449,7 @@ def get_last_host_logs():  ## working
         page = int(get_value(flask_request, "page"))
     except Exception:
         page = 1
-    return jsonify(__last_host_logs(__language(), page)), 200
+    return jsonify(last_host_logs(page)), 200
 
 
 @app.route("/logs/get_html", methods=["GET"])
@@ -465,7 +465,7 @@ def get_logs_html():  ## todo: html needs to be added to solve this error
         target = get_value(flask_request, "target")
     except Exception:
         target = ""
-    return make_response(__logs_to_report_html(target, __language()))
+    return make_response(logs_to_report_html(target))
 
 
 @app.route("/logs/get_json", methods=["GET"])
@@ -481,7 +481,7 @@ def get_logs():  ## working fine
         target = get_value(flask_request, "target")
     except Exception:
         target = ""
-    data = __logs_to_report_json(target, __language())
+    data = logs_to_report_json(target)
     json_object = json.dumps(data)
     filename = "report-" + now(
         model="%Y_%m_%d_%H_%M_%S") + "".join(
@@ -504,7 +504,7 @@ def get_logs_csv():  ## working fine
         target = get_value(flask_request, "target")
     except Exception:
         target = ""
-    data = __logs_to_report_json(target, __language())
+    data = logs_to_report_json(target)
     keys = data[0].keys()
     filename = "report-" + now(
         model="%Y_%m_%d_%H_%M_%S") + "".join(random.choice(
@@ -541,7 +541,7 @@ def go_for_search_logs():  ## working fine
         query = get_value(flask_request, "q")
     except Exception:
         query = ""
-    return jsonify(__search_logs(__language(), page, query)), 200
+    return jsonify(search_logs(page, query)), 200
 
 
 def start_api_subprocess(options):
