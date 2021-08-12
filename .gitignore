@@ -17,6 +17,7 @@ logs.txt
 *.log
 results.*
 .owasp-nettacker*
+.data*
 *.html
 *.htm
 *.DS_Store
