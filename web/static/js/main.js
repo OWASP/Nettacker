@@ -724,17 +724,14 @@ $(document).ready(function () {
       // }
       //console.log(options)
       for (j = 0; j < options.length; j++) {
-        for (k=0; k < options[j]["profiles"].length; k++) {
-          //console.log(options[j]["profiles"])
-          html_options +=
-            "<p class='mb-1 bold label label-primary'>options:" +
-            options[j]["profiles"][k] +
+        html_options +=
+            "<p class='mb-1 bold label label-primary'>profiles:" +
+            options[j]["profiles"] +
             "</p> ";
           if (j == 10) {
             html_options +=
-              "<p class='mb-1 bold label label-primary'>options list</p> ";
+              "<p class='mb-1 bold label label-primary'>profiles list</p> ";
             break;
-          }
         }
       }
 

@@ -320,8 +320,10 @@ def get_results():
     api_key_is_valid(app, flask_request)
     try:
         page = int(get_value(flask_request, "page"))
+        if page > 0:
+            page-=1
     except Exception:
-        page = 1
+        page = 0
     return jsonify(
         select_reports(page)
     ), 200
@@ -447,8 +449,10 @@ def get_last_host_logs():  ## working
     api_key_is_valid(app, flask_request)
     try:
         page = int(get_value(flask_request, "page"))
+        if page > 0:
+            page-=1
     except Exception:
-        page = 1
+        page = 0
     return jsonify(last_host_logs(page)), 200
 
 
@@ -535,8 +539,10 @@ def go_for_search_logs():  ## working fine
     api_key_is_valid(app, flask_request)
     try:
         page = int(get_value(flask_request, "page"))
+        if page > 0:
+            page-=1
     except Exception:
-        page = 1
+        page = 0
     try:
         query = get_value(flask_request, "q")
     except Exception:
