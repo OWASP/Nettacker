@@ -338,20 +338,19 @@ def get_result_content():
         content of the scan result
     """
     api_key_is_valid(app, flask_request)
-    try:
-        scan_id = int(get_value(flask_request, "id"))
-    except Exception:
+    scan_id = get_value(flask_request, "id")
+    if not scan_id:
         return jsonify(
             structure(
                 status="error",
-                msg="your scan id is not valid!"
+                msg="your scan id is not valid!"  # todo: add to message()
             )
         ), 400
     return get_scan_result(scan_id)
 
 
 @app.route("/results/get_json", methods=["GET"])
-def get_results_json():  # todo: fix
+def get_results_json():
     """
     get host's logs through the API in JSON type
 
@@ -360,34 +359,25 @@ def get_results_json():  # todo: fix
     """
     session = create_connection()
     api_key_is_valid(app, flask_request)
-    try:
-        _id = int(get_value(flask_request, "id"))
-        scan_id_temp = session.query(Report).filter(Report.id == _id).all()
-    except Exception as _:
-        _id = ""
-        scan_id_temp = False
-    if (scan_id_temp):
-        result_id = session.query(Report).join(
-            HostsLog, Report.scan_unique_id == HostsLog.scan_unique_id).filter(
-            Report.scan_unique_id == scan_id_temp[0].scan_unique_id).all()
-    else:
-        result_id = []
-    json_object = {}
-    if (result_id):
-        scan_unique_id = result_id[0].scan_unique_id
-        data = __logs_by_scan_id(scan_unique_id)
-        json_object = json.dumps(data)
-    date_from_db = scan_id_temp[0].date
-    date_format = "aman"  ## todo: fix this
-    # date_format = datetime.strptime(str(date_from_db), "%Y-%m-%d %H:%M:%S").date()
-    date_format = str(date_format).replace(
-        "-", "_").replace(":", "_").replace(" ", "_")
-    filename = "report-" + date_format + "".join(
-        random.choice(string.ascii_lowercase) for x in range(10))
-    return Response(json_object,
-                    mimetype='application/json',
-                    headers={'Content-Disposition':
-                                 'attachment;filename=' + filename + '.json'})
+    result_id = get_value(flask_request, "id")
+    if not result_id:
+        return jsonify(
+            structure(
+                status="error",
+                msg="your scan id is not valid!"  # todo: add to message()
+            )
+        ), 400
+    scan_details = session.query(Report).filter(Report.id == result_id).first()
+    data = __logs_by_scan_id(scan_details.scan_unique_id)
+    json_object = json.dumps(data)
+    filename = ".".join(scan_details.report_path_filename.split('.')[:-1]) + '.json'
+    return Response(
+        json_object,
+        mimetype='application/json',
+        headers={
+            'Content-Disposition': 'attachment;filename=' + filename
+        }
+    )
 
 
 @app.route("/results/get_csv", methods=["GET"])
@@ -400,46 +390,43 @@ def get_results_csv():  # todo: need to fix time format
     """
     session = create_connection()
     api_key_is_valid(app, flask_request)
-    try:
-        _id = int(get_value(flask_request, "id"))
-        scan_id_temp = session.query(Report).filter(Report.id == _id).all()
-    except Exception as _:
-        _id = ""
-    if (scan_id_temp):
-        result_id = session.query(Report).join(
-            HostsLog, Report.scan_unique_id == HostsLog.scan_unique_id).filter(
-            Report.scan_unique_id == scan_id_temp[0].scan_unique_id).all()
-    else:
-        result_id = []
-    date_from_db = scan_id_temp[0].date
-    date_format = "aman"  ## todo: fix this
-    # date_format = datetime.strptime(date_from_db, "%Y-%m-%d %H:%M:%S")
-    date_format = str(date_format).replace(
-        "-", "_").replace(":", "_").replace(" ", "_")
-    filename = "report-" + date_format + "".join(
-        random.choice(string.ascii_lowercase) for x in range(10))
-    _reader = ''
-    if (result_id):
-        scan_unique_id = result_id[0].scan_unique_id
-        data = __logs_by_scan_id(scan_unique_id)
-        keys = data[0].keys()
-        with open(filename, "w") as report_path_filename:
-            dict_writer = csv.DictWriter(
-                report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL)
-            dict_writer.writeheader()
-            for i in data:
-                dictdata = {key: value for key, value in i.items()
-                            if key in keys}
-                dict_writer.writerow(dictdata)
-        with open(filename, 'r') as report_path_filename:
-            _reader = report_path_filename.read()
-    return Response(_reader, mimetype='text/csv',
-                    headers={'Content-Disposition':
-                                 'attachment;filename=' + filename + '.csv'})
+    result_id = get_value(flask_request, "id")
+    if not result_id:
+        return jsonify(
+            structure(
+                status="error",
+                msg="your scan id is not valid!"  # todo: add to message()
+            )
+        ), 400
+    scan_details = session.query(Report).filter(Report.id == result_id).first()
+    data = __logs_by_scan_id(scan_details.scan_unique_id)
+    keys = data[0].keys()
+    filename = ".".join(scan_details.report_path_filename.split('.')[:-1]) + '.csv'
+    with open(filename, "w") as report_path_filename:
+        dict_writer = csv.DictWriter(
+            report_path_filename,
+            fieldnames=keys,
+            quoting=csv.QUOTE_ALL
+        )
+        dict_writer.writeheader()
+        for event in data:
+            dictdata = {
+                key: value for key, value in event.items() if key in keys
+            }
+            dict_writer.writerow(dictdata)
+    with open(filename, 'r') as report_path_filename:
+        reader = report_path_filename.read()
+    return Response(
+        reader,
+        mimetype='text/csv',
+        headers={
+            'Content-Disposition': 'attachment;filename=' + filename
+        }
+    )
 
 
 @app.route("/logs/get_list", methods=["GET"])
-def get_last_host_logs():  ## working
+def get_last_host_logs(): # need to check
     """
     get list of logs through the API
 
@@ -447,12 +434,11 @@ def get_last_host_logs():  ## working
         an array of JSON logs if success otherwise abort(403)
     """
     api_key_is_valid(app, flask_request)
-    try:
-        page = int(get_value(flask_request, "page"))
-        if page > 0:
-            page -= 1
-    except Exception:
+    page = get_value(flask_request, "page")
+    if not page:
         page = 0
+    if page > 0:
+        page -= 1
     return jsonify(last_host_logs(page)), 200
 
 
