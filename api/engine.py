@@ -596,7 +596,7 @@ def start_api_server(options):
         options: all options
     """
     # Starting the API
-    write_to_api_console(messages("API_key").format(options.api_access_key))
+    write_to_api_console(messages("API_key").format(options.api_port, options.api_access_key))
     p = multiprocessing.Process(
         target=start_api_subprocess,
         args=(options,)

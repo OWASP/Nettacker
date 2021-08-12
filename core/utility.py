@@ -16,63 +16,62 @@ from core.time import now
 def process_conditions(event, module_name, target, scan_unique_id, options, response):
     from core.alert import (info,
                             verbose_info)
-    try:
-        if 'save_to_temp_events_only' in event.get('response',''):
-            from database.db import submit_temp_logs_to_db
-            submit_temp_logs_to_db(
-                {
-                    "date": now(model=None),
-                    "target": target,
-                    "module_name": module_name,
-                    "scan_unique_id": scan_unique_id,
-                    "event_name": event['response']['save_to_temp_events_only'],
-                    "options": options,
-                    "event": event,
-                    "data": response
-                }
-            )
-        if event['response']['conditions_results'] and 'save_to_temp_events_only' not in event.get('response',''):
-            from database.db import submit_logs_to_db, submit_report_to_db
-            from core.log import sort_logs
-            
-            submit_logs_to_db(
-                {
-                    "date": now(model=None),
-                    "target": target,
-                    "module_name": module_name,
-                    "scan_unique_id": scan_unique_id,
-                    "options": options,
-                    "event": event
-                }
-            )
-            submit_report_to_db(
-                {
-                    "date": now(model=None),
-                    "scan_unique_id": scan_unique_id,
-                    "options": options,
-                }
-            )
-            sort_logs(
-                {
-                    "date": now(model=None),
-                    "target": target,
-                    "module_name": module_name,
-                    "scan_unique_id": scan_unique_id,
-                    "options": options,
-                    "event": event
-                }
-            )
-            info(
-                json.dumps(event)
-            )
-            return True
-        else:
-            verbose_info(
-                json.dumps(event)
-            )
-            return 'save_to_temp_events_only' in event['response']
-    except Exception as e:
-        print(e)
+
+    if 'save_to_temp_events_only' in event.get('response', ''):
+        from database.db import submit_temp_logs_to_db
+        submit_temp_logs_to_db(
+            {
+                "date": now(model=None),
+                "target": target,
+                "module_name": module_name,
+                "scan_unique_id": scan_unique_id,
+                "event_name": event['response']['save_to_temp_events_only'],
+                "options": options,
+                "event": event,
+                "data": response
+            }
+        )
+    if event['response']['conditions_results'] and 'save_to_temp_events_only' not in event.get('response', ''):
+        from database.db import submit_logs_to_db, submit_report_to_db
+        from core.log import sort_logs
+
+        submit_logs_to_db(
+            {
+                "date": now(model=None),
+                "target": target,
+                "module_name": module_name,
+                "scan_unique_id": scan_unique_id,
+                "options": options,
+                "event": event
+            }
+        )
+        submit_report_to_db(
+            {
+                "date": now(model=None),
+                "scan_unique_id": scan_unique_id,
+                "options": options,
+            }
+        )
+        sort_logs(
+            {
+                "date": now(model=None),
+                "target": target,
+                "module_name": module_name,
+                "scan_unique_id": scan_unique_id,
+                "options": options,
+                "event": event
+            }
+        )
+        info(
+            json.dumps(event)
+        )
+        return True
+    else:
+        verbose_info(
+            json.dumps(event)
+        )
+        return 'save_to_temp_events_only' in event['response']
+
 
 def get_dependent_results_from_database(target, module_name, scan_unique_id, event_name):
     from database.db import find_temp_events
