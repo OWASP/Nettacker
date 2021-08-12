@@ -4,6 +4,7 @@
 import sys
 from core import color
 from core.messages import load_message
+from core.time import now
 
 message_cache = load_message().messages
 
@@ -51,7 +52,7 @@ def info(content):
         sys.stdout.buffer.write(
             bytes(
                 color.color("yellow")
-                + "[+] "
+                + "[{0}][+] ".format(now())
                 + color.color("green")
                 + content
                 + color.color("reset")
@@ -77,7 +78,7 @@ def event_info(content):
         sys.stdout.buffer.write(
             bytes(
                 color.color("red")
-                + "[+++] "
+                + "[{0}][+++] ".format(now())
                 + color.color("cyan")
                 + content
                 + color.color("reset")
@@ -103,7 +104,7 @@ def verbose_info(content):
         sys.stdout.buffer.write(
             bytes(
                 color.color("yellow")
-                + "[+] "
+                + "[{0}][+] ".format(now())
                 + color.color("purple")
                 + content
                 + color.color("reset")
@@ -145,7 +146,7 @@ def warn(content):
         sys.stdout.buffer.write(
             bytes(
                 color.color("blue")
-                + "[!] "
+                + "[{0}][!] ".format(now())
                 + color.color("yellow")
                 + content
                 + color.color("reset")
@@ -168,7 +169,7 @@ def error(content):
     """
     data = (
             color.color("red")
-            + "[X] "
+            + "[{0}][X] ".format(now())
             + color.color("yellow")
             + content
             + color.color("reset")
