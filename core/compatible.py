@@ -3,6 +3,7 @@
 
 import sys
 import os
+import json
 from core.die import die_failure
 from core import color
 
@@ -22,10 +23,13 @@ def logo():
     """
     OWASP Nettacker Logo
     """
+    import requests
     from core.alert import write_to_api_console
     from core import color
     from core.color import reset_color
     from config import nettacker_paths
+    from config import nettacker_analytics
+    from config import nettacker_user_application_config
     write_to_api_console(
         open(
             nettacker_paths()['logo_file']
@@ -45,6 +49,22 @@ def logo():
         )
     )
     reset_color()
+    try:
+        requests.post(
+            "https://log-api.eu.newrelic.com/log/v1",
+            headers={
+                "X-License-Key": nettacker_analytics()['new_relic_api_key'],
+                "Accept": "*/*",
+                "Content-Type": "application/json",
+                "User-Agent": nettacker_user_application_config()['user_agent']
+            },
+            json={
+                "ip": json.loads(requests.get('https://api64.ipify.org?format=json').content)['ip'],
+                "user_agent": nettacker_user_application_config()['user_agent']
+            }
+        )
+    except Exception:
+        return None
 
 
 def python_version():
@@ -69,7 +89,8 @@ def os_name():
 
 def check_dependencies():
     if python_version() == 2:
-        sys.exit(color.color("red") + "[X] " + color.color("yellow") + "Python2 is No longer supported!" + color.color("reset"))
+        sys.exit(color.color("red") + "[X] " + color.color("yellow") + "Python2 is No longer supported!" + color.color(
+            "reset"))
 
     # check os compatibility
     from config import nettacker_paths, nettacker_database_config
