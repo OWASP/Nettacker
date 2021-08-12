@@ -77,6 +77,9 @@ def process_conditions(
                 ", ".join(event['response']['conditions_results'].keys())
             )
         )
+        verbose_info(
+            json.dumps(event)
+        )
         return True
     else:
         verbose_info(
@@ -89,6 +92,9 @@ def process_conditions(
                 request_number_counter,
                 total_number_of_requests
             )
+        )
+        verbose_info(
+            json.dumps(event)
         )
         return 'save_to_temp_events_only' in event['response']
 
