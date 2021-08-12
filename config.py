@@ -50,7 +50,7 @@ def nettacker_api_config():
         #     "10.0.0.0/24",
         #     "192.168.1.1-192.168.1.255"
         # ],
-        "api_access_log": "nettacker.log",
+        "api_access_log": os.path.join(sys.path[0], '.data/nettacker.log'),
     }
 
 

@@ -321,7 +321,7 @@ def get_results():
     try:
         page = int(get_value(flask_request, "page"))
         if page > 0:
-            page-=1
+            page -= 1
     except Exception:
         page = 0
     return jsonify(
@@ -330,7 +330,7 @@ def get_results():
 
 
 @app.route("/results/get", methods=["GET"])
-def get_result_content():  ## todo: working now but improvement for filename
+def get_result_content():
     """
     get a result HTML/TEXT/JSON content
 
@@ -351,7 +351,7 @@ def get_result_content():  ## todo: working now but improvement for filename
 
 
 @app.route("/results/get_json", methods=["GET"])
-def get_results_json():  ##working fine
+def get_results_json():  # todo: fix
     """
     get host's logs through the API in JSON type
 
@@ -450,7 +450,7 @@ def get_last_host_logs():  ## working
     try:
         page = int(get_value(flask_request, "page"))
         if page > 0:
-            page-=1
+            page -= 1
     except Exception:
         page = 0
     return jsonify(last_host_logs(page)), 200
@@ -540,7 +540,7 @@ def go_for_search_logs():  ## working fine
     try:
         page = int(get_value(flask_request, "page"))
         if page > 0:
-            page-=1
+            page -= 1
     except Exception:
         page = 0
     try:
