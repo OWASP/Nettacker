@@ -13,9 +13,22 @@ from core.load_modules import load_all_languages
 from core.time import now
 
 
-def process_conditions(event, module_name, target, scan_unique_id, options, response):
-    from core.alert import (info,
-                            verbose_info)
+def process_conditions(
+        event,
+        module_name,
+        target,
+        scan_unique_id,
+        options,
+        response,
+        process_number,
+        module_thread_number,
+        total_module_thread_number,
+        request_number_counter,
+        total_number_of_requests
+):
+    from core.alert import (event_info,
+                            verbose_info,
+                            messages)
 
     if 'save_to_temp_events_only' in event.get('response', ''):
         from database.db import submit_temp_logs_to_db
@@ -33,7 +46,7 @@ def process_conditions(event, module_name, target, scan_unique_id, options, resp
         )
     if event['response']['conditions_results'] and 'save_to_temp_events_only' not in event.get('response', ''):
         from database.db import submit_logs_to_db, submit_report_to_db
-        from core.log import sort_logs
+        # from core.log import sort_logs todo: check this later
 
         submit_logs_to_db(
             {
@@ -52,23 +65,30 @@ def process_conditions(event, module_name, target, scan_unique_id, options, resp
                 "options": options,
             }
         )
-        sort_logs(
-            {
-                "date": now(model=None),
-                "target": target,
-                "module_name": module_name,
-                "scan_unique_id": scan_unique_id,
-                "options": options,
-                "event": event
-            }
-        )
-        info(
-            json.dumps(event)
+        event_info(
+            messages("send_success_event_from_module").format(
+                process_number,
+                module_name,
+                target,
+                module_thread_number,
+                total_module_thread_number,
+                request_number_counter,
+                total_number_of_requests,
+                ", ".join(event['response']['conditions_results'].keys())
+            )
         )
         return True
     else:
         verbose_info(
-            json.dumps(event)
+            messages("send_unsuccess_event_from_module").format(
+                process_number,
+                module_name,
+                target,
+                module_thread_number,
+                total_module_thread_number,
+                request_number_counter,
+                total_number_of_requests
+            )
         )
         return 'save_to_temp_events_only' in event['response']
 

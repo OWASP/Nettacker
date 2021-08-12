@@ -207,7 +207,18 @@ class NettackerSocket:
 
 
 class Engine:
-    def run(sub_step, module_name, target, scan_unique_id, options):
+    def run(
+            sub_step,
+            module_name,
+            target,
+            scan_unique_id,
+            options,
+            process_number,
+            module_thread_number,
+            total_module_thread_number,
+            request_number_counter,
+            total_number_of_requests
+    ):
         backup_method = copy.deepcopy(sub_step['method'])
         backup_response = copy.deepcopy(sub_step['response'])
         del sub_step['method']
@@ -237,5 +248,10 @@ class Engine:
             target,
             scan_unique_id,
             options,
-            response
+            response,
+            process_number,
+            module_thread_number,
+            total_module_thread_number,
+            request_number_counter,
+            total_number_of_requests
         )

@@ -12,8 +12,11 @@ from terminable_thread import Thread
 from core.utility import wait_for_threads_to_finish
 
 
-def parallel_scan_process(options, targets, scan_unique_id):
+def parallel_scan_process(options, targets, scan_unique_id, process_number):
     active_threads = []
+    info(messages("single_process_started").format(process_number))
+    total_number_of_modules = len(targets) * len(options.selected_modules)
+    total_number_of_modules_counter = 1
     for target in targets:
         for module_name in options.selected_modules:
             from database.db import remove_old_logs
@@ -26,11 +29,28 @@ def parallel_scan_process(options, targets, scan_unique_id):
             )
             thread = Thread(
                 target=perform_scan,
-                args=(options, target, module_name, scan_unique_id,)
+                args=(
+                    options,
+                    target,
+                    module_name,
+                    scan_unique_id,
+                    process_number,
+                    total_number_of_modules_counter,
+                    total_number_of_modules
+                )
             )
             thread.name = f"{target} -> {module_name}"
             thread.start()
-            info(messages("start_parallel_module_scan").format(module_name, target))
+            info(
+                messages("start_parallel_module_scan").format(
+                    process_number,
+                    module_name,
+                    target,
+                    total_number_of_modules_counter,
+                    total_number_of_modules
+                )
+            )
+            total_number_of_modules_counter += 1
             active_threads.append(thread)
             if not wait_for_threads_to_finish(active_threads, options.parallel_module_scan, True):
                 return False
@@ -59,10 +79,12 @@ def start_scan_processes(options):
     ]
     active_processes = []
     info(messages("start_multi_process").format(len(options.targets)))
+    process_number = 0
     for targets in options.targets:
+        process_number += 1
         process = multiprocessing.Process(
             target=parallel_scan_process,
-            args=(options, targets, scan_unique_id,)
+            args=(options, targets, scan_unique_id, process_number,)
         )
         process.start()
         active_processes.append(process)
