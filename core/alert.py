@@ -62,6 +62,32 @@ def info(content):
         sys.stdout.flush()
 
 
+def event_info(content):
+    """
+    build the info message, log the message in database if requested,
+    rewrite the thread temporary file
+
+    Args:
+        content: content of the message
+
+    Returns:
+        None
+    """
+    if (not run_from_api()) or verbose_mode_is_enabled():  # prevent to stdout if run from API
+        sys.stdout.buffer.write(
+            bytes(
+                color.color("red")
+                + "[+++] "
+                + color.color("cyan")
+                + content
+                + color.color("reset")
+                + "\n",
+                "utf8",
+            )
+        )
+        sys.stdout.flush()
+
+
 def verbose_info(content):
     """
     build the info message, log the message in database if requested,

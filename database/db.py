@@ -10,10 +10,9 @@ from database.models import (HostsLog,
                              Report,
                              TempEvents)
 from core.alert import warn
-from core.alert import info
+from core.alert import (info,
+                        verbose_info)
 from core.alert import messages
-from core.time import now
-from core import compatible
 from api.api_core import structure
 from config import nettacker_database_config
 
@@ -103,7 +102,7 @@ def submit_report_to_db(event):
     Returns:
         return True if submitted otherwise False
     """
-    info(messages("inserting_report_db"))
+    verbose_info(messages("inserting_report_db"))
     session = create_connection()
     session.add(
         Report(
@@ -252,7 +251,7 @@ def select_reports(page):
     try:
         search_data = session.query(Report).order_by(
             Report.id.desc()
-        ).offset(page*10).limit(10)
+        ).offset(page * 10).limit(10)
         for data in search_data:
             tmp = {
                 "id": data.id,

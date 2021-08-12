@@ -53,6 +53,9 @@ class NettackerModules:
         self.module_content = None
         self.scan_unique_id = None
         self.target = None
+        self.process_number = None
+        self.module_thread_number = None
+        self.total_module_thread_number = None
         self.module_inputs = {}
         self.libraries = [
             'http',
@@ -92,11 +95,20 @@ class NettackerModules:
         from core.utility import wait_for_threads_to_finish
         active_threads = []
         from core.alert import warn
+        from core.alert import info
+        from core.alert import messages
 
+        # counting total number of requests
+        total_number_of_requests = 0
         for payload in self.module_content['payloads']:
             if payload['library'] not in self.libraries:
                 warn('library [{library}] is not support!'.format(library=payload['library']))
                 return None
+            for step in payload['steps']:
+                for _ in step:
+                    total_number_of_requests += 1
+        request_number_counter = 0
+        for payload in self.module_content['payloads']:
             protocol = getattr(
                 __import__(
                     'core.module_protocols.{library}'.format(library=payload['library']),
@@ -113,10 +125,27 @@ class NettackerModules:
                             self.module_name,
                             self.target,
                             self.scan_unique_id,
-                            self.module_inputs
+                            self.module_inputs,
+                            self.process_number,
+                            self.module_thread_number,
+                            self.total_module_thread_number,
+                            request_number_counter,
+                            total_number_of_requests
                         )
                     )
                     thread.name = f"{self.target} -> {self.module_name} -> {sub_step}"
+                    request_number_counter += 1
+                    info(
+                        messages("sending_module_request").format(
+                            self.process_number,
+                            self.module_name,
+                            self.target,
+                            self.module_thread_number,
+                            self.total_module_thread_number,
+                            request_number_counter,
+                            total_number_of_requests
+                        )
+                    )
                     thread.start()
                     time.sleep(self.module_inputs['time_sleep_between_requests'])
                     active_threads.append(thread)
@@ -227,7 +256,7 @@ def load_all_profiles(limit=-1):
     return profiles
 
 
-def perform_scan(options, target, module_name, scan_unique_id):
+def perform_scan(options, target, module_name, scan_unique_id, process_number, thread_number, total_number_threads):
     from core.alert import (info,
                             messages)
 
@@ -235,12 +264,22 @@ def perform_scan(options, target, module_name, scan_unique_id):
     options.target = target
     validate_module = NettackerModules()
     validate_module.module_name = module_name
+    validate_module.process_number = process_number
+    validate_module.module_thread_number = thread_number
+    validate_module.total_module_thread_number = total_number_threads
     validate_module.module_inputs = vars(options)
     validate_module.scan_unique_id = scan_unique_id
     validate_module.target = target
     validate_module.load()
     validate_module.generate_loops()
-    info(f"starting scan {target} - {module_name}")
     validate_module.start()
-    info(messages("finished_module").format(module_name, target))
+    info(
+        messages("finished_parallel_module_scan").format(
+            process_number,
+            module_name,
+            target,
+            thread_number,
+            total_number_threads
+        )
+    )
     return os.EX_OK

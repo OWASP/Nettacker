@@ -114,18 +114,30 @@ def nettacker_user_application_config():
         "time_sleep_between_requests": 0.0,
         "scan_ip_range": False,
         "scan_subdomains": False,
-        "thread_per_host": 100,
-        "parallel_module_scan": 10,
+        "thread_per_host": 250,
+        "parallel_module_scan": 20,
         "socks_proxy": None,
         "retries": 3,
         "ping_before_scan": False,
         "profiles": None,
-        "set_hardware_usage": "normal",
+        "set_hardware_usage": "maximum",  # low, normal, high, maximum
         "user_agent": "Nettacker {version_number} {version_code} - https://github.com/OWASP/Nettacker".format(
             version_number=version_info()[0], version_code=version_info()[1]
         ),
         "show_all_modules": False,
         "show_all_profiles": False
+    }
+
+
+def nettacker_analytics():
+    return {
+        "new_relic_api_key": "eu01xx37fdbe48e4ebcd3f5935175aaf3aeaNRAL"
+        # set this to None if you don't want us receive any analytics from you
+        # the reason for this is too check how much Nettacker is being used and
+        # in which geo area we have more users to develop the messaging system
+        # we don't share or sell any info with anyone (actually we don't have any info tho
+        # check core/compatible.py)
+        # if you have any concern or feedback, let us know :)
     }
 
 
