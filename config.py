@@ -117,7 +117,7 @@ def nettacker_user_application_config():
         "thread_per_host": 250,
         "parallel_module_scan": 20,
         "socks_proxy": None,
-        "retries": 3,
+        "retries": 1,
         "ping_before_scan": False,
         "profiles": None,
         "set_hardware_usage": "maximum",  # low, normal, high, maximum

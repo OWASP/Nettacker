@@ -235,10 +235,12 @@ class Engine:
                 temp_event
             )
         action = getattr(NettackerSocket, backup_method, None)
-        try:
-            response = action(**sub_step)
-        except Exception:
-            response = []
+        for _ in range(options['retries']):
+            try:
+                response = action(**sub_step)
+                break
+            except Exception:
+                response = []
         sub_step['method'] = backup_method
         sub_step['response'] = backup_response
         sub_step['response']['conditions_results'] = response_conditions_matched(sub_step, response)

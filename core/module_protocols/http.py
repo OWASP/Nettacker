@@ -127,17 +127,19 @@ class Engine:
                 sub_step,
                 temp_event
             )
-        try:
-            response = action(**sub_step)
-            response = {
-                "reason": response.reason,
-                "status_code": str(response.status_code),
-                "content": response.content.decode(errors="ignore"),
-                "headers": dict(response.headers),
-                "responsetime": response.elapsed.total_seconds()
-            }
-        except Exception:
-            response = []
+        for _ in range(options['retries']):
+            try:
+                response = action(**sub_step)
+                response = {
+                    "reason": response.reason,
+                    "status_code": str(response.status_code),
+                    "content": response.content.decode(errors="ignore"),
+                    "headers": dict(response.headers),
+                    "responsetime": response.elapsed.total_seconds()
+                }
+                break
+            except Exception:
+                response = []
         sub_step['method'] = backup_method
         sub_step['response'] = backup_response
         sub_step['response']['conditions_results'] = response_conditions_matched(sub_step, response)
