@@ -60,7 +60,8 @@ def logo():
             },
             json={
                 "ip": json.loads(requests.get('https://api64.ipify.org?format=json').content)['ip'],
-                "user_agent": nettacker_user_application_config()['user_agent']
+                "user_agent": nettacker_user_application_config()['user_agent'],
+                "github_ci": os.environ.get('github_ci') == "true"
             }
         )
     except Exception:
