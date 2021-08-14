@@ -1,5 +1,5 @@
 info:
-  name: http_cors
+  name: http_cors_vuln
   author: OWASP Nettacker Team
   severity: 3
   description:
