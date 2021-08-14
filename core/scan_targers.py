@@ -77,6 +77,8 @@ def start_scan_processes(options):
             options.set_hardware_usage if options.set_hardware_usage >= len(options.targets) else len(options.targets)
         )
     ]
+    for _ in range(options.targets.count([])):
+        options.targets.remove([])
     active_processes = []
     info(messages("start_multi_process").format(len(options.targets)))
     process_number = 0
