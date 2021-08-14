@@ -399,7 +399,7 @@ def last_host_logs(page):
     return selected
 
 
-def __logs_by_scan_id(scan_unique_id):
+def get_logs_by_scan_unique_id(scan_unique_id):
     """
     select all events by scan id hash
 

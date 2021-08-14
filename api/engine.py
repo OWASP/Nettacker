@@ -10,7 +10,7 @@ import string
 import os
 import copy
 from types import SimpleNamespace
-from database.db import create_connection, __logs_by_scan_id
+from database.db import create_connection, get_logs_by_scan_unique_id
 from database.models import HostsLog, Report
 from flask import Flask
 from flask import jsonify
@@ -267,7 +267,7 @@ def session_check():
 
 
 @app.route("/session/set", methods=["GET", "POST"])
-def session_set():  ## working fine ## todo: mtehod requires to be POST
+def session_set():
     """
     set session on the browser
 
@@ -343,7 +343,7 @@ def get_result_content():
         return jsonify(
             structure(
                 status="error",
-                msg="your scan id is not valid!"  # todo: add to message()
+                msg=messages("invalid_scan_id")
             )
         ), 400
     return get_scan_result(scan_id)
@@ -364,11 +364,11 @@ def get_results_json():
         return jsonify(
             structure(
                 status="error",
-                msg="your scan id is not valid!"  # todo: add to message()
+                msg=messages("invalid_scan_id")
             )
         ), 400
     scan_details = session.query(Report).filter(Report.id == result_id).first()
-    data = __logs_by_scan_id(scan_details.scan_unique_id)
+    data = get_logs_by_scan_unique_id(scan_details.scan_unique_id)
     json_object = json.dumps(data)
     filename = ".".join(scan_details.report_path_filename.split('.')[:-1])[1:] + '.json'
     return Response(
@@ -395,11 +395,11 @@ def get_results_csv():  # todo: need to fix time format
         return jsonify(
             structure(
                 status="error",
-                msg="your scan id is not valid!"  # todo: add to message()
+                msg=messages("invalid_scan_id")
             )
         ), 400
     scan_details = session.query(Report).filter(Report.id == result_id).first()
-    data = __logs_by_scan_id(scan_details.scan_unique_id)
+    data = get_logs_by_scan_unique_id(scan_details.scan_unique_id)
     keys = data[0].keys()
     filename = ".".join(scan_details.report_path_filename.split('.')[:-1])[1:] + '.csv'
     with open(filename, "w") as report_path_filename:
@@ -410,10 +410,11 @@ def get_results_csv():  # todo: need to fix time format
         )
         dict_writer.writeheader()
         for event in data:
-            dictdata = {
-                key: value for key, value in event.items() if key in keys
-            }
-            dict_writer.writerow(dictdata)
+            dict_writer.writerow(
+                {
+                    key: value for key, value in event.items() if key in keys
+                }
+            )
     with open(filename, 'r') as report_path_filename:
         reader = report_path_filename.read()
     return Response(
@@ -426,7 +427,7 @@ def get_results_csv():  # todo: need to fix time format
 
 
 @app.route("/logs/get_list", methods=["GET"])
-def get_last_host_logs(): # need to check
+def get_last_host_logs():  # need to check
     """
     get list of logs through the API
 
@@ -459,7 +460,7 @@ def get_logs_html():  ## todo: html needs to be added to solve this error
 
 
 @app.route("/logs/get_json", methods=["GET"])
-def get_logs():  ## working fine
+def get_logs():
     """
     get host's logs through the API in JSON type
 
@@ -467,22 +468,25 @@ def get_logs():  ## working fine
         an array with JSON events
     """
     api_key_is_valid(app, flask_request)
-    try:
-        target = get_value(flask_request, "target")
-    except Exception:
-        target = ""
+    target = get_value(flask_request, "target")
     data = logs_to_report_json(target)
     json_object = json.dumps(data)
     filename = "report-" + now(
-        model="%Y_%m_%d_%H_%M_%S") + "".join(
-        random.choice(string.ascii_lowercase) for x in range(10))
-    return Response(json_object, mimetype='application/json',
-                    headers={'Content-Disposition':
-                                 'attachment;filename=' + filename + '.json'})
+        model="%Y_%m_%d_%H_%M_%S"
+    ) + "".join(
+        random.choice(string.ascii_lowercase) for _ in range(10)
+    )
+    return Response(
+        json_object,
+        mimetype='application/json',
+        headers={
+            'Content-Disposition': 'attachment;filename=' + filename + '.json'
+        }
+    )
 
 
 @app.route("/logs/get_csv", methods=["GET"])
-def get_logs_csv():  ## working fine
+def get_logs_csv():
     """
     get target's logs through the API in JSON type
 
@@ -490,32 +494,41 @@ def get_logs_csv():  ## working fine
         an array with JSON events
     """
     api_key_is_valid(app, flask_request)
-    try:
-        target = get_value(flask_request, "target")
-    except Exception:
-        target = ""
+    target = get_value(flask_request, "target")
     data = logs_to_report_json(target)
     keys = data[0].keys()
     filename = "report-" + now(
-        model="%Y_%m_%d_%H_%M_%S") + "".join(random.choice(
-        string.ascii_lowercase) for x in range(10))
+        model="%Y_%m_%d_%H_%M_%S"
+    ) + "".join(
+        random.choice(
+            string.ascii_lowercase
+        ) for _ in range(10)
+    )
     with open(filename, "w") as report_path_filename:
         dict_writer = csv.DictWriter(
-            report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL)
+            report_path_filename,
+            fieldnames=keys,
+            quoting=csv.QUOTE_ALL
+        )
         dict_writer.writeheader()
-        for i in data:
-            dictdata = {key: value for key, value in i.items()
-                        if key in keys}
-            dict_writer.writerow(dictdata)
+        for event in data:
+            dict_writer.writerow(
+                {
+                    key: value for key, value in event.items() if key in keys
+                }
+            )
     with open(filename, 'r') as report_path_filename:
         reader = report_path_filename.read()
-    return Response(reader, mimetype='text/csv',
-                    headers={'Content-Disposition':
-                                 'attachment;filename=' + filename + '.csv'})
+    return Response(
+        reader, mimetype='text/csv',
+        headers={
+            'Content-Disposition': 'attachment;filename=' + filename + '.csv'
+        }
+    )
 
 
 @app.route("/logs/search", methods=["GET"])
-def go_for_search_logs():  ## working fine
+def go_for_search_logs():
     """
     search in all events
 
@@ -548,7 +561,6 @@ def start_api_subprocess(options):
         "api_access_key": options.api_access_key,
         "api_client_whitelisted_ips": options.api_client_whitelisted_ips,
         "api_access_log": options.api_access_log,
-        # "api_access_log_filename": options.api_access_log_filename,
         "api_cert": options.api_cert,
         "api_cert_key": options.api_cert_key,
         "language": options.language,
@@ -582,7 +594,12 @@ def start_api_server(options):
         options: all options
     """
     # Starting the API
-    write_to_api_console(messages("API_key").format(options.api_port, options.api_access_key))
+    write_to_api_console(
+        messages("API_key").format(
+            options.api_port,
+            options.api_access_key
+        )
+    )
     p = multiprocessing.Process(
         target=start_api_subprocess,
         args=(options,)
