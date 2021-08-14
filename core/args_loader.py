@@ -136,6 +136,13 @@ def load_all_args():
         help=messages("choose_scan_method").format(load_all_modules(limit=10).keys()),
     )
     modules.add_argument(
+        "--modules-extra-args",
+        action="store",
+        dest="modules_extra_args",
+        default=nettacker_global_configuration['nettacker_user_application_config']['modules_extra_args'],
+        help=messages("modules_extra_args_help")
+    )
+    modules.add_argument(
         "--show-all-modules",
         action="store_true",
         dest="show_all_modules",
@@ -564,6 +571,12 @@ def check_all_required(parser, api_forms=None):
         if not (options.report_path_filename.endswith(".html") or options.report_path_filename.endswith(".htm")):
             warn(messages("graph_output"))
             options.graph_name = None
+    # check modules extra args
+    if options.modules_extra_args:
+        all_args = {}
+        for args in options.modules_extra_args.split("&"):
+            all_args[args.split('=')[0]] = args.split('=')[1]
+        options.modules_extra_args = all_args
     options.timeout = float(options.timeout)
     options.time_sleep_between_requests = float(options.time_sleep_between_requests)
     options.retries = int(options.retries)

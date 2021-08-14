@@ -29,6 +29,7 @@ finished_module: finished module {0} towards the target {1} | module thread numb
 save_logs: save all logs in file (results.txt, results.csv, results.html, results.json)
 target: Target
 target_input: Target input options
+modules_extra_args_help: add extra args to pass to modules (e.g. --modules-extra-args "x_api_key=123&xyz_passwd=abc"
 target_list: target(s) list, separate with ","
 read_target: read target(s) from file
 scan_method_options: Scan method options

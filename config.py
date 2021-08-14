@@ -125,7 +125,8 @@ def nettacker_user_application_config():
             version_number=version_info()[0], version_code=version_info()[1]
         ),
         "show_all_modules": False,
-        "show_all_profiles": False
+        "show_all_profiles": False,
+        "modules_extra_args": None
     }
 
 

@@ -268,6 +268,9 @@ def perform_scan(options, target, module_name, scan_unique_id, process_number, t
     validate_module.module_thread_number = thread_number
     validate_module.total_module_thread_number = total_number_threads
     validate_module.module_inputs = vars(options)
+    for module_extra_args in validate_module.module_inputs['modules_extra_args']:
+        validate_module.module_inputs[module_extra_args] = \
+            validate_module.module_inputs['modules_extra_args'][module_extra_args]
     validate_module.scan_unique_id = scan_unique_id
     validate_module.target = target
     validate_module.load()
