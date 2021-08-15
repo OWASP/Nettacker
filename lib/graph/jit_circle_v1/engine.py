@@ -6,20 +6,12 @@ import json
 from core.alert import messages
 
 
-def start(graph_name, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE, _DESCRIPTION):
+def start(events):
     """
     generate the jit_circle_v1_graph with events
 
     Args:
-        graph_name: graph name
-        language: language
-        data: events in JSON
-        _HOST: host key
-        _USERNAME: username key
-        _PASSWORD: password key
-        _PORT: port key
-        _TYPE: module name key
-        _DESCRIPTION: description key
+        events: event
 
     Returns:
         a graph in HTML
@@ -30,7 +22,7 @@ def start(graph_name, language, data, _HOST, _USERNAME, _PASSWORD, _PORT, _TYPE,
         "children": {}
     }
     # get data for normalised_json
-    for each_scan in data:
+    for each_scan in events:
 
         if each_scan['HOST'] not in normalisedjson['children']:
             normalisedjson['children'].update({each_scan['HOST']: {}})

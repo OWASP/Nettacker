@@ -6,21 +6,12 @@ import json
 from core.alert import messages
 
 
-def start(graph_name, language,
-                 data, date, target, module_name, scan_unique_id, options, event):
+def start(events):
     """
     generate the d3_tree_v1_graph with events
 
     Args:
-        graph_name: graph name
-        language: language
-        data: events in JSON
-        _HOST: host key
-        _USERNAME: username key
-        _PASSWORD: password key
-        _PORT: port key
-        _TYPE: module name key
-        _DESCRIPTION: description key
+        events: all events
 
     Returns:
         a graph in HTML
@@ -32,7 +23,7 @@ def start(graph_name, language,
         "children": {}
     }
     # get data for normalised_json
-    for each_scan in data:
+    for each_scan in events:
         if each_scan['target'] not in normalisedjson['children']:
             normalisedjson['children'].update({each_scan['target']: {}})
             normalisedjson['children'][each_scan['target']].update(
@@ -51,8 +42,8 @@ def start(graph_name, language,
         for otype in list(normalisedjson['children'][target].keys()):
             for description in normalisedjson["children"][target][otype]:
                 children_array = [{"name": otype, "children": [{"name": description}]}]
-                d3_structure["children"].append({"name": target, "children": children_array})            
-        # d3_structure["children"].append({"name": host, "children": [{"name": otype, "children": [{"name": description}
+                d3_structure["children"].append({"name": target, "children": children_array})
+                # d3_structure["children"].append({"name": host, "children": [{"name": otype, "children": [{"name": description}
         #                                                                                          for description in normalisedjson['children'][host][otype]]} for otype in list(normalisedjson['children'][host].keys())]})
 
     data = '''<!DOCTYPE html>

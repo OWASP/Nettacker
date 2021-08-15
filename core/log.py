@@ -4,35 +4,21 @@
 import json
 import csv
 import texttable
-import lockfile
 from core.alert import messages
 from core.alert import info
 from core.compatible import version_info
 from core.time import now
 from core.die import die_failure
-from database.db import submit_report_to_db
-from database.db import submit_logs_to_db
-from database.db import remove_old_logs
-import html
 from database.db import get_logs_by_scan_unique_id
-from core.alert import write
 
 
-def build_graph(graph_name, language,
-                data, date, target, module_name, scan_unique_id, options, event):
+def build_graph(graph_name, events):
     """
     build a graph
 
     Args:
         graph_name: graph name
-        language: language
-        data: events in JSON type
-        _HOST: host key used in JSON
-        _USERNAME: username key used in JSON
-        _PASSWORD: password key used in JSON
-        _PORT: port key used in JSON
-        _TYPE: type key used in JSON
-        _DESCRIPTION: description key used in JSON
+        events: list of events
 
     Returns:
         graph in HTML type
@@ -40,23 +26,34 @@ def build_graph(graph_name, language,
     info(messages("build_graph"))
     try:
         start = getattr(
-            __import__('lib.graph.{0}.engine'.format(
-                graph_name.rsplit('_graph')[0]),
-                fromlist=['start']),
-            'start')
-    except Exception as e:
+            __import__(
+                'lib.graph.{0}.engine'.format(
+                    graph_name.rsplit('_graph')[0]
+                ),
+                fromlist=['start']
+            ),
+            'start'
+        )
+    except Exception:
         die_failure(
-            messages("graph_module_unavailable").format(graph_name))
+            messages("graph_module_unavailable").format(graph_name)
+        )
 
-    # print(graph_name, language, data, date, target, module_name, scan_unique_id, options, event)
     info(messages("finish_build_graph"))
-    return start(graph_name, language,
-                 data, date, target, module_name, scan_unique_id, options, event)
+    return start(
+        events
+    )
 
 
-def __build_texttable(JSON_FROM_DB, target,
-                      module_name, scan_unique_id,
-                      options, event, date):
+def __build_texttable(
+        JSON_FROM_DB,
+        target,
+        module_name,
+        scan_unique_id,
+        options,
+        event,
+        date
+):
     """
     value['date'], value["target"], value['module_name'], value['scan_unique_id'],
                                                     value['options'], value['event']
@@ -123,11 +120,12 @@ def sort_logs(logs):
         _table = log_data.table_title.format(
             _graph, log_data.css_1, 'date', 'target', 'module_name', 'scan_unique_id', 'options', 'event')
         for value in data:
-            _table += log_data.table_items.format(value["date"], value["target"], value["module_name"], value["scan_unique_id"],
+            _table += log_data.table_items.format(value["date"], value["target"], value["module_name"],
+                                                  value["scan_unique_id"],
                                                   value["options"], value["event"])
             # events_num += 1
         _table += log_data.table_end + '<p class="footer">' + \
-            messages("nettacker_version_details").format(version_info()[0], version_info()[1], now()) + '</p>'
+                  messages("nettacker_version_details").format(version_info()[0], version_info()[1], now()) + '</p>'
         with open(report_path_filename, 'w', encoding='utf-8') as save:
             save.write(_table + '\n')
     elif len(report_path_filename) >= 5 and report_path_filename[-5:] == '.json':
@@ -155,12 +153,14 @@ def sort_logs(logs):
         graph_name = ""
         report_type = "TEXT"
         data, events_num = __build_texttable(
-            JSON_FROM_DB, logs["target"], logs["module_name"], logs["scan_unique_id"], logs["options"], logs["event"], logs["date"])
+            JSON_FROM_DB, logs["target"], logs["module_name"], logs["scan_unique_id"], logs["options"], logs["event"],
+            logs["date"])
         if len(report_path_filename) >= 4 and not report_path_filename[-3:] == '.txt':
             report_path_filename += ".txt"
         with open(report_path_filename, 'wb') as save:
             data = data if report_type == "TEXT" else __build_texttable(
-                JSON_FROM_DB, logs["target"], logs["module_name"], logs["scan_unique_id"], logs["options"], logs["event"], logs["date"])[0]
+                JSON_FROM_DB, logs["target"], logs["module_name"], logs["scan_unique_id"], logs["options"],
+                logs["event"], logs["date"])[0]
             save.write(data)
 
     # info(messages("removing_logs_db"))

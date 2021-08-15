@@ -393,41 +393,52 @@ def logs_to_report_html(target):
     generate HTML report with d3_tree_v2_graph for a host
 
     Args:
-        host: the host
+        target: the target
 
     Returns:
         HTML report
     """
+    from core.log import build_graph
+    from lib.html_log import log_data
     session = create_connection()
-    try:
-        logs = []
-        logs_data = session.query(HostsLog).filter(
-            HostsLog.target == target).all()
-        for log in logs_data:
-            data = {
-                "date": log.date,
-                "target": log.target,
-                "module_name": log.module_name,
-                "scan_unique_id": log.scan_unique_id,
-                "options": log.options,
-                "event": log.event
-            }
-            logs.append(data)
-        from core.log import build_graph
-        _graph = build_graph("d3_tree_v2_graph", "en", logs, 'date',
-                             'target', 'module_name', 'scan_unique_id', 'options', 'event')
-        from lib.html_log import log_data
-        _table = log_data.table_title.format(
-            _graph, log_data.css_1, 'date', 'target', 'module_name', 'scan_unique_id', 'options', 'event')
-        for value in logs:
-            _table += log_data.table_items.format(value['date'], value["target"], value['module_name'],
-                                                  value['scan_unique_id'],
-                                                  value['options'], value['event'])
-        _table += log_data.table_end + '<p class="footer">' + \
-                  messages("nettacker_report") + '</p>'
-        return _table
-    except Exception:
-        return ""
+    logs = [
+        {
+            "date": log.date,
+            "target": log.target,
+            "module_name": log.module_name,
+            "scan_unique_id": log.scan_unique_id,
+            "options": log.options,
+            "event": log.event
+        } for log in session.query(HostsLog).filter(
+            HostsLog.target == target
+        ).all()
+    ]
+    html_graph = build_graph(
+        "d3_tree_v2_graph",
+        logs
+    )
+
+    html_content = log_data.table_title.format(
+        html_graph,
+        log_data.css_1,
+        'date',
+        'target',
+        'module_name',
+        'scan_unique_id',
+        'options',
+        'event'
+    )
+    for event in logs:
+        html_content += log_data.table_items.format(
+            event['date'],
+            event["target"],
+            event['module_name'],
+            event['scan_unique_id'],
+            event['options'],
+            event['event']
+        )
+    html_content += log_data.table_end + '<p class="footer">' + messages("nettacker_report") + '</p>'
+    return html_content
 
 
 def search_logs(page, query):

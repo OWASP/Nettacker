@@ -457,7 +457,9 @@ def get_logs_html():  # todo: check until here - ali
     """
     api_key_is_valid(app, flask_request)
     target = get_value(flask_request, "target")
-    return make_response(logs_to_report_html(target))
+    return make_response(
+        logs_to_report_html(target)
+    )
 
 
 @app.route("/logs/get_json", methods=["GET"])
