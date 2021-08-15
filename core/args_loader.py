@@ -438,6 +438,23 @@ def check_all_required(parser, api_forms=None):
         if '--start-api' in sys.argv and api_forms:
             die_failure(messages("cannot_run_api_server"))
         from api.engine import start_api_server
+        if options.api_client_whitelisted_ips:
+            if type(options.api_client_whitelisted_ips) == str:
+                options.api_client_whitelisted_ips = options.api_client_whitelisted_ips.split(',')
+                whielisted_ips = []
+                for ip in options.api_client_whitelisted_ips:
+                    from core.ip import (is_single_ipv4,
+                                         is_single_ipv6,
+                                         is_ipv4_cidr,
+                                         is_ipv6_range,
+                                         is_ipv6_cidr,
+                                         is_ipv4_range,
+                                         generate_ip_range)
+                    if is_single_ipv4(ip) or is_single_ipv6(ip):
+                        whielisted_ips.append(ip)
+                    elif is_ipv4_range(ip) or is_ipv6_range(ip) or is_ipv4_cidr(ip) or is_ipv6_cidr(ip):
+                        whielisted_ips += generate_ip_range(ip)
+                options.api_client_whitelisted_ips = whielisted_ips
         start_api_server(options)
 
     # Check the target(s)
