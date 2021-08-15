@@ -14,7 +14,7 @@ from database.db import submit_report_to_db
 from database.db import submit_logs_to_db
 from database.db import remove_old_logs
 import html
-from database.db import __logs_by_scan_id
+from database.db import get_logs_by_scan_unique_id
 from core.alert import write
 
 
@@ -102,7 +102,7 @@ def sort_logs(logs):
     Returns:
         True if success otherwise None
     """
-    JSON_FROM_DB = __logs_by_scan_id(logs["scan_unique_id"])
+    JSON_FROM_DB = get_logs_by_scan_unique_id(logs["scan_unique_id"])
     JSON_Data = sorted(JSON_FROM_DB, key=sorted)
     report_path_filename = logs["options"]["report_path_filename"]
     if (len(report_path_filename) >= 5 and report_path_filename[-5:] == '.html') or (

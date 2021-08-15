@@ -10,8 +10,7 @@ from database.models import (HostsLog,
                              Report,
                              TempEvents)
 from core.alert import warn
-from core.alert import (info,
-                        verbose_info)
+from core.alert import verbose_info
 from core.alert import messages
 from api.api_core import structure
 from config import nettacker_database_config
@@ -50,7 +49,7 @@ def create_connection():
         connection if success otherwise False
     """
     try:
-        for i in range(0, 100):
+        for _ in range(0, 100):
             try:
                 db_engine = create_engine(
                     db_inputs(DB),
@@ -109,7 +108,8 @@ def submit_report_to_db(event):
             date=event["date"],
             scan_unique_id=event["scan_unique_id"],
             report_path_filename=json.dumps(
-                event["options"]["report_path_filename"]),
+                event["options"]["report_path_filename"]
+            ),
             options=json.dumps(event["options"]),
         )
     )
@@ -251,7 +251,7 @@ def select_reports(page):
     try:
         search_data = session.query(Report).order_by(
             Report.id.desc()
-        ).offset(page * 10).limit(10)
+        ).offset((page * 10) - 10).limit(10)
         for data in search_data:
             tmp = {
                 "id": data.id,
@@ -279,13 +279,12 @@ def get_scan_result(id):
     session = create_connection()
     try:
         try:
-            file_obj = session.query(Report).filter_by(id=id).first()
-            filename = file_obj.report_path_filename
-            filename = filename[1:-1]  # Todo: fix this
+            filename = session.query(Report).filter_by(id=id).first().report_path_filename[1:-1]
+            # for some reason filename saved like "filename" with double quotes in the beginning and end
             return open(str(filename), 'rb').read(), 200
-        except Exception as _:
+        except Exception:
             return jsonify(structure(status="error", msg="cannot find the file!")), 400
-    except Exception as _:
+    except Exception:
         return jsonify(structure(status="error", msg="database error!")), 200
 
 
@@ -300,103 +299,40 @@ def last_host_logs(page):
         an array of events in JSON type if success otherwise an error in JSON type
     """
     session = create_connection()
-    page = int(page * 10 if page > 0 else page * -10) - 10
-    data_structure = {
-        "target": "",
-        "info": {
-            # "open_ports": [],
-            # "scan_methods": [],
-            "module_name": [],
-            # "category": [],
-            "options": [],
-            "date": [],
-            "event": [],
-            # "descriptions": []
-        }
-    }
-    # data_structure = {
-    #     "host": "",
-    #     "info": {
-    #         "open_ports": [],
-    #         "scan_methods": [],
-    #         "category": [],
-    #         "descriptions": []
-    #     }
-    # }
-    selected = []
-    try:
-        for host in session.query(HostsLog).group_by(HostsLog.target).order_by(HostsLog.id.desc())[page:page + 11]:
-            for data in session.query(HostsLog).filter(HostsLog.target == host.target).group_by(
-                    HostsLog.module_name, HostsLog.event, HostsLog.options).order_by(HostsLog.id.desc()):
-                n = 0
-                capture = None
-                for selected_data in selected:
-                    if selected_data["target"] == host.target:
-                        capture = n
-                    n += 1
-                if capture is None:
-                    # tmp = {  # fix later, junks
-                    #     "host": data.host,
-                    #     "info": {
-                    #         "open_ports": [],
-                    #         "scan_methods": [],
-                    #         "category": [],
-                    #         "descriptions": []
-                    #     }
-                    # }
-                    tmp = {  # fix later, junks
-                        "target": data.target,
-                        "info": {
-                            # "open_ports": [],
-                            # "scan_methods": [],
-                            "module_name": [],
-                            # "category": [],
-                            "options": [],
-                            "date": [],
-                            "event": [],
-                            # "descriptions": []
-                        }
-                    }
-                    selected.append(tmp)
-                    n = 0
-                    for selected_data in selected:
-                        if selected_data["target"] == host.target:
-                            capture = n
-                        n += 1
-                if data.target == selected[capture]["target"]:
-                    # if data.port not in selected[capture]["info"]["open_ports"] and isinstance(data.port, int):
-                    #     selected[capture]["info"]["open_ports"].append(
-                    #         data.port)
-                    if data.module_name not in selected[capture]["info"]["module_name"]:
-                        selected[capture]["info"][
-                            "module_name"].append(data.module_name)
-                    if data.date not in selected[capture]["info"]["date"]:
-                        selected[capture]["info"][
-                            "date"].append(data.date)
-                    if data.options not in selected[capture]["info"]["options"]:
-                        selected[capture]["info"]["options"].append(
-                            json.loads(data.options))
-                    if data.event not in selected[capture]["info"]["event"]:
-                        selected[capture]["info"]["event"].append(
-                            json.loads(data.event))
-                # if data.host == selected[capture]["host"]:
-                #     if data.port not in selected[capture]["info"]["open_ports"] and isinstance(data.port, int):
-                #         selected[capture]["info"]["open_ports"].append(
-                #             data.port)
-                #     if data.type not in selected[capture]["info"]["scan_methods"]:
-                #         selected[capture]["info"][
-                #             "scan_methods"].append(data.type)
-                #     if data.category not in selected[capture]["info"]["category"]:
-                #         selected[capture]["info"]["category"].append(
-                #             data.category)
-                #     if data.description not in selected[capture]["info"]["descriptions"]:
-                #         selected[capture]["info"][
-                #             "descriptions"].append(data.description)
-    except Exception as _:
-        return structure(status="error", msg="database error!")
-    if len(selected) == 0:
+    hosts = [
+        {
+            "target": host.target,
+            "info": {
+                "module_name": [
+                    _.module_name for _ in session.query(HostsLog).filter(
+                        HostsLog.target == host.target
+                    ).group_by(HostsLog.module_name).all()
+                ],
+                "date": session.query(HostsLog).filter(
+                    HostsLog.target == host.target
+                ).order_by(
+                    HostsLog.id.desc()
+                ).first().date,
+                # "options": [  # unnecessary data?
+                #     _.options for _ in session.query(HostsLog).filter(
+                #         HostsLog.target == host.target
+                #     ).all()
+                # ],
+                "events": [
+                    _.event for _ in session.query(HostsLog).filter(
+                        HostsLog.target == host.target
+                    ).all()
+                ],
+            }
+        } for host in session.query(HostsLog).group_by(HostsLog.target).order_by(HostsLog.id.desc()).offset(
+            (
+                    page * 10
+            ) - 10
+        ).limit(10)
+    ]
+    if len(hosts) == 0:
         return structure(status="finished", msg="No more search results")
-    return selected
+    return hosts
 
 
 def get_logs_by_scan_unique_id(scan_unique_id):
@@ -410,24 +346,19 @@ def get_logs_by_scan_unique_id(scan_unique_id):
         an array with JSON events or an empty array
     """
     session = create_connection()
-    # try:
-    return_logs = []
-    logs = session.query(HostsLog).filter(
-        HostsLog.scan_unique_id == scan_unique_id).all()
-    for log in logs:
-        data = {
+    return [
+        {
             "scan_unique_id": scan_unique_id,
             "target": log.target,
-            # "DATE": log.date,
             "module_name": log.module_name,
             "date": str(log.date),
             "options": json.loads(log.options),
             "event": json.loads(log.event),
         }
-        return_logs.append(data)
-    return return_logs
-    # except:
-    #     return []
+        for log in session.query(HostsLog).filter(
+            HostsLog.scan_unique_id == scan_unique_id
+        ).all()
+    ]
 
 
 def logs_to_report_json(target):
@@ -448,20 +379,12 @@ def logs_to_report_json(target):
             data = {
                 "scan_unique_id": log.scan_unique_id,
                 "target": log.target,
-                # "DATE": log.date,
                 "options": json.loads(log.options),
                 "event": json.loads(log.event),
-                # "HOST": host,
-                # "USERNAME": log.username,
-                # "PASSWORD": log.password,
-                # "PORT": log.port,
-                # "TYPE": log.type,
-                # "TIME": log.date,
-                # "DESCRIPTION": log.description
             }
             return_logs.append(data)
         return return_logs
-    except Exception as _:
+    except Exception:
         return []
 
 
@@ -488,17 +411,9 @@ def logs_to_report_html(target):
                 "scan_unique_id": log.scan_unique_id,
                 "options": log.options,
                 "event": log.event
-                # "USERNAME": log.username,
-                # "PASSWORD": log.password,
-                # "PORT": log.port,
-                # "TYPE": log.type,
-                # "TIME": log.date,
-                # "DESCRIPTION": log.description
             }
             logs.append(data)
         from core.log import build_graph
-        # _graph = build_graph("d3_tree_v2_graph", "en", logs, 'target', 'USERNAME', 'PASSWORD', 'PORT', 'TYPE',
-        #                      'DESCRIPTION')
         _graph = build_graph("d3_tree_v2_graph", "en", logs, 'date',
                              'target', 'module_name', 'scan_unique_id', 'options', 'event')
         from lib.html_log import log_data
@@ -511,7 +426,7 @@ def logs_to_report_html(target):
         _table += log_data.table_end + '<p class="footer">' + \
                   messages("nettacker_report") + '</p>'
         return _table
-    except Exception as _:
+    except Exception:
         return ""
 
 
@@ -528,38 +443,19 @@ def search_logs(page, query):
     """
     session = create_connection()
     page = int(page * 10 if page > 0 else page * -10) - 10
-    data_structure = {
-        "target": "",
-        "info": {
-            # "open_ports": [],
-            # "scan_methods": [],
-            "module_name": [],
-            # "category": [],
-            "options": [],
-            "date": [],
-            "event": [],
-            # "descriptions": []
-        }
-    }
     selected = []
     try:
         for host in session.query(HostsLog).filter(
                 (HostsLog.target.like("%" + str(query) + "%"))
                 | (HostsLog.date.like("%" + str(query) + "%"))
-                # | (HostsLog.port.like("%" + str(query) + "%"))
                 | (HostsLog.module_name.like("%" + str(query) + "%"))
                 | (HostsLog.options.like("%" + str(query) + "%"))
                 | (HostsLog.event.like("%" + str(query) + "%"))
-                # | (HostsLog.category.like("%" + str(query) + "%"))
-                # | (HostsLog.description.like("%" + str(query) + "%"))
-                # | (HostsLog.username.like("%" + str(query) + "%"))
-                # | (HostsLog.password.like("%" + str(query) + "%"))
                 | (HostsLog.scan_unique_id.like("%" + str(query) + "%"))
-                # | (HostsLog.scan_cmd.like("%" + str(query) + "%"))
         ).group_by(HostsLog.target).order_by(HostsLog.id.desc())[page:page + 11]:
             for data in session.query(HostsLog).filter(HostsLog.target == str(host.target)).group_by(
-                    HostsLog.module_name, HostsLog.options, HostsLog.scan_unique_id, HostsLog.event).order_by(
-                HostsLog.id.desc()).all():
+                    HostsLog.module_name, HostsLog.options, HostsLog.scan_unique_id, HostsLog.event
+            ).order_by(HostsLog.id.desc()).all():
                 n = 0
                 capture = None
                 for selected_data in selected:
@@ -567,17 +463,13 @@ def search_logs(page, query):
                         capture = n
                     n += 1
                 if capture is None:
-                    tmp = {  # fix later, junks
+                    tmp = {
                         "target": data.target,
                         "info": {
-                            # "open_ports": [],
-                            # "scan_methods": [],
                             "module_name": [],
-                            # "category": [],
                             "options": [],
                             "date": [],
                             "event": [],
-                            # "descriptions": []
                         }
                     }
                     selected.append(tmp)
@@ -587,28 +479,19 @@ def search_logs(page, query):
                             capture = n
                         n += 1
                 if data.target == selected[capture]["target"]:
-                    # if data.port not in selected[capture]["info"]["open_ports"] and isinstance(data.port, int):
-                    #     selected[capture]["info"]["open_ports"].append(
-                    #         data.port)
                     if data.module_name not in selected[capture]["info"]["module_name"]:
-                        selected[capture]["info"][
-                            "module_name"].append(data.module_name)
+                        selected[capture]["info"]["module_name"].append(data.module_name)
                     if data.date not in selected[capture]["info"]["date"]:
-                        selected[capture]["info"][
-                            "date"].append(data.date)
+                        selected[capture]["info"]["date"].append(data.date)
                     if data.options not in selected[capture]["info"]["options"]:
                         selected[capture]["info"]["options"].append(
-                            json.loads(data.options))
+                            json.loads(data.options)
+                        )
                     if data.event not in selected[capture]["info"]["event"]:
                         selected[capture]["info"]["event"].append(
-                            json.loads(data.event))
-                    # if data.category not in selected[capture]["info"]["category"]:
-                    #     selected[capture]["info"]["category"].append(
-                    #         data.category)
-                    # if data.description not in selected[capture]["info"]["descriptions"]:
-                    #     selected[capture]["info"][
-                    #         "descriptions"].append(data.description)
-    except Exception as _:
+                            json.loads(data.event)
+                        )
+    except Exception:
         return structure(status="error", msg="database error!")
     if len(selected) == 0:
         return structure(status="finished", msg="No more search results")

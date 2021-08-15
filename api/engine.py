@@ -11,7 +11,7 @@ import os
 import copy
 from types import SimpleNamespace
 from database.db import create_connection, get_logs_by_scan_unique_id
-from database.models import HostsLog, Report
+from database.models import Report
 from flask import Flask
 from flask import jsonify
 from flask import request as flask_request
@@ -318,14 +318,13 @@ def get_results():
         an array of JSON scan's results if success otherwise abort(403)
     """
     api_key_is_valid(app, flask_request)
-    try:
-        page = int(get_value(flask_request, "page"))
-        if page > 0:
-            page -= 1
-    except Exception:
-        page = 0
+    page = get_value(flask_request, "page")
+    if not page:
+        page = 1
     return jsonify(
-        select_reports(page)
+        select_reports(
+            int(page)
+        )
     ), 200
 
 
@@ -357,8 +356,8 @@ def get_results_json():
     Returns:
         an array with JSON events
     """
-    session = create_connection()
     api_key_is_valid(app, flask_request)
+    session = create_connection()
     result_id = get_value(flask_request, "id")
     if not result_id:
         return jsonify(
@@ -368,8 +367,11 @@ def get_results_json():
             )
         ), 400
     scan_details = session.query(Report).filter(Report.id == result_id).first()
-    data = get_logs_by_scan_unique_id(scan_details.scan_unique_id)
-    json_object = json.dumps(data)
+    json_object = json.dumps(
+        get_logs_by_scan_unique_id(
+            scan_details.scan_unique_id
+        )
+    )
     filename = ".".join(scan_details.report_path_filename.split('.')[:-1])[1:] + '.json'
     return Response(
         json_object,
@@ -388,8 +390,8 @@ def get_results_csv():  # todo: need to fix time format
     Returns:
         an array with JSON events
     """
-    session = create_connection()
     api_key_is_valid(app, flask_request)
+    session = create_connection()
     result_id = get_value(flask_request, "id")
     if not result_id:
         return jsonify(
@@ -437,14 +439,16 @@ def get_last_host_logs():  # need to check
     api_key_is_valid(app, flask_request)
     page = get_value(flask_request, "page")
     if not page:
-        page = 0
-    if page > 0:
-        page -= 1
-    return jsonify(last_host_logs(page)), 200
+        page = 1
+    return jsonify(
+        last_host_logs(
+            int(page)
+        )
+    ), 200
 
 
 @app.route("/logs/get_html", methods=["GET"])
-def get_logs_html():  ## todo: html needs to be added to solve this error
+def get_logs_html():  # todo: check until here - ali
     """
     get host's logs through the API in HTML type
 
@@ -452,10 +456,7 @@ def get_logs_html():  ## todo: html needs to be added to solve this error
         HTML report
     """
     api_key_is_valid(app, flask_request)
-    try:
-        target = get_value(flask_request, "target")
-    except Exception:
-        target = ""
+    target = get_value(flask_request, "target")
     return make_response(logs_to_report_html(target))
 
 
