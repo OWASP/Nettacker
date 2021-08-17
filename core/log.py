@@ -10,6 +10,7 @@ from core.compatible import version_info
 from core.time import now
 from core.die import die_failure
 from database.db import get_logs_by_scan_unique_id
+from database.db import submit_report_to_db
 
 
 def build_graph(graph_name, events):
@@ -89,19 +90,20 @@ def __build_texttable(
         now()).encode('utf8') + b"\n", events_num]
 
 
-def sort_logs(logs):
+def create_report(options, scan_unique_id):
     """
     sort all events, create log file in HTML/TEXT/JSON and remove old logs
 
     Args:
-        events: events log
+        options: parsing options
 
     Returns:
         True if success otherwise None
     """
-    JSON_FROM_DB = get_logs_by_scan_unique_id(logs["scan_unique_id"])
+
+    JSON_FROM_DB = get_logs_by_scan_unique_id(scan_unique_id)
     JSON_Data = sorted(JSON_FROM_DB, key=sorted)
-    report_path_filename = logs["options"]["report_path_filename"]
+    report_path_filename = options.report_path_filename
     if (len(report_path_filename) >= 5 and report_path_filename[-5:] == '.html') or (
             len(report_path_filename) >= 4 and report_path_filename[-4:] == '.htm'):
         report_type = "HTML"
@@ -112,9 +114,8 @@ def sort_logs(logs):
         #     if(i["DESCRIPTION"]):
         #         i["DESCRIPTION"] = html.escape(i["DESCRIPTION"])
         #         break
-        if logs["options"]["graph_name"] is not None:
-            _graph = build_graph(logs["options"]["graph_name"], "en", data, logs["date"], logs["target"],
-                                 logs["module_name"], logs["scan_unique_id"], logs["options"], logs["event"])
+        if options.graph_name is not None:
+            _graph = build_graph(options.graph_name,data)
         from lib.html_log import log_data
         _css = log_data.css_1
         _table = log_data.table_title.format(
@@ -157,21 +158,19 @@ def sort_logs(logs):
             logs["date"])
         if len(report_path_filename) >= 4 and not report_path_filename[-3:] == '.txt':
             report_path_filename += ".txt"
-        with open(report_path_filename, 'wb') as save:
+        with open(report_path_filename, 'wb') as save:  ## todo: required to fix texttable
             data = data if report_type == "TEXT" else __build_texttable(
                 JSON_FROM_DB, logs["target"], logs["module_name"], logs["scan_unique_id"], logs["options"],
                 logs["event"], logs["date"])[0]
             save.write(data)
 
-    # info(messages("removing_logs_db"))
-    # remove_old_logs(logs)
-    # info(messages("inserting_report_db"))
-    # submit_report_to_db(logs)
-    # info(messages("updating_database"))
-    # submit_logs_to_db(logs)
-
-    info(
-        json.dumps(logs["event"])
+    submit_report_to_db(
+        {
+            "date": now(model=None),
+            "scan_unique_id": scan_unique_id,
+            "options": vars(options), 
+        }
     )
-    # info(messages( "file_saved").format(output_file))
+
+    info(messages("file_saved").format(report_path_filename))
     return True

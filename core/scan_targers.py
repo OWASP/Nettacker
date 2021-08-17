@@ -90,4 +90,4 @@ def start_scan_processes(options):
         )
         process.start()
         active_processes.append(process)
-    return wait_for_threads_to_finish(active_processes, sub_process=True)
+    return wait_for_threads_to_finish(active_processes, sub_process=True), scan_unique_id

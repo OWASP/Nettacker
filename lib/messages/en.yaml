@@ -41,6 +41,8 @@ graph_module_404: "this graph module not found: {0}"
 graph_module_unavailable: this graph module "{0}" is not available
 graph_output: to use graph feature your output filename must end with ".html" or ".htm"!
 help_menu: Show Nettacker Help Menu
+done: "done!"
+file_saved: "report saved in {0} and database"
 inserting_report_db: inserting report to the database
 invalid_database: Please select from mysql or sqlite in the configuration file
 invalid_json_type_to_db: "Invalid type of JSON data for the database. Skipping the submission to database. Data:{0}"

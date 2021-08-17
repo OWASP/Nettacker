@@ -46,7 +46,6 @@ def process_conditions(
         )
     if event['response']['conditions_results'] and 'save_to_temp_events_only' not in event.get('response', ''):
         from database.db import submit_logs_to_db, submit_report_to_db
-        # from core.log import sort_logs todo: check this later
 
         submit_logs_to_db(
             {
@@ -56,13 +55,6 @@ def process_conditions(
                 "scan_unique_id": scan_unique_id,
                 "options": options,
                 "event": event
-            }
-        )
-        submit_report_to_db(
-            {
-                "date": now(model=None),
-                "scan_unique_id": scan_unique_id,
-                "options": options,
             }
         )
         event_info(
