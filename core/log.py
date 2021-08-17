@@ -154,14 +154,14 @@ def create_report(options, scan_unique_id):
         graph_name = ""
         report_type = "TEXT"
         data, events_num = __build_texttable(
-            JSON_FROM_DB, logs["target"], logs["module_name"], logs["scan_unique_id"], logs["options"], logs["event"],
-            logs["date"])
-        if len(report_path_filename) >= 4 and not report_path_filename[-3:] == '.txt':
+            JSON_FROM_DB, "targets", "module_names", "scan_unique_id", "options", "event",
+            "date")
+        if len(report_path_filename) >= 4 and report_path_filename[-3:] != '.txt':
             report_path_filename += ".txt"
-        with open(report_path_filename, 'wb') as save:  ## todo: required to fix texttable
+        with open(report_path_filename, 'wb') as save:
             data = data if report_type == "TEXT" else __build_texttable(
-                JSON_FROM_DB, logs["target"], logs["module_name"], logs["scan_unique_id"], logs["options"],
-                logs["event"], logs["date"])[0]
+                JSON_FROM_DB, "targets", "module_names", "scan_unique_id", "options",
+                "event", "date")[0]
             save.write(data)
 
     submit_report_to_db(
