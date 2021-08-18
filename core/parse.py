@@ -6,7 +6,6 @@ from core.scan_targers import start_scan_processes
 from core.alert import info
 from core.alert import write
 from core.alert import messages
-from core.log import create_report
 from core.load_modules import load_all_modules
 from core.args_loader import load_all_args
 from core.args_loader import check_all_required
@@ -24,7 +23,6 @@ def load():
 
     info(messages("scan_started"))
     info(messages("loaded_modules").format(len(load_all_modules())))
-    exit_code,scan_unique_id = start_scan_processes(options)
-    create_report(options, scan_unique_id)
+    exit_code = start_scan_processes(options)
     info(messages("done"))
     return exit_code

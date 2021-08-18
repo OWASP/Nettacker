@@ -723,10 +723,13 @@ $(document).ready(function () {
       //   }
       // }
       //console.log(options)
-      for (j = 0; j < options.length; j++) {
+      var profile_array = []
+        //options[0]["profiles"]: ["medium severity", "low severtiy"]
+      profile_array = options[0]["profiles"] 
+      for (j=0;j<profile_array.length;j++){
         html_options +=
             "<p class='mb-1 bold label label-primary'>profiles:" +
-            options[j]["profiles"] +
+            profile_array[j] +
             "</p> ";
           if (j == 10) {
             html_options +=
@@ -734,7 +737,6 @@ $(document).ready(function () {
             break;
         }
       }
-
       // for (j = 0; j < target_event.length; j++) {
       //   html_target_event +=
       //     "<p class='mb-1 bold label label-primary'>event:" +
