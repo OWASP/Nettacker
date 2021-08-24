@@ -133,7 +133,7 @@ def load_all_args():
         action="store",
         dest="selected_modules",
         default=nettacker_global_configuration['nettacker_user_application_config']["selected_modules"],
-        help=messages("choose_scan_method").format(load_all_modules(limit=10).keys()),
+        help=messages("choose_scan_method").format(list(load_all_modules(limit=10).keys())),
     )
     modules.add_argument(
         "--modules-extra-args",

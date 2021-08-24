@@ -46,7 +46,7 @@ def build_graph(graph_name, events):
     )
 
 
-def __build_texttable(
+def build_texttable(
         JSON_FROM_DB,
         target,
         module_name,
@@ -74,20 +74,40 @@ def __build_texttable(
     """
     _table = texttable.Texttable()
     _table.add_rows(
-        [[target, module_name, scan_unique_id, options, event, date]])
+        [
+            [target, module_name, scan_unique_id, options, event, date]
+        ]
+    )
     events_num = 0
     for value in JSON_FROM_DB:
-        _table.add_rows([[target, module_name, scan_unique_id,
-                          options, event, date],
-                         [value['target'], value['module_name'],
-                          value['scan_unique_id'], value['options'], value['event'],
-                          value['date']]])
+        _table.add_rows(
+            [
+                [
+                    target,
+                    module_name,
+                    scan_unique_id,
+                    options,
+                    event,
+                    date
+                ],
+                [
+                    value['target'],
+                    value['module_name'],
+                    value['scan_unique_id'],
+                    value['options'],
+                    value['event'],
+                    value['date']
+                ]
+            ]
+        )
         events_num += 1
-    return [_table.draw().encode('utf8') + b'\n\n' + messages(
-        "nettacker_version_details").format(
-        version_info()[0],
-        version_info()[1],
-        now()).encode('utf8') + b"\n", events_num]
+    return [
+        _table.draw().encode('utf8') + b'\n\n' + messages("nettacker_version_details").format(
+            version_info()[0],
+            version_info()[1],
+            now()
+        ).encode('utf8') + b"\n", events_num
+    ]
 
 
 def create_report(options, scan_unique_id):
@@ -104,8 +124,11 @@ def create_report(options, scan_unique_id):
     JSON_FROM_DB = get_logs_by_scan_unique_id(scan_unique_id)
     JSON_Data = sorted(JSON_FROM_DB, key=sorted)
     report_path_filename = options.report_path_filename
-    if (len(report_path_filename) >= 5 and report_path_filename[-5:] == '.html') or (
-            len(report_path_filename) >= 4 and report_path_filename[-4:] == '.htm'):
+    if (
+            len(report_path_filename) >= 5 and report_path_filename[-5:] == '.html'
+    ) or (
+            len(report_path_filename) >= 4 and report_path_filename[-4:] == '.htm'
+    ):
         report_type = "HTML"
         data = sorted(JSON_FROM_DB, key=lambda x: sorted(x.keys()))
         # if user want a graph
@@ -115,15 +138,28 @@ def create_report(options, scan_unique_id):
         #         i["DESCRIPTION"] = html.escape(i["DESCRIPTION"])
         #         break
         if options.graph_name is not None:
-            _graph = build_graph(options.graph_name,data)
+            _graph = build_graph(options.graph_name, data)
         from lib.html_log import log_data
         _css = log_data.css_1
         _table = log_data.table_title.format(
-            _graph, log_data.css_1, 'date', 'target', 'module_name', 'scan_unique_id', 'options', 'event')
+            _graph,
+            log_data.css_1,
+            'date',
+            'target',
+            'module_name',
+            'scan_unique_id',
+            'options',
+            'event'
+        )
         for value in data:
-            _table += log_data.table_items.format(value["date"], value["target"], value["module_name"],
-                                                  value["scan_unique_id"],
-                                                  value["options"], value["event"])
+            _table += log_data.table_items.format(
+                value["date"],
+                value["target"],
+                value["module_name"],
+                value["scan_unique_id"],
+                value["options"],
+                value["event"]
+            )
             # events_num += 1
         _table += log_data.table_end + '<p class="footer">' + \
                   messages("nettacker_version_details").format(version_info()[0], version_info()[1], now()) + '</p>'
@@ -153,22 +189,34 @@ def create_report(options, scan_unique_id):
     else:
         graph_name = ""
         report_type = "TEXT"
-        data, events_num = __build_texttable(
-            JSON_FROM_DB, "targets", "module_names", "scan_unique_id", "options", "event",
-            "date")
+        data, events_num = build_texttable(
+            JSON_FROM_DB,
+            "targets",
+            "module_names",
+            "scan_unique_id",
+            "options",
+            "event",
+            "date"
+        )
         if len(report_path_filename) >= 4 and report_path_filename[-3:] != '.txt':
             report_path_filename += ".txt"
         with open(report_path_filename, 'wb') as save:
-            data = data if report_type == "TEXT" else __build_texttable(
-                JSON_FROM_DB, "targets", "module_names", "scan_unique_id", "options",
-                "event", "date")[0]
+            data = data if report_type == "TEXT" else build_texttable(
+                JSON_FROM_DB,
+                "targets",
+                "module_names",
+                "scan_unique_id",
+                "options",
+                "event",
+                "date"
+            )[0]
             save.write(data)
 
     submit_report_to_db(
         {
             "date": now(model=None),
             "scan_unique_id": scan_unique_id,
-            "options": vars(options), 
+            "options": vars(options),
         }
     )
 
