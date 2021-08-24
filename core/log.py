@@ -46,68 +46,49 @@ def build_graph(graph_name, events):
     )
 
 
-def build_texttable(
-        JSON_FROM_DB,
-        target,
-        module_name,
-        scan_unique_id,
-        options,
-        event,
-        date
-):
+def build_texttable(events):
     """
     value['date'], value["target"], value['module_name'], value['scan_unique_id'],
                                                     value['options'], value['event']
     build a text table with generated event related to the scan
 
-    :param JSON_FROM_DB: JSON events from database
-    :param target: host string
-    :param module_name: username string
-    :param scan_unique_id: password string
-    :param options: port string
-    :param event: type string
-    :param date: description string
-    :param _TIME: time string
-    :param language: language
+    :param events: all events
     :return:
         array [text table, event_number]
     """
     _table = texttable.Texttable()
+    table_headers = [
+        'target',
+        'module_name',
+        'scan_unique_id',
+        'options',
+        'event',
+        'date'
+    ]
     _table.add_rows(
         [
-            [target, module_name, scan_unique_id, options, event, date]
+            table_headers
         ]
     )
-    events_num = 0
-    for value in JSON_FROM_DB:
+    for event in events:
         _table.add_rows(
             [
+                table_headers,
                 [
-                    target,
-                    module_name,
-                    scan_unique_id,
-                    options,
-                    event,
-                    date
-                ],
-                [
-                    value['target'],
-                    value['module_name'],
-                    value['scan_unique_id'],
-                    value['options'],
-                    value['event'],
-                    value['date']
+                    event['target'],
+                    event['module_name'],
+                    event['scan_unique_id'],
+                    event['options'],
+                    event['event'],
+                    event['date']
                 ]
             ]
         )
-        events_num += 1
-    return [
-        _table.draw().encode('utf8') + b'\n\n' + messages("nettacker_version_details").format(
-            version_info()[0],
-            version_info()[1],
-            now()
-        ).encode('utf8') + b"\n", events_num
-    ]
+    return _table.draw().encode('utf8') + b'\n\n' + messages("nettacker_version_details").format(
+        version_info()[0],
+        version_info()[1],
+        now()
+    ).encode('utf8') + b"\n"
 
 
 def create_report(options, scan_unique_id):
@@ -116,33 +97,26 @@ def create_report(options, scan_unique_id):
 
     Args:
         options: parsing options
+        scan_unique_id: scan unique id
 
     Returns:
         True if success otherwise None
     """
-
-    JSON_FROM_DB = get_logs_by_scan_unique_id(scan_unique_id)
-    JSON_Data = sorted(JSON_FROM_DB, key=sorted)
+    all_scan_logs = get_logs_by_scan_unique_id(scan_unique_id)
     report_path_filename = options.report_path_filename
     if (
             len(report_path_filename) >= 5 and report_path_filename[-5:] == '.html'
     ) or (
             len(report_path_filename) >= 4 and report_path_filename[-4:] == '.htm'
     ):
-        report_type = "HTML"
-        data = sorted(JSON_FROM_DB, key=lambda x: sorted(x.keys()))
-        # if user want a graph
-        _graph = ''
-        # for i in data:
-        #     if(i["DESCRIPTION"]):
-        #         i["DESCRIPTION"] = html.escape(i["DESCRIPTION"])
-        #         break
-        if options.graph_name is not None:
-            _graph = build_graph(options.graph_name, data)
+        if options.graph_name:
+            html_graph = build_graph(options.graph_name, all_scan_logs)
+        else:
+            html_graph = ''
+
         from lib.html_log import log_data
-        _css = log_data.css_1
-        _table = log_data.table_title.format(
-            _graph,
+        html_table_content = log_data.table_title.format(
+            html_graph,
             log_data.css_1,
             'date',
             'target',
@@ -151,66 +125,49 @@ def create_report(options, scan_unique_id):
             'options',
             'event'
         )
-        for value in data:
-            _table += log_data.table_items.format(
-                value["date"],
-                value["target"],
-                value["module_name"],
-                value["scan_unique_id"],
-                value["options"],
-                value["event"]
+        for event in all_scan_logs:
+            html_table_content += log_data.table_items.format(
+                event["date"],
+                event["target"],
+                event["module_name"],
+                event["scan_unique_id"],
+                event["options"],
+                event["event"]
             )
-            # events_num += 1
-        _table += log_data.table_end + '<p class="footer">' + \
-                  messages("nettacker_version_details").format(version_info()[0], version_info()[1], now()) + '</p>'
+        html_table_content += log_data.table_end + '<p class="footer">' + messages("nettacker_version_details").format(
+            version_info()[0],
+            version_info()[1],
+            now()
+        ) + '</p>'
         with open(report_path_filename, 'w', encoding='utf-8') as save:
-            save.write(_table + '\n')
+            save.write(html_table_content + '\n')
+            save.close()
     elif len(report_path_filename) >= 5 and report_path_filename[-5:] == '.json':
-        graph_name = ""
-        report_type = "JSON"
-        data = json.dumps(JSON_Data)
-        # events_num = len(JSON_Data)
         with open(report_path_filename, 'w', encoding='utf-8') as save:
-            save.write(str(data) + '\n')
+            save.write(
+                str(
+                    json.dumps(all_scan_logs)
+                ) + '\n'
+            )
+            save.close()
     elif len(report_path_filename) >= 5 and report_path_filename[-4:] == '.csv':
-        graph_name = ""
-        report_type = "CSV"
-        keys = JSON_Data[0].keys()
-        data = json.dumps(JSON_Data)
-        # events_num = len(JSON_Data)
+        keys = all_scan_logs[0].keys()
         with open(report_path_filename, 'a') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=keys)
             writer.writeheader()
-            for i in JSON_Data:
-                dicdata = {key: value for key, value in i.items()
-                           if key in keys}
+            for i in all_scan_logs:
+                dicdata = {
+                    key: value for key, value in i.items() if key in keys
+                }
                 writer.writerow(dicdata)
+            csvfile.close()
 
     else:
-        graph_name = ""
-        report_type = "TEXT"
-        data, events_num = build_texttable(
-            JSON_FROM_DB,
-            "targets",
-            "module_names",
-            "scan_unique_id",
-            "options",
-            "event",
-            "date"
-        )
-        if len(report_path_filename) >= 4 and report_path_filename[-3:] != '.txt':
-            report_path_filename += ".txt"
         with open(report_path_filename, 'wb') as save:
-            data = data if report_type == "TEXT" else build_texttable(
-                JSON_FROM_DB,
-                "targets",
-                "module_names",
-                "scan_unique_id",
-                "options",
-                "event",
-                "date"
-            )[0]
-            save.write(data)
+            save.write(
+                build_texttable(all_scan_logs)
+            )
+            save.close()
 
     submit_report_to_db(
         {
