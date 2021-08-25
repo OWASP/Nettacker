@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import re
 import copy
 import paramiko
 import logging
@@ -28,6 +27,7 @@ class NettackSSHLib:
             port=int(ports),
             timeout=int(timeout)
         )
+        ssh.close()
         return {
             "host": host,
             "username": usernames,
