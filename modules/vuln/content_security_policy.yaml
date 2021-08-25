@@ -40,7 +40,7 @@ payloads:
           conditions:
             headers:
               Content-Security-Policy:
-                regex: unsafe-inline|unsafe-eval
+                regex: "^.{{0,0}}$|unsafe\\-\\S+"
                 reverse: false
             content:
               regex: <meta http-equiv="Content-Security-Policy" content=".*script-src '(unsafe-inline|unsafe-eval)'.*">
