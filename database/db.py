@@ -398,7 +398,7 @@ def logs_to_report_html(target):
     Returns:
         HTML report
     """
-    from core.log import build_graph
+    from core.graph import build_graph
     from lib.html_log import log_data
     session = create_connection()
     logs = [

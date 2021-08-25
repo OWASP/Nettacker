@@ -10,7 +10,7 @@ from core.utility import generate_random_token
 from core.load_modules import perform_scan
 from terminable_thread import Thread
 from core.utility import wait_for_threads_to_finish
-from core.log import create_report
+from core.graph import create_report
 
 
 def parallel_scan_process(options, targets, scan_unique_id, process_number):
