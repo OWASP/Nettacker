@@ -73,7 +73,6 @@ def start(events):
                 )
 
     from config import nettacker_paths
-    os.system('find web')
     data = open(
         os.path.join(
             nettacker_paths()['web_static_files_path'],
