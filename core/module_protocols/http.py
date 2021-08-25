@@ -28,26 +28,17 @@ def response_conditions_matched(sub_step, response):
             if 'content' in conditions:
                 condition_results['content'] = reverse_and_regex_condition(regex, reverse)
         if condition == 'headers':
-            #A small bug was present: if Headers in yaml as well as response headers file is something like: X-Powered-By instead of x-powered-by, then the tool will not run. We fixed using .lower().
+            # convert headers to case insensitive dict
+            for key in response["headers"].copy():
+                response['headers'][key.lower()] = response['headers'][key]
             condition_results['headers'] = {}
             for header in conditions['headers']:
                 reverse = conditions['headers'][header]['reverse']
-                response_copy = response["headers"].copy()
-                for key,value in response_copy.items():
-                    response['headers'][key.lower()] = value
-                if header.lower() in response['headers']:
-                    regex = re.findall(
-                        re.compile(conditions['headers'][header]['regex']),
-                        response['headers'][header.lower()]
-                    )
-                    condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
-                else:
-                    regex = re.findall(
-                        re.compile(conditions['headers'][header]['regex']),
-                        ""
-                    )
-                    condition_results['headers'][header] = reverse_and_regex_condition(regex,
-                                                                                       reverse) if reverse else []
+                regex = re.findall(
+                    re.compile(conditions['headers'][header]['regex']),
+                    response['headers'][header.lower()] if header.lower() in response['headers'] else ""
+                )
+                condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
         if condition == 'responsetime':
             if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
                 "==",
