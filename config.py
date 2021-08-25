@@ -29,6 +29,7 @@ def nettacker_paths():
         "web_browser_user_agents": os.path.join(sys.path[0], 'lib/payloads/User-Agents/web_browsers_user_agents.txt'),
         "web_static_files_path": os.path.join(sys.path[0], 'web/static'),
         "payloads_path": os.path.join(sys.path[0], 'lib/payloads'),
+        "module_protocols_path": os.path.join(sys.path[0], 'core/module_protocols'),
     }
 
 

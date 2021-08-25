@@ -49,6 +49,7 @@ def set_socks_proxy(socks_proxy):
 
 class NettackerModules:
     def __init__(self):
+        from config import nettacker_paths
         self.module_name = None
         self.module_content = None
         self.scan_unique_id = None
@@ -58,9 +59,9 @@ class NettackerModules:
         self.total_module_thread_number = None
         self.module_inputs = {}
         self.libraries = [
-            'http',
-            'socket',
-            'ssh'
+            module_protocol.split('.py')[0] for module_protocol in
+            os.listdir(nettacker_paths()['module_protocols_path']) if
+            module_protocol.endswith('.py') and module_protocol != '__init__.py'
         ]
 
     def load(self):
