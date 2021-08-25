@@ -9,7 +9,6 @@ info:
     - vulnerability
     - http
     - low_severity
-    - cto
 
 payloads:
   - library: http

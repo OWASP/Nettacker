@@ -59,7 +59,8 @@ class NettackerModules:
         self.module_inputs = {}
         self.libraries = [
             'http',
-            'socket'
+            'socket',
+            'ssh'
         ]
 
     def load(self):
@@ -102,7 +103,7 @@ class NettackerModules:
         total_number_of_requests = 0
         for payload in self.module_content['payloads']:
             if payload['library'] not in self.libraries:
-                warn('library [{library}] is not support!'.format(library=payload['library']))
+                warn(messages("library_not_supported").format(payload['library']))
                 return None
             for step in payload['steps']:
                 for _ in step:

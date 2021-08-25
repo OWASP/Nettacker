@@ -225,7 +225,7 @@ def profiles():
         HTML content or available profiles
     """
     res = ""
-    for profile in load_all_profiles().keys():
+    for profile in sorted(load_all_profiles().keys()):
         label = "success" if (
                 profile == "scan"
         ) else "warning" if (

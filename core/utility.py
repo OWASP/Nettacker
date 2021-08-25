@@ -8,6 +8,7 @@ import sys
 import ctypes
 import time
 import json
+import os
 import multiprocessing
 from core.load_modules import load_all_languages
 from core.time import now
@@ -332,7 +333,13 @@ def string_to_bytes(string):
 
 
 def fuzzer_function_read_file_as_array(filename):
-    return open(filename).read().split('\n')
+    from config import nettacker_paths
+    return open(
+        os.path.join(
+            nettacker_paths()['payloads_path'],
+            filename
+        )
+    ).read().split('\n')
 
 
 def apply_data_functions(data):
