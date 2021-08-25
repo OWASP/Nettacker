@@ -43,5 +43,5 @@ payloads:
                 regex: "^.{{0,0}}$|unsafe\\-\\S+"
                 reverse: false
             content:
-              regex: <meta http-equiv="Content-Security-Policy" content=".*script-src '(unsafe-inline|unsafe-eval)'.*">
+              regex: "^((?!Content\\-Security\\-Policy)[\\s\\S])*$"
               reverse: false
