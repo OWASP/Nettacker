@@ -1,0 +1,46 @@
+info:
+  name: content_security_policy_vuln
+  author: OWASP Nettacker Team
+  severity: 3
+  description: "Content-Security-Policy is the name of a HTTP response header that modern browsers use to enhance the security of the document (or web page). The Content-Security-Policy header allows you to restrict how resources such as JavaScript, CSS, or pretty much anything that the browser loads."
+  reference: "https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html"
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - low_severity
+    - csp
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            status_code:
+              regex: 404|200
+              reverse: false
+            content:
+              regex: <meta http-equiv="Content-Security-Policy" content=".*script-src '(unsafe-inline|unsafe-eval)'.*">
+              reverse: false
