@@ -336,8 +336,13 @@ def apply_data_functions(data):
     globals().update(locals())
     for data_name in data:
         if type(data[data_name]) == str and data[data_name].startswith('fuzzer_function'):
-            exec("fuzzer_function = {fuzzer_function}".format(fuzzer_function=data[data_name]), globals(),
-                 function_results)
+            exec(
+                "fuzzer_function = {fuzzer_function}".format(
+                    fuzzer_function=data[data_name]
+                ),
+                globals(),
+                function_results
+            )
             original_data[data_name] = function_results['fuzzer_function']
     return original_data
 

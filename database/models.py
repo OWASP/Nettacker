@@ -26,7 +26,12 @@ class Report(Base):
         """
         returns a printable representation of the object of the class Report
         """
-        return "<Report(id={0}, scan_unique_id={1}, date={2}, report_path_filename={3})>".format(self.id, self.scan_unique_id, self.date, self.report_path_filename)
+        return "<Report(id={0}, scan_unique_id={1}, date={2}, report_path_filename={3})>".format(
+            self.id,
+            self.scan_unique_id,
+            self.date,
+            self.report_path_filename
+        )
 
 
 class TempEvents(Base):
@@ -52,8 +57,15 @@ class TempEvents(Base):
         return '''
                     <scan_events(id={0}, target={1}, date={2}, module_name={3}, scan_unqiue_id={4}, 
                     options={5}, event={6})>
-                '''.format(self.id, self.target, self.date, self.module_name, self.scan_unique_id,
-                           self.options, self.event)
+                '''.format(
+            self.id,
+            self.target,
+            self.date,
+            self.module_name,
+            self.scan_unique_id,
+            self.options,
+            self.event
+        )
 
 
 class HostsLog(Base):
@@ -77,5 +89,12 @@ class HostsLog(Base):
         return '''
             <scan_events(id={0}, target={1}, date={2}, module_name={3}, scan_unqiue_id={4}, 
             options={5}, event={6})>
-        '''.format(self.id, self.target, self.date, self.module_name, self.scan_unique_id,
-                   self.options, self.event)
+        '''.format(
+            self.id,
+            self.target,
+            self.date,
+            self.module_name,
+            self.scan_unique_id,
+            self.options,
+            self.event
+        )

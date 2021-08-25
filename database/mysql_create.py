@@ -28,11 +28,13 @@ def mysql_create_database():
     try:
         engine = create_engine('mysql://{0}:{1}@{2}:{3}'.format(USER, PASSWORD, HOST, PORT))
         existing_databases = engine.execute("SHOW DATABASES;")
-        existing_databases = [d[0] for d in existing_databases]
+        existing_databases = [
+            d[0] for d in existing_databases
+        ]
         if DATABASE not in existing_databases:
             engine.execute("CREATE DATABASE {0} ".format(DATABASE))
         return True
-    except Exception as _:
+    except Exception:
         return False
 
 
@@ -51,5 +53,5 @@ def mysql_create_tables():
         db_engine = create_engine('mysql://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE))
         Base.metadata.create_all(db_engine)
         return True
-    except Exception as _:
+    except Exception:
         return False
