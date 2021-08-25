@@ -38,9 +38,10 @@ payloads:
         response:
           condition_type: or
           conditions:
-            status_code:
-              regex: 404|200
-              reverse: false
+            headers:
+              Content-Security-Policy:
+                regex: unsafe-inline|unsafe-eval
+                reverse: false
             content:
               regex: <meta http-equiv="Content-Security-Policy" content=".*script-src '(unsafe-inline|unsafe-eval)'.*">
               reverse: false
