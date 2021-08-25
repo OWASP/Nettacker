@@ -235,7 +235,6 @@ def load_all_profiles(limit=-1):
     Returns:
         an array of all profile names
     """
-    from config import nettacker_paths
     all_modules_with_details = load_all_modules(limit=limit, full_details=True)
     profiles = {}
     if '...' in all_modules_with_details:

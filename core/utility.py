@@ -45,8 +45,13 @@ def process_conditions(
             }
         )
     if event['response']['conditions_results'] and 'save_to_temp_events_only' not in event.get('response', ''):
-        from database.db import submit_logs_to_db, submit_report_to_db
+        from database.db import submit_logs_to_db
 
+        # remove sensitive information before submitting to db
+        from config import nettacker_api_config
+        options = copy.deepcopy(options)
+        for key in nettacker_api_config():
+            del options[key]
         submit_logs_to_db(
             {
                 "date": now(model=None),
