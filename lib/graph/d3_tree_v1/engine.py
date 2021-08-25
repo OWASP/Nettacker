@@ -73,6 +73,10 @@ def start(events):
                 )
 
     from config import nettacker_paths
+    os.system('ls -lah {}'.format(os.path.join(
+            nettacker_paths()['web_static_files_path'],
+            'report/d3_tree_v1.html'
+        )))
     data = open(
         os.path.join(
             nettacker_paths()['web_static_files_path'],
