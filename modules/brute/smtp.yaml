@@ -1,28 +1,28 @@
 info:
-  name: ftps_brute
+  name: smtp_brute
   author: OWASP Nettacker Team
   severity: 3
-  description: FTPS Bruteforcer
+  description: SMTP Bruteforcer
   reference:
   profiles:
     - brute
     - brute_force
-    - ftp
+    - smtp
 
 payloads:
-  - library: ftp
+  - library: smtp
     steps:
-      - method: ftps_brute_force
+      - method: smtp_brute_force
         timeout: 3
         host: "{target}"
         ports:
-          - 990
+          - 25
+          - 2525
         usernames:
           - root
           - admin
           - user
           - test
-          - anonymous
         passwords:
           nettacker_fuzzer:
             input_format: '{{passwords}}'

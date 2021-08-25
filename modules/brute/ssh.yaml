@@ -1,9 +1,9 @@
 info:
-  name: dir_scan
+  name: ssh_brute
   author: OWASP Nettacker Team
   severity: 3
-  description: Directory, Backup finder
-  reference: https://www.zaproxy.org/docs/alerts/10095/
+  description: SSH Bruteforcer
+  reference:
   profiles:
     - brute
     - brute_force

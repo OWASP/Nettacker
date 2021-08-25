@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import copy
-import logging
 import ftplib
 # from core.utility import reverse_and_regex_condition
 from core.utility import process_conditions
