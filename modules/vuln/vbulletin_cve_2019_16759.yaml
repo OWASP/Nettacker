@@ -9,7 +9,8 @@ info:
     - vulnerability
     - http
     - critical_severity
-    - vbulletin_cve_2019_16759
+    - vbulletin
+    - cve
 
 payloads:
   - library: http

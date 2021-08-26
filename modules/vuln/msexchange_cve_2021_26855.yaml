@@ -9,7 +9,8 @@ info:
     - vulnerability
     - http
     - critical_severity
-    - msexchange_cve_2021_26855
+    - msexchange
+    - cve
 
 payloads:
   - library: http
