@@ -51,12 +51,12 @@ payloads:
           condition_type: or
           conditions:
             headers:
-              sdfhasd:
+              randomstring_xyz_1:
                 regex: randomstring_xyz_1
                 reverse: false
-              dsfasda:
+              randomstring_xyz_2:
                 regex: randomstring_xyz_2
                 reverse: false
-              ksdfkdl:
+              randomstring_xyz_3:
                 regex: randomstring_xyz_3
                 reverse: false
