@@ -1,0 +1,43 @@
+info:
+  name: pma_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: php my admin finder
+  reference:
+  profiles:
+    - scan
+    - http
+    - backup
+    - low_severity
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{urls}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              urls: fuzzer_function_read_file_as_array('wordlists/pma_wordlist.txt')
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            status_code:
+              regex: 200|403|401
+              reverse: false

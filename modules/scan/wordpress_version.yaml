@@ -1,0 +1,44 @@
+info:
+  name: wordpress_version_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: Directory, Backup finder
+  reference:
+  profiles:
+    - scan
+    - http
+    - backup
+    - low_severity
+    - wp
+    - wordpress
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/wp-admin/install.php"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            content:
+              regex: ver=.*\d
+              reverse: false
