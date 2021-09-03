@@ -24,14 +24,11 @@ payloads:
           User-Agent: "{user_agent}"
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            input_format: "{{schema}}://{target}:{{ports}}/?format=feed"
             prefix: ""
             suffix: ""
             interceptors:
             data:
-              paths:
-                - joomla.xml
-                - administrator/manifests/files/joomla.xml
               schema:
                 - "http"
                 - "https"
@@ -42,5 +39,5 @@ payloads:
           condition_type: or
           conditions:
             content:
-              regex: <version>(.+?)</version>
+              regex: (?i)<author>(.+?)\((.+?)\)<\/author>
               reverse: false

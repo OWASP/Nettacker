@@ -30,8 +30,8 @@ payloads:
             interceptors:
             data:
               paths:
-                - joomla.xml
-                - administrator/manifests/files/joomla.xml
+                - ""
+                - administrator/
               schema:
                 - "http"
                 - "https"
@@ -42,5 +42,5 @@ payloads:
           condition_type: or
           conditions:
             content:
-              regex: <version>(.+?)</version>
+              regex: \/(?i)\badministrator\/templates\b\/(.+?)\/|\/(?i)templates\/(.+?)\/
               reverse: false

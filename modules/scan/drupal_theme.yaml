@@ -1,15 +1,15 @@
 info:
-  name: joomla_version_scan
+  name: drupal_theme_scan
   author: OWASP Nettacker Team
   severity: 3
-  description: fetch joomla version from target
+  description: fetch drupal version from target
   reference:
   profiles:
     - scan
     - http
     - backup
     - low_severity
-    - joomla
+    - drupal
 
 payloads:
   - library: http
@@ -24,14 +24,11 @@ payloads:
           User-Agent: "{user_agent}"
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            input_format: "{{schema}}://{target}:{{ports}}/index.php"
             prefix: ""
             suffix: ""
             interceptors:
             data:
-              paths:
-                - joomla.xml
-                - administrator/manifests/files/joomla.xml
               schema:
                 - "http"
                 - "https"
@@ -42,5 +39,5 @@ payloads:
           condition_type: or
           conditions:
             content:
-              regex: <version>(.+?)</version>
+              regex: \/(?i)\bthemes\b\/(.+?)\/
               reverse: false
