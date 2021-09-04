@@ -20,14 +20,6 @@ def parallel_scan_process(options, targets, scan_unique_id, process_number):
     total_number_of_modules_counter = 1
     for target in targets:
         for module_name in options.selected_modules:
-            from database.db import remove_old_logs
-            remove_old_logs(
-                {
-                    "target": target,
-                    "module_name": module_name,
-                    "scan_unique_id": scan_unique_id,
-                }
-            )
             thread = Thread(
                 target=perform_scan,
                 args=(
@@ -72,12 +64,25 @@ def start_scan_processes(options):
     scan_unique_id = generate_random_token(32)
     # find total number of targets + types + expand (subdomain, IPRanges, etc)
     # optimize CPU usage
+    info(messages("regrouping_targets"))
     options.targets = [
         targets.tolist() for targets in numpy.array_split(
             expand_targets(options, scan_unique_id),
             options.set_hardware_usage if options.set_hardware_usage >= len(options.targets) else len(options.targets)
         )
     ]
+    info(messages("removing_old_db_records"))
+    from database.db import remove_old_logs
+    for target_group in options.targets:
+        for target in target_group:
+            for module_name in options.selected_modules:
+                remove_old_logs(
+                    {
+                        "target": target,
+                        "module_name": module_name,
+                        "scan_unique_id": scan_unique_id,
+                    }
+                )
     for _ in range(options.targets.count([])):
         options.targets.remove([])
     active_processes = []
@@ -91,7 +96,6 @@ def start_scan_processes(options):
         )
         process.start()
         active_processes.append(process)
-    
     exit_code = wait_for_threads_to_finish(active_processes, sub_process=True)
     create_report(options, scan_unique_id)
     return exit_code
