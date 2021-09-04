@@ -453,7 +453,6 @@ def search_logs(page, query):
         an array with JSON structure of founded events or an empty array
     """
     session = create_connection()
-    page = int(page * 10 if page > 0 else page * -10) - 10
     selected = []
     try:
         for host in session.query(HostsLog).filter(
@@ -463,7 +462,7 @@ def search_logs(page, query):
                 | (HostsLog.options.like("%" + str(query) + "%"))
                 | (HostsLog.event.like("%" + str(query) + "%"))
                 | (HostsLog.scan_unique_id.like("%" + str(query) + "%"))
-        ).group_by(HostsLog.target).order_by(HostsLog.id.desc())[page:page + 11]:
+        ).group_by(HostsLog.target).order_by(HostsLog.id.desc()).offset((page * 10) - 10).limit(10):
             for data in session.query(HostsLog).filter(HostsLog.target == str(host.target)).group_by(
                     HostsLog.module_name, HostsLog.options, HostsLog.scan_unique_id, HostsLog.event
             ).order_by(HostsLog.id.desc()).all():
