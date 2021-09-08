@@ -72,7 +72,6 @@ class Engine:
                 response = action(**sub_step)
                 break
             except Exception as _:
-                print(_)
                 response = []
         sub_step['method'] = backup_method
         sub_step['response'] = backup_response

@@ -27,7 +27,7 @@ def process_conditions(
         request_number_counter,
         total_number_of_requests
 ):
-    from core.alert import (event_info,
+    from core.alert import (success_event_info,
                             verbose_info,
                             messages)
 
@@ -53,6 +53,7 @@ def process_conditions(
         options = copy.deepcopy(options)
         for key in nettacker_api_config():
             del options[key]
+        del event['response']['conditions']
         submit_logs_to_db(
             {
                 "date": now(model=None),
@@ -63,7 +64,7 @@ def process_conditions(
                 "event": event
             }
         )
-        event_info(
+        success_event_info(
             messages("send_success_event_from_module").format(
                 process_number,
                 module_name,
@@ -80,6 +81,7 @@ def process_conditions(
         )
         return True
     else:
+        del event['response']['conditions']
         verbose_info(
             messages("send_unsuccess_event_from_module").format(
                 process_number,

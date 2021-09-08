@@ -4,6 +4,7 @@
 import numpy
 import multiprocessing
 from core.alert import (info,
+                        verbose_event_info,
                         messages)
 from core.targets import expand_targets
 from core.utility import generate_random_token
@@ -15,7 +16,7 @@ from core.graph import create_report
 
 def parallel_scan_process(options, targets, scan_unique_id, process_number):
     active_threads = []
-    info(messages("single_process_started").format(process_number))
+    verbose_event_info(messages("single_process_started").format(process_number))
     total_number_of_modules = len(targets) * len(options.selected_modules)
     total_number_of_modules_counter = 1
     for target in targets:
@@ -34,7 +35,7 @@ def parallel_scan_process(options, targets, scan_unique_id, process_number):
             )
             thread.name = f"{target} -> {module_name}"
             thread.start()
-            info(
+            verbose_event_info(
                 messages("start_parallel_module_scan").format(
                     process_number,
                     module_name,

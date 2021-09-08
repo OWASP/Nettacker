@@ -103,6 +103,9 @@ def create_report(options, scan_unique_id):
         True if success otherwise None
     """
     all_scan_logs = get_logs_by_scan_unique_id(scan_unique_id)
+    if not all_scan_logs:
+        info(messages("no_events_for_report"))
+        return True
     report_path_filename = options.report_path_filename
     if (
             len(report_path_filename) >= 5 and report_path_filename[-5:] == '.html'

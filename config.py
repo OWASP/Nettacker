@@ -95,6 +95,7 @@ def nettacker_user_application_config():
     return {  # OWASP Nettacker Default Configuration
         "language": "en",
         "verbose_mode": False,
+        "verbose_event": False,
         "show_version": False,
         "report_path_filename": "{results_path}/results_{date_time}_{random_chars}.html".format(
             results_path=nettacker_paths()["results_path"],
@@ -116,8 +117,8 @@ def nettacker_user_application_config():
         "time_sleep_between_requests": 0.0,
         "scan_ip_range": False,
         "scan_subdomains": False,
-        "thread_per_host": 250,
-        "parallel_module_scan": 20,
+        "thread_per_host": 100,
+        "parallel_module_scan": 1,
         "socks_proxy": None,
         "retries": 1,
         "ping_before_scan": False,

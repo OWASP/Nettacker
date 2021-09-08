@@ -97,7 +97,7 @@ class NettackerModules:
         from core.utility import wait_for_threads_to_finish
         active_threads = []
         from core.alert import warn
-        from core.alert import info
+        from core.alert import verbose_event_info
         from core.alert import messages
 
         # counting total number of requests
@@ -137,7 +137,7 @@ class NettackerModules:
                     )
                     thread.name = f"{self.target} -> {self.module_name} -> {sub_step}"
                     request_number_counter += 1
-                    info(
+                    verbose_event_info(
                         messages("sending_module_request").format(
                             self.process_number,
                             self.module_name,
@@ -258,7 +258,7 @@ def load_all_profiles(limit=-1):
 
 
 def perform_scan(options, target, module_name, scan_unique_id, process_number, thread_number, total_number_threads):
-    from core.alert import (info,
+    from core.alert import (verbose_event_info,
                             messages)
 
     socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
@@ -278,7 +278,7 @@ def perform_scan(options, target, module_name, scan_unique_id, process_number, t
     validate_module.load()
     validate_module.generate_loops()
     validate_module.start()
-    info(
+    verbose_event_info(
         messages("finished_parallel_module_scan").format(
             process_number,
             module_name,

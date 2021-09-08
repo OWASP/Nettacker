@@ -23,6 +23,10 @@ def verbose_mode_is_enabled():
     return '--verbose' in sys.argv or '-v' in sys.argv
 
 
+def event_verbose_mode_is_enabled():
+    return '--verbose-event' in sys.argv
+
+
 def messages(msg_id):
     """
     load a message from message library with specified language
@@ -48,7 +52,7 @@ def info(content):
     Returns:
         None
     """
-    if (not run_from_api()) or verbose_mode_is_enabled():  # prevent to stdout if run from API
+    if not run_from_api():
         sys.stdout.buffer.write(
             bytes(
                 color.color("yellow")
@@ -63,7 +67,7 @@ def info(content):
         sys.stdout.flush()
 
 
-def event_info(content):
+def verbose_event_info(content):
     """
     build the info message, log the message in database if requested,
     rewrite the thread temporary file
@@ -74,7 +78,35 @@ def event_info(content):
     Returns:
         None
     """
-    if (not run_from_api()) or verbose_mode_is_enabled():  # prevent to stdout if run from API
+    if (not run_from_api()) and (
+            verbose_mode_is_enabled() or event_verbose_mode_is_enabled()
+    ):  # prevent to stdout if run from API
+        sys.stdout.buffer.write(
+            bytes(
+                color.color("yellow")
+                + "[{0}][+] ".format(now())
+                + color.color("green")
+                + content
+                + color.color("reset")
+                + "\n",
+                "utf8",
+            )
+        )
+        sys.stdout.flush()
+
+
+def success_event_info(content):
+    """
+    build the info message, log the message in database if requested,
+    rewrite the thread temporary file
+
+    Args:
+        content: content of the message
+
+    Returns:
+        None
+    """
+    if not run_from_api():
         sys.stdout.buffer.write(
             bytes(
                 color.color("red")

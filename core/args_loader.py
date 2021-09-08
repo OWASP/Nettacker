@@ -67,6 +67,13 @@ def load_all_args():
         help=messages("verbose_mode"),
     )
     engineOpt.add_argument(
+        "--verbose-event",
+        action="store_true",
+        dest="verbose_event",
+        default=nettacker_global_configuration['nettacker_user_application_config']['verbose_event'],
+        help=messages("verbose_event"),
+    )
+    engineOpt.add_argument(
         "-V",
         "--version",
         action="store_true",
@@ -154,7 +161,7 @@ def load_all_args():
         action="store",
         default=nettacker_global_configuration['nettacker_user_application_config']["profiles"],
         dest="profiles",
-        help=messages("select_profile").format(list(load_all_profiles().keys())),
+        help=messages("select_profile").format(list(load_all_profiles(limit=10).keys())),
     )
     modules.add_argument(
         "--show-all-profiles",
@@ -529,7 +536,7 @@ def check_all_required(parser, api_forms=None):
             die_failure(messages("error_exclude_all"))
         for excluded_module in options.excluded_modules:
             if excluded_module in options.selected_modules:
-                options.selected_modules.remove(excluded_module)
+                del options.selected_modules[excluded_module]
     # Check port(s)
     if options.ports:
         tmp_ports = []
