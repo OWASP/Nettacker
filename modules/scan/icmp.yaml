@@ -17,7 +17,6 @@ payloads:
       - method: socket_icmp
         timeout: 3
         host: "{target}"
-        ports: ""
         response:
           condition_type: or
           conditions:
