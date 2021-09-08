@@ -40,7 +40,7 @@ def process_conditions(
                 "module_name": module_name,
                 "scan_unique_id": scan_unique_id,
                 "event_name": event['response']['save_to_temp_events_only'],
-                "options": options,
+                # "options": options,
                 "event": event,
                 "data": response
             }
@@ -60,7 +60,7 @@ def process_conditions(
                 "target": target,
                 "module_name": module_name,
                 "scan_unique_id": scan_unique_id,
-                "options": options,
+                # "options": options,
                 "event": event
             }
         )
