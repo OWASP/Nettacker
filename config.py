@@ -134,7 +134,8 @@ def nettacker_user_application_config():
 
 def nettacker_analytics():
     return {
-        "new_relic_api_key": "eu01xx37fdbe48e4ebcd3f5935175aaf3aeaNRAL"
+        "new_relic_api_key": None,
+        # "new_relic_api_key": "eu01xx37fdbe48e4ebcd3f5935175aaf3aeaNRAL"
         # set this to None if you don't want us receive any analytics from you
         # the reason for this is too check how much Nettacker is being used and
         # in which geo area we have more users to develop the messaging system

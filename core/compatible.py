@@ -50,20 +50,21 @@ def logo():
     )
     reset_color()
     try:
-        requests.post(
-            "https://log-api.eu.newrelic.com/log/v1",
-            headers={
-                "X-License-Key": nettacker_analytics()['new_relic_api_key'],
-                "Accept": "*/*",
-                "Content-Type": "application/json",
-                "User-Agent": nettacker_user_application_config()['user_agent']
-            },
-            json={
-                "ip": json.loads(requests.get('https://api64.ipify.org?format=json').content)['ip'],
-                "user_agent": nettacker_user_application_config()['user_agent'],
-                "github_ci": os.environ.get('github_ci') == "true"
-            }
-        )
+        if nettacker_analytics()['new_relic_api_key']:
+            requests.post(
+                "https://log-api.eu.newrelic.com/log/v1",
+                headers={
+                    "X-License-Key": nettacker_analytics()['new_relic_api_key'],
+                    "Accept": "*/*",
+                    "Content-Type": "application/json",
+                    "User-Agent": nettacker_user_application_config()['user_agent']
+                },
+                json={
+                    "ip": json.loads(requests.get('https://api64.ipify.org?format=json').content)['ip'],
+                    "user_agent": nettacker_user_application_config()['user_agent'],
+                    "github_ci": os.environ.get('github_ci') == "true"
+                }
+            )
     except Exception:
         return None
 
