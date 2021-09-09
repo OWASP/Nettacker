@@ -17,6 +17,7 @@ payloads:
     cert: ""
     stream: false
     proxies: ""
+    allow_redirects: false
     steps:
       - method: get
         headers:
