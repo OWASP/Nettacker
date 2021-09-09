@@ -60,12 +60,15 @@ class NettackerSocket:
         socket_connection.settimeout(timeout)
         socket_connection.connect((host, int(ports)))
         peer_name = socket_connection.getpeername()
-        socket_connection.send(b"ABC\x00\r\n" * 10)
-        response = socket_connection.recv(1024 * 1024 * 10)
-        socket_connection.close()
+        try:
+            socket_connection.send(b"ABC\x00\r\n" * 10)
+            socket_connection.close()
+            response = socket_connection.recv(1024 * 1024 * 10)
+        except Exception:
+            response = b""
         return {
             "peer_name": peer_name,
-            "service": socket.getservbyport(int(ports)),
+            "service":  socket.getservbyport(int(ports)),
             "response": response.decode(errors='ignore')
         }
 
