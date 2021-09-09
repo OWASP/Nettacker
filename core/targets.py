@@ -43,7 +43,15 @@ def expand_targets(options, scan_unique_id):
         # domains
         elif options.scan_subdomains:
             targets.append(target)
-            perform_scan(options, target, 'subdomain_scan', scan_unique_id)
+            perform_scan(
+                options,
+                target,
+                'subdomain_scan',
+                scan_unique_id,
+                'pre_process',
+                'pre_process_thread',
+                'unknown'
+            )
             for row in find_events(target, 'subdomain_scan', scan_unique_id):
                 for sub_domain in json.loads(row.event)['response']['conditions_results']['content']:
                     if sub_domain not in targets:
@@ -52,7 +60,15 @@ def expand_targets(options, scan_unique_id):
             targets.append(target)
     if options.ping_before_scan:
         for target in copy.deepcopy(targets):
-            perform_scan(options, target, 'icmp_scan', scan_unique_id)
+            perform_scan(
+                options,
+                target,
+                'icmp_scan',
+                scan_unique_id,
+                'pre_process',
+                'pre_process_thread',
+                'unknown'
+            )
             if not find_events(target, 'icmp_scan', scan_unique_id):
                 targets.remove(target)
     return list(set(targets))

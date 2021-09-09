@@ -53,7 +53,10 @@ def process_conditions(
         from config import nettacker_api_config
         options = copy.deepcopy(options)
         for key in nettacker_api_config():
-            del options[key]
+            try:
+                del options[key]
+            except Exception:
+                continue
         del event['response']['conditions']
         submit_logs_to_db(
             {
