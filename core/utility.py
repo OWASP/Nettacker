@@ -83,9 +83,9 @@ def process_conditions(
                 ", ".join(
                     [
                         "{}: {}".format(
-                            _,
-                            event_request_keys[_]
-                        ) for _ in event_request_keys
+                            key,
+                            event_request_keys[key]
+                        ) for key in event_request_keys
                     ]
                 ),
                 ", ".join(event['response']['conditions_results'].keys())
