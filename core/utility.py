@@ -80,9 +80,9 @@ def process_conditions(
                 total_module_thread_number,
                 request_number_counter,
                 total_number_of_requests,
-                ",".join(
+                ", ".join(
                     [
-                        "{}:{}, ".format(
+                        "{}: {}".format(
                             _,
                             event_request_keys[_]
                         ) for _ in event_request_keys
