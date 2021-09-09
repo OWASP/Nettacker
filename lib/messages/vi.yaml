@@ -1,0 +1,254 @@
+---
+scan_started: Động cơ Nettacker đã bắt đầu ...
+options: python nettacker.py [tùy chọn]
+help_menu: Hiển thị menu trợ giúp Nettacker
+license: Vui lòng đọc giấy phép và thỏa thuận https://github.com/OWASP/Nettacker
+engine: Động cơ
+engine_input: Tùy chọn đầu vào của động cơ
+select_language: chọn ngôn ngữ {0}
+range: quét tất cả các IP trong phạm vi
+subdomains: tìm và quét tên miền phụ
+thread_number_connections: số chuỗi cho kết nối với máy chủ lưu trữ
+thread_number_hosts: số luồng cho máy quét
+save_logs: lưu tất cả các bản ghi trong tệp (results.txt, results.html, results.json)
+target: Mục tiêu
+target_input: Tùy chọn nhập mục tiêu
+target_list: (các) mục tiêu, tách biệt với ","
+read_target: đọc (các) mục tiêu từ tệp
+scan_method_options: Tùy chọn phương pháp quét
+choose_scan_method: chọn phương pháp quét {0}
+exclude_scan_method: chọn phương pháp quét để loại trừ {0}
+username_list: (các) tên người dùng, riêng biệt với ","
+username_from_file: đọc (các) tên người dùng từ tệp
+password_seperator: (các) mật khẩu, riêng biệt với ","
+read_passwords: đọc (các) mật khẩu từ tệp
+port_seperator: danh sách cổng, tách biệt với ","
+time_to_sleep: thời gian để ngủ giữa mỗi yêu cầu
+error_target: Không thể chỉ định (các) mục tiêu
+error_target_file: "Không thể chỉ định (các) đích, không thể mở tệp: {0}"
+thread_number_warning:
+  nó tốt hơn để sử dụng số chủ đề thấp hơn 100, BTW chúng tôi
+  đang tiếp tục ...
+settimeout:
+  đặt thời gian chờ thành {0} giây, nó quá lớn, phải không? bằng cách chúng
+  ta tiếp tục ...
+scan_module_not_found: mô-đun quét này [{0}] không tìm thấy!
+error_exclude_all: bạn không thể loại trừ tất cả các phương pháp quét
+exclude_module_error: mô-đun {0} bạn đã chọn để loại trừ không tìm thấy!
+method_inputs:
+  "nhập phương thức nhập, ví dụ: ftp_brute_users = test, admin & ftp_brute_passwds
+  = read_from_file: /tmp/pass.txt&ftp_brute_port=21"
+error_reading_file: không thể đọc tệp {0}
+error_username: "Không thể chỉ định (các) tên người dùng, không thể mở tệp: {0}"
+found: "Đã tìm thấy {0}! ({1}: {2})"
+error_password_file: "Không thể chỉ định (các) mật khẩu, không thể mở tệp: {0}"
+file_write_error: tệp "{0}" không thể ghi được!
+scan_method_select: hãy chọn phương pháp quét của bạn!
+remove_temp: xóa các tệp tạm thời!
+sorting_results: sắp xếp kết quả!
+done: làm xong!
+start_attack: bắt đầu tấn công {0}, {1} trong tổng số {2}
+module_not_available: mô-đun này "{0}" không khả dụng
+error_platform:
+  tiếc là phiên bản này của phần mềm chỉ có thể chạy trên linux / osx
+  / windows.
+python_version_error: Phiên bản Python của bạn không được hỗ trợ!
+skip_duplicate_target:
+  bỏ qua mục tiêu trùng lặp (một số miền phụ / miền có thể có
+  cùng IP và phạm vi)
+unknown_target: loại mục tiêu không xác định [{0}]
+checking_range: đang kiểm tra dải {0} ...
+checking: kiểm tra {0} ...
+HOST: HOST
+USERNAME: USERNAME
+PASSWORD: MẬT KHẨU
+PORT: HẢI CẢNG
+TYPE: KIỂU
+DESCRIPTION: SỰ MIÊU TẢ
+verbose_mode: mức chế độ tiết (0-5) (mặc định 0)
+software_version: hiển thị phiên bản phần mềm
+check_updates: kiểm tra cập nhật
+outgoing_proxy:
+  "proxy kết nối đi (vớ). ví dụ socks5: 127.0.0.1:9050, socks: //127.0.0.1:
+  9050 socks5: //127.0.0.1: 9050 hoặc socks4: socks4: //127.0.0.1: 9050, xác thực:
+  socks: // username: password @ Tên người dùng 127.0.0.1, socks4: //: password@127.0.0.1,
+  socks5: // username: password@127.0.0.1"
+valid_socks_address:
+  "xin vui lòng nhập địa chỉ vớ hợp lệ và cổng. ví dụ socks5: 127.0.0.1:9050,
+  socks: //127.0.0.1: 9050, socks5: //127.0.0.1: 9050 hoặc socks4: socks4: //127.0.0.1:
+  9050, xác thực: socks: // username: password @ 127.0.0.1, tên người dùng socks4:
+  //: password@127.0.0.1, socks5: // username: password@127.0.0.1"
+connection_retries: Thử lại khi hết thời gian chờ kết nối (mặc định 3)
+ftp_connectiontimeout: "kết nối ftp với {0}: {1} thời gian chờ, bỏ qua {2}: {3}"
+login_successful: ĐĂNG NHẬP THÀNH CÔNG!
+login_list_error:
+  ĐĂNG NHẬP TRONG SUCCESSFULLY, PERMISSION DENIED CHO DANH SÁCH DANH
+  SÁCH!
+ftp_connection_failed:
+  "kết nối ftp với {0}: {1} không thành công, bỏ qua toàn bộ
+  bước [process {2} of {3}]! bước tiếp theo"
+input_target_error:
+  mục tiêu đầu vào cho mô-đun {0} phải là DOMAIN, HTTP hoặc SINGLE_IPv4,
+  bỏ qua {1}
+user_pass_found:
+  "người dùng: {0} vượt qua: {1} máy chủ lưu trữ: {2} cổng: {3} được
+  tìm thấy!"
+file_listing_error: "(KHÔNG PHÉP CHO DANH SÁCH DANH SÁCH)"
+trying_message: "đang thử {0} trong {1} trong quá trình {2} của {3} {4}: {5} ({6})"
+smtp_connectiontimeout: "kết nối smtp thành {0}: {1} thời gian chờ, bỏ qua {2}: {3}"
+smtp_connection_failed:
+  "kết nối smtp thành {0}: {1} không thành công, bỏ qua toàn
+  bộ bước [process {2} of {3}]! bước tiếp theo"
+ssh_connectiontimeout: "kết nối ssh tới {0}: {1} thời gian chờ, bỏ qua {2}: {3}"
+ssh_connection_failed:
+  "kết nối ssh tới {0}: {1} không thành công, bỏ qua toàn bộ
+  bước [process {2} of {3}]! bước tiếp theo"
+port/type: "{0} / {1}"
+port_found: "host: {0} port: {1} ({2}) được tìm thấy!"
+target_submitted: mục tiêu {0} đã được gửi!
+current_version:
+  bạn đang chạy phiên bản OWASP Nettacker {0} {1} {2} {6} với tên mã
+  {3} {4} {5}
+feature_unavailable:
+  tính năng này chưa khả dụng! hãy chạy "git clone https://github.com/OWASP/Nettacker.git
+  hoặc pip install -U OWASP-Nettacker để lấy phiên bản cuối cùng.
+available_graph:
+  "xây dựng một biểu đồ của tất cả các hoạt động và thông tin, bạn
+  phải sử dụng đầu ra HTML. đồ thị có sẵn: {0}"
+graph_output:
+  để sử dụng tính năng đồ thị, tên tệp đầu ra của bạn phải kết thúc bằng
+  ".html" hoặc ".htm"!
+build_graph: xây dựng đồ thị ...
+finish_build_graph: kết thúc đồ thị xây dựng!
+pentest_graphs: Đồ thị kiểm tra thâm nhập
+graph_message:
+  Biểu đồ này được tạo bởi OWASP Nettacker. Biểu đồ chứa tất cả các hoạt
+  động của mô-đun, bản đồ mạng và thông tin nhạy cảm, Vui lòng không chia sẻ tệp này
+  với bất kỳ ai nếu nó không đáng tin cậy.
+nettacker_report: Báo cáo của OWASP Nettacker
+nettacker_version_details:
+  "Chi tiết phần mềm: Phiên bản OWASP Nettacker {0} [{1}]
+  trong {2}"
+no_open_ports: không tìm thấy cổng mở nào!
+no_user_passwords: không tìm thấy người dùng / mật khẩu nào!
+loaded_modules: "{0} mô-đun được tải ..."
+graph_module_404: "không tìm thấy mô-đun đồ thị này: {0}"
+graph_module_unavailable: mô-đun biểu đồ này "{0}" không khả dụng
+ping_before_scan: ping trước khi quét máy chủ
+skipping_target:
+  bỏ qua toàn bộ mục tiêu {0} và phương pháp quét {1} vì --ping-before-scan
+  là đúng và nó không phản hồi!
+not_last_version:
+  bạn không sử dụng phiên bản OWASP Nettacker cuối cùng, vui lòng
+  cập nhật.
+cannot_update:
+  không thể kiểm tra cập nhật, vui lòng kiểm tra kết nối internet của
+  bạn.
+last_version: Bạn đang sử dụng phiên bản mới nhất của OWASP Nettacker ...
+directoy_listing: danh sách thư mục được tìm thấy trong {0}
+insert_port_message:
+  hãy chèn cổng thông qua chuyển đổi -g hoặc --methods-args thay
+  vì url
+http_connectiontimeout: kết nối http {0} hết giờ!
+wizard_mode: chế độ thuật sĩ khởi động
+directory_file_404: không tìm thấy thư mục hoặc tệp nào cho {0} trong cổng {1}
+open_error: không thể mở {0}
+dir_scan_get:
+  Giá trị dir_scan_http_method phải là GET hoặc HEAD, đặt mặc định là
+  GET.
+list_methods: liệt kê tất cả các phương thức args
+module_args_error: không thể nhận được {0} mô-đun args
+trying_process: đang thử {0} trong {1} trong quá trình {2} trong {3} vào {4} ({5})
+domain_found: "tên miền được tìm thấy: {0}"
+TIME: THỜI GIAN
+CATEGORY: THỂ LOẠI
+module_pattern_404: không thể tìm thấy bất kỳ mô-đun nào với mẫu {0}!
+enter_default: vui lòng nhập {0} | Mặc định [{1}]>
+enter_choices_default: vui lòng nhập {0} | lựa chọn [{1}] | Mặc định [{2}]>
+all_targets: mục tiêu
+all_thread_numbers: số chủ đề
+out_file: tên tệp đầu ra
+all_scan_methods: các phương pháp quét
+all_scan_methods_exclude: các phương pháp quét để loại trừ
+all_usernames: tên người dùng
+all_passwords: mật khẩu
+timeout_seconds: thời gian chờ giây
+all_ports: số cổng
+all_verbose_level: mức độ tiết
+all_socks_proxy: vớ vớ
+retries_number: số retries
+graph: một đồ thị
+subdomain_found: "tên miền phụ được tìm thấy: {0}"
+select_profile: chọn hồ sơ {0}
+profile_404: không tìm thấy hồ sơ "{0}"!
+waiting: chờ đợi {0}
+vulnerable: dễ bị tổn thương đến {0}
+target_vulnerable: "mục tiêu {0}: {1} dễ bị {2}!"
+no_vulnerability_found: không tìm thấy lỗ hổng nào! ({0})
+Method: phương pháp
+API: API
+API_options: Tùy chọn API
+start_api_server: bắt đầu dịch vụ API
+API_host: Địa chỉ máy chủ API
+API_port: Số cổng API
+API_debug: Chế độ gỡ lỗi API
+API_access_key: Khóa truy cập API
+white_list_API: chỉ cho phép các máy chủ danh sách trắng kết nối với API
+define_whie_list:
+  "xác định các máy chủ danh sách trắng, tách biệt với, (ví dụ: 127.0.0.1,
+  192.168.0.1/24, 10.0.0.1-10.0.0.255)"
+gen_API_access_log: tạo nhật ký truy cập API
+API_access_log_file: Tên tệp nhật ký truy cập API
+API_port_int: Cổng API phải là một số nguyên!
+unknown_ip_input:
+  loại đầu vào không xác định, các loại được chấp nhận là SINGLE_IPv4,
+  RANGE_IPv4, CIDR_IPv4
+API_key: "* Khóa API: {0}"
+ports_int: "cổng phải là số nguyên! (ví dụ: 80 || 80,1080 || 80,1080-1300,9000,12000-15000)"
+through_API: Thông qua API OWASP Nettacker
+API_invalid: khóa API không hợp lệ
+unauthorized_IP: IP của bạn không được ủy quyền
+not_found: Không tìm thấy!
+no_subdomain_found: "subdomain_scan: không có tên miền phụ nào được thành lập!"
+viewdns_domain_404: "viewdns_reverse_ip_lookup_scan: không tìm thấy tên miền!"
+browser_session_valid: phiên trình duyệt của bạn hợp lệ
+browser_session_killed: phiên trình duyệt của bạn đã bị giết
+updating_database: đang cập nhật cơ sở dữ liệu ...
+database_connect_fail: không thể kết nối với cơ sở dữ liệu!
+inserting_report_db: chèn báo cáo vào cơ sở dữ liệu
+inserting_logs_db: chèn nhật ký vào cơ sở dữ liệu
+removing_logs_db: xóa nhật ký cũ khỏi db
+len_subdomain_found: "{0} tên miền phụ đã được tìm thấy!"
+len_domain_found: "{0} tên miền được tìm thấy!"
+phpmyadmin_dir_404: không tìm thấy bất kỳ thư mục phpmyadmin nào!
+DOS_send: gửi các gói DoS tới {0}
+host_up: "{0} đã hết! Thời gian thực hiện để ping lại là {1}"
+host_down: Không thể ping {0}!
+root_required: điều này cần phải được chạy dưới dạng root
+admin_scan_get:
+  Giá trị admin_scan_http_method phải là GET hoặc HEAD, đặt mặc định
+  là GET.
+telnet_connectiontimeout:
+  "kết nối telnet tới {0}: {1} thời gian chờ, bỏ qua {2}:
+  {3}"
+telnet_connection_failed:
+  "kết nối telnet tới {0}: {1} không thành công, bỏ qua toàn
+  bộ bước [process {2} of {3}]! bước tiếp theo"
+http_auth_success:
+  "http thành công xác thực cơ bản - máy chủ: {2}: {3}, người dùng:
+  {0}, vượt qua: {1} được tìm thấy!"
+http_auth_failed: "xác thực cơ bản http không thành công {0}: {3} bằng {1}: {2}"
+http_form_auth_success:
+  "thành công xác thực mẫu http - máy chủ lưu trữ: {2}: {3},
+  người dùng: {0}, vượt qua: {1} được tìm thấy!"
+http_form_auth_failed:
+  "xác thực biểu mẫu http không thành công {0}: {3} bằng {1}:
+  {2}"
+http_ntlm_success:
+  "Xác thực thành công http ntlm - máy chủ lưu trữ: {2}: {3}, người
+  dùng: {0}, vượt qua: {1} được tìm thấy!"
+http_ntlm_failed: "Xác thực http ntlm không thành công {0}: {3} bằng {1}: {2}"
+no_response: không thể nhận phản hồi từ mục tiêu
+category_framework: "danh mục: {0}, khung: {1} được tìm thấy!"
+nothing_found: không tìm thấy gì trên {0} trong {1}!
+no_auth: "Không tìm thấy auth trên {0}: {1}"

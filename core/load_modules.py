@@ -1,21 +1,166 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
 import os
-import lib
-import api
-import inspect
+import socket
+import time
 from glob import glob
-from core.alert import messages
-from core.alert import info
-from core.alert import warn
-from core._die import __die_failure
-from core.compatible import is_windows
-from core.config import _core_config
-from core.config_builder import _core_default_config
-from core.config_builder import _builder
-from shutil import copyfile
+from io import StringIO
+
+
+def getaddrinfo(*args):
+    """
+    same getaddrinfo() used in socket except its resolve addresses with socks proxy
+
+    Args:
+        args: *args
+
+    Returns:
+        getaddrinfo
+    """
+    return [(socket.AF_INET, socket.SOCK_STREAM, 6, '', (args[0], args[1]))]
+
+
+def set_socks_proxy(socks_proxy):
+    if socks_proxy:
+        import socks
+        socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
+        socks_proxy = socks_proxy.split('://')[1] if '://' in socks_proxy else socks_proxy
+        if '@' in socks_proxy:
+            socks_username = socks_proxy.split(':')[0]
+            socks_password = socks_proxy.split(':')[1].split('@')[0]
+            socks.set_default_proxy(
+                socks_version,
+                str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),  # hostname
+                int(socks_proxy.rsplit(':')[-1]),  # port
+                username=socks_username,
+                password=socks_password
+            )
+        else:
+            socks.set_default_proxy(
+                socks_version,
+                str(socks_proxy.rsplit(':')[0]),  # hostname
+                int(socks_proxy.rsplit(':')[1])  # port
+            )
+        return socks.socksocket, getaddrinfo
+    else:
+        return socket.socket, socket.getaddrinfo
+
+
+class NettackerModules:
+    def __init__(self):
+        from config import nettacker_paths
+        self.module_name = None
+        self.module_content = None
+        self.scan_unique_id = None
+        self.target = None
+        self.process_number = None
+        self.module_thread_number = None
+        self.total_module_thread_number = None
+        self.module_inputs = {}
+        self.libraries = [
+            module_protocol.split('.py')[0] for module_protocol in
+            os.listdir(nettacker_paths()['module_protocols_path']) if
+            module_protocol.endswith('.py') and module_protocol != '__init__.py'
+        ]
+
+    def load(self):
+        import yaml
+        from config import nettacker_paths
+        from core.utility import find_and_replace_configuration_keys
+        self.module_content = find_and_replace_configuration_keys(
+            yaml.load(
+                StringIO(
+                    open(
+                        nettacker_paths()['modules_path'] +
+                        '/' +
+                        self.module_name.split('_')[-1].split('.yaml')[0] +
+                        '/' +
+                        '_'.join(self.module_name.split('_')[:-1]) +
+                        '.yaml',
+                        'r'
+                    ).read().format(
+                        **self.module_inputs
+                    )
+                ),
+                Loader=yaml.FullLoader
+            ),
+            self.module_inputs
+        )
+
+    def generate_loops(self):
+        from core.utility import expand_module_steps
+        self.module_content['payloads'] = expand_module_steps(self.module_content['payloads'])
+
+    def start(self):
+        from terminable_thread import Thread
+        from core.utility import wait_for_threads_to_finish
+        active_threads = []
+        from core.alert import warn
+        from core.alert import verbose_event_info
+        from core.alert import messages
+
+        # counting total number of requests
+        total_number_of_requests = 0
+        for payload in self.module_content['payloads']:
+            if payload['library'] not in self.libraries:
+                warn(messages("library_not_supported").format(payload['library']))
+                return None
+            for step in payload['steps']:
+                for _ in step:
+                    total_number_of_requests += 1
+        request_number_counter = 0
+        for payload in self.module_content['payloads']:
+            protocol = getattr(
+                __import__(
+                    'core.module_protocols.{library}'.format(library=payload['library']),
+                    fromlist=['Engine']
+                ),
+                'Engine'
+            )
+            for step in payload['steps']:
+                for sub_step in step:
+                    thread = Thread(
+                        target=protocol.run,
+                        args=(
+                            sub_step,
+                            self.module_name,
+                            self.target,
+                            self.scan_unique_id,
+                            self.module_inputs,
+                            self.process_number,
+                            self.module_thread_number,
+                            self.total_module_thread_number,
+                            request_number_counter,
+                            total_number_of_requests
+                        )
+                    )
+                    thread.name = f"{self.target} -> {self.module_name} -> {sub_step}"
+                    request_number_counter += 1
+                    verbose_event_info(
+                        messages("sending_module_request").format(
+                            self.process_number,
+                            self.module_name,
+                            self.target,
+                            self.module_thread_number,
+                            self.total_module_thread_number,
+                            request_number_counter,
+                            total_number_of_requests
+                        )
+                    )
+                    thread.start()
+                    time.sleep(self.module_inputs['time_sleep_between_requests'])
+                    active_threads.append(thread)
+                    wait_for_threads_to_finish(
+                        active_threads,
+                        maximum=self.module_inputs['thread_per_host'],
+                        terminable=True
+                    )
+        wait_for_threads_to_finish(
+            active_threads,
+            maximum=None,
+            terminable=True
+        )
 
 
 def load_all_graphs():
@@ -25,150 +170,121 @@ def load_all_graphs():
     Returns:
         an array of graph names
     """
+    from config import nettacker_paths
     graph_names = []
-    for _lib in glob(os.path.dirname(inspect.getfile(lib)) + '/*/*/engine.py'):
-        if os.path.dirname(_lib).rsplit('\\' if is_windows() else '/')[
-                -2] == "graph" and _lib + '_graph' not in graph_names:
-            _lib = _lib.rsplit('\\' if is_windows() else '/')[-2]
-            graph_names.append(_lib + '_graph')
+    for graph_library in glob(os.path.join(nettacker_paths()['home_path'] + '/lib/graph/*/engine.py')):
+        graph_names.append(graph_library.split('/')[-2] + '_graph')
     return graph_names
 
 
-def load_all_modules():
+def load_all_languages():
+    """
+    load all available languages
+
+    Returns:
+        an array of languages
+    """
+    languages_list = []
+    from config import nettacker_paths
+    for language in glob(os.path.join(nettacker_paths()['home_path'] + '/lib/messages/*.yaml')):
+        languages_list.append(language.split('/')[-1].split('.')[0])
+    return languages_list
+
+
+def load_all_modules(limit=-1, full_details=False):
     """
     load all available modules
+
+    limit: return limited number of modules
+    full: with full details
 
     Returns:
         an array of all module names
     """
     # Search for Modules
-    module_names = []
-    for _lib in glob(os.path.dirname(inspect.getfile(lib)) + '/*/*/engine.py'):
-        libname = _lib.rsplit('\\' if is_windows() else '/')[-2]
-        category = _lib.rsplit('\\' if is_windows() else '/')[-3]
-        if category != 'graph' and libname + '_' + category not in module_names:
-            module_names.append(libname + '_' + category)
-    module_names.append('all')
+    from config import nettacker_paths
+    if full_details:
+        import yaml
+    module_names = {}
+    for module_name in glob(os.path.join(nettacker_paths()['modules_path'] + '/*/*.yaml')):
+        libname = module_name.split('/')[-1].split('.')[0]
+        category = module_name.split('/')[-2]
+        module_names[libname + '_' + category] = yaml.load(
+            StringIO(
+                open(
+                    nettacker_paths()['modules_path'] +
+                    '/' +
+                    category +
+                    '/' +
+                    libname +
+                    '.yaml',
+                    'r'
+                ).read().split('payload:')[0]
+            ),
+            Loader=yaml.FullLoader
+        )['info'] if full_details else None
+        if len(module_names) == limit:
+            module_names['...'] = {}
+            break
+    module_names['all'] = {}
     return module_names
 
 
-def load_all_method_args(language, API=False):
+def load_all_profiles(limit=-1):
     """
-    load all ARGS method for each module
-
-    Args:
-        language: language
-        API: API Flag (default False)
+    load all available profiles
 
     Returns:
-        all ARGS method in JSON
+        an array of all profile names
     """
-    module_names = []
-    modules_args = {}
-    # get module names
-    for _lib in glob(os.path.dirname(inspect.getfile(lib)) + '/*/*/engine.py'):
-        _lib = _lib.replace('/', '.').replace('\\', '.')
-        if '.lib.brute.' in _lib or '.lib.scan.' in _lib or '.lib.vuln.' in _lib:
-            _lib = 'lib.' + _lib.rsplit('.lib.')[-1].rsplit('.py')[0]
-            if _lib not in module_names:
-                module_names.append(_lib)
-    # get args
-    res = ""
-    for imodule in module_names:
-        _ERROR = False
-        try:
-            extra_requirements_dict = getattr(__import__(imodule, fromlist=['extra_requirements_dict']),
-                                              'extra_requirements_dict')
-        except:
-            warn(messages(language, "module_args_error").format(imodule))
-            _ERROR = True
-        if not _ERROR:
-            imodule_args = extra_requirements_dict()
-            modules_args[imodule] = []
-            for imodule_arg in imodule_args:
-                if API:
-                    res += imodule_arg + "=" + \
-                        ",".join(map(str, imodule_args[imodule_arg])) + "\n"
-                modules_args[imodule].append(imodule_arg)
-    if API:
-        return res
-    for imodule in modules_args:
-        info(imodule.rsplit('.')[2] + '_' + imodule.rsplit('.')[1] + ' --> '
-             + ", ".join(modules_args[imodule]))
-    return module_names
-
-
-def __check_external_modules():
-    """
-    check external libraries if they are installed
-
-    Returns:
-        True if success otherwise None
-    """
-    external_modules = ["argparse", "netaddr", "requests", "paramiko", "texttable", "socks", "win_inet_pton",
-                        "flask", "sqlalchemy"]
-    for module in external_modules:
-        try:
-            __import__(module)
-        except:
-            __die_failure("pip install -r requirements.txt ---> " +
-                          module + " not installed!")
-
-    default_config = _builder(_core_config(), _core_default_config())
-
-    if not os.path.exists(default_config["home_path"]):
-        try:
-            os.mkdir(default_config["home_path"])
-            os.mkdir(default_config["tmp_path"])
-            os.mkdir(default_config["results_path"])
-        except:
-            __die_failure("cannot access the directory {0}".format(
-                default_config["home_path"]))
-    if not os.path.exists(default_config["tmp_path"]):
-        try:
-            os.mkdir(default_config["tmp_path"])
-        except:
-            __die_failure("cannot access the directory {0}".format(
-                default_config["results_path"]))
-    if not os.path.exists(default_config["results_path"]):
-        try:
-            os.mkdir(default_config["results_path"])
-        except:
-            __die_failure("cannot access the directory {0}".format(
-                default_config["results_path"]))
-    if default_config["database_type"] == "sqlite":
-        try:
-            if os.path.isfile(default_config["home_path"]+"/"+default_config["database_name"]):
-                pass
+    all_modules_with_details = load_all_modules(limit=limit, full_details=True)
+    profiles = {}
+    if '...' in all_modules_with_details:
+        del all_modules_with_details['...']
+    del all_modules_with_details['all']
+    for key in all_modules_with_details:
+        for tag in all_modules_with_details[key]['profiles']:
+            if tag not in profiles:
+                profiles[tag] = []
+                profiles[tag].append(key)
             else:
-                from database.sqlite_create import sqlite_create_tables
-                sqlite_create_tables()
-        except:
-            __die_failure("cannot access the directory {0}".format(
-                default_config["home_path"]))
-    elif default_config["database_type"] == "mysql":
-        try:
-            from database.mysql_create import mysql_create_tables, mysql_create_database
-            mysql_create_database()
-            mysql_create_tables()
-        except:
-            __die_failure(messages("en", "database_connection_failed"))
-    elif default_config["database_type"] == "postgres":
-        try:
-            from database.postgres_create import postgres_create_database
-            postgres_create_database()
-        except Exception as e:
-            __die_failure(messages("en", "database_connection_failed"))
-    else:
-        __die_failure(messages("en", "invalid_database"))
-    return True
+                profiles[tag].append(key)
+            if len(profiles) == limit:
+                profiles['...'] = []
+                profiles['all'] = []
+                return profiles
+    profiles['all'] = []
+    return profiles
 
 
-def load_file_path():
-    """
-    load home path
+def perform_scan(options, target, module_name, scan_unique_id, process_number, thread_number, total_number_threads):
+    from core.alert import (verbose_event_info,
+                            messages)
 
-    Returns:
-        value of home path
-    """
-    return _builder(_core_config(), _core_default_config())["home_path"]
+    socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
+    options.target = target
+    validate_module = NettackerModules()
+    validate_module.module_name = module_name
+    validate_module.process_number = process_number
+    validate_module.module_thread_number = thread_number
+    validate_module.total_module_thread_number = total_number_threads
+    validate_module.module_inputs = vars(options)
+    if options.modules_extra_args:
+        for module_extra_args in validate_module.module_inputs['modules_extra_args']:
+            validate_module.module_inputs[module_extra_args] = \
+                validate_module.module_inputs['modules_extra_args'][module_extra_args]
+    validate_module.scan_unique_id = scan_unique_id
+    validate_module.target = target
+    validate_module.load()
+    validate_module.generate_loops()
+    validate_module.start()
+    verbose_event_info(
+        messages("finished_parallel_module_scan").format(
+            process_number,
+            module_name,
+            target,
+            thread_number,
+            total_number_threads
+        )
+    )
+    return os.EX_OK

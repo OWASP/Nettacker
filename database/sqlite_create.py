@@ -1,13 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import create_engine
 
 from database.models import Base
-from core.config import _database_config
+from config import nettacker_database_config
 
-
-DATABASE = _database_config()["DATABASE"]
+DATABASE = nettacker_database_config()["DATABASE"]
 
 
 def sqlite_create_tables():
@@ -22,11 +21,13 @@ def sqlite_create_tables():
         True if success otherwise False
     """
     try:
-        db_engine = create_engine('sqlite:///{0}'.format(DATABASE),
-                                  connect_args={'check_same_thread': False}
-                                  )
+        db_engine = create_engine(
+            'sqlite:///{0}'.format(DATABASE),
+            connect_args={
+                'check_same_thread': False
+            }
+        )
         Base.metadata.create_all(db_engine)
         return True
-    except Exception as _:
+    except Exception:
         return False
-

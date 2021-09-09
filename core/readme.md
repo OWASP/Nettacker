@@ -3,8 +3,8 @@ OWASP Nettacker core functions
 
 OWASP Nettacker core functions are stored in here.
 
-* `_die.py` exit functions
-* `_time.py` time functions
+* `die.py` exit functions
+* `time.py` time functions
 * `alert.py` user alerts and printing functions
 * `args_loader.py` ARGV commands and apply rules
 * `attack.py` start new attacks and multi-processing managements

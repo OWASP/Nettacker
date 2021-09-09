@@ -1,0 +1,323 @@
+info:
+  name: http_cors_vuln
+  author: OWASP Nettacker Team
+  severity: 3
+  description:
+  reference:
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - low_severity
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get # post-domain
+        headers:
+          User-Agent: "{user_agent}"
+          Origin:
+            nettacker_fuzzer:
+              input_format: "{{schema}}://{target}.example.com/" # origin: owasp.org.example.com
+              prefix: ""
+              suffix: ""
+              interceptors:
+              data:
+                schema:
+                  - "http"
+                  - "https"
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            headers:
+              Access-Control-Allow-Origin:
+                regex: "(http|https):\\/\\/{target}.example.com"
+                reverse: false
+
+      - method: get # pre-domain
+        headers:
+          User-Agent: "{user_agent}"
+          Origin:
+            nettacker_fuzzer:
+              input_format: "{{schema}}://example.com.{target}/" #origin: owasp.org.example.com
+              prefix: ""
+              suffix: ""
+              interceptors:
+              data:
+                schema:
+                  - "http"
+                  - "https"
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            headers:
+              Access-Control-Allow-Origin:
+                regex: "(http|https):\\/\\/example.com.{target}"
+                reverse: false
+
+      #Unescaped Regex needs to be improved. WIP.
+      - method: get # unescaped regex
+        headers:
+          User-Agent: "{user_agent}"
+          Origin:
+            nettacker_fuzzer:
+              input_format: "{{schema}}://x{target}/" # origin: subdomainxowasp.org or origin: axowasp.org
+              prefix: ""
+              suffix: ""
+              interceptors:
+              data:
+                schema:
+                  - "http"
+                  - "https"
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            headers:
+              Access-Control-Allow-Origin:
+                regex: "(http|https):\\/\\/x{target}"
+                reverse: false
+
+      - method: get # unrecognized underscore
+        headers:
+          User-Agent: "{user_agent}"
+          Origin:
+            nettacker_fuzzer:
+              input_format: "{{schema}}://{target}_.example.com/" # origin: owasp.org_.example.com
+              prefix: ""
+              suffix: ""
+              interceptors:
+              data:
+                schema:
+                  - "http"
+                  - "https"
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            headers:
+              Access-Control-Allow-Origin:
+                regex: "(http|https):\\/\\/{target}_.example.com"
+                reverse: false
+
+      - method: get # broken parser
+        headers:
+          User-Agent: "{user_agent}"
+          Origin:
+            nettacker_fuzzer:
+              input_format: "{{schema}}://{target}%60.example.com/" # origin: owasp.org%60.example.com
+              prefix: ""
+              suffix: ""
+              interceptors:
+              data:
+                schema:
+                  - "http"
+                  - "https"
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            headers:
+              Access-Control-Allow-Origin:
+                regex: "(http|https):\\/\\/{target}%60.example.com"
+                reverse: false
+
+      - method: get # Null origin
+        headers:
+          User-Agent: "{user_agent}"
+          Origin:
+            nettacker_fuzzer:
+              input_format: "null" # Origin: null
+              prefix: ""
+              suffix: ""
+              interceptors:
+              data:
+                schema:
+                  - "http"
+                  - "https"
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            headers:
+              Access-Control-Allow-Origin:
+                regex: "null"
+                reverse: false
+
+      - method: get # Only HTTP
+        headers:
+          User-Agent: "{user_agent}" #http://owasp.org
+          Origin: "http://{target}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            headers:
+              Access-Control-Allow-Origin:
+                regex: "http://{target}"
+                reverse: false
+
+      - method: get # Wild card
+        headers:
+          User-Agent: "{user_agent}"
+          Origin:
+            nettacker_fuzzer:
+              input_format: "*" # *
+              prefix: ""
+              suffix: ""
+              interceptors:
+              data:
+                schema:
+                  - "http"
+                  - "https"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            headers:
+              Access-Control-Allow-Origin:
+                regex: "\\*"
+                reverse: false
+
+      - method: get # origin reflected
+        headers:
+          User-Agent: "{user_agent}"
+          Origin:
+            nettacker_fuzzer:
+              input_format: "{{schema}}://evil.com" # https://evil.com or http://evil.com
+              prefix: ""
+              suffix: ""
+              interceptors:
+              data:
+                schema:
+                  - "http"
+                  - "https"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            headers:
+              Access-Control-Allow-Origin:
+                regex: "(http|https):\\/\\/evil.com "
+                reverse: false

@@ -1,0 +1,252 @@
+---
+scan_started: Начался запуск Nettacker ...
+options: python nettacker.py [опции]
+help_menu: Показать меню справки Nettacker
+license: Пожалуйста, ознакомьтесь с лицензией и соглашениями https://github.com/OWASP/Nettacker
+engine: двигатель
+engine_input: Параметры ввода двигателя
+select_language: выберите язык {0}
+range: сканировать все IP-адреса в диапазоне
+subdomains: находить и сканировать субдомены
+thread_number_connections: номера потоков для соединений с хостом
+thread_number_hosts: номера потоков для хостов сканирования
+save_logs: сохранить все журналы в файле (results.txt, results.html, results.json)
+target: цель
+target_input: Целевые параметры ввода
+target_list: список целей, разделяемых с ","
+read_target: читать цели (цели) из файла
+scan_method_options: Параметры метода сканирования
+choose_scan_method: выбрать метод сканирования {0}
+exclude_scan_method: выберите метод сканирования, чтобы исключить {0}
+username_list: список пользователей, разделяемых с ","
+username_from_file: читать имя пользователя из файла
+password_seperator: список паролей, разделяемых «,»,
+read_passwords: читать пароль (ы) из файла
+port_seperator: порт (ы), разделенные с ","
+time_to_sleep: время спать между каждым запросом
+error_target: Невозможно указать цель (ы)
+error_target_file: "Невозможно указать цель (ы), неспособную открыть файл: {0}"
+thread_number_warning:
+  лучше использовать число потоков ниже 100, BTW мы продолжаем
+  ...
+settimeout:
+  установить таймаут до {0} секунд, он слишком велик, не так ли? кстати,
+  мы продолжаем ...
+scan_module_not_found: этот модуль сканирования [{0}] не найден!
+error_exclude_all: вы не можете исключить все методы сканирования
+exclude_module_error: модуль {0}, который вы выбрали для исключения, не найден!
+method_inputs:
+  "введите методы ввода, например: ftp_brute_users = test, admin & ftp_brute_passwds
+  = read_from_file: /tmp/pass.txt&ftp_brute_port=21"
+error_reading_file: не может читать файл {0}
+error_username:
+  "Невозможно указать имя пользователя (ов), неспособное открыть файл:
+  {0}"
+found: "{0} найдено! ({1}: {2})"
+error_password_file: "Не удается указать пароль (ы), не удается открыть файл: {0}"
+file_write_error: Файл "{0}" не доступен для записи!
+scan_method_select: выберите способ сканирования!
+remove_temp: удаление временных файлов!
+sorting_results: результаты сортировки!
+done: сделанный!
+start_attack: начать атаковать {0}, {1} из {2}
+module_not_available: этот модуль «{0}» недоступен
+error_platform:
+  к сожалению, эту версию программного обеспечения можно было запустить
+  только на linux / osx / windows.
+python_version_error: Ваша версия Python не поддерживается!
+skip_duplicate_target:
+  пропустить дублируемую цель (некоторые поддомены / домены могут
+  иметь одинаковые IP-адреса и диапазоны)
+unknown_target: неизвестный тип цели [{0}]
+checking_range: проверка диапазона {0} ...
+checking: проверка {0} ...
+HOST: HOST
+USERNAME: USERNAME
+PASSWORD: ПАРОЛЬ
+PORT: PORT
+TYPE: ТИП
+DESCRIPTION: ОПИСАНИЕ
+verbose_mode: уровень подробного режима (0-5) (по умолчанию 0)
+software_version: показать версию программного обеспечения
+check_updates: Проверить обновления
+outgoing_proxy:
+  "прокси-сервер исходящих соединений (носки). пример socks5: 127.0.0.1:9050,
+  носки: //127.0.0.1: 9050 socks5: //127.0.0.1: 9050 или socks4: socks4: //127.0.0.1:
+  9050, аутентификация: носки: // имя пользователя: пароль @ 127.0.0.1, socks4: //
+  имя пользователя: password@127.0.0.1, socks5: // имя пользователя: password@127.0.0.1"
+valid_socks_address:
+  "введите действительный адрес и порт для носков. пример socks5:
+  127.0.0.1:9050, носки: //127.0.0.1: 9050, socks5: //127.0.0.1: 9050 или socks4:
+  socks4: //127.0.0.1: 9050, аутентификация: носки: // имя пользователя: пароль @
+  127.0.0.1, socks4: // имя пользователя: password@127.0.0.1, socks5: // имя пользователя:
+  пароль@127.0.0.1"
+connection_retries: Повторяет попытку, когда таймаут соединения (по умолчанию 3)
+ftp_connectiontimeout: "ftp для {0}: {1} таймаут, пропуская {2}: {3}"
+login_successful: ДОСТУПНЫ В УСПЕШНО!
+login_list_error: ПОЛУЧЕННО УСПЕШНО, РАЗРЕШЕНИЕ, ПОСВЯЩЕННОЕ ДЛЯ КОМАНДЫ СПИСКОВ!
+ftp_connection_failed:
+  "ftp-подключение к {0}: {1} не удалось, пропустив весь шаг
+  [процесс {2} из {3}]! переход к следующему шагу"
+input_target_error:
+  входная цель для модуля {0} должна быть DOMAIN, HTTP или SINGLE_IPv4,
+  пропуская {1}
+user_pass_found: "user: {0} pass: {1} host: {2} port: {3} найдено!"
+file_listing_error: "(НЕТ РАЗРЕШЕНИЯ НА ФАЙЛЫ СПИСКОВ)"
+trying_message: "{0} из {1} в процессе {2} из {3} {4}: {5} ({6})"
+smtp_connectiontimeout: "smtp-соединение с {0}: {1} таймаут, пропуская {2}: {3}"
+smtp_connection_failed:
+  "smtp-соединение с {0}: {1} не удалось, пропустив весь шаг
+  [процесс {2} из {3}]! переход к следующему шагу"
+ssh_connectiontimeout: "ssh для {0}: {1} таймаут, пропуская {2}: {3}"
+ssh_connection_failed:
+  "ssh-соединение с {0}: {1} не удалось, пропустив весь шаг [процесс
+  {2} из {3}]! переход к следующему шагу"
+port/type: "{0} / {1}"
+port_found: "host: {0} порт: {1} ({2}) найден!"
+target_submitted: target {0}!
+current_version:
+  вы используете версию OWASP Nettacker {0} {1} {2} {6} с кодовым названием
+  {3} {4} {5}
+feature_unavailable:
+  эта функция пока недоступна! запустите «git clone https://github.com/OWASP/Nettacker.git
+  или pip install -U OWASP-Nettacker, чтобы получить последнюю версию.
+available_graph:
+  "постройте график всех действий и информации, вы должны использовать
+  вывод HTML. доступные графики: {0}"
+graph_output:
+  чтобы использовать функцию графика, ваше выходное имя файла должно заканчиваться
+  на «.html» или «.htm»!
+build_graph: строительный график ...
+finish_build_graph: закончите строить график!
+pentest_graphs: Графики тестирования проникновения
+graph_message:
+  Этот график создан OWASP Nettacker. График содержит все действия модулей,
+  карту сети и конфиденциальную информацию. Пожалуйста, не сообщайте этот файл никому,
+  если он не является надежным.
+nettacker_report: Отчет OwASP Nettacker
+nettacker_version_details:
+  "Сведения о программном обеспечении: версия OWASP Nettacker
+  {0} [{1}] в {2}"
+no_open_ports: открытых портов не найдено!
+no_user_passwords: не найдено ни одного пользователя / пароля!
+loaded_modules: Загружено модулей {0} ...
+graph_module_404: "этот модуль графа не найден: {0}"
+graph_module_unavailable: этот модуль графа «{0}» недоступен
+ping_before_scan: ping перед сканированием хоста
+skipping_target:
+  пропуская целую цель {0} и метод сканирования {1} из-за -ping-before-scan,
+  является истинным, и он не ответил!
+not_last_version:
+  вы не используете последнюю версию OWASP Nettacker, пожалуйста,
+  обновите ее.
+cannot_update: не можете проверить наличие обновлений, проверьте подключение к Интернету.
+last_version: Вы используете последнюю версию OWASP Nettacker ...
+directoy_listing: список каталогов, найденный в {0}
+insert_port_message: вставьте порт через ключ -g или --methods-args вместо url
+http_connectiontimeout: http-соединение {0} тайм-аут!
+wizard_mode: запустить мастер-режим
+directory_file_404: нет каталога или файла, найденного для {0} в порту {1}
+open_error: не удалось открыть {0}
+dir_scan_get:
+  Значение dir_scan_http_method должно быть GET или HEAD, по умолчанию
+  установлено GET.
+list_methods: перечислить все методы args
+module_args_error: не может получить {0} модуль args
+trying_process: пытая {0} из {1} в процессе {2} {3} на {4} ({5})
+domain_found: "Найден домен: {0}"
+TIME: ВРЕМЯ
+CATEGORY: КАТЕГОРИЯ
+module_pattern_404: не может найти какой-либо модуль с шаблоном {0}!
+enter_default: введите {0} | По умолчанию [{1}]>
+enter_choices_default: введите {0} | выборы [{1}] | По умолчанию [{2}]>
+all_targets: цели
+all_thread_numbers: номер резьбы
+out_file: имя выходного файла
+all_scan_methods: методы сканирования
+all_scan_methods_exclude: методы сканирования для исключения
+all_usernames: имена пользователей
+all_passwords: пароли
+timeout_seconds: таймаут секунд
+all_ports: номера портов
+all_verbose_level: подробный уровень
+all_socks_proxy: прокси-сервер socks
+retries_number: число повторов
+graph: график
+subdomain_found: "найдено субдомен: {0}"
+select_profile: выбрать профиль {0}
+profile_404: профиль "{0}" не найден!
+waiting: ожидая {0}
+vulnerable: уязвим для {0}
+target_vulnerable: "target {0}: {1} уязвим для {2}!"
+no_vulnerability_found: не обнаружена уязвимость! ({0})
+Method: метод
+API: API
+API_options: Параметры API
+start_api_server: запустить службу API
+API_host: Адрес хоста API
+API_port: Номер порта API
+API_debug: Режим отладки API
+API_access_key: Ключ доступа к API
+white_list_API: просто разрешить хостам белого списка подключаться к API
+define_whie_list:
+  "определить узлы белого списка, разделить с, (примеры: 127.0.0.1,
+  192.168.0.1/24, 10.0.0.1-10.0.0.255)"
+gen_API_access_log: генерировать журнал доступа к API
+API_access_log_file: Имя файла журнала доступа к API
+API_port_int: Порт API должен быть целым!
+unknown_ip_input:
+  "неизвестный тип ввода, принятые типы: SINGLE_IPv4, RANGE_IPv4,
+  CIDR_IPv4"
+API_key: "* Ключ API: {0}"
+ports_int:
+  порты должны быть целыми! (например, 80, 80, 1080, 80, 1080-1300, 000,
+  12000-15000)
+through_API: Через API-интерфейс OWASP Nettacker
+API_invalid: неверный ключ API
+unauthorized_IP: ваш IP-адрес не разрешен
+not_found: Не обнаружена!
+no_subdomain_found: "subdomain_scan: не создан субдомен!"
+viewdns_domain_404: "viewdns_reverse_ip_lookup_scan: домен не найден!"
+browser_session_valid: ваш сеанс браузера действителен
+browser_session_killed: ваш сеанс браузера убит
+updating_database: обновление базы данных ...
+database_connect_fail: не удалось подключиться к базе данных!
+inserting_report_db: вставка отчета в базу данных
+inserting_logs_db: вставка журналов в базу данных
+removing_logs_db: удаление старых журналов из db
+len_subdomain_found: Найдено {0} поддомен (ы)!
+len_domain_found: Найдено {0} домен (ы)!
+phpmyadmin_dir_404: не найдено ни одного phpmyadmin dir!
+DOS_send: отправка пакетов DoS на {0}
+host_up: "{0} вверх! Время, затрачиваемое на откат, - {1}"
+host_down: Не удается выполнить ping {0}!
+root_required: это должно выполняться как root
+admin_scan_get:
+  Значение admin_scan_http_method должно быть GET или HEAD, по умолчанию
+  установлено значение GET.
+telnet_connectiontimeout: "telnet-соединение с {0}: {1} тайм-аут, пропуская {2}:
+  {3}"
+telnet_connection_failed:
+  "telnet-соединение с {0}: {1} не выполнено, пропустив весь
+  шаг [процесс {2} из {3}]! переход к следующему шагу"
+http_auth_success:
+  "http basic authentication success - host: {2}: {3}, user: {0},
+  pass: {1} найдено!"
+http_auth_failed: "http basic authentication не удалось {0}: {3} с помощью {1}: {2}"
+http_form_auth_success:
+  "Успешность аутентификации http-формы - host: {2}: {3}, пользователь:
+  {0}, pass: {1} найден!"
+http_form_auth_failed:
+  "Проверка подлинности http-формы не удалось {0}: {3} с помощью
+  {1}: {2}"
+http_ntlm_success:
+  "http ntlm authentication success - host: {2}: {3}, пользователь:
+  {0}, pass: {1} найден!"
+http_ntlm_failed:
+  "Проверка подлинности http ntlm не удалось {0}: {3} с помощью {1}:
+  {2}"
+no_response: не может получить ответ от целевой
+category_framework: "категория: {0}, рамки: {1} найдено!"
+nothing_found: ничего не найдено на {0} в {1}!
+no_auth: "{0}: {1}"

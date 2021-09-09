@@ -18,11 +18,11 @@ logs.txt
 results.*
 .owasp-nettacker*
 .data*
-*.html
-*.htm
 *.DS_Store
 *.swp
 
 #codacy
 .coverage
 coverage.xml
+
+venv/*

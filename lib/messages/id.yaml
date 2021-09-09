@@ -1,0 +1,249 @@
+---
+scan_started: Mesin Nettacker mulai ...
+options: python nettacker.py [opsi]
+help_menu: Tampilkan Menu Bantuan Nettacker
+license: Harap baca lisensi dan perjanjian https://github.com/OWASP/Nettacker
+engine: Mesin
+engine_input: Opsi masukan mesin
+select_language: pilih bahasa {0}
+range: pindai semua IP dalam rentang
+subdomains: cari dan pindai subdomain
+thread_number_connections: nomor utas untuk koneksi ke host
+thread_number_hosts: nomor utas untuk host pemindaian
+save_logs: simpan semua log dalam file (results.txt, results.html, results.json)
+target: Target
+target_input: Opsi masukan target
+target_list: daftar target (s), terpisah dengan ","
+read_target: baca target (s) dari file
+scan_method_options: Pindai opsi metode
+choose_scan_method: pilih metode pemindaian {0}
+exclude_scan_method: pilih metode pemindaian untuk mengecualikan {0}
+username_list: daftar nama pengguna (s), terpisah dengan ","
+username_from_file: baca nama pengguna (s) dari file
+password_seperator: daftar kata sandi, terpisah dengan ","
+read_passwords: baca kata sandi (s) dari file
+port_seperator: daftar port (s), terpisah dengan ","
+time_to_sleep: waktu untuk tidur di antara setiap permintaan
+error_target: Tidak dapat menentukan target (s)
+error_target_file: "Tidak dapat menentukan target (s), tidak dapat membuka file: {0}"
+thread_number_warning:
+  lebih baik menggunakan nomor utas lebih rendah dari 100, BTW
+  kami terus ...
+settimeout:
+  mengatur waktu tunggu hingga {0} detik, itu terlalu besar, bukan? dengan
+  cara kita melanjutkan ...
+scan_module_not_found: modul pemindaian ini [{0}] tidak ditemukan!
+error_exclude_all: Anda tidak dapat mengecualikan semua metode pemindaian
+exclude_module_error: "{0} modul yang Anda pilih untuk dikecualikan tidak ditemukan!"
+method_inputs:
+  "masukkan input metode, contoh: ftp_brute_users = test, admin & ftp_brute_passwds
+  = baca_from_file: /tmp/pass.txt&ftp_brute_port=21"
+error_reading_file: tidak bisa membaca file {0}
+error_username:
+  "Tidak dapat menentukan nama pengguna (s), tidak dapat membuka file:
+  {0}"
+found: "{0} ditemukan! ({1}: {2})"
+error_password_file:
+  "Tidak dapat menentukan kata sandi (s), tidak dapat membuka file:
+  {0}"
+file_write_error: file "{0}" tidak dapat ditulis!
+scan_method_select: silakan pilih metode pemindaian Anda!
+remove_temp: menghapus file temp!
+sorting_results: hasil penyortiran!
+done: selesai!
+start_attack: mulai menyerang {0}, {1} dari {2}
+module_not_available: modul ini "{0}" tidak tersedia
+error_platform:
+  sayangnya versi perangkat lunak ini hanya bisa dijalankan di linux
+  / osx / windows.
+python_version_error: Versi Python Anda tidak didukung!
+skip_duplicate_target:
+  lewati target duplikat (beberapa subdomain / domain mungkin
+  memiliki IP dan Rentang yang sama)
+unknown_target: jenis target yang tidak diketahui [{0}]
+checking_range: memeriksa {0} rentang ...
+checking: memeriksa {0} ...
+HOST: TUAN RUMAH
+USERNAME: NAMA PENGGUNA
+PASSWORD: KATA SANDI
+PORT: PELABUHAN
+TYPE: MENGETIK
+DESCRIPTION: DESKRIPSI
+verbose_mode: tingkat modus verbose (0-5) (default 0)
+software_version: tampilkan versi perangkat lunak
+check_updates: memeriksa pembaruan
+outgoing_proxy:
+  "proxy koneksi keluar (kaus kaki). contoh kaus kaki5: 127.0.0.1:9050,
+  kaus kaki: //127.0.0.1: 9050 kaus kaki5: //127.0.0.1: 9050 atau kaus kaki4: kaus
+  kaki4: //127.0.0.1: 9050, autentikasi: kaus kaki: // namapengguna: kata sandi @
+  127.0.0.1, socks4: // username: password@127.0.0.1, socks5: // username: password@127.0.0.1"
+valid_socks_address:
+  "masukkan alamat dan port kaus kaki yang valid. contoh kaus kaki5:
+  127.0.0.1:9050, kaus kaki: //127.0.0.1: 9050, kaus kaki5: //127.0.0.1: 9050 atau
+  kaus kaki4: kaus kaki4: //127.0.0.1: 9050, autentikasi: kaus kaki: // namapengguna:
+  kata sandi @ 127.0.0.1, socks4: // username: password@127.0.0.1, socks5: // username:
+  password@127.0.0.1"
+connection_retries: Retries ketika batas waktu koneksi (default 3)
+ftp_connectiontimeout: "koneksi ftp ke {0}: {1} timeout, skipping {2}: {3}"
+login_successful: DITERUKAN SECARA SUKSES!
+login_list_error: DITERUKAN SECARA SUKSES, IZIN DITOLAK UNTUK DAFTAR!
+ftp_connection_failed:
+  "koneksi ftp ke {0}: {1} gagal, melewati seluruh langkah [proses
+  {2} {3}]! akan ke langkah berikutnya"
+input_target_error:
+  target input untuk {0} modul harus DOMAIN, HTTP atau SINGLE_IPv4,
+  skipping {1}
+user_pass_found: "pengguna: {0} lulus: {1} host: {2} port: {3} ditemukan!"
+file_listing_error: "(TIDAK ADA IZIN UNTUK DAFTAR DAFTAR)"
+trying_message: "mencoba {0} dari {1} dalam proses {2} dari {3} {4}: {5} ({6})"
+smtp_connectiontimeout: "koneksi smtp ke {0}: {1} timeout, skipping {2}: {3}"
+smtp_connection_failed:
+  "koneksi smtp ke {0}: {1} gagal, melewati seluruh langkah
+  [proses {2} {3}]! akan ke langkah berikutnya"
+ssh_connectiontimeout: "koneksi ssh ke {0}: {1} timeout, skipping {2}: {3}"
+ssh_connection_failed:
+  "koneksi ssh ke {0}: {1} gagal, melewati seluruh langkah [proses
+  {2} {3}]! akan ke langkah berikutnya"
+port/type: "{0} / {1}"
+port_found: "host: {0} port: {1} ({2}) ditemukan!"
+target_submitted: target {0} dikirimkan!
+current_version:
+  Anda menjalankan OWASP Nettacker versi {0} {1} {2} {6} dengan nama
+  kode {3} {4} {5}
+feature_unavailable:
+  fitur ini belum tersedia! silakan jalankan "git clone https://github.com/OWASP/Nettacker.git
+  atau install pip -U OWASP-Nettacker untuk mendapatkan versi terakhir.
+available_graph:
+  "membangun grafik dari semua aktivitas dan informasi, Anda harus
+  menggunakan output HTML. grafik yang tersedia: {0}"
+graph_output:
+  untuk menggunakan fitur grafik, nama file output Anda harus diakhiri
+  dengan ".html" atau ".htm"!
+build_graph: membangun grafik ...
+finish_build_graph: selesaikan grafik bangunan!
+pentest_graphs: Grafik Pengujian Penetrasi
+graph_message:
+  Grafik ini dibuat oleh OWASP Nettacker. Grafik berisi semua kegiatan
+  modul, peta jaringan, dan informasi sensitif. Jangan bagikan file ini dengan siapa
+  pun jika tidak dapat diandalkan.
+nettacker_report: Laporan OWASP Nettacker
+nettacker_version_details:
+  "Detail Perangkat Lunak: OWASP Nettacker versi {0} [{1}]
+  di {2}"
+no_open_ports: tidak ada port terbuka ditemukan!
+no_user_passwords: tidak ada pengguna / kata sandi yang ditemukan!
+loaded_modules: "{0} modul dimuat ..."
+graph_module_404: "modul grafik ini tidak ditemukan: {0}"
+graph_module_unavailable: modul grafik ini "{0}" tidak tersedia
+ping_before_scan: ping sebelum memindai host
+skipping_target:
+  melewatkan seluruh target {0} dan metode pemindaian {1} karena --ping-before-scan
+  adalah benar dan tidak ada respon!
+not_last_version: Anda tidak menggunakan versi terakhir OWASP Nettacker, harap perbarui.
+cannot_update: tidak dapat memeriksa pembaruan, periksa koneksi internet Anda.
+last_version: Anda menggunakan versi terakhir OWASP Nettacker ...
+directoy_listing: daftar direktori ditemukan di {0}
+insert_port_message:
+  tolong masukkan port melalui switch -g atau --methods-args sebagai
+  ganti url
+http_connectiontimeout: koneksi http {0} timeout!
+wizard_mode: mulai mode wizard
+directory_file_404:
+  tidak ada direktori atau file yang ditemukan untuk {0} di port
+  {1}
+open_error: tidak dapat membuka {0}
+dir_scan_get: nilai dir_scan_http_method harus GET atau HEAD, atur default ke GET.
+list_methods: daftar semua metode args
+module_args_error: tidak bisa mendapatkan argumen modul {0}
+trying_process: mencoba {0} dari {1} dalam proses {2} dari {3} pada {4} ({5})
+domain_found: "domain ditemukan: {0}"
+TIME: WAKTU
+CATEGORY: KATEGORI
+module_pattern_404: tidak dapat menemukan modul apa pun dengan pola {0}!
+enter_default: masukkan {0} | Default [{1}]>
+enter_choices_default: masukkan {0} | pilihan [{1}] | Default [{2}]>
+all_targets: targetnya
+all_thread_numbers: nomor utas
+out_file: nama file keluaran
+all_scan_methods: metode pemindaian
+all_scan_methods_exclude: metode pemindaian untuk dikecualikan
+all_usernames: nama pengguna
+all_passwords: kata sandi
+timeout_seconds: batas waktu detik
+all_ports: nomor port
+all_verbose_level: tingkat verbose
+all_socks_proxy: proxy kaus kaki
+retries_number: nomor retries
+graph: sebuah grafik
+subdomain_found: "subdomain ditemukan: {0}"
+select_profile: pilih profil {0}
+profile_404: profil "{0}" tidak ditemukan!
+waiting: menunggu {0}
+vulnerable: rentan terhadap {0}
+target_vulnerable: "target {0}: {1} rentan terhadap {2}!"
+no_vulnerability_found: tidak ditemukan kerentanan! ({0})
+Method: metode
+API: API
+API_options: Opsi API
+start_api_server: memulai layanan API
+API_host: Alamat host API
+API_port: Nomor port API
+API_debug: Mode debug API
+API_access_key: Kunci akses API
+white_list_API: cukup izinkan host daftar putih untuk terhubung ke API
+define_whie_list:
+  "mendefinisikan host daftar putih, terpisah dengan, (contoh: 127.0.0.1,
+  192.168.0.1/24, 10.0.0.1-10.0.0.255)"
+gen_API_access_log: menghasilkan log akses API
+API_access_log_file: Nama file log akses API
+API_port_int: Port API harus berupa bilangan bulat!
+unknown_ip_input:
+  jenis masukan tidak dikenal, jenis yang diterima adalah SINGLE_IPv4,
+  RANGE_IPv4, CIDR_IPv4
+API_key: "* Kunci API: {0}"
+ports_int: port harus berupa bilangan bulat! (mis. 80 || 80,1080 || 80,1080-1300,9000,12000-15000)
+through_API: Melalui API OWASP Nettacker
+API_invalid: kunci API tidak valid
+unauthorized_IP: IP Anda tidak diotorisasi
+not_found: Tidak ditemukan!
+no_subdomain_found: "subdomain_scan: tidak ada subdomain yang ditemukan!"
+viewdns_domain_404: "viewdns_reverse_ip_lookup_scan: tidak ada domain yang ditemukan!"
+browser_session_valid: sesi browser Anda valid
+browser_session_killed: sesi browser Anda terbunuh
+updating_database: memperbarui basis data ...
+database_connect_fail: tidak bisa terhubung ke database!
+inserting_report_db: memasukkan laporan ke database
+inserting_logs_db: memasukkan log ke database
+removing_logs_db: menghapus log lama dari db
+len_subdomain_found: "{0} subdomain (s) ditemukan!"
+len_domain_found: "{0} domain (s) ditemukan!"
+phpmyadmin_dir_404: tidak ada dir phpmyadmin ditemukan!
+DOS_send: mengirim paket DoS ke {0}
+host_up:
+  "{0} sudah habis! Waktu yang diambil untuk melakukan ping kembali adalah
+  {1}"
+host_down: Tidak bisa melakukan ping {0}!
+root_required: ini harus dijalankan sebagai root
+admin_scan_get:
+  admin_scan_http_method value harus GET atau HEAD, atur default ke
+  GET.
+telnet_connectiontimeout: "koneksi telnet ke {0}: {1} timeout, skipping {2}: {3}"
+telnet_connection_failed:
+  "koneksi telnet ke {0}: {1} gagal, melewati seluruh langkah
+  [proses {2} dari {3}]! akan ke langkah berikutnya"
+http_auth_success:
+  "sukses otentikasi dasar http - host: {2}: {3}, pengguna: {0},
+  lulus: {1} ditemukan!"
+http_auth_failed: "Otentikasi dasar http gagal {0}: {3} menggunakan {1}: {2}"
+http_form_auth_success:
+  "keberhasilan otentikasi bentuk http - host: {2}: {3}, pengguna:
+  {0}, lulus: {1} ditemukan!"
+http_form_auth_failed: "Otentikasi bentuk http gagal {0}: {3} menggunakan {1}: {2}"
+http_ntlm_success:
+  "Keberhasilan autentikasi ntlm http: host: {2}: {3}, pengguna:
+  {0}, lulus: {1} ditemukan!"
+http_ntlm_failed: "Otentikasi ntlm http gagal {0}: {3} menggunakan {1}: {2}"
+no_response: tidak bisa mendapatkan respons dari target
+category_framework: "kategori: {0}, kerangka kerja: {1} ditemukan!"
+nothing_found: tidak ditemukan apa pun di {0} dalam {1}!
+no_auth: "Tidak ada auth yang ditemukan pada {0}: {1}"
