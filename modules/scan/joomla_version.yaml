@@ -1,0 +1,47 @@
+info:
+  name: joomla_version_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: fetch joomla version from target
+  reference:
+  profiles:
+    - scan
+    - http
+    - backup
+    - low_severity
+    - joomla
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    allow_redirects: false
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:
+                - joomla.xml
+                - administrator/manifests/files/joomla.xml
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            content:
+              regex: <version>(.+?)</version>
+              reverse: false

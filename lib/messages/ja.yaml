@@ -1,0 +1,189 @@
+---
+scan_started: Nettackerエンジンが始動しました...
+options: python nettacker.py [options]
+help_menu: Nettackerヘルプメニューを表示する
+license: ライセンスと契約書をお読みくださいhttps://github.com/OWASP/Nettacker
+engine: エンジン
+engine_input: エンジン入力オプション
+select_language: 言語を選択{0}
+range: 範囲内のすべてのIPをスキャンする
+subdomains: サブドメインの検索とスキャン
+thread_number_connections: ホストへの接続のスレッド番号
+thread_number_hosts: スキャンホストのスレッド番号
+save_logs: すべてのログをファイルに保存する（results.txt、results.html、results.json）
+target: ターゲット
+target_input: ターゲット入力オプション
+target_list: ターゲットリスト、 "、"で区切る
+read_target: ファイルからターゲットを読み込む
+scan_method_options: スキャン方法のオプション
+choose_scan_method: スキャン方法{0}を選択してください
+exclude_scan_method: スキャン方法を選択して{0}を除外する
+username_list: ユーザ名リスト、 "、"
+username_from_file: ファイルからユーザー名を読み込む
+password_seperator: パスワードのリスト、 "、"で区切る
+read_passwords: ファイルからパスワードを読み込む
+port_seperator: ポートリスト、 "、"
+time_to_sleep: 各リクエストの間にスリープする時間
+error_target: ターゲットを指定できません
+error_target_file: ファイルを開くことができないターゲットを指定することはできません：{0}
+thread_number_warning: 100より低いスレッド番号を使用する方が良いです、私たちは継続しています...
+settimeout: タイムアウトを{0}秒に設定すると大きすぎますね。私たちが続けているところで...
+scan_module_not_found: このスキャンモジュール[{0}]は見つかりませんでした！
+error_exclude_all: すべてのスキャン方法を除外することはできません
+exclude_module_error: 除外するように選択した{0}モジュールが見つかりません！
+method_inputs: メソッド入力を入力します。例：ftp_brute_users = test、admin＆ftp_brute_passwds = read_from_file：/tmp/pass.txt&ftp_brute_port=21
+error_reading_file: ファイル{0}を読むことができません
+error_username: ユーザー名を指定できません。ファイルを開くことができません：{0}
+found: "{0}が見つかりました！ （{1}：{2}）"
+error_password_file: パスワードを指定できません。ファイルを開くことができません：{0}
+file_write_error: ファイル "{0}"は書き込み可能ではありません！
+scan_method_select: あなたのスキャン方法を選んでください！
+remove_temp: 一時ファイルを削除！
+sorting_results: 結果を並べ替える！
+done: 完了！
+start_attack: "{2}の{0}、{1}を攻撃し始める"
+module_not_available: このモジュール「{0}」は使用できません
+error_platform: 残念ながら、このバージョンのソフトウェアはlinux / osx / windows上で実行できます。
+python_version_error: あなたのPythonバージョンはサポートされていません！
+skip_duplicate_target: 重複するターゲットをスキップします（一部のサブドメイン/ドメインには同じIPと範囲が含まれることがあります）
+unknown_target: 不明なタイプのターゲット[{0}]
+checking_range: "{0}の範囲をチェックしています..."
+checking: "{0}をチェックしています..."
+HOST: ホスト
+USERNAME: ユーザー名
+PASSWORD: パスワード
+PORT: ポート
+TYPE: タイプ
+DESCRIPTION: DESCRIPTION
+verbose_mode: 冗長モードレベル（0〜5）（デフォルトは0）
+software_version: ショーソフトウェアバージョン
+check_updates: 更新を確認
+outgoing_proxy:
+  発信接続プロキシ（ソックス）。例：socks5：127.0.0.1:9050、socks：//127.0.0.1：9050 socks5：//127.0.0.1：9050またはsocks4：socks4：//127.0.0.1：9050、認証：socks：//
+  username：password @ 127.0.0.1、socks4：// username：password@127.0.0.1、socks5：// username：password@127.0.0.1
+valid_socks_address:
+  有効な靴下のアドレスとポートを入力してください。例socks5：127.0.0.1:9050、socks：//127.0.0.1：9050、socks5：//127.0.0.1：9050またはsocks4：socks4：//127.0.0.1：9050、認証：socks：//
+  username：password @ 127.0.0.1、socks4：// username：password@127.0.0.1、socks5：// username：password@127.0.0.1
+connection_retries: 接続タイムアウト（デフォルトは3）
+ftp_connectiontimeout: "{0}へのFTP接続：{1}タイムアウト、{2}をスキップ：{3}"
+login_successful: 成功裏にログオン！
+login_list_error: 成功裏にログに記録され、許可はリストコマンドに拒否されました！
+ftp_connection_failed: "{0}へのftp接続：{1}は{3}の[{2}}プロセス全体をスキップしました！次のステップに進む"
+input_target_error: "{0}モジュールの入力ターゲットはDOMAIN、HTTP、またはSINGLE_IPv4で、{1}をスキップする必要があります"
+user_pass_found: ユーザー：{0}合格：{1}ホスト：{2}ポート：{3}が見つかりました！
+file_listing_error: "（リストファイルの許可なし）"
+trying_message: "{3} {4}：{5}（{6}）のプロセス{2}で{1}の{0}を試しています"
+smtp_connectiontimeout: "{0}へのsmtp接続：{1}タイムアウト、{2}をスキップ：{3}"
+smtp_connection_failed: "{0}へのsmtp接続：{1}の全工程[{2}}をスキップしました！次のステップに進む"
+ssh_connectiontimeout: "{0}へのssh接続：{1}タイムアウト、{2}をスキップ：{3}"
+ssh_connection_failed: "{0}へのssh接続が失敗しました。{3}の{{2}}プロセス全体をスキップしました！次のステップに進む"
+port/type: "{0} / {1}"
+port_found: ホスト：{0}ポート：{1}（{2}）が見つかりました！
+target_submitted: ターゲット{0}が送信されました。
+current_version: OWASP Nettackerのバージョン{0} {1} {2} {6}をコード名{3} {4} {5}で実行しています。
+feature_unavailable:
+  この機能はまだ利用できません。 「git clone https://github.com/OWASP/Nettacker.git」または「pip
+  install -U OWASP-Nettacker」を実行して、最新バージョンを入手してください。
+available_graph: すべての活動と情報のグラフを作成するには、HTML出力を使用する必要があります。利用可能なグラフ：{0}
+graph_output: グラフフィーチャを使用するには、出力ファイル名が ".html"または ".htm"で終わる必要があります。
+build_graph: グラフを作成する...
+finish_build_graph: グラフを完成させる！
+pentest_graphs: 侵入テストグラフ
+graph_message: このグラフは、OWASP Nettackerによって作成されました。グラフには、すべてのモジュールアクティビティ、ネットワークマップ、機密情報が含まれています。信頼できない場合は、このファイルを誰とも共有しないでください。
+nettacker_report: OWASP Nettackerレポート
+nettacker_version_details: ソフトウェアの詳細：{2}のOWASP Nettackerのバージョン{0} [{1}]
+no_open_ports: 開いているポートは見つかりませんでした。
+no_user_passwords: ユーザー/パスワードが見つかりません！
+loaded_modules: "{0}モジュールがロードされました..."
+graph_module_404: このグラフモジュールが見つかりません：{0}
+graph_module_unavailable: このグラフモジュール "{0}"は使用できません
+ping_before_scan: ホストをスキャンする前にping
+skipping_target: "--ping-before-scanが真であり、応答しなかったため、ターゲット{0}とスキャン方法{1}全体をスキップします！"
+not_last_version: OWASP Nettackerの最新バージョンを使用していない場合は、更新してください。
+cannot_update: アップデートを確認できません。インターネット接続を確認してください。
+last_version: OWASP Nettackerの最新バージョンを使用しています...
+directoy_listing: "{0}にあるディレクトリリスト"
+insert_port_message: URLの代わりに-gまたは--methods-argsスイッチを使用してポートを挿入してください
+http_connectiontimeout: http接続{0}タイムアウト！
+wizard_mode: ウィザードモードを開始する
+directory_file_404: ポート{1}の{0}のディレクトリまたはファイルが見つかりません
+open_error: "{0}を開くことができません"
+dir_scan_get: dir_scan_http_methodの値はGETまたはHEADでなければなりません。デフォルトはGETに設定されています。
+list_methods: すべてのメソッドargsをリストする
+module_args_error: "{0}モジュールの引数を取得できません"
+trying_process: "{4}（{5}）の{3}の処理{2}で{1}の{0}を試しています"
+domain_found: ドメインが見つかりました：{0}
+TIME: 時間
+CATEGORY: カテゴリー
+module_pattern_404: "{0}パターンのモジュールが見つかりません！"
+enter_default: "{0}を入力してください。デフォルト[{1}]>"
+enter_choices_default: "{0}を入力してください。選択肢[{1}] |デフォルト[{2}]>"
+all_targets: ターゲット
+all_thread_numbers: スレッド番号
+out_file: 出力ファイル名
+all_scan_methods: スキャン方法
+all_scan_methods_exclude: 除外するスキャン方法
+all_usernames: ユーザ名
+all_passwords: パスワード
+timeout_seconds: タイムアウト秒
+all_ports: ポート番号
+all_verbose_level: 冗長レベル
+all_socks_proxy: 靴下プロキシ
+retries_number: 再試行回数
+graph: グラフ
+subdomain_found: サブドメインが見つかりました：{0}
+select_profile: プロファイル{0}を選択
+profile_404: プロファイル "{0}"が見つかりません！
+waiting: "{0}を待っています"
+vulnerable: "{0}に脆弱です"
+target_vulnerable: ターゲット{0}：{1}は{2}に対して脆弱です！
+no_vulnerability_found: 脆弱性が見つかりません！ （{0}）
+Method: 方法
+API: API
+API_options: APIオプション
+start_api_server: APIサービスを開始する
+API_host: APIホストアドレス
+API_port: APIポート番号
+API_debug: APIデバッグモード
+API_access_key: APIアクセスキー
+white_list_API: ホワイトリストホストだけがAPIに接続できるようにする
+define_whie_list: ホワイトリストホストを定義し、で区切って（例：127.0.0.1,192.168.0.1/24、10.0.0.1-10.0.0.255）
+gen_API_access_log: APIアクセスログを生成する
+API_access_log_file: APIアクセスログファイル名
+API_port_int: APIポートは整数でなければなりません！
+unknown_ip_input: 未知の入力タイプ、受け入れタイプはSINGLE_IPv4、RANGE_IPv4、CIDR_IPv4です。
+API_key: "* APIキー：{0}"
+ports_int: ポートは整数でなければなりません！ （例えば、80 || 80,1080 || 80,1080-1300,9000,12000-15000）
+through_API: OWASP Nettacker APIを通して
+API_invalid: 無効なAPIキー
+unauthorized_IP: あなたのIPは許可されていない
+not_found: 見つかりません！
+no_subdomain_found: subdomain_scan：サブドメインが見つかりませんでした。
+viewdns_domain_404: viewdns_reverse_ip_lookup_scan：ドメインが見つかりません！
+browser_session_valid: あなたのブラウザセッションは有効です
+browser_session_killed: ブラウザセッションが終了しました
+updating_database: データベースを更新しています...
+database_connect_fail: データベースに接続できませんでした。
+inserting_report_db: レポートをデータベースに挿入する
+inserting_logs_db: データベースにログを挿入する
+removing_logs_db: 古いログをdbから削除する
+len_subdomain_found: "{0}サブドメインが見つかりました！"
+len_domain_found: "{0}個のドメインが見つかりました！"
+phpmyadmin_dir_404: phpmyadminディレクトリが見つかりません！
+DOS_send: "{0}にDoSパケットを送信する"
+host_up: "{0}はアップです！ pingにかかった時間は{1}です。"
+host_down: "{0}にpingできません！"
+root_required: これはrootとして実行する必要があります
+admin_scan_get: admin_scan_http_methodの値はGETまたはHEADにする必要があります。デフォルトはGETに設定します。
+telnet_connectiontimeout: "{0}へのtelnet接続：{1}タイムアウト、{2}をスキップ：{3}"
+telnet_connection_failed: "{0}へのtelnet接続が失敗しました。{3}の{{2}}プロセス全体をスキップしました！次のステップに進む"
+http_auth_success: http基本認証の成功 - ホスト：{2}：{3}、ユーザー：{0}、パス：{1}が見つかりました！
+http_auth_failed: http基本認証が{0}に失敗しました：{1}を使用している{3}：{2}
+http_form_auth_success: httpフォーム認証の成功 - ホスト：{2}：{3}、ユーザー：{0}、パス：{1}が見つかりました！
+http_form_auth_failed: "{1}：{2}を使用して、httpフォーム認証を{0}に失敗しました：{3}"
+http_ntlm_success: http ntlm認証の成功 - ホスト：{2}：{3}、ユーザー：{0}、パス：{1}が見つかりました！
+http_ntlm_failed: "{0}に失敗しました：{1}：{2}を使用しているため、http ntlm認証が{3}"
+no_response: ターゲットからの応答を得ることができません
+category_framework: カテゴリ：{0}、フレームワーク：{1}が見つかりました！
+nothing_found: "{1}の{0}に何も見つかりません！"
+no_auth: "{0}で認証が見つかりません：{1}"

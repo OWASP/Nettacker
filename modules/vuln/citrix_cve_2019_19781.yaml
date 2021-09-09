@@ -1,0 +1,52 @@
+info:
+  name: citrix_cve_2019_19781_vuln
+  author: OWASP Nettacker Team
+  severity: 8
+  description:
+  reference:
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - high_severity
+    - cve
+    - citrix
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 10
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:
+                - 'vpn/../vpns/cfg/smb.conf'
+                - 'vpn/../vpns/portal/scripts/newbm.pl'
+                - 'vpn/../vpns/portal/scripts/rmbm.pl'
+                - 'vpn/../vpns/portal/scripts/picktheme.pl'
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "\\[global\\]|lmhosts"
+              reverse: false

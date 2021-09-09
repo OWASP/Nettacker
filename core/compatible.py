@@ -1,54 +1,75 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sys
 import os
-from core.alert import messages
-from core._die import __die_failure
-
-__version__ = '0.0.2'
-__code_name__ = 'BIST'
+import json
+from core.die import die_failure
+from core import color
 
 
-def _version_info():
+def version_info():
     """
     version information of the framework
 
     Returns:
         an array of version and code name
     """
-    return [__version__, __code_name__]
+    from config import nettacker_paths
+    return open(nettacker_paths()['version_file']).read().split()
 
 
 def logo():
     """
     OWASP Nettacker Logo
     """
+    import requests
     from core.alert import write_to_api_console
     from core import color
-    from core.color import finish
-    write_to_api_console('''    
-   ______          __      _____ _____  
-  / __ \ \        / /\    / ____|  __ \ 
- | |  | \ \  /\  / /  \  | (___ | |__) |
- | |  | |\ \/  \/ / /\ \  \___ \|  ___/ 
- | |__| | \  /\  / ____ \ ____) | |     {2}Version {0}{3}  
-  \____/   \/  \/_/    \_\_____/|_|     {4}{1}{5}
-                          _   _      _   _             _            
-                         | \ | |    | | | |           | |            
-  {6}github.com/OWASP     {7}  |  \| | ___| |_| |_ __ _  ___| | _____ _ __ 
-  {8}owasp.org{9}              | . ` |/ _ \ __| __/ _` |/ __| |/ / _ \ '__|
-  {10}zdresearch.com{11}         | |\  |  __/ |_| || (_| | (__|   <  __/ |   
-                         |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|   
-                                               
-    \n\n'''.format(__version__, __code_name__, color.color('red'), color.color('reset'), color.color('yellow'),
-                   color.color('reset'), color.color(
-            'cyan'), color.color('reset'), color.color('cyan'),
-                   color.color('reset'), color.color('cyan'), color.color('reset')))
-    finish()
+    from core.color import reset_color
+    from config import nettacker_paths
+    from config import nettacker_analytics
+    from config import nettacker_user_application_config
+    write_to_api_console(
+        open(
+            nettacker_paths()['logo_file']
+        ).read().format(
+            version_info()[0],
+            version_info()[1],
+            color.color('red'),
+            color.color('reset'),
+            color.color('yellow'),
+            color.color('reset'),
+            color.color('cyan'),
+            color.color('reset'),
+            color.color('cyan'),
+            color.color('reset'),
+            color.color('cyan'),
+            color.color('reset')
+        )
+    )
+    reset_color()
+    try:
+        if nettacker_analytics()['new_relic_api_key']:
+            requests.post(
+                "https://log-api.eu.newrelic.com/log/v1",
+                headers={
+                    "X-License-Key": nettacker_analytics()['new_relic_api_key'],
+                    "Accept": "*/*",
+                    "Content-Type": "application/json",
+                    "User-Agent": nettacker_user_application_config()['user_agent']
+                },
+                json={
+                    "ip": json.loads(requests.get('https://api64.ipify.org?format=json').content)['ip'],
+                    "user_agent": nettacker_user_application_config()['user_agent'],
+                    "github_ci": os.environ.get('github_ci') == "true"
+                }
+            )
+    except Exception:
+        return None
 
 
-def version():
+def python_version():
     """
     version of python
 
@@ -56,38 +77,6 @@ def version():
         integer version of python (2 or 3)
     """
     return int(sys.version_info[0])
-
-
-def check(language):
-    """
-    check if framework compatible with the OS
-    Args:
-        language: language
-
-    Returns:
-        True if compatible otherwise None
-    """
-    # from core.color import finish
-    if 'linux' in os_name() or 'darwin' in os_name():
-        pass
-        # os.system('clear')
-    elif 'win32' == os_name() or 'win64' == os_name():
-        # if language != 'en':
-        #    from core.color import finish
-        #    from core.alert import error
-        #   error('please use english language on windows!')
-        #    finish()
-        #    sys.exit(1)
-        # os.system('cls')
-        pass
-    else:
-        __die_failure(messages(language, "error_platform"))
-    if version() ==2 or version() == 3:
-        pass
-    else:
-        __die_failure(messages(language, "python_version_error"))
-    logo()
-    return True
 
 
 def os_name():
@@ -100,13 +89,80 @@ def os_name():
     return sys.platform
 
 
-def is_windows():
-    """
-    check if the framework run in Windows OS
+def check_dependencies():
+    if python_version() == 2:
+        sys.exit(color.color("red") + "[X] " + color.color("yellow") + "Python2 is No longer supported!" + color.color(
+            "reset"))
 
-    Returns:
-        True if its running on windows otherwise False
-    """
-    if 'win32' == os_name() or 'win64' == os_name():
-        return True
-    return False
+    # check os compatibility
+    from config import nettacker_paths, nettacker_database_config
+    external_modules = open(nettacker_paths()["requirements_path"]).read().split('\n')
+    for module_name in external_modules:
+        try:
+            __import__(
+                module_name.split('==')[0] if 'library_name=' not in module_name
+                else module_name.split('library_name=')[1].split()[0]
+            )
+        except Exception:
+            if 'is_optional=true' not in module_name:
+                sys.exit(
+                    color.color("red") + "[X] " + color.color("yellow") + "pip3 install -r requirements.txt ---> " +
+                    module_name.split('#')[0].strip() + " not installed!" + color.color("reset")
+                )
+    logo()
+
+    from core.alert import messages
+    if not ('linux' in os_name() or 'darwin' in os_name()):
+        die_failure(messages("error_platform"))
+
+    if not os.path.exists(nettacker_paths()["home_path"]):
+        try:
+            os.mkdir(nettacker_paths()["home_path"])
+            os.mkdir(nettacker_paths()["tmp_path"])
+            os.mkdir(nettacker_paths()["results_path"])
+        except Exception:
+            die_failure("cannot access the directory {0}".format(
+                nettacker_paths()["home_path"])
+            )
+    if not os.path.exists(nettacker_paths()["tmp_path"]):
+        try:
+            os.mkdir(nettacker_paths()["tmp_path"])
+        except Exception:
+            die_failure("cannot access the directory {0}".format(
+                nettacker_paths()["results_path"])
+            )
+    if not os.path.exists(nettacker_paths()["results_path"]):
+        try:
+            os.mkdir(nettacker_paths()["results_path"])
+        except Exception:
+            die_failure("cannot access the directory {0}".format(
+                nettacker_paths()["results_path"])
+            )
+
+    if nettacker_database_config()["DB"] == "sqlite":
+        try:
+            if not os.path.isfile(nettacker_paths()["database_path"]):
+                from database.sqlite_create import sqlite_create_tables
+                sqlite_create_tables()
+        except Exception:
+            die_failure("cannot access the directory {0}".format(
+                nettacker_paths()["home_path"])
+            )
+    elif nettacker_database_config()["DB"] == "mysql":
+        try:
+            from database.mysql_create import (
+                mysql_create_tables,
+                mysql_create_database
+            )
+            mysql_create_database()
+            mysql_create_tables()
+        except Exception:
+            die_failure(messages("database_connection_failed"))
+    elif nettacker_database_config()["DB"] == "postgres":
+        try:
+            from database.postgres_create import postgres_create_database
+            postgres_create_database()
+        except Exception:
+            die_failure(messages("database_connection_failed"))
+    else:
+        die_failure(messages("invalid_database"))

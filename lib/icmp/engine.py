@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-from core.compatible import version
+#!/usr/bin/env python3
 
 """
     A pure python ping implementation using raw socket.
@@ -132,31 +130,6 @@ def checksum_py3(source_string):
     return answer
 
 
-def checksum_py2(source_string):
-    """
-    I'm not too confident that this is right but testing seems
-    to suggest that it gives the same answers as in_cksum in ping.c
-    """
-    sum = 0
-    count_to = (len(source_string) / 2) * 2
-    for count in range(0, int(count_to), 2):
-        this = ord(str(source_string[count + 1])) * \
-            256 + ord(str(source_string[count]))
-        sum = sum + this
-        sum = sum & 0xffffffff  # Necessary?
-    if count_to < len(source_string):
-        sum = sum + ord(source_string[len(source_string) - 1])
-        sum = sum & 0xffffffff  # Necessary?
-
-    sum = (sum >> 16) + (sum & 0xffff)
-    sum = sum + (sum >> 16)
-    answer = ~sum
-    answer = answer & 0xffff
-
-    # Swap bytes. Bugger me if I know why.
-    answer = answer >> 8 | (answer << 8 & 0xff00)
-    return answer
-
 
 def receive_one_ping(my_socket, id, timeout):
     """
@@ -205,11 +178,10 @@ def send_one_ping(my_socket, dest_addr, id, psize):
     bytes = struct.calcsize("d")
     data = (psize - bytes) * "Q"
     data = struct.pack("d", time.time(
-    )) + data if version() ==2 else struct.pack("d", time.time()) + data.encode()
+    )) + struct.pack("d", time.time()) + data.encode()
 
     # Calculate the checksum on the data and the dummy header.
-    my_checksum = checksum_py2(
-        header + data) if version() ==2 else checksum_py3(header + data)
+    my_checksum = checksum_py3(header + data)
 
     # Now that we have the right checksum, we put that in. It's just easier
     # to make up a new header than to stuff it into the dummy.

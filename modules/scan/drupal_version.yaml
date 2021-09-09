@@ -1,0 +1,44 @@
+info:
+  name: drupal_version_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: fetch drupal version from target
+  reference:
+  profiles:
+    - scan
+    - http
+    - backup
+    - low_severity
+    - drupal
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    allow_redirects: false
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/CHANGELOG.txt"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            content:
+              regex: Drupal (\d+\.\d+),
+              reverse: false

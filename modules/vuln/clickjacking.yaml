@@ -1,0 +1,49 @@
+info:
+  name: clickjacking_vuln
+  author: OWASP Nettacker Team
+  severity: 5
+  description: "Clickjacking, also known as a \"UI redress attack\", is when an attacker uses multiple transparent or opaque layers to trick a user into clicking on a button"
+  reference: "https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html"
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - medium_severity
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            headers:
+              x-frame-options:
+                regex: DENY|SAMEORIGIN
+                reverse: true
+              Content-Security-Policy:
+                regex: frame-ancestors|frame-src
+                reverse: true
+            content:
+              regex: http-equiv="Content-Security-Policy"
+              reverse: true

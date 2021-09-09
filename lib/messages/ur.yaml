@@ -1,0 +1,259 @@
+---
+scan_started: Nettacker انجن شروع کر دیا ...
+options: پادری nettacker.py [اختیارات]
+help_menu: Nettacker مدد مینو دکھائیں
+license: برائے مہربانی لائسنس اور معاہدوں کو https://github.com/OWASP/Nettacker پڑھیں
+engine: انجن
+engine_input: انجن ان پٹ کے اختیارات
+select_language: ایک زبان منتخب کریں {0}
+range: رینج میں تمام آئی پی اسکین کریں
+subdomains: ذیلی ڈومینز تلاش اور اسکین کریں
+thread_number_connections: میزبان میں کنکشن کے لئے دھاگے نمبر
+thread_number_hosts: سکین میزبان کے لئے دھاگے کی تعداد
+save_logs:
+  تمام لاگ ان فائلوں میں فائلوں (نتائج.txt، نتائج.html، نتائج.json) کو محفوظ
+  کریں
+target: ہدف
+target_input: ہدف ان پٹ کے اختیارات
+target_list: ہدف (فہرست) کی فہرست، "علیحدہ" کے ساتھ
+read_target: فائل سے ہدف پڑھیں
+scan_method_options: طریقہ کار کے اختیارات اسکین کریں
+choose_scan_method: اسکین کا طریقہ منتخب کریں {0}
+exclude_scan_method: "{0} کو خارج کرنے کے لئے اسکین کا طریقہ منتخب کریں"
+username_list: صارف نام (ے) کی فہرست، کے ساتھ علیحدہ "،"
+username_from_file: فائل سے صارف نام (زبانیں) پڑھیں
+password_seperator: پاس ورڈ (ے) کی فہرست، کے ساتھ علیحدہ "،"
+read_passwords: فائل سے پاس ورڈ (پڑھنا) پڑھیں
+port_seperator: بندرگاہ کی فہرست، کے ساتھ علیحدہ "،"
+time_to_sleep: ہر درخواست کے درمیان سونے کا وقت
+error_target: ہدف مقرر نہیں کر سکتے ہیں
+error_target_file: "ہدف (ن) کی وضاحت نہیں کرسکتا، فائل کو کھولنے میں ناکام ہے: {0}"
+thread_number_warning:
+  اس موضوع کو 100 سے زائد کم دھاگے کا استعمال کرنا بہتر ہے، بی
+  ٹی ڈبلیو ہم جاری رہے گی ...
+settimeout:
+  "{0} سیکنڈ کو وقت مقرر کریں، یہ بہت بڑا ہے، ہے نہ؟ جس طرح ہم جاری رہے
+  ہیں ..."
+scan_module_not_found: اس سکین ماڈیول [{0}] نہیں مل سکا!
+error_exclude_all: آپ تمام سکین طریقوں کو خارج نہیں کر سکتے ہیں
+exclude_module_error: "{ما} ماڈیول آپ کو منتخب نہیں کرنے کے لئے منتخب کیا!"
+method_inputs:
+  "طریقوں کے آدانوں میں داخل کریں، مثال: ftp_brute_users = ٹیسٹ، منتظم
+  اور ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21"
+error_reading_file: فائل {0} نہیں پڑھ سکتی
+error_username: "فائل کو کھولنے میں ناکام صارف نام (ے) کی وضاحت نہیں کرسکتا: {0}"
+found: "{0} مل گیا! ({1}: {2})"
+error_password_file: "فائل کو کھولنے میں ناکام پاس ورڈ (ے) کی وضاحت نہیں کرسکتا: {0}"
+file_write_error: فائل "{0}" قابل تحریر نہیں ہے!
+scan_method_select: براہ مہربانی اپنے اسکین کا طریقہ منتخب کریں!
+remove_temp: طے شدہ فائلوں کو ہٹا دیں!
+sorting_results: چھانٹ کے نتائج!
+done: کیا ہوا
+start_attack: "{0}، {1} کا {2}"
+module_not_available: یہ ماڈیول "{0}" دستیاب نہیں ہے
+error_platform:
+  بدقسمتی سے سافٹ ویئر کا یہ ورژن صرف لینکس / اوکسکس / ونڈوز پر چلایا
+  جا سکتا ہے.
+python_version_error: آپ کے آرتھو ورژن کی حمایت نہیں کی جاتی ہے!
+skip_duplicate_target:
+  ڈپلیکیٹ ہدف کو چھوڑ دو (کچھ ذیلی ڈومینز / ڈومینز اسی آئی پی
+  اور رینجز ہیں)
+unknown_target: ہدف کی نامعلوم قسم [{0}]
+checking_range: "{0} رینج کی جانچ پڑتال ..."
+checking: "{0} کی جانچ پڑتال ..."
+HOST: HOST
+USERNAME: USERNAME
+PASSWORD: پاس ورڈ
+PORT: پورٹ
+TYPE: TYPE
+DESCRIPTION: تفصیل
+verbose_mode: verbose موڈ کی سطح (0-5) (پہلے سے طے شدہ 0)
+software_version: شو سافٹ ویئر ورژن دکھائیں
+check_updates: اپ ڈیٹ کی جانچ پڑتال کریں
+outgoing_proxy:
+  "باہر جانے والی کنکشن پراکسی (جرابیں). مثال کے طور پر جرابوں 5: 127.0.0.1:9050،
+  موزوں: //127.0.0.1: 9050 موزوں 5: //127.0.0.1: 9050 یا جرابوں 4: جرابوں: //127.0.0.1:
+  9050، تصدیق: موزوں: // صارف کا نام: پاس ورڈ @ 127.0.0.1، جرابیں 4: // صارف نام:
+  password@127.0.0.1، جرابیں 5: // صارف کا نام: password@127.0.0.1"
+valid_socks_address:
+  "براہ کرم درست موزوں ایڈریس اور پورٹ درج کریں. مثال کے طور پر
+  جرابوں 5: 127.0.0.1:9050، جرابوں: //127.0.0.1: 9050، جرابوں 5: //127.0.0.1: 9050
+  یا جرابوں 4: جرابوں 4: //127.0.0.1: 9050، تصدیق: موزوں: // صارف کا نام: پاس ورڈ
+  @ 127.0.0.1، جرابیں 4: // صارف نام: password@127.0.0.1، جرابیں 5: // صارف کا نام:
+  password@127.0.0.1"
+connection_retries: جب کنکشن ٹائم آؤٹ (پہلے سے طے شدہ 3) دوبارہ کوشش کرتا ہے
+ftp_connectiontimeout: "ftp کنکشن {0}: {1} ٹائم آؤٹ، اتارنے {2}: {3}"
+login_successful: کامیابی سے لاگ ان
+login_list_error:
+  کامیابی کے ساتھ علامت (لوگو) کی فہرست کمیٹی کے لئے انجام دیا گیا
+  ہے!
+ftp_connection_failed:
+  "FTP کنکشن {0}: {1} ناکام ہوگیا، پورے قدم [عمل {2} کا {3}]
+  چھوڑ کر! اگلے مرحلے پر جا رہے ہیں"
+input_target_error:
+  "{0} ماڈیول برائے ان پٹ ہدف DOMAIN، HTTP یا SINGLE_IPv4 ہونا لازمی
+  ہے، {1}"
+user_pass_found: "صارف: {0} پاس: {1} میزبان: {2} بندرگاہ: {3} پایا!"
+file_listing_error: "(فہرست فائلوں کے لئے کوئی اجازت نہیں)"
+trying_message: "{0} {1} عمل {2} میں {3} {4}: {5} ({6}) کی کوشش کررہا ہے."
+smtp_connectiontimeout: "SMTP کنکشن {0}: {1} ٹائم آؤٹ، اچانک {2}: {3}"
+smtp_connection_failed:
+  "SMTP کنکشن {0}: {1} ناکام ہوگیا، پورے مرحلے [عمل {2} کا {3}]
+  چھوڑ کر! اگلے مرحلے پر جا رہے ہیں"
+ssh_connectiontimeout: "ssh کنکشن {0}: {1} ٹائم آؤٹ، اچانک {2}: {3}"
+ssh_connection_failed:
+  "ssh کنکشن {0}: {1} ناکام ہوگیا، پورے قدم [عمل {2} کا {3}]
+  چھوڑ کر! اگلے مرحلے پر جا رہے ہیں"
+port/type: "{0} / {1}"
+port_found: "میزبان: {0} پورٹ: {1} ({2}) پایا!"
+target_submitted: ھدف کردہ {0}
+current_version:
+  آپ OWASP Nettacker ورژن {0} {1} {2} {6} کوڈ چل رہے ہیں {کوڈ} {3}
+  {4} {5}
+feature_unavailable:
+  یہ خصوصیت ابھی تک دستیاب نہیں ہے! براہ کرم "گٹ کلون https://github.com/OWASP/Nettacker.git
+  یا انسٹال پائپ انسٹال کریں. - OWASP-Nettacker آخری ورژن حاصل کرنے کے لئے.
+available_graph:
+  "تمام سرگرمیوں اور معلومات کا گراف بناؤ، آپ کو HTML پیداوار استعمال
+  کرنا ضروری ہے. دستیاب گرافس: {0}"
+graph_output:
+  گراف کی خصوصیت کو استعمال کرنے کیلئے آپ کا آؤٹ پٹ فائل نام ".html" یا
+  ".htm" کے ساتھ ختم ہونا ضروری ہے!
+build_graph: عمارت گراف ...
+finish_build_graph: عمارت گراف ختم!
+pentest_graphs: رسائی ٹیسٹنگ گرافس
+graph_message:
+  یہ گراف OWASP Nettacker کی طرف سے تیار. گراف پر مشتمل تمام ماڈیول سرگرمیوں،
+  نیٹ ورک کا نقشہ اور حساس معلومات، براہ کرم اس فائل کو کسی کے ساتھ اشتراک نہ کریں
+  اگر یہ قابل اعتماد نہیں ہے.
+nettacker_report: او ڈبلیو ایس اے ایس پی نیٹی بیکر کی رپورٹ
+nettacker_version_details:
+  "سافٹ ویئر کی تفصیلات: OWASP ناٹیکر ورژن {0} [{1}] میں
+  {2}"
+no_open_ports: کوئی کھلا بندرگاہ نہیں مل سکا!
+no_user_passwords: کوئی صارف / پاس ورڈ نہیں مل سکا!
+loaded_modules: ماڈیولز لوڈ کیے گئے ...
+graph_module_404: "یہ گراف ماڈیول نہیں مل سکا: {0}"
+graph_module_unavailable: یہ گراف ماڈیول "{0}" دستیاب نہیں ہے
+ping_before_scan: میزبان اسکین کرنے سے پہلے پنگ
+skipping_target:
+  پورے ہدف {0} اور سکیننگ کا طریقہ {1} اتارنے کی وجہ سے - پہلے سے پہلے
+  اسکین درست ہے اور اس کا جواب نہیں دیا گیا!
+not_last_version:
+  آپ OWASP Nettacker کے آخری ورژن کا استعمال نہیں کر رہے ہیں، براہ
+  کرم اپ ڈیٹ کریں.
+cannot_update:
+  اپ ڈیٹ کے لئے چیک نہیں کر سکتے ہیں، براہ کرم اپنا انٹرنیٹ کنکشن چیک
+  کریں.
+last_version: آپ OWASP Nettacker کے آخری ورژن کا استعمال کر رہے ہیں ...
+directoy_listing: ڈائرکٹری لسٹنگ {0} میں ملا
+insert_port_message:
+  براہ کرم بندرگاہ کو یو آر ایل کے بجائے جی جی یا - طریقے - args
+  سوئچ کے ذریعہ داخل کریں
+http_connectiontimeout: HTTP کنکشن {0} ٹائم آؤٹ!
+wizard_mode: جادوگر موڈ شروع کریں
+directory_file_404: "{0} بندرگاہ {1} میں کوئی ڈائرکٹری یا فائل نہیں ملی"
+open_error: "{0} کھولنے میں ناکام"
+dir_scan_get:
+  dir_scan_http_method کا قدر GET یا HEAD ہونا ضروری ہے، GET کو ڈیفالٹ
+  مقرر کریں.
+list_methods: تمام طریقوں کی فہرست کی فہرست
+module_args_error: ماڈیول args حاصل نہیں کر سکتے ہیں
+trying_process: "{0} {1} کے عمل {2} کے {3} پر {4} ({5}) کی کوشش کررہا ہے."
+domain_found: "ڈومین مل گیا: {0}"
+TIME: ٹائم
+CATEGORY: قسم
+module_pattern_404: "{0} پیٹرن کے ساتھ کوئی ماڈیول نہیں مل سکتا!"
+enter_default: برائے مہربانی درج کریں {0} | پہلے سے طے شدہ [{1}]>
+enter_choices_default:
+  برائے مہربانی درج کریں {0} | انتخاب [{1}] | پہلے سے طے شدہ
+  [{2}]>
+all_targets: اہداف
+all_thread_numbers: سلسلہ نمبر
+out_file: پیداوار فائل نام
+all_scan_methods: سکین طریقوں
+all_scan_methods_exclude: اسکین طریقوں کو خارج کرنے کے لئے
+all_usernames: صارف نام
+all_passwords: پاس ورڈ
+timeout_seconds: ٹائم آؤٹ سیکنڈ
+all_ports: پورٹ نمبر
+all_verbose_level: زبانی سطح
+all_socks_proxy: موزوں پراکسی
+retries_number: دوبارہ کوشش نمبر
+graph: ایک گراف
+subdomain_found: "ذیلی ڈومین پایا: {0}"
+select_profile: پروفائل منتخب کریں {0}
+profile_404: پروفائل "{0}" نہیں مل سکا!
+waiting: "{0} کے انتظار میں"
+vulnerable: "{0}"
+target_vulnerable: "ہدف {0}: {1} {2} کو کمزور ہے!"
+no_vulnerability_found: کوئی خطرہ نہیں ملا! ({0})
+Method: طریقہ
+API: API
+API_options: API کے اختیارات
+start_api_server: API سروس شروع کریں
+API_host: API میزبان کا پتہ
+API_port: API پورٹ نمبر
+API_debug: API ڈیبگ موڈ
+API_access_key: API رسائی کی چابی
+white_list_API: صرف سفید فہرست میزبان API سے منسلک کرنے کی اجازت دیتے ہیں
+define_whie_list:
+  "سفید فہرست میزبان کی وضاحت، کے ساتھ علیحدہ کریں، (مثال: 127.0.0.1،
+  192.168.0.1/24، 10.0.0.1-10.0.0.255)"
+gen_API_access_log: API رسائی لاگ پیدا کریں
+API_access_log_file: API رسائی لاگ فائل نام
+API_port_int: API پورٹ لازمی ہے.
+unknown_ip_input:
+  نامعلوم ان پٹ کی قسم، قبول شدہ اقسام SINGLE_IPv4، RANGE_IPv4، CIDR_IPv4
+  ہیں
+API_key: "* API کلیدی: {0}"
+ports_int: بندرگاہوں کو لازمی طور پر ہونا چاہئے! (مثلا 80 || 80،1080 || 80،1080-1300،9000،12000-15000)
+through_API: OWASP Nettacker API کے ذریعہ
+API_invalid: غلط API کلید
+unauthorized_IP: آپ کا آئی پی اہل نہیں ہے
+not_found: نہیں ملا!
+no_subdomain_found: "subdomain_scan: کوئی ذیلی ڈومین قائم نہیں!"
+viewdns_domain_404: "viewdns_reverse_ip_lookup_scan: کوئی ڈومین نہیں ملا!"
+browser_session_valid: آپ کے براؤزر کا سیشن درست ہے
+browser_session_killed: آپ کے براؤزر کا اجلاس ہلاک
+updating_database: ڈیٹا بیس کو اپ ڈیٹ ...
+database_connect_fail: ڈیٹا بیس سے منسلک نہیں ہوسکتا!
+inserting_report_db: ڈیٹا بیس میں رپورٹ داخل
+inserting_logs_db: لاگ ان ڈیٹا بیس میں لاگ ان
+removing_logs_db: ڈی بی سے پرانی لاگز کو ہٹا دیں
+len_subdomain_found: "{0} ذیلی ڈومین مل گیا!"
+len_domain_found: "{0} ڈومین (ے) پایا!"
+phpmyadmin_dir_404: کوئی پیپییمیڈیم ڈائن نہیں ملا!
+DOS_send: DOS پیکٹ بھیجنے کے لئے {0}
+host_up: "{0} ہے! وقت پائی کرنے کے لۓ وقت {1}"
+host_down: "{0} پنگ نہیں کر سکتے ہیں!"
+root_required: اسے جڑ کے طور پر چلانے کی ضرورت ہے
+admin_scan_get:
+  admin_scan_http_method کا قدر GET یا HEAD ہونا ضروری ہے، GET کو ڈیفالٹ
+  مقرر کریں.
+telnet_connectiontimeout: "{0}: {1} ٹائم آؤٹ کنکشن کے ساتھ ٹلیٹ کنکشن {2}: {3}"
+telnet_connection_failed:
+  "{1}} کے ساتھ telnet کنکشن: {1} ناکام ہوگیا، پورے قدم [عمل
+  {2} کا {3}] چھوڑ کر! اگلے مرحلے پر جا رہے ہیں"
+http_auth_success:
+  "HTTP بنیادی تصدیق کامیابی - میزبان: {2}: {3}، صارف: {0}، پاس:
+  {1} پایا!"
+http_auth_failed:
+  "HTTP بنیادی تصدیق {0}: {3} کا استعمال کرتے ہوئے {1}: {2} میں ناکام
+  ہوگیا"
+http_form_auth_success:
+  "HTTP فارم کی تصدیق کی کامیابی - میزبان: {2}: {3}، صارف: {0}،
+  پاس: {1} پایا!"
+http_form_auth_failed:
+  "HTTP فارم کی تصدیق {0}: {3} کا استعمال کرتے ہوئے {1}: {2}
+  میں ناکام ہوگیا"
+http_ntlm_success:
+  "http ntlm تصدیق کامیابی - میزبان: {2}: {3}، صارف: {0}، پاس: {1}
+  پایا!"
+http_ntlm_failed:
+  "http ntlm کی تصدیق {0}: {3} کا استعمال کرتے ہوئے {1}: {2} میں ناکام
+  ہوگیا"
+no_response: ہدف سے جواب نہیں مل سکا
+category_framework: "زمرہ: {0}، فریم ورک: {1} پایا!"
+nothing_found: "{0} میں {1} میں کچھ بھی نہیں مل سکا!"
+no_auth: "{0}: {1} پر کوئی مصنف نہیں ملا."

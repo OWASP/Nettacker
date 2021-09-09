@@ -1,0 +1,255 @@
+---
+scan_started: Nettacker շարժիչը սկսվեց ...
+options: python nettacker.py [ընտրանքներ]
+help_menu: Ցույց տալ Nettacker Օգնություն Մենյու
+license: Խնդրում ենք կարդալ լիցենզիա եւ համաձայնագրեր https://github.com/OWASP/Nettacker
+engine: Շարժիչ
+engine_input: Շարժիչի ներածման ընտրանքները
+select_language: "{0} լեզու ընտրել"
+range: սկան բոլոր IP- ների համար
+subdomains: գտնել եւ ստուգել subdomains
+thread_number_connections: թղթի համարները հյուրընկալողներին միանալու համար
+thread_number_hosts: թղթի համարները նիշի սերվերների համար
+save_logs: փրկել բոլոր տեղեկամատյանները ֆայլում (results.txt, results.html, results.json)
+target: Թիրախը
+target_input: Թիրախային ներածման ընտրանքները
+target_list: թիրախ (ներ) ցուցակը, առանձին ","
+read_target: կարդալ թիրախ (ներ) ը ֆայլից
+scan_method_options: Սկան մեթոդի ընտրանքներ
+choose_scan_method: ընտրեք սկանավորման մեթոդը {0}
+exclude_scan_method: ընտրեք սկանավորման եղանակը, բացառելու {0}
+username_list: օգտագործողի անուն (ներ) ցուցակը, առանձին ","
+username_from_file: կարդացեք օգտվողի անունը (ներ) ը ֆայլից
+password_seperator: գաղտնաբառերի ցուցակը, որը առանձին է «,»
+read_passwords: կարդալ գաղտնաբառ (ներ) ը ֆայլից
+port_seperator: պորտ (ներ) ցուցակը, որը առանձին է «,»
+time_to_sleep: յուրաքանչյուր խնդրի միջեւ քնելու ժամանակ
+error_target: Հնարավոր չէ նշել թիրախ (ներ)
+error_target_file: Հնարավոր չէ նշել թիրախ (ներ) ը, չի կարող բացել ֆայլը, {0}
+thread_number_warning:
+  Ավելի լավ է օգտագործել 100-ից պակաս թղթի համարը, BTW- ն շարունակվում
+  է ...
+settimeout:
+  "սահմանել {0} վայրկյանի ժամանակ, այն չափազանց մեծ է, չէ: ի դեպ, շարունակելով
+  ..."
+scan_module_not_found: "այս սկանավորման մոդուլը [{0}) չի գտնվել:"
+error_exclude_all: դուք չեք կարող բացառել բոլոր սկանավորման եղանակները
+exclude_module_error: "ձեր ընտրած {0} մոդուլը բացառել չի գտնվել:"
+method_inputs:
+  "մուտքագրեք մեթոդի մուտքագրություններ, օրինակ `ftp_brute_users = test,
+  admin & ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21"
+error_reading_file: "{0} ֆայլը չի ​​կարող ընթերցել"
+error_username: Հնարավոր չէ նշել օգտվողի անունը (ներ), չկարողանալ բացել ֆայլը, {0}
+found: "{0} հայտնաբերվեց {{1}} {2})"
+error_password_file:
+  Հնարավոր չէ նշեք գաղտնաբառը (ներ) ը, չկարողանալ բացել ֆայլը,
+  {0}
+file_write_error: "«{0}» ֆայլը գրավոր չէ:"
+scan_method_select: "խնդրում ենք ընտրել ձեր սկանավորման մեթոդը:"
+remove_temp: "հեռացնել temp ֆայլերը:"
+sorting_results: "տեսակավորման արդյունքներ:"
+done: կատարած!
+start_attack: սկսեք հարձակվել {0}, {1} - ից {2}
+module_not_available: այս մոդուլը «{0}» մատչելի չէ
+error_platform:
+  "Ցավոք, ծրագրակազմի այս տարբերակը պարզապես կարող է գործել linux /
+  osx / windows- ում:"
+python_version_error: "Ձեր Python տարբերակը չի աջակցվում:"
+skip_duplicate_target:
+  հեռացնել կրկնօրինակ թիրախը (որոշ ենթադոմեններ / տիրույթներ
+  կարող են ունենալ նույն IP- ը եւ միջակայքերը)
+unknown_target: անհայտ թիրախ [{0}]
+checking_range: ստուգման {0} շարք ...
+checking: ստուգում {0} ...
+HOST: HOST
+USERNAME: ՕԳՏԱԳՈՐԾՈՂԻ ԱՆՈՒՆԸ
+PASSWORD: PASSWORD
+PORT: ՊՈՐՏ
+TYPE: ՏԻՊ
+DESCRIPTION: DESCRIPTION
+verbose_mode: մանրամասն ռեժիմի մակարդակը (0-5) (նախնական 0)
+software_version: ցույց տալ ծրագրային տարբերակը
+check_updates: ստուգեք թարմացման համար
+outgoing_proxy:
+  "ելքային կապերի վստահված անձ (գուլպաներ): օրինակ, socks5: 127.0.0.1:9050,
+  գուլպաներ: //127.0.0.1: 9050 գուլպաներ5: //127.0.0.1: 9050 կամ գուլպաներ4: գուլպաներ4:
+  /127.0.0.1: 9050, վավերացման: գուլպաներ: // օգտվողի անունը: 127.0.0.1, socks4: //
+  օգտվողի անունը: password@127.0.0.1, socks5: // օգտվողի անունը: password@127.0.0.1"
+valid_socks_address:
+  "խնդրում ենք մուտքագրեք վավեր գուլպաների հասցեն եւ նավահանգիստը:
+  օրինակ `socks5: 127.0.0.1:9050, գուլպաներ` /127.0.0.1: 9050, կիսագուլպա5: /127.0.0.1:
+  9050 կամ գուլպաներ4: գուլպաներ4: //127.0.0.1: 9050, վավերացում: գուլպաներ: // մուտքային
+  կոդը: @ 127.0.0.1, socks4: // օգտվողի անունը: password@127.0.0.1, socks5: // օգտվողի
+  անունը: password@127.0.0.1"
+connection_retries: Կրկնում է, երբ կապի ժամանակահատվածը (կանխադրված 3)
+ftp_connectiontimeout: "{0}: {1} timeout- ին, {2}: {3}"
+login_successful: ՀԱՋՈՂՎԵՑԻՆ ՄԵԿԸ
+login_list_error: ՀԱՋՈՂՎԵՑ ԱՆՎՃԱՐ, ԹԵԿՆԱԾՈՒԹՅՈՒՆԸ ՀՐԱԺԱՐՎԵԼ Է ՀԱՄԱԿԱՐԳԻ ՀԱՄԱՐ
+ftp_connection_failed:
+  "{0}: {1 }- ի ftp- ի կապը ձախողվեց, {3} {2} {2} ամբողջ քայլը
+  բաց թողեց: գնալ հաջորդ քայլին"
+input_target_error:
+  "{0} մոդուլի մուտքային թիրախը պետք է լինի DOMAIN, HTTP կամ SINGLE_IPv4,
+  skipping {1}"
+user_pass_found: "օգտագործողը `{0} անցնում` {1} հյուրընկալող `{2} պորտ` {3} գտել:"
+file_listing_error: "(ՑԱՆԿԱՑԱԾ ԴՐՈՒՅԹՆԵՐ ՉԿԱՆ)"
+trying_message: "{3} {4}: {5} ({6}) {2} - ի {{0}"
+smtp_connectiontimeout: "smtp կապ {0}: {1} timeout- ին, {2}: {3}"
+smtp_connection_failed:
+  "{0}: {1 }- ի smtp կապը ձախողվեց, {3} գործընթացի {2} գործընթացը
+  անջատելու համար): գնալ հաջորդ քայլին"
+ssh_connectiontimeout: "{0}: {1} timeout- ին ssh կապակցում, {2}: {3}"
+ssh_connection_failed:
+  "ssh կապը {0}: {1 }- ի հետ կապ չհաջողվեց, անընդմեջ շրջանցելով
+  ամբողջ գործընթացը {3} {{2} գործընթացը): գնալ հաջորդ քայլին"
+port/type: "{0} / {1}"
+port_found: "հյուրընկալող `{0} պորտ: {1} ({2}):"
+target_submitted: "թիրախ {0} ներկայացվեց:"
+current_version:
+  Դուք աշխատում եք {0} {1} {2} {6} - ի OWASP Nettacker տարբերակով {3}
+  {4} {5}
+feature_unavailable:
+  'այս հատկությունը հասանելի չէ: խնդրում ենք վազել "git clone https://github.com/OWASP/Nettacker.git
+  կամ pip install -U OWASP-Nettacker ստանալ վերջին տարբերակը:'
+available_graph:
+  "կառուցեք բոլոր գործողությունների եւ տեղեկատվության գրաֆիկ, դուք
+  պետք է օգտագործեք HTML արտադրանքը: մատչելի գրաֆիկները `{0}"
+graph_output:
+  "օգտագործել գրաֆիկի առանձնահատկությունը ձեր արտադրանքի ֆայլի անվանումը
+  պետք է ավարտվի «.html» կամ «.htm»:"
+build_graph: կառուցել գրաֆիկը ...
+finish_build_graph: "ավարտել շինարարական գրաֆիկը:"
+pentest_graphs: Ներթափանցման փորձարկման գրաֆիկները
+graph_message:
+  "Այս գրաֆիկը ստեղծվել է OWASP Nettacker- ի կողմից: Գծապատկերը պարունակում
+  է բոլոր մոդուլների գործողությունները, ցանցային քարտեզը եւ զգայուն տեղեկությունները,
+  Խնդրում ենք չօգտագործել այս ֆայլը որեւէ մեկի հետ, եթե այն հուսալի չէ:"
+nettacker_report: OWASP Nettacker- ի զեկույցը
+nettacker_version_details:
+  Ծրագրային ապահովման մանրամասները `OWASP Nettacker տարբերակը
+  {0} [{1}] - ի {2}
+no_open_ports: "չկան բաց նավահանգիստներ:"
+no_user_passwords: "ոչ մի օգտվող / գաղտնաբառ չի գտնվել:"
+loaded_modules: "{0} մոդուլներ բեռնված են ..."
+graph_module_404: այս գրաֆի մոդուլը չի ​​գտնվել, {0}
+graph_module_unavailable: "«{0}» գրաֆիկական մոդուլը հասանելի չէ"
+ping_before_scan: ping առաջ սկան հյուրընկալող
+skipping_target:
+  "skipping ամբողջ թիրախ {0} եւ սկանավորման մեթոդը {1} պատճառով, նախքան
+  սկանավորումը ճշմարիտ է եւ չի պատասխանել:"
+not_last_version:
+  "Դուք չեք օգտագործում OWASP Nettacker- ի վերջին տարբերակը, խնդրում
+  ենք թարմացնել:"
+cannot_update:
+  "չի կարող ստուգել թարմացման համար, խնդրում ենք ստուգել ձեր ինտերնետային
+  կապը:"
+last_version: Դուք օգտագործում եք OWASP Nettacker- ի վերջին տարբերակը ...
+directoy_listing: "{0} -ում հայտնաբերված ցուցակների ցանկը"
+insert_port_message:
+  խնդրում ենք մուտքագրել նավահանգիստ, հղում `-g կամ -methods-args
+  switch- ի փոխարեն
+http_connectiontimeout: "http connection {0} timeout- ը:"
+wizard_mode: սկսել վիզարդ ռեժիմը
+directory_file_404: "{1} նավահանգստում {0} համար որեւէ տեղեկատու կամ ֆայլ չի գտնվել"
+open_error: չհաջողվեց բացել {0}
+dir_scan_get:
+  "dir_scan_http_method արժեքը պետք է լինի GET կամ HEAD, նախադրված է GET-
+  ին:"
+list_methods: ցուցադրել բոլոր մեթոդները args
+module_args_error: չի կարող ձեռք բերել {0} մոդուլային args
+trying_process: "{4} ({5}) - ի {3} {2} {{{0}"
+domain_found: տիրույթը գտնվել է `{0}
+TIME: TIME- ը
+CATEGORY: CATEGORY
+module_pattern_404: "{0} մոդուլի հետ որեւէ մոդուլ չի գտնի:"
+enter_default: խնդրում ենք մուտքագրել {0} | Նախնական [{1}]>
+enter_choices_default:
+  խնդրում ենք մուտքագրել {0} | ընտրություններ [{1}] | Նախնական
+  [{2}]>
+all_targets: թիրախները
+all_thread_numbers: թղթի համարը
+out_file: արտադրանքի ֆայլի անունը
+all_scan_methods: սկանավորման մեթոդները
+all_scan_methods_exclude: սկանավորման մեթոդները բացառելու համար
+all_usernames: օգտվողների անունները
+all_passwords: գաղտնաբառերը
+timeout_seconds: Ժամկետանց վայրկյան
+all_ports: նավահանգիստների համարները
+all_verbose_level: բարդ մակարդակը
+all_socks_proxy: գուլպաներ վստահված անձը
+retries_number: վերադարձի համարը
+graph: գրաֆիկ
+subdomain_found: ենթադոմեյնը `{0}
+select_profile: ընտրեք պրոֆիլը {0}
+profile_404: '"{0}" պրոֆիլը չի ​​գտնվել'
+waiting: սպասում {0}
+vulnerable: խոցելի {0}
+target_vulnerable: "{0} թիրախը {1 }- ն խոցելի է {2}!"
+no_vulnerability_found: "չկան խոցելիություն: ({0})"
+Method: Մեթոդ
+API: API- ը
+API_options: API տարբերակները
+start_api_server: սկսեք API ծառայությունը
+API_host: API հյուրընկալող հասցեն
+API_port: API պորտի համարը
+API_debug: API- ի կարգաբերման ռեժիմ
+API_access_key: API մուտքի բանալին
+white_list_API: պարզապես թույլ տվեք սպիտակ ցուցակի հյուրընկալողներին միանալ API- ին
+define_whie_list:
+  սահմանել սպիտակ ցուցակի հանգույցներ, առանձին, (օրինակ `127.0.0.1,
+  192.168.0.1/24, 10.0.0.1-10.0.0.255)
+gen_API_access_log: API- ի հասանելիության մատյան
+API_access_log_file: API մուտքի մուտքագրման ֆայլի անունը
+API_port_int: "API պորտը պետք է լինի ամբողջական թիվ:"
+unknown_ip_input:
+  անհայտ մուտքագրման տեսակը, ընդունված տեսակներ SINGLE_IPv4, RANGE_IPv4,
+  CIDR_IPv4
+API_key: "* API կոդ: {0}"
+ports_int: "նավահանգիստները պետք է լինեն թվեր: (օր. 80 | 80,1080 | 80,1080-1300,9000,12000-15000)"
+through_API: OWASP Nettacker API- ի միջոցով
+API_invalid: անվավեր API- ի ստեղն
+unauthorized_IP: ձեր IP- ն լիազորված չէ
+not_found: Չի գտնվել!
+no_subdomain_found: "subdomain_scan: ոչ մի ենթադոմեն ստեղծվեց:"
+viewdns_domain_404: "viewdns_reverse_ip_lookup_scan: ոչ մի տիրույթ չի գտնվել:"
+browser_session_valid: ձեր զննարկիչի նիստը վավեր է
+browser_session_killed: ձեր զննարկչի նիստը սպանվեց
+updating_database: տվյալների բազայի թարմացում ...
+database_connect_fail: "չկարողացավ կապվել տվյալների բազայի հետ:"
+inserting_report_db: զեկույցը տվյալների բազայում տեղադրելու համար
+inserting_logs_db: ներդնել տեղեկամատյանները տվյալների բազայում
+removing_logs_db: հեռացնել հին տեղեկամատյանները db- ից
+len_subdomain_found: "{0} ենթաբաղադրիչ (ներ) գտավ:"
+len_domain_found: "{0} տիրույթ (ներ) գտավ:"
+phpmyadmin_dir_404: ոչ մի phpmyadmin Dir found!
+DOS_send: ուղարկելով DoS փաթեթներ {0}
+host_up: "{0 }- ը բարձրանում է: Ping back- ին տված ժամանակը {1}"
+host_down: Չի կարող ping {0}!
+root_required: դա պետք է արմատ լինի
+admin_scan_get:
+  "admin_scan_http_method արժեքը պետք է լինի GET կամ HEAD, նախադրված
+  GET- ին:"
+telnet_connectiontimeout: "{0}: {1} timeout- ին, {2} դուրս գալը, {3}"
+telnet_connection_failed:
+  "telnet- ի կապը {0}: {1 }- ին չհաջողվեց, անընդմեջ շրջանցելով
+  ամբողջ գործընթացը {3} {{2} գործընթացը): գնալ հաջորդ քայլին"
+http_auth_success:
+  "http- ի հիմնական վավերացման հաջողությունը `host: {2}: {3}, user:
+  {0}, անցնել: {1} գտնվեց:"
+http_auth_failed:
+  "http- ի հիմնական վավերացումը չհաջողվեց {0}: {3} - ի միջոցով {1}:
+  {2}"
+http_form_auth_success:
+  "http ձեւի վավերացման հաջողությունը `հյուրընկալող` {2}: {3},
+  օգտվող `{0}, անցնում` {1} գտավ:"
+http_form_auth_failed: "http ձեւի իսկությունը չհաջողվեց {0}: {3} - ից {1}: {2}"
+http_ntlm_success:
+  "http ntlm- ի վավերացման հաջողությունը `հյուրընկալողը` {2}: {3},
+  օգտվող `{0}, անցնում` {1} գտավ:"
+http_ntlm_failed:
+  "{1}: {2} - ից օգտագործելով http: ntlm վավերացումը չհաջողվեց {0}:
+  {3}"
+no_response: չի կարող պատասխան ստանալ թիրախից
+category_framework: "կատեգորիա `{0}, շրջանակներ` {1} գտավ:"
+nothing_found: "{1} -ում {0} -ում հայտնաբերված ոչինչ չկա:"
+no_auth: "{0} - {1} - ում հայտնաբերված ոչ մի վավերագիր"

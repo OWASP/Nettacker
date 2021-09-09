@@ -1,7 +1,7 @@
 #### Checklist
 - [ ] I have followed the [Contributor Guidelines](https://github.com/OWASP/Nettacker/wiki/Developers#contribution-guidelines).
 - [ ] The code has been thoroughly tested in my local development environment with flake8 and pylint.
-- [ ] The code is both Python 2 and Python 3 compatible.
+- [ ] The code is Python 3 compatible.
 - [ ] The code follows the PEP8 styling guidelines with 4 spaces indentation.
 - [ ] This Pull Request relates to only one issue or only one feature
 - [ ] I have referenced the corresponding issue number in my commit message

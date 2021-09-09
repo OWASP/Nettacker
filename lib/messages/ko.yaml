@@ -1,0 +1,209 @@
+---
+scan_started: Nettacker 엔진이 시작되었습니다 ...
+options: python nettacker.py [options]
+help_menu: Nettacker 도움말 메뉴 표시
+license: 라이센스 및 계약서를 읽으십시오. https://github.com/OWASP/Nettacker
+engine: 엔진
+engine_input: 엔진 입력 옵션
+select_language: 언어 선택 {0}
+range: 범위 내의 모든 IP 스캔
+subdomains: 하위 도메인 찾기 및 스캔
+thread_number_connections: 호스트 연결 용 스레드 번호
+thread_number_hosts: 스캔 호스트의 스레드 번호
+save_logs: 모든 로그를 파일에 저장합니다 (results.txt, results.html, results.json).
+target: 목표
+target_input: 대상 입력 옵션
+target_list: 목표 목록, ","
+read_target: 파일로부터 목표를 읽다.
+scan_method_options: 스캔 방법 옵션
+choose_scan_method: 검사 방법 {0}을 선택하십시오.
+exclude_scan_method: 검색 방법을 선택하여 {0}을 (를) 제외하십시오.
+username_list: 사용자 이름 목록, ","
+username_from_file: 파일에서 사용자 이름 읽기
+password_seperator: 암호 목록, ","
+read_passwords: 파일에서 암호 읽기
+port_seperator: 포트 목록, ","
+time_to_sleep: 각 요청 사이에 잠자기 시간
+error_target: 타겟을 지정할 수 없습니다.
+error_target_file: "파일을 열 수없는 대상을 지정할 수 없습니다 : {0}"
+thread_number_warning: 100보다 낮은 스레드 번호를 사용하는 것이 좋습니다. 계속 진행 중입니다 ...
+settimeout: 시간 초과를 {0} 초로 설정하면 너무 큽니다. 그렇지 않습니까? 그런데 우리가 계속 ...
+scan_module_not_found: 이 스캔 모듈 [{0}]을 찾을 수 없습니다!
+error_exclude_all: 모든 검사 방법을 제외 할 수는 없습니다.
+exclude_module_error: 찾을 수없는 제외 모듈 {0}을 (를) 찾았습니다!
+method_inputs:
+  "메소드 입력을 입력하십시오 (예 : ftp_brute_users = test, admin & ftp_brute_passwds
+  = read_from_file : /tmp/pass.txt&ftp_brute_port=21)."
+error_reading_file: 파일 {0}을 (를) 읽을 수 없습니다.
+error_username: "사용자 이름을 지정할 수 없습니다. 파일을 열 수 없습니다 : {0}"
+found: "{0} 찾았습니다! ({1} : {2})"
+error_password_file: "암호를 지정할 수 없습니다. 파일을 열 수 없습니다 : {0}"
+file_write_error: 파일 "{0}"이 (가) 쓰기 가능하지 않습니다!
+scan_method_select: 스캔 방법을 선택하십시오!
+remove_temp: 임시 파일을 제거하십시오!
+sorting_results: 결과 정렬!
+done: 끝난!
+start_attack: "{2} 중 {0}, {1} 공격을 시작합니다."
+module_not_available: 이 모듈 "{0}"을 (를) 사용할 수 없습니다.
+error_platform: 불행하게도이 버전의 소프트웨어는 linux / osx / windows에서 실행될 수 있습니다.
+python_version_error: 파이썬 버전은 지원되지 않습니다!
+skip_duplicate_target: 중복 대상 건너 뛰기 (일부 하위 도메인 / 도메인은 동일한 IP 및 범위를 가질 수 있음)
+unknown_target: 알 수없는 유형의 대상 [{0}]
+checking_range: "{0} 범위를 확인 중입니다 ..."
+checking: "{0} 확인 중 ..."
+HOST: 숙주
+USERNAME: 사용자 이름
+PASSWORD: 암호
+PORT: 포트
+TYPE: 유형
+DESCRIPTION: 기술
+verbose_mode: 상세 모드 레벨 (0-5) (기본값 0)
+software_version: 소프트웨어 버전 표시
+check_updates: 업데이트를 확인
+outgoing_proxy:
+  "나가는 연결 프록시 (양말). 예 : socks5 : 127.0.0.1:9050, socks : //127.0.0.1
+  : 9050 socks5 : //127.0.0.1 : 9050 또는 socks4 : socks4 : //127.0.0.1 : 9050, authentication
+  : socks : // username : password @ 127.0.0.1, socks4 : // 사용자 이름 : password@127.0.0.1,
+  socks5 : // 사용자 이름 : password@127.0.0.1"
+valid_socks_address:
+  "유효한 양말 주소와 포트를 입력하십시오. 예제 socks5 : 127.0.0.1:9050, 양말 : //127.0.0.1
+  : 9050, socks5 : //127.0.0.1 : 9050 또는 socks4 : socks4 : //127.0.0.1 : 9050, 인증
+  : socks : // 사용자 이름 : password @ 127.0.0.1, socks4 : // 사용자 이름 : password@127.0.0.1,
+  socks5 : // 사용자 이름 : password@127.0.0.1"
+connection_retries: 연결 시간 제한 (기본값 3)
+ftp_connectiontimeout: "{0}에 대한 FTP 연결 : {1} 시간 초과, {2} 건너 뛰기 : {3}"
+login_successful: 성공 적으로 로깅되었습니다!
+login_list_error: 성공적으로 로깅되었으므로 권한이 목록 명령에 거부되었습니다!
+ftp_connection_failed:
+  "{0} (으) 로의 FTP 연결이 실패했습니다 : {3}의 {2} 번 프로세스를 건너 뜁니다! 다음 단계로
+  이동"
+input_target_error: "{0} 모듈의 입력 대상은 {1}을 (를) 건너 뛰고 DOMAIN, HTTP 또는 SINGLE_IPv4 여야합니다."
+user_pass_found: "사용자 : {0} 통과 : {1} 호스트 : {2} 포트 : {3}이 (가) 발견되었습니다."
+file_listing_error: "(목록 파일에 대한 권한 없음)"
+trying_message: "{3} {4} : {5} ({6})의 {2} 프로세스에서 {1}의 {0}"
+smtp_connectiontimeout: "{0}에 대한 smtp 연결 : {1} 시간 초과, {2} 건너 뛰기 : {3}"
+smtp_connection_failed:
+  "{0}에 대한 smtp 연결이 실패했습니다 : {3}의 {{2}} 프로세스 전체를 건너 뜁니다! 다음
+  단계로 이동"
+ssh_connectiontimeout: "{0}에 대한 ssh 연결 : {1} 시간 초과, {2} 건너 뛰기 : {3}"
+ssh_connection_failed:
+  "{0}에 대한 ssh 연결 : {1}이 (가) {3}의 전체 {{2}} 프로세스를 건너 뛰었습니다! 다음
+  단계로 이동"
+port/type: "{0} / {1}"
+port_found: "호스트 : {0} 포트 : {1} ({2})이 (가) 발견되었습니다!"
+target_submitted: 타겟 {0}이 제출되었습니다.
+current_version: 당신은 코드 이름 {3} {4} {5}로 OWASP Nettacker 버전 {0} {1} {2} {6}
+feature_unavailable:
+  아직이 기능을 사용할 수 없습니다. 마지막 버전을 얻으려면 "git clone https://github.com/OWASP/Nettacker.git
+  또는 pip install -U OWASP-Nettacker를 실행하십시오.
+available_graph: "모든 활동 및 정보의 그래프를 작성하려면 HTML 출력을 사용해야합니다. 사용 가능한 그래프 : {0}"
+graph_output: 그래프 기능을 사용하려면 출력 파일 이름이 ".html"또는 ".htm"로 끝나야합니다!
+build_graph: 그래프 작성 중 ...
+finish_build_graph: 건물 그래프 완성!
+pentest_graphs: 침투 테스트 그래프
+graph_message:
+  이 그래프는 OWASP Nettacker에 의해 작성되었습니다. 그래프에는 모든 모듈 활동, 네트워크 맵 및 중요한 정보가
+  포함되어 있습니다. 신뢰할 수없는 경우이 파일을 다른 사람과 공유하지 마십시오.
+nettacker_report: OWASP Nettacker 보고서
+nettacker_version_details: "소프트웨어 세부 정보 : {2}의 OWASP Nettacker 버전 {0} [{1}}"
+no_open_ports: 열려있는 포트가 없습니다!
+no_user_passwords: 사용자 / 비밀번호를 찾을 수 없습니다!
+loaded_modules: "{0} 모듈이로드되었습니다 ..."
+graph_module_404: "이 그래프 모듈을 찾을 수 없습니다 : {0}"
+graph_module_unavailable: 이 그래프 모듈 "{0}"을 (를) 사용할 수 없습니다.
+ping_before_scan: 호스트를 검사하기 전에 핑 (ping)
+skipping_target:
+  "--ping-before-scan이 true이고 응답하지 않았기 때문에 전체 대상 {0}과 스캔 방법 {1}을 건너
+  뛰었습니다!"
+not_last_version: OWASP Nettacker의 최신 버전을 사용하고 있지 않으므로 업데이트하십시오.
+cannot_update: 업데이트를 확인할 수 없으므로 인터넷 연결을 확인하십시오.
+last_version: OWASP Nettacker의 마지막 버전을 사용 중입니다 ...
+directoy_listing: "{0}에있는 디렉토리 목록"
+insert_port_message: URL 대신 -g 또는 --methods-args 스위치를 통해 포트를 삽입하십시오.
+http_connectiontimeout: http 연결 {0} 시간 초과!
+wizard_mode: 마법사 모드 시작
+directory_file_404: 포트 {1}에서 {0}에 대한 디렉토리 또는 파일을 찾을 수 없습니다.
+open_error: "{0}을 (를) 열 수 없습니다."
+dir_scan_get: dir_scan_http_method 값은 GET 또는 HEAD 여야하며, 기본값은 GET으로 설정하십시오.
+list_methods: 모든 메소드 args를 나열하십시오.
+module_args_error: "{0} 모듈 인수를 얻을 수 없습니다."
+trying_process: "{4} (3)에 {3}의 {2} 프로세스에서 {1}의 {0}을 (를) 시도 중입니다."
+domain_found: "발견 된 도메인 : {0}"
+TIME: 시각
+CATEGORY: 범주
+module_pattern_404: "{0} 패턴을 가진 모듈을 찾을 수 없습니다!"
+enter_default: "{0}을 입력하십시오. | 기본값 [{1}]>"
+enter_choices_default: "{0}을 입력하십시오. | 선택 사항 [{1}] | 기본값 [{2}]>"
+all_targets: 목표
+all_thread_numbers: 스레드 번호
+out_file: 출력 파일 이름
+all_scan_methods: 스캔 방법
+all_scan_methods_exclude: 제외시킬 검사 방법
+all_usernames: 사용자 이름
+all_passwords: 암호
+timeout_seconds: 시간 초과 초
+all_ports: 포트 번호
+all_verbose_level: 상세 수준
+all_socks_proxy: 양말 프록시
+retries_number: 재시도 횟수
+graph: 그래프
+subdomain_found: "발견 된 하위 도메인 : {0}"
+select_profile: 프로필 {0}을 (를) 선택하십시오.
+profile_404: 프로필 "{0}"을 (를) 찾을 수 없습니다!
+waiting: "{0}을 (를) 기다리는 중"
+vulnerable: "{0}에 취약하다."
+target_vulnerable: "타겟 {0} : {1}은 (는) {2}에게 취약합니다!"
+no_vulnerability_found: 아무런 취약점이 발견되지 않았습니다! ({0})
+Method: 방법
+API: API
+API_options: API 옵션
+start_api_server: API 서비스 시작
+API_host: API 호스트 주소
+API_port: API 포트 번호
+API_debug: API 디버그 모드
+API_access_key: API 액세스 키
+white_list_API: 화이트리스트 호스트가 API에 연결하도록 허용하기
+define_whie_list:
+  "(예 : 127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)로 구분 된 화이트리스트
+  호스트를 정의하십시오."
+gen_API_access_log: API 액세스 로그 생성
+API_access_log_file: API 액세스 로그 파일 이름
+API_port_int: API 포트는 정수 여야합니다!
+unknown_ip_input: 알 수없는 입력 유형, 허용되는 유형은 SINGLE_IPv4, RANGE_IPv4, CIDR_IPv4입니다.
+API_key: "* API 키 : {0}"
+ports_int: "포트는 정수 여야합니다! (예 : 80 || 80,1080 || 80,1080-1300,9000,12000-15000)"
+through_API: OWASP Nettacker API를 통해
+API_invalid: 잘못된 API 키
+unauthorized_IP: 귀하의 IP가 승인되지 않았습니다.
+not_found: 찾을 수 없습니다!
+no_subdomain_found: "subdomain_scan : 하위 도메인이 없습니다!"
+viewdns_domain_404: "viewdns_reverse_ip_lookup_scan : 도메인을 찾을 수 없습니다!"
+browser_session_valid: 브라우저 세션이 유효합니다.
+browser_session_killed: 브라우저 세션이 종료되었습니다.
+updating_database: 데이터베이스 업데이트 중 ...
+database_connect_fail: 데이터베이스에 연결할 수 없습니다.
+inserting_report_db: 데이터베이스에 보고서 삽입
+inserting_logs_db: 데이터베이스에 로그 삽입
+removing_logs_db: DB에서 이전 로그를 제거합니다.
+len_subdomain_found: "{0} 개의 하위 도메인이 발견되었습니다!"
+len_domain_found: "{0} 개의 도메인이 발견되었습니다!"
+phpmyadmin_dir_404: phpmyadmin 디렉토리가 없습니다!
+DOS_send: "{0}에 DoS 패킷 보내기"
+host_up: "{0}이 (가) 있습니다! 핑 (ping)까지 걸리는 시간은 {1}입니다."
+host_down: "{0}을 (를) 핑 (ping) 할 수 없습니다!"
+root_required: 이것은 루트로서 실행되어야한다.
+admin_scan_get: admin_scan_http_method 값은 GET 또는 HEAD 여야하며, 기본값은 GET으로 설정하십시오.
+telnet_connectiontimeout: "{0}에 대한 텔넷 연결 : {1} 시간 초과, {2} 건너 뛰기 : {3}"
+telnet_connection_failed: "{0} : {1}에 대한 텔넷 연결이 실패했습니다. [{3}의 {2}} 프로세스! 다음 단계로 이동"
+http_auth_success: "http 기본 인증 성공 - 호스트 : {2} : {3}, 사용자 : {0}, 통과 : {1}이 (가) 발견되었습니다!"
+http_auth_failed: "http 기본 인증이 {1}을 (를) 사용하여 {0} : {3}에 실패했습니다 : {2}"
+http_form_auth_success:
+  "http 양식 인증 성공 - 호스트 : {2} : {3}, 사용자 : {0}, 통과 : {1}이 (가)
+  발견되었습니다!"
+http_form_auth_failed: "{1}을 (를) 사용하여 http 양식 인증을 {0} : {3}에 실패했습니다 : {2}"
+http_ntlm_success: "http ntlm 인증 성공 - 호스트 : {2} : {3}, 사용자 : {0}, 통과 : {1}이 (가) 발견되었습니다!"
+http_ntlm_failed: "{1}을 (를) 사용하여 http ntlm 인증이 {0} : {3}에 실패했습니다 : {2}"
+no_response: 목표에서 응답을 얻을 수 없다.
+category_framework: "카테고리 : {0}, 프레임 워크 : {1}이 (가) 발견되었습니다!"
+nothing_found: "{1}의 {0}에 아무것도 없습니다!"
+no_auth: "{0}에서 인증을 찾을 수 없습니다 : {1}"

@@ -1,0 +1,229 @@
+---
+scan_started: מנוע Nettacker התחיל ...
+options: python nettacker.py [אפשרויות]
+help_menu: הצג תפריט עזרה Nettacker
+license: קרא את הרישיון וההסכמים https://github.com/OWASP/Nettacker
+engine: מנוע
+engine_input: אפשרויות קלט מנוע
+select_language: בחר שפה {0}
+range: סרוק את כל כתובות ה- IP בטווח
+subdomains: מצא וסרוק תת-דומיינים
+thread_number_connections: מספרי פתיל לחיבורים למארח
+thread_number_hosts: מספרי פתיל לסרוק את המארחים
+save_logs: שמור את כל היומנים בקובץ (results.txt, results.html, results.json)
+target: יַעַד
+target_input: אפשרויות קלט יעד
+target_list: רשימת היעד, נפרד עם ","
+read_target: לקרוא את היעד (ים) מקובץ
+scan_method_options: אפשרויות שיטת סריקה
+choose_scan_method: בחר שיטת סריקה {0}
+exclude_scan_method: בחר שיטת סריקה כדי לא לכלול {0}
+username_list: שם משתמש, נפרד עם ","
+username_from_file: לקרוא שם משתמש (ים) מקובץ
+password_seperator: רשימת הסיסמאות, בנפרד עם ","
+read_passwords: לקרוא את הסיסמה (s) מקובץ
+port_seperator: פורט (ים), נפרד עם ","
+time_to_sleep: זמן לישון בין כל בקשה
+error_target: לא ניתן להגדיר את המיקודים
+error_target_file: "לא ניתן לציין את היעדים, לא ניתן לפתוח את הקובץ: {0}"
+thread_number_warning: עדיף להשתמש במספר פתיל נמוך מ -100, BTW אנחנו ממשיכים ...
+settimeout: להגדיר פסק זמן ל {0} שניות, זה גדול מדי, לא? בדרך שאנחנו ממשיכים ...
+scan_module_not_found: מודול הסריקה [{0}] לא נמצא!
+error_exclude_all: לא ניתן לבצע אי הכללה של כל שיטות הסריקה
+exclude_module_error: מודול {0} שבחרת לא לכלול לא נמצא!
+method_inputs:
+  "הזן שיטות קלט, לדוגמה: ftp_brute_users = test, admin & ftp_brute_passwds
+  = read_from_file: /tmp/pass.txt&ftp_brute_port=21"
+error_reading_file: אין אפשרות לקרוא את הקובץ {0}
+error_username: "לא ניתן לציין את שם המשתמש, ולא ניתן לפתוח את הקובץ: {0}"
+found: "{0} נמצא! ({1}: {2})"
+error_password_file: "לא ניתן לציין את הסיסמאות, לא ניתן לפתוח את הקובץ: {0}"
+file_write_error: הקובץ "{0}" אינו ניתן לכתיבה!
+scan_method_select: בחר את שיטת הסריקה שלך!
+remove_temp: הסרת קבצי זמני!
+sorting_results: מיון תוצאות!
+done: בוצע!
+start_attack: התחל לתקוף את {0}, {1} מתוך {2}
+module_not_available: מודול זה "{0}" אינו זמין
+error_platform:
+  למרבה הצער גירסה זו של התוכנה פשוט יכול להיות מופעל על לינוקס / osx
+  / Windows.
+python_version_error: גירסת Python שלך אינה נתמכת!
+skip_duplicate_target:
+  לדלג על היעד הכפול (לחלק מתת התחומים / לתחומים יש אותו IP ו-
+  Ranges)
+unknown_target: סוג יעד לא מוכר [{0}]
+checking_range: בודק {0} טווח ...
+checking: בודק {0} ...
+HOST: מארח
+USERNAME: שם משתמש
+PASSWORD: סיסמה
+PORT: נמל
+TYPE: סוּג
+DESCRIPTION: תיאור
+verbose_mode: מצב מצב verbose (0-5) (ברירת מחדל 0)
+software_version: הצג גרסת תוכנה
+check_updates: בדוק עדכונים
+outgoing_proxy:
+  "פרוקסי חיבורים (גרביים). לדוגמה: socks5: 127.0.0.1:9050, גרביים:
+  //127.0.0.1: 9050 socks5: //127.0.0.1: 9050 או גרביים 4: socks4: //127.0.0.1: 9050,
+  אימות: socks: // שם משתמש: password @ 127.0.0.1, socks4: // שם משתמש: password@127.0.0.1,
+  socks5: // שם משתמש: password@127.0.0.1"
+valid_socks_address:
+  "נא להזין כתובת גרביים חוקית יציאת. גרביים לדוגמה: 127.0.0.1:9050,
+  גרביים: //127.0.0.1: 9050, socks5: //127.0.0.1: 9050 או גרביים 4: socks4: //127.0.0.1:
+  9050, אימות: socks: // username: password @ 127.0.0.1, socks4: // שם משתמש: password@127.0.0.1,
+  socks5: // שם משתמש: password@127.0.0.1"
+connection_retries: ניסיונות חוזרים כאשר פסק הזמן לחיבור (ברירת מחדל 3)
+ftp_connectiontimeout: "חיבור ל- {0}: {1} פסק זמן, דילוג על {2}: {3}"
+login_successful: התחברת בהצלחה!
+login_list_error: מחובר בהצלחה, הרשאה מסולקת עבור פקודת רשימה!
+ftp_connection_failed:
+  "חיבור ל- {0}: {1} נכשל, מדלג על כל התהליך [תהליך {2} של {3}]!
+  הולך לשלב הבא"
+input_target_error:
+  יעד קלט עבור מודול {0} חייב להיות DOMAIN, HTTP או SINGLE_IPv4,
+  דילוג על {1}
+user_pass_found: "המשתמש: {0} pass: {1} host: {2} port: {3} נמצא!"
+file_listing_error: "(אין הרשאה עבור רשימת קבצים)"
+trying_message: "מנסה {0} של {1} בתהליך {2} של {3} {4}: {5} ({6})"
+smtp_connectiontimeout: "חיבור smtp אל {0}: {1} פסק זמן, דילוג על {2}: {3}"
+smtp_connection_failed:
+  "חיבור smtp אל {0}: {1} נכשל, מדלג על כל השלבים [תהליך {2}
+  של {3}]! הולך לשלב הבא"
+ssh_connectiontimeout: "חיבור ssh ל- {0}: {1} פסק זמן, דילוג על {2}: {3}"
+ssh_connection_failed:
+  "חיבור ssh ל- {0}: {1} נכשל, מדלג על כל השלבים [תהליך {2} של
+  {3}]! הולך לשלב הבא"
+port/type: "{0} / {1}"
+port_found: "host: {0} port: {1} ({2}) נמצא!"
+target_submitted: יעד {0} נשלח!
+current_version:
+  אתה מפעיל את גרסת OWASP Nettacker {0} {1} {2} {6} עם שם קוד {3} {4}
+  {5}
+feature_unavailable:
+  תכונה זו אינה זמינה עדיין! בבקשה להפעיל "git שיבוט https://github.com/OWASP/Nettacker.git
+  או להתקין פיפס -U OWASP-Nettacker כדי לקבל את הגירסה האחרונה.
+available_graph:
+  "לבנות גרף של כל הפעילויות והמידע, עליך להשתמש בפלט HTML. גרפים זמינים:
+  {0}"
+graph_output: כדי להשתמש בתכונת הגרף שם קובץ הפלט שלך חייב להסתיים עם ".html" או ".htm"!
+build_graph: הבניין גרף ...
+finish_build_graph: לסיים את גרף הבניין!
+pentest_graphs: חדירה בדיקות גרפים
+graph_message:
+  גרף זה נוצר על ידי OWASP Nettacker. גרף מכיל את כל הפעילויות מודולים,
+  מפת הרשת ומידע רגיש, בבקשה אל תשתף את הקובץ הזה עם אף אחד אם זה לא אמין.
+nettacker_report: דו"ח OWASP Nettacker
+nettacker_version_details: "פרטי תוכנה: גרסת OWASP Nettacker {0} [{1}] ב- {2}"
+no_open_ports: לא נמצאו יציאות פתוחות!
+no_user_passwords: לא נמצא משתמש / סיסמה!
+loaded_modules: "{0} מודולים נטענים ..."
+graph_module_404: "מודול גרף זה לא נמצא: {0}"
+graph_module_unavailable: מודול גרף זה "{0}" אינו זמין
+ping_before_scan: ping לפני לסרוק את המארח
+skipping_target:
+  דילוג על כל המטרה {0} ושיטת הסריקה {1} בגלל - לפני - לפני הסריקה
+  היא נכונה והיא לא הגיבה!
+not_last_version: אתה לא משתמש בגירסה האחרונה של OWASP Nettacker, אנא עדכן.
+cannot_update: לא ניתן לבדוק אם יש עדכון, בדוק את חיבור האינטרנט שלך.
+last_version: אתה משתמש בגירסה האחרונה של OWASP Nettacker ...
+directoy_listing: רישום בספרייה שנמצא ב- {0}
+insert_port_message: אנא הכנס את היציאה דרך מתג -g או -methods-args במקום url
+http_connectiontimeout: HTTP {0} פסק זמן!
+wizard_mode: הפעל מצב אשף
+directory_file_404: לא נמצאה ספרייה או קובץ עבור {0} ביציאה {1}
+open_error: לא ניתן לפתוח {0}
+dir_scan_get:
+  הערך dir_scan_http_method חייב להיות GET או HEAD, הגדר את ברירת המחדל
+  ל- GET.
+list_methods: רשימה כל השיטות מתווכח
+module_args_error: לא ניתן לקבל {0} ארגומנטים מודולים
+trying_process: מנסה {0} של {1} בתהליך {2} של {3} בתאריך {4} ({5})
+domain_found: "domain נמצא: {0}"
+TIME: זְמַן
+CATEGORY: קטגוריה
+module_pattern_404: לא ניתן למצוא כל מודול עם תבנית {0}!
+enter_default: נא להזין {0} | ברירת המחדל [{1}]>
+enter_choices_default: נא להזין {0} | בחירות [{1}] ברירת המחדל [{2}]>
+all_targets: את המטרות
+all_thread_numbers: את מספר פתיל
+out_file: שם קובץ הפלט
+all_scan_methods: את שיטות הסריקה
+all_scan_methods_exclude: את שיטות הסריקה כדי לכלול
+all_usernames: שמות המשתמשים
+all_passwords: את הסיסמאות
+timeout_seconds: את timeout שניות
+all_ports: מספרי היציאה
+all_verbose_level: את רמת verbose
+all_socks_proxy: את גרביים proxy
+retries_number: מספר ניסיונות חוזרים
+graph: גרף
+subdomain_found: "תת-דומיין שנמצא: {0}"
+select_profile: בחר פרופיל {0}
+profile_404: הפרופיל "{0}" לא נמצא!
+waiting: ממתין {0}
+vulnerable: פגיע ל {0}
+target_vulnerable: "היעד {0}: {1} פגיע ל {2}!"
+no_vulnerability_found: לא נמצאה פגיעות! ({0})
+Method: שיטה
+API: API
+API_options: אפשרויות ממשק API
+start_api_server: הפעל את שירות ה- API
+API_host: כתובת מארח של ממשק API
+API_port: מספר יציאת ממשק API
+API_debug: מצב איתור באגים ב- API
+API_access_key: מפתח גישה לממשק API
+white_list_API: רק לאפשר למארחים רשימה לבנה להתחבר API
+define_whie_list:
+  "להגדיר את המארחים רשימה לבנה, להפריד עם, (דוגמאות: 127.0.0.1, 192.168.0.1/24,
+  10.0.0.1-10.0.0.255)"
+gen_API_access_log: ליצור יומן גישה API
+API_access_log_file: קובץ יומן רישום של ממשק API
+API_port_int: יציאת ה- API חייבת להיות מספר שלם!
+unknown_ip_input: סוג קלט לא מוכר, סוגים מקובלים הם SINGLE_IPv4, RANGE_IPv4, CIDR_IPv4
+API_key: "* מפתח API: {0}"
+ports_int: יציאות חייב להיות מספרים שלמים! (למשל 80 | 80,1080 || 80,1080-1300,9000,12000-15000)
+through_API: באמצעות OWASP Nettacker API
+API_invalid: מפתח API לא חוקי
+unauthorized_IP: כתובת ה- IP שלך אינה מורשית
+not_found: לא נמצא!
+no_subdomain_found: "subdomain_scan: לא תת-דומיין שהוקם!"
+viewdns_domain_404: "Viewdns_reverse_ip_lookup_scan: לא נמצא דומיין!"
+browser_session_valid: הפעלת הדפדפן שלך תקפה
+browser_session_killed: הפגישה הדפדפן שלך נהרג
+updating_database: מעדכן את מסד הנתונים ...
+database_connect_fail: אין אפשרות להתחבר למסד הנתונים!
+inserting_report_db: הוספת דוח למסד הנתונים
+inserting_logs_db: הוספת יומנים למסד הנתונים
+removing_logs_db: הסרת יומנים ישנים מ db
+len_subdomain_found: "{0} תת-דומיינים שנמצאו!"
+len_domain_found: "{0} דומיינים נמצאו!"
+phpmyadmin_dir_404: לא כל phpmyadmin dir נמצא!
+DOS_send: שליחת מנות DoS אל {0}
+host_up: "{0} הוא למעלה! הזמן שנלקח כדי לבצע פינג בחזרה הוא {1}"
+host_down: לא ניתן לבצע פינג {0}!
+root_required: זה צריך להיות לרוץ כמו שורש
+admin_scan_get:
+  הערך admin_scan_http_method חייב להיות GET או HEAD, הגדר את ברירת
+  המחדל ל- GET.
+telnet_connectiontimeout: "חיבור Telnet אל {0}: {1} פסק זמן, דילוג על {2}: {3}"
+telnet_connection_failed:
+  "חיבור Telnet ל- {0}: {1} נכשל, מדלג על כל השלבים [תהליך
+  {2} של {3}]! הולך לשלב הבא"
+http_auth_success:
+  "אימות HTTP בסיסי אימות - מארח: {2}: {3}, משתמש: {0}, לעבור: {1}
+  נמצאו!"
+http_auth_failed: "אימות בסיסי של http נכשל {0}: {3} באמצעות {1}: {2}"
+http_form_auth_success:
+  "HTTP אימות הצלחה הצלחה - מארח: {2}: {3}, משתמש: {0}, לעבור:
+  {1} נמצאו!"
+http_form_auth_failed: "אימות טופס http נכשל {0}: {3} באמצעות {1}: {2}"
+http_ntlm_success:
+  "HTTP ntlm אימות הצלחה - מארח: {2}: {3}, משתמש: {0}, עובר: {1}
+  נמצא!"
+http_ntlm_failed: "אימות http ntlm נכשל {0}: {3} באמצעות {1}: {2}"
+no_response: לא יכול לקבל תגובה מהיעד
+category_framework: "קטגוריה: {0}, מסגרות: {1} נמצאו!"
+nothing_found: דבר לא נמצא ב- {0} ב- {1}!
+no_auth: "לא נמצאה כתובת אימות ב- {0}: {1}"

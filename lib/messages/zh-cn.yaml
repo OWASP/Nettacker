@@ -1,0 +1,189 @@
+---
+scan_started: Nettacker 启动...
+options: python nettacker.py [选项]
+help_menu: 显示 Nettacker 菜单
+license: 请阅读许可证和协议 https://github.com/OWASP/Nettacker
+engine: Nettacker
+engine_input: 选项
+select_language: 选择一种语言{0}
+range: 扫描范围内的所有 IP
+subdomains: 扫描子域名
+thread_number_connections: 用于连接到主机的线程数
+thread_number_hosts: 扫描主机的线程数
+save_logs: 保存文件中的所有日志（results.txt，results.html，results.json）
+target: 目标
+target_input: 目标选项
+target_list: 目标列表，用“，”分隔
+read_target: 从文件中读取目标文件
+scan_method_options: 扫描方法选项
+choose_scan_method: 选择扫描方法{0}
+exclude_scan_method: 排除扫描方法{0}
+username_list: 用户名列表，用“，”分开
+username_from_file: 从文件中读取用户名
+password_seperator: 密码列表，用“，”分开
+read_passwords: 从文件中读取密码
+port_seperator: 端口列表，用“，”分开
+time_to_sleep: 每次请求的间隔时间
+error_target: 无法指定目标（s）
+error_target_file: 无法指定目标，无法打开文件：{0}
+thread_number_warning: 建议线程数小于100，顺便说一句，我们正在继续......
+settimeout: 将超时设置为{0}秒，它太大了，不是吗？顺便说一句，我们正在继续...
+scan_module_not_found: 未找到此扫描模块[{0}]！
+error_exclude_all: 您不能排除所有扫描方法
+exclude_module_error: 您排除的{0}模块未找到！
+method_inputs: 输入方法输入，例如：ftp_brute_users = test，admin＆ftp_brute_passwds = read_from_file：/tmp/pass.txt&ftp_brute_port=21
+error_reading_file: 无法读取文件{0}
+error_username: 无法指定用户名，无法打开文件：{0}
+found: 找到{0}！ （{1}：{2}）
+error_password_file: 无法指定密码，无法打开文件：{0}
+file_write_error: 文件“{0}”不可写！
+scan_method_select: 请选择您的扫描方法！
+remove_temp: 删除临时文件！
+sorting_results: 排序结果！
+done: 完成了！
+start_attack: 开始攻击{2}的{0}，{1}
+module_not_available: 此模块“{0}”不可用
+error_platform: 不幸的是，这个版本的软件只能在 linux / osx / windows 上运行。
+python_version_error: 您的 Python 版本不受支持！
+skip_duplicate_target: 跳过重复的目标（一些子域/域可能具有相同的IP和范围）
+unknown_target: 未知类型的目标[{0}]
+checking_range: 检查{0}范围...
+checking: 正在检查{0} ...
+HOST: 主办
+USERNAME: 用户名
+PASSWORD: 密码
+PORT: 港口
+TYPE: 类型
+DESCRIPTION: 描述
+verbose_mode: 详细模式级别（0-5）（默认0）
+software_version: 显示软件版本
+check_updates: 检查更新
+outgoing_proxy:
+  传出连接代理（socks）。例如 socks5：127.0.0.1:9050，socks：//127.0.0.1：9050 socks5：//127.0.0.1：9050或socks4：socks4：//127.0.0.1：9050，authentication：socks：//
+  username：password @ 127.0.0.1，socks4：//用户名：password@127.0.0.1，socks5：//用户名：password@127.0.0.1
+valid_socks_address:
+  请输入有效的 socks 地址和端口。示例socks5：127.0.0.1:9050，socks：//127.0.0.1：9050，socks5：//127.0.0.1：9050或socks4：socks4：//127.0.0.1：9050，身份验证：socks：//用户名：密码@
+  127.0.0.1，socks4：//用户名：password@127.0.0.1，socks5：//用户名：password@127.0.0.1
+connection_retries: 连接超时时重试（默认3）
+ftp_connectiontimeout: 到{0}的 FTP 连接：{1}超时，跳过{2}：{3}
+login_successful: 记录成功！
+login_list_error: 记录成功，未授权命令列表！
+ftp_connection_failed: 到{0}的 ftp 连接失败，跳过{3}的整个步骤[process {2}]！进入下一步
+input_target_error: "{0}模块的输入目标必须是 DOMAIN，HTTP 或 SINGLE_IPv4，跳过{1}"
+user_pass_found: 用户：{0}传递：{1}主机：{2}端口：{3}找到！
+file_listing_error: "（不允许列表文件）"
+trying_message: 尝试{3} {4}的过程{2}中{1}的{0}：{5}（{6}）
+smtp_connectiontimeout: smtp 连接到{0}：{1}超时，跳过{2}：{3}
+smtp_connection_failed: smtp 连接到{0}：{1}失败，跳过{3}的整个步骤[process {2}]！进入下一步
+ssh_connectiontimeout: ssh 连接到{0}：{1}超时，跳过{2}：{3}
+ssh_connection_failed: ssh 连接到{0}：{1}失败，跳过{3}的整个步骤[process {2}]！进入下一步
+port/type: "{0} / {1}"
+port_found: 主机：{0}端口：{1}（{2}）找到了！
+target_submitted: 目标{0}已提交！
+current_version: 您正在运行代码为{3} {4} {5}的 OWASP Nettacker 版本{0} {1} {2} {6}
+feature_unavailable:
+  此功能尚未提供！请运行“git clone https://github.com/OWASP/Nettacker.git或
+  pip install -U OWASP-Nettacker 来获取最新版本。
+available_graph: 建立所有活动和信息的图表，您必须使用 HTML 输出。可用图表：{0}
+graph_output: 要使用图表功能，您的输出文件名必须以“.html”或“.htm”结尾！
+build_graph: 正在生成图表...
+finish_build_graph: 图表生成完成！
+pentest_graphs: 渗透测试图
+graph_message: 这张图由 OWASP Nettacker 创建。图表包含所有模块活动，网络图和敏感信息，请不要与任何人共享此文件。
+nettacker_report: OWASP Nettacker 报告
+nettacker_version_details: 软件详细信息：{2}中的 OWASP Nettacker 版本{0} [{1}]
+no_open_ports: 找不到开放的端口！
+no_user_passwords: 没有找到用户/密码！
+loaded_modules: "{0}模块已加载..."
+graph_module_404: 未找到此图形模块：{0}
+graph_module_unavailable: 此图形模块“{0}”不可用
+ping_before_scan: ping 主机存活检测
+skipping_target: 跳过整个目标{0}和扫描方法{1}，因为 - 扫描前是真的，它没有响应！
+not_last_version: 您没有使用 OWASP Nettacker 的最新版本，请更新。
+cannot_update: 无法检查更新，请检查您的互联网连接。
+last_version: 您正在使用 OWASP Nettacker 的最新版本...
+directoy_listing: 在{0}中找到目录列表
+insert_port_message: 请通过 -g 或 --methods-args 开关而不是 url 来插入端口
+http_connectiontimeout: http 连接{0}超时！
+wizard_mode: 启动向导模式
+directory_file_404: 在端口{1}中没有找到{0}的目录或文件
+open_error: 无法打开{0}
+dir_scan_get: dir_scan_http_method 值必须是 GET 或 HEAD，默认设置为 GET。
+list_methods: 列出所有的方法参数
+module_args_error: 无法获得{0}模块参数
+trying_process: 在{4}（{5}）上{3}的进程{2}中尝试{1}的{0}
+domain_found: 找到域名：{0}
+TIME: 时间
+CATEGORY: 类别
+module_pattern_404: 找不到{0}模式的任何模块！
+enter_default: 请输入{0} |默认[{1}]>
+enter_choices_default: 请输入{0} |选择[{1}] |默认[{2}]>
+all_targets: 目标
+all_thread_numbers: 线程数
+out_file: 输出文件名
+all_scan_methods: 扫描方法
+all_scan_methods_exclude: 要排除的扫描方法
+all_usernames: 用户名
+all_passwords: 密码
+timeout_seconds: 超时秒数
+all_ports: 端口号
+all_verbose_level: 详细级别
+all_socks_proxy: socks 代理
+retries_number: 重试次数
+graph: 图
+subdomain_found: 发现子域名：{0}
+select_profile: 选择配置文件{0}
+profile_404: 未找到配置文件“{0}”！
+waiting: 正在等待{0}
+vulnerable: 易受{0}攻击
+target_vulnerable: 目标{0}：{1}易受{2}攻击！
+no_vulnerability_found: 没有发现漏洞！ （{0}）
+Method: 方法
+API: API
+API_options: API 选项
+start_api_server: 启动 API 服务
+API_host: API 主机地址
+API_port: API 端口号
+API_debug: API 调试模式
+API_access_key: API 访问密钥
+white_list_API: 只允许白名单主机连接到 API
+define_whie_list: 定义白名单主机，与之分开，（例如：127.0.0.1,192.168.0.1/24,10.0.0.1-10.0.0.255）
+gen_API_access_log: 生成 API 访问日志
+API_access_log_file: API 访问日志文件名
+API_port_int: API 端口必须是整数！
+unknown_ip_input: 未知的输入类型，接受的类型是 SINGLE_IPv4，RANGE_IPv4，CIDR_IPv4
+API_key: "* API 密钥：{0}"
+ports_int: 端口必须是整数！ （例如 80 || 80,1080 || 80,1080-1300,9000,12000-15000）
+through_API: 通过 OWASP Nettacker API
+API_invalid: 无效的 API 密钥
+unauthorized_IP: 您的 IP 未经授权
+not_found: 未找到！
+no_subdomain_found: subdomain_scan：没有发现子域名！
+viewdns_domain_404: viewdns_reverse_ip_lookup_scan：找不到网址！
+browser_session_valid: 您的浏览器会话有效
+browser_session_killed: 您的浏览器会话中断
+updating_database: 更新数据库...
+database_connect_fail: 无法连接到数据库！
+inserting_report_db: 保存报告到数据库
+inserting_logs_db: 保存日志到数据库
+removing_logs_db: 从数据库中删除旧日志
+len_subdomain_found: 找到{0}个子域名！
+len_domain_found: 找到{0}个域名！
+phpmyadmin_dir_404: 找不到任何 phpmyadmin 目录！
+DOS_send: 将 DoS 数据包发送到{0}
+host_up: "{0}在线！平时花费的时间是{1}"
+host_down: ping {0} 失败！
+root_required: 这需要以 root 身份运行
+admin_scan_get: admin_scan_http_method 值必须是 GET 或 HEAD，默认设置为 GET。
+telnet_connectiontimeout: telnet 连接到{0}：{1}超时，跳过{2}：{3}
+telnet_connection_failed: telnet 连接到{0}：{1}失败，跳过{3}的整个步骤[process {2}]！进入下一步
+http_auth_success: http 基本认证成功 - 主机：{2}：{3}，用户：{0}，通过：{1}找到！
+http_auth_failed: http 基本身份验证失败{0}：使用{1}的{3}：{2}
+http_form_auth_success: http 表单身份验证成功 - 主持人：{2}：{3}，用户：{0}，通过：{1}找到了！
+http_form_auth_failed: http 表单身份验证失败{0}：使用{1}的{3}：{2}
+http_ntlm_success: http ntlm 认证成功 - 主机：{2}：{3}，用户：{0}，通过：{1}找到！
+http_ntlm_failed: http ntlm 身份验证失败{0}：使用{1}的{3}：{2}
+no_response: 无法从目标获得回应
+category_framework: 类别：{0}，框架：{1}找到了！
+nothing_found: 在{1}的{0}中找不到任何内容！
+no_auth: 在{0}上找不到验证码：{1}

@@ -1,0 +1,42 @@
+info:
+  name: smtps_brute
+  author: OWASP Nettacker Team
+  severity: 3
+  description: SMTPS Bruteforcer
+  reference:
+  profiles:
+    - brute
+    - brute_force
+    - smtp
+
+payloads:
+  - library: smtp
+    steps:
+      - method: smtps_brute_force
+        timeout: 3
+        host: "{target}"
+        ports:
+          - 25
+          - 2525
+          - 465
+          - 587
+        usernames:
+          - root
+          - admin
+          - user
+          - test
+        passwords:
+          nettacker_fuzzer:
+            input_format: '{{passwords}}'
+            prefix:
+            suffix:
+            interceptors:
+            data:
+              passwords: fuzzer_function_read_file_as_array('passwords/top_1000_common_passwords.txt')
+        response:
+          condition_type: or
+          conditions:
+            successful_login:
+              regex: ""
+              reverse: false
+

@@ -1,0 +1,48 @@
+info:
+  name: exponent_cms_cve_2021_38751_vuln
+  author: OWASP Nettacker Team
+  severity: 5
+  description:
+  reference:
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - medium_severity
+    - cve
+    - exponent_cms
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 10
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+          Host: "random_string_1.com"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "random_string_1.com"
+              reverse: false

