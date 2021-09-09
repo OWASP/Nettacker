@@ -625,7 +625,9 @@ $(document).ready(function () {
     $("#advance_options").addClass("hidden");
     $("#basic_options").removeClass("hidden");
   });
-
+function obsKeysToString(o, k, sep) {
+ return k.map(key => o[key]).filter(v => v).join(sep);
+}
   function show_crawler(res) {
     res = JSON.parse(res);
     // var HTMLData = "";
@@ -661,6 +663,7 @@ $(document).ready(function () {
       options = res[i]["info"]["options"];
       //date = res[i]["info"]["date"];
       module_name = res[i]["info"]["module_name"]
+      events = res[i]["info"]["event"]
 
       // open_ports = res[i]["info"]["open_ports"];
       // scan_methods = res[i]["info"]["scan_methods"];
@@ -702,11 +705,27 @@ $(document).ready(function () {
             "<p class='mb-1 bold label label-info'>selected_modules:" +
             module_name[j] +
             "</p> ";
-          if (j == 10) {
-            html_module_name +=
-              "<p class='mb-1 bold label label-info'>selected_modules: click to see more.</p> ";
-            break;
+        }
+
+       for (j = 0; j < events.length; j++) {
+          cleaned_event = JSON.parse(JSON.stringify(events[j]))
+          delete cleaned_event.response
+          data = ""
+          for (key in cleaned_event){
+            data += key + ":" + cleaned_event[key] + ', '
           }
+          data = data.slice(0, -2)
+          html_module_name +=   "<p class='mb-1 bold label label-success'>event: " + data + "</p> ";
+        }
+
+       for (j = 0; j < events.length; j++) {
+          cleaned_event = JSON.parse(JSON.stringify(events[j])).response.conditions_results
+          data = ""
+          for (key in cleaned_event){
+            data += key + ", "
+          }
+          data = data.slice(0, -2)
+          html_module_name += "<p class='mb-1 bold label label-warning'>condition_results: " + data + "</p> ";
         }
 
       
