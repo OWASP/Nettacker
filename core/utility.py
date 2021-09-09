@@ -58,6 +58,8 @@ def process_conditions(
             except Exception:
                 continue
         del event['response']['conditions']
+        event_request_keys = copy.deepcopy(event)
+        del event_request_keys['response']
         submit_logs_to_db(
             {
                 "date": now(model=None),
@@ -78,6 +80,14 @@ def process_conditions(
                 total_module_thread_number,
                 request_number_counter,
                 total_number_of_requests,
+                ",".join(
+                    [
+                        "{}:{}, ".format(
+                            _,
+                            event_request_keys[_]
+                        ) for _ in event_request_keys
+                    ]
+                ),
                 ", ".join(event['response']['conditions_results'].keys())
             )
         )
