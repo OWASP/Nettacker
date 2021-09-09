@@ -62,8 +62,8 @@ class NettackerSocket:
         peer_name = socket_connection.getpeername()
         try:
             socket_connection.send(b"ABC\x00\r\n" * 10)
-            socket_connection.close()
             response = socket_connection.recv(1024 * 1024 * 10)
+            socket_connection.close()
         except Exception:
             response = b""
         return {
