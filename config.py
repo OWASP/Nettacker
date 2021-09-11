@@ -124,7 +124,7 @@ def nettacker_user_application_config():
         "ping_before_scan": False,
         "profiles": None,
         "set_hardware_usage": "maximum",  # low, normal, high, maximum
-        "user_agent": "Nettacker {version_number} {version_code} - https://github.com/OWASP/Nettacker".format(
+        "user_agent": "Nettacker {version_number} {version_code}".format(
             version_number=version_info()[0], version_code=version_info()[1]
         ),
         "show_all_modules": False,
