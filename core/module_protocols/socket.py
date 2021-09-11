@@ -65,10 +65,14 @@ class NettackerSocket:
             response = socket_connection.recv(1024 * 1024 * 10)
             socket_connection.close()
         except Exception:
-            response = b""
+            try:
+                socket_connection.close()
+                response = b""
+            except Exception:
+                response = b""
         return {
             "peer_name": peer_name,
-            "service":  socket.getservbyport(int(ports)),
+            "service": socket.getservbyport(int(ports)),
             "response": response.decode(errors='ignore')
         }
 
