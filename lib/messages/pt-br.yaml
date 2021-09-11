@@ -1,0 +1,281 @@
+scan_started: |+
+  O mecanismo Nettacker iniciou ...
+
+options: 'python nettacker.py [opções]'
+help_menu: Exibir o menu de ajuda do OWASP Nettacker
+license: |
+  Leia a licença e os acordos em https://github.com/OWASP/Nettacker
+engine: Mecanismo
+engine_input: Opções de entrada do mecanismo
+select_language: 'selecione um idioma {0}'
+range: escanear todos os IP em um intervalo
+subdomains: buscar e escanear subdomínios
+Invalid_whatcms_api_key: '{0}'
+searching_whatcms_database: Procurando por CMS em whatcms.org...
+whatcms_monthly_quota_exceeded: Você excedeu sua cota de requisição WHATCMS mensal
+thread_number_connections: número de thread(s) para as conexões com um host
+thread_number_hosts: número de thread(s) para os hosts de escaneio
+save_logs: 'salvar todos os registros no arquivo (results.txt, results.html, results.json)'
+target: Alvo
+target_input: Opções de entrada de destino
+target_list: 'lista(s) de destino(s), separe com ","'
+read_target: ler alvo(s) do arquivo
+scan_method_options: Opções de método de escaneio
+choose_scan_method: 'escolha o método de escaneio {0}'
+exclude_scan_method: 'escolha método de escaneio para excluir {0}'
+username_list: 'lista de nome(s) de usuário(s), separe com ","'
+username_from_file: ler nome(s) de usuário(s) do arquivo
+password_seperator: 'lista de senha(s), separe com ","'
+read_passwords: ler senhas(s) do arquivo
+port_seperator: 'lsita de porta(s), separe com ","'
+time_to_sleep: tempo para esperar entre cada solicitação
+error_target: Não foi possível especificar o(s) alvo(s)
+error_target_file: 'Não foi possível especificar o(s) alvo(s), impossível abrir o arquivo: {0}'
+thread_number_warning: >-
+  é melhor utilizar um número de threads inferior a 100, a propósito continuamos
+  ...
+set_timeout: >-
+  estabelece o tempo de espera em {0} segundos, é muito grande, não? a
+  propósito, continuamos
+scan_module_not_found: 'este módulo de escaneio [{0}] não foi encantrado!'
+error_exclude_all: você não pode excluir todos os métodos de escaneio
+exclude_module_error: 'o módulo {0}, que você selecionou para excluir, não foi encontrado!'
+method_inputs: >-
+  digita as entradas de métodos, exemplo: ftp_brute_users = test, admin &
+  ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21
+error_reading_file: 'impossível ler o arquivo {0}'
+error_username: >-
+  Não foi possível especificar o(s) nome(s) de usuário(s), impossível abrir o
+  arquivo: {0}
+found: '{0} encontrado! ({1}: {2})'
+error_password_file: 'Não foi possível especificar a(s) senha(s), impossível abrir o arquivo: {0}'
+file_write_error: 'O arquivo "{0}" não é escrevível!'
+scan_method_select: 'por favor, escolha seu método de escaneio!'
+remove_temp: eliminando arquivos temporários!
+sorting_results: ordenando resultados!
+done: concluído!
+start_attack: 'começando a atacar {0}, {1} de {2}'
+module_not_available: 'este módulo "{0}" está indisponível'
+error_platform: >-
+  infelizmente, esta versão do software só pode ser executado em
+  linux/osx/windows.
+python_version_error: Sua versão do Python não é compatível!
+skip_duplicate_target: >-
+  pular alvos duplicados (alguns subdomínios/domínios podem ter o mesmo IP e
+  Intervalos)
+unknown_target: 'tipo de alvo desconhecido [{0}]'
+checking_range: 'checando o intervalo {0} ...'
+checking: 'checando {0} ...'
+HOST: HOST
+USERNAME: NOME DE USUÁRIO
+PASSWORD: SENHA
+PORT: PORTA
+TYPE: TIPO
+DESCRIPTION: DESCRIÇÃO
+verbose_level: nível de modo de detalhe (0-5) (padrão 0)
+software_version: mostrar a versão do software
+check_updates: checar atualizações
+outgoing_proxy: >-
+  proxy de conexões de saída (socks). exemplo de socks5: 127.0.0.1:9050,
+  socks://127.0.0.1:9050 socks5://127.0.0.1:9050 ou socks4:
+  socks4://127.0.0.1:9050, autenticação: socks://nome de usuário:
+  senha@127.0.0.1, socks4://nome de usuário:senha@127.0.0.1, socks5://nome de
+  usuário:senha@127.0.0.1
+valid_socks_address: >-
+  por favor, insira válidos endereço de socks e porta. exemplo de socks5:
+  127.0.0.1:9050, socks://127.0.0.1:9050, socks5://127.0.0.1:9050 ou socks4:
+  socks4://127.0.0.1:9050, autenticação: socks://nome de
+  usuário:senha@127.0.0.1, socks4://nome de usuário:senha@127.0.0.1,
+  socks5://nome de usuário:senha@127.0.0.1
+connection_retries: Tentativas quando o tempo da conexão esgotar (padrão 3)
+ftp_connection_timeout: 'conexão ftp a {0}: {1} tempo esgotado, pulando {2}: {3}'
+login_successful: CONECTADO COM SUCESSO!
+login_list_error: 'CONECTADO COM SUCESSO, PERMISSÃO NEGADA PARA O COMANDO DE LISTA!'
+ftp_connection_failed: >-
+  conexão ftp a {0}: {1} falhou, pulando todo o passo [processo {2} de {3}]!
+  indo ao próximo passo
+input_target_error: >-
+  o alvo de entrada para o módulo {0} deve ser DOMÍNIO, HTTP ou SINGLE_IPv4,
+  pulando {1}
+user_pass_found: 'usuário: {0} passe: {1} host: {2} porta: {3} encontrado!'
+file_listing_error: (SEM PERMISSÃO PARA LISTAR ARQUIVOS)
+trying_message: 'tentando {0} de {1} em processo {2} de {3} {4}: {5} ({6})'
+smtp_connection_timeout: 'conexão smtp a {0}: {1} tempo esgotado, pulando {2}: {3}'
+smtp_connection_failed: >-
+  conexão smtp a {0}: {1} falhou, pulando todo o passo [processo {2} de {3}]!
+  indo ao próximo passo
+ssh_connection_timeout: 'conexão ssh a {0}: {1} tempo esgotado, pulando {2}: {3}'
+ssh_connection_failed: >-
+  a conexão ssh a {0}: {1} falhou, pulando todo o passo [processo {2} de {3}]!
+  indo ao próximo passo
+port/type: '{0}/{1}'
+port_found: 'host: {0} porta: {1} ({2}) encontrado!'
+target_submitted: 'alvo {0} submetido!'
+current_version: >-
+  você está usando o OWASP Nettacker versão {0}{1}{2}{6} com nome de código
+  {3}{4}{5}
+feature_unavailable: >-
+  este recurso ainda não está disponível! por favor, execute "git clone
+  https://github.com/OWASP/Nettacker.git ou pip install -U OWASP-Nettacker para
+  obter a última versão.
+available_graph: >-
+  cria um gráfico de todas as atividades e informações, você deve usar a saída
+  HTML. gráficos disponíveis: {0}
+graph_output: >-
+  para usar o recurso gráfico, o nome de seu arquivo de saída deve terminar com
+  ".html" ou ".htm"!
+build_graph: construindo gráfico ...
+finish_build_graph: terminar de construir o gráfico!
+pentest_graphs: Gráficos de Testes de Invasão
+graph_message: >-
+  Este gráfico foi criado por OWASP Nettacker. O gráfico contém todas as
+  atividades dos módulos, o mapa da rede e informações confidenciais. Por
+  favor,não compartilhe este arquivo com ninguém se não for confiável.
+nettacker_report: Relatório OWASP Nettacker
+nettacker_version_details: 'Detalhes do software: versão do OWASP Nettacker {0} [{1}] em {2}'
+no_open_ports: não foram encontradas portas abertas!
+no_user_passwords: usuário/senha não encontrado(s)!
+loaded_modules: '{0} módulos carregados ...'
+graph_module_404: 'este módulo gráfico não foi encontrado: {0}'
+graph_module_unavailable: 'este módulo de gráfico "{0}" não está disponível'
+ping_before_scan: ping antes de escanear o host
+skipping_target: >-
+  pulando todo o alvo {0} e o método de escaneio {1}, pois --ping-before-scan é
+  verdadeiro e não respondeu!
+not_last_version: >-
+  você não está utilizando a última versão do OWASP Nettacker, por favor
+  atualize.
+cannot_update: 'não foi possível verificar atualização, verifique sua conexão com a internet.'
+last_version: Você está utilizando a última versão do OWASP Nettacker ...
+directoy_listing: 'lista de diretórios encontrada em {0}'
+insert_port_message: 'por favor, insira a porta mediante o switch -g ou --methods-args em vez da url'
+http_connection_timeout: 'conexão http {0} tempo esgotado!'
+wizard_mode: iniciar modo de assistente
+directory_file_404: 'nenhum diretório ou arquivo encontrado a {0} na porta {1}'
+open_error: 'não foi possível abrir {0}'
+dir_scan_get: 'O valor dir_scan_http_method deve ser GET ou HEAD, definição padrão em GET.'
+list_methods: listar todos os métodos args
+module_args_error: 'não foi possível obter {0} argumentos do módulo'
+trying_process: 'tentando {0} de {1} em processo {2} de {3} em {4} ({5})'
+domain_found: 'domínio encontrado: {0}'
+TIME: TEMPO
+CATEGORY: CATEGORIA
+module_pattern_404: 'não foi possível encontrar módulos com o padrão {0}!'
+enter_default: 'por favor, entre {0} | Padrão[{1}]>'
+enter_choices_default: 'por favor, entre {0} | opções [{1}] | Padrão [{2}]>'
+all_targets: os alvos
+all_thread_numbers: o número de thread(s)
+out_file: o nome do arquivo de saída
+all_scan_methods: os métodos de escaneio
+all_scan_methods_exclude: os métodos de escaneio para excluir
+all_usernames: os nomes de usuario
+all_passwords: as senhas
+timeout_seconds: os segundos de tempo de esgotamento
+Invalid_shodan_api_key: '{0}'
+shodan_api_key: 'Chave de API Shodan para reconhecimento de Shodan '
+shodan_results_found: 'Resultado de Shodan encontrados: {0}'
+shodan_results_not_found: Nada encontrado na base de dados Shodan
+shodan_plan_upgrade: >-
+  Por favor, atualize seu plano de API para usar FILTERS ou PAGING e obter
+  resultados muito melhores
+searching_shodan_database: Procurando Base de Dados Shodan...
+all_ports: os números de portas
+all_verbose_level: o nivel detalhado
+all_socks_proxy: os proxy de socks
+retries_number: o número de novas tentativas
+graph: um gráfico
+subdomain_found: 'subdomínio encontrado: {0}'
+select_profile: 'selecionar perfil {0}'
+profile_404: 'o perfil "{0}" não foi encontrado!'
+waiting: 'esperando por {0}'
+vulnerable: 'vulnerável a {0}'
+target_vulnerable: 'alvo {0}: {1} é vulnerável a {2}!'
+graphql_inspection: >-
+  Console GraphQL encontrado no alvo {0}:{1} o qual têm Consultas de
+  Introspecção Ativadas!
+graphql_inspection_console: 'Console GraphQL encontrado havendo Consultas de Introspecção Ativadas: {0}!'
+no_vulnerability_found: 'não foram encontradas vulnerabilidades! ({0})'
+Method: Método
+API: API
+API_options: Opções de API
+start_API: iniciar el servicio API
+API_host: Endereço de host API
+API_port: Número de porta API
+API_debug: Modo de depuração API
+API_access_key: Chave de acceso API
+white_list_API: apenas permita que os hosts da white list se conectem com a API
+define_whie_list: >-
+  definir os hosts da white list, separar com , (exemplos: 127.0.0.1,
+  192.168.0.1/24, 10.0.0.1-10.0.0.255)
+gen_API_access_log: gerar registros de acceso API
+API_access_log_file: nome do arquivo de registros de acceso API
+API_port_int: a porta API deve ser um número inteiro!
+unknown_ip_input: >-
+  tipo de entrada desconhecido, os tipos aceitos são SINGLE_IPv4, RANGE_IPv4,
+  CIDR_IPv4
+API_key: '* Chave de API: {0}'
+ports_int: >-
+  as portas devem ser inteiros! (por exemplo, 80 || 80,1080 ||
+  80,1080-1300,9000,12000-15000)
+through_API: Através da API OWASP Nettacker
+API_invalid: chave de API inválida
+API_cert: CERTIFICADO API
+API_cert_key: Chave do CERTIFICADO API
+api_cert: >-
+  Por favor, forneça a localização do seu certificado SSL usando o switch
+  --api-cert
+api_cert_key: >-
+  Por favor, forneça a localização da sua chave privada SSL usando o switch
+  --api-cert-key
+wrong_values: 'Por favor, forneça o certificado SSL correto e o arquivo de chave privada!'
+unauthorized_IP: seu IP não está autorizado
+not_found: Não encontrado!
+no_subdomain_found: 'subdomain_scan: nenhum subdomínio encontrado!'
+viewdns_domain_404: 'viewdns_reverse_ip_lookup_scan: nenhum domínio encontrado!'
+browser_session_valid: a sessão do seu navegador é válida
+browser_session_killed: a sessão do seu navegador morreu
+updating_database: atualizando a base de dados ...
+database_connect_fail: não foi possível conectar à base de dados!
+inserting_report_db: inserindo relatório na base de dados
+inserting_logs_db: inserindo registros na base de dados
+removing_logs_db: removendo os registros antigos da bd
+len_subdomain_found: '{0} subdomínio(s) encontrado(s)!'
+len_domain_found: '{0} domínio(s) encontrado(s)!'
+phpmyadmin_dir_404: nenhum phpmyadmin dir encontrado!
+DOS_send: 'enviar pacotes DoS a {0}'
+host_up: '{0} está pronto! O tempo necessário para fazer o ping de volta é {1}'
+host_down: 'Não foi possível realizar o ping {0}!'
+root_required: isso necessita ser executado pelo root
+admin_scan_get: >-
+  O valor de admin_scan_http_method deve ser GET ou HEAD, definição padrão em
+  GET.
+telnet_connection_timeout: 'conexão telnet a {0}: {1} tempo esgotado, pulando {2}: {3}'
+telnet_connection_failed: >-
+  conexão telnet a {0}: {1} falhou, pulando todo o passo [processo {2} de {3}]!
+  indo ao próximo passo
+http_auth_success: >-
+  autenticação básica http realizada com sucesso - host:{2}:{3}, usuário: {0},
+  passe:{1} encontrado!
+http_auth_failed: 'autenticação básica http falhou {0}: {3} usando {1}: {2}'
+http_form_auth_success: >-
+  autenticação de formulário http realizada com sucesso - host:{2}:{3}, usuário:
+  {0}, passe: {1} encontrado!
+http_form_auth_failed: 'autenticação de formulário http falhou a {0}:{3} usando {1}:{2}'
+using_shodan_query_override: 'Usando {0} como um alvo para Shodan'
+http_ntlm_success: >-
+  autenticação http ntlm realizada com sucesso - host:{2}:{3}, usuário: {0},
+  passe: {1} encontrado!
+http_ntlm_failed: 'autenticação http ntlm falhou a {0}:{3} usando {1}:{2}'
+no_response: não foi possível receber resposta do alvo
+category_framework: 'categoría: {0}, frameworks: {1} encontrado!'
+nothing_found: 'nada encontrado em {0} em {1}!'
+no_auth: 'Nenhuma autenticação encontrada em {0}:{1}'
+invalid_database: 'Por favor, selecione mysql ou sqlite no arquivo de configuração'
+database_connection_failed: Conexão com a bd selecionada falhou
+fuzzer_no_response: 'O fuzzer http não encontrou nenhuma saída para {0}'
+summary_report: tabela de relatório de resumo
+file_saved: 'relatório salvo em {0} e base de dados'
+no_event_found: nenhum evento encontrado nesse escaneio
+invalid_json_type_to_db: >-
+  Tipo inválido de dados JSON para o banco de dados. Pulando a submissão para
+  obanco de dados. Dado:{0}
