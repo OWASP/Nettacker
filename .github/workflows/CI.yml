@@ -2,66 +2,21 @@
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 name: CI
-
-on:
-  push:
-    branches:
-      - master
-      - development
-      - '**'
-    paths:
-      - '**.py'
-  pull_request:
-    branches:
-      - master
-      - development
-
-    types: [
-      assigned,
-      unassigned,
-      labeled,
-      unlabeled,
-      opened,
-      edited,
-      closed,
-      reopened,
-      synchronize,
-      ready_for_review,
-      locked,
-      unlocked,
-      review_requested,
-      review_request_removed
-    ]
+on: [push, pull_request]
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.9] # python version is defined in docker
-
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip
-
-      - name: Install development dependencies
-        run: sudo pip install -r requirements-dev.txt
-
-      - name: lint check with flake8
-        run: flake8 --extend-exclude '*.txt,*.js,*.md,*.html' --count --select=E9,F63,F7,F82 --show-source
-
-      - name: create .data directory
-        run: mkdir -p .data/results .data/tmp
+      - name: Check out the repo
+        uses: actions/checkout@v2
 
       - name: Build the code with docker
         run: docker build . -t nettacker
+
+      - name: Lint
+        run: "docker run -e github_ci=true -v $(pwd):/usr/src/owaspnettacker --rm nettacker flake8 --extend-exclude
+        '*.txt,*.js,*.md,*.html' --count --select=E9,F63,F7,F82 --show-source"
 
       - name: Help Menu
         run: "docker run -e github_ci=true -v $(pwd):/usr/src/owaspnettacker --rm nettacker python nettacker.py --help"
