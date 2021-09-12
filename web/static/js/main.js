@@ -286,7 +286,7 @@ $(document).ready(function () {
       selected_modules: selected_modules,
       graph_name: graph_name,
       language: language,
-      report_path_filename: $("#report_path_filename").val(),
+      report_path_filename: $("#output_file").val(),
       scan_ip_range: p_1,
       scan_subdomains: p_3,
       ping_before_scan: p_2,
