@@ -585,6 +585,7 @@ def start_api_subprocess(options):
             host=options.api_hostname,
             port=options.api_port,
             debug=options.api_debug_mode,
+            ssl_context='adhoc',
             threaded=True
         )
 
