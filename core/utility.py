@@ -58,6 +58,7 @@ def process_conditions(
             except Exception:
                 continue
         del event['response']['conditions']
+        del event['response']['condition_type']
         event_request_keys = copy.deepcopy(event)
         del event_request_keys['response']
         submit_logs_to_db(
@@ -68,7 +69,20 @@ def process_conditions(
                 "scan_unique_id": scan_unique_id,
                 # "options": options,
                 "options": {},
-                "event": event
+                "event": ", ".join(
+                    [
+                        "{}: {}".format(
+                            key,
+                            value
+                        ) for key, value in event_request_keys.items()
+                    ]
+                ) + ", conditions: " + ", ".join(
+                    [
+                        "{}".format(
+                            key
+                        ) for key in event['response']['conditions_results'].keys()
+                    ]
+                )
             }
         )
         success_event_info(

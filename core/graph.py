@@ -158,11 +158,11 @@ def create_report(options, scan_unique_id):
         with open(report_path_filename, 'a') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=keys)
             writer.writeheader()
-            for i in all_scan_logs:
-                dicdata = {
-                    key: value for key, value in i.items() if key in keys
+            for log in all_scan_logs:
+                dict_data = {
+                    key: value for key, value in log.items() if key in keys
                 }
-                writer.writerow(dicdata)
+                writer.writerow(dict_data)
             csvfile.close()
 
     else:
