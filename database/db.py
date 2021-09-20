@@ -410,8 +410,9 @@ def logs_to_report_html(target):
             "target": log.target,
             "module_name": log.module_name,
             "scan_unique_id": log.scan_unique_id,
-            "options": log.options,
-            "event": log.event
+            "port": log.port,
+            "event": log.event,
+            "json_event": log.json_event
         } for log in session.query(HostsLog).filter(
             HostsLog.target == target
         ).all()
@@ -428,8 +429,9 @@ def logs_to_report_html(target):
         'target',
         'module_name',
         'scan_unique_id',
-        'options',
-        'event'
+        'port',
+        'event',
+        'json_event'
     )
     for event in logs:
         html_content += log_data.table_items.format(
@@ -437,8 +439,9 @@ def logs_to_report_html(target):
             event["target"],
             event['module_name'],
             event['scan_unique_id'],
-            event['options'],
-            event['event']
+            event['port'],
+            event['event'],
+            event['json_event']
         )
     html_content += log_data.table_end + '<p class="footer">' + messages("nettacker_report") + '</p>'
     return html_content
