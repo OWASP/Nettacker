@@ -66,7 +66,7 @@ def process_conditions(
                 "target": target,
                 "module_name": module_name,
                 "scan_unique_id": scan_unique_id,
-                "port": event.get('ports'),
+                "port": event.get('ports') or event.get('port') or event.get('url').split(':')[2].split('/')[0],
                 "event": ", ".join(
                     [
                         "{}: {}".format(
