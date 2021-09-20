@@ -40,8 +40,7 @@ def process_conditions(
                 "module_name": module_name,
                 "scan_unique_id": scan_unique_id,
                 "event_name": event['response']['save_to_temp_events_only'],
-                # "options": options,
-                "options": {},
+                "port": event.get('ports', ''),
                 "event": event,
                 "data": response
             }
@@ -67,8 +66,7 @@ def process_conditions(
                 "target": target,
                 "module_name": module_name,
                 "scan_unique_id": scan_unique_id,
-                # "options": options,
-                "options": {},
+                "port": event.get('ports'),
                 "event": ", ".join(
                     [
                         "{}: {}".format(
@@ -82,7 +80,8 @@ def process_conditions(
                             key
                         ) for key in event['response']['conditions_results'].keys()
                     ]
-                )
+                ),
+                "json_event": json.dumps(event)
             }
         )
         success_event_info(
