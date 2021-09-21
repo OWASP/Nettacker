@@ -40,8 +40,7 @@ def process_conditions(
                 "module_name": module_name,
                 "scan_unique_id": scan_unique_id,
                 "event_name": event['response']['save_to_temp_events_only'],
-                # "options": options,
-                "options": {},
+                "port": event.get('ports', ''),
                 "event": event,
                 "data": response
             }
@@ -58,6 +57,7 @@ def process_conditions(
             except Exception:
                 continue
         del event['response']['conditions']
+        del event['response']['condition_type']
         event_request_keys = copy.deepcopy(event)
         del event_request_keys['response']
         submit_logs_to_db(
@@ -66,9 +66,22 @@ def process_conditions(
                 "target": target,
                 "module_name": module_name,
                 "scan_unique_id": scan_unique_id,
-                # "options": options,
-                "options": {},
-                "event": event
+                "port": event.get('ports') or event.get('port') or event.get('url').split(':')[2].split('/')[0],
+                "event": ", ".join(
+                    [
+                        "{}: {}".format(
+                            key,
+                            value
+                        ) for key, value in event_request_keys.items()
+                    ]
+                ) + ", conditions: " + ", ".join(
+                    [
+                        "{}".format(
+                            key
+                        ) for key in event['response']['conditions_results'].keys()
+                    ]
+                ),
+                "json_event": json.dumps(event)
             }
         )
         success_event_info(

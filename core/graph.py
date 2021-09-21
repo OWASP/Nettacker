@@ -58,12 +58,14 @@ def build_texttable(events):
     """
     _table = texttable.Texttable()
     table_headers = [
+        'date',
         'target',
         'module_name',
         'scan_unique_id',
-        'options',
+        'port',
         'event',
-        'date'
+        'json_event'
+
     ]
     _table.add_rows(
         [
@@ -75,12 +77,14 @@ def build_texttable(events):
             [
                 table_headers,
                 [
+                    event['date'],
                     event['target'],
                     event['module_name'],
                     event['scan_unique_id'],
-                    event['options'],
+                    event['port'],
                     event['event'],
-                    event['date']
+                    event['json_event']
+
                 ]
             ]
         )
@@ -125,8 +129,9 @@ def create_report(options, scan_unique_id):
             'target',
             'module_name',
             'scan_unique_id',
-            'options',
-            'event'
+            'port',
+            'event',
+            'json_event'
         )
         for event in all_scan_logs:
             html_table_content += log_data.table_items.format(
@@ -134,8 +139,9 @@ def create_report(options, scan_unique_id):
                 event["target"],
                 event["module_name"],
                 event["scan_unique_id"],
-                event["options"],
-                event["event"]
+                event["port"],
+                event["event"],
+                event["json_event"]
             )
         html_table_content += log_data.table_end + '<p class="footer">' + messages("nettacker_version_details").format(
             version_info()[0],
@@ -158,11 +164,11 @@ def create_report(options, scan_unique_id):
         with open(report_path_filename, 'a') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=keys)
             writer.writeheader()
-            for i in all_scan_logs:
-                dicdata = {
-                    key: value for key, value in i.items() if key in keys
+            for log in all_scan_logs:
+                dict_data = {
+                    key: value for key, value in log.items() if key in keys
                 }
-                writer.writerow(dicdata)
+                writer.writerow(dict_data)
             csvfile.close()
 
     else:

@@ -153,8 +153,9 @@ def submit_logs_to_db(log):
                 date=log["date"],
                 module_name=log["module_name"],
                 scan_unique_id=log["scan_unique_id"],
-                options=json.dumps(log["options"]),
-                event=json.dumps(log["event"])
+                port=json.dumps(log["port"]),
+                event=json.dumps(log["event"]),
+                json_event=json.dumps(log["json_event"])
             )
         )
         return send_submit_query(session)
@@ -182,7 +183,7 @@ def submit_temp_logs_to_db(log):
                 module_name=log["module_name"],
                 scan_unique_id=log["scan_unique_id"],
                 event_name=log["event_name"],
-                options=json.dumps(log["options"]),
+                port=json.dumps(log["port"]),
                 event=json.dumps(log["event"]),
                 data=json.dumps(log["data"])
             )
@@ -352,8 +353,9 @@ def get_logs_by_scan_unique_id(scan_unique_id):
             "target": log.target,
             "module_name": log.module_name,
             "date": str(log.date),
-            "options": json.loads(log.options),
+            "port": json.loads(log.port),
             "event": json.loads(log.event),
+            "json_event": log.json_event,
         }
         for log in session.query(HostsLog).filter(
             HostsLog.scan_unique_id == scan_unique_id
@@ -379,8 +381,9 @@ def logs_to_report_json(target):
             data = {
                 "scan_unique_id": log.scan_unique_id,
                 "target": log.target,
-                "options": json.loads(log.options),
+                "port": json.loads(log.port),
                 "event": json.loads(log.event),
+                "json_event": json.loads(log.json_event),
             }
             return_logs.append(data)
         return return_logs
@@ -407,8 +410,9 @@ def logs_to_report_html(target):
             "target": log.target,
             "module_name": log.module_name,
             "scan_unique_id": log.scan_unique_id,
-            "options": log.options,
-            "event": log.event
+            "port": log.port,
+            "event": log.event,
+            "json_event": log.json_event
         } for log in session.query(HostsLog).filter(
             HostsLog.target == target
         ).all()
@@ -425,8 +429,9 @@ def logs_to_report_html(target):
         'target',
         'module_name',
         'scan_unique_id',
-        'options',
-        'event'
+        'port',
+        'event',
+        'json_event'
     )
     for event in logs:
         html_content += log_data.table_items.format(
@@ -434,8 +439,9 @@ def logs_to_report_html(target):
             event["target"],
             event['module_name'],
             event['scan_unique_id'],
-            event['options'],
-            event['event']
+            event['port'],
+            event['event'],
+            event['json_event']
         )
     html_content += log_data.table_end + '<p class="footer">' + messages("nettacker_report") + '</p>'
     return html_content
@@ -459,12 +465,12 @@ def search_logs(page, query):
                 (HostsLog.target.like("%" + str(query) + "%"))
                 | (HostsLog.date.like("%" + str(query) + "%"))
                 | (HostsLog.module_name.like("%" + str(query) + "%"))
-                | (HostsLog.options.like("%" + str(query) + "%"))
+                | (HostsLog.port.like("%" + str(query) + "%"))
                 | (HostsLog.event.like("%" + str(query) + "%"))
                 | (HostsLog.scan_unique_id.like("%" + str(query) + "%"))
         ).group_by(HostsLog.target).order_by(HostsLog.id.desc()).offset((page * 10) - 10).limit(10):
             for data in session.query(HostsLog).filter(HostsLog.target == str(host.target)).group_by(
-                    HostsLog.module_name, HostsLog.options, HostsLog.scan_unique_id, HostsLog.event
+                    HostsLog.module_name, HostsLog.port, HostsLog.scan_unique_id, HostsLog.event
             ).order_by(HostsLog.id.desc()).all():
                 n = 0
                 capture = None
@@ -477,9 +483,10 @@ def search_logs(page, query):
                         "target": data.target,
                         "info": {
                             "module_name": [],
-                            "options": [],
+                            "port": [],
                             "date": [],
                             "event": [],
+                            "json_event": []
                         }
                     }
                     selected.append(tmp)
@@ -493,13 +500,17 @@ def search_logs(page, query):
                         selected[capture]["info"]["module_name"].append(data.module_name)
                     if data.date not in selected[capture]["info"]["date"]:
                         selected[capture]["info"]["date"].append(data.date)
-                    if data.options not in selected[capture]["info"]["options"]:
-                        selected[capture]["info"]["options"].append(
-                            json.loads(data.options)
+                    if data.port not in selected[capture]["info"]["port"]:
+                        selected[capture]["info"]["port"].append(
+                            json.loads(data.port)
                         )
                     if data.event not in selected[capture]["info"]["event"]:
                         selected[capture]["info"]["event"].append(
                             json.loads(data.event)
+                        )
+                    if data.json_event not in selected[capture]["info"]["json_event"]:
+                        selected[capture]["info"]["json_event"].append(
+                            json.loads(data.json_event)
                         )
     except Exception:
         return structure(status="error", msg="database error!")

@@ -43,13 +43,13 @@ def start(events):
                 }
             )
         normalisedjson['children'][event['target']][event['module_name']].append(
-            f"target: {event['target']}, module_name: {event['module_name']}, options: "
-            f"{event['options']}, event: {event['event']}"
+            f"target: {event['target']}, module_name: {event['module_name']}, port: "
+            f"{event['port']}, event: {event['event']}"
         )
     # define a d3_structure_json
     d3_structure = {
         "name": "Starting attack",
-                    "children": []
+        "children": []
     }
     # get data for normalised_json
     for target in list(normalisedjson['children'].keys()):

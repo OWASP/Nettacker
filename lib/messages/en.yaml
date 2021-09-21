@@ -6,7 +6,7 @@ API_cert_key: API CERTIFICATE Key
 API_debug: API debug mode
 API_host: API host address
 API_invalid: invalid API key
-API_key: " * API is accessible from http://nettacker-api.z3r0d4y.com:{0}/ via API Key: {1}"
+API_key: " * API is accessible from https://nettacker-api.z3r0d4y.com:{0}/ via API Key: {1}"
 API_options: API options
 API_port: API port number
 Method: Method

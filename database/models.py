@@ -46,7 +46,7 @@ class TempEvents(Base):
     module_name = Column(Text)
     scan_unique_id = Column(Text)
     event_name = Column(Text)
-    options = Column(Text)
+    port = Column(Text)
     event = Column(Text)
     data = Column(Text)
 
@@ -56,15 +56,16 @@ class TempEvents(Base):
         """
         return '''
                     <scan_events(id={0}, target={1}, date={2}, module_name={3}, scan_unqiue_id={4}, 
-                    options={5}, event={6})>
+                    port={5}, event={6}, data={7})>
                 '''.format(
             self.id,
             self.target,
             self.date,
             self.module_name,
             self.scan_unique_id,
-            self.options,
-            self.event
+            self.port,
+            self.event,
+            self.data
         )
 
 
@@ -79,8 +80,9 @@ class HostsLog(Base):
     target = Column(Text)
     module_name = Column(Text)
     scan_unique_id = Column(Text)
-    options = Column(Text)
+    port = Column(Text)
     event = Column(Text)
+    json_event = Column(Text)
 
     def __repr__(self):
         """
@@ -88,13 +90,14 @@ class HostsLog(Base):
         """
         return '''
             <scan_events(id={0}, target={1}, date={2}, module_name={3}, scan_unqiue_id={4}, 
-            options={5}, event={6})>
+            port={5}, event={6}, json_event={7})>
         '''.format(
             self.id,
             self.target,
             self.date,
             self.module_name,
             self.scan_unique_id,
-            self.options,
-            self.event
+            self.port,
+            self.event,
+            self.json_event
         )
