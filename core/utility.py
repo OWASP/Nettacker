@@ -66,7 +66,11 @@ def process_conditions(
                 "target": target,
                 "module_name": module_name,
                 "scan_unique_id": scan_unique_id,
-                "port": event.get('ports') or event.get('port') or event.get('url').split(':')[2].split('/')[0],
+                "port": event.get('ports') or event.get('port') or (
+                    event.get('url').split(':')[2].split('/')[0] if
+                    type(event.get('url')) == str and len(event.get('url').split(':')) >= 3 and
+                    event.get('url').split(':')[2].split('/')[0].isdigit() else ""
+                ),
                 "event": ", ".join(
                     [
                         "{}: {}".format(
@@ -81,7 +85,7 @@ def process_conditions(
                         ) for key in event['response']['conditions_results'].keys()
                     ]
                 ),
-                "json_event": json.dumps(event)
+                "json_event": event
             }
         )
         success_event_info(

@@ -53,7 +53,7 @@ def expand_targets(options, scan_unique_id):
                 'unknown'
             )
             for row in find_events(target, 'subdomain_scan', scan_unique_id):
-                for sub_domain in json.loads(row.event)['response']['conditions_results']['content']:
+                for sub_domain in json.loads(row.json_event)['response']['conditions_results']['content']:
                     if sub_domain not in targets:
                         targets.append(sub_domain)
         else:
