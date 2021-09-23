@@ -10,8 +10,10 @@ import time
 import json
 import os
 import multiprocessing
+import yaml
 from core.load_modules import load_all_languages
 from core.time import now
+from core.color import color
 
 
 def process_conditions(
@@ -71,20 +73,8 @@ def process_conditions(
                     type(event.get('url')) == str and len(event.get('url').split(':')) >= 3 and
                     event.get('url').split(':')[2].split('/')[0].isdigit() else ""
                 ),
-                "event": ", ".join(
-                    [
-                        "{}: {}".format(
-                            key,
-                            value
-                        ) for key, value in event_request_keys.items()
-                    ]
-                ) + ", conditions: " + ", ".join(
-                    [
-                        "{}".format(
-                            key
-                        ) for key in event['response']['conditions_results'].keys()
-                    ]
-                ),
+                "event": " ".join(yaml.dump(event_request_keys).split()) +
+                         " ".join(yaml.dump(event['response']['conditions_results']).split()),
                 "json_event": event
             }
         )
@@ -97,15 +87,28 @@ def process_conditions(
                 total_module_thread_number,
                 request_number_counter,
                 total_number_of_requests,
-                ", ".join(
+                " ".join(
                     [
-                        "{}: {}".format(
-                            key,
-                            event_request_keys[key]
-                        ) for key in event_request_keys
+                        color('yellow') + key + color('reset') if ':' in key
+                        else color('green') + key + color('reset')
+                        for key in yaml.dump(event_request_keys).split()
                     ]
                 ),
-                ", ".join(event['response']['conditions_results'].keys())
+                # ", ".join(
+                #     [
+                #         "{}: {}".format(
+                #             key,
+                #             event_request_keys[key]
+                #         ) for key in event_request_keys
+                #     ]
+                # ),
+                " ".join(
+                    [
+                        color('purple') + key + color('reset') if ':' in key
+                        else color('green') + key + color('reset')
+                        for key in yaml.dump(event['response']['conditions_results']).split()
+                    ]
+                )
             )
         )
         verbose_info(
