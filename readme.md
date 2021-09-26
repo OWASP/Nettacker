@@ -1,10 +1,10 @@
 OWASP Nettacker
 =========
-[Build Status](https://github.com/OWASP/Nettacker/workflows/CI/badge.svg?branch=master)
+[![Build Status](https://github.com/OWASP/Nettacker/workflows/CI/badge.svg?branch=master)](https://github.com/OWASP/Nettacker/actions/workflows/CI.yml)
 [![Apache License](https://img.shields.io/badge/License-Apache%20v2-green.svg)](https://github.com/OWASP/Nettacker/blob/master/LICENSE)
 [![Twitter](https://img.shields.io/badge/Twitter-@iotscan-blue.svg)](https://twitter.com/iotscan)
-![GitHub contributors](https://img.shields.io/github/contributors/zdresearch/OWASP-Nettacker)
-[![repo size ](https://img.shields.io/github/repo-size/zdresearch/OWASP-Nettacker)](https://github.com/OWASP/Nettacker)
+![GitHub contributors](https://img.shields.io/github/contributors/OWASP/Nettacker)
+[![repo size ](https://img.shields.io/github/repo-size/OWASP/Nettacker)](https://github.com/OWASP/Nettacker)
 
 
 <img src="https://raw.githubusercontent.com/zdresearch/OWASP-Nettacker/master/web/static/img/owasp-nettacker.png" width="200"><img src="https://raw.githubusercontent.com/zdresearch/OWASP-Nettacker/master/web/static/img/owasp.png" width="500">
