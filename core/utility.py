@@ -73,8 +73,11 @@ def process_conditions(
                     type(event.get('url')) == str and len(event.get('url').split(':')) >= 3 and
                     event.get('url').split(':')[2].split('/')[0].isdigit() else ""
                 ),
-                "event": " ".join(yaml.dump(event_request_keys).split()) +
-                         " ".join(yaml.dump(event['response']['conditions_results']).split()),
+                "event": " ".join(
+                    yaml.dump(event_request_keys).split()
+                ) + "conditions: " + " ".join(
+                    yaml.dump(event['response']['conditions_results']).split()
+                ),
                 "json_event": event
             }
         )
@@ -94,20 +97,15 @@ def process_conditions(
                         for key in yaml.dump(event_request_keys).split()
                     ]
                 ),
-                # ", ".join(
-                #     [
-                #         "{}: {}".format(
-                #             key,
-                #             event_request_keys[key]
-                #         ) for key in event_request_keys
-                #     ]
-                # ),
-                " ".join(
-                    [
-                        color('purple') + key + color('reset') if ':' in key
-                        else color('green') + key + color('reset')
-                        for key in yaml.dump(event['response']['conditions_results']).split()
-                    ]
+                filter_large_content(
+                    "conditions: " + " ".join(
+                        [
+                            color('purple') + key + color('reset') if ':' in key
+                            else color('green') + key + color('reset')
+                            for key in yaml.dump(event['response']['conditions_results']).split()
+                        ]
+                    ),
+                    filter_rate=150
                 )
             )
         )
@@ -132,6 +130,21 @@ def process_conditions(
             json.dumps(event)
         )
         return 'save_to_temp_events_only' in event['response']
+
+
+def filter_large_content(content, filter_rate=150):
+    from core.alert import messages
+    if len(content) <= filter_rate:
+        return content
+    else:
+        filter_rate -= 1
+        filter_index = filter_rate
+        for char in content[filter_rate:]:
+            if char == ' ':
+                return content[0:filter_index] + messages('filtered_content')
+            else:
+                filter_index += 1
+        return content
 
 
 def get_dependent_results_from_database(target, module_name, scan_unique_id, event_name):
