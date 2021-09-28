@@ -54,7 +54,7 @@ license: "Please read license and agreements https://github.com/OWASP/Nettacker"
 loaded_modules: "{0} modules loaded ..."
 loading_modules: loading all modules... it might get some time!
 loading_profiles: loading all profiles... it might get some time!
-module_profile_full_information: "{0}: {1}"
+module_profile_full_information: "{0}{1}{2}: {3}"
 nettacker_report: OWASP Nettacker Report
 nettacker_version_details: "Software Details: OWASP Nettacker version {0} [{1}] in {2}"
 not_found: Not Found!

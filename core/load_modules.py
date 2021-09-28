@@ -174,7 +174,7 @@ def load_all_graphs():
     graph_names = []
     for graph_library in glob(os.path.join(nettacker_paths()['home_path'] + '/lib/graph/*/engine.py')):
         graph_names.append(graph_library.split('/')[-2] + '_graph')
-    return graph_names
+    return list(set(graph_names))
 
 
 def load_all_languages():
@@ -188,7 +188,7 @@ def load_all_languages():
     from config import nettacker_paths
     for language in glob(os.path.join(nettacker_paths()['home_path'] + '/lib/messages/*.yaml')):
         languages_list.append(language.split('/')[-1].split('.')[0])
-    return languages_list
+    return list(set(languages_list))
 
 
 def load_all_modules(limit=-1, full_details=False):
@@ -203,6 +203,7 @@ def load_all_modules(limit=-1, full_details=False):
     """
     # Search for Modules
     from config import nettacker_paths
+    from core.utility import sort_dictonary
     if full_details:
         import yaml
     module_names = {}
@@ -226,7 +227,9 @@ def load_all_modules(limit=-1, full_details=False):
         if len(module_names) == limit:
             module_names['...'] = {}
             break
+    module_names = sort_dictonary(module_names)
     module_names['all'] = {}
+
     return module_names
 
 
@@ -237,6 +240,7 @@ def load_all_profiles(limit=-1):
     Returns:
         an array of all profile names
     """
+    from core.utility import sort_dictonary
     all_modules_with_details = load_all_modules(limit=limit, full_details=True)
     profiles = {}
     if '...' in all_modules_with_details:
@@ -250,9 +254,11 @@ def load_all_profiles(limit=-1):
             else:
                 profiles[tag].append(key)
             if len(profiles) == limit:
+                profiles = sort_dictonary(profiles)
                 profiles['...'] = []
                 profiles['all'] = []
                 return profiles
+    profiles = sort_dictonary(profiles)
     profiles['all'] = []
     return profiles
 
