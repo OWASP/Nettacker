@@ -628,6 +628,33 @@ $(document).ready(function () {
 function obsKeysToString(o, k, sep) {
  return k.map(key => o[key]).filter(v => v).join(sep);
 }
+
+function filter_large_content(content, filter_rate){
+    if (content == undefined){
+    return content
+    }
+    if (content.length <= filter_rate){
+        return content
+    }
+    else{
+
+        filter_rate -= 1
+        filter_index = filter_rate
+        for (var i = 0; i < content.substring(filter_rate,).length; i++) {
+            if (content.substring(i, i+1) == ' '){
+                return content.substring(0, filter_index) + "... [see the full content in the report]"
+            }
+            else {
+                filter_index += 1
+            }
+        }
+        return content
+    }
+}
+
+
+
+
   function show_crawler(res) {
     res = JSON.parse(res);
     // var HTMLData = "";
@@ -706,10 +733,12 @@ function obsKeysToString(o, k, sep) {
             module_name[j] +
             "</p> ";
         }
-
+        html_module_name += "<br><br>"
        for (j = 0; j < events.length; j++) {
-          html_module_name +=   "<p class='mb-1 bold label label-success'>event: " + events[j].split('conditions: ')[0] + "</p> ";
-          html_module_name += "<p class='mb-1 bold label label-warning'>condition_results: " + events[j].split('conditions: ')[1] + "</p> ";
+          event = events[j].split('conditions: ')[0]
+          results = events[j].split('conditions: ')[1]
+          html_module_name +=   "<p class='mb-1 bold label label-success'>event: " + filter_large_content(event, 100) + "</p> ";
+          html_module_name += "<p class='mb-1 bold label label-warning'>condition_results: " + filter_large_content(results, 100) + "</p> <br><br>";
         }
 
       
