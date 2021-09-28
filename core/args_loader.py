@@ -419,7 +419,9 @@ def check_all_required(parser, api_forms=None):
         for module in modules_list:
             info(
                 messages("module_profile_full_information").format(
+                    color('cyan'),
                     module,
+                    color('green'),
                     ", ".join(
                         [
                             "{key}: {value}".format(
@@ -435,7 +437,9 @@ def check_all_required(parser, api_forms=None):
         for profile in profiles_list:
             info(
                 messages("module_profile_full_information").format(
+                    color('cyan'),
                     profile,
+                    color('green'),
                     ", ".join(profiles_list[profile])
                 )
             )

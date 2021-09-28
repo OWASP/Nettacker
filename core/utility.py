@@ -470,3 +470,15 @@ def expand_module_steps(content):
                     ]
                 ]
     return original_content
+
+
+def sort_dictonary(dictionary):
+    etc_flag = '...' in dictionary
+    if etc_flag:
+        del dictionary['...']
+    sorted_dictionary = {}
+    for key in sorted(dictionary):
+        sorted_dictionary[key] = dictionary[key]
+    if etc_flag:
+        sorted_dictionary['...'] = {}
+    return sorted_dictionary
