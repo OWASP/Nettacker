@@ -2,8 +2,10 @@ info:
   name: exponent_cms_cve_2021_38751_vuln
   author: OWASP Nettacker Team
   severity: 5
-  description:
+  description: A HTTP Host header attack exists in ExponentCMS 2.6 and below in /exponent_constants.php. A modified HTTP header can change links on the webpage to an arbitrary value, leading to a possible attack vector for MITM.
   reference:
+    - https://github.com/exponentcms/exponent-cms/issues/1544
+    - https://github.com/exponentcms/exponent-cms/blob/a9fa9358c5e8dc2ce7ad61d7d5bea38505b8515c/exponent_constants.php#L56-L64
   profiles:
     - vuln
     - vulnerability
@@ -11,6 +13,7 @@ info:
     - medium_severity
     - cve
     - exponent_cms
+    - cve2021
 
 payloads:
   - library: http

@@ -1,0 +1,55 @@
+info:
+  name: CVE_2021_40539_vuln
+  author: OWASP Nettacker Team
+  severity: 9
+  description: Zoho ManageEngine ADSelfService Plus version 6113 and prior is vulnerable to REST API authentication bypass with resultant remote code execution.
+  reference: 
+    - https://attackerkb.com/topics/DMSNq5zgcW/cve-2021-40539/rapid7-analysis
+    - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-40539
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve2021
+    - cve
+    - zoho
+    - rce
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: post
+        headers:
+          User-Agent: "{user_agent}"
+          Host: {target}
+          Content-Type: application/x-www-form-urlencoded
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/./RestAPI/LogonCustomization"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        data:
+          methodToCall=previewMobLogo  ##test required
+        response:
+          condition_type: and
+          conditions:
+            status:
+              regex: 200
+              reverse: false
+            content:
+              regex: '<script type=\"text/javascript\">var d = new Date\(\);window\.parent\.\$\(\"#mobLogo\"\)\.attr\(\"src\",\"/temp/tempMobPreview\.jpeg\?\"\+d\.getTime\(\)\);window\.parent\.\$\(\"#tabLogo\"\)\.attr\(\"src\",\"/temp/tempMobPreview\.jpeg\?\"\+d\.getTime\(\)\);<\/script>'
+              reverse: false

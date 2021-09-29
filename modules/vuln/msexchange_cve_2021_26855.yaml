@@ -11,6 +11,7 @@ info:
     - critical_severity
     - msexchange
     - cve
+    - cve2021
 
 payloads:
   - library: http

