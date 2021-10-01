@@ -1,4 +1,4 @@
-FROM python:3.10.0b4
+FROM python:3.10.0rc1-slim
 RUN apt update
 WORKDIR /usr/src/owaspnettacker
 COPY . .
