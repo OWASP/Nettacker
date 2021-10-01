@@ -282,11 +282,11 @@ def get_scan_result(id):
         try:
             filename = session.query(Report).filter_by(id=id).first().report_path_filename[1:-1]
             # for some reason filename saved like "filename" with double quotes in the beginning and end
-            return open(str(filename), 'rb').read(), 200
+            return filename, open(str(filename), 'rb').read()
         except Exception:
-            return jsonify(structure(status="error", msg="cannot find the file!")), 400
+            return jsonify(structure(status="error", msg="cannot find the file!")), 404
     except Exception:
-        return jsonify(structure(status="error", msg="database error!")), 200
+        return jsonify(structure(status="error", msg="database error!")), 500
 
 
 def last_host_logs(page):
