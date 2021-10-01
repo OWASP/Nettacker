@@ -104,6 +104,7 @@ def mime_types():
         ".tiff": "image/tiff",
         ".ts": "application/typescript",
         ".ttf": "font/ttf",
+        ".txt": "text/plain",
         ".vsd": "application/vnd.visio",
         ".wav": "audio/x-wav",
         ".weba": "audio/webm",

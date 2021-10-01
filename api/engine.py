@@ -345,7 +345,17 @@ def get_result_content():
                 msg=messages("invalid_scan_id")
             )
         ), 400
-    return get_scan_result(scan_id)
+    filename, file_content = get_scan_result(scan_id)
+    return Response(
+        file_content,
+        mimetype=mime_types().get(
+            os.path.splitext(filename)[1],
+            "text/plain"
+        ),
+        headers={
+            'Content-Disposition': 'attachment;filename=' + filename.split('/')[-1]
+        }
+    )
 
 
 @app.route("/results/get_json", methods=["GET"])
