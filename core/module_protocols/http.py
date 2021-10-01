@@ -21,12 +21,7 @@ def response_conditions_matched(sub_step, response):
         if condition in ['reason', 'status_code', 'content']:
             regex = re.findall(re.compile(conditions[condition]['regex']), response[condition])
             reverse = conditions[condition]['reverse']
-            if 'reason' in conditions:
-                condition_results['reason'] = reverse_and_regex_condition(regex, reverse)
-            if 'status_code' in conditions:
-                condition_results['status_code'] = reverse_and_regex_condition(regex, reverse)
-            if 'content' in conditions:
-                condition_results['content'] = reverse_and_regex_condition(regex, reverse)
+            condition_results[condition] = reverse_and_regex_condition(regex, reverse)
         if condition == 'headers':
             # convert headers to case insensitive dict
             for key in response["headers"].copy():
@@ -125,6 +120,9 @@ class Engine:
         for _ in range(options['retries']):
             try:
                 response = action(**sub_step)
+                # requests lib automatically follow redirect and this make issues with status codes.
+                if response.history:
+                    response = response.history[0]
                 response = {
                     "reason": response.reason,
                     "status_code": str(response.status_code),
