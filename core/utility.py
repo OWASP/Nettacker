@@ -11,6 +11,7 @@ import json
 import os
 import multiprocessing
 import yaml
+import hashlib
 from core.load_modules import load_all_languages
 from core.time import now
 from core.color import color
@@ -364,6 +365,18 @@ def class_to_value(arrays):
             value_index += 1
         array_index += 1
     return original_arrays
+
+
+def generate_and_replace_md5(content):
+    md5_content = content.split('NETTACKER_MD5_GENERATOR_START')[1].split('NETTACKER_MD5_GENERATOR_STOP')[0]
+    md5_content_backup = md5_content
+    if type(md5_content) == str:
+        md5_content = md5_content.encode()
+    md5_hash = hashlib.md5(md5_content).hexdigest()
+    return content.replace(
+        'NETTACKER_MD5_GENERATOR_START' + md5_content_backup + 'NETTACKER_MD5_GENERATOR_STOP',
+        md5_hash
+    )
 
 
 def arrays_to_matrix(arrays):

