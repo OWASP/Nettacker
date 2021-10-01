@@ -348,11 +348,14 @@ def get_result_content():
     filename, file_content = get_scan_result(scan_id)
     return Response(
         file_content,
-        mimetype=mime_types().get(filename.split('.')[-1]),
+        mimetype=mime_types().get(
+            os.path.splitext(filename)[1],
+            "text/plain"
+        ),
         headers={
-            'Content-Disposition': 'attachment;filename=' + filename
+            'Content-Disposition': 'attachment;filename=' + filename.split('/')[-1]
         }
-    ) if file_content not in [404, 500] else filename, content
+    )
 
 
 @app.route("/results/get_json", methods=["GET"])
