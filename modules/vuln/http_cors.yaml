@@ -31,7 +31,7 @@ payloads:
                 schema:
                   - "http"
                   - "https"
-
+        allow_redirects: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/"
@@ -66,7 +66,7 @@ payloads:
                 schema:
                   - "http"
                   - "https"
-
+        allow_redirects: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/"
@@ -102,7 +102,7 @@ payloads:
                 schema:
                   - "http"
                   - "https"
-
+        allow_redirects: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/"
@@ -137,7 +137,7 @@ payloads:
                 schema:
                   - "http"
                   - "https"
-
+        allow_redirects: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/"
@@ -172,7 +172,7 @@ payloads:
                 schema:
                   - "http"
                   - "https"
-
+        allow_redirects: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/"
@@ -207,7 +207,7 @@ payloads:
                 schema:
                   - "http"
                   - "https"
-
+        allow_redirects: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/"
@@ -233,6 +233,7 @@ payloads:
         headers:
           User-Agent: "{user_agent}" #http://owasp.org
           Origin: "http://{target}"
+        allow_redirects: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/"
@@ -267,6 +268,7 @@ payloads:
                 schema:
                   - "http"
                   - "https"
+        allow_redirects: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/"
@@ -301,6 +303,7 @@ payloads:
                 schema:
                   - "http"
                   - "https"
+        allow_redirects: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/"

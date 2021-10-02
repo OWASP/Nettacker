@@ -23,6 +23,7 @@ payloads:
       - method: get
         headers:
           User-Agent: "{user_agent}"
+        allow_redirects: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
@@ -47,5 +48,5 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: root:.*:0:0:|/etc/passwd|/etc/shadow|uid\\=*.+gid
+              regex: root:\\C+(:\\d+)+|/etc/passwd|/etc/shadow|uid\\=*.+gid
               reverse: false

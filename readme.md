@@ -31,6 +31,23 @@ OWASP Nettacker project is created to automate information gathering, vulnerabil
 * OpenHub: https://www.openhub.net/p/OWASP-Nettacker
 * **Donate**: https://owasp.org/donate/?reponame=www-project-nettacker&title=OWASP+Nettacker
 
+____________
+Quick Setup & Run
+============
+```bash
+$ docker-compose up -d && docker exec -it nettacker_nettacker_1 /bin/bash
+# python nettacker.py -i owasp.org -s -m port_scan
+```
+* Results are accessible from your (https://localhost:5000) or https://nettacker-api.z3r0d4y.com:5000/ (pointed to your localhost)
+* The local database is `.data/nettacker.db` (sqlite).
+* Default results path is `.data/results`
+* `docker-compose` will share your nettacker folder, so you will not lose any data after `docker-compose down`
+* To see the API key in you can run `docker logs nettacker_nettacker_1`.
+* More details and setup without docker https://github.com/OWASP/Nettacker/wiki/Installation
+_____________
+Thanks to our awesome contributors
+============
+![Awesome Contributors](https://contrib.rocks/image?repo=OWASP/Nettacker)
 _____________
 
 * *** IoT Scanner***
