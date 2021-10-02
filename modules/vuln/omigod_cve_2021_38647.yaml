@@ -25,6 +25,7 @@ payloads:
     proxies: ""
     steps:
       - method: post
+        allow_redirects: false
         headers:
           User-Agent: "{user_agent}"
           Host: {target}

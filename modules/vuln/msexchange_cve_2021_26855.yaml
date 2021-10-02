@@ -22,6 +22,7 @@ payloads:
     proxies: ""
     steps:
       - method: get
+        allow_redirects: false
         headers:
           User-Agent: "{user_agent}"
           Cookie:

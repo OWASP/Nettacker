@@ -44,7 +44,7 @@ payloads:
                 - 80
                 - 443
         data:
-          methodToCall=previewMobLogo  ##test required
+          methodToCall=previewMobLogo
         response:
           condition_type: and
           conditions:

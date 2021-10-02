@@ -27,6 +27,7 @@ payloads:
         headers:
           User-Agent: "{user_agent}"
           Host: "random_string_1.com"
+        allow_redirects: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/"
