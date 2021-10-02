@@ -83,5 +83,5 @@ payloads:
           condition_type: and
           conditions:
             content:
-              regex: '<p:StdOut>&uid=0\(root\) gid=0\(root\) groups=0'
+              regex: \\C+StdOut\\C+root\\C+groups=0
               reverse: false

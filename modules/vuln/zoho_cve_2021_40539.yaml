@@ -52,5 +52,5 @@ payloads:
               regex: '200'
               reverse: false
             content:
-              regex: '<script type=\"text/javascript\">var d = new Date\(\);window\.parent\.\$\(\"#mobLogo\"\)\.attr\(\"src\",\"/temp/tempMobPreview\.jpeg\?\"\+d\.getTime\(\)\);window\.parent\.\$\(\"#tabLogo\"\)\.attr\(\"src\",\"/temp/tempMobPreview\.jpeg\?\"\+d\.getTime\(\)\);<\/script>'
+              regex: <script type="text/javascript">var d = new Date();window.parent.$("#mobLogo").attr("src","/temp/tempMobPreview.jpeg?"+d.getTime());window.parent.$("#tabLogo").attr("src","/temp/tempMobPreview.jpeg?"+d.getTime());</script>
               reverse: false

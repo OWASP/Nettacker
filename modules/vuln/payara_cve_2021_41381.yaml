@@ -48,5 +48,5 @@ payloads:
           condition_type: and
           conditions:
             content:
-              regex: "payara.security.openid.default.providerURI=&payara.security.openid.sessionScopedConfiguration=true"
+              regex: payara.security.openid.default.providerURI=&payara.security.openid.sessionScopedConfiguration=true
               reverse: false

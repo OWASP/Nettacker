@@ -53,5 +53,5 @@ payloads:
                 regex: text/html
                 reverse: false
             content:
-              regex: '<\/script><script>alert\(document.domain\)<\/script>'
+              regex: </script><script>alert(document.domain)</script>
               reverse: false
