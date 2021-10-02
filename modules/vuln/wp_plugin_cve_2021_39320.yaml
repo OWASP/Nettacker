@@ -1,5 +1,5 @@
 info:
-  name: CVE_2021_39320_vuln
+  name: wp_plugin_cve_2021_39320_vuln
   author: OWASP Nettacker Team
   severity: 6
   description: The underConstruction plugin <= 1.18 for WordPress echoes out the raw value of `$GLOBALS['PHP_SELF']` in the ucOptions.php file. On certain configurations including Apache+modPHP, this makes it possible to use it to perform a reflected Cross-Site Scripting attack by injecting malicious code in the request path.
@@ -45,7 +45,7 @@ payloads:
         response:
           condition_type: and
           conditions:
-            status:
+            status_code:
               regex: 200
               reverse: false
             header:

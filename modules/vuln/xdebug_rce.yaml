@@ -9,6 +9,7 @@ info:
     - vulnerability
     - http
     - critical_severity
+    - rce
 
 payloads:
   - library: http

@@ -27,6 +27,7 @@ payloads:
       - method: get
         headers:
           User-Agent: "{user_agent}"
+        allow_redirect: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
@@ -47,7 +48,7 @@ payloads:
           #max size needed and also if first url matches response conditions then stop attempting request
           condition_type: and
           conditions:
-            status:
+            status_code:
               regex: 200
               reverse: false
             content:

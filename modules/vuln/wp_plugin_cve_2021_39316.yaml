@@ -1,5 +1,5 @@
 info:
-  name: CVE_2021_39316_vuln
+  name: wp_plugin_cve_2021_39316_vuln
   author: OWASP Nettacker Team
   severity: 7
   description: The Zoomsounds plugin <= 6.45 for WordPress allows arbitrary files, including sensitive configuration files such as wp-config.php, to be downloaded via the `dzsap_download` action using directory traversal in the `link` parameter.
@@ -45,7 +45,7 @@ payloads:
         response:
           condition_type: and
           conditions:
-            status:
+            status_code:
               regex: 200
               reverse: false
             content:

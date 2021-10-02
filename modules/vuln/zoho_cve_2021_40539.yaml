@@ -1,5 +1,5 @@
 info:
-  name: CVE_2021_40539_vuln
+  name: zoho_cve_2021_40539_vuln
   author: OWASP Nettacker Team
   severity: 9
   description: Zoho ManageEngine ADSelfService Plus version 6113 and prior is vulnerable to REST API authentication bypass with resultant remote code execution.
@@ -48,7 +48,7 @@ payloads:
         response:
           condition_type: and
           conditions:
-            status:
+            status_code:
               regex: 200
               reverse: false
             content:
