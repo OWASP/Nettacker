@@ -2,8 +2,9 @@ info:
   name: citrix_cve_2019_19781_vuln
   author: OWASP Nettacker Team
   severity: 8
-  description:
-  reference:
+  description: CVE-2019-19781 - Vulnerability in Citrix Application Delivery Controller, Citrix Gateway, and Citrix SD-WAN WANOP appliance
+  reference: 
+    - https://support.citrix.com/article/CTX267027
   profiles:
     - vuln
     - vulnerability
