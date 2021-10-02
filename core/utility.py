@@ -368,6 +368,7 @@ def class_to_value(arrays):
 
 
 def generate_and_replace_md5(content):
+    # todo: make it betetr and document it
     md5_content = content.split('NETTACKER_MD5_GENERATOR_START')[1].split('NETTACKER_MD5_GENERATOR_STOP')[0]
     md5_content_backup = md5_content
     if type(md5_content) == str:
