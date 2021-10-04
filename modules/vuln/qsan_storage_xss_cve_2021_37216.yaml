@@ -45,7 +45,7 @@ payloads:
           condition_type: and
           conditions:
             header:
-              Content-type: 
+              Content-Type:
                 regex: text/html
                 reverse: false  
             content:
