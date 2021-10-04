@@ -1,5 +1,5 @@
 info:
-  name: phpinfo_cve_2021_40868_vuln
+  name: phpinfo_cve_2021_37704_vuln
   author: OWASP Nettacker Team
   severity: 4
   description: phpinfo() exposure in unprotected composer vendor folder via phpfastcache/phpfastcache.
