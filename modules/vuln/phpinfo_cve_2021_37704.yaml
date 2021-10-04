@@ -51,5 +51,5 @@ payloads:
               regex: '200'
               reverse: false
             content:
-              regex: PHP Extension&PHP Version&>PHP Version <\/td><td class="v">([0-9.]+)
+              regex: PHP Extension|PHP Version
               reverse: false
