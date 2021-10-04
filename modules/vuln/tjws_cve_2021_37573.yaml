@@ -47,7 +47,7 @@ payloads:
               regex: '404'
               reverse: false
             header:
-              Content-type: 
+              Content-Type: 
                 regex: text/html
                 reverse: false  
             content:
