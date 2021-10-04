@@ -1,5 +1,5 @@
 info:
-  name: tjws_cve_2021_40868_vuln
+  name: tjws_cve_2021_37573_vuln
   author: OWASP Nettacker Team
   severity: 6
   description: A reflected cross-site scripting (XSS) vulnerability in the web server TTiny Java Web Server and Servlet Container (TJWS) <=1.115 allows an adversary to inject malicious code on the server's 404 Page not Found error page.
