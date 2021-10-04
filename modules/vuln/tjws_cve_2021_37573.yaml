@@ -29,7 +29,7 @@ payloads:
         allow_redirects: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}//te%3Cimg%20src=x%20onerror=alert(1)%3Est"
+            input_format: "{{schema}}://{target}:{{ports}}/te%3Cimg%20src=x%20onerror=alert(1)%3Est"
             prefix: ""
             suffix: ""
             interceptors:
