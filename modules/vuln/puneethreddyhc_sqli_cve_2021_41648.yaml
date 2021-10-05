@@ -1,0 +1,57 @@
+info:
+  name: puneethreddyhc_sql_cve_2021_41648_vuln
+  author: OWASP Nettacker Team
+  severity: 8
+  description: An un-authenticated SQL Injection exists in PuneethReddyHC online-shopping-system-advanced through the /action.php prId parameter. Using a post request does not sanitize the user input.
+  reference: 
+    - https://github.com/MobiusBinary/CVE-2021-41648
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - high_severity
+    - cve2021
+    - cve
+    - puneethreddyhc
+    - sqli
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: post
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/action.php"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        data:
+          "proId=1'&addToCart=1"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+            header:
+              Content-Type: 
+                regex: text/html
+                reverse: false
+            content:
+              regex: 'Warning: mysqli_num_rows\(\) expects parameter 1 to be&xdebug-error xe-warning'
+              reverse: false
