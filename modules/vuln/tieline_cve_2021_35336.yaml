@@ -1,0 +1,68 @@
+info:
+  name: tieline_cve_2021_35336_vuln
+  author: OWASP Nettacker Team
+  severity: 9
+  description: Finding the Tieline Admin Panels with default credentials.
+  reference: 
+    - https://wpscan.com/vulnerability/49ae1df0-d6d2-4cbb-9a9d-bf3599429875
+    - https://nvd.nist.gov/vuln/detail/CVE-2021-39320
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve2021
+    - cve
+    - tieline
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          Authorization: 'Digest username="admin", realm="Bridge-IT", nonce="d24d09512ebc3e43c4f6faf34fdb8c76", uri="/api/get_device_details", response="d052e9299debc7bd9cb8adef0a83fed4", qop=auth, nc=00000001, cnonce="ae373d748855243d"'
+          Referer:
+            nettacker_fuzzer:
+              input_format: "{{schema}}://{target}:{{ports}}/assets/base/home.html"
+              prefix: ""
+              suffix: ""
+              interceptors:
+              data:
+                schema:
+                  - "http"
+                  - "https"
+                ports:
+                  - 80
+                  - 443
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/get_device_details"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+            header:
+              Content-type: 
+                regex: text/xml
+                reverse: false
+            content:
+              regex: \<SERIAL\>&\<VERSION\>
+              reverse: false
