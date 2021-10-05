@@ -1,5 +1,5 @@
 info:
-  name: novnc_cve_2021_41826_vuln
+  name: novnc_cve_2021_3654_vuln
   author: OWASP Nettacker Team
   severity: 3
   description: A user-controlled input redirects noVNC users to an external website.
