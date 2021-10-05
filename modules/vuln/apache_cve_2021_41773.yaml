@@ -10,7 +10,7 @@ info:
     - vuln
     - vulnerability
     - http
-    - low_severity
+    - critical_severity
     - cve2021
     - cve
     - apache
