@@ -1,0 +1,53 @@
+info:
+  name: placeos_sql_cve_2021_41826_vuln
+  author: OWASP Nettacker Team
+  severity: 3
+  description: PlaceOS Authentication Service before 1.29.10.0 allows app/controllers/auth/sessions_controller.rb open redirect
+  reference: 
+    - https://www.exploit-db.com/exploits/50359
+    - https://nvd.nist.gov/vuln/detail/CVE-2021-41826
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - low_severity
+    - cve2021
+    - cve
+    - placeos
+    - open_redirect
+
+payloads:
+  - library: http
+    verify: false
+    timeout: 3
+    cert: ""
+    stream: false
+    proxies: ""
+    steps:
+      - method: get
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/auth/logout?continue=//example.com"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '301|302'
+              reverse: false
+            headers:
+              Location:
+                regex: (?:https?:\/\/|\/\/)(?:[a-zA-Z0-9\-_\.@]*)example\.com.*$
+                reverse: false
