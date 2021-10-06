@@ -18,13 +18,13 @@ info:
 
 payloads:
   - library: http
-    verify: false
-    timeout: 3
-    cert: ""
-    stream: false
-    proxies: ""
     steps:
       - method: get
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         allow_redirects: false
@@ -48,8 +48,8 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: 200
+              regex: "200"
               reverse: false
             content:
-              regex: app/arguments/admin # could use this but not necessary ^\C{0,1000}app/arguments/admin\C{0,1000}$
+              regex: app/arguments/admin # could use this but not necessary ^\C{{0,1000}}app/arguments/admin\C{{0,1000}}$
               reverse: false

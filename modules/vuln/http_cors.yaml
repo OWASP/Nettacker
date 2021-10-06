@@ -12,13 +12,13 @@ info:
 
 payloads:
   - library: http
-    verify: false
-    timeout: 3
-    cert: ""
-    stream: false
-    proxies: ""
     steps:
       - method: get # post-domain
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
         headers:
           User-Agent: "{user_agent}"
           Origin:
@@ -54,6 +54,11 @@ payloads:
                 reverse: false
 
       - method: get # pre-domain
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
         headers:
           User-Agent: "{user_agent}"
           Origin:
@@ -90,6 +95,11 @@ payloads:
 
       #Unescaped Regex needs to be improved. WIP.
       - method: get # unescaped regex
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
         headers:
           User-Agent: "{user_agent}"
           Origin:
@@ -125,6 +135,11 @@ payloads:
                 reverse: false
 
       - method: get # unrecognized underscore
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
         headers:
           User-Agent: "{user_agent}"
           Origin:
@@ -160,6 +175,11 @@ payloads:
                 reverse: false
 
       - method: get # broken parser
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
         headers:
           User-Agent: "{user_agent}"
           Origin:
@@ -195,6 +215,11 @@ payloads:
                 reverse: false
 
       - method: get # Null origin
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
         headers:
           User-Agent: "{user_agent}"
           Origin:
@@ -230,6 +255,11 @@ payloads:
                 reverse: false
 
       - method: get # Only HTTP
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
         headers:
           User-Agent: "{user_agent}" #http://owasp.org
           Origin: "http://{target}"
@@ -256,6 +286,11 @@ payloads:
                 reverse: false
 
       - method: get # Wild card
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
         headers:
           User-Agent: "{user_agent}"
           Origin:
@@ -291,6 +326,11 @@ payloads:
                 reverse: false
 
       - method: get # origin reflected
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
         headers:
           User-Agent: "{user_agent}"
           Origin:

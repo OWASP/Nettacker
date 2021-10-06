@@ -18,15 +18,13 @@ info:
 
 payloads:
   - library: http
-    verify: false
-    timeout: 3
-    cert: ""
-    stream: false
-    proxies: ""
     steps:
-      
-        
       - method: get
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         allow_redirects: false
@@ -43,7 +41,6 @@ payloads:
               ports:
                 - 80
                 - 443
-        
         response:
           condition_type: and
           conditions:
