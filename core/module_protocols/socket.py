@@ -8,6 +8,7 @@ import os
 import select
 import struct
 import time
+import ssl
 from core.utility import reverse_and_regex_condition
 from core.utility import process_conditions
 from core.utility import get_dependent_results_from_database
@@ -43,11 +44,22 @@ def response_conditions_matched(sub_step, response):
     return []
 
 
-class NettackerSocket:
-    def tcp_connect_only(host, ports, timeout):
+def create_tcp_socket(host, ports, timeout):
+    socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket_connection.settimeout(timeout)
+    socket_connection.connect((host, int(ports)))
+    try:
+        socket_connection = ssl.wrap_socket(socket_connection)
+    except Exception:
         socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         socket_connection.settimeout(timeout)
         socket_connection.connect((host, int(ports)))
+    return socket_connection
+
+
+class NettackerSocket:
+    def tcp_connect_only(host, ports, timeout):
+        socket_connection = create_tcp_socket(host, ports, timeout)
         peer_name = socket_connection.getpeername()
         socket_connection.close()
         return {
@@ -56,9 +68,7 @@ class NettackerSocket:
         }
 
     def tcp_connect_send_and_receive(host, ports, timeout):
-        socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socket_connection.settimeout(timeout)
-        socket_connection.connect((host, int(ports)))
+        socket_connection = create_tcp_socket(host, ports, timeout)
         peer_name = socket_connection.getpeername()
         try:
             socket_connection.send(b"ABC\x00\r\n" * 10)
