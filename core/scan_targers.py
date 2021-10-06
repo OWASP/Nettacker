@@ -66,10 +66,12 @@ def start_scan_processes(options):
     # find total number of targets + types + expand (subdomain, IPRanges, etc)
     # optimize CPU usage
     info(messages("regrouping_targets"))
+    options.targets = expand_targets(options, scan_unique_id)
+    number_of_total_targets = len(options.targets)
     options.targets = [
         targets.tolist() for targets in numpy.array_split(
-            expand_targets(options, scan_unique_id),
-            options.set_hardware_usage if options.set_hardware_usage >= len(options.targets) else len(options.targets)
+            options.targets,
+            options.set_hardware_usage if options.set_hardware_usage <= len(options.targets) else len(options.targets)
         )
     ]
     info(messages("removing_old_db_records"))
@@ -87,7 +89,12 @@ def start_scan_processes(options):
     for _ in range(options.targets.count([])):
         options.targets.remove([])
     active_processes = []
-    info(messages("start_multi_process").format(len(options.targets)))
+    info(
+        messages("start_multi_process").format(
+            number_of_total_targets,
+            len(options.targets)
+        )
+    )
     process_number = 0
     for targets in options.targets:
         process_number += 1

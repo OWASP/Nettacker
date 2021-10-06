@@ -95,7 +95,7 @@ show_all_profiles: show all profiles and their information
 single_process_started: process-{0}| process is started!
 software_version: show software version
 start_api_server: start the API service
-start_multi_process: starting {0} process(es).
+start_multi_process: imported {0} targets in {1} process(es).
 start_parallel_module_scan:
   process-{0}|{1}|{2}| started module thread number {3}
   from {4}
