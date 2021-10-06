@@ -49,5 +49,5 @@ payloads:
               regex: '200'
               reverse: false
             content:
-              regex: root:\\C+(:\\d+)+
+              regex: "root:(\\S+):"
               reverse: false
