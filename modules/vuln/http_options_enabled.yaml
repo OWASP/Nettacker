@@ -12,13 +12,13 @@ info:
 
 payloads:
   - library: http
-    verify: false
-    timeout: 3
-    cert: ""
-    stream: false
-    proxies: ""
     steps:
       - method: options
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         allow_redirects: false
