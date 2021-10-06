@@ -48,7 +48,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: 200
+              regex: "200"
               reverse: false
             content:
               regex: app/arguments/admin # could use this but not necessary ^\C{{0,1000}}app/arguments/admin\C{{0,1000}}$
