@@ -30,7 +30,7 @@ payloads:
           User-Agent: "{user_agent}"
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/path"
+            input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
             prefix: ""
             suffix: ""
             interceptors:
