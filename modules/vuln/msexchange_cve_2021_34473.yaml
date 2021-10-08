@@ -1,5 +1,5 @@
 info:
-  name: msexchange_cve_2021_33473_vuln
+  name: msexchange_cve_2021_34473_vuln
   author: OWASP Nettacker Team
   severity: 9
   description: Microsoft Exchange Server Remote Code Execution Vulnerability This CVE ID is unique from CVE-2021-31196, CVE-2021-31206.
