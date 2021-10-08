@@ -1,0 +1,50 @@
+info:
+  name: accela_cve_2021_34370_vuln
+  author: OWASP Nettacker Team
+  severity: 6
+  description: Accela Civic Platform Cross-Site-Scripting and Open Redirect <= 21.1
+  reference: 
+    - https://www.exploit-db.com/exploits/49990
+    - https://nvd.nist.gov/vuln/detail/CVE-2021-34370
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - medium_severity
+    - cve2021
+    - cve
+    - accela
+    - open_redirect
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/ssoAdapter/logoutAction.do?servProvCode=SAFVC&successURL=https://example.com/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+
+        response:
+          condition_type: and
+          conditions:
+            headers:
+              Location:
+                regex: (?:https?:\/\/|\/\/)(?:[a-zA-Z0-9\-_\.@]*)example\.com.*$
+                reverse: false
