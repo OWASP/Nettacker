@@ -52,6 +52,10 @@ payloads:
             status:
               regex: 200
               reverse: false
+            headers:
+              Content-Length:
+                regex: ^[0-5]?[0-9]$
+                reverse: false
             content:
               regex: "[a-f0-9]{{32}}"
               reverse: false

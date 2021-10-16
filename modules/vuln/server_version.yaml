@@ -40,5 +40,5 @@ payloads:
           conditions:
             headers:
               server:
-                regex: \d*\.?\d
+                regex: .+\d*\.?\d\S+
                 reverse: false

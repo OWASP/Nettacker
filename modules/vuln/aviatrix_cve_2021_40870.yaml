@@ -84,5 +84,5 @@ payloads:
               regex: '200'
               reverse: false
             content:
-              regex: NETTACKER&PHP Version
+              regex: NETTACKER
               reverse: false

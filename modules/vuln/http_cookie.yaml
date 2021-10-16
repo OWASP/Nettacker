@@ -40,5 +40,5 @@ payloads:
           conditions:
             headers:
               Set-Cookie:
-                regex: "samesite"
-                reverse: true
+                regex: ^((?!SameSite).)+$
+                reverse: false

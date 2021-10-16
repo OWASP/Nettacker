@@ -40,5 +40,5 @@ payloads:
           conditions:
             headers:
               x-xss-protection:
-                regex: 1;\ ?report='?https?:\/\/(www\.)?[-a-zA-Z0-9]{{1,256}}\.[-a-zA-Z0-9]{{1,6}}'?|^1;\ ?mode=block$|1
-                reverse: true
+                regex: ^((?!1; mode=block).)+$
+                reverse: false

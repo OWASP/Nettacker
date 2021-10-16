@@ -41,8 +41,8 @@ payloads:
           conditions:
             headers:
               Content-Security-Policy:
-                regex: "^.{{0,0}}$|unsafe\\-\\S+"
+                regex: ^.{{0,0}}$|unsafe\-\S+
                 reverse: false
             content:
-              regex: ^((?!Content-Security-Policy)[\s\S])*$|.*Content-Security-Policy.*unsafe-\S+
+              regex: ^((?!Content-Security-Policy unsafe-\S+).)+$
               reverse: false
