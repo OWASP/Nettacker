@@ -40,5 +40,5 @@ payloads:
           conditions:
             headers:
               allow:
-                regex: ".*"
+                regex: "\\S+"
                 reverse: false

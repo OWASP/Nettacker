@@ -76,7 +76,7 @@ def process_conditions(
                 ),
                 "event": " ".join(
                     yaml.dump(event_request_keys).split()
-                ) + "conditions: " + " ".join(
+                ) + " conditions: " + " ".join(
                     yaml.dump(event['response']['conditions_results']).split()
                 ),
                 "json_event": event

