@@ -2,8 +2,10 @@ info:
   name: http_cookie_vuln
   author: OWASP Nettacker Team
   severity: 3
-  description:
+  description: This module check for Set-Cookie header best practices.
   reference:
+    - https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/06-Session_Management_Testing/02-Testing_for_Cookies_Attributes
+    - https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html
   profiles:
     - vuln
     - vulnerability
@@ -40,5 +42,5 @@ payloads:
           conditions:
             headers:
               Set-Cookie:
-                regex: ^((?!SameSite).)+$
+                regex: ^((?!SameSite).)+$|^((?!secure).)+$|^((?!HttpOnly).)+$|^((?!Max-Age).)+$
                 reverse: false
