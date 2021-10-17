@@ -1,0 +1,46 @@
+info:
+  name: strict_transport_security_vuln
+  author: OWASP Nettacker Team
+  severity: 3
+  description: The HTTP Strict Transport Security (Strict-Transport-Security) header informs the browser that it should never load a site using HTTP and should automatically convert all attempts to access the site using HTTP to HTTPS requests instead.
+  reference:
+    - https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Strict_Transport_Security_Cheat_Sheet.html
+    - https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/02-Configuration_and_Deployment_Management_Testing/07-Test_HTTP_Strict_Transport_Security
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - low_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            headers:
+              Strict-Transport-Security:
+                regex: ^((?!Max-Age).)+$|^((?!includeSubDomains).)+$
+                reverse: false
