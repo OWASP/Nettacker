@@ -21,7 +21,7 @@ from flask import Response
 from flask import make_response
 from core.alert import write_to_api_console
 from core.alert import messages
-from core.die import die_success
+from core.die import die_success, die_failure
 from core.time import now
 from api.api_core import structure
 from api.api_core import get_value
@@ -579,25 +579,28 @@ def start_api_subprocess(options):
         "language": options.language,
         "options": options
     }
-    if options.api_cert and options.api_cert_key:
-        app.run(
-            host=options.api_hostname,
-            port=options.api_port,
-            debug=options.api_debug_mode,
-            ssl_context=(
-                options.api_cert,
-                options.api_cert_key
-            ),
-            threaded=True
-        )
-    else:
-        app.run(
-            host=options.api_hostname,
-            port=options.api_port,
-            debug=options.api_debug_mode,
-            ssl_context='adhoc',
-            threaded=True
-        )
+    try:
+        if options.api_cert and options.api_cert_key:
+            app.run(
+                host=options.api_hostname,
+                port=options.api_port,
+                debug=options.api_debug_mode,
+                ssl_context=(
+                    options.api_cert,
+                    options.api_cert_key
+                ),
+                threaded=True
+            )
+        else:
+            app.run(
+                host=options.api_hostname,
+                port=options.api_port,
+                debug=options.api_debug_mode,
+                ssl_context='adhoc',
+                threaded=True
+            )
+    except Exception as e:
+        die_failure(str(e))
 
 
 def start_api_server(options):
