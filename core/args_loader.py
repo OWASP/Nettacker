@@ -260,6 +260,13 @@ def load_all_args():
         help=messages("subdomains"),
     )
     modules.add_argument(
+        "--skip-service-discovery",
+        action="store_true",
+        default=nettacker_global_configuration['nettacker_user_application_config']["skip_service_discovery"],
+        dest="skip_service_discovery",
+        help=messages("skip_service_discovery")
+    )
+    modules.add_argument(
         "-t",
         "--thread-per-host",
         action="store",

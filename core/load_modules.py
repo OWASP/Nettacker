@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+import copy
 import os
 import socket
+import yaml
 import time
+import json
 from glob import glob
 from io import StringIO
 
@@ -58,6 +60,16 @@ class NettackerModules:
         self.module_thread_number = None
         self.total_module_thread_number = None
         self.module_inputs = {}
+        self.skip_service_discovery = None
+        self.discovered_services = None
+        self.service_discovery_signatures = list(set(yaml.load(
+            StringIO(
+                open(nettacker_paths()['modules_path'] + '/scan/port.yaml').read().format(
+                    **{'target': 'dummy'}
+                )
+            ),
+            Loader=yaml.FullLoader
+        )['payloads'][0]['steps'][0]['response']['conditions'].keys()))
         self.libraries = [
             module_protocol.split('.py')[0] for module_protocol in
             os.listdir(nettacker_paths()['module_protocols_path']) if
@@ -65,9 +77,9 @@ class NettackerModules:
         ]
 
     def load(self):
-        import yaml
         from config import nettacker_paths
         from core.utility import find_and_replace_configuration_keys
+        from database.db import find_events
         self.module_content = find_and_replace_configuration_keys(
             yaml.load(
                 StringIO(
@@ -87,6 +99,33 @@ class NettackerModules:
             ),
             self.module_inputs
         )
+        if not self.skip_service_discovery:
+            services = {}
+            for service in find_events(self.target, 'port_scan', self.scan_unique_id):
+                service_event = json.loads(service.json_event)
+                port = service_event['ports']
+                protocols = service_event['response']['conditions_results'].keys()
+                for protocol in protocols:
+                    if protocol in self.libraries and protocol:
+                        if protocol in services:
+                            services[protocol].append(port)
+                        else:
+                            services[protocol] = [port]
+            self.discovered_services = copy.deepcopy(services)
+            for payload in copy.deepcopy(self.module_content['payloads']):
+                if payload['library'] not in self.discovered_services and \
+                        payload['library'] in self.service_discovery_signatures:
+                    del self.module_content['payloads'][self.module_content['payloads'].index(payload)]
+                else:
+                    for step in copy.deepcopy(
+                            self.module_content['payloads'][self.module_content['payloads'].index(payload)]['steps']
+                    ):
+                        backup_step = copy.deepcopy(step)
+                        step['ports'] = self.discovered_services[payload['library']]
+                        self.module_content['payloads'][self.module_content['payloads'].index(payload)]['steps'][
+                            self.module_content['payloads'][self.module_content['payloads'].index(payload)][
+                                'steps'].index(backup_step)
+                        ] = step
 
     def generate_loops(self):
         from core.utility import expand_module_steps
@@ -270,6 +309,7 @@ def perform_scan(options, target, module_name, scan_unique_id, process_number, t
     socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
     options.target = target
     validate_module = NettackerModules()
+    validate_module.skip_service_discovery = options.skip_service_discovery
     validate_module.module_name = module_name
     validate_module.process_number = process_number
     validate_module.module_thread_number = thread_number
