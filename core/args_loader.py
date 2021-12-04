@@ -497,8 +497,8 @@ def check_all_required(parser, api_forms=None):
         die_failure(messages("scan_method_select"))
     if options.selected_modules:
         if options.selected_modules == 'all':
-            options.selected_modules = modules_list
-            del options.selected_modules['all']
+            options.selected_modules = list(set(modules_list.keys()))
+            options.selected_modules.remove('all')
         else:
             options.selected_modules = list(set(options.selected_modules.split(',')))
         for module_name in options.selected_modules:
@@ -512,8 +512,8 @@ def check_all_required(parser, api_forms=None):
         if not options.selected_modules:
             options.selected_modules = []
         if options.profiles == 'all':
-            options.selected_modules = modules_list
-            del options.selected_modules['all']
+            options.selected_modules = list(set(modules_list.keys()))
+            options.selected_modules.remove('all')
         else:
             options.profiles = list(set(options.profiles.split(',')))
             for profile in options.profiles:
