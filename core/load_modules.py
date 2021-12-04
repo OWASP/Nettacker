@@ -62,6 +62,10 @@ class NettackerModules:
         self.module_inputs = {}
         self.skip_service_discovery = None
         self.discovered_services = None
+        self.ignored_core_modules = [
+            'subdomain_scan',
+            'icmp_scan'
+        ]
         self.service_discovery_signatures = list(set(yaml.load(
             StringIO(
                 open(nettacker_paths()['modules_path'] + '/scan/port.yaml').read().format(
@@ -99,7 +103,7 @@ class NettackerModules:
             ),
             self.module_inputs
         )
-        if not self.skip_service_discovery:
+        if not self.skip_service_discovery and self.module_name not in self.ignored_core_modules:
             services = {}
             for service in find_events(self.target, 'port_scan', self.scan_unique_id):
                 service_event = json.loads(service.json_event)
