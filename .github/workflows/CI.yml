@@ -36,7 +36,16 @@ jobs:
         run: "docker run -e github_ci=true -v $(pwd):/usr/src/owaspnettacker --rm -i nettacker python nettacker.py
          -i 127.0.0.1 -u user1,user2 -p pass1,pass2 -m all -g 21,25,80,443 -t 1000 -T 3 -o out.csv"
 
+      - name: Test all modules command + check if it's finish successfully + csv
+        run: "docker run -e github_ci=true -v $(pwd):/usr/src/owaspnettacker --rm -i nettacker python nettacker.py
+          -i 127.0.0.1 -u user1,user2 -p pass1,pass2 -m all -g 21,25,80,443 -t 1000 -T 3 -o out.csv --skip-service-discovery"
+
       - name: Test all modules command + check if it's finish successfully + with graph + Persian
         run: "docker run -e github_ci=true -v $(pwd):/usr/src/owaspnettacker --rm -i nettacker python nettacker.py -i
          127.0.0.1 -L fa -u user1,user2 -p pass1,pass2 --profile all -g 21,25,80,443 -t 1000 -T 3
          --graph d3_tree_v2_graph -v"
+
+      - name: Test all modules command + check if it's finish successfully + with graph + Persian
+        run: "docker run -e github_ci=true -v $(pwd):/usr/src/owaspnettacker --rm -i nettacker python nettacker.py -i
+         127.0.0.1 -L fa -u user1,user2 -p pass1,pass2 --profile all -g 21,25,80,443 -t 1000 -T 3
+         --graph d3_tree_v2_graph -v --skip-service-discovery"
