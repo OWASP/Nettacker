@@ -116,20 +116,21 @@ class NettackerModules:
                         else:
                             services[protocol] = [port]
             self.discovered_services = copy.deepcopy(services)
+            index_payload = 0
             for payload in copy.deepcopy(self.module_content['payloads']):
                 if payload['library'] not in self.discovered_services and \
                         payload['library'] in self.service_discovery_signatures:
-                    del self.module_content['payloads'][self.module_content['payloads'].index(payload)]
+                    del self.module_content['payloads'][index_payload]
+                    index_payload -= 1
                 else:
+                    index_step = 0
                     for step in copy.deepcopy(
-                            self.module_content['payloads'][self.module_content['payloads'].index(payload)]['steps']
+                            self.module_content['payloads'][index_payload]['steps']
                     ):
-                        backup_step = copy.deepcopy(step)
                         step['ports'] = self.discovered_services[payload['library']]
-                        self.module_content['payloads'][self.module_content['payloads'].index(payload)]['steps'][
-                            self.module_content['payloads'][self.module_content['payloads'].index(payload)][
-                                'steps'].index(backup_step)
-                        ] = step
+                        self.module_content['payloads'][index_payload]['steps'][index_step] = step
+                        index_step += 1
+                index_payload += 1
 
     def generate_loops(self):
         from core.utility import expand_module_steps
