@@ -76,10 +76,8 @@ class NettackerSocket:
         try:
             socket_connection.send(b"ABC\x00\r\n\r\n\r\n" * 10)
             response = socket_connection.recv(1024 * 1024 * 10)
-            print(response)
             socket_connection.close()
-        except Exception as e:
-            print(e)
+        except Exception:
             try:
                 socket_connection.close()
                 response = b""
