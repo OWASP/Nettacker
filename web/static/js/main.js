@@ -782,14 +782,14 @@ function filter_large_content(content, filter_rate){
 
       HTMLData +=
         '<div class="row myBox" ><div class="d-flex w-100 text-justify justify-content-between">\n' +
-        '<button class="mb-1 bold label card-date""><a target=\'_blank\' style="color: black" href="/logs/get_html?target=' +
+        '<button class="btn btn-primary" style="margin-right: 1rem"> <a target=\'_blank\' style="color: white" href="/logs/get_html?target=' +
         target +
         '">' +
         target +
-        '</a></button></span><button class="mb-1 bold label card-date""><a href="/logs/get_json?target=' +
+        '</a></button></span><button class="btn btn-btn-secondary" style="margin-right: 1rem"><a href="/logs/get_json?target=' +
         target +
         '">Get JSON</a></button>' +
-        '<button class="mb-1 bold label card-date""><a href="/logs/get_csv?target=' +
+        '<button class="btn btn-btn-secondary"><a href="/logs/get_csv?target=' +
         target +
         '">Get CSV </a></button></h3>\n' +
         "</div>\n" +
