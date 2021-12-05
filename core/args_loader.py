@@ -3,6 +3,7 @@
 
 import argparse
 import sys
+import json
 
 from core.alert import write
 from core.alert import warn
@@ -610,7 +611,27 @@ def check_all_required(parser, api_forms=None):
     if options.modules_extra_args:
         all_args = {}
         for args in options.modules_extra_args.split("&"):
-            all_args[args.split('=')[0]] = args.split('=')[1]
+            value = args.split('=')[1]
+            if value.lower() == 'true':
+                value = True
+            elif value.lower() == 'false':
+                value = False
+            elif '.' in value:
+                try:
+                    value = float(value)
+                except Exception as _:
+                    del _
+            elif '{' in value or '[' in value:
+                try:
+                    value = json.loads(value)
+                except Exception as _:
+                    del _
+            else:
+                try:
+                    value = int(value)
+                except Exception as _:
+                    del _
+            all_args[args.split('=')[0]] = value
         options.modules_extra_args = all_args
     options.timeout = float(options.timeout)
     options.time_sleep_between_requests = float(options.time_sleep_between_requests)
