@@ -83,6 +83,7 @@ class HostsLog(Base):
     port = Column(Text)
     event = Column(Text)
     json_event = Column(Text)
+    event_checksum = Column(Text)
 
     def __repr__(self):
         """
@@ -90,7 +91,7 @@ class HostsLog(Base):
         """
         return '''
             <scan_events(id={0}, target={1}, date={2}, module_name={3}, scan_unqiue_id={4}, 
-            port={5}, event={6}, json_event={7})>
+            port={5}, event={6}, json_event={7}, event_checksum={8})>
         '''.format(
             self.id,
             self.target,
@@ -99,5 +100,6 @@ class HostsLog(Base):
             self.scan_unique_id,
             self.port,
             self.event,
-            self.json_event
+            self.json_event,
+            self.event_checksum
         )

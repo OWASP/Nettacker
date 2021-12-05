@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import hashlib
 import time
 from flask import jsonify
 from sqlalchemy import create_engine
@@ -155,7 +156,8 @@ def submit_logs_to_db(log):
                 scan_unique_id=log["scan_unique_id"],
                 port=json.dumps(log["port"]),
                 event=json.dumps(log["event"]),
-                json_event=json.dumps(log["json_event"])
+                json_event=json.dumps(log["json_event"]),
+                event_checksum=hashlib.sha256(json.dumps(log["json_event"]).encode()).hexdigest()
             )
         )
         return send_submit_query(session)
@@ -356,6 +358,7 @@ def get_logs_by_scan_unique_id(scan_unique_id):
             "port": json.loads(log.port),
             "event": json.loads(log.event),
             "json_event": log.json_event,
+            "event_checksum": log.event_checksum
         }
         for log in session.query(HostsLog).filter(
             HostsLog.scan_unique_id == scan_unique_id
@@ -384,6 +387,7 @@ def logs_to_report_json(target):
                 "port": json.loads(log.port),
                 "event": json.loads(log.event),
                 "json_event": json.loads(log.json_event),
+                "event_checksum": log.event_checksum
             }
             return_logs.append(data)
         return return_logs
@@ -412,7 +416,8 @@ def logs_to_report_html(target):
             "scan_unique_id": log.scan_unique_id,
             "port": log.port,
             "event": log.event,
-            "json_event": log.json_event
+            "json_event": log.json_event,
+            "event_checksum": log.event_checksum
         } for log in session.query(HostsLog).filter(
             HostsLog.target == target
         ).all()
@@ -431,7 +436,8 @@ def logs_to_report_html(target):
         'scan_unique_id',
         'port',
         'event',
-        'json_event'
+        'json_event',
+        'event_checksum'
     )
     for event in logs:
         html_content += log_data.table_items.format(
@@ -441,7 +447,8 @@ def logs_to_report_html(target):
             event['scan_unique_id'],
             event['port'],
             event['event'],
-            event['json_event']
+            event['json_event'],
+            event['event_checksum']
         )
     html_content += log_data.table_end + '<p class="footer">' + messages("nettacker_report") + '</p>'
     return html_content

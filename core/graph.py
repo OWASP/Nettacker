@@ -131,7 +131,8 @@ def create_report(options, scan_unique_id):
             'scan_unique_id',
             'port',
             'event',
-            'json_event'
+            'json_event',
+            'event_checksum'
         )
         for event in all_scan_logs:
             html_table_content += log_data.table_items.format(
@@ -141,7 +142,8 @@ def create_report(options, scan_unique_id):
                 event["scan_unique_id"],
                 event["port"],
                 event["event"],
-                event["json_event"]
+                event["json_event"],
+                event["event_checksum"]
             )
         html_table_content += log_data.table_end + '<p class="footer">' + messages("nettacker_version_details").format(
             version_info()[0],
