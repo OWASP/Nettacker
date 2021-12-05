@@ -3,6 +3,7 @@
 
 import argparse
 import sys
+import json
 
 from core.alert import write
 from core.alert import warn
@@ -260,6 +261,13 @@ def load_all_args():
         help=messages("subdomains"),
     )
     modules.add_argument(
+        "--skip-service-discovery",
+        action="store_true",
+        default=nettacker_global_configuration['nettacker_user_application_config']["skip_service_discovery"],
+        dest="skip_service_discovery",
+        help=messages("skip_service_discovery")
+    )
+    modules.add_argument(
         "-t",
         "--thread-per-host",
         action="store",
@@ -490,8 +498,8 @@ def check_all_required(parser, api_forms=None):
         die_failure(messages("scan_method_select"))
     if options.selected_modules:
         if options.selected_modules == 'all':
-            options.selected_modules = modules_list
-            del options.selected_modules['all']
+            options.selected_modules = list(set(modules_list.keys()))
+            options.selected_modules.remove('all')
         else:
             options.selected_modules = list(set(options.selected_modules.split(',')))
         for module_name in options.selected_modules:
@@ -505,8 +513,8 @@ def check_all_required(parser, api_forms=None):
         if not options.selected_modules:
             options.selected_modules = []
         if options.profiles == 'all':
-            options.selected_modules = modules_list
-            del options.selected_modules['all']
+            options.selected_modules = list(set(modules_list.keys()))
+            options.selected_modules.remove('all')
         else:
             options.profiles = list(set(options.profiles.split(',')))
             for profile in options.profiles:
@@ -603,7 +611,27 @@ def check_all_required(parser, api_forms=None):
     if options.modules_extra_args:
         all_args = {}
         for args in options.modules_extra_args.split("&"):
-            all_args[args.split('=')[0]] = args.split('=')[1]
+            value = args.split('=')[1]
+            if value.lower() == 'true':
+                value = True
+            elif value.lower() == 'false':
+                value = False
+            elif '.' in value:
+                try:
+                    value = float(value)
+                except Exception as _:
+                    del _
+            elif '{' in value or '[' in value:
+                try:
+                    value = json.loads(value)
+                except Exception as _:
+                    del _
+            else:
+                try:
+                    value = int(value)
+                except Exception as _:
+                    del _
+            all_args[args.split('=')[0]] = value
         options.modules_extra_args = all_args
     options.timeout = float(options.timeout)
     options.time_sleep_between_requests = float(options.time_sleep_between_requests)

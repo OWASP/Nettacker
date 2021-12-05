@@ -48,30 +48,33 @@ def create_tcp_socket(host, ports, timeout):
     socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socket_connection.settimeout(timeout)
     socket_connection.connect((host, int(ports)))
+    ssl_flag = False
     try:
         socket_connection = ssl.wrap_socket(socket_connection)
+        ssl_flag = True
     except Exception:
         socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         socket_connection.settimeout(timeout)
         socket_connection.connect((host, int(ports)))
-    return socket_connection
+    return socket_connection, ssl_flag
 
 
 class NettackerSocket:
     def tcp_connect_only(host, ports, timeout):
-        socket_connection = create_tcp_socket(host, ports, timeout)
+        socket_connection, ssl_flag = create_tcp_socket(host, ports, timeout)
         peer_name = socket_connection.getpeername()
         socket_connection.close()
         return {
             "peer_name": peer_name,
-            "service": socket.getservbyport(int(ports))
+            "service": socket.getservbyport(int(ports)),
+            "ssl_flag": ssl_flag
         }
 
     def tcp_connect_send_and_receive(host, ports, timeout):
-        socket_connection = create_tcp_socket(host, ports, timeout)
+        socket_connection, ssl_flag = create_tcp_socket(host, ports, timeout)
         peer_name = socket_connection.getpeername()
         try:
-            socket_connection.send(b"ABC\x00\r\n" * 10)
+            socket_connection.send(b"ABC\x00\r\n\r\n\r\n" * 10)
             response = socket_connection.recv(1024 * 1024 * 10)
             socket_connection.close()
         except Exception:
@@ -83,7 +86,8 @@ class NettackerSocket:
         return {
             "peer_name": peer_name,
             "service": socket.getservbyport(int(ports)),
-            "response": response.decode(errors='ignore')
+            "response": response.decode(errors='ignore'),
+            "ssl_flag": ssl_flag
         }
 
     def socket_icmp(host, timeout):
@@ -219,7 +223,8 @@ class NettackerSocket:
         socket_connection.close()
         return {
             "host": host,
-            "response_time": delay
+            "response_time": delay,
+            "ssl_flag": False
         }
 
 
@@ -260,6 +265,7 @@ class Engine:
                 response = []
         sub_step['method'] = backup_method
         sub_step['response'] = backup_response
+        sub_step['response']['ssl_flag'] = response['ssl_flag'] if type(response) == dict else False
         sub_step['response']['conditions_results'] = response_conditions_matched(sub_step, response)
         return process_conditions(
             sub_step,

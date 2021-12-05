@@ -52,26 +52,16 @@ def parallel_scan_process(options, targets, scan_unique_id, process_number):
     return True
 
 
-def start_scan_processes(options):
-    """
-    preparing for attacks and managing multi-processing for host
-
-    Args:
-        options: all options
-
-    Returns:
-        True when it ends
-    """
-    scan_unique_id = generate_random_token(32)
-    # find total number of targets + types + expand (subdomain, IPRanges, etc)
-    # optimize CPU usage
-    info(messages("regrouping_targets"))
-    options.targets = expand_targets(options, scan_unique_id)
+def multi_processor(options, scan_unique_id):
+    if not options.targets:
+        info(messages("no_live_service_found"))
+        return True
     number_of_total_targets = len(options.targets)
     options.targets = [
         targets.tolist() for targets in numpy.array_split(
             options.targets,
-            options.set_hardware_usage if options.set_hardware_usage <= len(options.targets) else len(options.targets)
+            options.set_hardware_usage if options.set_hardware_usage <= len(options.targets)
+            else number_of_total_targets
         )
     ]
     info(messages("removing_old_db_records"))
@@ -104,6 +94,28 @@ def start_scan_processes(options):
         )
         process.start()
         active_processes.append(process)
-    exit_code = wait_for_threads_to_finish(active_processes, sub_process=True)
-    create_report(options, scan_unique_id)
+    return wait_for_threads_to_finish(active_processes, sub_process=True)
+
+
+def start_scan_processes(options):
+    """
+    preparing for attacks and managing multi-processing for host
+
+    Args:
+        options: all options
+
+    Returns:
+        True when it ends
+    """
+    scan_unique_id = generate_random_token(32)
+    # find total number of targets + types + expand (subdomain, IPRanges, etc)
+    # optimize CPU usage
+    info(messages("regrouping_targets"))
+    options.targets = expand_targets(options, scan_unique_id)
+    if options.targets:
+        exit_code = multi_processor(options, scan_unique_id)
+        create_report(options, scan_unique_id)
+    else:
+        info(messages("no_live_service_found"))
+        exit_code = True
     return exit_code
