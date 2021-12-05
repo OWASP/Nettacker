@@ -64,7 +64,8 @@ class NettackerModules:
         self.discovered_services = None
         self.ignored_core_modules = [
             'subdomain_scan',
-            'icmp_scan'
+            'icmp_scan',
+            'port_scan'
         ]
         self.service_discovery_signatures = list(set(yaml.load(
             StringIO(
@@ -127,7 +128,12 @@ class NettackerModules:
                     for step in copy.deepcopy(
                             self.module_content['payloads'][index_payload]['steps']
                     ):
-                        step['ports'] = self.discovered_services[payload['library']]
+                        find_and_replace_configuration_keys(
+                            step,
+                            {
+                                "ports": self.discovered_services[payload['library']]
+                            }
+                        )
                         self.module_content['payloads'][index_payload]['steps'][index_step] = step
                         index_step += 1
                 index_payload += 1
