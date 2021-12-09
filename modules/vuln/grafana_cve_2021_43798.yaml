@@ -42,25 +42,48 @@ payloads:
                 - 80
                 - 443
               plugin-id:
-                - grafana-clock-panel
                 - alertlist
-                - graph
-                - elasticsearch
-                - dashlist
+                - annolist
+                - barchart
+                - bargauge
                 - cloudwatch
-                - mysql
-                - influxdb
-                - heatmap
-                - graphite
-                - prometheus
-                - postgres
-                - pluginlist
-                - opentsdb
-                - text
-                - table
-                - stackdriver
+                - dashlist
+                - elasticsearch
+                - gauge
+                - geomap
+                - gettingstarted
                 - grafana-azure-monitor-datasource
+                - grafana-clock-panel
                 - grafana-simple-json-datasource
+                - graph
+                - graphite
+                - heatmap
+                - histogram
+                - influxdb
+                - jaeger
+                - logs
+                - loki
+                - mssql
+                - mysql
+                - news
+                - nodeGraph
+                - opentsdb
+                - piechart
+                - pluginlist
+                - postgres
+                - prometheus
+                - stackdriver
+                - stat
+                - state-timeline
+                - status-history
+                - table
+                - table-old
+                - tempo
+                - testdata
+                - text
+                - timeseries
+                - welcome
+                - zipkin
         response:
           condition_type: and
           conditions:
