@@ -12,8 +12,6 @@ info:
     - http
     - critical_severity
     - grafana
-    - 0day
-    - zeroday
     - lfi
 
 payloads:
