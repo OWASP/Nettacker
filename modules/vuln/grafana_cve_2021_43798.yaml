@@ -1,5 +1,5 @@
 info:
-  name: grafana_zeroday_vuln
+  name: grafana_cve_2021_43798_vuln
   author: OWASP Nettacker Team
   severity: 9
   description:  Grafana unpatched 0 Day LFI is now being actively exploited, it affects only Grafana 8.0+, Vulnerable companies should revoke the secrets they store at their /etc/grafana/grafana.ini as there is no official fix in the meantime.
