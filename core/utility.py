@@ -12,6 +12,7 @@ import os
 import multiprocessing
 import yaml
 import hashlib
+import re
 from core.load_modules import load_all_languages
 from core.time import now
 from core.color import color
@@ -169,7 +170,13 @@ def find_and_replace_dependent_values(sub_step, dependent_on_temp_event):
                 if type(sub_step[key]) == str:
                     if 'dependent_on_temp_event' in sub_step[key]:
                         globals().update(locals())
-                        exec('sub_step[key] = {sub_step}'.format(sub_step=sub_step[key]), globals(), {})
+                        generate_new_step = copy.deepcopy(sub_step[key])
+                        key_name = re.findall(
+                            re.compile("dependent_on_temp_event\\['\\S+\\]\\[\\S+\\]"),
+                            generate_new_step
+                        )[0]
+                        key_value = eval(key_name)
+                        sub_step[key] = sub_step[key].replace(key_name, key_value)
     if type(sub_step) == list:
         value_index = 0
         for value in copy.deepcopy(sub_step):
@@ -181,7 +188,13 @@ def find_and_replace_dependent_values(sub_step, dependent_on_temp_event):
                 if type(sub_step[value_index]) == str:
                     if 'dependent_on_temp_event' in sub_step[value_index]:
                         globals().update(locals())
-                        exec('sub_step[value_index] = {sub_step}'.format(sub_step=sub_step[value_index]), globals(), {})
+                        generate_new_step = copy.deepcopy(sub_step[key])
+                        key_name = re.findall(
+                            re.compile("dependent_on_temp_event\\['\\S+\\]\\[\\S+\\]"),
+                            generate_new_step
+                        )[0]
+                        key_value = eval(key_name)
+                        sub_step[value_index] = eval(key_name)
             value_index += 1
     return sub_step
 
