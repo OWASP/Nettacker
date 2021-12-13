@@ -149,14 +149,17 @@ def filter_large_content(content, filter_rate=150):
         return content
 
 
-def get_dependent_results_from_database(target, module_name, scan_unique_id, event_name):
+def get_dependent_results_from_database(target, module_name, scan_unique_id, event_names):
     from database.db import find_temp_events
-    while True:
-        event = find_temp_events(target, module_name, scan_unique_id, event_name)
-        if event:
-            break
-        time.sleep(0.1)
-    return json.loads(event.event)['response']['conditions_results']
+    events = []
+    for event_name in event_names.split(','):
+        while True:
+            event = find_temp_events(target, module_name, scan_unique_id, event_name)
+            if event:
+                events.append(json.loads(event.event)['response']['conditions_results'])
+                break
+            time.sleep(0.1)
+    return events
 
 
 def find_and_replace_dependent_values(sub_step, dependent_on_temp_event):
@@ -172,7 +175,7 @@ def find_and_replace_dependent_values(sub_step, dependent_on_temp_event):
                         globals().update(locals())
                         generate_new_step = copy.deepcopy(sub_step[key])
                         key_name = re.findall(
-                            re.compile("dependent_on_temp_event\\['\\S+\\]\\[\\S+\\]"),
+                            re.compile("dependent_on_temp_event\\[\\S+\\]\\['\\S+\\]\\[\\S+\\]"),
                             generate_new_step
                         )[0]
                         key_value = eval(key_name)

