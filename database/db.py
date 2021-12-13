@@ -208,12 +208,22 @@ def find_temp_events(target, module_name, scan_unique_id, event_name):
             an array with JSON events or an empty array
         """
     session = create_connection()
-    return session.query(TempEvents).filter(
-        TempEvents.target == target,
-        TempEvents.module_name == module_name,
-        TempEvents.scan_unique_id == scan_unique_id,
-        TempEvents.event_name == event_name
-    ).first()
+    try:
+        for _ in range(1, 100):
+            try:
+                return session.query(TempEvents).filter(
+                    TempEvents.target == target,
+                    TempEvents.module_name == module_name,
+                    TempEvents.scan_unique_id == scan_unique_id,
+                    TempEvents.event_name == event_name
+                ).first()
+            except Exception:
+                time.sleep(0.01)
+    except Exception as _:
+        warn(messages("database_connect_fail"))
+        return False
+    return False
+
 
 
 def find_events(target, module_name, scan_unique_id):
