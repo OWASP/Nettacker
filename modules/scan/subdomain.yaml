@@ -220,10 +220,10 @@ payloads:
         headers:
           User-Agent: "{user_agent}"
           Referer: "https://dnsdumpster.com/"
-          Cookie: "dependent_on_temp_event['headers']['Set-Cookie'][1]"
+          Cookie: "dependent_on_temp_event[0]['headers']['Set-Cookie'][1]"
         url: "https://dnsdumpster.com/"
         data:
-          csrfmiddlewaretoken: "dependent_on_temp_event['content'][0]"
+          csrfmiddlewaretoken: "dependent_on_temp_event[0]['content'][0]"
           targetip: "{target}"
           user: "free"
         response:
@@ -270,7 +270,7 @@ payloads:
         headers:
           User-Agent: "{user_agent}"
           Referer: "https://toolbox.googleapps.com/apps/dig/"
-          Cookie: "dependent_on_temp_event['headers']['Set-Cookie'][1]"
+          Cookie: "dependent_on_temp_event[0]['headers']['Set-Cookie'][1]"
           authority: "toolbox.googleapps.com"
           dnt: "1"
           sec-ch-ua-mobile: "?1"
@@ -281,7 +281,7 @@ payloads:
           accept-language: "en-US,en;q=0.9,fa-IR;q=0.8,fa;q=0.7"
         url: "https://toolbox.googleapps.com/apps/dig/lookup"
         data:
-          csrfmiddlewaretoken: "dependent_on_temp_event['content'][0]"
+          csrfmiddlewaretoken: "dependent_on_temp_event[0]['content'][0]"
           domain: "{target}"
           typ: "ANY"
         response:
