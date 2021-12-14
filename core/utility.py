@@ -178,7 +178,10 @@ def find_and_replace_dependent_values(sub_step, dependent_on_temp_event):
                             re.compile("dependent_on_temp_event\\[\\S+\\]\\['\\S+\\]\\[\\S+\\]"),
                             generate_new_step
                         )[0]
-                        key_value = eval(key_name)
+                        try:
+                            key_value = eval(key_name)
+                        except Exception:
+                            key_value = "error"
                         sub_step[key] = sub_step[key].replace(key_name, key_value)
     if type(sub_step) == list:
         value_index = 0
@@ -196,8 +199,11 @@ def find_and_replace_dependent_values(sub_step, dependent_on_temp_event):
                             re.compile("dependent_on_temp_event\\['\\S+\\]\\[\\S+\\]"),
                             generate_new_step
                         )[0]
-                        key_value = eval(key_name)
-                        sub_step[value_index] = eval(key_name)
+                        try:
+                            key_value = eval(key_name)
+                        except Exception:
+                            key_value = "error"
+                        sub_step[value_index] = sub_step[value_index].replace(key_name, key_value)
             value_index += 1
     return sub_step
 
@@ -233,9 +239,14 @@ def select_maximum_cpu_core(mode):
 def wait_for_threads_to_finish(threads, maximum=None, terminable=False, sub_process=False):
     while threads:
         try:
-            for thread in threads[:]:
+            dead_threads = []
+            for thread in threads:
                 if not thread.is_alive():
+                    dead_threads.append(thread)
+            if dead_threads:
+                for thread in dead_threads:
                     threads.remove(thread)
+                dead_threads = []
             if maximum and len(threads) < maximum:
                 break
             time.sleep(0.01)
