@@ -36,6 +36,9 @@ payloads:
             content:
               regex: <code>(.*)[A-Za-z0-9_]<\/code>
               reverse: false
+            status_code:
+              regex: "200"
+              reverse: false
 
       - method: get
         verify: false
@@ -663,8 +666,8 @@ payloads:
         proxies: ""
         headers:
           User-Agent: "{user_agent}"
-        url: "https://httpstat.us/200?sleep=10000"
-        # simple hack to ensure we check the logs after 10 seconds waiting
+        url: "https://httpstat.us/200?sleep=3000"
+        # simple hack to ensure we check the logs after 3 seconds waiting
         response:
           save_to_temp_events_only: log4shell_http_timeout
           condition_type: and
