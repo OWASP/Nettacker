@@ -61,7 +61,7 @@ def create_connection():
                 session = Session()
                 return session
             except Exception:
-                time.sleep(0.01)
+                time.sleep(0.1)
     except Exception:
         warn(messages("database_connect_fail"))
     return False
@@ -84,7 +84,7 @@ def send_submit_query(session):
                 session.commit()
                 return True
             except Exception:
-                time.sleep(0.01)
+                time.sleep(0.1)
     except Exception as _:
         warn(messages("database_connect_fail"))
         return False
@@ -218,7 +218,7 @@ def find_temp_events(target, module_name, scan_unique_id, event_name):
                     TempEvents.event_name == event_name
                 ).first()
             except Exception:
-                time.sleep(0.01)
+                time.sleep(0.1)
     except Exception as _:
         warn(messages("database_connect_fail"))
         return False
