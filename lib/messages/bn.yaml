@@ -1,0 +1,109 @@
+API: API
+API_access_key: API অ্যাক্সেস কী
+API_access_log_file: API অ্যাক্সেস লগ ফাইল নাম
+API_cert: API সার্টিফিকেট
+API_cert_key: API সার্টিফিকেট কী
+API_debug: API ডিবাগ মোড
+API_host: API হোস্ট ঠিকানা
+API_invalid: অবৈধ API কী
+API_key: "* API https://nettacker-api.z3r0d4y.com থেকে অ্যাক্সেসযোগ্য:{0}/ API কী এর মাধ্যমে: {1}"
+API_options: API বিকল্প
+API_port: API পোর্ট নম্বর
+Method: উপায়
+skip_service_discovery: স্ক্যান করার আগে পরিষেবা আবিষ্কারটি এড়িয়ে যান এবং যাই হোক না কেন স্ক্যান করার জন্য সমস্ত মডিউল প্রয়োগ করুন
+no_live_service_found: কোন লাইভ সেবা স্ক্যান পাওয়া যায় না।
+icmp_need_root_access: icmp_scan মডিউল বা --ping-before-scan ব্যবহার করতে আপনাকে রুট হিসাবে স্ক্রিপ্ট চালাতে হবে!
+available_graph: "সমস্ত ক্রিয়াকলাপ এবং তথ্যের একটি গ্রাফ তৈরি করুন, আপনাকে HTML আউটপুটটি ব্যবহার করতে হবে। উপলব্ধ গ্রাফ: {0}"
+browser_session_killed: আপনার ব্রাউজার অধিবেশন হত্যা
+browser_session_valid: আপনার ব্রাউজার অধিবেশন বৈধ
+build_graph: গ্রাফ নির্মাণ ...
+connection_retries: সংযোগ সময়সীমা (ডিফল্ট 3)
+current_version: আপনি কোড নাম {3}{4}{5} সহ OWASP Nettacker সংস্করণ {0}{1}{2}{6} চালাচ্ছেন
+database_connect_fail: ডাটাবেস সংযোগ করতে পারে না!
+database_connection_failed: সংযোগ নির্বাচিত ডাটাবেস থেকে ব্যর্থ হয়েছে
+define_whie_list: "হোয়াইট লিস্ট হোস্টকে সংজ্ঞায়িত করুন, এটি আলাদা করুন, (উদাহরণ: 127.0.0.1, 1 9 2.168.0.1/24, 10.0.0.1-10.0.0.255 )"
+engine: ইঞ্জিন
+filtered_content: ... [রিপোর্টে পূর্ণ সামগ্রী দেখুন]
+engine_input: ইঞ্জিন ইনপুট বিকল্প
+Invalid_whatcms_api_key: "{0}"
+searching_whatcms_database: whatcms.org এ CMS অনুসন্ধান করা হচ্ছে...
+whatcms_monthly_quota_exceeded: আপনি আপনার মাসিক WhatCMS অনুরোধ কোটা অতিক্রম করেছেন
+finished_module: শেষ মডিউল {0} টার্গেটের দিকে {1} |মডিউল থ্রেড নম্বর {2} {3} থেকে!
+modules_extra_args_help: মডিউল পাস করার জন্য অতিরিক্ত আর্গুমেন্ট যোগ করুন (E.G. --MODULES-ARGR-ARGS "x_api_key=123&xyz_passwd=abc"
+choose_scan_method: --show-all-modules ব্যবহার করে সম্পূর্ণ তালিকা দেখতে {0} মডিউল বেছে নিন
+cannot_run_api_server: আপনি নিজেই এপিআই সার্ভার চালাতে পারবেন না!
+error_target: লক্ষ্য উল্লেখ করতে পারবেন না
+error_target_file: "ফাইলটি খুলতে অক্ষম (টার্গেট) নির্দিষ্ট করতে পারে না: {0}"
+error_username: "ব্যবহারকারী নামটি ফাইলটি খুলতে অক্ষম হতে পারে না: {0}"
+exclude_scan_method: "{0} বাদ দিতে স্ক্যান পদ্ধতি বেছে নিন"
+file_write_error: ফাইল "{0}" লেখার যোগ্য নয়!
+library_not_supported: লাইব্রেরি [{0}] সমর্থন নয়!
+removing_old_db_records: নির্বাচিত লক্ষ্য এবং মডিউল জন্য পুরানো ডাটাবেস রেকর্ড মুছে ফেলা হচ্ছে।
+regrouping_targets: হার্ডওয়্যার সম্পদ উপর ভিত্তি করে লক্ষ্য পুনর্গঠন!
+finish_build_graph: নির্মাণ গ্রাফ শেষ করুন!
+finished_parallel_module_scan: প্রক্রিয়া- {0} | {1} | {2} |{3} থেকে মডিউল থ্রেড নম্বর শেষ করুন {3}
+graph_message: এই গ্রাফটি OWASP Nettacker দ্বারা তৈরি করা হয়েছে। গ্রাফে সমস্ত মডিউল কার্যকলাপ, নেটওয়ার্ক মানচিত্র এবং সংবেদনশীল তথ্য রয়েছে, দয়া করে এই ফাইলটি কারো সাথে শেয়ার করবেন না যদি এটি নির্ভরযোগ্য না হয়।
+graph_module_404: "এই গ্রাফ মডিউলটি পায়নি: {0}"
+graph_module_unavailable: এই গ্রাফ মডিউল "{0}" পাওয়া যায় না
+graph_output: আপনার আউটপুট ফাইলের নাম গ্রাফ বৈশিষ্ট্যটি ব্যবহার করার জন্য "। HTML" বা ".htm" এর সাথে শেষ হওয়া উচিত!
+help_menu: নেটটেকার সাহায্য মেনু দেখান
+done: সম্পন্ন !
+error_platform: দুর্ভাগ্যবশত, সফ্টওয়্যারটির এই সংস্করণটি Linux/darwin-এ চলতে পারে
+file_saved: ডাটাবেস সংরক্ষিত রিপোর্ট এবং {0}
+inserting_report_db: ডাটাবেসের মধ্যে রিপোর্ট
+invalid_database: অনুগ্রহ করে কনফিগারেশন ফাইলে mysql বা sqlite থেকে নির্বাচন করুন
+invalid_json_type_to_db: "ডাটাবেসের জন্য JSON ডেটা অবৈধ টাইপ। ডাটাবেস জমা দেওয়া। তথ্য: {0}"
+license: "অনুগ্রহ করে লাইসেন্স এবং চুক্তি https://github.com/owasp/nettacker পড়ুন"
+loaded_modules: "{0} মডিউল লোড ..."
+loading_modules: সব মডিউল লোড হচ্ছে ... এটা কিছু সময় পেতে পারে!
+loading_profiles: সব প্রোফাইল লোড হচ্ছে ... এটা কিছু সময় পেতে পারে!
+module_profile_full_information: "{0} {1} {2}: {3}"
+nettacker_report: OWASP Nettacker রিপোর্ট
+nettacker_version_details: "সফটওয়্যার বর্ণনা: {0} [{1}] {2}"
+not_found: পাওয়া যায় নি!
+outgoing_proxy: "বহির্গামী সংযোগ প্রক্সি (socks)। উদাহরণ socks5: 127.0.0.1:9050, socks://127.0.0.1:9050 socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050, প্রমাণীকরণ: socks://username: password@ 127.0.0.1, socks4://username:password@127.0.0.1, socks5://username:password@127.0.0.1"
+password_seperator: পাসওয়ার্ড(গুলি) তালিকা, "," দিয়ে আলাদা
+pentest_graphs: ভর্তি পরীক্ষা গ্রাফ
+ping_before_scan: হোস্ট স্ক্যান করার আগে পিং
+port_seperator: পোর্ট(গুলি) তালিকা, "," দিয়ে আলাদা
+ports_int: বন্দর পূর্ণসংখ্যা হতে হবে!(উদাহরণস্বরূপ 80 || 80,1080 || 80,1080-1300,9000,12000-15000)
+profile_404: প্রোফাইল "{0}" পেয়ে গেল না!
+range: পরিসরের সমস্ত আইপি স্ক্যান করুন
+read_passwords: ফাইল থেকে পাসওয়ার্ড পড়ুন
+read_target: ফাইল থেকে লক্ষ্য(গুলি) পড়ুন
+removing_logs_db: ডিবি থেকে পুরানো লগ অপসারণ
+save_logs: ফাইলের সমস্ত লগ সংরক্ষণ করুন (results.txt, results.csv, results.html, results.json)
+scan_method_options: স্ক্যান পদ্ধতি বিকল্প
+scan_method_select: আপনার স্ক্যানিং পদ্ধতি নির্বাচন করুন!
+scan_module_not_found: এই স্ক্যান মডিউল [{0}] এটি পাইনি!
+scan_started: "নেটটেকার ইঞ্জিন শুরু হয়েছে..." 
+select_language: একটি ভাষা নির্বাচন করুন {0}
+select_profile: প্রোফাইল নির্বাচন করুন {0}
+select_user_agent: "HTTP অনুরোধগুলি পাঠানোর জন্য একটি ব্যবহারকারী এজেন্ট নির্বাচন করুন অথবা অনুরোধে ব্যবহারকারী-এজেন্টকে র্যান্ডমাইজ করতে \"random_user_agent\" লিখুন।"
+send_success_event_from_module: "প্রক্রিয়া- {0} | {1} | {2} | মডিউল-থ্রেড {3} / {4} | অনুরোধ-থ্রেড {5} / {6} | {7} | Success_Condition (গুলি): {8}"
+send_unsuccess_event_from_module: "প্রক্রিয়া- {0} | {1} | {2} | মডিউল-থ্রেড {3} / {4} | অনুরোধ-থ্রেড {5} / {6} | সমস্ত শর্ত ব্যর্থ হয়েছে"
+sending_module_request: "প্রক্রিয়া- {0} | {1} | {2} | মডিউল-থ্রেড {3} / {4} | অনুরোধ পাঠানো হচ্ছে {6} থেকে"
+verbose_event: প্রতিটি থ্রেড অবস্থা দেখতে verbose ইভেন্ট সক্রিয় করুন
+no_events_for_report: একটি রিপোর্ট তৈরি করার জন্য কোন ঘটনা নেই!এই বিভাগে skipping।
+set_hardware_usage: স্ক্যান করার সময় হার্ডওয়্যার ব্যবহার সেট করুন।(কম, স্বাভাবিক, উচ্চ, সর্বাধিক)
+show_all_modules: সমস্ত মডিউল এবং তাদের তথ্য দেখান
+show_all_profiles: সব প্রোফাইল এবং তাদের তথ্য দেখান
+single_process_started: প্রক্রিয়া- {0} |প্রক্রিয়া শুরু হয়!
+software_version: সফ্টওয়্যার সংস্করণ দেখান
+start_api_server: API পরিষেবা শুরু করুন
+start_multi_process: "{1} প্রক্রিয়া (es) মধ্যে {0} লক্ষ্যমাত্রা আমদানি করা হয়েছে।"
+start_parallel_module_scan: প্রক্রিয়া- {0} | {1} | {2} |মডিউল থ্রেড নম্বর শুরু করেছেন {3} থেকে {4}
+subdomains: সাবডোমেন খুঁজুন এবং স্ক্যান করুন
+target: লক্ষ্যমাত্রা
+target_input: লক্ষ্য ইনপুট বিকল্প
+target_list: লক্ষ্য(গুলি) তালিকা, "," দিয়ে আলাদা
+thread_number_connections: হোস্টের সাথে সংযোগ করতে থ্রেড নম্বর
+thread_number_modules: হোস্ট জন্য সমান্তরাল মডিউল স্ক্যান
+time_to_sleep: প্রতিটি অনুরোধের মধ্যে ঘুমানোর সময়
+unauthorized_IP: আপনার আইপি অনুমোদিত নয়
+updating_database: ডাটাবেস আপডেট হচ্ছে ...
+username_from_file: ফাইল থেকে ব্যবহারকারী নাম (গুলি) পড়ুন
+username_list: ব্যবহারকারীর নাম(গুলি) তালিকা, "," দিয়ে আলাদা
+verbose_mode: Verbose মোড স্তর (0-5) (ডিফল্ট 0)
+wrong_hardware_usage: "আপনি হার্ডওয়্যার ব্যবহারের জন্য এই প্রোফাইলগুলির একটি নির্বাচন করতে হবে। (নিম্ন, স্বাভাবিক, উচ্চ, সর্বাধিক)"
+invalid_scan_id: আপনার স্ক্যান আইডি বৈধ নয়
