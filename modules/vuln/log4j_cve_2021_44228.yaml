@@ -670,23 +670,6 @@ payloads:
               regex: ''
               reverse: false
 
-      # this request must stay in -2 position
-      - method: get
-        verify: false
-        cert: ""
-        stream: false
-        proxies: ""
-        headers:
-          User-Agent: "{user_agent}"
-        url: "https://httpstat.us/200?sleep=3000"
-        # simple hack to ensure we check the logs after 3 seconds waiting
-        response:
-          save_to_temp_events_only: log4shell_http_timeout
-          condition_type: and
-          conditions:
-            content:
-              regex: ''
-              reverse: false
       # this request must stay in -1 position
       - method: get
         verify: false
@@ -706,7 +689,7 @@ payloads:
               token:
                 - "dependent_on_temp_event[0]['content'][0]"
         response:
-          dependent_on_temp_event: log4shell_token,log4shell_junk1,log4shell_junk2,log4shell_junk3,log4shell_junk4,log4shell_junk5,log4shell_junk6,log4shell_junk7,log4shell_http_timeout
+          dependent_on_temp_event: log4shell_token,log4shell_junk1,log4shell_junk2,log4shell_junk3,log4shell_junk4,log4shell_junk5,log4shell_junk6,log4shell_junk7
           condition_type: and
           conditions:
             content:
