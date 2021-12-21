@@ -2,16 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import re
-import requests
+import aiohttp
+import asyncio
 import copy
 import random
+import time
 from core.utility import reverse_and_regex_condition
 from core.utility import process_conditions
 from core.utility import get_dependent_results_from_database
 from core.utility import replace_dependent_values
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def response_conditions_matched(sub_step, response):
@@ -89,6 +88,31 @@ def response_conditions_matched(sub_step, response):
     return []
 
 
+async def perform_request_action(action, request_options):
+    start_time = time.time()
+    async with action(**request_options) as response:
+        return {
+            "reason": response.reason,
+            "status_code": str(response.status),
+            "content": await response.content.read(),
+            "headers": dict(response.headers),
+            "responsetime": time.time() - start_time
+        }
+
+
+async def send_request(request_options, method):
+    async with aiohttp.ClientSession() as session:
+        action = getattr(session, method, None)
+        response = await asyncio.gather(
+            *[
+                asyncio.ensure_future(
+                    perform_request_action(action, request_options)
+                )
+            ]
+        )
+        return response[0]
+
+
 class Engine:
     def run(
             sub_step,
@@ -104,7 +128,6 @@ class Engine:
     ):
         backup_method = copy.deepcopy(sub_step['method'])
         backup_response = copy.deepcopy(sub_step['response'])
-        action = getattr(requests, backup_method, None)
         if options['user_agent'] == 'random_user_agent':
             sub_step['headers']['User-Agent'] = random.choice(options['user_agents'])
         del sub_step['method']
@@ -122,14 +145,8 @@ class Engine:
             )
         for _ in range(options['retries']):
             try:
-                response = action(**sub_step)
-                response = {
-                    "reason": response.reason,
-                    "status_code": str(response.status_code),
-                    "content": response.content.decode(errors="ignore"),
-                    "headers": dict(response.headers),
-                    "responsetime": response.elapsed.total_seconds()
-                }
+                response = asyncio.run(send_request(sub_step, backup_method))
+                response['content'] = response['content'].decode(errors="ignore")
                 break
             except Exception:
                 response = []
