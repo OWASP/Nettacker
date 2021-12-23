@@ -10,7 +10,7 @@ PySocks==1.7.1 # library_name=socks # module name is not equal to socks name; th
 pyOpenSSL==21.0.0 # library_name=OpenSSL
 elasticsearch==7.16.1
 flask==2.0.2
-redis==4.0.2
+rejson==0.5.6
 py3DNS==3.2.1 # library_name=DNS
 numpy==1.21.4
 terminable_thread==0.7.1

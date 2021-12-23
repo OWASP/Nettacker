@@ -2,7 +2,7 @@ version: "3"
 
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
     container_name: "elasticsearch"
     environment:
       - "ES_JAVA_OPTS=-Xms4096m -Xmx4096m"
@@ -15,14 +15,22 @@ services:
       - ./.data/db:/usr/share/elasticsearch/data:Z
 
   redis:
-    image: redislabs/rejson:1.0.8
+    container_name: "redis"
+    image: redislabs/rejson:2.0.6
     ports:
       - 6379:6379
     environment:
       - REDIS_REPLICATION_MODE=master
-      - REDIS_PASSWORD=changeme # DO NOT FORGET TO CHANGE THIS!
     volumes:
       - ./.data/bitnami:/bitnami:Z
+    entrypoint: [
+        "redis-server",
+        "--loadmodule",
+        "/usr/lib/redis/modules/rejson.so",
+        "--loadmodule",
+        "/usr/lib/redis/modules/redisearch.so",
+        "--requirepass", "changeme"
+    ] # DO NOT FORGET TO CHANGE THIS!
 
   nettacker:
     build:
@@ -36,6 +44,7 @@ services:
     environment:
       - docker_env=true
       - ELASTICSEARCH_DOCKER_ENV=true
+      - REDIS_DOCKER_ENV=true
     links:
       - elasticsearch
       - redis

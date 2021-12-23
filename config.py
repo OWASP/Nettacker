@@ -63,13 +63,25 @@ def nettacker_database_config():
         a JSON with Database configuration
     """
     if os.environ.get('ELASTICSEARCH_DOCKER_ENV') == "true":
-        db_url = "elasticsearch:9200"
+        elasticsearch_url = "elasticsearch:9200"
     else:
-        db_url = "127.0.0.1:9200"
+        elasticsearch_url = "127.0.0.1:9200"
+    if os.environ.get('REDIS_DOCKER_ENV') == "true":
+        redis_url = "redis"
+    else:
+        redis_url = "127.0.0.1"
     return {
-        # http://127.0.0.1:9200/ # todo: add SSL support later
-        "api_database": db_url,
-        "api_database_http_auth": ('elastic', 'changeme')  # DO NPT FORGET TO CHANGE THIS!
+        "elasticsearch": {
+            # http://127.0.0.1:9200/ # todo: add SSL support later
+            "url": elasticsearch_url,
+            "http_auth": ('elastic', 'changeme')  # DO NPT FORGET TO CHANGE THIS!
+        },
+        "redis": {
+            "url": redis_url,
+            "port": 6379,
+            "password": "changeme"  # DO NPT FORGET TO CHANGE THIS!
+
+        }
     }
 
 
