@@ -1,14 +1,44 @@
 version: "3"
 
 services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.3
+    container_name: "elasticsearch"
+    environment:
+      - "ES_JAVA_OPTS=-Xms4096m -Xmx4096m"
+      - discovery.type=single-node
+      - xpack.security.enabled=false # note: you must secure your elasticsearch otherwise everyone can access it
+      # you also need to add the credentials to config.py
+    ports:
+      - 9200:9200
+    volumes:
+      - ./.data/db:/usr/share/elasticsearch/data:Z
+
+  redis:
+    image: redislabs/rejson:1.0.8
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PASSWORD=changeme # DO NOT FORGET TO CHANGE THIS!
+    volumes:
+      - ./.data/bitnami:/bitnami:Z
+
   nettacker:
     build:
       context: .
       dockerfile: "Dockerfile"
-    command: python3 nettacker.py --start-api --api-host 0.0.0.0
+    command: bash -c "sleep 30 && python3 nettacker.py --start-api --api-host 0.0.0.0"
     ports:
       - 5000:5000
     volumes:
       - ./:/usr/src/owaspnettacker
     environment:
       - docker_env=true
+      - ELASTICSEARCH_DOCKER_ENV=true
+    links:
+      - elasticsearch
+      - redis
+    depends_on:
+      - elasticsearch
+      - redis

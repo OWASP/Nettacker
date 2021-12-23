@@ -17,9 +17,14 @@ logs.txt
 *.log
 results.*
 .owasp-nettacker*
-.data*
 *.DS_Store
 *.swp
+
+#private data files
+.data/bitnami/redis*
+.data/db/nodes*
+.data/results/*
+.data/tmp/*
 
 #codacy
 .coverage
