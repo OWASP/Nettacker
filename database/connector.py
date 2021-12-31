@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import elasticsearch
 from config import nettacker_database_config
 from rejson import Client
 
