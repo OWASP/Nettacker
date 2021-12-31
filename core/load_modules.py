@@ -84,7 +84,8 @@ class NettackerModules:
     def load(self):
         from config import nettacker_paths
         from core.utility import find_and_replace_configuration_keys
-        from database.db import find_events
+        from database.connector import RedisConnector
+        redis = RedisConnector()
         self.module_content = find_and_replace_configuration_keys(
             yaml.load(
                 StringIO(
@@ -106,7 +107,16 @@ class NettackerModules:
         )
         if not self.skip_service_discovery and self.module_name not in self.ignored_core_modules:
             services = {}
-            for service in find_events(self.target, 'port_scan', self.scan_unique_id):
+            available_services = redis.read(
+                "nettacker_scans",
+                "." +
+                redis.normalize_key_name(self.scan_unique_id) +
+                ".events." +
+                redis.normalize_key_name(self.target) +
+                "." +
+                redis.normalize_key_name('port_scan')
+            )
+            for service in available_services:
                 service_event = json.loads(service.json_event)
                 port = service_event['ports']
                 protocols = service_event['response']['conditions_results'].keys()
@@ -150,11 +160,13 @@ class NettackerModules:
                     steps.append(step)
 
             for step in copy.deepcopy(self.module_content['payloads'][index]['steps']):
-                if 'dependent_on_temp_event' in step[0]['response'] and 'save_to_temp_events_only' in step[0]['response']:
+                if 'dependent_on_temp_event' in step[0]['response'] and \
+                        'save_to_temp_events_only' in step[0]['response']:
                     steps.append(step)
 
             for step in copy.deepcopy(self.module_content['payloads'][index]['steps']):
-                if 'dependent_on_temp_event' in step[0]['response'] and 'save_to_temp_events_only' not in step[0]['response']:
+                if 'dependent_on_temp_event' in step[0]['response'] and \
+                        'save_to_temp_events_only' not in step[0]['response']:
                     steps.append(step)
             self.module_content['payloads'][index]['steps'] = steps
 
@@ -198,7 +210,7 @@ class NettackerModules:
                             self.module_thread_number,
                             self.total_module_thread_number,
                             request_number_counter,
-                            total_number_of_requests
+                            total_number_of_requests,
                         )
                     )
                     thread.name = f"{self.target} -> {self.module_name} -> {sub_step}"
@@ -229,6 +241,7 @@ class NettackerModules:
         )
 
 
+# noinspection PyTypeChecker
 def load_all_graphs():
     """
     load all available graphs
@@ -243,6 +256,7 @@ def load_all_graphs():
     return list(set(graph_names))
 
 
+# noinspection PyTypeChecker
 def load_all_languages():
     """
     load all available languages
@@ -257,6 +271,7 @@ def load_all_languages():
     return list(set(languages_list))
 
 
+# noinspection PyTypeChecker
 def load_all_modules(limit=-1, full_details=False):
     """
     load all available modules
@@ -329,7 +344,13 @@ def load_all_profiles(limit=-1):
     return profiles
 
 
-def perform_scan(options, target, module_name, scan_unique_id, process_number, thread_number, total_number_threads):
+def perform_scan(options,
+                 target,
+                 module_name,
+                 scan_unique_id,
+                 process_number,
+                 thread_number,
+                 total_number_threads):
     from core.alert import (verbose_event_info,
                             messages)
 

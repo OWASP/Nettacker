@@ -31,57 +31,70 @@ def process_conditions(
         request_number_counter,
         total_number_of_requests
 ):
+    from config import nettacker_global_config
     from core.alert import (success_event_info,
                             verbose_info,
                             messages)
+    from database.connector import RedisConnector
+    redis = RedisConnector()
+    nettacker_engine_identifier = nettacker_global_config()["nettacker_engine_identifier"]
+    # remove sensitive information before submitting to db
+    # options = copy.deepcopy(options)
+    # for key in nettacker_api_config():
+    #     try:
+    #         del options[key]
+    #     except Exception:
+    #         continue
 
+    redis_path = redis.normalize_key_name(target) + "." + redis.normalize_key_name(module_name)
+    build_event = {
+        "nettacker_engine_identifier": nettacker_engine_identifier,
+        "date": now(),
+        "target": target,
+        "scan_unique_id": scan_unique_id,
+        "event": event,
+        # "options": json.loads(json.dumps(options)), # take a lot of unnecessary space
+        # "data": response
+    }
+    # calculate sha256 checksum
+    sha256_checksum = json.dumps(build_event)
+    build_event["sha256_checksum"] = hashlib.sha256(
+        sha256_checksum.encode()
+    ).hexdigest()
     if 'save_to_temp_events_only' in event.get('response', ''):
-        from database.db import submit_temp_logs_to_db
-        submit_temp_logs_to_db(
-            {
-                "date": now(model=None),
-                "target": target,
-                "module_name": module_name,
-                "scan_unique_id": scan_unique_id,
-                "event_name": event['response']['save_to_temp_events_only'],
-                "port": event.get('ports', ''),
-                "event": event,
-                "data": response
-            }
+        if redis.read("nettacker_temporary_events", redis_path) is None:
+            redis.write(
+                "nettacker_temporary_events",
+                redis_path,
+                []
+            )
+        # add temp event name
+        build_event["event_name"] = event['response']['save_to_temp_events_only']
+        redis.append(
+            "nettacker_temporary_events",
+            redis_path,
+            build_event
         )
     if event['response']['conditions_results'] and 'save_to_temp_events_only' not in event.get('response', ''):
-        from database.db import submit_logs_to_db
-
-        # remove sensitive information before submitting to db
-        from config import nettacker_api_config
-        options = copy.deepcopy(options)
-        for key in nettacker_api_config():
-            try:
-                del options[key]
-            except Exception:
-                continue
+        if redis.read("nettacker_events", redis_path) is None:
+            redis.write(
+                "nettacker_events",
+                redis_path,
+                []
+            )
         del event['response']['conditions']
         del event['response']['condition_type']
         event_request_keys = copy.deepcopy(event)
         del event_request_keys['response']
-        submit_logs_to_db(
-            {
-                "date": now(model=None),
-                "target": target,
-                "module_name": module_name,
-                "scan_unique_id": scan_unique_id,
-                "port": event.get('ports') or event.get('port') or (
-                    event.get('url').split(':')[2].split('/')[0] if
-                    type(event.get('url')) == str and len(event.get('url').split(':')) >= 3 and
-                    event.get('url').split(':')[2].split('/')[0].isdigit() else ""
-                ),
-                "event": " ".join(
-                    yaml.dump(event_request_keys).split()
-                ) + " conditions: " + " ".join(
-                    yaml.dump(event['response']['conditions_results']).split()
-                ),
-                "json_event": event
-            }
+        build_event["human_readable_event"] = " ".join(
+            yaml.dump(event_request_keys).split()
+        ) + " conditions: " + " ".join(
+            yaml.dump(event['response']['conditions_results']).split()
+        )
+        redis.append(
+            "nettacker_events",
+            redis_path,
+            build_event
         )
         success_event_info(
             messages("send_success_event_from_module").format(
@@ -150,13 +163,24 @@ def filter_large_content(content, filter_rate=150):
 
 
 def get_dependent_results_from_database(target, module_name, scan_unique_id, event_names):
-    from database.db import find_temp_events
+    from database.connector import RedisConnector
+    redis = RedisConnector()
     events = []
+    # todo: should be array instead of seperate by comma
     for event_name in event_names.split(','):
         while True:
-            event = find_temp_events(target, module_name, scan_unique_id, event_name)
-            if event:
-                events.append(json.loads(event.event)['response']['conditions_results'])
+            get_events = redis.read(
+                "nettacker_temporary_events",
+                redis.normalize_key_name(target) +
+                "." +
+                redis.normalize_key_name(module_name)
+            )
+            event_found = False
+            for event in get_events:
+                if event["event_name"] == event_name and event["scan_unique_id"] == scan_unique_id:
+                    events.append(event['event']['response']['conditions_results'])
+                    event_found = True
+            if event_found:
                 break
             time.sleep(0.1)
     return events

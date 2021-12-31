@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-from core.scan_targers import start_scan_processes
+from core.scan_targets import start_scan_processes
 from core.alert import info
 from core.alert import write
 from core.alert import messages
@@ -11,9 +11,11 @@ from core.args_loader import load_all_args
 from core.args_loader import check_all_required
 
 
-def load():
+def load(scan_unique_id):
     """
     load all ARGS, Apply rules and go for attacks
+
+    scan_unique_id: scan unique id
 
     Returns:
         True if success otherwise None
@@ -23,6 +25,6 @@ def load():
 
     info(messages("scan_started"))
     info(messages("loaded_modules").format(len(load_all_modules())))
-    exit_code = start_scan_processes(options)
+    exit_code = start_scan_processes(options, scan_unique_id)
     info(messages("done"))
     return exit_code

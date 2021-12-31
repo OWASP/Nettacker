@@ -11,7 +11,8 @@ from core.ip import (get_ip_range,
                      is_single_ipv6,
                      is_ipv6_range,
                      is_ipv6_cidr)
-from database.db import find_events
+from database.connector import RedisConnector
+from config import nettacker_global_config
 
 
 def filter_target_by_event(targets, scan_unique_id, module_name):
@@ -30,9 +31,9 @@ def expand_targets(options, scan_unique_id):
         scan_unique_id: unique scan identifier
 
     Returns:
-        a generator
+        list()
     """
-    from core.scan_targers import multi_processor
+    from core.scan_targets import multi_processor
     targets = []
     for target in options.targets:
         if '://' in target:

@@ -27,6 +27,9 @@ def load_all_args():
     """
     create the ARGS and help menu
 
+    scan_unique_id: scan unique id
+    redis_scan_engine_path: scan engine redis path
+
     Returns:
         the parser, the ARGS
     """
@@ -48,10 +51,10 @@ def load_all_args():
     parser = argparse.ArgumentParser(prog="Nettacker", add_help=False)
 
     # Engine Options
-    engineOpt = parser.add_argument_group(
+    engine_options = parser.add_argument_group(
         messages("engine"), messages("engine_input")
     )
-    engineOpt.add_argument(
+    engine_options .add_argument(
         "-L",
         "--language",
         action="store",
@@ -59,7 +62,7 @@ def load_all_args():
         default=nettacker_global_configuration['nettacker_user_application_config']["language"],
         help=messages("select_language").format(languages_list),
     )
-    engineOpt.add_argument(
+    engine_options .add_argument(
         "-v",
         "--verbose",
         action="store_true",
@@ -67,14 +70,14 @@ def load_all_args():
         default=nettacker_global_configuration['nettacker_user_application_config']['verbose_mode'],
         help=messages("verbose_mode"),
     )
-    engineOpt.add_argument(
+    engine_options .add_argument(
         "--verbose-event",
         action="store_true",
         dest="verbose_event",
         default=nettacker_global_configuration['nettacker_user_application_config']['verbose_event'],
         help=messages("verbose_event"),
     )
-    engineOpt.add_argument(
+    engine_options .add_argument(
         "-V",
         "--version",
         action="store_true",
@@ -82,7 +85,7 @@ def load_all_args():
         dest="show_version",
         help=messages("software_version"),
     )
-    engineOpt.add_argument(
+    engine_options .add_argument(
         "-o",
         "--output",
         action="store",
@@ -90,14 +93,14 @@ def load_all_args():
         dest="report_path_filename",
         help=messages("save_logs"),
     )
-    engineOpt.add_argument(
+    engine_options .add_argument(
         "--graph",
         action="store",
         default=nettacker_global_configuration['nettacker_user_application_config']["graph_name"],
         dest="graph_name",
         help=messages("available_graph").format(load_all_graphs()),
     )
-    engineOpt.add_argument(
+    engine_options .add_argument(
         "-h",
         "--help",
         action="store_true",
@@ -131,7 +134,7 @@ def load_all_args():
     exclude_modules = list(load_all_modules(limit=10).keys())
     exclude_modules.remove("all")
 
-    # Methods Options
+    # Module Options
     modules = parser.add_argument_group(
         messages("Method"), messages("scan_method_options")
     )
@@ -360,7 +363,7 @@ def load_all_args():
         action="store",
         dest="api_client_whitelisted_ips",
         default=nettacker_global_configuration['nettacker_api_config']["api_client_whitelisted_ips"],
-        help=messages("define_whie_list")
+        help=messages("define_white_list")
     )
     api.add_argument(
         "--api-access-log",
@@ -385,6 +388,7 @@ def load_all_args():
     return parser
 
 
+# noinspection PyBroadException
 def check_all_required(parser, api_forms=None):
     """
     check all rules and requirements for ARGS
@@ -460,7 +464,7 @@ def check_all_required(parser, api_forms=None):
         if options.api_client_whitelisted_ips:
             if type(options.api_client_whitelisted_ips) == str:
                 options.api_client_whitelisted_ips = options.api_client_whitelisted_ips.split(',')
-                whielisted_ips = []
+                whitelisted_ips = []
                 for ip in options.api_client_whitelisted_ips:
                     from core.ip import (is_single_ipv4,
                                          is_single_ipv6,
@@ -470,10 +474,10 @@ def check_all_required(parser, api_forms=None):
                                          is_ipv4_range,
                                          generate_ip_range)
                     if is_single_ipv4(ip) or is_single_ipv6(ip):
-                        whielisted_ips.append(ip)
+                        whitelisted_ips.append(ip)
                     elif is_ipv4_range(ip) or is_ipv6_range(ip) or is_ipv4_cidr(ip) or is_ipv6_cidr(ip):
-                        whielisted_ips += generate_ip_range(ip)
-                options.api_client_whitelisted_ips = whielisted_ips
+                        whitelisted_ips += generate_ip_range(ip)
+                options.api_client_whitelisted_ips = whitelisted_ips
         start_api_server(options)
 
     # Check the target(s)

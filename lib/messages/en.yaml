@@ -20,8 +20,7 @@ build_graph: building graph ...
 connection_retries: Retries when the connection timeout (default 3)
 current_version: you are running OWASP Nettacker version {0}{1}{2}{6} with code name {3}{4}{5}
 database_connect_fail: could not connect to the database!
-database_connection_failed: Connection to the selected db failed
-define_whie_list: "define white list hosts, separate with , (examples: 127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)"
+define_white_list: "define white list hosts, separate with , (examples: 127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)"
 engine: Engine
 filtered_content: ... [see the full content in the report]
 engine_input: Engine input options
@@ -52,7 +51,7 @@ done: "done!"
 error_platform: "Unfortunately, this version of the software can run on Linux/darwin"
 file_saved: "report saved in {0} and database"
 inserting_report_db: inserting report to the database
-invalid_database: Please select from mysql or sqlite in the configuration file
+cannot_connect_to_redis: can't connect to redis, please check the config.py
 invalid_json_type_to_db: "Invalid type of JSON data for the database. Skipping the submission to database. Data:{0}"
 license: "Please read license and agreements https://github.com/OWASP/Nettacker"
 loaded_modules: "{0} modules loaded ..."

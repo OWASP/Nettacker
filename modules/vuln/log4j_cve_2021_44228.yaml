@@ -22,7 +22,7 @@ payloads:
       - method: get
         timeout: 3
         headers:
-           User-Agent: "{user_agent}"
+          User-Agent: "{user_agent}"
         url: "https://log4shell.huntress.com/"
         response:
           save_to_temp_events_only: log4shell_token

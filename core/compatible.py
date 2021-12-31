@@ -3,8 +3,7 @@
 
 import sys
 import os
-import json
-from core.die import die_failure
+from .die import die_failure
 from core import color
 
 
@@ -15,8 +14,8 @@ def version_info():
     Returns:
         an array of version and code name
     """
-    from config import nettacker_paths
-    return open(nettacker_paths()['version_file']).read().split()
+    import config
+    return open(config.nettacker_paths()['version_file']).read().split()
 
 
 def logo():
@@ -27,7 +26,6 @@ def logo():
     from core import color
     from core.color import reset_color
     from config import nettacker_paths
-    from config import nettacker_user_application_config
     write_to_api_console(
         open(
             nettacker_paths()['logo_file']
@@ -69,13 +67,27 @@ def os_name():
     return sys.platform
 
 
+# noinspection PyBroadException
 def check_dependencies():
+    """
+    check requirements before execution.
+
+    Returns:
+        object: scan unique id (string)
+    """
     if python_version() == 2:
-        sys.exit(color.color("red") + "[X] " + color.color("yellow") + "Python2 is No longer supported!" + color.color(
-            "reset"))
+        sys.exit(
+            color.color("red") +
+            "[X] " +
+            color.color("yellow") +
+            "Python2 is No longer supported!" +
+            color.color("reset")
+        )
 
     # check os compatibility
-    from config import nettacker_paths, nettacker_database_config
+    from config import (nettacker_paths,
+                        nettacker_global_config)
+    from database.connector import RedisConnector
     external_modules = open(nettacker_paths()["requirements_path"]).read().split('\n')
     for module_name in external_modules:
         try:
@@ -118,31 +130,80 @@ def check_dependencies():
             die_failure("cannot access the directory {0}".format(
                 nettacker_paths()["results_path"])
             )
+    redis = RedisConnector()
+    try:
+        redis.read('*', '*')
+    except Exception:
+        die_failure(messages("cannot_connect_to_redis"))
+    from core.utility import generate_random_token
+    scan_unique_id = generate_random_token(32)
 
-    if nettacker_database_config()["DB"] == "sqlite":
-        try:
-            if not os.path.isfile(nettacker_paths()["database_path"]):
-                from database.sqlite_create import sqlite_create_tables
-                sqlite_create_tables()
-        except Exception:
-            die_failure("cannot access the directory {0}".format(
-                nettacker_paths()["home_path"])
-            )
-    elif nettacker_database_config()["DB"] == "mysql":
-        try:
-            from database.mysql_create import (
-                mysql_create_tables,
-                mysql_create_database
-            )
-            mysql_create_database()
-            mysql_create_tables()
-        except Exception:
-            die_failure(messages("database_connection_failed"))
-    elif nettacker_database_config()["DB"] == "postgres":
-        try:
-            from database.postgres_create import postgres_create_database
-            postgres_create_database()
-        except Exception:
-            die_failure(messages("database_connection_failed"))
+    if redis.read("nettacker_engines", ".") is None:
+        redis.write(
+            'nettacker_engines',
+            '.',
+            {
+                redis.normalize_key_name(
+                    nettacker_global_config()["nettacker_engine_identifier"]
+                ): {
+                    "scans": {
+                        redis.normalize_key_name(
+                            scan_unique_id
+                        ): {
+                            "options": {},
+                            "expand_targets": {},
+                            "processes": {}
+                        }
+                    }
+                }
+            }
+        )
+        redis_scan_engine_path = "." + redis.normalize_key_name(
+            nettacker_global_config()["nettacker_engine_identifier"]
+        ) + ".scans." + redis.normalize_key_name(
+            scan_unique_id
+        )
     else:
-        die_failure(messages("invalid_database"))
+        redis_scan_engine_path = '.' + redis.normalize_key_name(
+            nettacker_global_config()["nettacker_engine_identifier"]
+        )
+        redis.write(
+            'nettacker_engines',
+            redis_scan_engine_path,
+            {
+                "scans": {}
+            },
+            nx=True
+        )
+        redis_scan_engine_path += ".scans." + redis.normalize_key_name(
+            scan_unique_id
+        )
+        redis.write(
+            'nettacker_engines',
+            redis_scan_engine_path,
+            {
+                "options": {},
+                "expand_targets": {},
+                "processes": {}
+            }
+        )
+    if redis.read("nettacker_events", ".") is None:
+        redis.write(
+            "nettacker_events",
+            ".",
+            {}
+        )
+
+    if redis.read("nettacker_temporary_events", ".") is None:
+        redis.write(
+            "nettacker_temporary_events",
+            ".",
+            {}
+        )
+    if redis.read("nettacker_scans", ".") is None:
+        redis.write(
+            "nettacker_scans",
+            ".",
+            {}
+        )
+    return scan_unique_id
