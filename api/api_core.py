@@ -192,7 +192,8 @@ def languages_to_country():
         "id": "id",
         "es": "es",
         "iw": "il",
-        "pt-br": "br"
+        "pt-br": "br",
+        "bn": "in"
     }
     for language in languages:
         res += """<option {2} id="{0}" data-content='<span class="flag-icon flag-icon-{1}" 
