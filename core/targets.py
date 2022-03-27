@@ -15,6 +15,24 @@ from database.connector import RedisConnector
 from config import nettacker_global_config
 
 
+def find_events(target, module_name, scan_unique_id):
+    redis = RedisConnector()
+    events = []
+
+    get_events = redis.read(
+        "nettacker_events",
+        redis.normalize_key_name(target) +
+        "." +
+        redis.normalize_key_name(module_name)
+    )
+    for event in get_events:
+        if event["event_name"] == module_name and event["scan_unique_id"] == scan_unique_id \
+                and event["target"] == target:
+            events.append(event)
+    print(get_events)
+    return events
+
+
 def filter_target_by_event(targets, scan_unique_id, module_name):
     for target in copy.deepcopy(targets):
         if not find_events(target, module_name, scan_unique_id):

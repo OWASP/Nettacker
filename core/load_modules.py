@@ -62,6 +62,8 @@ class NettackerModules:
         self.module_inputs = {}
         self.skip_service_discovery = None
         self.discovered_services = None
+        self.step_dependencies = {}
+        self.continue_monitor_dependent_variables = True
         self.ignored_core_modules = [
             'subdomain_scan',
             'icmp_scan',
@@ -155,28 +157,60 @@ class NettackerModules:
     def sort_loops(self):
         steps = []
         for index in range(len(self.module_content['payloads'])):
-            for step in copy.deepcopy(self.module_content['payloads'][index]['steps']):
+            for step in copy.deepcopy(self.module_content['payloads'][index]['steps']):  # independent steps
                 if 'dependent_on_temp_event' not in step[0]['response']:
                     steps.append(step)
 
-            for step in copy.deepcopy(self.module_content['payloads'][index]['steps']):
+            for step in copy.deepcopy(self.module_content['payloads'][index]['steps']):  # required steps
                 if 'dependent_on_temp_event' in step[0]['response'] and \
                         'save_to_temp_events_only' in step[0]['response']:
                     steps.append(step)
 
-            for step in copy.deepcopy(self.module_content['payloads'][index]['steps']):
+            for step in copy.deepcopy(self.module_content['payloads'][index]['steps']):  # steps with dependency
                 if 'dependent_on_temp_event' in step[0]['response'] and \
                         'save_to_temp_events_only' not in step[0]['response']:
                     steps.append(step)
             self.module_content['payloads'][index]['steps'] = steps
 
+    def dependent_variable_monitor(self, payload):
+        from core.utility import get_dependent_results_from_database
+        from core.utility import replace_dependent_values
+        while self.continue_monitor_dependent_variables:
+            time.sleep(0.01)
+            try:
+                if self.scan_unique_id not in self.step_dependencies:
+                    raise KeyError
+                if self.target not in self.step_dependencies[self.scan_unique_id]:
+                    raise KeyError
+                if self.module_name not in self.step_dependencies[self.scan_unique_id][self.target]:
+                    raise KeyError
+                temp_event = self.step_dependencies[self.scan_unique_id][self.target][
+                    self.module_name]
+            except KeyError:
+                temp_event = get_dependent_results_from_database(
+                    self.target,
+                    self.module_name,
+                    self.scan_unique_id,
+                    payload['response']['dependent_on_temp_event']
+                )
+                self.step_dependencies[self.scan_unique_id] = {
+                    self.target: {
+                        self.module_name: temp_event
+                    }
+                }
+            sub_step = replace_dependent_values(
+                payload,
+                temp_event
+            )
+            return sub_step
+
     def start(self):
         from terminable_thread import Thread
         from core.utility import wait_for_threads_to_finish
-        active_threads = []
         from core.alert import warn
         from core.alert import verbose_event_info
         from core.alert import messages
+        active_threads = []
 
         # counting total number of requests
         total_number_of_requests = 0
@@ -198,6 +232,8 @@ class NettackerModules:
             )
             for step in payload['steps']:
                 for sub_step in step:
+                    if 'dependent_on_temp_event' in sub_step['response']:
+                        sub_step = copy.deepcopy(self.dependent_variable_monitor(sub_step))
                     thread = Thread(
                         target=protocol.run,
                         args=(

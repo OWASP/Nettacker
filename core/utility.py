@@ -367,17 +367,29 @@ def generate_new_sub_steps(sub_steps, data_matrix, arrays):
 
 
 def find_repeaters(sub_content, root, arrays):
+    """
+    find arrays in sub_content and return the path to arrays.
+    - nettacker_fuzzer key name will be considered as array.
+    -
+
+    Args:
+        sub_content:
+        root:
+        arrays:
+
+    Returns:
+
+    """
     if type(sub_content) == dict and 'nettacker_fuzzer' not in sub_content:
-        temprory_content = copy.deepcopy(sub_content)
+        temporary_content = copy.deepcopy(sub_content)
         original_root = root
         for key in sub_content:
             root = original_root
             root += key + '/'
-            temprory_content[key], _root, arrays = find_repeaters(sub_content[key], root, arrays)
-        sub_content = copy.deepcopy(temprory_content)
+            temporary_content[key], _root, arrays = find_repeaters(sub_content[key], root, arrays)
+        sub_content = copy.deepcopy(temporary_content)
         root = original_root
-    if (type(sub_content) not in [bool, int, float]) and (
-            type(sub_content) == list or 'nettacker_fuzzer' in sub_content):
+    if type(sub_content) in [list, dict]:  # if it's an array, or dict (nettacker_fuzzer dict)
         arrays[root] = sub_content
     return (sub_content, root, arrays) if root != '' else arrays
 

@@ -30,11 +30,8 @@ services:
       - ./:/usr/src/owaspnettacker
     environment:
       - docker_env=true
-      - ELASTICSEARCH_DOCKER_ENV=true
       - REDIS_DOCKER_ENV=true
     links:
-      - elasticsearch
       - redis
     depends_on:
-      - elasticsearch
       - redis
