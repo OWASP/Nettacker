@@ -44,12 +44,16 @@ from core.args_loader import check_all_required
 
 app = Flask(
     __name__,
-    template_folder=nettacker_global_config()['nettacker_paths']['web_static_files_path']
+    template_folder=nettacker_global_config()["nettacker_paths"][
+        "web_static_files_path"
+    ],
 )
 app.config.from_object(__name__)
-nettacker_application_config = nettacker_global_config()['nettacker_user_application_config']
-nettacker_application_config.update(nettacker_global_config()['nettacker_api_config'])
-del nettacker_application_config['api_access_key']
+nettacker_application_config = nettacker_global_config()[
+    "nettacker_user_application_config"
+]
+nettacker_application_config.update(nettacker_global_config()["nettacker_api_config"])
+del nettacker_application_config["api_access_key"]
 
 
 @app.errorhandler(400)
@@ -63,12 +67,7 @@ def error_400(error):
     Returns:
         400 JSON error
     """
-    return jsonify(
-        structure(
-            status="error",
-            msg=error.description
-        )
-    ), 400
+    return jsonify(structure(status="error", msg=error.description)), 400
 
 
 @app.errorhandler(401)
@@ -82,12 +81,7 @@ def error_401(error):
     Returns:
         401 JSON error
     """
-    return jsonify(
-        structure(
-            status="error",
-            msg=error.description
-        )
-    ), 401
+    return jsonify(structure(status="error", msg=error.description)), 401
 
 
 @app.errorhandler(403)
@@ -101,12 +95,7 @@ def error_403(error):
     Returns:
         403 JSON error
     """
-    return jsonify(
-        structure(
-            status="error",
-            msg=error.description
-        )
-    ), 403
+    return jsonify(structure(status="error", msg=error.description)), 403
 
 
 @app.errorhandler(404)
@@ -120,12 +109,7 @@ def error_404(error):
     Returns:
         404 JSON error
     """
-    return jsonify(
-        structure(
-            status="error",
-            msg=messages("not_found")
-        )
-    ), 404
+    return jsonify(structure(status="error", msg=messages("not_found"))), 404
 
 
 @app.before_request
@@ -138,7 +122,10 @@ def limit_remote_addr():
     """
     # IP Limitation
     if app.config["OWASP_NETTACKER_CONFIG"]["api_client_whitelisted_ips"]:
-        if flask_request.remote_addr not in app.config["OWASP_NETTACKER_CONFIG"]["api_client_whitelisted_ips"]:
+        if (
+            flask_request.remote_addr
+            not in app.config["OWASP_NETTACKER_CONFIG"]["api_client_whitelisted_ips"]
+        ):
             abort(403, messages("unauthorized_IP"))
     return
 
@@ -155,12 +142,9 @@ def access_log(response):
         the flask response
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"]:
-        log_request = open(
-            app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"],
-            "ab"
-        )
+        log_request = open(app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"], "ab")
         log_request.write(
-            "{0} [{1}] {2} \"{3} {4}\" {5} {6} {7}\r\n".format(
+            '{0} [{1}] {2} "{3} {4}" {5} {6} {7}\r\n'.format(
                 flask_request.remote_addr,
                 now(),
                 flask_request.host,
@@ -168,7 +152,7 @@ def access_log(response):
                 flask_request.full_path,
                 flask_request.user_agent,
                 response.status_code,
-                json.dumps(flask_request.form)
+                json.dumps(flask_request.form),
             ).encode()
         )
         log_request.close()
@@ -191,14 +175,11 @@ def get_statics(path):
     return Response(
         get_file(
             os.path.join(
-                nettacker_global_config()['nettacker_paths']['web_static_files_path'],
-                path
+                nettacker_global_config()["nettacker_paths"]["web_static_files_path"],
+                path,
             )
         ),
-        mimetype=static_types.get(
-            os.path.splitext(path)[1],
-            "text/html"
-        )
+        mimetype=static_types.get(os.path.splitext(path)[1], "text/html"),
     )
 
 
@@ -211,6 +192,7 @@ def index():
         rendered HTML page
     """
     from config import nettacker_user_application_config
+
     filename = nettacker_user_application_config()["report_path_filename"]
     return render_template(
         "index.html",
@@ -218,7 +200,7 @@ def index():
         profile=profiles(),
         languages=languages_to_country(),
         graphs=graphs(),
-        filename=filename
+        filename=filename,
     )
 
 
@@ -236,17 +218,12 @@ def new_scan():
         if key not in form_values:
             form_values[key] = nettacker_application_config[key]
     options = check_all_required(
-        None,
-        api_forms=SimpleNamespace(**copy.deepcopy(form_values))
+        None, api_forms=SimpleNamespace(**copy.deepcopy(form_values))
     )
     app.config["OWASP_NETTACKER_CONFIG"]["options"] = options
     new_process = multiprocessing.Process(target=start_scan_processes, args=(options,))
     new_process.start()
-    return jsonify(
-        vars(
-            options
-        )
-    ), 200
+    return jsonify(vars(options)), 200
 
 
 @app.route("/session/check", methods=["GET"])
@@ -258,12 +235,7 @@ def session_check():
         a JSON message if it's valid otherwise abort(401)
     """
     api_key_is_valid(app, flask_request)
-    return jsonify(
-        structure(
-            status="ok",
-            msg=messages("browser_session_valid")
-        )
-    ), 200
+    return jsonify(structure(status="ok", msg=messages("browser_session_valid"))), 200
 
 
 @app.route("/session/set", methods=["GET", "POST"])
@@ -277,12 +249,7 @@ def session_set():
     """
     api_key_is_valid(app, flask_request)
     res = make_response(
-        jsonify(
-            structure(
-                status="ok",
-                msg=messages("browser_session_valid")
-            )
-        )
+        jsonify(structure(status="ok", msg=messages("browser_session_valid")))
     )
     res.set_cookie("key", value=app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"])
     return res
@@ -298,12 +265,7 @@ def session_kill():
         to unset the cookie on the browser
     """
     res = make_response(
-        jsonify(
-            structure(
-                status="ok",
-                msg=messages("browser_session_killed")
-            )
-        )
+        jsonify(structure(status="ok", msg=messages("browser_session_killed")))
     )
     res.set_cookie("key", "", expires=0)
     return res
@@ -321,11 +283,7 @@ def get_results():
     page = get_value(flask_request, "page")
     if not page:
         page = 1
-    return jsonify(
-        select_reports(
-            int(page)
-        )
-    ), 200
+    return jsonify(select_reports(int(page))), 200
 
 
 @app.route("/results/get", methods=["GET"])
@@ -339,22 +297,14 @@ def get_result_content():
     api_key_is_valid(app, flask_request)
     scan_id = get_value(flask_request, "id")
     if not scan_id:
-        return jsonify(
-            structure(
-                status="error",
-                msg=messages("invalid_scan_id")
-            )
-        ), 400
+        return jsonify(structure(status="error", msg=messages("invalid_scan_id"))), 400
     filename, file_content = get_scan_result(scan_id)
     return Response(
         file_content,
-        mimetype=mime_types().get(
-            os.path.splitext(filename)[1],
-            "text/plain"
-        ),
+        mimetype=mime_types().get(os.path.splitext(filename)[1], "text/plain"),
         headers={
-            'Content-Disposition': 'attachment;filename=' + filename.split('/')[-1]
-        }
+            "Content-Disposition": "attachment;filename=" + filename.split("/")[-1]
+        },
     )
 
 
@@ -370,25 +320,14 @@ def get_results_json():
     session = create_connection()
     result_id = get_value(flask_request, "id")
     if not result_id:
-        return jsonify(
-            structure(
-                status="error",
-                msg=messages("invalid_scan_id")
-            )
-        ), 400
+        return jsonify(structure(status="error", msg=messages("invalid_scan_id"))), 400
     scan_details = session.query(Report).filter(Report.id == result_id).first()
-    json_object = json.dumps(
-        get_logs_by_scan_unique_id(
-            scan_details.scan_unique_id
-        )
-    )
-    filename = ".".join(scan_details.report_path_filename.split('.')[:-1])[1:] + '.json'
+    json_object = json.dumps(get_logs_by_scan_unique_id(scan_details.scan_unique_id))
+    filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".json"
     return Response(
         json_object,
-        mimetype='application/json',
-        headers={
-            'Content-Disposition': 'attachment;filename=' + filename
-        }
+        mimetype="application/json",
+        headers={"Content-Disposition": "attachment;filename=" + filename},
     )
 
 
@@ -404,37 +343,26 @@ def get_results_csv():  # todo: need to fix time format
     session = create_connection()
     result_id = get_value(flask_request, "id")
     if not result_id:
-        return jsonify(
-            structure(
-                status="error",
-                msg=messages("invalid_scan_id")
-            )
-        ), 400
+        return jsonify(structure(status="error", msg=messages("invalid_scan_id"))), 400
     scan_details = session.query(Report).filter(Report.id == result_id).first()
     data = get_logs_by_scan_unique_id(scan_details.scan_unique_id)
     keys = data[0].keys()
-    filename = ".".join(scan_details.report_path_filename.split('.')[:-1])[1:] + '.csv'
+    filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".csv"
     with open(filename, "w") as report_path_filename:
         dict_writer = csv.DictWriter(
-            report_path_filename,
-            fieldnames=keys,
-            quoting=csv.QUOTE_ALL
+            report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL
         )
         dict_writer.writeheader()
         for event in data:
             dict_writer.writerow(
-                {
-                    key: value for key, value in event.items() if key in keys
-                }
+                {key: value for key, value in event.items() if key in keys}
             )
-    with open(filename, 'r') as report_path_filename:
+    with open(filename, "r") as report_path_filename:
         reader = report_path_filename.read()
     return Response(
         reader,
-        mimetype='text/csv',
-        headers={
-            'Content-Disposition': 'attachment;filename=' + filename
-        }
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=" + filename},
     )
 
 
@@ -450,11 +378,7 @@ def get_last_host_logs():  # need to check
     page = get_value(flask_request, "page")
     if not page:
         page = 1
-    return jsonify(
-        last_host_logs(
-            int(page)
-        )
-    ), 200
+    return jsonify(last_host_logs(int(page))), 200
 
 
 @app.route("/logs/get_html", methods=["GET"])
@@ -467,9 +391,7 @@ def get_logs_html():  # todo: check until here - ali
     """
     api_key_is_valid(app, flask_request)
     target = get_value(flask_request, "target")
-    return make_response(
-        logs_to_report_html(target)
-    )
+    return make_response(logs_to_report_html(target))
 
 
 @app.route("/logs/get_json", methods=["GET"])
@@ -484,17 +406,15 @@ def get_logs():
     target = get_value(flask_request, "target")
     data = logs_to_report_json(target)
     json_object = json.dumps(data)
-    filename = "report-" + now(
-        model="%Y_%m_%d_%H_%M_%S"
-    ) + "".join(
-        random.choice(string.ascii_lowercase) for _ in range(10)
+    filename = (
+        "report-"
+        + now(model="%Y_%m_%d_%H_%M_%S")
+        + "".join(random.choice(string.ascii_lowercase) for _ in range(10))
     )
     return Response(
         json_object,
-        mimetype='application/json',
-        headers={
-            'Content-Disposition': 'attachment;filename=' + filename + '.json'
-        }
+        mimetype="application/json",
+        headers={"Content-Disposition": "attachment;filename=" + filename + ".json"},
     )
 
 
@@ -510,33 +430,26 @@ def get_logs_csv():
     target = get_value(flask_request, "target")
     data = logs_to_report_json(target)
     keys = data[0].keys()
-    filename = "report-" + now(
-        model="%Y_%m_%d_%H_%M_%S"
-    ) + "".join(
-        random.choice(
-            string.ascii_lowercase
-        ) for _ in range(10)
+    filename = (
+        "report-"
+        + now(model="%Y_%m_%d_%H_%M_%S")
+        + "".join(random.choice(string.ascii_lowercase) for _ in range(10))
     )
     with open(filename, "w") as report_path_filename:
         dict_writer = csv.DictWriter(
-            report_path_filename,
-            fieldnames=keys,
-            quoting=csv.QUOTE_ALL
+            report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL
         )
         dict_writer.writeheader()
         for event in data:
             dict_writer.writerow(
-                {
-                    key: value for key, value in event.items() if key in keys
-                }
+                {key: value for key, value in event.items() if key in keys}
             )
-    with open(filename, 'r') as report_path_filename:
+    with open(filename, "r") as report_path_filename:
         reader = report_path_filename.read()
     return Response(
-        reader, mimetype='text/csv',
-        headers={
-            'Content-Disposition': 'attachment;filename=' + filename + '.csv'
-        }
+        reader,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=" + filename + ".csv"},
     )
 
 
@@ -577,7 +490,7 @@ def start_api_subprocess(options):
         "api_cert": options.api_cert,
         "api_cert_key": options.api_cert_key,
         "language": options.language,
-        "options": options
+        "options": options,
     }
     try:
         if options.api_cert and options.api_cert_key:
@@ -585,19 +498,16 @@ def start_api_subprocess(options):
                 host=options.api_hostname,
                 port=options.api_port,
                 debug=options.api_debug_mode,
-                ssl_context=(
-                    options.api_cert,
-                    options.api_cert_key
-                ),
-                threaded=True
+                ssl_context=(options.api_cert, options.api_cert_key),
+                threaded=True,
             )
         else:
             app.run(
                 host=options.api_hostname,
                 port=options.api_port,
                 debug=options.api_debug_mode,
-                ssl_context='adhoc',
-                threaded=True
+                ssl_context="adhoc",
+                threaded=True,
             )
     except Exception as e:
         die_failure(str(e))
@@ -612,15 +522,9 @@ def start_api_server(options):
     """
     # Starting the API
     write_to_api_console(
-        messages("API_key").format(
-            options.api_port,
-            options.api_access_key
-        )
+        messages("API_key").format(options.api_port, options.api_access_key)
     )
-    p = multiprocessing.Process(
-        target=start_api_subprocess,
-        args=(options,)
-    )
+    p = multiprocessing.Process(target=start_api_subprocess, args=(options,))
     p.start()
     # Sometimes it's take much time to terminate flask with CTRL+C
     # So It's better to use KeyboardInterrupt to terminate!

@@ -16,9 +16,10 @@ def start(events):
         a graph in HTML
     """
     from lib.graph.d3_tree_v1.engine import start
+
     return start(events).replace(
-        '''\t root.children.forEach(function(child){
+        """\t root.children.forEach(function(child){
      collapse(child);
-\t });''',
-        ''
+\t });""",
+        "",
     )

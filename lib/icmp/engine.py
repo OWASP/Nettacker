@@ -112,23 +112,22 @@ def checksum_py3(source_string):
     while count < countTo:
         thisVal = source_string[count + 1] * 256 + source_string[count]
         sum = sum + thisVal
-        sum = sum & 0xffffffff  # Necessary?
+        sum = sum & 0xFFFFFFFF  # Necessary?
         count = count + 2
 
     if countTo < len(source_string):
         sum = sum + source_string[len(source_string) - 1]
-        sum = sum & 0xffffffff  # Necessary?
+        sum = sum & 0xFFFFFFFF  # Necessary?
 
-    sum = (sum >> 16) + (sum & 0xffff)
+    sum = (sum >> 16) + (sum & 0xFFFF)
     sum = sum + (sum >> 16)
     answer = ~sum
-    answer = answer & 0xffff
+    answer = answer & 0xFFFF
 
     # Swap bytes. Bugger me if I know why.
-    answer = answer >> 8 | (answer << 8 & 0xff00)
+    answer = answer >> 8 | (answer << 8 & 0xFF00)
 
     return answer
-
 
 
 def receive_one_ping(my_socket, id, timeout):
@@ -139,19 +138,17 @@ def receive_one_ping(my_socket, id, timeout):
     while True:
         started_select = time.time()
         what_ready = select.select([my_socket], [], [], time_left)
-        how_long_in_select = (time.time() - started_select)
+        how_long_in_select = time.time() - started_select
         if what_ready[0] == []:  # Timeout
             return
 
         time_received = time.time()
         received_packet, addr = my_socket.recvfrom(1024)
         icmpHeader = received_packet[20:28]
-        type, code, checksum, packet_id, sequence = struct.unpack(
-            "bbHHh", icmpHeader
-        )
+        type, code, checksum, packet_id, sequence = struct.unpack("bbHHh", icmpHeader)
         if packet_id == id:
             bytes = struct.calcsize("d")
-            time_sent = struct.unpack("d", received_packet[28:28 + bytes])[0]
+            time_sent = struct.unpack("d", received_packet[28 : 28 + bytes])[0]
             return time_received - time_sent
 
         time_left = time_left - how_long_in_select
@@ -177,8 +174,7 @@ def send_one_ping(my_socket, dest_addr, id, psize):
     header = struct.pack("bbHHh", ICMP_ECHO_REQUEST, 0, my_checksum, id, 1)
     bytes = struct.calcsize("d")
     data = (psize - bytes) * "Q"
-    data = struct.pack("d", time.time(
-    )) + struct.pack("d", time.time()) + data.encode()
+    data = struct.pack("d", time.time()) + struct.pack("d", time.time()) + data.encode()
 
     # Calculate the checksum on the data and the dummy header.
     my_checksum = checksum_py3(header + data)

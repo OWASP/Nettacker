@@ -27,25 +27,24 @@ def postgres_create_database():
 
     try:
         engine = create_engine(
-            'postgres+psycopg2://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE)
+            "postgres+psycopg2://{0}:{1}@{2}:{3}/{4}".format(
+                USER, PASSWORD, HOST, PORT, DATABASE
+            )
         )
         Base.metadata.create_all(engine)
         return True
     except OperationalError:
         # if the database does not exist
         engine = create_engine(
-            "postgres+psycopg2://postgres:postgres@localhost/postgres")
+            "postgres+psycopg2://postgres:postgres@localhost/postgres"
+        )
         conn = engine.connect()
         conn.execute("commit")
-        conn.execute('CREATE DATABASE {0}'.format(DATABASE))
+        conn.execute("CREATE DATABASE {0}".format(DATABASE))
         conn.close()
         engine = create_engine(
-            'postgres+psycopg2://{0}:{1}@{2}:{3}/{4}'.format(
-                USER,
-                PASSWORD,
-                HOST,
-                PORT,
-                DATABASE
+            "postgres+psycopg2://{0}:{1}@{2}:{3}/{4}".format(
+                USER, PASSWORD, HOST, PORT, DATABASE
             )
         )
         Base.metadata.create_all(engine)
