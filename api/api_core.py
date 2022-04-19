@@ -20,10 +20,7 @@ def structure(status="", msg=""):
     Returns:
         a JSON message
     """
-    return {
-        "status": status,
-        "msg": msg
-    }
+    return {"status": status, "msg": msg}
 
 
 def get_value(flask_request, key):
@@ -37,13 +34,12 @@ def get_value(flask_request, key):
     Returns:
         the value content if found otherwise None
     """
-    return dict(
-        flask_request.args
-    ).get(key) or dict(
-        flask_request.form
-    ).get(key) or dict(
-        flask_request.cookies
-    ).get(key) or ""
+    return (
+        dict(flask_request.args).get(key)
+        or dict(flask_request.form).get(key)
+        or dict(flask_request.cookies).get(key)
+        or ""
+    )
 
 
 def mime_types():
@@ -122,7 +118,7 @@ def mime_types():
         "audio/3gpp": "video",
         ".3g2": "video/3gpp2",
         "audio/3gpp2": "video",
-        ".7z": "application/x-7z-compressed"
+        ".7z": "application/x-7z-compressed",
     }
 
 
@@ -137,7 +133,7 @@ def get_file(filename):
         content of the file or abort(404)
     """
     try:
-        return open(filename, 'rb').read()
+        return open(filename, "rb").read()
     except IOError:
         print(filename)
         abort(404)
@@ -155,7 +151,9 @@ def api_key_is_valid(app, flask_request):
         200 HTTP code if it's valid otherwise 401 error
 
     """
-    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != get_value(flask_request, "key"):
+    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != get_value(
+        flask_request, "key"
+    ):
         abort(401, messages("API_invalid"))
     return
 
@@ -168,6 +166,7 @@ def languages_to_country():
         HTML code for each language with its country flag
     """
     from core.load_modules import load_all_languages
+
     languages = load_all_languages()
     res = ""
     flags = {
@@ -193,14 +192,12 @@ def languages_to_country():
         "es": "es",
         "iw": "il",
         "pt-br": "br",
-        "bn": "in"
+        "bn": "in",
     }
     for language in languages:
         res += """<option {2} id="{0}" data-content='<span class="flag-icon flag-icon-{1}" 
         value="{0}"></span> {0}'></option>""".format(
-            language,
-            flags[language],
-            "selected" if language == "en" else ""
+            language, flags[language], "selected" if language == "en" else ""
         )
     return res
 
@@ -216,7 +213,9 @@ def graphs():
                             class="label label-default">None</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""
     for graph in load_all_graphs():
         res += """<label><input id="{0}" type="radio" name="graph_name" value="{0}" class="radio"><a
-                            class="label label-default">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(graph)
+                            class="label label-default">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(
+            graph
+        )
     return res
 
 
@@ -229,15 +228,19 @@ def profiles():
     """
     res = ""
     for profile in sorted(load_all_profiles().keys()):
-        label = "success" if (
-                profile == "scan"
-        ) else "warning" if (
-                profile == "brute"
-        ) else "danger" if (
-                profile == "vulnerability"
-        ) else "default"
+        label = (
+            "success"
+            if (profile == "scan")
+            else "warning"
+            if (profile == "brute")
+            else "danger"
+            if (profile == "vulnerability")
+            else "default"
+        )
         res += """<label><input id="{0}" type="checkbox" class="checkbox checkbox-{0}"><a class="label 
-            label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(profile, label)
+            label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(
+            profile, label
+        )
     return res
 
 
@@ -252,20 +255,26 @@ def scan_methods():
     methods.pop("all")
     res = ""
     for sm in methods.keys():
-        label = "success" if sm.endswith(
-            "_scan"
-        ) else "warning" if sm.endswith(
-            "_brute"
-        ) else "danger" if sm.endswith(
-            "_vuln"
-        ) else "default"
-        profile = "scan" if sm.endswith(
-            "_scan"
-        ) else "brute" if sm.endswith(
-            "_brute"
-        ) else "vuln" if sm.endswith(
-            "_vuln"
-        ) else "default"
+        label = (
+            "success"
+            if sm.endswith("_scan")
+            else "warning"
+            if sm.endswith("_brute")
+            else "danger"
+            if sm.endswith("_vuln")
+            else "default"
+        )
+        profile = (
+            "scan"
+            if sm.endswith("_scan")
+            else "brute"
+            if sm.endswith("_brute")
+            else "vuln"
+            if sm.endswith("_vuln")
+            else "default"
+        )
         res += """<label><input id="{0}" type="checkbox" class="checkbox checkbox-{2}-module">
-        <a class="label label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(sm, label, profile)
+        <a class="label label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(
+            sm, label, profile
+        )
     return res

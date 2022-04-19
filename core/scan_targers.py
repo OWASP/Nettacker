@@ -3,9 +3,7 @@
 
 import numpy
 import multiprocessing
-from core.alert import (info,
-                        verbose_event_info,
-                        messages)
+from core.alert import info, verbose_event_info, messages
 from core.targets import expand_targets
 from core.utility import generate_random_token
 from core.load_modules import perform_scan
@@ -30,8 +28,8 @@ def parallel_scan_process(options, targets, scan_unique_id, process_number):
                     scan_unique_id,
                     process_number,
                     total_number_of_modules_counter,
-                    total_number_of_modules
-                )
+                    total_number_of_modules,
+                ),
             )
             thread.name = f"{target} -> {module_name}"
             thread.start()
@@ -41,12 +39,14 @@ def parallel_scan_process(options, targets, scan_unique_id, process_number):
                     module_name,
                     target,
                     total_number_of_modules_counter,
-                    total_number_of_modules
+                    total_number_of_modules,
                 )
             )
             total_number_of_modules_counter += 1
             active_threads.append(thread)
-            if not wait_for_threads_to_finish(active_threads, options.parallel_module_scan, True):
+            if not wait_for_threads_to_finish(
+                active_threads, options.parallel_module_scan, True
+            ):
                 return False
     wait_for_threads_to_finish(active_threads, maximum=None, terminable=True)
     return True
@@ -58,14 +58,17 @@ def multi_processor(options, scan_unique_id):
         return True
     number_of_total_targets = len(options.targets)
     options.targets = [
-        targets.tolist() for targets in numpy.array_split(
+        targets.tolist()
+        for targets in numpy.array_split(
             options.targets,
-            options.set_hardware_usage if options.set_hardware_usage <= len(options.targets)
-            else number_of_total_targets
+            options.set_hardware_usage
+            if options.set_hardware_usage <= len(options.targets)
+            else number_of_total_targets,
         )
     ]
     info(messages("removing_old_db_records"))
     from database.db import remove_old_logs
+
     for target_group in options.targets:
         for target in target_group:
             for module_name in options.selected_modules:
@@ -81,8 +84,7 @@ def multi_processor(options, scan_unique_id):
     active_processes = []
     info(
         messages("start_multi_process").format(
-            number_of_total_targets,
-            len(options.targets)
+            number_of_total_targets, len(options.targets)
         )
     )
     process_number = 0
@@ -90,7 +92,12 @@ def multi_processor(options, scan_unique_id):
         process_number += 1
         process = multiprocessing.Process(
             target=parallel_scan_process,
-            args=(options, targets, scan_unique_id, process_number,)
+            args=(
+                options,
+                targets,
+                scan_unique_id,
+                process_number,
+            ),
         )
         process.start()
         active_processes.append(process)
