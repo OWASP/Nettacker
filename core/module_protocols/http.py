@@ -108,6 +108,7 @@ class Engine:
     ):
         backup_method = copy.deepcopy(sub_step['method'])
         backup_response = copy.deepcopy(sub_step['response'])
+        backup_iterative_response_match = copy.deepcopy(sub_step['response']['conditions'].get('iterative_response_match',None))
         action = getattr(requests, backup_method, None)
         if options['user_agent'] == 'random_user_agent':
             sub_step['headers']['User-Agent'] = random.choice(options['user_agents'])
@@ -140,7 +141,21 @@ class Engine:
                 response = []
         sub_step['method'] = backup_method
         sub_step['response'] = backup_response
+        
+        if backup_iterative_response_match != None:
+            backup_iterative_response_match = copy.deepcopy(sub_step['response']['conditions'].get('iterative_response_match'))
+            del sub_step['response']['conditions']['iterative_response_match']
+
         sub_step['response']['conditions_results'] = response_conditions_matched(sub_step, response)
+
+        if backup_iterative_response_match != None:
+            sub_step['response']['conditions']['iterative_response_match'] = backup_iterative_response_match
+            for key in sub_step['response']['conditions']['iterative_response_match']:
+                result = response_conditions_matched(
+                    sub_step['response']['conditions']['iterative_response_match'][key],response)
+                if result:
+                    sub_step['response']['conditions_results'][key]=result
+
         return process_conditions(
             sub_step,
             module_name,
