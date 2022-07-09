@@ -112,7 +112,6 @@ class Engine:
         if options['user_agent'] == 'random_user_agent':
             sub_step['headers']['User-Agent'] = random.choice(options['user_agents'])
         del sub_step['method']
-        del sub_step['response']
         if 'dependent_on_temp_event' in backup_response:
             temp_event = get_dependent_results_from_database(
                 target,
@@ -124,6 +123,8 @@ class Engine:
                 sub_step,
                 temp_event
             )
+        backup_response = copy.deepcopy(sub_step['response'])
+        del sub_step['response']
         for _ in range(options['retries']):
             try:
                 response = action(**sub_step)
