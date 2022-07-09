@@ -72,9 +72,9 @@ def response_conditions_matched(sub_step, response):
                 'headers' in condition_results and
                 (
                         (
-                                list(condition_results.values()).count([]) - 1 !=
+                                list(condition_results.values()).count([]) + 1 !=
                                 len(list(condition_results.values()))
-                        ) and
+                        ) or
                         (
                                 list(condition_results['headers'].values()).count([]) !=
                                 len(list(condition_results['headers'].values()))
