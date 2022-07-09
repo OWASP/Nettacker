@@ -16,7 +16,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 def response_conditions_matched(sub_step, response):
     if not response:
-        return []
+        return {}
     condition_type = sub_step['response']['condition_type']
     conditions = sub_step['response']['conditions']
     condition_results = {}
@@ -83,14 +83,14 @@ def response_conditions_matched(sub_step, response):
         ):
             return condition_results
         else:
-            return []
+            return {}
     if condition_type.lower() == "and":
         if [] in condition_results.values() or \
                 ('headers' in condition_results and [] in condition_results['headers'].values()):
-            return []
+            return {}
         else:
             return condition_results
-    return []
+    return {}
 
 
 class Engine:
