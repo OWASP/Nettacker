@@ -62,6 +62,8 @@ def process_conditions(
                 continue
         del event['response']['conditions']
         del event['response']['condition_type']
+        if 'log' in event['response']:
+            del event['response']['log']
         event_request_keys = copy.deepcopy(event)
         del event_request_keys['response']
         submit_logs_to_db(
@@ -83,7 +85,10 @@ def process_conditions(
                 "json_event": event
             }
         )
-        success_event_info(
+        log_list = merge_logs_to_list(event['response']['conditions_results'])
+        #print(log_list,event['response']['conditions_results'])
+        if log_list:
+            success_event_info(
             messages("send_success_event_from_module").format(
                 process_number,
                 module_name,
@@ -92,25 +97,47 @@ def process_conditions(
                 total_module_thread_number,
                 request_number_counter,
                 total_number_of_requests,
-                " ".join(
-                    [
-                        color('yellow') + key + color('reset') if ':' in key
-                        else color('green') + key + color('reset')
-                        for key in yaml.dump(event_request_keys).split()
-                    ]
-                ),
+                " ",
                 filter_large_content(
-                    "conditions: " + " ".join(
+                    "\n".join(
                         [
-                            color('purple') + key + color('reset') if ':' in key
-                            else color('green') + key + color('reset')
-                            for key in yaml.dump(event['response']['conditions_results']).split()
+                            color('purple') + key + color('reset')
+                            for key in log_list
                         ]
                     ),
-                    filter_rate=150
+                    filter_rate=100000
                 )
             )
         )
+        else:
+            success_event_info(
+                messages("send_success_event_from_module").format(
+                    process_number,
+                    module_name,
+                    target,
+                    module_thread_number,
+                    total_module_thread_number,
+                    request_number_counter,
+                    total_number_of_requests,
+                    " ".join(
+                        [
+                            color('yellow') + key + color('reset') if ':' in key
+                            else color('green') + key + color('reset')
+                            for key in yaml.dump(event_request_keys).split()
+                        ]
+                    ),
+                    filter_large_content(
+                        "conditions: " + " ".join(
+                            [
+                                color('purple') + key + color('reset') if ':' in key
+                                else color('green') + key + color('reset')
+                                for key in yaml.dump(event['response']['conditions_results']).split()
+                            ]
+                        ),
+                        filter_rate=150
+                    )
+                )
+            )
         verbose_info(
             json.dumps(event)
         )
@@ -228,6 +255,16 @@ def replace_dependent_response(log,result):
                 key_value = "response dependent error"
             log = log.replace(i," ".join(key_value))
         return log
+
+
+def merge_logs_to_list(result,log_list=[]):
+    if type(result) == dict:
+        for i in result:
+            if 'log'==i:
+                log_list.append(result['log'])
+            else:
+                merge_logs_to_list(result[i],log_list)
+    return log_list
 
 
 def reverse_and_regex_condition(regex, reverse):
