@@ -32,11 +32,15 @@ def response_conditions_matched(sub_step, response):
             condition_results['headers'] = {}
             for header in conditions['headers']:
                 reverse = conditions['headers'][header]['reverse']
-                regex = re.findall(
-                    re.compile(conditions['headers'][header]['regex']),
-                    response['headers'][header.lower()] if header.lower() in response['headers'] else ""
-                )
-                condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
+                try:
+                    #print(re.compile(conditions['headers'][header]['regex']))
+                    regex = re.findall(
+                        re.compile(conditions['headers'][header]['regex']),
+                        response['headers'][header.lower()] if header.lower() in response['headers'] else False
+                    )
+                    condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
+                except TypeError:
+                    pass
         if condition == 'responsetime':
             if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
                 "==",
