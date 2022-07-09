@@ -9,6 +9,7 @@ from core.utility import reverse_and_regex_condition
 from core.utility import process_conditions
 from core.utility import get_dependent_results_from_database
 from core.utility import replace_dependent_values
+from core.utility import replace_dependent_response
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -81,6 +82,10 @@ def response_conditions_matched(sub_step, response):
                         )
                 )
         ):
+            if sub_step['response'].get('log',False):
+                condition_results['log']=sub_step['response']['log']
+                if 'response_dependent' in condition_results['log']:
+                    condition_results['log'] = replace_dependent_response(condition_results['log'],condition_results)
             return condition_results
         else:
             return {}
@@ -89,6 +94,10 @@ def response_conditions_matched(sub_step, response):
                 ('headers' in condition_results and [] in condition_results['headers'].values()):
             return {}
         else:
+            if sub_step['response'].get('log',False):
+                condition_results['log']=sub_step['response']['log']
+                if 'response_dependent' in condition_results['log']:
+                    condition_results['log'] = replace_dependent_response(condition_results['log'],condition_results)
             return condition_results
     return {}
 

@@ -212,6 +212,24 @@ def replace_dependent_values(sub_step, dependent_on_temp_event):
     return find_and_replace_dependent_values(sub_step, dependent_on_temp_event)
 
 
+def replace_dependent_response(log,result):
+    #print(log)
+    response_dependent = result
+    if str(log):
+        key_name = re.findall(
+            re.compile("response_dependent\\['\\S+\\]"),
+            log
+        )
+        for i in key_name:
+            #print(i)
+            try:
+                key_value = eval(i)
+            except Exception:
+                key_value = "response dependent error"
+            log = log.replace(i," ".join(key_value))
+        return log
+
+
 def reverse_and_regex_condition(regex, reverse):
     if regex:
         if reverse:
