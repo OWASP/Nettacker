@@ -41,7 +41,7 @@ def response_conditions_matched(sub_step, response):
                     )
                     condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
                 except TypeError:
-                    pass
+                    condition_results['headers'][header] = []
         if condition == 'responsetime':
             if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
                 "==",
@@ -72,16 +72,14 @@ def response_conditions_matched(sub_step, response):
         ) or (
                 'headers' in condition_results and
                 (
-                        (
-                                list(condition_results.values()).count([]) + 1 !=
-                                len(list(condition_results.values()))
-                        ) or
-                        (
-                                list(condition_results['headers'].values()).count([]) !=
-                                len(list(condition_results['headers'].values()))
-                        )
+                        
+                    len(list(condition_results.values())) +
+                    len(list(condition_results['headers'].values())) -
+                    list(condition_results.values()).count([]) -
+                    list(condition_results['headers'].values()).count([]) -
+                    1 != 0
                 )
-        ):
+            ):
             if sub_step['response'].get('log',False):
                 condition_results['log']=sub_step['response']['log']
                 if 'response_dependent' in condition_results['log']:
