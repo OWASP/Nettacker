@@ -39,7 +39,574 @@ payloads:
         response:
           condition_type: or
           conditions:
-            content:
-              # more to be added
-              regex: The specified bucket does not exist|Repository not found|The page you have requested does not exist|There isn\'t a GitHub Pages site here.
-              reverse: false
+            iterative_response_match:
+              Aftership Takeover:
+                response:
+                  condition_type: or
+                  log: Aftership Takeover Detected
+                  conditions:
+                    content:
+                      regex: Oops\.</h2><p class="text-muted text-tight">The page you're looking for doesn't exist
+                      reverse: false
+              Agilecrm Takeover:
+                response:
+                  condition_type: or
+                  log: Agilecrm Takeover detected
+                  conditions:
+                    content:
+                      regex: Sorry, this page is no longer available
+                      reverse: false
+              Aha Takeover:
+                response:
+                  condition_type: or
+                  log: Aha Takeover detected
+                  conditions:
+                    content:
+                      regex: There is no portal here \.\.\. sending you back to Aha!
+                      reverse: false
+              Airee Takeover:
+                response:
+                  condition_type: or
+                  log: Airee Takeover detected
+                  conditions:
+                    content:
+                      regex: Ошибка 402\. Сервис Айри\.рф не оплачен
+                      reverse: false
+              Anima Takeover:
+                response:
+                  condition_type: or
+                  log: Anima Takeover detected
+                  conditions:
+                    content:
+                      regex: If this is your website and you've just created it, try refreshing in a minute
+                      reverse: false
+              Announcekit Takeover:
+                response:
+                  condition_type: and
+                  log: Announcekit Takeover detected
+                  conditions:
+                    content:
+                      regex: Error 404 - AnnounceKit
+                      reverse: false
+                    status_code:
+                      regex: "404"
+                      reverse: false
+              AWS Bucket Takeover:
+                response:
+                  condition_type: or
+                  log: Probable AWS Bucket Takeover detected
+                  conditions:
+                    content:
+                      regex: The specified bucket does not exist
+                      reverse: false
+              Bigcartel Takeover:
+                response:
+                  condition_type: and
+                  log: Probable Bigcartel Takeover detected
+                  conditions:
+                    content:
+                      regex: <h1>Oops! We couldn&#8217;t find that page.</h1>
+                      reverse: false
+                    headers:
+                      host:
+                        regex: .*
+                        reverse: true
+              Bitbucket Takeover:
+                response:
+                  condition_type: or
+                  log: Bitbucket Takeover detected
+                  conditions:
+                    content:
+                      regex: Repository not found
+                      reverse: false
+              Brightcove Takeover:
+                response:
+                  condition_type: or
+                  log: Brightcove Takeover detected
+                  conditions:
+                    content:
+                      regex: '<p class="bc-gallery-error-code">Error Code: 404</p>'
+                      reverse: false
+              Campaignmonitor Takeover:
+                response:
+                  condition_type: or
+                  log: Campaignmonitor Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*<strong>Trying to access your account\?</strong>)(?=.*or <a href="mailto:help@createsend\.com).*$
+                      reverse: false
+              Canny Takeover:
+                response:
+                  condition_type: or
+                  log: Canny Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*Company Not Found)(?=.*There is no such company. Did you enter the right URL\?).*$
+                      reverse: false
+              Cargo Takeover:
+                response:
+                  condition_type: or
+                  log: Cargo Takeover detected
+                  conditions:
+                    content:
+                      regex: If you're moving your domain away from Cargo you must make this configuration through your registrar's DNS control panel
+                      reverse: false
+              Cargocollective Takeover:
+                response:
+                  condition_type: or
+                  log: Cargocollective Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*<div class="notfound">)(?=.*404 Not Found<br>).*$
+                      reverse: false 
+              Feedpress Takeover:
+                response:
+                  condition_type: or
+                  log: Feedpress Takeover detected
+                  conditions:
+                    content:
+                      regex: The feed has not been found
+                      reverse: false
+              Flexbe Takeover:
+                response:
+                  condition_type: or
+                  log: Flexbe Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*Domain isn't configured)(?=.*flexbe).*$
+                      reverse: false
+                    status_code:
+                      regex: "404"
+                      reverse: false
+              Flywheel Takeover:
+                response:
+                  condition_type: or
+                  log: Flywheel Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*We're sorry, you've landed on a page that is hosted by Flywheel)(?=.*<h1>Oops! That's not the site<br>you're looking&nbsp;for\.</h1>).*$
+                      reverse: false
+              Frontify Takeover:
+                response:
+                  condition_type: or
+                  log: Frontify Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*404 - Page Not Found)(?=.*Oops… looks like you got lost).*$
+                      reverse: false
+              Gemfury Takeover:
+                response:
+                  condition_type: or
+                  log: Gemfury Takeover detected
+                  conditions:
+                    content:
+                      regex: "404: This page could not be found"
+                      reverse: false
+              Getresponse Takeover:
+                response:
+                  condition_type: or
+                  log: Getresponse Takeover detected
+                  conditions:
+                    content:
+                      regex: With GetResponse Landing Pages, lead generation has never been easier
+                      reverse: false
+              Ghost Takeover:
+                response:
+                  condition_type: and
+                  log: Ghost Takeover detected
+                  conditions:
+                    content:
+                      regex: offline\.ghost\.org
+                      reverse: false
+                    status_code:
+                      regex: "302"
+                      reverse: false
+              Gitbook Takeover:
+                response:
+                  condition_type: or
+                  log: Gitbook Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*If you need specifics, here's the error)(?=.*Domain not found).*$
+                      reverse: false
+              Github Takeover:
+                response:
+                  condition_type: and
+                  log: Github Takeover detected
+                  conditions:
+                    content:
+                      regex: There isn't a GitHub Pages site here|For root URLs (like http://example\.com/) you must provide an index\.html file
+                      reverse: false
+                    headers:
+                      host:
+                        regex: githubapp\.com|github\.com|github\.io
+                        reverse: true
+              Hatenablog Takeover:
+                response:
+                  condition_type: or
+                  log: Hatenablog Takeover detected
+                  conditions:
+                    content:
+                      regex: 404 Blog is not found
+                      reverse: false
+              Helpjuice Takeover:
+                response:
+                  condition_type: or
+                  log: Helpjuice Takeover detected
+                  conditions:
+                    content:
+                      regex: We could not find what you're looking for
+                      reverse: false  
+              Helprace Takeover:
+                response:
+                  condition_type: or
+                  log: Helprace Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*Alias not configured!)(?=.*Admin of this Helprace account needs to set up domain alias).*$
+                      reverse: false
+              Helpscout Takeover:
+                response:
+                  condition_type: or
+                  log: Helpscout Takeover detected
+                  conditions:
+                    content:
+                      regex: "No settings were found for this company:"
+                      reverse: false 
+              Heroku Takeover:
+                response:
+                  condition_type: or
+                  log: Probable Heroku Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*herokucdn\.com/error-pages/no-such-app\.html)(?=.*<title>No such app</title>).*$
+                      reverse: false
+              Hubspot Takeover:
+                response:
+                  condition_type: or
+                  log: Hubspot Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*Domain not found)(?=.*does not exist in our system).*$
+                      reverse: false
+              Intercom Takeover:
+                response:
+                  condition_type: or
+                  log: Intercom Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*<h1 class="headline">Uh oh\. That page doesn\\’t exist</h1>)(?=.*This page is reserved for artistic dogs).*$
+                      reverse: false
+              Jazzhr Takeover:
+                response:
+                  condition_type: or
+                  log: Jazzhr Takeover detected
+                  conditions:
+                    content:
+                      regex: This account no longer active
+                      reverse: false 
+              Jetbrains Takeover:
+                response:
+                  condition_type: or
+                  log: Jetbrains Takeover detected
+                  conditions:
+                    content:
+                      regex: is not a registered InCloud YouTrack
+                      reverse: false
+              Kinsta Takeover:
+                response:
+                  condition_type: or
+                  log: Kinsta Takeover detected
+                  conditions:
+                    content:
+                      regex: No Site For Domain
+                      reverse: false
+              Landingi Takeover:
+                response:
+                  condition_type: or
+                  log: Probable Landingi Takeover detected
+                  conditions:
+                    content:
+                      regex: It looks like you’re lost\.\.\.
+                      reverse: false
+              Launchrock Takeover:
+                response:
+                  condition_type: or
+                  log: Launchrock Takeover detected
+                  conditions:
+                    content:
+                      regex: It looks like you may have taken a wrong turn somewhere\. Don't worry\.\.\.it happens to all of us
+                      reverse: false
+              Mashery Takeover:
+                response:
+                  condition_type: or
+                  log: Probable Mashery Takeover detected
+                  conditions:
+                    content:
+                      regex: Unrecognized domain <strong>
+                      reverse: false
+              Netlify Takeover:
+                response:
+                  condition_type: or
+                  log: Probable Netlify Takeover detected
+                  conditions:
+                    content:
+                      regex: Not found - Request ID
+                      reverse: false
+              Ngrok Takeover:
+                response:
+                  condition_type: or
+                  log: Ngrok Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*ngrok\.io not found)(?=.*Tunnel .*\.ngrok.io not found).*$
+                      reverse: false
+              Pagewiz Takeover:
+                response:
+                  condition_type: or
+                  log: Pagewiz Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*404 - Page Not Found)(?=.*Start Your New Landing Page Now!)(?=.*pagewiz).*$
+                      reverse: false
+              Pantheon Takeover:
+                response:
+                  condition_type: or
+                  log: Pantheon Takeover detected
+                  conditions:
+                    content:
+                      regex: The gods are wise, but do not know of the site which you seek
+                      reverse: false
+              Pingdom Takeover:
+                response:
+                  condition_type: or
+                  log: Pingdom Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*Sorry, couldn't find the status page)(?=.*This public report page has not been activated by the user).*$
+                      reverse: false
+              Proposify Takeover:
+                response:
+                  condition_type: or
+                  log: Proposify Takeover detected
+                  conditions:
+                    content:
+                      regex: If you need immediate assistance, please contact <a href="mailto:support@proposify\.biz
+                      reverse: false
+              Readme Takeover:
+                response:
+                  condition_type: or
+                  log: Readme Takeover detected
+                  conditions:
+                    content:
+                      regex: Project doesnt exist\.\.\. yet!
+                      reverse: false
+              Readthedocs Takeover:
+                response:
+                  condition_type: or
+                  log: Readthedocs Takeover detected
+                  conditions:
+                    content:
+                      regex: unknown to Read the Docs
+                      reverse: false
+              Shopify Takeover:
+                response:
+                  condition_type: and
+                  log: Probable Shopify Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*(To finish setting up your new web address, go to your domain settings, click "Connect existing domain"|Sorry, this shop is currently unavailable))(?=.*shop-not-found).*$
+                      reverse: false
+                    headers:
+                      host:
+                        regex: myshopify\.com|shopify\.com
+                        reverse: true
+              Shortio Takeover:
+                response:
+                  condition_type: or
+                  log: Shortio Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*Link does not exist)(?=.*This domain is not configured on Short\.io).*$
+                      reverse: false
+              Smartjobboard Takeover:
+                response:
+                  condition_type: or
+                  log: Smartjobboard Takeover detected
+                  conditions:
+                    content:
+                      regex: This job board website is either expired or its domain name is invalid
+                      reverse: false
+              Smugmug Takeover:
+                response:
+                  condition_type: or
+                  log: Smugmug Takeover detected
+                  conditions:
+                    content:
+                      regex: '\{{"text":"Page Not Found"'  
+                      reverse: false
+              Sprintful Takeover:
+                response:
+                  condition_type: and
+                  log: Sprintful Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*Sprintful)(?=.*(The user account associated with this calendar has been deactivated|Please contact the owner of this calendar directly in order to book a meeting|This domain name does not have a default page configured)).*$
+                      reverse: false
+                    status_code:
+                      regex: "200"
+                      reverse: false
+              Strikingly Takeover:
+                response:
+                  condition_type: or
+                  log: Strikingly Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*But if you're looking to build your own website)(?=.*you've come to the right place)(?=.*page not found).*$
+                      reverse: false
+              Surge Takeover:
+                response:
+                  condition_type: or
+                  log: Surge Takeover detected
+                  conditions:
+                    content:
+                      regex: project not found
+                      reverse: false
+              Surveygizmo Takeover:
+                response:
+                  condition_type: or
+                  log: Surveygizmo Takeover detected
+                  conditions:
+                    content:
+                      regex: data-html-name
+                      reverse: false
+              Tave Takeover:
+                response:
+                  condition_type: or
+                  log: Tave Takeover detected
+                  conditions:
+                    content:
+                      regex: "<h1>Error 404: Page Not Found</h1>"
+                      reverse: false
+              Teamwork Takeover:
+                response:
+                  condition_type: or
+                  log: Teamwork Takeover detected
+                  conditions:
+                    content:
+                      regex: "Oops - We didn't find your site"
+                      reverse: false
+              Tictail Takeover:
+                response:
+                  condition_type: or
+                  log: Tictail Takeover detected
+                  conditions:
+                    content:
+                      regex: 'Building a brand of your own\?|to target URL: <a href="https://tictail\.com|Start selling on Tictail'
+                      reverse: false
+              Tilda Takeover:
+                response:
+                  condition_type: or
+                  log: Probable Tilda Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?!.*<title>Please renew your subscription</title>)(?=.*Please go to the site settings and put the domain name in the Domain tab).*$
+                      reverse: false
+              Tumblr Takeover:
+                response:
+                  condition_type: and
+                  log: Probable Tumblr Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*Whatever you were looking for doesn't currently exist at this address)(?=.*There's nothing here).*$
+                      reverse: false
+                    headers:
+                      host:
+                        regex: tumblr\.com|txmblr\.com
+                        reverse: true
+              Uberflip Takeover:
+                response:
+                  condition_type: or
+                  log: Uberflip Takeover detected
+                  conditions:
+                    content:
+                      regex: Non-hub domain, The URL you've accessed does not provide a hub
+                      reverse: false
+              Uservoice Takeover:
+                response:
+                  condition_type: or
+                  log: Uservoice Takeover detected
+                  conditions:
+                    content:
+                      regex: This UserVoice subdomain is currently available!
+                      reverse: false
+              Uptimerobot Takeover:
+                response:
+                  condition_type: or
+                  log: Uptimerobot Takeover detected
+                  conditions:
+                    content:
+                      regex: ^page not found$
+                      reverse: false
+                    status_code:
+                      regex: "404"
+                      reverse: false
+              Vend Takeover:
+                response:
+                  condition_type: or
+                  log: Vend Takeover detected
+                  conditions:
+                    content:
+                      regex: Looks like you've traveled too far into cyberspace
+                      reverse: false
+              Webflow Takeover:
+                response:
+                  condition_type: or
+                  log: Probable Webflow Takeover detected
+                  conditions:
+                    content:
+                      regex: <p class="description">The page you are looking for doesn't exist or has been moved\.</p>
+                      reverse: false
+              Wishpond Takeover:
+                response:
+                  condition_type: or
+                  log: Wishpond Takeover detected
+                  conditions:
+                    content:
+                      regex: https://www\.wishpond\.com/404\?campaign=true
+                      reverse: false
+              Wix Takeover:
+                response:
+                  condition_type: and
+                  log: Probable Wix Takeover detected
+                  conditions:
+                    content:
+                      regex: Error ConnectYourDomain occurred|wixErrorPagesApp
+                      reverse: false
+                    status_code:
+                      regex: "404"
+                      reverse: false
+              WordPress Takeover:
+                response:
+                  condition_type: or
+                  log: WordPress Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?!.*cannot be registered)(?=.*Do you want to register)(?=.*\.wordpress\.com</em> doesn&#8217;t&nbsp;exist).*$
+                      reverse: false
+              Worksites Takeover:
+                response:
+                  condition_type: or
+                  log: Worksites Takeover detected
+                  conditions:
+                    content:
+                      regex: (?:Company Not Found|you&rsquo;re looking for doesn&rsquo;t exist)
+                      reverse: false
+              Wufoo Takeover:
+                response:
+                  condition_type: or
+                  log: Wufoo Takeover detected
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*Profile not found)(?=.*Hmmm\.\.\.\.something is not right).*$
+                      reverse: false
