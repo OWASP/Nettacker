@@ -2,7 +2,7 @@ argparse==1.4.0
 netaddr==0.8.0
 ipaddr==2.2.0
 requests==2.26.0
-paramiko==2.8.1
+paramiko==2.11.0
 texttable==1.6.4
 PySocks==1.7.1 # library_name=socks # module name is not equal to socks name; this is required to be checked on startup
 pyOpenSSL==21.0.0 # library_name=OpenSSL
