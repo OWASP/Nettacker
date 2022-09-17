@@ -41,10 +41,10 @@ payloads:
                 - 443
         response:
           #save_to_temp_events_only: valid_request_status
-          condition_type: or
+          condition_type: and
           conditions:
             status_code:
-              regex: ^[1-5][0-9][0-9]
+              regex: "200"
               reverse: false
             iterative_response_match:  
               1C-Bitrix:
