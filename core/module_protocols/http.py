@@ -34,7 +34,6 @@ def response_conditions_matched(sub_step, response):
             for header in conditions['headers']:
                 reverse = conditions['headers'][header]['reverse']
                 try:
-                    #print(re.compile(conditions['headers'][header]['regex']))
                     regex = re.findall(
                         re.compile(conditions['headers'][header]['regex']),
                         response['headers'][header.lower()] if header.lower() in response['headers'] else False
@@ -155,7 +154,7 @@ class Engine:
 
         sub_step['response']['conditions_results'] = response_conditions_matched(sub_step, response)
 
-        if backup_iterative_response_match != None:
+        if backup_iterative_response_match != None and (sub_step['response']['conditions_results'] or sub_step['response']['condition_type']=='or') :
             sub_step['response']['conditions']['iterative_response_match'] = backup_iterative_response_match
             for key in sub_step['response']['conditions']['iterative_response_match']:
                 result = response_conditions_matched(
