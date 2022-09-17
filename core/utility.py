@@ -86,7 +86,6 @@ def process_conditions(
             }
         )
         log_list = merge_logs_to_list(event['response']['conditions_results'])
-        #print(log_list,event['response']['conditions_results'])
         if log_list:
             success_event_info(
             messages("send_success_event_from_module").format(
@@ -240,7 +239,6 @@ def replace_dependent_values(sub_step, dependent_on_temp_event):
 
 
 def replace_dependent_response(log,result):
-    #print(log)
     response_dependent = result
     if str(log):
         key_name = re.findall(
@@ -248,7 +246,6 @@ def replace_dependent_response(log,result):
             log
         )
         for i in key_name:
-            #print(i)
             try:
                 key_value = eval(i)
             except Exception:
@@ -264,7 +261,7 @@ def merge_logs_to_list(result,log_list=[]):
                 log_list.append(result['log'])
             else:
                 merge_logs_to_list(result[i],log_list)
-    return log_list
+    return list(set(log_list))
 
 
 def reverse_and_regex_condition(regex, reverse):
