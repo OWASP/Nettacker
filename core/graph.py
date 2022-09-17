@@ -143,11 +143,11 @@ def create_report(options, scan_unique_id):
                 event["event"],
                 event["json_event"]
             )
-        html_table_content += log_data.table_end + '<p class="footer">' + messages("nettacker_version_details").format(
+        html_table_content += log_data.table_end + '<p class="footer">' + '<center><img src="https://raw.githubusercontent.com/OWASP/Nettacker/master/web/static/img/owasp.png" alt="LOGO" width="250" height="100"></center>' + '<center>' + messages("nettacker_version_details").format(
             version_info()[0],
             version_info()[1],
             now()
-        ) + '</p>'
+        ) + '</center>' + '</p>'
         with open(report_path_filename, 'w', encoding='utf-8') as save:
             save.write(html_table_content + '\n')
             save.close()
