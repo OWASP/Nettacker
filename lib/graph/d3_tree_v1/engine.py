@@ -73,7 +73,6 @@ def start(events):
                 )
 
     from config import nettacker_paths
-    print("ok\n",d3_structure)
     data = open(
         os.path.join(
             nettacker_paths()['web_static_files_path'],
