@@ -11,6 +11,7 @@ from core.time import now
 from core.die import die_failure
 from database.db import get_logs_by_scan_unique_id
 from database.db import submit_report_to_db
+from core.utility import merge_logs_to_list
 
 
 def build_graph(graph_name, events):
@@ -128,26 +129,28 @@ def create_report(options, scan_unique_id):
             'date',
             'target',
             'module_name',
-            'scan_unique_id',
             'port',
-            'event',
+            'logs',
             'json_event'
         )
+        index=1
         for event in all_scan_logs:
+            log = merge_logs_to_list(json.loads(event["json_event"]), [])
             html_table_content += log_data.table_items.format(
                 event["date"],
                 event["target"],
                 event["module_name"],
-                event["scan_unique_id"],
                 event["port"],
-                event["event"],
+                "<br>".join(log) if log else "detected", #event["event"], #log
+                index, 
                 event["json_event"]
             )
-        html_table_content += log_data.table_end + '<p class="footer">' + messages("nettacker_version_details").format(
+            index+=1
+        html_table_content += log_data.table_end + '<div id="json_length">' + str(index-1) + '</div>' + '<p class="footer">' + messages("nettacker_version_details").format(
             version_info()[0],
             version_info()[1],
             now()
-        ) + '</p>'
+        ) + '</p>' + log_data.json_parse_js
         with open(report_path_filename, 'w', encoding='utf-8') as save:
             save.write(html_table_content + '\n')
             save.close()
