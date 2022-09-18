@@ -6,7 +6,7 @@ import csv
 import texttable
 import html
 from core.alert import messages
-from core.alert import info
+from core.alert import info, write
 from core.compatible import version_info
 from core.time import now
 from core.die import die_failure
@@ -63,10 +63,8 @@ def build_texttable(events):
         'date',
         'target',
         'module_name',
-        'scan_unique_id',
         'port',
-        'event',
-        'json_event'
+        'logs'
 
     ]
     _table.add_rows(
@@ -75,6 +73,7 @@ def build_texttable(events):
         ]
     )
     for event in events:
+        log = merge_logs_to_list(json.loads(event["json_event"]), [])
         _table.add_rows(
             [
                 table_headers,
@@ -82,10 +81,8 @@ def build_texttable(events):
                     event['date'],
                     event['target'],
                     event['module_name'],
-                    event['scan_unique_id'],
                     event['port'],
-                    event['event'],
-                    event['json_event']
+                    "\n".join(log) if log else "Detected"
 
                 ]
             ]
@@ -142,7 +139,7 @@ def create_report(options, scan_unique_id):
                 event["target"],
                 event["module_name"],
                 event["port"],
-                "<br>".join(log) if log else "detected", #event["event"], #log
+                "<br>".join(log) if log else "Detected", #event["event"], #log
                 index, 
                 html.escape(event["json_event"])
             )
@@ -181,7 +178,7 @@ def create_report(options, scan_unique_id):
                 build_texttable(all_scan_logs)
             )
             save.close()
-
+    write(build_texttable(all_scan_logs))
     submit_report_to_db(
         {
             "date": now(model=None),
