@@ -4,6 +4,7 @@
 import json
 import csv
 import texttable
+import html
 from core.alert import messages
 from core.alert import info
 from core.compatible import version_info
@@ -143,7 +144,7 @@ def create_report(options, scan_unique_id):
                 event["port"],
                 "<br>".join(log) if log else "detected", #event["event"], #log
                 index, 
-                event["json_event"]
+                html.escape(event["json_event"])
             )
             index+=1
         html_table_content += log_data.table_end + '<div id="json_length">' + str(index-1) + '</div>' + '<p class="footer">' + messages("nettacker_version_details").format(
