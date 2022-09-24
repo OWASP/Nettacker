@@ -15,11 +15,7 @@ payloads:
   - library: http
     steps:
       - method: get
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         url: "https://jldc.me/anubis/subdomains/{target}"
@@ -33,11 +29,7 @@ payloads:
               regex: "\"([a-zA-Z0-9\\-\\_.\\s]+)\""
               reverse: false
       - method: post
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         url: "https://api.certspotter.com/v1/issuances?domain={target}&expand=dns_names&expand=issuer"
@@ -51,11 +43,7 @@ payloads:
               regex: "\"([a-zA-Z0-9\\-\\_.\\s]+.{target})\""
               reverse: false
       - method: get
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         url: "https://www.threatcrowd.org/searchApi/v2/domain/report/?domain={target}"
@@ -70,11 +58,7 @@ payloads:
               reverse: false
 
       - method: get
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         url: "https://urlscan.io/api/v1/search/?q=domain:{target}"
@@ -89,11 +73,7 @@ payloads:
               reverse: false
 
       - method: get
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         url: "https://dns.bufferover.run/dns?q={target}"
@@ -108,11 +88,7 @@ payloads:
               reverse: false
 
       - method: get
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         url: "https://otx.alienvault.com/api/v1/indicator/domain/{target}/passive_dns"
@@ -127,11 +103,7 @@ payloads:
               reverse: false
 
       - method: get
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         url: "https://api.threatminer.org/v2/domain.php?q={target}&api=True&rt=5"
@@ -146,11 +118,7 @@ payloads:
               reverse: false
 
       - method: get
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         url: "https://crt.sh/?q=%.{target}"
@@ -164,11 +132,7 @@ payloads:
               regex: "[a-zA-Z0-9\\-\\_\\s]+[\\.]+[a-zA-Z0-9\\-\\_\\s]+\\.{target}"
               reverse: false
       - method: post
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         url: "https://hackertarget.com/find-dns-host-records/"
@@ -188,11 +152,7 @@ payloads:
               reverse: false
 
       - method: get
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         url: "https://dnsdumpster.com/"
@@ -212,11 +172,7 @@ payloads:
                 reverse: false
 
       - method: post
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
           Referer: "https://dnsdumpster.com/"
@@ -238,11 +194,7 @@ payloads:
               reverse: false
 
       - method: get
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         url: "https://toolbox.googleapps.com/apps/dig/#ANY/"
@@ -262,11 +214,7 @@ payloads:
                 reverse: false
 
       - method: post
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
           Referer: "https://toolbox.googleapps.com/apps/dig/"

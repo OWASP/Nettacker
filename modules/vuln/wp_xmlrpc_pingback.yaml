@@ -15,11 +15,7 @@ payloads:
   - library: http
     steps:
       - method: post
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
           Content-Type: "text/xml"

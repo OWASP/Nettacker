@@ -26,7 +26,7 @@ OWASP Nettacker project is created to automate information gathering, vulnerabil
 * GitHub: https://github.com/OWASP/Nettacker
 * Slack: #project-nettacker on https://owasp.slack.com
 * Mailing List: https://groups.google.com/forum/#!forum/owasp-nettacker
-* Docker Image: https://hub.docker.com/r/alirazmjoo/owaspnettacker/
+* Docker Image: https://hub.docker.com/r/owasp/nettacker
 * How to use the Dockerfile: https://github.com/OWASP/Nettacker/wiki/Installation#docker
 * OpenHub: https://www.openhub.net/p/OWASP-Nettacker
 * **Donate**: https://owasp.org/donate/?reponame=www-project-nettacker&title=OWASP+Nettacker

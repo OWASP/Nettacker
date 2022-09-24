@@ -2,21 +2,46 @@
 # -*- coding: utf-8 -*-
 
 import re
-import requests
+import aiohttp
+import asyncio
 import copy
 import random
+import time
 from core.utility import reverse_and_regex_condition
 from core.utility import process_conditions
 from core.utility import get_dependent_results_from_database
 from core.utility import replace_dependent_values
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from core.utility import replace_dependent_response
 
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+async def perform_request_action(action, request_options):
+    start_time = time.time()
+    async with action(**request_options) as response:
+        return {
+            "reason": response.reason,
+            "status_code": str(response.status),
+            "content": await response.content.read(),
+            "headers": dict(response.headers),
+            "responsetime": time.time() - start_time
+        }
+
+
+async def send_request(request_options, method):
+    async with aiohttp.ClientSession() as session:
+        action = getattr(session, method, None)
+        response = await asyncio.gather(
+            *[
+                asyncio.ensure_future(
+                    perform_request_action(action, request_options)
+                )
+            ]
+        )
+        return response[0]
 
 
 def response_conditions_matched(sub_step, response):
     if not response:
-        return []
+        return {}
     condition_type = sub_step['response']['condition_type']
     conditions = sub_step['response']['conditions']
     condition_results = {}
@@ -32,11 +57,14 @@ def response_conditions_matched(sub_step, response):
             condition_results['headers'] = {}
             for header in conditions['headers']:
                 reverse = conditions['headers'][header]['reverse']
-                regex = re.findall(
-                    re.compile(conditions['headers'][header]['regex']),
-                    response['headers'][header.lower()] if header.lower() in response['headers'] else ""
-                )
-                condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
+                try:
+                    regex = re.findall(
+                        re.compile(conditions['headers'][header]['regex']),
+                        response['headers'][header.lower()] if header.lower() in response['headers'] else False
+                    )
+                    condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
+                except TypeError:
+                    condition_results['headers'][header] = []
         if condition == 'responsetime':
             if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
                 "==",
@@ -67,26 +95,32 @@ def response_conditions_matched(sub_step, response):
         ) or (
                 'headers' in condition_results and
                 (
-                        (
-                                list(condition_results.values()).count([]) - 1 !=
-                                len(list(condition_results.values()))
-                        ) and
-                        (
-                                list(condition_results['headers'].values()).count([]) !=
-                                len(list(condition_results['headers'].values()))
-                        )
+
+                        len(list(condition_results.values())) +
+                        len(list(condition_results['headers'].values())) -
+                        list(condition_results.values()).count([]) -
+                        list(condition_results['headers'].values()).count([]) -
+                        1 != 0
                 )
         ):
+            if sub_step['response'].get('log', False):
+                condition_results['log'] = sub_step['response']['log']
+                if 'response_dependent' in condition_results['log']:
+                    condition_results['log'] = replace_dependent_response(condition_results['log'], condition_results)
             return condition_results
         else:
-            return []
+            return {}
     if condition_type.lower() == "and":
         if [] in condition_results.values() or \
                 ('headers' in condition_results and [] in condition_results['headers'].values()):
-            return []
+            return {}
         else:
+            if sub_step['response'].get('log', False):
+                condition_results['log'] = sub_step['response']['log']
+                if 'response_dependent' in condition_results['log']:
+                    condition_results['log'] = replace_dependent_response(condition_results['log'], condition_results)
             return condition_results
-    return []
+    return {}
 
 
 class Engine:
@@ -104,11 +138,11 @@ class Engine:
     ):
         backup_method = copy.deepcopy(sub_step['method'])
         backup_response = copy.deepcopy(sub_step['response'])
-        action = getattr(requests, backup_method, None)
+        backup_iterative_response_match = copy.deepcopy(
+            sub_step['response']['conditions'].get('iterative_response_match', None))
         if options['user_agent'] == 'random_user_agent':
             sub_step['headers']['User-Agent'] = random.choice(options['user_agents'])
         del sub_step['method']
-        del sub_step['response']
         if 'dependent_on_temp_event' in backup_response:
             temp_event = get_dependent_results_from_database(
                 target,
@@ -120,22 +154,34 @@ class Engine:
                 sub_step,
                 temp_event
             )
+        backup_response = copy.deepcopy(sub_step['response'])
+        del sub_step['response']
         for _ in range(options['retries']):
             try:
-                response = action(**sub_step)
-                response = {
-                    "reason": response.reason,
-                    "status_code": str(response.status_code),
-                    "content": response.content.decode(errors="ignore"),
-                    "headers": dict(response.headers),
-                    "responsetime": response.elapsed.total_seconds()
-                }
+                response = asyncio.run(send_request(sub_step, backup_method))
+                response['content'] = response['content'].decode(errors="ignore")
                 break
             except Exception:
                 response = []
         sub_step['method'] = backup_method
         sub_step['response'] = backup_response
+
+        if backup_iterative_response_match != None:
+            backup_iterative_response_match = copy.deepcopy(
+                sub_step['response']['conditions'].get('iterative_response_match'))
+            del sub_step['response']['conditions']['iterative_response_match']
+
         sub_step['response']['conditions_results'] = response_conditions_matched(sub_step, response)
+
+        if backup_iterative_response_match != None and (
+                sub_step['response']['conditions_results'] or sub_step['response']['condition_type'] == 'or'):
+            sub_step['response']['conditions']['iterative_response_match'] = backup_iterative_response_match
+            for key in sub_step['response']['conditions']['iterative_response_match']:
+                result = response_conditions_matched(
+                    sub_step['response']['conditions']['iterative_response_match'][key], response)
+                if result:
+                    sub_step['response']['conditions_results'][key] = result
+
         return process_conditions(
             sub_step,
             module_name,
