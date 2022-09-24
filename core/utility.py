@@ -12,6 +12,7 @@ import os
 import multiprocessing
 import yaml
 import hashlib
+import re
 from core.load_modules import load_all_languages
 from core.time import now
 from core.color import color
@@ -61,6 +62,8 @@ def process_conditions(
                 continue
         del event['response']['conditions']
         del event['response']['condition_type']
+        if 'log' in event['response']:
+            del event['response']['log']
         event_request_keys = copy.deepcopy(event)
         del event_request_keys['response']
         submit_logs_to_db(
@@ -82,7 +85,9 @@ def process_conditions(
                 "json_event": event
             }
         )
-        success_event_info(
+        log_list = merge_logs_to_list(event['response']['conditions_results'])
+        if log_list:
+            success_event_info(
             messages("send_success_event_from_module").format(
                 process_number,
                 module_name,
@@ -91,25 +96,47 @@ def process_conditions(
                 total_module_thread_number,
                 request_number_counter,
                 total_number_of_requests,
-                " ".join(
-                    [
-                        color('yellow') + key + color('reset') if ':' in key
-                        else color('green') + key + color('reset')
-                        for key in yaml.dump(event_request_keys).split()
-                    ]
-                ),
+                " ",
                 filter_large_content(
-                    "conditions: " + " ".join(
+                    "\n".join(
                         [
-                            color('purple') + key + color('reset') if ':' in key
-                            else color('green') + key + color('reset')
-                            for key in yaml.dump(event['response']['conditions_results']).split()
+                            color('purple') + key + color('reset')
+                            for key in log_list
                         ]
                     ),
-                    filter_rate=150
+                    filter_rate=100000
                 )
             )
         )
+        else:
+            success_event_info(
+                messages("send_success_event_from_module").format(
+                    process_number,
+                    module_name,
+                    target,
+                    module_thread_number,
+                    total_module_thread_number,
+                    request_number_counter,
+                    total_number_of_requests,
+                    " ".join(
+                        [
+                            color('yellow') + key + color('reset') if ':' in key
+                            else color('green') + key + color('reset')
+                            for key in yaml.dump(event_request_keys).split()
+                        ]
+                    ),
+                    filter_large_content(
+                        "conditions: " + " ".join(
+                            [
+                                color('purple') + key + color('reset') if ':' in key
+                                else color('green') + key + color('reset')
+                                for key in yaml.dump(event['response']['conditions_results']).split()
+                            ]
+                        ),
+                        filter_rate=150
+                    )
+                )
+            )
         verbose_info(
             json.dumps(event)
         )
@@ -148,14 +175,17 @@ def filter_large_content(content, filter_rate=150):
         return content
 
 
-def get_dependent_results_from_database(target, module_name, scan_unique_id, event_name):
+def get_dependent_results_from_database(target, module_name, scan_unique_id, event_names):
     from database.db import find_temp_events
-    while True:
-        event = find_temp_events(target, module_name, scan_unique_id, event_name)
-        if event:
-            break
-        time.sleep(0.1)
-    return json.loads(event.event)['response']['conditions_results']
+    events = []
+    for event_name in event_names.split(','):
+        while True:
+            event = find_temp_events(target, module_name, scan_unique_id, event_name)
+            if event:
+                events.append(json.loads(event.event)['response']['conditions_results'])
+                break
+            time.sleep(0.1)
+    return events
 
 
 def find_and_replace_dependent_values(sub_step, dependent_on_temp_event):
@@ -169,7 +199,16 @@ def find_and_replace_dependent_values(sub_step, dependent_on_temp_event):
                 if type(sub_step[key]) == str:
                     if 'dependent_on_temp_event' in sub_step[key]:
                         globals().update(locals())
-                        exec('sub_step[key] = {sub_step}'.format(sub_step=sub_step[key]), globals(), {})
+                        generate_new_step = copy.deepcopy(sub_step[key])
+                        key_name = re.findall(
+                            re.compile("dependent_on_temp_event\\[\\S+\\]\\['\\S+\\]\\[\\S+\\]"),
+                            generate_new_step
+                        )[0]
+                        try:
+                            key_value = eval(key_name)
+                        except Exception:
+                            key_value = "error"
+                        sub_step[key] = sub_step[key].replace(key_name, key_value)
     if type(sub_step) == list:
         value_index = 0
         for value in copy.deepcopy(sub_step):
@@ -181,13 +220,48 @@ def find_and_replace_dependent_values(sub_step, dependent_on_temp_event):
                 if type(sub_step[value_index]) == str:
                     if 'dependent_on_temp_event' in sub_step[value_index]:
                         globals().update(locals())
-                        exec('sub_step[value_index] = {sub_step}'.format(sub_step=sub_step[value_index]), globals(), {})
+                        generate_new_step = copy.deepcopy(sub_step[key])
+                        key_name = re.findall(
+                            re.compile("dependent_on_temp_event\\['\\S+\\]\\[\\S+\\]"),
+                            generate_new_step
+                        )[0]
+                        try:
+                            key_value = eval(key_name)
+                        except Exception:
+                            key_value = "error"
+                        sub_step[value_index] = sub_step[value_index].replace(key_name, key_value)
             value_index += 1
     return sub_step
 
 
 def replace_dependent_values(sub_step, dependent_on_temp_event):
     return find_and_replace_dependent_values(sub_step, dependent_on_temp_event)
+
+
+def replace_dependent_response(log,result):
+    response_dependent = result
+    if str(log):
+        key_name = re.findall(
+            re.compile("response_dependent\\['\\S+\\]"),
+            log
+        )
+        for i in key_name:
+            try:
+                key_value = eval(i)
+            except Exception:
+                key_value = "response dependent error"
+            log = log.replace(i," ".join(key_value))
+        return log
+
+
+def merge_logs_to_list(result,log_list=[]):
+    if type(result) == dict:
+        for i in result:
+            if 'log'==i:
+                log_list.append(result['log'])
+            else:
+                merge_logs_to_list(result[i],log_list)
+    return list(set(log_list))
 
 
 def reverse_and_regex_condition(regex, reverse):
@@ -217,9 +291,14 @@ def select_maximum_cpu_core(mode):
 def wait_for_threads_to_finish(threads, maximum=None, terminable=False, sub_process=False):
     while threads:
         try:
-            for thread in threads[:]:
+            dead_threads = []
+            for thread in threads:
                 if not thread.is_alive():
+                    dead_threads.append(thread)
+            if dead_threads:
+                for thread in dead_threads:
                     threads.remove(thread)
+                dead_threads = []
             if maximum and len(threads) < maximum:
                 break
             time.sleep(0.01)

