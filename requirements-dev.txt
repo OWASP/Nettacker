@@ -1,2 +1,2 @@
-flake8==4.0.1
+flake8==5.0.4
 ipython==8.5.0
