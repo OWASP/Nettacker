@@ -175,7 +175,6 @@ def access_log(response):
     return response
 
 
-@app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def get_statics(path):
     """
