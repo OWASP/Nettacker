@@ -169,7 +169,7 @@ class NettackerModules:
         # counting total number of requests
         total_number_of_requests = 0
         for payload in self.module_content['payloads']:
-            if 'core_'+payload['library'] not in self.libraries:
+            if 'core_' + payload['library'] not in self.libraries:
                 warn(messages("library_not_supported").format(payload['library']))
                 return None
             for step in payload['steps']:
