@@ -15,11 +15,7 @@ payloads:
   - library: http
     steps:
       - method: get  ## meant to store the response
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         allow_redirects: true
@@ -46,11 +42,7 @@ payloads:
               reverse: false
 
       - method: get
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           User-Agent: "{user_agent}"
         allow_redirects: true
