@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env core_mysql.py
 # -*- coding: utf-8 -*-
 
 import copy
