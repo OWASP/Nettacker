@@ -85,8 +85,8 @@ select_language: select a language {0}
 select_profile: select profile {0}
 select_user_agent: "Select a user agent to send with HTTP requests or enter \"random_user_agent\"
   to randomize the User-Agent in the requests."
-send_success_event_from_module: "process-{0}|{1}|{2}|module-thread {3}/{4}|request-thread {5}/{6}|{7}|success_condition
-(s): {8}"
+send_success_event_from_module: "process-{0}|{1}|{2}|module-thread {3}/{4}|request-thread {5}/{6}|{7}|\nsuccess_condition
+(s): \n{8}"
 send_unsuccess_event_from_module: "process-{0}|{1}|{2}|module-thread {3}/{4}|request-thread
   {5}/{6}| all conditions failed"
 sending_module_request: "process-{0}|{1}|{2}|module-thread {3}/{4}| sending request
