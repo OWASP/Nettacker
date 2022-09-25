@@ -14,3 +14,4 @@ py3DNS==3.2.1 # library_name=DNS
 numpy==1.23.3
 terminable_thread==0.7.1
 PyYAML==6.0 # library_name=yaml
+flasgger==0.9.5

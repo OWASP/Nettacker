@@ -26,26 +26,6 @@ def structure(status="", msg=""):
     }
 
 
-def get_value(flask_request, key):
-    """
-    get a value from GET, POST or CCOKIES
-
-    Args:
-        flask_request: the flask request
-        key: the value name to find
-
-    Returns:
-        the value content if found otherwise None
-    """
-    return dict(
-        flask_request.args
-    ).get(key) or dict(
-        flask_request.form
-    ).get(key) or dict(
-        flask_request.cookies
-    ).get(key) or ""
-
-
 def mime_types():
     """
     contains all mime types for HTTP request
@@ -158,9 +138,8 @@ def api_key_is_valid(app, flask_request):
         200 HTTP code if it's valid otherwise 401 error
 
     """
-    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != get_value(flask_request, "key"):
-        abort(401, messages("API_invalid"))
-    return
+    return app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] == flask_request.cookies.get("api_key") or \
+           abort(401, messages("API_invalid"))
 
 
 def languages_to_country():
