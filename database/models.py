@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import (Column,
-                        Integer,
-                        Text,
-                        DateTime)
+from sqlalchemy import Column, Integer, Text, DateTime
 
 Base = declarative_base()
 
@@ -14,7 +11,8 @@ class Report(Base):
     """
     This class defines the table schema of the reports table. Any changes to the reports table need to be done here.
     """
-    __tablename__ = 'reports'
+
+    __tablename__ = "reports"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     date = Column(DateTime)
@@ -27,10 +25,7 @@ class Report(Base):
         returns a printable representation of the object of the class Report
         """
         return "<Report(id={0}, scan_unique_id={1}, date={2}, report_path_filename={3})>".format(
-            self.id,
-            self.scan_unique_id,
-            self.date,
-            self.report_path_filename
+            self.id, self.scan_unique_id, self.date, self.report_path_filename
         )
 
 
@@ -38,7 +33,8 @@ class TempEvents(Base):
     """
     This class defines the table schema of the reports table. Any changes to the reports table need to be done here.
     """
-    __tablename__ = 'temp_events'
+
+    __tablename__ = "temp_events"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     date = Column(DateTime)
@@ -54,10 +50,10 @@ class TempEvents(Base):
         """
         returns a printable representation of the object of the class Report
         """
-        return '''
+        return """
                     <scan_events(id={0}, target={1}, date={2}, module_name={3}, scan_unqiue_id={4}, 
                     port={5}, event={6}, data={7})>
-                '''.format(
+                """.format(
             self.id,
             self.target,
             self.date,
@@ -65,7 +61,7 @@ class TempEvents(Base):
             self.scan_unique_id,
             self.port,
             self.event,
-            self.data
+            self.data,
         )
 
 
@@ -73,7 +69,8 @@ class HostsLog(Base):
     """
     This class defines the table schema of the hosts_log table. Any changes to the reports hosts_log need to be done here.
     """
-    __tablename__ = 'scan_events'
+
+    __tablename__ = "scan_events"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     date = Column(DateTime)
@@ -88,10 +85,10 @@ class HostsLog(Base):
         """
         returns a printable representation of the object of the class HostsLog
         """
-        return '''
+        return """
             <scan_events(id={0}, target={1}, date={2}, module_name={3}, scan_unqiue_id={4}, 
             port={5}, event={6}, json_event={7})>
-        '''.format(
+        """.format(
             self.id,
             self.target,
             self.date,
@@ -99,5 +96,5 @@ class HostsLog(Base):
             self.scan_unique_id,
             self.port,
             self.event,
-            self.json_event
+            self.json_event,
         )

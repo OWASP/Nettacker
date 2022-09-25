@@ -20,11 +20,11 @@ def run_from_api():
 
 
 def verbose_mode_is_enabled():
-    return '--verbose' in sys.argv or '-v' in sys.argv
+    return "--verbose" in sys.argv or "-v" in sys.argv
 
 
 def event_verbose_mode_is_enabled():
-    return '--verbose-event' in sys.argv
+    return "--verbose-event" in sys.argv
 
 
 def messages(msg_id):
@@ -79,7 +79,7 @@ def verbose_event_info(content):
         None
     """
     if (not run_from_api()) and (
-            verbose_mode_is_enabled() or event_verbose_mode_is_enabled()
+        verbose_mode_is_enabled() or event_verbose_mode_is_enabled()
     ):  # prevent to stdout if run from API
         sys.stdout.buffer.write(
             bytes(
@@ -200,12 +200,12 @@ def error(content):
         the message in error structure - None
     """
     data = (
-            color.color("red")
-            + "[{0}][X] ".format(now())
-            + color.color("yellow")
-            + content
-            + color.color("reset")
-            + "\n"
+        color.color("red")
+        + "[{0}][X] ".format(now())
+        + color.color("yellow")
+        + content
+        + color.color("reset")
+        + "\n"
     )
     sys.stdout.buffer.write(data.encode("utf8"))
     sys.stdout.flush()
