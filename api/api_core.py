@@ -136,10 +136,13 @@ def get_file(filename):
     Returns:
         content of the file or abort(404)
     """
+    if not os.path.normpath(filename).startswith(nettacker_paths()["web_static_files_path"]):
+        abort(404)
     try:
-        return open(filename, 'rb').read()
+        return open(filename, "rb").read()
+    except ValueError:
+        abort(404)
     except IOError:
-        print(filename)
         abort(404)
 
 
