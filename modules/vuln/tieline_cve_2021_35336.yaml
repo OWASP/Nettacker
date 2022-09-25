@@ -19,11 +19,7 @@ payloads:
   - library: http
     steps:
       - method: get
-        verify: false
         timeout: 3
-        cert: ""
-        stream: false
-        proxies: ""
         headers:
           Authorization: 'Digest username="admin", realm="Bridge-IT", nonce="d24d09512ebc3e43c4f6faf34fdb8c76", uri="/api/get_device_details", response="d052e9299debc7bd9cb8adef0a83fed4", qop=auth, nc=00000001, cnonce="ae373d748855243d"'
           Referer:

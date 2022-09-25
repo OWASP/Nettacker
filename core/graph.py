@@ -4,13 +4,15 @@
 import json
 import csv
 import texttable
+import html
 from core.alert import messages
-from core.alert import info
+from core.alert import info, write
 from core.compatible import version_info
 from core.time import now
 from core.die import die_failure
 from database.db import get_logs_by_scan_unique_id
 from database.db import submit_report_to_db
+from core.utility import merge_logs_to_list
 
 
 def build_graph(graph_name, events):
@@ -61,10 +63,8 @@ def build_texttable(events):
         'date',
         'target',
         'module_name',
-        'scan_unique_id',
         'port',
-        'event',
-        'json_event'
+        'logs'
 
     ]
     _table.add_rows(
@@ -73,6 +73,7 @@ def build_texttable(events):
         ]
     )
     for event in events:
+        log = merge_logs_to_list(json.loads(event["json_event"]), [])
         _table.add_rows(
             [
                 table_headers,
@@ -80,10 +81,8 @@ def build_texttable(events):
                     event['date'],
                     event['target'],
                     event['module_name'],
-                    event['scan_unique_id'],
                     event['port'],
-                    event['event'],
-                    event['json_event']
+                    "\n".join(log) if log else "Detected"
 
                 ]
             ]
@@ -128,26 +127,28 @@ def create_report(options, scan_unique_id):
             'date',
             'target',
             'module_name',
-            'scan_unique_id',
             'port',
-            'event',
+            'logs',
             'json_event'
         )
+        index=1
         for event in all_scan_logs:
+            log = merge_logs_to_list(json.loads(event["json_event"]), [])
             html_table_content += log_data.table_items.format(
                 event["date"],
                 event["target"],
                 event["module_name"],
-                event["scan_unique_id"],
                 event["port"],
-                event["event"],
-                event["json_event"]
+                "<br>".join(log) if log else "Detected", #event["event"], #log
+                index, 
+                html.escape(event["json_event"])
             )
-        html_table_content += log_data.table_end + '<p class="footer">' + messages("nettacker_version_details").format(
+            index+=1
+        html_table_content += log_data.table_end + '<div id="json_length">' + str(index-1) + '</div>' + '<p class="footer">' + messages("nettacker_version_details").format(
             version_info()[0],
             version_info()[1],
             now()
-        ) + '</p>'
+        ) + '</p>' + log_data.json_parse_js
         with open(report_path_filename, 'w', encoding='utf-8') as save:
             save.write(html_table_content + '\n')
             save.close()
@@ -177,7 +178,7 @@ def create_report(options, scan_unique_id):
                 build_texttable(all_scan_logs)
             )
             save.close()
-
+    write(build_texttable(all_scan_logs))
     submit_report_to_db(
         {
             "date": now(model=None),

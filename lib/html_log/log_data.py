@@ -11,6 +11,13 @@ css_1 = open(
     )
 ).read()
 
+json_parse_js = open(
+    os.path.join(
+        nettacker_paths()['web_static_files_path'],
+        'report/json_parse.js'
+    )
+).read()
+
 table_title = open(
     os.path.join(
         nettacker_paths()['web_static_files_path'],
