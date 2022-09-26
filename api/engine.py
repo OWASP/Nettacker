@@ -301,6 +301,7 @@ def cookie_delete():
 
 
 # todo: develop below api endpoints
+# create api unittest with docker-compose --start-api
 # start new scan
 # list of scans
 # get scan
