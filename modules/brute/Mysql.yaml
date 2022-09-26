@@ -1,5 +1,5 @@
 info:
-  name: Mysql_brute
+  name: mysql_brute
   author: Mrinank Bhowmick
   severity: 3
   description: Mysql Bruteforcer
@@ -7,12 +7,12 @@ info:
   profiles:
     - brute
     - brute_force
-    - Mysql
+    - mysql
 
 payloads:
-  - library: Mysql
+  - library: mysql
     steps:
-      - method: Mysql_brute_force
+      - method: mysql_brute_force
         timeout: 3
         host: "{target}"
         ports:
