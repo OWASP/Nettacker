@@ -300,6 +300,28 @@ def cookie_delete():
     return res
 
 
+# todo: develop below api endpoints
+# start new scan
+# list of scans
+# get scan
+# stop scan
+# delete scan (stop if it's running)
+# restart scan
+# download scan report json
+# download scan report csv
+# download scan report html
+# get assets
+# delete assets
+# generate assets report json
+# generate assets report csv
+# generate assets report html
+# delete assets
+# get events
+# generate events report json
+# generate events report csv
+# generate events report html
+# delete events
+
 def start_api_subprocess(options):
     """
     a function to run flask in a subprocess to make kill signal in a better
