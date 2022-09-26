@@ -111,7 +111,7 @@ class NettackerModules:
                 port = service_event['ports']
                 protocols = service_event['response']['conditions_results'].keys()
                 for protocol in protocols:
-                    if protocol in self.libraries and protocol:
+                    if 'core_' + protocol in self.libraries and protocol:
                         if protocol in services:
                             services[protocol].append(port)
                         else:
