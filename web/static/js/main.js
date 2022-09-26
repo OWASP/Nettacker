@@ -36,7 +36,7 @@ $(document).ready(function () {
 
   // login
   $("#send_session").click(function () {
-    var key = "/session/set?key=" + $("#session_value").val();
+    var key = "/cookie/set?api_key=" + $("#session_value").val();
     $.ajax({
       type: "GET",
       url: key,
@@ -61,8 +61,8 @@ $(document).ready(function () {
   // logout
   $("#logout_btn").click(function () {
     $.ajax({
-      type: "GET",
-      url: "/session/kill",
+      type: "DELETE",
+      url: "/cookie/delete",
       dataType: "text",
     })
       .done(function (res) {

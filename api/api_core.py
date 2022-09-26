@@ -138,8 +138,12 @@ def api_key_is_valid(app, flask_request):
         200 HTTP code if it's valid otherwise 401 error
 
     """
-    return app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] == flask_request.cookies.get("api_key") or \
-           abort(401, messages("API_invalid"))
+    return app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] if \
+        app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] == (
+                flask_request.form.get("api_key") or
+                flask_request.args.get("api_key") or
+                flask_request.cookies.get("api_key")
+        ) else abort(401, messages("API_invalid"))
 
 
 def languages_to_country():

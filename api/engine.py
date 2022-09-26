@@ -125,6 +125,16 @@ def limit_remote_addr():
     if app.config["OWASP_NETTACKER_CONFIG"]["api_client_whitelisted_ips"]:
         if flask_request.remote_addr not in app.config["OWASP_NETTACKER_CONFIG"]["api_client_whitelisted_ips"]:
             abort(403, messages("unauthorized_IP"))
+    if not (
+            flask_request.path.startswith("/cookie/") or
+            flask_request.path == "/" or
+            flask_request.path.startswith("/css/") or
+            flask_request.path.startswith("/js/") or
+            flask_request.path.startswith("/fonts/") or
+            flask_request.path.startswith("/img/") or
+            flask_request.path == "/favicon.ico"
+    ):
+        api_key_is_valid(app, flask_request)
     return
 
 
@@ -206,10 +216,10 @@ def index():
     )
 
 
-@app.route("/cookie/set", methods=["POST"])
+@app.route("/cookie/set", methods=["POST", "GET"])
 def set_cookie():
     """
-    This is using docstrings for specifications.
+    Set cookie on browser or any library uses session.
     ---
     parameters:
         -   name: api_key
@@ -226,9 +236,6 @@ def set_cookie():
         401:
             description: The API key is invalid
     """
-    api_key = flask_request.values.get("api_key")
-    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != api_key:
-        abort(401, messages("API_invalid"))
     res = make_response(
         jsonify(
             structure(
@@ -237,7 +244,59 @@ def set_cookie():
             )
         )
     )
-    res.set_cookie("api_key", value=api_key)
+    res.set_cookie("api_key", value=api_key_is_valid(app, flask_request))
+    return res
+
+
+@app.route("/cookie/check", methods=["GET", "POST"])
+def cookie_check():
+    """
+    Check cookie on browser or any library uses session.
+    ---
+    parameters:
+        -   name: api_key
+            in: formData
+            type: string
+            required: true
+            default: ""
+    definitions:
+        api_key:
+            type: string
+    responses:
+        200:
+            description: The API key is valid
+        401:
+            description: The API key is invalid
+    """
+    api_key_is_valid(app, flask_request)
+    return jsonify(
+        structure(
+            status="ok",
+            msg=messages("browser_session_valid")
+        )
+    ), 200
+
+
+@app.route("/cookie/delete", methods=["DELETE"])
+def cookie_delete():
+    """
+    Delete cookie on browser or any library uses session.
+    ---
+    responses:
+        200:
+            description: The API key is valid
+        401:
+            description: The API key is invalid
+    """
+    res = make_response(
+        jsonify(
+            structure(
+                status="ok",
+                msg=messages("browser_session_killed")
+            )
+        )
+    )
+    res.set_cookie("api_key", "", expires=0)
     return res
 
 

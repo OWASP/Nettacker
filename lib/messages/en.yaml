@@ -5,7 +5,7 @@ API_cert: API CERTIFICATE
 API_cert_key: API CERTIFICATE Key
 API_debug: API debug mode
 API_host: API host address
-API_invalid: invalid API key
+API_invalid: invalid API key, request GET or POST /cookie/set with api_key in args, post or cookie to login. (e.g. GET /cookie/set?api_key=x)
 API_key: " * API is accessible from https://nettacker-api.z3r0d4y.com:{0}/ via API Key: {1}"
 API_options: API options
 API_port: API port number
@@ -15,7 +15,7 @@ no_live_service_found: no any live service found to scan.
 icmp_need_root_access: to use icmp_scan module or --ping-before-scan you need to run the script as root!
 available_graph: "build a graph of all activities and information, you must use HTML output. available graphs: {0}"
 browser_session_killed: your browser session killed
-browser_session_valid: your browser session is valid
+browser_session_valid: your browser session is valid, browse home page GET / to see the home page.
 build_graph: building graph ...
 connection_retries: Retries when the connection timeout (default 3)
 current_version: you are running OWASP Nettacker version {0}{1}{2}{6} with code name {3}{4}{5}
