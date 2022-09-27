@@ -3,16 +3,9 @@
 
 import copy
 import mysql.connector as sqltor
-
-# from core.utility import reverse_and_regex_condition
 from core.utility import process_conditions
 from core.utility import get_dependent_results_from_database
 from core.utility import replace_dependent_values
-
-
-# def response_conditions_matched(sub_step, response):
-#     return response
-
 
 class NettackMYSQLLib:
     def mysql_brute_force(host, ports, usernames, passwords, timeout):
@@ -63,7 +56,6 @@ class Engine:
         sub_step['method'] = backup_method
         sub_step['response'] = backup_response
         sub_step['response']['conditions_results'] = response
-        # sub_step['response']['conditions_results'] = response_conditions_matched(sub_step, response)
         return process_conditions(
             sub_step,
             module_name,
