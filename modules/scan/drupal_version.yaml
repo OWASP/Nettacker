@@ -19,6 +19,7 @@ payloads:
         headers:
           User-Agent: "{user_agent}"
         allow_redirects: false
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/CHANGELOG.txt"

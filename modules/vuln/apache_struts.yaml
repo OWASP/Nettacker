@@ -31,6 +31,7 @@ payloads:
                   - randomstring_xyz_3
           Accept: "*/*"
         allow_redirects: false
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/"

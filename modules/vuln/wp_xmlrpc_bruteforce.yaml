@@ -21,6 +21,7 @@ payloads:
           User-Agent: "{user_agent}"
           Content-Type: "text/xml"
         allow_redirects: false
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/xmlrpc.php"
