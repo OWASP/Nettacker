@@ -18,7 +18,7 @@ jobs:
         run: docker-compose up -d && sleep 5
 
       - name: Run the tests
-        run: docker exec nettacker-nettacker-1 python3 -m pytest -rpP --reruns 5 --reruns-delay 3
+        run: docker exec nettacker_nettacker_1 python3 -m pytest -rpP --reruns 5 --reruns-delay 3
 
       - name: Lint
         run: "docker run -e github_ci=true -v $(pwd):/usr/src/owaspnettacker --rm nettacker flake8 --extend-exclude
