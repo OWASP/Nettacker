@@ -1,2 +1,4 @@
 flake8==5.0.4
 ipython==8.5.0
+pytest==6.2.4
+pytest-rerunfailures==10.1
