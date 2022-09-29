@@ -25,6 +25,7 @@ payloads:
           Content-Type: application/x-www-form-urlencoded
           User-Agent: "{user_agent}"
         allow_redirects: false
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"

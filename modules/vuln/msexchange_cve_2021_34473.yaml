@@ -24,6 +24,7 @@ payloads:
         allow_redirects: false
         headers:
           User-Agent: "{user_agent}"
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"

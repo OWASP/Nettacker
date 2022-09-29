@@ -24,6 +24,7 @@ payloads:
           User-Agent: "{user_agent}"
           X-Trigger-XSS: "<script>alert(1)</script>"
         allow_redirects: false
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/http_header.php"

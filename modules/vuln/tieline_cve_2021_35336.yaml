@@ -36,6 +36,7 @@ payloads:
                   - 80
                   - 443
         allow_redirects: false
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/api/get_device_details"
