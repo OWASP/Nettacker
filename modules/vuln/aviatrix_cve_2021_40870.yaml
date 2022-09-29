@@ -26,6 +26,7 @@ payloads:
           Host: "{target}"
           Content-Type: application/x-www-form-urlencoded
         allow_redirects: false
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/v1/backend1"
@@ -55,6 +56,7 @@ payloads:
           Host: "{target}"
           Content-Type: application/x-www-form-urlencoded
         allow_redirects: false
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/v1/random_string1.php"

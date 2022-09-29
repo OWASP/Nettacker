@@ -23,6 +23,7 @@ payloads:
         headers:
           User-Agent: "{user_agent}"
         allow_redirects: false
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/te%3Cimg%20src=x%20onerror=alert(1)%3Est"

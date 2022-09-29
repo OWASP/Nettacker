@@ -23,6 +23,7 @@ payloads:
         timeout: 3
         headers:
           User-Agent: "{user_agent}"
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/ssoAdapter/logoutAction.do?servProvCode=SAFVC&successURL=https://example.com/"
