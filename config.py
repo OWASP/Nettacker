@@ -45,7 +45,7 @@ def nettacker_api_config():
         "api_hostname": "0.0.0.0" if os.environ.get("docker_env") == "true" else "nettacker-api.z3r0d4y.com",
         "api_port": 5000,
         "api_debug_mode": False,
-        "api_access_key": generate_random_token(32),
+        "api_access_key": generate_random_token(32) if os.environ.get("github_ci") != "true" else "test",
         "api_client_whitelisted_ips": [],  # disabled - to enable please put an array with list of ips/cidr/ranges
         # [
         #     "127.0.0.1",

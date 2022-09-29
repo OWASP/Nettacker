@@ -7,6 +7,8 @@ on: [ push, pull_request ]
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      github_ci: true
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -15,10 +17,12 @@ jobs:
         run: docker build . -t nettacker
 
       - name: Run API Server with docker-compose
-        run: docker-compose up -d && sleep 5
+        run: github_ci=true docker-compose up -d && sleep 5
 
       - name: Run the tests
         run: docker exec nettacker_nettacker_1 python3 -m pytest -rpP --reruns 5 --reruns-delay 3
+      - name: Stop API Server
+        run: docker-compose down
 
       - name: Lint
         run: "docker run -e github_ci=true -v $(pwd):/usr/src/owaspnettacker --rm nettacker flake8 --extend-exclude
