@@ -486,34 +486,17 @@ def new_scan():
     for key in nettacker_application_config:
         if key not in form_values:
             form_values[key] = nettacker_application_config[key]
-    # if not form_values["targets"] or not (form_values["selected_modules"] or form_values["profiles"]):
-    #     return jsonify(
-    #         structure(
-    #             status="error",
-    #             msg=messages("missing_arguments")
-    #         )
-    #     ), 400
-
-    sandbox_requirements = multiprocessing.Process(
-        target=check_all_required,
-        args=(
-            None,
-            SimpleNamespace(**copy.deepcopy(form_values))
-        )
-    )
-    sandbox_requirements.start()
-    sandbox_requirements.join()
-    if sandbox_requirements.exitcode != 0:
-        return jsonify(
-            structure(
-                status="error",
-                msg=messages("missing_arguments")
-            )
-        ), 400
     options = check_all_required(
         None,
         api_forms=SimpleNamespace(**copy.deepcopy(form_values))
     )
+    if type(options) == list:
+        return jsonify(
+            structure(
+                status="error",
+                msg=", ".join(options)
+            )
+        ), 400
     app.config["OWASP_NETTACKER_CONFIG"]["options"] = options
     new_process = multiprocessing.Process(target=start_scan_processes, args=(options,))
     new_process.start()

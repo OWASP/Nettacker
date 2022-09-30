@@ -400,6 +400,7 @@ def check_all_required(parser, api_forms=None):
     options = parser.parse_args() if not api_forms else api_forms
     modules_list = load_all_modules(full_details=True)
     profiles_list = load_all_profiles()
+    parser_failed = []
 
     # Check Help Menu
     if options.show_help_menu:
@@ -455,7 +456,7 @@ def check_all_required(parser, api_forms=None):
     # API mode
     if options.start_api_server:
         if '--start-api' in sys.argv and api_forms:
-            die_failure(messages("cannot_run_api_server"))
+            parser_failed.append(messages("cannot_run_api_server"))
         from api.engine import start_api_server
         if options.api_client_whitelisted_ips:
             if type(options.api_client_whitelisted_ips) == str:
@@ -478,24 +479,21 @@ def check_all_required(parser, api_forms=None):
 
     # Check the target(s)
     if not (options.targets or options.targets_list) or (options.targets and options.targets_list):
-        parser.print_help()
-        write("\n")
-        die_failure(messages("error_target"))
+        if not api_forms:
+            parser.print_help()
+            write("\n")
+        parser_failed.append(messages("error_target"))
     if options.targets:
         options.targets = list(set(options.targets.split(",")))
     if options.targets_list:
         try:
             options.targets = list(set(open(options.targets_list, "rb").read().decode().split()))
         except Exception:
-            die_failure(
-                messages("error_target_file").format(
-                    options.targets_list
-                )
-            )
+            parser_failed.append(messages("error_target_file"))
 
     # check for modules
     if not (options.selected_modules or options.profiles):
-        die_failure(messages("scan_method_select"))
+        parser_failed.append(messages("scan_method_select"))
     if options.selected_modules:
         if options.selected_modules == 'all':
             options.selected_modules = list(set(modules_list.keys()))
@@ -504,11 +502,7 @@ def check_all_required(parser, api_forms=None):
             options.selected_modules = list(set(options.selected_modules.split(',')))
         for module_name in options.selected_modules:
             if module_name not in modules_list:
-                die_failure(
-                    messages("scan_module_not_found").format(
-                        module_name
-                    )
-                )
+                parser_failed.append(messages("scan_module_not_found").format(module_name))
     if options.profiles:
         if not options.selected_modules:
             options.selected_modules = []
@@ -519,19 +513,13 @@ def check_all_required(parser, api_forms=None):
             options.profiles = list(set(options.profiles.split(',')))
             for profile in options.profiles:
                 if profile not in profiles_list:
-                    die_failure(
-                        messages("profile_404").format(
-                            profile
-                        )
-                    )
+                    parser_failed.append(messages("profile_404").format(profile))
                 for module_name in profiles_list[profile]:
                     if module_name not in options.selected_modules:
                         options.selected_modules.append(module_name)
     # threading & processing
     if options.set_hardware_usage not in ['low', 'normal', 'high', 'maximum']:
-        die_failure(
-            messages("wrong_hardware_usage")
-        )
+        parser_failed.append(messages("wrong_hardware_usage"))
     options.set_hardware_usage = select_maximum_cpu_core(options.set_hardware_usage)
 
     options.thread_per_host = int(options.thread_per_host)
@@ -545,7 +533,7 @@ def check_all_required(parser, api_forms=None):
     if options.excluded_modules:
         options.excluded_modules = options.excluded_modules.split(",")
         if 'all' in options.excluded_modules:
-            die_failure(messages("error_exclude_all"))
+            parser_failed.append(messages("error_exclude_all"))
         for excluded_module in options.excluded_modules:
             if excluded_module in options.selected_modules:
                 del options.selected_modules[excluded_module]
@@ -562,7 +550,7 @@ def check_all_required(parser, api_forms=None):
                     if int(port) not in tmp_ports:
                         tmp_ports.append(int(port))
             except Exception:
-                die_failure(messages("ports_int"))
+                parser_failed.append(messages("ports_int"))
         options.ports = tmp_ports
 
     if options.user_agent == 'random_user_agent':
@@ -577,9 +565,7 @@ def check_all_required(parser, api_forms=None):
         try:
             options.usernames = list(set(open(options.usernames_list).read().split("\n")))
         except Exception:
-            die_failure(
-                messages("error_username").format(options.usernames_list)
-            )
+            parser_failed.append(messages("error_username").format(options.usernames_list))
     # Check password list
     if options.passwords:
         options.passwords = list(set(options.passwords.split(",")))
@@ -587,23 +573,17 @@ def check_all_required(parser, api_forms=None):
         try:
             options.passwords = list(set(open(options.passwords_list).read().split("\n")))
         except Exception:
-            die_failure(
-                messages("error_passwords").format(options.passwords_list)
-            )
+            parser_failed.append(messages("error_passwords").format(options.passwords_list))
     # Check output file
     try:
         temp_file = open(options.report_path_filename, "w")
         temp_file.close()
     except Exception:
-        die_failure(
-            messages("file_write_error").format(options.report_path_filename)
-        )
+        parser_failed.append(messages("file_write_error").format(options.report_path_filename))
     # Check Graph
     if options.graph_name:
         if options.graph_name not in load_all_graphs():
-            die_failure(
-                messages("graph_module_404").format(options.graph_name)
-            )
+            parser_failed.append(messages("graph_module_404").format(options.graph_name))
         if not (options.report_path_filename.endswith(".html") or options.report_path_filename.endswith(".htm")):
             warn(messages("graph_output"))
             options.graph_name = None
@@ -636,4 +616,9 @@ def check_all_required(parser, api_forms=None):
     options.timeout = float(options.timeout)
     options.time_sleep_between_requests = float(options.time_sleep_between_requests)
     options.retries = int(options.retries)
+    if parser_failed:
+        if api_forms:
+            return parser_failed
+        else:
+            die_failure(", ".join(parser_failed))
     return options

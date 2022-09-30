@@ -267,11 +267,6 @@ class TestAPIEndpoints(unittest.TestCase):
             )
         )
         self.assertEqual(int(response["status_code"]), 200)
-        self.assertEqual(
-            response["headers"]['Set-Cookie'], "api_key={api_key}; Path=/".format(
-                api_key=api_configurations['api_access_key']
-            )
-        )
 
         # GET /cookie/check with api_key in cookies + random string
         response = asyncio.run(
