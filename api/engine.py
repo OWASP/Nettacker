@@ -5,6 +5,7 @@ import multiprocessing
 import time
 import json
 import os
+import copy
 from flask import Flask
 from flask import jsonify
 from flask import request as flask_request
@@ -26,6 +27,9 @@ from api.api_core import graphs
 from api.api_core import languages_to_country
 from api.api_core import api_key_is_valid
 from config import nettacker_global_config
+from core.args_loader import check_all_required
+from core.scan_targers import start_scan_processes
+from types import SimpleNamespace
 
 app = Flask(
     __name__,
@@ -298,6 +302,226 @@ def cookie_delete():
     )
     res.set_cookie("api_key", "")
     return res
+
+
+@app.route("/scan/new", methods=["POST"])
+def new_scan():
+    """
+    start a new scan
+    ---
+    parameters:
+        -   name: language
+            in: formData
+            type: string
+            required: false
+            default: "en"
+        -   name: graph_name
+            in: formData
+            type: string
+            required: false
+            default: "d3_tree_v2_graph"
+        -   name: targets
+            in: formData
+            type: string
+            required: true
+            default: ""
+        -   name: selected_modules
+            in: formData
+            type: string
+            required: false
+            default: ""
+        -   name: excluded_modules
+            in: formData
+            type: string
+            required: false
+            default: ""
+        -   name: profile
+            in: formData
+            type: string
+            required: false
+            default: ""
+        -   name: usernames
+            in: formData
+            type: string
+            required: false
+            default: ""
+        -   name: passwords
+            in: formData
+            type: string
+            required: false
+            default: ""
+        -   name: ports
+            in: formData
+            type: string
+            required: false
+            default: ""
+        -   name: timeout
+            in: formData
+            type: float
+            required: false
+            default: 3.0
+        -   name: time_sleep_between_requests
+            in: formData
+            type: float
+            required: false
+            default: 0.0
+        -   name: scan_ip_range
+            in: formData
+            type: boolean
+            required: false
+            default: false
+        -   name: scan_subdomains
+            in: formData
+            type: boolean
+            required: false
+            default: false
+        -   name: skip_service_discovery
+            in: formData
+            type: boolean
+            required: false
+            default: false
+        -   name: thread_per_host
+            in: formData
+            type: integer
+            required: false
+            default: 100
+        -   name: parallel_module_scan
+            in: formData
+            type: integer
+            required: false
+            default: 1
+        -   name: socks_proxy
+            in: formData
+            type: string
+            required: false
+            default: ""
+        -   name: retries
+            in: formData
+            type: integer
+            required: false
+            default: 1
+        -   name: ping_before_scan
+            in: formData
+            type: boolean
+            required: false
+            default: false
+        -   name: set_hardware_usage
+            in: formData
+            type: boolean
+            required: false
+            default: false
+        -   name: hardware_usage
+            in: formData
+            type: string
+            required: false
+            default: "maximum"
+        -   name: user_agent
+            in: formData
+            type: string
+            required: false
+            default: ""
+        -   name: modules_extra_args
+            in: formData
+            type: string
+            required: false
+            default: ""
+    definitions:
+        language:
+            type: string
+        graph_name:
+            type: string
+        targets:
+            type: string
+        selected_modules:
+            type: string
+        excluded_modules:
+            type: string
+        profile:
+            type: string
+        usernames:
+            type: string
+        passwords:
+            type: string
+        ports:
+            type: string
+        timeout:
+            type: float
+        time_sleep_between_requests:
+            type: float
+        scan_ip_range:
+            type: boolean
+        scan_subdomains:
+            type: boolean
+        skip_service_discovery:
+            type: boolean
+        thread_per_host:
+            type: integer
+        parallel_module_scan:
+            type: integer
+        socks_proxy:
+            type: string
+        retries:
+            type: integer
+        ping_before_scan:
+            type: boolean
+        set_hardware_usage:
+            type: boolean
+        hardware_usage:
+            type: string
+        user_agent:
+            type: string
+        modules_extra_args:
+            type: string
+    responses:
+        201:
+            description: Scan started
+        400:
+            description: Missing arguments
+        401:
+            description: The API key is invalid
+
+    """
+    api_key_is_valid(app, flask_request)
+    form_values = dict(flask_request.form)
+    for key in nettacker_application_config:
+        if key not in form_values:
+            form_values[key] = nettacker_application_config[key]
+    # if not form_values["targets"] or not (form_values["selected_modules"] or form_values["profiles"]):
+    #     return jsonify(
+    #         structure(
+    #             status="error",
+    #             msg=messages("missing_arguments")
+    #         )
+    #     ), 400
+
+    sandbox_requirements = multiprocessing.Process(
+        target=check_all_required,
+        args=(
+            None,
+            SimpleNamespace(**copy.deepcopy(form_values))
+        )
+    )
+    sandbox_requirements.start()
+    sandbox_requirements.join()
+    if sandbox_requirements.exitcode != 0:
+        return jsonify(
+            structure(
+                status="error",
+                msg=messages("missing_arguments")
+            )
+        ), 400
+    options = check_all_required(
+        None,
+        api_forms=SimpleNamespace(**copy.deepcopy(form_values))
+    )
+    app.config["OWASP_NETTACKER_CONFIG"]["options"] = options
+    new_process = multiprocessing.Process(target=start_scan_processes, args=(options,))
+    new_process.start()
+    return jsonify(
+        vars(
+            options
+        )
+    ), 201
 
 
 # todo: develop below api endpoints

@@ -10,6 +10,7 @@ API_key: " * API is accessible from https://nettacker-api.z3r0d4y.com:{0}/ via A
 API_options: API options
 API_port: API port number
 Method: Method
+missing_arguments: missing arguments
 skip_service_discovery: skip service discovery before scan and enforce all modules to scan anyway
 no_live_service_found: no any live service found to scan.
 icmp_need_root_access: to use icmp_scan module or --ping-before-scan you need to run the script as root!
