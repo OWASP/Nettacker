@@ -227,6 +227,67 @@ class TestAPIEndpoints(unittest.TestCase):
         )
         self.assertEqual(int(response["status_code"]), 401)
 
+    def test_api_endpoint_cookies_delete(self):
+        response = asyncio.run(
+            send_request(
+                {
+                    "url": api_configurations['api_url'] + "/cookie",
+                    "ssl": False,
+                },
+                method="delete"
+            )
+        )
+        self.assertEqual(int(response["status_code"]), 200)
+        self.assertEqual(response["headers"]['Set-Cookie'], "api_key=; Path=/")
+
+    def test_api_endpoint_cookies_check(self):
+        # GET /cookie/check without api_key
+        response = asyncio.run(
+            send_request(
+                {
+                    "url": api_configurations['api_url'] + "/cookie/check",
+                    "ssl": False,
+                },
+                method="get"
+            )
+        )
+        self.assertEqual(int(response["status_code"]), 401)
+
+        # GET /cookie/check with api_key in cookies
+        response = asyncio.run(
+            send_request(
+                {
+                    "url": api_configurations['api_url'] + "/cookie/check",
+                    "ssl": False,
+                    "cookies": {
+                        "api_key": api_configurations["api_access_key"]
+                    }
+                },
+                method="get"
+            )
+        )
+        self.assertEqual(int(response["status_code"]), 200)
+        self.assertEqual(
+            response["headers"]['Set-Cookie'], "api_key={api_key}; Path=/".format(
+                api_key=api_configurations['api_access_key']
+            )
+        )
+
+        # GET /cookie/check with api_key in cookies + random string
+        response = asyncio.run(
+            send_request(
+                {
+                    "url": api_configurations['api_url'] + "/cookie/check",
+                    "ssl": False,
+                    "cookies": {
+                        "api_key": api_configurations["api_access_key"] + random.choice(string.ascii_letters)
+                    }
+                },
+                method="get"
+            )
+        )
+        self.assertEqual(int(response["status_code"]), 401)
+
     def test_api_endpoint_apidocs(self):
         # GET /apidocs without api_key
         response = asyncio.run(
@@ -297,4 +358,36 @@ class TestAPIEndpoints(unittest.TestCase):
             )
         )
         self.assertEqual(int(response["status_code"]), 401)
-        
+
+    def test_api_endpoint_with_static_path(self):
+        # GET /js/main.js without api_key
+        response = asyncio.run(
+            send_request(
+                {
+                    "url": api_configurations['api_url'] + "/js/main.js",
+                    "ssl": False
+                },
+                method="get"
+            )
+        )
+        self.assertEqual(int(response["status_code"]), 200)
+        self.assertEqual(response["headers"]['Content-Type'], "application/javascript; charset=utf-8")
+
+        # GET /js/main.js with api_key in cookies
+        response = asyncio.run(
+            send_request(
+                {
+                    "url": api_configurations['api_url'] + "/js/main.js",
+                    "ssl": False,
+                    "cookies": {
+                        "api_key": api_configurations["api_access_key"]
+                    }
+                },
+                method="get"
+            )
+        )
+        self.assertEqual(int(response["status_code"]), 200)
+        self.assertEqual(response["headers"]['Content-Type'], "application/javascript; charset=utf-8")
+
+
+

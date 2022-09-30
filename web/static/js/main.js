@@ -62,7 +62,7 @@ $(document).ready(function () {
   $("#logout_btn").click(function () {
     $.ajax({
       type: "DELETE",
-      url: "/cookie/delete",
+      url: "/cookie",
       dataType: "text",
     })
       .done(function (res) {

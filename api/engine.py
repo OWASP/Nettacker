@@ -126,7 +126,7 @@ def limit_remote_addr():
         if flask_request.remote_addr not in app.config["OWASP_NETTACKER_CONFIG"]["api_client_whitelisted_ips"]:
             abort(403, messages("unauthorized_IP"))
     if not (
-            flask_request.path.startswith("/cookie/") or
+            flask_request.path.startswith("/cookie") or
             flask_request.path == "/" or
             flask_request.path.startswith("/css/") or
             flask_request.path.startswith("/js/") or
@@ -170,7 +170,7 @@ def access_log(response):
     return response
 
 
-@app.route("/<path:path>")
+@app.route("/<path:path>", methods=["GET"])
 def get_statics(path):
     """
     getting static files and return content mime types
@@ -277,7 +277,7 @@ def cookie_check():
     ), 200
 
 
-@app.route("/cookie/delete", methods=["DELETE"])
+@app.route("/cookie", methods=["DELETE"])
 def cookie_delete():
     """
     Delete cookie on browser or any library uses session.
@@ -296,12 +296,11 @@ def cookie_delete():
             )
         )
     )
-    res.set_cookie("api_key", "", expires=0)
+    res.set_cookie("api_key", "")
     return res
 
 
 # todo: develop below api endpoints
-# create api unittest with docker-compose --start-api
 # start new scan
 # list of scans
 # get scan
