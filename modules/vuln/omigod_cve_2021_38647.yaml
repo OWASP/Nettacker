@@ -26,6 +26,7 @@ payloads:
           User-Agent: "{user_agent}"
           Host: {target}
           Content-Type: application/soap+xml;charset=UTF-8
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/wsman"

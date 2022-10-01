@@ -18,6 +18,7 @@ payloads:
         timeout: 3
         headers:
           User-Agent: "{user_agent}"
+        ssl: false
         url:
           - https://viewdns.info/reverseip/?host={target}&t=1
         response:

