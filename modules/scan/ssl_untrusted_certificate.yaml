@@ -1,0 +1,54 @@
+info:
+  id: ssl_untrusted_certificate_scan
+  author: OWASP Nettacker Team
+  severity: 6
+  description: Find untrusted SSL certificate.
+  reference:
+  profiles:
+    - scan
+    - information_gathering
+    - infortmation
+    - info
+    - medium_severity
+    - ssl
+    - tls
+    - ssl_audit
+    - tls_audit
+
+payloads:
+  - library: exec
+    steps:
+      - method: os_command
+        command:
+          nettacker_fuzzer:
+            input_format: "gnutls-cli {target}:{{ports}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              ports:
+                - 80 # HTTP (some LBs support TLS on 80)
+                - 261 # Nsiiops
+                - 443 # HTTPS
+                - 446 # Openfiler's management interface
+                - 448 # ddm-ssl
+                - 465 # SMTPS
+                - 563 # NNTPS
+                - 585 # imap4-ssl
+                - 614 # SSLshell
+                - 636 # LDAPS
+                - 684 # Corba IIOP SSL
+                - 695 # IEEE-MMS-SSL
+                - 853 # DNS over TLS
+                - 902 # VMWare Auth Daemon
+                - 989 # FTPS data
+        response:
+          condition_type: and
+          conditions:
+            UNTRUSTED_CERTIFICATE:
+              regex: "A TLS fatal alert has been received|- Status: .*"
+              reverse: false
+            TRUSTED_CERTIFICATE_OR_NOT_SSL:
+              regex: "The certificate is trusted|Received record packet of unknown type 72"
+              reverse: true
+

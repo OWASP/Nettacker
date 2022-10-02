@@ -1027,6 +1027,9 @@ payloads:
         response:
           condition_type: or
           conditions:
+            exec:
+              regex: ""
+              reverse: false
             open_port:
               regex: ""
               reverse: false

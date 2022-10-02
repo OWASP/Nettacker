@@ -118,7 +118,7 @@ def nettacker_user_application_config():
         "scan_ip_range": False,
         "scan_subdomains": False,
         "skip_service_discovery": False,
-        "thread_per_host": 100,
+        "thread_per_host": 1024,
         "parallel_module_scan": 1,
         "socks_proxy": None,
         "retries": 1,

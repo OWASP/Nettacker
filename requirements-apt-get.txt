@@ -9,3 +9,8 @@ musl-dev
 make 
 gcc 
 git
+openssl
+wget
+unzip
+make
+gnutls-bin

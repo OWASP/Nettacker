@@ -23,30 +23,64 @@ def getaddrinfo(*args):
     return [(socket.AF_INET, socket.SOCK_STREAM, 6, '', (args[0], args[1]))]
 
 
-def set_socks_proxy(socks_proxy):
+def set_socks_proxy(socks_proxy, scan_unique_id):
+    from config import nettacker_paths
+    socks_configuration_file = os.path.join(nettacker_paths()["tmp_path"], "socks_configuration_" + scan_unique_id)
     if socks_proxy:
         import socks
         socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
         socks_proxy = socks_proxy.split('://')[1] if '://' in socks_proxy else socks_proxy
+        socks_version_string = "socks5" if socks_version == socks.SOCKS5 else "socks4"
+        socks_username = ""
+        socks_password = ""
         if '@' in socks_proxy:
             socks_username = socks_proxy.split(':')[0]
             socks_password = socks_proxy.split(':')[1].split('@')[0]
+            socks_host = str(socks_proxy.rsplit('@')[1].rsplit(':')[0])
+            socks_port = int(socks_proxy.rsplit(':')[-1])
+
             socks.set_default_proxy(
                 socks_version,
-                str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),  # hostname
-                int(socks_proxy.rsplit(':')[-1]),  # port
+                socks_host,
+                socks_port,
                 username=socks_username,
                 password=socks_password
             )
         else:
+            socks_host = str(socks_proxy.rsplit(':')[0])
+            socks_port = int(socks_proxy.rsplit(':')[1])
             socks.set_default_proxy(
                 socks_version,
-                str(socks_proxy.rsplit(':')[0]),  # hostname
-                int(socks_proxy.rsplit(':')[1])  # port
+                socks_host,
+                socks_port
             )
-        return socks.socksocket, getaddrinfo
+        if not os.path.exists(socks_configuration_file):
+            open(socks_configuration_file, 'w').write(
+                "\n".join(
+                    [
+                        "strict_chain",
+                        "proxy_dns",
+                        "remote_dns_subnet 224",
+                        "tcp_read_time_out 15000",
+                        "tcp_connect_time_out 8000",
+                        "[ProxyList]"
+                    ]
+                ) +
+                "\n" +
+                socks_version_string +
+                " " +
+                socks_host +
+                " " +
+                str(socks_port) +
+                " " +
+                socks_username +
+                " " +
+                socks_password +
+                "\n"
+            )
+        return socks.socksocket, getaddrinfo, socks_configuration_file
     else:
-        return socket.socket, socket.getaddrinfo
+        return socket.socket, socket.getaddrinfo, None
 
 
 class NettackerModules:
@@ -150,11 +184,13 @@ class NettackerModules:
                     steps.append(step)
 
             for step in copy.deepcopy(self.module_content['payloads'][index]['steps']):
-                if 'dependent_on_temp_event' in step[0]['response'] and 'save_to_temp_events_only' in step[0]['response']:
+                if 'dependent_on_temp_event' in step[0]['response'] and \
+                        'save_to_temp_events_only' in step[0]['response']:
                     steps.append(step)
 
             for step in copy.deepcopy(self.module_content['payloads'][index]['steps']):
-                if 'dependent_on_temp_event' in step[0]['response'] and 'save_to_temp_events_only' not in step[0]['response']:
+                if 'dependent_on_temp_event' in step[0]['response'] and \
+                        'save_to_temp_events_only' not in step[0]['response']:
                     steps.append(step)
             self.module_content['payloads'][index]['steps'] = steps
 
@@ -333,7 +369,7 @@ def perform_scan(options, target, module_name, scan_unique_id, process_number, t
     from core.alert import (verbose_event_info,
                             messages)
 
-    socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
+    socket.socket, socket.getaddrinfo, socks_configuration_file = set_socks_proxy(options.socks_proxy, scan_unique_id)
     options.target = target
     validate_module = NettackerModules()
     validate_module.skip_service_discovery = options.skip_service_discovery
@@ -342,6 +378,7 @@ def perform_scan(options, target, module_name, scan_unique_id, process_number, t
     validate_module.module_thread_number = thread_number
     validate_module.total_module_thread_number = total_number_threads
     validate_module.module_inputs = vars(options)
+    validate_module.module_inputs['socks_configuration_file'] = socks_configuration_file
     if options.modules_extra_args:
         for module_extra_args in validate_module.module_inputs['modules_extra_args']:
             validate_module.module_inputs[module_extra_args] = \

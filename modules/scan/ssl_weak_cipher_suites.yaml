@@ -1,0 +1,443 @@
+info:
+  id: ssl_weak_cipher_suites_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: Find weak cipher suites in TLS/SSL.
+  reference: https://ciphersuite.info/
+  profiles:
+    - scan
+    - information_gathering
+    - infortmation
+    - info
+    - low_severity
+    - ssl
+    - tls
+    - ssl_audit
+    - tls_audit
+
+payloads:
+  - library: exec
+    steps:
+      - method: os_command
+        command:
+          nettacker_fuzzer:
+            input_format: "openssl s_client -cipher {{weak_cipher_suites}} -servername {target} -connect {target}:{{ports}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              weak_cipher_suites:
+                # Weak cipher suites
+                - "SRP-AES-128-CBC-SHA"
+                - "PSK-CAMELLIA256-SHA384"
+                - "DHE-PSK-AES256-CBC-SHA384"
+                - "DHE-DSS-CAMELLIA256-SHA256"
+                - "ECDHE-RSA-AES256-SHA384"
+                - "DHE-DSS-AES256-SHA256"
+                - "PSK-AES128-CBC-SHA"
+                - "AES128-SHA"
+                - "AES256-CCM"
+                - "ECDHE-PSK-AES256-CBC-SHA"
+                - "PSK-AES128-CCM"
+                - "SRP-DSS-AES-256-CBC-SHA"
+                - "DHE-DSS-DES-CBC3-SHA"
+                - "DES-CBC3-SHA"
+                - "DHE-DSS-CAMELLIA256-SHA"
+                - "DHE-PSK-AES128-CBC-SHA"
+                - "RSA-PSK-AES256-GCM-SHA384"
+                - "CAMELLIA256-SHA256"
+                - "DHE-RSA-AES128-SHA"
+                - "ECDHE-PSK-3DES-EDE-CBC-SHA"
+                - "PSK-AES256-CCM8"
+                - "DHE-RSA-SEED-SHA"
+                - "SRP-3DES-EDE-CBC-SHA"
+                - "RSA-PSK-CHACHA20-POLY1305"
+                - "SEED-SHA"
+                - "DHE-RSA-AES256-SHA256"
+                - "DHE-DSS-AES256-SHA"
+                - "PSK-3DES-EDE-CBC-SHA"
+                - "DHE-RSA-AES256-SHA"
+                - "AES128-CCM8"
+                - "ECDHE-ECDSA-AES256-SHA384"
+                - "IDEA-CBC-SHA"
+                - "SRP-DSS-3DES-EDE-CBC-SHA"
+                - "DHE-PSK-CAMELLIA128-SHA256"
+                - "PSK-AES256-CBC-SHA384"
+                - "ECDHE-RSA-AES128-SHA256"
+                - "ECDHE-PSK-AES128-CBC-SHA"
+                - "SRP-DSS-AES-128-CBC-SHA"
+                - "RSA-PSK-AES256-CBC-SHA"
+                - "DHE-RSA-CAMELLIA256-SHA256"
+                - "PSK-AES256-CBC-SHA"
+                - "SRP-RSA-AES-128-CBC-SHA"
+                - "AES128-GCM-SHA256"
+                - "SRP-RSA-3DES-EDE-CBC-SHA"
+                - "DHE-DSS-CAMELLIA128-SHA256"
+                - "RSA-PSK-CAMELLIA128-SHA256"
+                - "ECDHE-ECDSA-CAMELLIA256-SHA384"
+                - "AES256-SHA256"
+                - "ECDHE-RSA-AES256-SHA"
+                - "PSK-AES256-GCM-SHA384"
+                - "CAMELLIA128-SHA256"
+                - "ECDHE-ECDSA-AES256-SHA"
+                - "AES128-CCM"
+                - "ECDHE-PSK-CAMELLIA128-SHA256"
+                - "RSA-PSK-AES128-CBC-SHA256"
+                - "DHE-RSA-CAMELLIA128-SHA256"
+                - "RSA-PSK-CAMELLIA256-SHA384"
+                - "ECDHE-RSA-AES128-SHA"
+                - "DHE-DSS-AES128-SHA256"
+                - "AES256-CCM8"
+                - "DHE-PSK-CAMELLIA256-SHA384"
+                - "RSA-PSK-3DES-EDE-CBC-SHA"
+                - "DHE-DSS-CAMELLIA128-SHA"
+                - "ECDHE-ECDSA-DES-CBC3-SHA"
+                - "ECDHE-PSK-AES256-CBC-SHA384"
+                - "DHE-PSK-AES256-CBC-SHA"
+                - "AES256-SHA"
+                - "CAMELLIA256-SHA"
+                - "ECDHE-RSA-CAMELLIA128-SHA256"
+                - "AES256-GCM-SHA384"
+                - "DHE-RSA-DES-CBC3-SHA"
+                - "DHE-RSA-CAMELLIA256-SHA"
+                - "DHE-RSA-AES128-SHA256"
+                - "PSK-AES256-CCM"
+                - "DHE-PSK-AES128-CBC-SHA256"
+                - "DHE-PSK-3DES-EDE-CBC-SHA"
+                - "ECDHE-PSK-AES128-CBC-SHA256"
+                - "ECDHE-ECDSA-CAMELLIA128-SHA256"
+                - "PSK-AES128-CBC-SHA256"
+                - "ECDHE-RSA-CAMELLIA256-SHA384"
+                - "RSA-PSK-AES128-GCM-SHA256"
+                - "RSA-PSK-AES256-CBC-SHA384"
+                - "PSK-AES128-CCM8"
+                - "RSA-PSK-AES128-CBC-SHA"
+                - "PSK-CAMELLIA128-SHA256"
+                - "CAMELLIA128-SHA"
+                - "ECDHE-ECDSA-AES128-SHA256"
+                - "PSK-AES128-GCM-SHA256"
+                - "ECDHE-RSA-DES-CBC3-SHA"
+                - "SRP-AES-256-CBC-SHA"
+                - "DHE-DSS-SEED-SHA"
+                - "AES128-SHA256"
+                - "DHE-DSS-AES128-SHA"
+                - "ECDHE-ECDSA-AES128-SHA"
+                - "SRP-RSA-AES-256-CBC-SHA"
+                - "DHE-RSA-CAMELLIA128-SHA"
+                - "PSK-CHACHA20-POLY1305"
+                - "ECDHE-PSK-CAMELLIA256-SHA384"
+
+              ports:
+                - 80 # HTTP (some LBs support TLS on 80)
+                - 261 # Nsiiops
+                - 443 # HTTPS
+                - 446 # Openfiler's management interface
+                - 448 # ddm-ssl
+                - 465 # SMTPS
+                - 563 # NNTPS
+                - 585 # imap4-ssl
+                - 614 # SSLshell
+                - 636 # LDAPS
+                - 684 # Corba IIOP SSL
+                - 695 # IEEE-MMS-SSL
+                - 853 # DNS over TLS
+                - 902 # VMWare Auth Daemon
+                - 989 # FTPS data
+        response:
+          condition_type: or
+          conditions:
+            WEAK-DHE-RSA-SEED-SHA:
+              regex: Cipher is DHE-RSA-SEED-SHA\n
+              reverse: false
+            WEAK-SRP-RSA-3DES-EDE-CBC-SHA:
+              regex: Cipher is SRP-RSA-3DES-EDE-CBC-SHA\n
+              reverse: false
+            WEAK-DHE-PSK-AES128-CBC-SHA256:
+              regex: Cipher is DHE-PSK-AES128-CBC-SHA256\n
+              reverse: false
+            WEAK-RSA-PSK-AES128-CBC-SHA256:
+              regex: Cipher is RSA-PSK-AES128-CBC-SHA256\n
+              reverse: false
+            WEAK-AES128-CCM:
+              regex: Cipher is AES128-CCM\n
+              reverse: false
+            WEAK-CAMELLIA128-SHA:
+              regex: Cipher is CAMELLIA128-SHA\n
+              reverse: false
+            WEAK-ECDHE-RSA-CAMELLIA128-SHA256:
+              regex: Cipher is ECDHE-RSA-CAMELLIA128-SHA256\n
+              reverse: false
+            WEAK-ECDHE-ECDSA-CAMELLIA256-SHA384:
+              regex: Cipher is ECDHE-ECDSA-CAMELLIA256-SHA384\n
+              reverse: false
+            WEAK-PSK-AES256-CCM8:
+              regex: Cipher is PSK-AES256-CCM8\n
+              reverse: false
+            WEAK-DHE-DSS-AES128-SHA:
+              regex: Cipher is DHE-DSS-AES128-SHA\n
+              reverse: false
+            WEAK-RSA-PSK-AES256-CBC-SHA:
+              regex: Cipher is RSA-PSK-AES256-CBC-SHA\n
+              reverse: false
+            WEAK-DHE-DSS-AES256-SHA256:
+              regex: Cipher is DHE-DSS-AES256-SHA256\n
+              reverse: false
+            WEAK-PSK-AES256-CBC-SHA384:
+              regex: Cipher is PSK-AES256-CBC-SHA384\n
+              reverse: false
+            WEAK-PSK-AES256-CCM:
+              regex: Cipher is PSK-AES256-CCM\n
+              reverse: false
+            WEAK-SRP-DSS-3DES-EDE-CBC-SHA:
+              regex: Cipher is SRP-DSS-3DES-EDE-CBC-SHA\n
+              reverse: false
+            WEAK-SRP-AES-128-CBC-SHA:
+              regex: Cipher is SRP-AES-128-CBC-SHA\n
+              reverse: false
+            WEAK-AES128-SHA256:
+              regex: Cipher is AES128-SHA256\n
+              reverse: false
+            WEAK-ECDHE-ECDSA-CAMELLIA128-SHA256:
+              regex: Cipher is ECDHE-ECDSA-CAMELLIA128-SHA256\n
+              reverse: false
+            WEAK-ECDHE-RSA-AES128-SHA:
+              regex: Cipher is ECDHE-RSA-AES128-SHA\n
+              reverse: false
+            WEAK-AES128-SHA:
+              regex: Cipher is AES128-SHA\n
+              reverse: false
+            WEAK-AES128-GCM-SHA256:
+              regex: Cipher is AES128-GCM-SHA256\n
+              reverse: false
+            WEAK-PSK-CHACHA20-POLY1305:
+              regex: Cipher is PSK-CHACHA20-POLY1305\n
+              reverse: false
+            WEAK-DHE-RSA-CAMELLIA128-SHA:
+              regex: Cipher is DHE-RSA-CAMELLIA128-SHA\n
+              reverse: false
+            WEAK-IDEA-CBC-SHA:
+              regex: Cipher is IDEA-CBC-SHA\n
+              reverse: false
+            WEAK-SRP-RSA-AES-128-CBC-SHA:
+              regex: Cipher is SRP-RSA-AES-128-CBC-SHA\n
+              reverse: false
+            WEAK-DHE-DSS-AES128-SHA256:
+              regex: Cipher is DHE-DSS-AES128-SHA256\n
+              reverse: false
+            WEAK-ECDHE-PSK-3DES-EDE-CBC-SHA:
+              regex: Cipher is ECDHE-PSK-3DES-EDE-CBC-SHA\n
+              reverse: false
+            WEAK-DHE-DSS-SEED-SHA:
+              regex: Cipher is DHE-DSS-SEED-SHA\n
+              reverse: false
+            WEAK-PSK-AES128-CBC-SHA256:
+              regex: Cipher is PSK-AES128-CBC-SHA256\n
+              reverse: false
+            WEAK-PSK-AES128-CCM8:
+              regex: Cipher is PSK-AES128-CCM8\n
+              reverse: false
+            WEAK-ECDHE-PSK-AES128-CBC-SHA256:
+              regex: Cipher is ECDHE-PSK-AES128-CBC-SHA256\n
+              reverse: false
+            WEAK-AES256-SHA:
+              regex: Cipher is AES256-SHA\n
+              reverse: false
+            WEAK-DHE-RSA-AES256-SHA:
+              regex: Cipher is DHE-RSA-AES256-SHA\n
+              reverse: false
+            WEAK-CAMELLIA128-SHA256:
+              regex: Cipher is CAMELLIA128-SHA256\n
+              reverse: false
+            WEAK-ECDHE-ECDSA-AES256-SHA:
+              regex: Cipher is ECDHE-ECDSA-AES256-SHA\n
+              reverse: false
+            WEAK-RSA-PSK-CHACHA20-POLY1305:
+              regex: Cipher is RSA-PSK-CHACHA20-POLY1305\n
+              reverse: false
+            WEAK-ECDHE-PSK-AES256-CBC-SHA384:
+              regex: Cipher is ECDHE-PSK-AES256-CBC-SHA384\n
+              reverse: false
+            WEAK-ECDHE-ECDSA-DES-CBC3-SHA:
+              regex: Cipher is ECDHE-ECDSA-DES-CBC3-SHA\n
+              reverse: false
+            WEAK-SRP-AES-256-CBC-SHA:
+              regex: Cipher is SRP-AES-256-CBC-SHA\n
+              reverse: false
+            WEAK-PSK-AES128-CCM:
+              regex: Cipher is PSK-AES128-CCM\n
+              reverse: false
+            WEAK-AES128-CCM8:
+              regex: Cipher is AES128-CCM8\n
+              reverse: false
+            WEAK-RSA-PSK-3DES-EDE-CBC-SHA:
+              regex: Cipher is RSA-PSK-3DES-EDE-CBC-SHA\n
+              reverse: false
+            WEAK-RSA-PSK-CAMELLIA256-SHA384:
+              regex: Cipher is RSA-PSK-CAMELLIA256-SHA384\n
+              reverse: false
+            WEAK-DHE-RSA-DES-CBC3-SHA:
+              regex: Cipher is DHE-RSA-DES-CBC3-SHA\n
+              reverse: false
+            WEAK-DHE-PSK-AES256-CBC-SHA:
+              regex: Cipher is DHE-PSK-AES256-CBC-SHA\n
+              reverse: false
+            WEAK-PSK-3DES-EDE-CBC-SHA:
+              regex: Cipher is PSK-3DES-EDE-CBC-SHA\n
+              reverse: false
+            WEAK-DHE-DSS-CAMELLIA256-SHA:
+              regex: Cipher is DHE-DSS-CAMELLIA256-SHA\n
+              reverse: false
+            WEAK-DHE-DSS-AES256-SHA:
+              regex: Cipher is DHE-DSS-AES256-SHA\n
+              reverse: false
+            WEAK-ECDHE-ECDSA-AES128-SHA:
+              regex: Cipher is ECDHE-ECDSA-AES128-SHA\n
+              reverse: false
+            WEAK-DHE-RSA-CAMELLIA256-SHA256:
+              regex: Cipher is DHE-RSA-CAMELLIA256-SHA256\n
+              reverse: false
+            WEAK-PSK-AES128-GCM-SHA256:
+              regex: Cipher is PSK-AES128-GCM-SHA256\n
+              reverse: false
+            WEAK-RSA-PSK-AES128-GCM-SHA256:
+              regex: Cipher is RSA-PSK-AES128-GCM-SHA256\n
+              reverse: false
+            WEAK-DHE-PSK-CAMELLIA256-SHA384:
+              regex: Cipher is DHE-PSK-CAMELLIA256-SHA384\n
+              reverse: false
+            WEAK-DHE-DSS-CAMELLIA128-SHA256:
+              regex: Cipher is DHE-DSS-CAMELLIA128-SHA256\n
+              reverse: false
+            WEAK-RSA-PSK-AES256-CBC-SHA384:
+              regex: Cipher is RSA-PSK-AES256-CBC-SHA384\n
+              reverse: false
+            WEAK-ECDHE-RSA-CAMELLIA256-SHA384:
+              regex: Cipher is ECDHE-RSA-CAMELLIA256-SHA384\n
+              reverse: false
+            WEAK-DHE-PSK-AES128-CBC-SHA:
+              regex: Cipher is DHE-PSK-AES128-CBC-SHA\n
+              reverse: false
+            WEAK-PSK-CAMELLIA256-SHA384:
+              regex: Cipher is PSK-CAMELLIA256-SHA384\n
+              reverse: false
+            WEAK-ECDHE-RSA-AES256-SHA384:
+              regex: Cipher is ECDHE-RSA-AES256-SHA384\n
+              reverse: false
+            WEAK-SRP-DSS-AES-128-CBC-SHA:
+              regex: Cipher is SRP-DSS-AES-128-CBC-SHA\n
+              reverse: false
+            WEAK-DHE-PSK-3DES-EDE-CBC-SHA:
+              regex: Cipher is DHE-PSK-3DES-EDE-CBC-SHA\n
+              reverse: false
+            WEAK-ECDHE-ECDSA-AES128-SHA256:
+              regex: Cipher is ECDHE-ECDSA-AES128-SHA256\n
+              reverse: false
+            WEAK-ECDHE-PSK-CAMELLIA256-SHA384:
+              regex: Cipher is ECDHE-PSK-CAMELLIA256-SHA384\n
+              reverse: false
+            WEAK-AES256-SHA256:
+              regex: Cipher is AES256-SHA256\n
+              reverse: false
+            WEAK-RSA-PSK-AES128-CBC-SHA:
+              regex: Cipher is RSA-PSK-AES128-CBC-SHA\n
+              reverse: false
+            WEAK-CAMELLIA256-SHA:
+              regex: Cipher is CAMELLIA256-SHA\n
+              reverse: false
+            WEAK-ECDHE-RSA-AES128-SHA256:
+              regex: Cipher is ECDHE-RSA-AES128-SHA256\n
+              reverse: false
+            WEAK-SEED-SHA:
+              regex: Cipher is SEED-SHA\n
+              reverse: false
+            WEAK-RSA-PSK-CAMELLIA128-SHA256:
+              regex: Cipher is RSA-PSK-CAMELLIA128-SHA256\n
+              reverse: false
+            WEAK-ECDHE-RSA-DES-CBC3-SHA:
+              regex: Cipher is ECDHE-RSA-DES-CBC3-SHA\n
+              reverse: false
+            WEAK-AES256-CCM8:
+              regex: Cipher is AES256-CCM8\n
+              reverse: false
+            WEAK-PSK-AES256-CBC-SHA:
+              regex: Cipher is PSK-AES256-CBC-SHA\n
+              reverse: false
+            WEAK-DHE-RSA-AES256-SHA256:
+              regex: Cipher is DHE-RSA-AES256-SHA256\n
+              reverse: false
+            WEAK-DHE-DSS-CAMELLIA128-SHA:
+              regex: Cipher is DHE-DSS-CAMELLIA128-SHA\n
+              reverse: false
+            WEAK-DHE-DSS-CAMELLIA256-SHA256:
+              regex: Cipher is DHE-DSS-CAMELLIA256-SHA256\n
+              reverse: false
+            WEAK-PSK-AES256-GCM-SHA384:
+              regex: Cipher is PSK-AES256-GCM-SHA384\n
+              reverse: false
+            WEAK-PSK-CAMELLIA128-SHA256:
+              regex: Cipher is PSK-CAMELLIA128-SHA256\n
+              reverse: false
+            WEAK-RSA-PSK-AES256-GCM-SHA384:
+              regex: Cipher is RSA-PSK-AES256-GCM-SHA384\n
+              reverse: false
+            WEAK-CAMELLIA256-SHA256:
+              regex: Cipher is CAMELLIA256-SHA256\n
+              reverse: false
+            WEAK-ECDHE-PSK-AES256-CBC-SHA:
+              regex: Cipher is ECDHE-PSK-AES256-CBC-SHA\n
+              reverse: false
+            WEAK-DHE-DSS-DES-CBC3-SHA:
+              regex: Cipher is DHE-DSS-DES-CBC3-SHA\n
+              reverse: false
+            WEAK-ECDHE-ECDSA-AES256-SHA384:
+              regex: Cipher is ECDHE-ECDSA-AES256-SHA384\n
+              reverse: false
+            WEAK-SRP-3DES-EDE-CBC-SHA:
+              regex: Cipher is SRP-3DES-EDE-CBC-SHA\n
+              reverse: false
+            WEAK-DHE-RSA-AES128-SHA:
+              regex: Cipher is DHE-RSA-AES128-SHA\n
+              reverse: false
+            WEAK-AES256-CCM:
+              regex: Cipher is AES256-CCM\n
+              reverse: false
+            WEAK-DES-CBC3-SHA:
+              regex: Cipher is DES-CBC3-SHA\n
+              reverse: false
+            WEAK-DHE-RSA-CAMELLIA256-SHA:
+              regex: Cipher is DHE-RSA-CAMELLIA256-SHA\n
+              reverse: false
+            WEAK-PSK-AES128-CBC-SHA:
+              regex: Cipher is PSK-AES128-CBC-SHA\n
+              reverse: false
+            WEAK-DHE-RSA-CAMELLIA128-SHA256:
+              regex: Cipher is DHE-RSA-CAMELLIA128-SHA256\n
+              reverse: false
+            WEAK-DHE-PSK-CAMELLIA128-SHA256:
+              regex: Cipher is DHE-PSK-CAMELLIA128-SHA256\n
+              reverse: false
+            WEAK-SRP-DSS-AES-256-CBC-SHA:
+              regex: Cipher is SRP-DSS-AES-256-CBC-SHA\n
+              reverse: false
+            WEAK-ECDHE-RSA-AES256-SHA:
+              regex: Cipher is ECDHE-RSA-AES256-SHA\n
+              reverse: false
+            WEAK-ECDHE-PSK-CAMELLIA128-SHA256:
+              regex: Cipher is ECDHE-PSK-CAMELLIA128-SHA256\n
+              reverse: false
+            WEAK-DHE-PSK-AES256-CBC-SHA384:
+              regex: Cipher is DHE-PSK-AES256-CBC-SHA384\n
+              reverse: false
+            WEAK-ECDHE-PSK-AES128-CBC-SHA:
+              regex: Cipher is ECDHE-PSK-AES128-CBC-SHA\n
+              reverse: false
+            WEAK-AES256-GCM-SHA384:
+              regex: Cipher is AES256-GCM-SHA384\n
+              reverse: false
+            WEAK-SRP-RSA-AES-256-CBC-SHA:
+              regex: Cipher is SRP-RSA-AES-256-CBC-SHA\n
+              reverse: false
+            WEAK-DHE-RSA-AES128-SHA256:
+              regex: Cipher is DHE-RSA-AES128-SHA256\n
+              reverse: false
+

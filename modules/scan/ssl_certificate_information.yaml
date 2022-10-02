@@ -1,0 +1,49 @@
+# echo | openssl s_client -showcerts -connect expired.badssl.com:443
+info:
+  id: ssl_untrusted_certificate_scan
+  author: OWASP Nettacker Team
+  severity: 0
+  description: Gather SSL/TLS information
+  reference:
+  profiles:
+    - scan
+    - information_gathering
+    - infortmation
+    - info
+    - ssl
+    - tls
+
+payloads:
+  - library: exec
+    steps:
+      - method: os_command
+        command:
+          nettacker_fuzzer:
+            input_format: "openssl s_client -showcerts -connect {target}:{{ports}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              ports:
+                - 80 # HTTP (some LBs support TLS on 80)
+                - 261 # Nsiiops
+                - 443 # HTTPS
+                - 446 # Openfiler's management interface
+                - 448 # ddm-ssl
+                - 465 # SMTPS
+                - 563 # NNTPS
+                - 585 # imap4-ssl
+                - 614 # SSLshell
+                - 636 # LDAPS
+                - 684 # Corba IIOP SSL
+                - 695 # IEEE-MMS-SSL
+                - 853 # DNS over TLS
+                - 902 # VMWare Auth Daemon
+                - 989 # FTPS data
+        response:
+          condition_type: or
+          conditions:
+            CERTIFICATE_INFO:
+                regex: "no peer certificate available"
+                reverse: true
+

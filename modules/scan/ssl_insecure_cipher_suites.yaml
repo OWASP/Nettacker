@@ -1,0 +1,182 @@
+info:
+  id: ssl_insecure_cipher_suites_scan
+  author: OWASP Nettacker Team
+  severity: 6
+  description: Find insecure cipher suites in TLS/SSL.
+  reference: https://ciphersuite.info/
+  profiles:
+    - scan
+    - information_gathering
+    - infortmation
+    - info
+    - medium_severity
+    - ssl
+    - tls
+    - ssl_audit
+    - tls_audit
+
+payloads:
+  - library: exec
+    steps:
+      - method: os_command
+        command:
+          nettacker_fuzzer:
+            input_format: "openssl s_client -cipher {{insecure_cipher_suites}} -servername {target} -connect {target}:{{ports}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              insecure_cipher_suites:
+                # Insecure cipher suites
+                - "RSA-PSK-NULL-SHA256"
+                - "AECDH-AES128-SHA"
+                - "ECDHE-PSK-NULL-SHA384"
+                - "ADH-SEED-SHA"
+                - "AECDH-DES-CBC3-SHA"
+                - "ECDHE-PSK-NULL-SHA"
+                - "DHE-PSK-NULL-SHA"
+                - "AECDH-NULL-SHA"
+                - "PSK-NULL-SHA"
+                - "AECDH-AES256-SHA"
+                - "ADH-AES256-SHA256"
+                - "ADH-CAMELLIA256-SHA256"
+                - "ADH-CAMELLIA128-SHA"
+                - "ADH-CAMELLIA256-SHA"
+                - "PSK-NULL-SHA384"
+                - "DHE-PSK-NULL-SHA384"
+                - "ADH-AES128-SHA"
+                - "ADH-AES256-SHA"
+                - "NULL-SHA"
+                - "ADH-CAMELLIA128-SHA256"
+                - "DHE-PSK-NULL-SHA256"
+                - "NULL-SHA256"
+                - "RSA-PSK-NULL-SHA384"
+                - "ADH-AES256-GCM-SHA384"
+                - "ECDHE-PSK-NULL-SHA256"
+                - "NULL-MD5"
+                - "PSK-NULL-SHA256"
+                - "ADH-AES128-GCM-SHA256"
+                - "ADH-DES-CBC3-SHA"
+                - "ECDHE-ECDSA-NULL-SHA"
+                - "ADH-AES128-SHA256"
+                - "RSA-PSK-NULL-SHA"
+                - "ECDHE-RSA-NULL-SHA"
+
+              ports:
+                - 80 # HTTP (some LBs support TLS on 80)
+                - 261 # Nsiiops
+                - 443 # HTTPS
+                - 446 # Openfiler's management interface
+                - 448 # ddm-ssl
+                - 465 # SMTPS
+                - 563 # NNTPS
+                - 585 # imap4-ssl
+                - 614 # SSLshell
+                - 636 # LDAPS
+                - 684 # Corba IIOP SSL
+                - 695 # IEEE-MMS-SSL
+                - 853 # DNS over TLS
+                - 902 # VMWare Auth Daemon
+                - 989 # FTPS data
+        response:
+          condition_type: or
+          conditions:
+            INSECURE-ECDHE-ECDSA-NULL-SHA:
+              regex: Cipher is ECDHE-ECDSA-NULL-SHA\n
+              reverse: false
+            INSECURE-NULL-SHA256:
+              regex: Cipher is NULL-SHA256\n
+              reverse: false
+            INSECURE-ECDHE-PSK-NULL-SHA384:
+              regex: Cipher is ECDHE-PSK-NULL-SHA384\n
+              reverse: false
+            INSECURE-AECDH-DES-CBC3-SHA:
+              regex: Cipher is AECDH-DES-CBC3-SHA\n
+              reverse: false
+            INSECURE-RSA-PSK-NULL-SHA256:
+              regex: Cipher is RSA-PSK-NULL-SHA256\n
+              reverse: false
+            INSECURE-ADH-AES256-SHA:
+              regex: Cipher is ADH-AES256-SHA\n
+              reverse: false
+            INSECURE-AECDH-AES256-SHA:
+              regex: Cipher is AECDH-AES256-SHA\n
+              reverse: false
+            INSECURE-RSA-PSK-NULL-SHA:
+              regex: Cipher is RSA-PSK-NULL-SHA\n
+              reverse: false
+            INSECURE-DHE-PSK-NULL-SHA:
+              regex: Cipher is DHE-PSK-NULL-SHA\n
+              reverse: false
+            INSECURE-AECDH-AES128-SHA:
+              regex: Cipher is AECDH-AES128-SHA\n
+              reverse: false
+            INSECURE-DHE-PSK-NULL-SHA384:
+              regex: Cipher is DHE-PSK-NULL-SHA384\n
+              reverse: false
+            INSECURE-ADH-CAMELLIA256-SHA:
+              regex: Cipher is ADH-CAMELLIA256-SHA\n
+              reverse: false
+            INSECURE-ADH-AES128-SHA256:
+              regex: Cipher is ADH-AES128-SHA256\n
+              reverse: false
+            INSECURE-ADH-AES256-SHA256:
+              regex: Cipher is ADH-AES256-SHA256\n
+              reverse: false
+            INSECURE-ECDHE-RSA-NULL-SHA:
+              regex: Cipher is ECDHE-RSA-NULL-SHA\n
+              reverse: false
+            INSECURE-NULL-SHA:
+              regex: Cipher is NULL-SHA\n
+              reverse: false
+            INSECURE-PSK-NULL-SHA:
+              regex: Cipher is PSK-NULL-SHA\n
+              reverse: false
+            INSECURE-PSK-NULL-SHA256:
+              regex: Cipher is PSK-NULL-SHA256\n
+              reverse: false
+            INSECURE-PSK-NULL-SHA384:
+              regex: Cipher is PSK-NULL-SHA384\n
+              reverse: false
+            INSECURE-ADH-CAMELLIA128-SHA256:
+              regex: Cipher is ADH-CAMELLIA128-SHA256\n
+              reverse: false
+            INSECURE-ADH-AES128-SHA:
+              regex: Cipher is ADH-AES128-SHA\n
+              reverse: false
+            INSECURE-DHE-PSK-NULL-SHA256:
+              regex: Cipher is DHE-PSK-NULL-SHA256\n
+              reverse: false
+            INSECURE-ADH-SEED-SHA:
+              regex: Cipher is ADH-SEED-SHA\n
+              reverse: false
+            INSECURE-ADH-AES128-GCM-SHA256:
+              regex: Cipher is ADH-AES128-GCM-SHA256\n
+              reverse: false
+            INSECURE-AECDH-NULL-SHA:
+              regex: Cipher is AECDH-NULL-SHA\n
+              reverse: false
+            INSECURE-ADH-CAMELLIA128-SHA:
+              regex: Cipher is ADH-CAMELLIA128-SHA\n
+              reverse: false
+            INSECURE-ADH-CAMELLIA256-SHA256:
+              regex: Cipher is ADH-CAMELLIA256-SHA256\n
+              reverse: false
+            INSECURE-NULL-MD5:
+              regex: Cipher is NULL-MD5\n
+              reverse: false
+            INSECURE-ADH-AES256-GCM-SHA384:
+              regex: Cipher is ADH-AES256-GCM-SHA384\n
+              reverse: false
+            INSECURE-ADH-DES-CBC3-SHA:
+              regex: Cipher is ADH-DES-CBC3-SHA\n
+              reverse: false
+            INSECURE-ECDHE-PSK-NULL-SHA256:
+              regex: Cipher is ECDHE-PSK-NULL-SHA256\n
+              reverse: false
+            INSECURE-ECDHE-PSK-NULL-SHA:
+              regex: Cipher is ECDHE-PSK-NULL-SHA\n
+              reverse: false
+            INSECURE-RSA-PSK-NULL-SHA384:
+              regex: Cipher is RSA-PSK-NULL-SHA384\n
+              reverse: false
