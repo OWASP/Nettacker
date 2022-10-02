@@ -14,3 +14,4 @@ py3DNS==3.2.1 # library_name=DNS
 numpy==1.23.3
 terminable_thread==0.7.1
 PyYAML==6.0 # library_name=yaml
+mysql-connector-python==3.20.1 # library_name=mysql.connector
