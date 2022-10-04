@@ -26,6 +26,7 @@ payloads:
           User-Agent: "{user_agent}"
           Accept: "*/*"
         allow_redirects: false
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/wp-admin/admin-ajax.php?action=NETTACKER_MD5_GENERATOR_START{{md5}}NETTACKER_MD5_GENERATOR_STOP"

