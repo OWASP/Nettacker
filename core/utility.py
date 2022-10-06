@@ -544,26 +544,20 @@ def nettacker_fuzzer_repeater_perform(arrays):
             original_arrays[array_name] = processed_array
     return original_arrays
 
-
 def expand_module_steps(content):
-    original_content = copy.deepcopy(content)
-    for protocol_lib in content:
-        for sub_step in content[content.index(protocol_lib)]['steps']:
-            arrays = nettacker_fuzzer_repeater_perform(find_repeaters(sub_step, '', {}))
-            if arrays:
-                original_content[content.index(protocol_lib)]['steps'][
-                    original_content[content.index(protocol_lib)]['steps'].index(sub_step)
-                ] = generate_new_sub_steps(sub_step, class_to_value(arrays_to_matrix(arrays)), arrays)
-            else:
-                original_content[content.index(protocol_lib)]['steps'][
-                    original_content[content.index(protocol_lib)]['steps'].index(sub_step)
-                ] = [  # minimum 1 step in array
-                    original_content[content.index(protocol_lib)]['steps'][
-                        original_content[content.index(protocol_lib)]['steps'].index(sub_step)
-                    ]
-                ]
-    return original_content
+    return [expand_protocol(x) for x in copy.deepcopy(content)]
 
+def expand_protocol(protocol):
+    protocol['steps'] = [expand_step(x) for x in protocol['steps']]
+    return protocol
+
+def expand_step(step):
+    arrays = nettacker_fuzzer_repeater_perform(find_repeaters(step, '', {}))
+    if arrays:
+        return generate_new_sub_steps(step, class_to_value(arrays_to_matrix(arrays)), arrays)
+    else:
+         # Minimum 1 step in array
+        return [step]
 
 def sort_dictonary(dictionary):
     etc_flag = '...' in dictionary
