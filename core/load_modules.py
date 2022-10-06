@@ -138,8 +138,7 @@ class NettackerModules:
                 warn(messages("library_not_supported").format(payload['library']))
                 return None
             for step in payload['steps']:
-                for _ in step:
-                    total_number_of_requests += 1
+                total_number_of_requests += len(step)
         request_number_counter = 0
         for payload in self.module_content['payloads']:
             protocol = getattr(
