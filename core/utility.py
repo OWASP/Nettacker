@@ -88,26 +88,26 @@ def process_conditions(
         log_list = merge_logs_to_list(event['response']['conditions_results'])
         if log_list:
             success_event_info(
-            messages("send_success_event_from_module").format(
-                process_number,
-                module_name,
-                target,
-                module_thread_number,
-                total_module_thread_number,
-                request_number_counter,
-                total_number_of_requests,
-                " ",
-                filter_large_content(
-                    "\n".join(
-                        [
-                            color('purple') + key + color('reset')
-                            for key in log_list
-                        ]
-                    ),
-                    filter_rate=100000
+                messages("send_success_event_from_module").format(
+                    process_number,
+                    module_name,
+                    target,
+                    module_thread_number,
+                    total_module_thread_number,
+                    request_number_counter,
+                    total_number_of_requests,
+                    " ",
+                    filter_large_content(
+                        "\n".join(
+                            [
+                                color('purple') + key + color('reset')
+                                for key in log_list
+                            ]
+                        ),
+                        filter_rate=100000
+                    )
                 )
             )
-        )
         else:
             success_event_info(
                 messages("send_success_event_from_module").format(
@@ -238,7 +238,7 @@ def replace_dependent_values(sub_step, dependent_on_temp_event):
     return find_and_replace_dependent_values(sub_step, dependent_on_temp_event)
 
 
-def replace_dependent_response(log,result):
+def replace_dependent_response(log, result):
     response_dependent = result
     if str(log):
         key_name = re.findall(
@@ -250,17 +250,17 @@ def replace_dependent_response(log,result):
                 key_value = eval(i)
             except Exception:
                 key_value = "response dependent error"
-            log = log.replace(i," ".join(key_value))
+            log = log.replace(i, " ".join(key_value))
         return log
 
 
-def merge_logs_to_list(result,log_list=[]):
+def merge_logs_to_list(result, log_list=[]):
     if type(result) == dict:
         for i in result:
-            if 'log'==i:
+            if 'log' == i:
                 log_list.append(result['log'])
             else:
-                merge_logs_to_list(result[i],log_list)
+                merge_logs_to_list(result[i], log_list)
     return list(set(log_list))
 
 
@@ -546,23 +546,21 @@ def nettacker_fuzzer_repeater_perform(arrays):
 
 
 def expand_module_steps(content):
-    original_content = copy.deepcopy(content)
-    for protocol_lib in content:
-        for sub_step in content[content.index(protocol_lib)]['steps']:
-            arrays = nettacker_fuzzer_repeater_perform(find_repeaters(sub_step, '', {}))
-            if arrays:
-                original_content[content.index(protocol_lib)]['steps'][
-                    original_content[content.index(protocol_lib)]['steps'].index(sub_step)
-                ] = generate_new_sub_steps(sub_step, class_to_value(arrays_to_matrix(arrays)), arrays)
-            else:
-                original_content[content.index(protocol_lib)]['steps'][
-                    original_content[content.index(protocol_lib)]['steps'].index(sub_step)
-                ] = [  # minimum 1 step in array
-                    original_content[content.index(protocol_lib)]['steps'][
-                        original_content[content.index(protocol_lib)]['steps'].index(sub_step)
-                    ]
-                ]
-    return original_content
+    return [expand_protocol(x) for x in copy.deepcopy(content)]
+
+
+def expand_protocol(protocol):
+    protocol['steps'] = [expand_step(x) for x in protocol['steps']]
+    return protocol
+
+
+def expand_step(step):
+    arrays = nettacker_fuzzer_repeater_perform(find_repeaters(step, '', {}))
+    if arrays:
+        return generate_new_sub_steps(step, class_to_value(arrays_to_matrix(arrays)), arrays)
+    else:
+        # Minimum 1 step in array
+        return [step]
 
 
 def sort_dictonary(dictionary):
