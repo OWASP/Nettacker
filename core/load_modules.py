@@ -10,6 +10,7 @@ from glob import glob
 from io import StringIO
 from core.socks_proxy import set_socks_proxy
 
+
 class NettackerModules:
     def __init__(self, options, module_name, scan_unique_id, process_number, thread_number, total_number_threads):
         from config import nettacker_paths
@@ -115,11 +116,13 @@ class NettackerModules:
                     steps.append(step)
 
             for step in copy.deepcopy(self.module_content['payloads'][index]['steps']):
-                if 'dependent_on_temp_event' in step[0]['response'] and 'save_to_temp_events_only' in step[0]['response']:
+                if 'dependent_on_temp_event' in step[0]['response'] and \
+                        'save_to_temp_events_only' in step[0]['response']:
                     steps.append(step)
 
             for step in copy.deepcopy(self.module_content['payloads'][index]['steps']):
-                if 'dependent_on_temp_event' in step[0]['response'] and 'save_to_temp_events_only' not in step[0]['response']:
+                if 'dependent_on_temp_event' in step[0]['response'] and \
+                        'save_to_temp_events_only' not in step[0]['response']:
                     steps.append(step)
             self.module_content['payloads'][index]['steps'] = steps
 
@@ -300,7 +303,14 @@ def perform_scan(options, target, module_name, scan_unique_id, process_number, t
     socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
     options.target = target
 
-    validate_module = NettackerModules(options, module_name, scan_unique_id, process_number, thread_number, total_number_threads)
+    validate_module = NettackerModules(
+        options,
+        module_name,
+        scan_unique_id,
+        process_number,
+        thread_number,
+        total_number_threads
+    )
     validate_module.load()
     validate_module.generate_loops()
     validate_module.sort_loops()

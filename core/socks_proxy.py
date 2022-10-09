@@ -1,5 +1,6 @@
 import socket
 
+
 def getaddrinfo(*args):
     """
     same getaddrinfo() used in socket except its resolve addresses with socks proxy
