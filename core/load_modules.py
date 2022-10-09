@@ -8,59 +8,25 @@ import time
 import json
 from glob import glob
 from io import StringIO
-
-
-def getaddrinfo(*args):
-    """
-    same getaddrinfo() used in socket except its resolve addresses with socks proxy
-
-    Args:
-        args: *args
-
-    Returns:
-        getaddrinfo
-    """
-    return [(socket.AF_INET, socket.SOCK_STREAM, 6, '', (args[0], args[1]))]
-
-
-def set_socks_proxy(socks_proxy):
-    if socks_proxy:
-        import socks
-        socks_version = socks.SOCKS5 if socks_proxy.startswith('socks5://') else socks.SOCKS4
-        socks_proxy = socks_proxy.split('://')[1] if '://' in socks_proxy else socks_proxy
-        if '@' in socks_proxy:
-            socks_username = socks_proxy.split(':')[0]
-            socks_password = socks_proxy.split(':')[1].split('@')[0]
-            socks.set_default_proxy(
-                socks_version,
-                str(socks_proxy.rsplit('@')[1].rsplit(':')[0]),  # hostname
-                int(socks_proxy.rsplit(':')[-1]),  # port
-                username=socks_username,
-                password=socks_password
-            )
-        else:
-            socks.set_default_proxy(
-                socks_version,
-                str(socks_proxy.rsplit(':')[0]),  # hostname
-                int(socks_proxy.rsplit(':')[1])  # port
-            )
-        return socks.socksocket, getaddrinfo
-    else:
-        return socket.socket, socket.getaddrinfo
+from core.socks_proxy import set_socks_proxy
 
 
 class NettackerModules:
-    def __init__(self):
+    def __init__(self, options, module_name, scan_unique_id, process_number, thread_number, total_number_threads):
         from config import nettacker_paths
-        self.module_name = None
-        self.module_content = None
-        self.scan_unique_id = None
-        self.target = None
-        self.process_number = None
-        self.module_thread_number = None
-        self.total_module_thread_number = None
-        self.module_inputs = {}
-        self.skip_service_discovery = None
+        self.module_name = module_name
+        self.process_number = process_number
+        self.module_thread_number = thread_number
+        self.total_module_thread_number = total_number_threads
+        self.module_inputs = vars(options)
+        if options.modules_extra_args:
+            for module_extra_args in self.module_inputs['modules_extra_args']:
+                self.module_inputs[module_extra_args] = \
+                    self.module_inputs['modules_extra_args'][module_extra_args]
+        self.scan_unique_id = scan_unique_id
+        self.target = options.target
+        self.skip_service_discovery = options.skip_service_discovery
+
         self.discovered_services = None
         self.ignored_core_modules = [
             'subdomain_scan',
@@ -150,11 +116,13 @@ class NettackerModules:
                     steps.append(step)
 
             for step in copy.deepcopy(self.module_content['payloads'][index]['steps']):
-                if 'dependent_on_temp_event' in step[0]['response'] and 'save_to_temp_events_only' in step[0]['response']:
+                if 'dependent_on_temp_event' in step[0]['response'] and \
+                        'save_to_temp_events_only' in step[0]['response']:
                     steps.append(step)
 
             for step in copy.deepcopy(self.module_content['payloads'][index]['steps']):
-                if 'dependent_on_temp_event' in step[0]['response'] and 'save_to_temp_events_only' not in step[0]['response']:
+                if 'dependent_on_temp_event' in step[0]['response'] and \
+                        'save_to_temp_events_only' not in step[0]['response']:
                     steps.append(step)
             self.module_content['payloads'][index]['steps'] = steps
 
@@ -173,8 +141,7 @@ class NettackerModules:
                 warn(messages("library_not_supported").format(payload['library']))
                 return None
             for step in payload['steps']:
-                for _ in step:
-                    total_number_of_requests += 1
+                total_number_of_requests += len(step)
         request_number_counter = 0
         for payload in self.module_content['payloads']:
             protocol = getattr(
@@ -335,23 +302,20 @@ def perform_scan(options, target, module_name, scan_unique_id, process_number, t
 
     socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
     options.target = target
-    validate_module = NettackerModules()
-    validate_module.skip_service_discovery = options.skip_service_discovery
-    validate_module.module_name = module_name
-    validate_module.process_number = process_number
-    validate_module.module_thread_number = thread_number
-    validate_module.total_module_thread_number = total_number_threads
-    validate_module.module_inputs = vars(options)
-    if options.modules_extra_args:
-        for module_extra_args in validate_module.module_inputs['modules_extra_args']:
-            validate_module.module_inputs[module_extra_args] = \
-                validate_module.module_inputs['modules_extra_args'][module_extra_args]
-    validate_module.scan_unique_id = scan_unique_id
-    validate_module.target = target
+
+    validate_module = NettackerModules(
+        options,
+        module_name,
+        scan_unique_id,
+        process_number,
+        thread_number,
+        total_number_threads
+    )
     validate_module.load()
     validate_module.generate_loops()
     validate_module.sort_loops()
     validate_module.start()
+
     verbose_event_info(
         messages("finished_parallel_module_scan").format(
             process_number,
