@@ -11,6 +11,6 @@ pyOpenSSL==22.1.0 # library_name=OpenSSL
 flask==2.2.2
 SQLAlchemy>=1.3.0 # library_name=sqlalchemy
 py3DNS==3.2.1 # library_name=DNS
-numpy==1.23.3
+numpy==1.23.4
 terminable_thread==0.7.1
 PyYAML==6.0 # library_name=yaml
