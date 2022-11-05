@@ -18,10 +18,10 @@ payloads:
         ports:
           - 110
         usernames:
-          - root
-          - admin
-          - user
-          - test
+          - root@{target}
+          - admin@{target}
+          - user@{target}
+          - test@{target}
         passwords:
           nettacker_fuzzer:
             input_format: '{{passwords}}'
