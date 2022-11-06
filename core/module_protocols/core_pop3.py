@@ -10,7 +10,7 @@ from core.utility import replace_dependent_values
 
 class NettackPOP3Lib:
     def pop3_brute_force(host, ports, usernames, passwords, timeout):
-        server = poplib.POP3(host,timeout=timeout)
+        server = poplib.POP3(host, port=ports, timeout=timeout)
         server.user(usernames)
         server.pass_(passwords)
         server.quit()
@@ -20,6 +20,19 @@ class NettackPOP3Lib:
             "password": passwords,
             "port": ports
         }
+
+    def pop3_ssl_brute_force(host, ports, usernames, passwords, timeout):
+        server = poplib.POP3_SSL(host, port=ports, timeout=timeout)
+        server.user(usernames)
+        server.pass_(passwords)
+        server.quit()
+        return {
+            "host": host,
+            "username": usernames,
+            "password": passwords,
+            "port": ports
+        }
+
 
 class Engine:
     def run(

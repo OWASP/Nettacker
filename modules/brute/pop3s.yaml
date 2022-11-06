@@ -1,8 +1,8 @@
 info:
   name: pop3_brute
-  author: Mrinank Bhowmick
+  author: OWASP Nettacker Team
   severity: 3
-  description: POP3 Bruteforcer
+  description: POP3 SSL Bruteforcer
   reference:
   profiles:
     - brute
@@ -12,11 +12,11 @@ info:
 payloads:
   - library: pop3
     steps:
-      - method: pop3_brute_force
+      - method: pop3_ssl_brute_force
         timeout: 3
         host: "{target}"
         ports:
-          - 110
+          - 995
         usernames:
           - root
           - admin
