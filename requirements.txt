@@ -5,7 +5,7 @@ requests==2.28.1
 aiohttp==3.8.3
 asyncio==3.4.3
 paramiko==2.11.0
-texttable==1.6.4
+texttable==1.6.6
 PySocks==1.7.1 # library_name=socks # module name is not equal to socks name; this is required to be checked on startup
 pyOpenSSL==22.1.0 # library_name=OpenSSL
 flask==2.2.2
