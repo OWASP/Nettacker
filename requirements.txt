@@ -2,7 +2,7 @@ argparse==1.4.0
 netaddr==0.8.0
 ipaddr==2.2.0
 requests==2.28.2
-aiohttp==3.8.3
+aiohttp==3.8.4
 asyncio==3.4.3
 paramiko==3.0.0
 texttable==1.6.7
