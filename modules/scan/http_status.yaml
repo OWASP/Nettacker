@@ -1,0 +1,41 @@
+info:
+  name: status_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: HTTP Status scan
+  reference:
+  profiles:
+    - scan
+    - http
+    - backup
+    - low_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          log: "response_dependent['status_code']"
+          conditions:
+            status_code:
+              regex: \d\d\d
+              reverse: false
