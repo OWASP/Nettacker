@@ -1,0 +1,45 @@
+info:
+  name: http_redirect_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: HTTP Redirect scan checks if a target website responds with a 3xx status code
+  reference:
+  profiles:
+    - scan
+    - http
+    - backup
+    - low_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          log: "response_dependent['status_code'] response_dependent['headers']['Location']"
+          conditions:
+            status_code:
+              regex: 3\d\d
+              reverse: false
+            headers:
+              Location:
+                regex: .*  
+                reverse: false
