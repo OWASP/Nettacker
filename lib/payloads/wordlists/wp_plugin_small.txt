@@ -123,6 +123,7 @@ mailz
 media-library-categories
 meenews
 mingle-forum
+miniorange-login-openid
 mm-forms-community
 myflash
 mystat
