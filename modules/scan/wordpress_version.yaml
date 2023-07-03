@@ -2,7 +2,7 @@ info:
   name: wordpress_version_scan
   author: OWASP Nettacker Team
   severity: 3
-  description: Directory, Backup finder
+  description: WordPress Version Scan - extracts WP version number from /wp-admin/install.php
   reference:
   profiles:
     - scan
@@ -36,7 +36,8 @@ payloads:
                 - 443
         response:
           condition_type: or
-          conditions:
+          conditions:              
             content:
-              regex: ver=.*\d
+              regex: \.css\?ver=(\d.\d.\d+)
               reverse: false
+          log: "response_dependent['content']"
