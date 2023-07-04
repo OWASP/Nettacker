@@ -42,3 +42,4 @@ payloads:
             content:
               regex: <version>(.+?)</version>
               reverse: false
+          log: "response_dependent['content']"
