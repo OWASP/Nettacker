@@ -34,8 +34,12 @@ payloads:
                 - 80
                 - 443
         response:
-          condition_type: or
+          condition_type: and        
           conditions:
+            status_code:
+                regex: "200"
+                reverse: false
             content:
-              regex: Drupal (\d+\.\d+),
+              regex: ^Drupal (\d+\.\d+)\,
               reverse: false
+          log: "response_dependent['content']"
