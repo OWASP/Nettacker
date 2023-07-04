@@ -39,3 +39,4 @@ payloads:
               x-powered-by:
                 regex: "\\S+"
                 reverse: false
+          log: "response_dependent['headers']['x-powered-by']"
