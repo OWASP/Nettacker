@@ -39,3 +39,4 @@ payloads:
               server:
                 regex: .+\d*\.?\d\S+
                 reverse: false
+          log: "response_dependent['headers']['server']"
