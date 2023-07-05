@@ -1,0 +1,45 @@
+info:
+  name: moveit_version_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: MoveIt version scan - detects and shows Progress MoveIt software and its version  
+  reference:
+    - https://community.progress.com/s/article/MOVEit-Transfer-Critical-Vulnerability-15June2023
+  profiles:
+    - scan
+    - http
+    - moveit
+    - low_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get 
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Host: "{target}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/moveitisapi/moveitisapi.dll?action=capa"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            headers:
+              x-moveitisapi-version:
+                regex: (\d\d\.\d+\.\d+)
+                reverse: false
+          log: "response_dependent['headers']['x-moveitisapi-version']"
