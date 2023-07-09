@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-from core.scan_targers import start_scan_processes
+from core.scan_targets import start_scan_processes
 from core.alert import info
 from core.alert import write
 from core.alert import messages

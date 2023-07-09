@@ -32,7 +32,7 @@ def expand_targets(options, scan_unique_id):
     Returns:
         a generator
     """
-    from core.scan_targers import multi_processor
+    from core.scan_targets import multi_processor
     targets = []
     for target in options.targets:
         if '://' in target:
