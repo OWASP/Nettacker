@@ -2,7 +2,7 @@ info:
   name: adobe_coldfusion_cve_2023_26360_vuln
   author: Jimmy Ly
   severity: 9.8
-  description: CVE-2023-26360 - Unauthenticated deserialization of untrusted data vulnerability in Adobe ColdFusion 2021 Update 5 and earlier as well as ColdFusion 2018 Update 15 and earlier, in order to gain abritrary file read and remote code execution.
+  description: CVE-2023-26360 - Unauthenticated deserialization of untrusted data vulnerability in Adobe ColdFusion 2021 Update 5 and earlier as well as ColdFusion 2018 Update 15 and earlier, in order to gain unauthenticated arbitrary file read and remote code execution.
   reference: 
     - https://nvd.nist.gov/vuln/detail/CVE-2023-26360
     - https://helpx.adobe.com/security/products/coldfusion/apsb23-25.html
