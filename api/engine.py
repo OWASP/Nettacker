@@ -39,7 +39,7 @@ from database.db import logs_to_report_json
 from database.db import search_logs
 from database.db import logs_to_report_html
 from config import nettacker_global_config
-from core.scan_targers import start_scan_processes
+from core.scan_targets import start_scan_processes
 from core.args_loader import check_all_required
 
 app = Flask(

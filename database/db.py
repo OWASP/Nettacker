@@ -25,15 +25,15 @@ DATABASE = nettacker_database_config()["DATABASE"]
 
 def db_inputs(connection_type):
     """
-        a function to determine the type of database the user wants to work with and
-        selects the corresponding connection to the db
+    a function to determine the type of database the user wants to work with and
+    selects the corresponding connection to the db
 
-        Args:
-            connection_type: type of db we are working with
+    Args:
+        connection_type: type of db we are working with
 
-        Returns:
-            corresponding command to connect to the db
-        """
+    Returns:
+        corresponding command to connect to the db
+    """
     return {
         "postgres": 'postgres+psycopg2://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE),
         "mysql": 'mysql://{0}:{1}@{2}:{3}/{4}'.format(USER, PASSWORD, HOST, PORT, DATABASE),
@@ -43,25 +43,22 @@ def db_inputs(connection_type):
 
 def create_connection():
     """
-    a function to create connections to db, it retries 100 times if connection returned an error
+    a function to create connections to db with pessimistic approach
 
     Returns:
         connection if success otherwise False
     """
     try:
-        for _ in range(0, 100):
-            try:
-                db_engine = create_engine(
-                    db_inputs(DB),
-                    connect_args={
-                        'check_same_thread': False
-                    }
-                )
-                Session = sessionmaker(bind=db_engine)
-                session = Session()
-                return session
-            except Exception:
-                time.sleep(0.1)
+        db_engine = create_engine(
+            db_inputs(DB),
+            connect_args={
+                'check_same_thread': False
+            },
+            pool_pre_ping=True
+        )
+        Session = sessionmaker(bind=db_engine)
+        session = Session()
+        return session
     except Exception:
         warn(messages("database_connect_fail"))
     return False
@@ -196,17 +193,17 @@ def submit_temp_logs_to_db(log):
 
 def find_temp_events(target, module_name, scan_unique_id, event_name):
     """
-        select all events by scan_unique id, target, module_name
+    select all events by scan_unique id, target, module_name
 
-        Args:
-            target: target
-            module_name: module name
-            scan_unique_id: unique scan identifier
-            event_name: event_name
+    Args:
+        target: target
+        module_name: module name
+        scan_unique_id: unique scan identifier
+        event_name: event_name
 
-        Returns:
-            an array with JSON events or an empty array
-        """
+    Returns:
+        an array with JSON events or an empty array
+    """
     session = create_connection()
     try:
         for _ in range(1, 100):

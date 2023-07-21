@@ -3,6 +3,7 @@
 
 #ignore IDE settings
 *.idea*
+*.vscode*
 
 #setup
 build/*
