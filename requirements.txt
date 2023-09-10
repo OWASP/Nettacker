@@ -13,4 +13,4 @@ SQLAlchemy>=1.4.43 # library_name=sqlalchemy
 py3DNS==3.2.1 # library_name=DNS
 numpy==1.25.2
 terminable_thread==0.7.1
-PyYAML==6.0 # library_name=yaml
+PyYAML==6.0.1 # library_name=yaml
