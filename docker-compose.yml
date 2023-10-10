@@ -4,7 +4,7 @@ services:
   nettacker:
     build:
       context: .
-      dockerfile: "Dockerfile"
+      dockerfile: Dockerfile
     command: python3 nettacker.py --start-api --api-host 0.0.0.0
     ports:
       - 5000:5000
