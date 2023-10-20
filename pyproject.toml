@@ -75,3 +75,58 @@ include = [
     "lib",
     "modules",
 ]
+
+[tool.poetry]
+name = "nettacker"
+authors = [ "OWASP" ]
+version = "0.3.1"
+description = "Automated Penetration Testing Framework - Open-Source Vulnerability Scanner - Vulnerability Management"
+keywords = [
+    "python", 
+    "security", 
+    "automation",
+    "scanner",
+    "bruteforce",
+    "owasp",
+    "penetration-testing",
+    "pentesting",
+    "cve",
+    "network-analysis",
+    "vulnerability-management",
+    "vulnerability-scanners",
+    "information-gathering",
+    "portscanner ",
+    "security-tools",
+    "vulnerability-scanner",
+    "penetration-testing-framework",
+    "hacking-tools", 
+    "pentesting-tools",
+    "cves",
+]
+readme = "README.md"
+license = "Apache-2.0"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Development Status :: 5 - Production/Stable",
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+argparse = "^1.4.0"
+netaddr = "^0.9.0"
+ipaddr = "^2.2.0"
+requests = "^2.31.0"
+aiohttp = "^3.8.5"
+asyncio = "^3.4.3"
+paramiko = "^3.3.1"
+texttable = "^1.6.7"
+PySocks = "^1.7.1"
+pyOpenSSL = "^23.2.0"
+flask = "^3.0.0"
+SQLAlchemy = "^1.4.43"
+py3DNS = "^4.0.0"
+numpy = "^1.26.0"
+terminable_thread = "^0.7.1"
+PyYAML = "^6.0.1"
