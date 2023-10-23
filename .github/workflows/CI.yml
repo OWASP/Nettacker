@@ -2,10 +2,52 @@
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 name: CI
-on: [push, pull_request]
+
+on:
+  - pull_request
+  - push
 
 jobs:
+  build-docker-image:
+    name: Test Docker ${{ matrix.docker-version }} build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        docker-version:
+          - '24.0.6-1~ubuntu.22.04~jammy'
+          - '23.0.6-1~ubuntu.22.04~jammy'
+          - '20.10.13~3-0~ubuntu-jammy'
+    steps:
+      - name: Uninstall pre-installed Docker
+        run: |
+          sudo apt-get remove docker-ce docker-ce-cli
+
+      # https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
+      - name: Install Docker ${{ matrix.docker-version }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install ca-certificates curl gnupg
+          sudo install -m 0755 -d /etc/apt/keyrings
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+          sudo chmod a+r /etc/apt/keyrings/docker.gpg
+          echo \
+            "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+            "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+            sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          sudo apt-get update
+          sudo apt-get install docker-ce=5:${{ matrix.docker-version }} docker-ce-cli=5:${{ matrix.docker-version }}
+
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Print Docker version
+        run: docker -v
+
+      - name: Build Nettacker image
+        run: docker build .
+
   test:
+    needs: build-docker-image
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo

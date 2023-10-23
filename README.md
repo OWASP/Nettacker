@@ -52,15 +52,15 @@ _____________
 
 ## ***IoT Scanner***
 *	Python Multi Thread & Multi Process Network Information Gathering Vulnerability Scanner
-*	Service and Device Detection ( SCADA, Restricted Areas, Routers, HTTP Servers, Logins and Authentications, None-Indexed HTTP, Paradox System, Cameras, Firewalls, UTM, WebMails, VPN, RDP, SSH, FTP, TELNET Services, Proxy Servers and Many Devices like Juniper, Cisco, Switches and many more… ) 
+*	Service and Device Detection ( SCADA, Restricted Areas, Routers, HTTP Servers, Logins and Authentications, None-Indexed HTTP, Paradox System, Cameras, Firewalls, UTM, WebMails, VPN, RDP, SSH, FTP, TELNET Services, Proxy Servers and Many Devices like Juniper, Cisco, Switches and many more… )
 *	Asset Discovery & Network Service Analysis
 *	Services Brute Force Testing
 *	Services Vulnerability Testing
-*	HTTP/HTTPS Crawling, Fuzzing, Information Gathering and … 
+*	HTTP/HTTPS Crawling, Fuzzing, Information Gathering and …
 *	HTML, JSON, CSV and Text Outputs
 * API & WebUI
-*	This project is at the moment in research and development phase 
-* Thanks to Google Summer of Code Initiative and all the students who contributed to this project during their summer breaks: 
+*	This project is at the moment in research and development phase
+* Thanks to Google Summer of Code Initiative and all the students who contributed to this project during their summer breaks:
 
 
 <img src="https://betanews.com/wp-content/uploads/2016/03/vertical-GSoC-logo.jpg" width="200"></img>

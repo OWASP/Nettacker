@@ -4,15 +4,20 @@ WORKDIR /usr/src/owaspnettacker
 
 COPY . .
 
-RUN <<EOL
-mkdir -p .data/results
-apt-get update
-apt-get install -y $(cat requirements-apt-get.txt)
-pip3 install --upgrade pip
-pip3 install -r requirements.txt
-pip3 install -r requirements-dev.txt
-EOL
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN mkdir -p .data/results && \
+    apt-get update && \
+    apt-get install -y $(cat requirements-apt-get.txt) && \
+    pip3 install --upgrade pip && \
+    pip3 install -r requirements.txt && \
+    pip3 install -r requirements-dev.txt && \
+    apt-get clean && \
+    rm -rf /root/.cache/* && \
+    rm -rf /var/lib/apt/lists/*
 
 ENV docker_env=true
 
-CMD [ "python3", "./nettacker.py" ]
+EXPOSE 5000
+
+CMD ["python3", "./nettacker.py"]
