@@ -563,7 +563,7 @@ def expand_step(step):
         return [step]
 
 
-def sort_dictonary(dictionary):
+def sort_dictionary(dictionary):
     etc_flag = '...' in dictionary
     if etc_flag:
         del dictionary['...']
