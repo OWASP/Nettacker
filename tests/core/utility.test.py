@@ -15,8 +15,8 @@ class UtilityTesting(unittest.TestCase):
     This is the class that tests the utility module functions.
     """
 
-    def test_sort_dictonary(self):
-        """Tests if the function sorts the input dictionary."""   
+    def test_sort_dictionary(self):
+        """Tests if the function sorts the input dictionary."""
         input_dict = {
             'a': 1,
             'c': 3,
@@ -29,7 +29,7 @@ class UtilityTesting(unittest.TestCase):
             'c': 3,
             'd': 23,
         }
-        self.assertDictEqual(utility.sort_dictonary(input_dict), sorted_dict)
+        self.assertDictEqual(utility.sort_dictionary(input_dict), sorted_dict)
 
     def test_select_maximum_cpu_core(self):
         """Tests if it selects the proper amount of cpu's"""
