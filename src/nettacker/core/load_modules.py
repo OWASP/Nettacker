@@ -252,9 +252,9 @@ def load_all_modules(limit=-1, full_details=False):
     if full_details:
         import yaml
     module_names = {}
-    for module_name in nettacker_paths()["modules_path"].glob("*.yaml"):
-        libname = module_name.split("/")[-1].split(".")[0]
-        category = module_name.split("/")[-2]
+    for module_name in nettacker_paths()["modules_path"].glob("**/*.yaml"):
+        libname = str(module_name).split("/")[-1].split(".")[0]
+        category = str(module_name).split("/")[-2]
         module_names[libname + "_" + category] = (
             yaml.load(
                 StringIO(
