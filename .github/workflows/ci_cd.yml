@@ -52,8 +52,9 @@ jobs:
 
   publish-to-test-pypi:
     name: Publish to Test PyPI
-    # github.repository == 'owasp/nettacker' &&
+
     if: |
+      github.repository == 'owasp/nettacker' &&
       github.event_name == 'push' &&
       github.ref_name == 'implement-package-publishing-poc'
     environment: test
@@ -75,9 +76,9 @@ jobs:
           repository-url: https://test.pypi.org/legacy/
 
   publish-to-pypi:
-    # github.repository == 'owasp/nettacker' &&
     name: Publish to PyPI
     if: |
+      github.repository == 'owasp/nettacker' &&
       github.event_name == 'push' &&
       github.ref_name == 'implement-package-publishing-poc'
     environment: release
