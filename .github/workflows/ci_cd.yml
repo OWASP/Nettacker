@@ -56,7 +56,7 @@ jobs:
     if: |
       github.repository == 'owasp/nettacker' &&
       github.event_name == 'push' &&
-      github.ref_name == 'implement-package-publishing-poc'
+      github.ref_name == 'arkid15r:implement-package-publishing-poc'
     environment: test
     needs:
       - build-package
@@ -80,7 +80,7 @@ jobs:
     if: |
       github.repository == 'owasp/nettacker' &&
       github.event_name == 'push' &&
-      github.ref_name == 'implement-package-publishing-poc'
+      github.ref_name == 'arkid15r:implement-package-publishing-poc'
     environment: release
     needs:
       - build-package
