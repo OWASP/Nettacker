@@ -102,7 +102,7 @@ jobs:
 
   test-docker-image:
     name: Test Docker image
-    needs: publish-to-pypi
+    # needs: publish-to-pypi
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
