@@ -59,9 +59,10 @@ jobs:
     name: Publish to Test PyPI
 
     if: |
-      github.repository == 'owasp/nettacker' &&
-      github.event_name == 'push' &&
-      endsWith(github.ref_name, 'implement-package-publishing-poc')
+      ${{
+        github.repository == 'owasp/nettacker' &&
+        github.event_name == 'push' &&
+        github.ref_name == 'implement-package-publishing-poc' }}
     environment: test
     needs:
       - build-package
@@ -86,7 +87,7 @@ jobs:
       ${{ github.repository == 'owasp/nettacker' &&
           github.event_name == 'push' &&
           github.ref_name == 'implement-package-publishing-poc' }}
-    environment: release
+    # environment: release
     needs:
       - build-package
     permissions:
