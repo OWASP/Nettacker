@@ -22,6 +22,11 @@ jobs:
         run: |
           poetry run pytest
 
+      - name: Print context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
   build-package:
     name: Build package
     needs: run-pytest
@@ -56,7 +61,7 @@ jobs:
     if: |
       github.repository == 'owasp/nettacker' &&
       github.event_name == 'push' &&
-      github.ref_name == 'arkid15r:implement-package-publishing-poc'
+      endsWith(github.ref_name, 'implement-package-publishing-poc')
     environment: test
     needs:
       - build-package
@@ -78,9 +83,9 @@ jobs:
   publish-to-pypi:
     name: Publish to PyPI
     if: |
-      github.repository == 'owasp/nettacker' &&
-      github.event_name == 'push' &&
-      github.ref_name == 'arkid15r:implement-package-publishing-poc'
+      ${{ github.repository == 'owasp/nettacker' &&
+          github.event_name == 'push' &&
+          github.ref_name == 'implement-package-publishing-poc' }}
     environment: release
     needs:
       - build-package
