@@ -63,7 +63,7 @@ jobs:
         github.repository == 'owasp/nettacker' &&
         github.event_name == 'push' &&
         github.ref_name == 'implement-package-publishing-poc' }}
-    environment: test
+    # environment: test
     needs:
       - build-package
     permissions:
