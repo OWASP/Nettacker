@@ -1,0 +1,93 @@
+[tool.poetry]
+name = "nettacker"
+version = "0.3.1-alpha.17"
+description = "Automates information gathering, vulnerability scanning and aids penetration testing engagements in general"
+license = "Apache-2.0"
+readme = "README.md"
+
+authors = ["OWASP Nettacker Contributors"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+keywords = [
+    "automation",
+    "bruteforce",
+    "cve",
+    "hacking-tools",
+    "information-gathering",
+    "network-analysis",
+    "owasp",
+    "penetration-testing",
+    "pentesting",
+    "pentesting-tools",
+    "port-scanner",
+    "python",
+    "security-tools",
+    "security",
+    "vulnerability-management",
+    "vulnerability-scanner",
+]
+
+homepage = "https://owasp.org/www-project-nettacker"
+repository = "https://github.com/OWASP/Nettacker"
+documentation = "https://github.com/OWASP/Nettacker/wiki"
+
+packages = [{ include = "nettacker", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.9, <3.13"
+aiohttp = "^3.8.6"
+argparse = "^1.4.0"
+asyncio = "^3.4.3"
+flask = "^3.0.0"
+ipaddr = "^2.2.0"
+netaddr = "^0.9.0"
+numpy = "^1.26.1"
+paramiko = "^3.3.1"
+py3dns = "^4.0.0"
+pyopenssl = "^23.2.0"
+pysocks = "^1.7.1"
+pyyaml = "^6.0.1"
+requests = "^2.31.0"
+sqlalchemy = "^2.0.22"
+terminable-thread = "^0.7.1"
+texttable = "^1.7.0"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.1.0"
+ipython = "^8.16.1"
+
+[tool.poetry.group.test.dependencies]
+coverage = "^7.3.2"
+pytest = "^7.4.3"
+pytest-cov = "^4.1.0"
+pytest-xdist = "^3.3.1"
+
+[tool.poetry.urls]
+"Sponsor" = "https://owasp.org/donate/?reponame=www-project-nettacker&title=OWASP+Nettacker"
+
+[tool.black]
+line-length = 99
+target-version = ["py38", "py39", "py310", "py311"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.isort]
+known_first_party = ["nettacker", "tests"]
+line_length = 99
+multi_line_output = 3
+no_inline_sort = true
+profile = "black"
+
+[tool.pytest.ini_options]
+addopts = "--cov=src/nettacker --cov-config=pyproject.toml --cov-report term --cov-report xml --dist loadscope --no-cov-on-fail --numprocesses auto"
+testpaths = ["tests"]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
