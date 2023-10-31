@@ -236,7 +236,7 @@ def load_all_modules(limit=-1, full_details=False):
     """
     # Search for Modules
     from config import nettacker_paths
-    from core.utility import sort_dictonary
+    from core.utility import sort_dictionary
     if full_details:
         import yaml
     module_names = {}
@@ -260,7 +260,7 @@ def load_all_modules(limit=-1, full_details=False):
         if len(module_names) == limit:
             module_names['...'] = {}
             break
-    module_names = sort_dictonary(module_names)
+    module_names = sort_dictionary(module_names)
     module_names['all'] = {}
 
     return module_names
@@ -273,7 +273,7 @@ def load_all_profiles(limit=-1):
     Returns:
         an array of all profile names
     """
-    from core.utility import sort_dictonary
+    from core.utility import sort_dictionary
     all_modules_with_details = load_all_modules(limit=limit, full_details=True)
     profiles = {}
     if '...' in all_modules_with_details:
@@ -287,11 +287,11 @@ def load_all_profiles(limit=-1):
             else:
                 profiles[tag].append(key)
             if len(profiles) == limit:
-                profiles = sort_dictonary(profiles)
+                profiles = sort_dictionary(profiles)
                 profiles['...'] = []
                 profiles['all'] = []
                 return profiles
-    profiles = sort_dictonary(profiles)
+    profiles = sort_dictionary(profiles)
     profiles['all'] = []
     return profiles
 

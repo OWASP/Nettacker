@@ -1,0 +1,52 @@
+info:
+  name: confluence_cve_2023_22515_vuln
+  author: Jimmy Ly
+  severity: 10
+  description: Atlassian has been made aware of an issue reported by a handful of customers where external attackers may have exploited a previously unknown vulnerability in publicly accessible Confluence Data Center and Server instances to create unauthorized Confluence administrator accounts and access Confluence instances.
+  reference: 
+    - https://confluence.atlassian.com/security/cve-2023-22515-privilege-escalation-vulnerability-in-confluence-data-center-and-server-1295682276.html
+    - https://attackerkb.com/topics/Q5f0ItSzw5/cve-2023-22515/rapid7-analysis
+    - https://confluence.atlassian.com/kb/faq-for-cve-2023-22515-1295682188.html
+    - https://jira.atlassian.com/browse/CONFSERVER-92475
+    - https://www.cisa.gov/news-events/alerts/2023/10/05/cisa-adds-three-known-exploited-vulnerabilities-catalog
+    - https://nvd.nist.gov/vuln/detail/CVE-2023-22515
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve
+    - confluence
+    - atlassian
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{{user_agent}}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/dashboard.action"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+            content:
+              regex: <span id=\'footer-build-information\'>8\.(0\.[0-4]|1\.[0-4]|2\.[0-3]|3\.[0-2]|4\.[0-2]|5\.[0-1])</span>
+              reverse: false 
