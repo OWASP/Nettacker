@@ -1,8 +1,8 @@
 info:
-  name: ivanti_ics_cve_2023_46805_and_cve_2024_21887_vuln
+  name: ivanti_ics_cve_2023_46805_vuln
   author: Jimmy Ly
-  severity: 9.1
-  description: Ivanti Connect Secure Unauthenticated Remote Code Execution. CVE-2023-46805 is an authentication bypass and CVE-2024-21887 is a command injection vulnerability in the web component of Ivanti ICS 9.x, 22.x. These two vulnerabilites can be chained to allow remote code exeuction as an unauthenticated user.
+  severity: 8.2
+  description: CVE-2023-46805 is an authentication bypass that is usually chained with CVE-2024-21887 to perform remote code execution on Ivanti ICS 9.x, 22.x. This module checks whether the mitigations have been applied for CVE-2023-46805. 
   reference: 
     - https://forums.ivanti.com/s/article/CVE-2023-46805-Authentication-Bypass-CVE-2024-21887-Command-Injection-for-Ivanti-Connect-Secure-and-Ivanti-Policy-Secure-Gateways?language=en_US
     - https://labs.watchtowr.com/welcome-to-2024-the-sslvpn-chaos-continues-ivanti-cve-2023-46805-cve-2024-21887
@@ -10,7 +10,7 @@ info:
     - vuln
     - vulnerability
     - http
-    - critical_severity
+    - high_severity
     - cve
     - ivanti
     - ivanti_connect_secure
