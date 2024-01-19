@@ -1,0 +1,51 @@
+info:
+  name: wp_plugin_cve_2023_6875_vuln
+  author: Captain-T2004
+  severity: 9
+  description: POST SMTP Mailer – Email log, Delivery Failure Notifications and Best Mail SMTP for WordPress <= 2.8.7 – Unauthenticated Stored Cross-Site Scripting via device
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2023-6875
+    - https://www.wordfence.com/blog/2024/01/type-juggling-leads-to-two-vulnerabilities-in-post-smtp-mailer-wordpress-plugin/
+    - https://www.cve.org/CVERecord?id=CVE-2023-6875
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve2023
+    - cve
+    - wordpress
+    - wp_plugin
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/wp-json/post-smtp/v1/connect-app"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          success_conditions: content
+          condition_type: and
+          conditions:
+            content:
+              regex: "fcm_token"
+              reverse: false
+            status_code:
+              regex: "200"
+              reverse: false
