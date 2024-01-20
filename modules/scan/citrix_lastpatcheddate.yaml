@@ -1,0 +1,45 @@
+info:
+  name:  citrix_lastpatcheeddate_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: Citrix Netscaler Gateway Last Patched Date Scan
+  reference:
+  profiles:
+    - scan
+    - http
+    - citrix
+    - low_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: head
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/epa/scripts/win/nsepa_setup.exe"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          log: "response_dependent['headers']['Last-Modified']"
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            headers:
+              Last-Modified:
+                regex: .*  
+                reverse: false

@@ -1,0 +1,43 @@
+info:
+  name: http_html_title_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: HTTP HTML Title scan - extracts the TITLE tag which can help identify the application running on the server
+  reference:
+  profiles:
+    - scan
+    - http
+    - low_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: true
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          log: "response_dependent['status_code'] response_dependent['content']"
+          conditions:
+            status_code:
+                regex: \d\d\d
+                reverse: false
+            content:
+                regex: <title>(.+?)</title> 
+                reverse: false
