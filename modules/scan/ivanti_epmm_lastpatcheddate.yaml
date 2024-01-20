@@ -1,5 +1,5 @@
 info:
-  name: ivanti_epmm_lastpatcheeddate_scan
+  name: ivanti_epmm_lastpatcheddate_scan
   author: OWASP Nettacker Team
   severity: 3
   description: Ivanti EPMM Last Patched Date Scan
