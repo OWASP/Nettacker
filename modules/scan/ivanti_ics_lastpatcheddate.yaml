@@ -1,5 +1,5 @@
 info:
-  name: ivanti_ics_lastpatcheeddate_scan
+  name: ivanti_ics_lastpatcheddate_scan
   author: OWASP Nettacker Team
   severity: 3
   description: Ivanti ICS Last Patched Date Scan
