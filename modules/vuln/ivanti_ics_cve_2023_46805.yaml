@@ -22,7 +22,7 @@ payloads:
       - method: get
         timeout: 3
         headers:
-          User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.138 Safari/537.36"
+          User-Agent: "{user_agent}"
         allow_redirects: false
         ssl: false
         url:
@@ -44,8 +44,8 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: '403'
+              regex: "403"
               reverse: false
             content:
-              regex: '<html>'
+              regex: "<html>"
               reverse: true
