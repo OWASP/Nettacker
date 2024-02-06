@@ -1,0 +1,48 @@
+info:
+  name: ivanti_ics_lastpatcheddate_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: Ivanti ICS Last Patched Date Scan
+  reference:
+  profiles:
+    - scan
+    - http
+    - ivanti
+    - low_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: head
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/dana-na/css/ds.js"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          log: "response_dependent['headers']['Last-Modified']"
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            headers:
+              Last-Modified:
+                regex: .*  
+                reverse: false
+            Content-Type: 
+              regex: "javascript"
+              reverse: false

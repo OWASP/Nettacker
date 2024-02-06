@@ -145,6 +145,7 @@ placester
 plugin-dir
 plugin-newsletter
 post-highlights
+post-smtp
 premium_gallery_manager
 pretty-link
 profiles

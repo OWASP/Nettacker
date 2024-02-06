@@ -1,0 +1,53 @@
+info:
+  name: ivanti_epmm_cve_2023_35082_vuln
+  author: OWASP Nettacker team 
+  severity: 9.8
+  description: CVE-2023-35082 is an authentication bypass in Ivanti Endpoint Manager Mobile (EPMM) and MobileIron Core
+  reference: 
+    - https://forums.ivanti.com/s/article/CVE-2023-35082-Remote-Unauthenticated-API-Access-Vulnerability-in-MobileIron-Core-11-2-and-older
+    - https://www.cisa.gov/news-events/alerts/2024/01/18/cisa-adds-one-known-exploited-vulnerability-catalog
+    - https://www.helpnetsecurity.com/2024/01/19/exploited-cve-2023-35082/
+    - https://www.rapid7.com/blog/post/2023/08/02/cve-2023-35082-mobileiron-core-unauthenticated-api-access-vulnerability/
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - high_severity
+    - cve
+    - ivanti
+    - ivanti_epmm
+    - cisa_kev
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:  
+                - "mifs/asfV3/api/v2/ping"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "vspVersion"
+              reverse: false

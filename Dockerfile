@@ -1,4 +1,5 @@
-FROM python:3.11.6-slim
+
+FROM python:3.11.7-slim
 WORKDIR /usr/src/owaspnettacker
 COPY . .
 RUN mkdir -p .data/results
