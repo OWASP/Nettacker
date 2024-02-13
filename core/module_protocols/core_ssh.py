@@ -20,22 +20,28 @@ class NettackSSHLib:
         paramiko_logger.disabled = True
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        
-        try:
-            # Try connecting to the SSH server using the provided credentials
+        if passwords:
+            # Try connecting to a SSH server using the provided credentials.
             ssh.connect(
                 hostname=host,
-                username=usernames,
-                password=passwords,
                 port=int(ports),
-                timeout=int(timeout)
+                timeout=int(timeout),
+                auth_strategy=paramiko.auth_strategy.Password(
+                    username=usernames,
+                    password_getter=lambda:passwords
+                ),
             )
-        except paramiko.ssh_exception.AuthenticationException:
-            # Handles cases with open Dropbear SSH servers:
-            # Attempt testing for an open server without authentication.
-            ssh.get_transport().auth_none(usernames)
-        finally:
-            ssh.close()
+        else:
+            # Try connecting to a SSH server without password.
+            ssh.connect(
+                hostname=host,
+                port=int(ports),
+                timeout=int(timeout),
+                auth_strategy=paramiko.auth_strategy.NoneAuth(
+                    username=usernames
+                ),
+            )
+        ssh.close()
 
         return {
             "host": host,
