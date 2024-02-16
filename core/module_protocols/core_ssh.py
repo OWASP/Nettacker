@@ -20,29 +20,18 @@ class NettackSSHLib:
         paramiko_logger.disabled = True
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        if passwords:
-            # Try connecting to a SSH server using the provided credentials.
-            ssh.connect(
-                hostname=host,
-                port=int(ports),
-                timeout=int(timeout),
-                auth_strategy=paramiko.auth_strategy.Password(
-                    username=usernames,
-                    password_getter=lambda:passwords
-                ),
-            )
-        else:
-            # Try connecting to a SSH server without password.
-            ssh.connect(
-                hostname=host,
-                port=int(ports),
-                timeout=int(timeout),
-                auth_strategy=paramiko.auth_strategy.NoneAuth(
-                    username=usernames
-                ),
-            )
+        ssh.connect(
+            hostname=host,
+            port=int(ports),
+            timeout=int(timeout),
+            auth_strategy=paramiko.auth_strategy.Password(
+                username=usernames,
+                password_getter=lambda:passwords
+            ) if passwords else paramiko.auth_strategy.NoneAuth(
+                                    username=usernames
+                                ),
+        )
         ssh.close()
-
         return {
             "host": host,
             "username": usernames,
