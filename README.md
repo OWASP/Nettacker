@@ -36,7 +36,7 @@ ____________
 Quick Setup & Run
 ============
 ```bash
-$ docker-compose up -d && docker exec -it nettacker_nettacker_1 /bin/bash
+$ docker-compose up -d && docker exec -it nettacker-nettacker-1 /bin/bash
 # python nettacker.py -i owasp.org -s -m port_scan
 ```
 * Results are accessible from your (https://localhost:5000) or https://nettacker-api.z3r0d4y.com:5000/ (pointed to your localhost)
