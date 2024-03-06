@@ -166,3 +166,68 @@ Relevant styles below
 .card-flag{
     margin-left: 10px;
 }
+
+#pagination_controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+#pagination_controls button {
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  color: #333;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+#pagination_controls button:hover {
+  background-color: #e2e6ea;
+}
+
+#pagination_controls button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+#pagination_controls button#previous_btn,
+#pagination_controls button#next_btn {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+}
+
+#pagination_controls button#previous_btn:disabled,
+#pagination_controls button#next_btn:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+#pagination_controls button#previous_btn[disabled],
+#pagination_controls button#next_btn[disabled] {
+  display: none;
+}
+
+#pagination_controls {
+  display: flex;
+  justify-content: center;
+}
+
+.page_number_btn {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+.page_number_btn.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.page_number_btn:hover:not(.active) {
+  background-color: #e9ecef;
+}

@@ -812,6 +812,50 @@ function filter_large_content(content, filter_rate){
     document.getElementById("crawl_results").innerHTML = HTMLData;
   }
 
+  function clearPaginationButtons() {
+    $(".page_number_btn").remove();
+  }
+
+  function updatePaginationControls(totalPages, currentPage) {
+    clearPaginationButtons();
+
+    let startPage = Math.max(currentPage - 2, 1);
+    let endPage = Math.min(startPage + 4, totalPages);
+
+    for (let i = startPage; i <= endPage; i++) {
+      const pageBtn = $("<button>").addClass("page_number_btn").text(i);
+      if (i === currentPage) {
+        pageBtn.addClass("active");
+      }
+      pageBtn.insertBefore("#crw_next_btn");
+      pageBtn.click(function () {
+        crawler_page = i;
+        get_crawler_list(i);
+      });
+    }
+    $("#crw_first_btn").toggle(currentPage > 1);
+    $("#crw_previous_btn").toggle(currentPage > 1);
+
+    $("#crw_next_btn").toggle(currentPage < totalPages);
+    $("#crw_last_btn").toggle(currentPage < totalPages);
+
+    $("#crw_previous_btn").toggle(currentPage > 1);
+    $("#crw_next_btn").toggle(currentPage < totalPages);
+  }
+  $("#crw_first_btn").click(function () {
+    if (crawler_page > 1) {
+      crawler_page = 1;
+      get_crawler_list(crawler_page);
+    }
+  });
+
+  $("#crw_last_btn").click(function () {
+    if (crawler_page < totalPages) {
+      crawler_page = totalPages;
+      get_crawler_list(crawler_page);
+    }
+  });
+
   function get_crawler_list(crawler_page) {
     $.ajax({
       type: "GET",
@@ -819,13 +863,29 @@ function filter_large_content(content, filter_rate){
         "/logs/search?q=" + $("#search_data").val() + "&page=" + crawler_page,
       dataType: "text",
     })
-      .done(function (res) {
-        $("#login_first").addClass("hidden");
-        $("#crawl_results").removeClass("hidden");
-        $("#crw_refresh_btn").removeClass("hidden");
-        $("#crw_nxt_prv_btn").removeClass("hidden");
-        show_crawler(res);
-      })
+    .done(function (res) {
+      const totalPages = Math.ceil(res.length / 10);
+      $("#login_first").addClass("hidden");
+      $("#crawl_results").removeClass("hidden");
+      $("#crw_refresh_btn").removeClass("hidden");
+      $("#crw_nxt_prv_btn").removeClass("hidden");
+      $("#current_page_number").text(crawler_page);
+      $("#total_pages").text(totalPages);
+      show_crawler(res);
+      updatePaginationControls(totalPages, crawler_page);
+  
+      if (crawler_page === 1) {
+        $("#crw_previous_btn").hide();
+      } else {
+        $("#crw_previous_btn").show();
+      }
+  
+      if (crawler_page === totalPages) {
+        $("#crw_next_btn").hide();
+      } else {
+        $("#crw_next_btn").show();
+      }
+    })
       .fail(function (jqXHR, textStatus, errorThrown) {
         if (errorThrown == "UNAUTHORIZED") {
           $("#login_first").removeClass("hidden");
