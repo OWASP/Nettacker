@@ -28,7 +28,7 @@ def structure(status="", msg=""):
 
 def get_value(flask_request, key):
     """
-    get a value from GET, POST or CCOKIES
+    get a value from GET, POST or COOKIES
 
     Args:
         flask_request: the flask request
