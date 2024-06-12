@@ -138,6 +138,9 @@
     /* background: #FAFAFA; */
     color: #2c3e50;
     padding: 25px 30px 15px;
+    text-align: justify !important;
+    color: #2c3e50;
+    padding: 15px 30px; 
     /* border-bottom: 1px solid #FFFFFF; */
 }
 
