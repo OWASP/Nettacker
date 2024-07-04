@@ -30,7 +30,7 @@ class Report(Base):
 class TempEvents(Base):
     """
     This class defines the table schema of the reports table. Any changes to
-    the reports table need to be done here.
+    the temp_events table need to be done here.
     """
 
     __tablename__ = "temp_events"

@@ -7,6 +7,8 @@ import math
 import multiprocessing
 import random
 import re
+import socket
+import ssl
 import string
 import sys
 import time
@@ -324,3 +326,34 @@ def sort_dictionary(dictionary):
     if etc_flag:
         sorted_dictionary["..."] = {}
     return sorted_dictionary
+
+
+def is_weak_hash_algo(algo):
+    algo = algo.lower()
+    for unsafe_algo in ("md2", "md4", "md5", "sha1"):
+        if unsafe_algo in algo:
+            return True
+    return False
+
+
+def is_weak_ssl_version(ssl_ver):
+    return ssl_ver not in {"TLSv1.2", "TLSv1.3"}
+
+
+def is_weak_cipher_suite(host, port, timeout):
+    unsecure_ciphers = "EXP-ADH-DES-CBC-SHA:ADH-3DES-EDE-CBC-SHA:ADH-AES128-CBC-SHA:ADH-AES128-CBC-SHA256:ADH-AES128-GCM-SHA256:ADH-AES256-CBC-SHA:ADH-AES256-CBC-SHA256:ADH-AES256-GCM-SHA384:ADH-ARIA128-CBC-SHA256:ADH-ARIA128-GCM-SHA256:ADH-ARIA256-CBC-SHA384:ADH-ARIA256-GCM-SHA384:ADH-CAMELLIA128-CBC-SHA:ADH-CAMELLIA128-CBC-SHA256"
+    try:
+        socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        socket_connection.settimeout(timeout)
+        socket_connection.connect((host, port))
+    except ConnectionRefusedError:
+        return None
+    try:
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        ctx.set_ciphers(unsecure_ciphers)
+        socket_connection = ctx.wrap_socket(socket_connection)
+        return True
+    except ssl.SSLError:
+        return False

@@ -1,3 +1,4 @@
+import ssl
 from unittest.mock import patch
 
 from core.utils import common as utils
@@ -52,3 +53,31 @@ class TestUtils(TestCase):
                 )
 
             self.assertEqual(utils.select_maximum_cpu_core("invalid"), 1)
+
+    def test_is_weak_hash_algo(self):
+        for algo in ("md2", "md4", "md5", "sha1"):
+            self.assertTrue(utils.is_weak_hash_algo(algo))
+        self.assertFalse(utils.is_weak_hash_algo("test_aglo"))
+
+    def test_is_weak_ssl_version(self):
+        for ver in {"TLSv1.2", "TLSv1.3"}:
+            self.assertFalse(utils.is_weak_ssl_version(ver))
+        self.assertTrue(utils.is_weak_ssl_version("test_version"))
+
+    @patch("socket.socket")
+    @patch("ssl.create_default_context")
+    def test_is_weak_cipher_suite(self, mock_context, mock_socket):
+        HOST = "example.com"
+        PORT = 80
+        TIMEOUT = 60
+
+        socket_instance = mock_socket.return_value
+        context_instance = mock_context.return_value
+
+        self.assertTrue(utils.is_weak_cipher_suite(HOST, PORT, TIMEOUT))
+        context_instance.wrap_socket.assert_called_with(socket_instance)
+        socket_instance.settimeout.assert_called_with(TIMEOUT)
+        socket_instance.connect.assert_called_with((HOST, PORT))
+
+        context_instance.wrap_socket.side_effect = ssl.SSLError
+        self.assertFalse(utils.is_weak_cipher_suite(HOST, PORT, TIMEOUT))

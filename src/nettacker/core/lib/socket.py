@@ -9,10 +9,13 @@ import socket
 import ssl
 import struct
 import time
+from datetime import datetime, timezone
 
-from core.utils.common import reverse_and_regex_condition
+from core.utils.common import is_weak_hash_algo, reverse_and_regex_condition
+from OpenSSL import crypto
 
 from nettacker.core.lib.base import BaseEngine, BaseLibrary
+from nettacker.core.utils.common import is_weak_ssl_version, is_weak_cipher_suite
 
 log = logging.getLogger(__name__)
 
@@ -78,6 +81,63 @@ class SocketLibrary(BaseLibrary):
             "service": socket.getservbyport(port),
             "response": response.decode(errors="ignore"),
             "ssl_flag": ssl_flag,
+        }
+
+    def ssl_certificate_scan(self, host, port, timeout):
+        tcp_socket = create_tcp_socket(host, port, timeout)
+        if tcp_socket is None:
+            return None
+
+        socket_connection, ssl_flag = tcp_socket
+        peer_name = socket_connection.getpeername()
+        if ssl_flag:
+            cert = ssl.get_server_certificate((host, port))
+            x509 = crypto.load_certificate(crypto.FILETYPE_PEM, cert)
+            weak_signing_algo = is_weak_hash_algo(str(x509.get_signature_algorithm()))
+            cert_expires = datetime.strptime(x509.get_notAfter().decode("utf-8"), "%Y%m%d%H%M%S%z")
+
+            return {
+                "self_signed": x509.get_issuer() == x509.get_subject(),
+                "expired": x509.has_expired(),
+                "weak_signing_algo": weak_signing_algo,
+                "ssl_flag": ssl_flag,
+                "peer_name": peer_name,
+                "expiring_soon": (cert_expires - datetime.now(timezone.utc)).days < 30,
+                "service": socket.getservbyport(int(port)),
+            }
+        return {
+            "peer_name": peer_name,
+            "ssl_flag": ssl_flag,
+            "service": socket.getservbyport(int(port)),
+        }
+
+    def ssl_version_scan(self, host, port, timeout):
+        tcp_socket = create_tcp_socket(host, port, timeout)
+        if tcp_socket is None:
+            return None
+
+        socket_connection, ssl_flag = tcp_socket
+        weak_cipher_suite = False
+        peer_name = socket_connection.getpeername()
+
+        if ssl_flag:
+            ssl_ver = socket_connection.version()
+            weak_version = is_weak_ssl_version(ssl_ver)
+            if ssl_ver != "TLSv1.3":
+                weak_cipher_suite = is_weak_cipher_suite(host, port, timeout)
+            return {
+                "ssl_version": ssl_ver,
+                "weak_version": weak_version,
+                "weak_cipher_suite": weak_cipher_suite,
+                "ssl_flag": ssl_flag,
+                "peer_name": peer_name,
+                "service": socket.getservbyport(int(port)),
+            }
+
+        return {
+            "ssl_flag": ssl_flag,
+            "service": socket.getservbyport(int(port)),
+            "peer_name": peer_name,
         }
 
     def socket_icmp(self, host, timeout):
@@ -254,6 +314,21 @@ class SocketEngine(BaseEngine):
                 return []
         if sub_step["method"] == "socket_icmp":
             return response
+
+        if sub_step["method"] in {"ssl_certificate_scan", "ssl_version_scan"}:
+            if response["ssl_flag"]:
+                for condition in conditions:
+                    if (conditions[condition]["reverse"] and not response[condition]) or (
+                        not conditions[condition]["reverse"] and response[condition]
+                    ):
+                        condition_results[condition] = True
+
+                if condition_type == "and":
+                    return condition_results if len(condition_results) == len(conditions) else []
+                if condition_type == "or":
+                    return condition_results if condition_results else []
+                return []
+
         return []
 
     def apply_extra_data(self, sub_step, response):

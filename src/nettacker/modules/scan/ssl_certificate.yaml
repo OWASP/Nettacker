@@ -1,0 +1,37 @@
+info:
+  name: ssl_certificate_scan
+  author: Captain-T2004
+  severity: 6
+  description: check if there are any ssl_certificate vulnerabilities present 
+  reference:
+    - https://www.beyondsecurity.com/resources/vulnerabilities/ssl-certificate-expiry
+  profiles:
+    - scan
+
+payloads:
+  - library: socket
+    steps:
+      - method: ssl_certificate_scan
+        timeout: 3
+        host: "{target}"
+        ports:
+          - 21
+          - 25
+          - 110
+          - 143
+          - 443
+          - 587
+          - 990
+          - 1080
+          - 8080
+        response:
+          condition_type: or
+          conditions:
+            self_signed:
+              reverse: false
+            expired:
+              reverse: false
+            weak_signing_algo:
+              reverse: false
+            expiring_soon:
+              reverse: false
