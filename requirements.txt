@@ -14,3 +14,4 @@ py3DNS==4.0.0 # library_name=DNS
 numpy==1.26.3
 terminable_thread==0.7.1
 PyYAML==6.0.1 # library_name=yaml
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
