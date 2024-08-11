@@ -6,10 +6,10 @@ from abc import ABC
 from datetime import datetime
 
 import yaml
-from core.utils.common import merge_logs_to_list
 
 from nettacker.config import Config
 from nettacker.core.messages import messages as _
+from nettacker.core.utils.common import merge_logs_to_list
 from nettacker.database.db import find_temp_events, submit_temp_logs_to_db, submit_logs_to_db
 from nettacker.logger import get_logger, TerminalCodes
 

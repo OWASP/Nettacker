@@ -10,9 +10,8 @@ import ssl
 import struct
 import time
 
-from core.utils.common import reverse_and_regex_condition
-
 from nettacker.core.lib.base import BaseEngine, BaseLibrary
+from nettacker.core.utils.common import reverse_and_regex_condition
 
 log = logging.getLogger(__name__)
 

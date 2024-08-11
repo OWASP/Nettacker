@@ -1,7 +1,6 @@
 from unittest.mock import patch
 
-from core.utils import common as utils
-
+from nettacker.core.utils import common as utils
 from tests.common import TestCase
 
 

@@ -17,7 +17,6 @@ from api.core import (
     languages_to_country,
     api_key_is_valid,
 )
-from core.utils.common import now
 from flask import Flask, jsonify
 from flask import request as flask_request
 from flask import render_template, abort, Response, make_response
@@ -28,6 +27,7 @@ from nettacker.config import Config
 from nettacker.core.app import Nettacker
 from nettacker.core.die import die_failure
 from nettacker.core.messages import messages as _
+from nettacker.core.utils.common import now
 from nettacker.database.db import (
     create_connection,
     get_logs_by_scan_id,

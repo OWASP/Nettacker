@@ -7,9 +7,6 @@ from threading import Thread
 
 import multiprocess
 import numpy
-from database.mysql import mysql_create_database, mysql_create_tables
-from database.postgresql import postgres_create_database
-from database.sqlite import sqlite_create_tables
 
 from nettacker import logger
 from nettacker.config import Config, version_info
@@ -32,6 +29,9 @@ from nettacker.core.socks_proxy import set_socks_proxy
 from nettacker.core.utils import common as utils
 from nettacker.core.utils.common import wait_for_threads_to_finish
 from nettacker.database.db import find_events, remove_old_logs
+from nettacker.database.mysql import mysql_create_database, mysql_create_tables
+from nettacker.database.postgresql import postgres_create_database
+from nettacker.database.sqlite import sqlite_create_tables
 from nettacker.logger import TerminalCodes
 
 log = logger.get_logger()

@@ -2,7 +2,7 @@ import sys
 from enum import Enum
 from functools import cached_property
 
-from core.utils import time
+from nettacker.core.utils import time
 
 
 class TerminalCodes(Enum):

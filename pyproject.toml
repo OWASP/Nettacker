@@ -36,7 +36,7 @@ homepage = "https://owasp.org/www-project-nettacker"
 repository = "https://github.com/OWASP/Nettacker"
 documentation = "https://github.com/OWASP/Nettacker/wiki"
 
-packages = [{ include = "nettacker", from = "src" }]
+packages = [{ include = "nettacker"}]
 
 [tool.poetry.dependencies]
 python = "^3.9, <3.13"
@@ -81,7 +81,7 @@ no_inline_sort = true
 profile = "black"
 
 [tool.pytest.ini_options]
-addopts = "--cov=src/nettacker --cov-config=pyproject.toml --cov-report term --cov-report xml --dist loadscope --no-cov-on-fail --numprocesses auto"
+addopts = "--cov=nettacker --cov-config=pyproject.toml --cov-report term --cov-report xml --dist loadscope --no-cov-on-fail --numprocesses auto"
 testpaths = ["tests"]
 
 [tool.ruff]

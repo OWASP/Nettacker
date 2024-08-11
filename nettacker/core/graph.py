@@ -5,12 +5,12 @@ import json
 from datetime import datetime
 
 import texttable
-from core.utils.common import merge_logs_to_list, now
 
 from nettacker import logger
 from nettacker.config import version_info
 from nettacker.core.die import die_failure
 from nettacker.core.messages import messages as _
+from nettacker.core.utils.common import merge_logs_to_list, now
 from nettacker.database.db import get_logs_by_scan_id, submit_report_to_db
 
 log = logger.get_logger()

@@ -7,9 +7,9 @@ import re
 import time
 
 import aiohttp
-from core.utils.common import replace_dependent_response, reverse_and_regex_condition
 
 from nettacker.core.lib.base import BaseEngine
+from nettacker.core.utils.common import replace_dependent_response, reverse_and_regex_condition
 
 
 async def perform_request_action(action, request_options):
