@@ -611,7 +611,7 @@ class ArgParser(ArgumentParser):
                 die_failure(_("error_exclude_all"))
             for excluded_module in options.excluded_modules:
                 if excluded_module in options.selected_modules:
-                    del options.selected_modules[excluded_module]
+                    options.selected_modules.remove(excluded_module)
         # Check port(s)
         if options.ports:
             tmp_ports = []
