@@ -598,10 +598,10 @@ class ArgParser(ArgumentParser):
         options.set_hardware_usage = utils.select_maximum_cpu_core(options.set_hardware_usage)
 
         options.thread_per_host = int(options.thread_per_host)
-        if not options.thread_per_host >= 1:
+        if options.thread_per_host < 1:
             options.thread_per_host = 1
         options.parallel_module_scan = int(options.parallel_module_scan)
-        if not options.parallel_module_scan >= 1:
+        if options.parallel_module_scan < 1:
             options.parallel_module_scan = 1
 
         # Check for excluding modules
