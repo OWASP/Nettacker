@@ -35,7 +35,10 @@ payloads:
               ports:
                 - 80
                 - 443
-              paths: fuzzer_function_read_file_as_array('wordlists/wp_timethumbs.txt')
+              paths:
+                read_from_file:
+                  - wordlists/wp_timethumbs.txt
+              
               
         response:
           condition_type: or

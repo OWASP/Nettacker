@@ -26,7 +26,9 @@ payloads:
             suffix: ""
             interceptors:
             data:
-              urls: fuzzer_function_read_file_as_array('wordlists/admin_wordlist.txt')
+              urls:
+                read_from_file:
+                  - wordlists/admin_wordlist.txt
               schema:
                 - "http"
                 - "https"
