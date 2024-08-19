@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nettacker"
-version = "0.3.1-alpha.17"
+version = "0.4.0"
 description = "Automates information gathering, vulnerability scanning and aids penetration testing engagements in general"
 license = "Apache-2.0"
 readme = "README.md"
