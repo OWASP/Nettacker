@@ -14,7 +14,7 @@ class Report(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     date = Column(DateTime)
-    scan_id = Column(Text)
+    scan_unique_id = Column(Text)
     report_path_filename = Column(Text)
     options = Column(Text)
 
@@ -22,8 +22,8 @@ class Report(Base):
         """
         returns a printable representation of the object of the class Report
         """
-        return "<Report(id={0}, scan_id={1}, date={2}, report_path_filename={3})>".format(
-            self.id, self.scan_id, self.date, self.report_path_filename
+        return "<Report(id={0}, scan_unique_id={1}, date={2}, report_path_filename={3})>".format(
+            self.id, self.scan_unique_id, self.date, self.report_path_filename
         )
 
 
@@ -39,7 +39,7 @@ class TempEvents(Base):
     date = Column(DateTime)
     target = Column(Text)
     module_name = Column(Text)
-    scan_id = Column(Text)
+    scan_unique_id = Column(Text)
     event_name = Column(Text)
     port = Column(Text)
     event = Column(Text)
@@ -57,7 +57,7 @@ class TempEvents(Base):
             self.target,
             self.date,
             self.module_name,
-            self.scan_id,
+            self.scan_unique_id,
             self.port,
             self.event,
             self.data,
@@ -76,7 +76,7 @@ class HostsLog(Base):
     date = Column(DateTime)
     target = Column(Text)
     module_name = Column(Text)
-    scan_id = Column(Text)
+    scan_unique_id = Column(Text)
     port = Column(Text)
     event = Column(Text)
     json_event = Column(Text)
@@ -93,7 +93,7 @@ class HostsLog(Base):
             self.target,
             self.date,
             self.module_name,
-            self.scan_id,
+            self.scan_unique_id,
             self.port,
             self.event,
             self.json_event,

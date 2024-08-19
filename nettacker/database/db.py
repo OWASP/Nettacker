@@ -93,7 +93,7 @@ def submit_report_to_db(event):
     session.add(
         Report(
             date=event["date"],
-            scan_id=event["scan_id"],
+            scan_unique_id=event["scan_id"],
             report_path_filename=event["options"]["report_path_filename"],
             options=json.dumps(event["options"]),
         )
@@ -116,7 +116,7 @@ def remove_old_logs(options):
     session.query(HostsLog).filter(
         HostsLog.target == options["target"],
         HostsLog.module_name == options["module_name"],
-        HostsLog.scan_id != options["scan_id"],
+        HostsLog.scan_unique_id != options["scan_id"],
     ).delete(synchronize_session=False)
     return send_submit_query(session)
 
@@ -138,7 +138,7 @@ def submit_logs_to_db(log):
                 target=log["target"],
                 date=log["date"],
                 module_name=log["module_name"],
-                scan_id=log["scan_id"],
+                scan_unique_id=log["scan_id"],
                 port=json.dumps(log["port"]),
                 event=json.dumps(log["event"]),
                 json_event=json.dumps(log["json_event"]),
@@ -167,7 +167,7 @@ def submit_temp_logs_to_db(log):
                 target=log["target"],
                 date=log["date"],
                 module_name=log["module_name"],
-                scan_id=log["scan_id"],
+                scan_unique_id=log["scan_id"],
                 event_name=log["event_name"],
                 port=json.dumps(log["port"]),
                 event=json.dumps(log["event"]),
@@ -202,7 +202,7 @@ def find_temp_events(target, module_name, scan_id, event_name):
                     .filter(
                         TempEvents.target == target,
                         TempEvents.module_name == module_name,
-                        TempEvents.scan_id == scan_id,
+                        TempEvents.scan_unique_id == scan_id,
                         TempEvents.event_name == event_name,
                     )
                     .first()
@@ -233,7 +233,7 @@ def find_events(target, module_name, scan_id):
         .filter(
             HostsLog.target == target,
             HostsLog.module_name == module_name,
-            HostsLog.scan_id == scan_id,
+            HostsLog.scan_unique_id == scan_id,
         )
         .all()
     )
@@ -261,7 +261,7 @@ def select_reports(page):
             tmp = {
                 "id": data.id,
                 "date": data.date,
-                "scan_id": data.scan_id,
+                "scan_id": data.scan_unique_id,
                 "report_path_filename": data.report_path_filename,
                 "options": json.loads(data.options),
             }
@@ -358,7 +358,7 @@ def get_logs_by_scan_id(scan_id):
             "event": json.loads(log.event),
             "json_event": log.json_event,
         }
-        for log in session.query(HostsLog).filter(HostsLog.scan_id == scan_id).all()
+        for log in session.query(HostsLog).filter(HostsLog.scan_unique_id == scan_id).all()
     ]
 
 
@@ -378,7 +378,7 @@ def logs_to_report_json(target):
         logs = session.query(HostsLog).filter(HostsLog.target == target)
         for log in logs:
             data = {
-                "scan_id": log.scan_id,
+                "scan_id": log.scan_unique_id,
                 "target": log.target,
                 "port": json.loads(log.port),
                 "event": json.loads(log.event),
@@ -409,7 +409,7 @@ def logs_to_report_html(target):
             "date": log.date,
             "target": log.target,
             "module_name": log.module_name,
-            "scan_id": log.scan_id,
+            "scan_id": log.scan_unique_id,
             "port": log.port,
             "event": log.event,
             "json_event": log.json_event,
@@ -468,7 +468,7 @@ def search_logs(page, query):
                 | (HostsLog.module_name.like("%" + str(query) + "%"))
                 | (HostsLog.port.like("%" + str(query) + "%"))
                 | (HostsLog.event.like("%" + str(query) + "%"))
-                | (HostsLog.scan_id.like("%" + str(query) + "%"))
+                | (HostsLog.scan_unique_id.like("%" + str(query) + "%"))
             )
             .group_by(HostsLog.target)
             .order_by(HostsLog.id.desc())
@@ -481,7 +481,7 @@ def search_logs(page, query):
                 .group_by(
                     HostsLog.module_name,
                     HostsLog.port,
-                    HostsLog.scan_id,
+                    HostsLog.scan_unique_id,
                     HostsLog.event,
                 )
                 .order_by(HostsLog.id.desc())

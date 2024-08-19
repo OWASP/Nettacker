@@ -306,7 +306,7 @@ def get_results_json():
     if not result_id:
         return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
     scan_details = session.query(Report).filter(Report.id == result_id).first()
-    json_object = json.dumps(get_logs_by_scan_id(scan_details.scan_id))
+    json_object = json.dumps(get_logs_by_scan_id(scan_details.scan_unique_id))
     filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".json"
     return Response(
         json_object,
@@ -329,7 +329,7 @@ def get_results_csv():  # todo: need to fix time format
     if not result_id:
         return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
     scan_details = session.query(Report).filter(Report.id == result_id).first()
-    data = get_logs_by_scan_id(scan_details.scan_id)
+    data = get_logs_by_scan_id(scan_details.scan_unique_id)
     keys = data[0].keys()
     filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".csv"
     with open(filename, "w") as report_path_filename:
