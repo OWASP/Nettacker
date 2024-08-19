@@ -206,12 +206,10 @@ def apply_data_functions(data):
             continue
 
         for fn_name in data[item]:
-            if fn_name not in AVAILABLE_DATA_FUNCTIONS[item]:
-                continue
-            fn = getattr(importlib.import_module("nettacker.core.fuzzer"), fn_name)
-            print(fn)
-
-        data[item] = fn(*data[item][fn_name])
+            if fn_name in AVAILABLE_DATA_FUNCTIONS[item]:
+                fn = getattr(importlib.import_module("nettacker.core.fuzzer"), fn_name)
+                if fn is not None:
+                    data[item] = fn(*data[item][fn_name])
 
 
 def fuzzer_repeater_perform(arrays):
@@ -256,7 +254,6 @@ def fuzzer_repeater_perform(arrays):
                 ]
             else:
                 interceptors_function_processed = input_format.format(**formatted_data)
-                print(interceptors_function_processed)
 
             processed_sub_data = interceptors_function_processed
             if prefix:
