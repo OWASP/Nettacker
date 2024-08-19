@@ -7,7 +7,12 @@ import string
 import time
 from types import SimpleNamespace
 
-from api.core import (
+from flask import Flask, jsonify
+from flask import request as flask_request
+from flask import render_template, abort, Response, make_response
+
+from nettacker import logger
+from nettacker.api.core import (
     get_value,
     get_file,
     mime_types,
@@ -17,11 +22,6 @@ from api.core import (
     languages_to_country,
     api_key_is_valid,
 )
-from flask import Flask, jsonify
-from flask import request as flask_request
-from flask import render_template, abort, Response, make_response
-
-from nettacker import logger
 from nettacker.api.helpers import structure
 from nettacker.config import Config
 from nettacker.core.app import Nettacker
