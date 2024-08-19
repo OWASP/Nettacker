@@ -193,7 +193,11 @@ def string_to_bytes(string):
     return string.encode()
 
 
-AVAILABLE_DATA_FUNCTIONS = {"passwords": {"read_from_file"}}
+AVAILABLE_DATA_FUNCTIONS = {
+    "passwords": {"read_from_file"},
+    "paths": {"read_from_file"},
+    "urls": {"read_from_file"},
+}
 
 
 def apply_data_functions(data):
@@ -205,6 +209,7 @@ def apply_data_functions(data):
             if fn_name not in AVAILABLE_DATA_FUNCTIONS[item]:
                 continue
             fn = getattr(importlib.import_module("nettacker.core.fuzzer"), fn_name)
+            print(fn)
 
         data[item] = fn(*data[item][fn_name])
 
@@ -251,6 +256,7 @@ def fuzzer_repeater_perform(arrays):
                 ]
             else:
                 interceptors_function_processed = input_format.format(**formatted_data)
+                print(interceptors_function_processed)
 
             processed_sub_data = interceptors_function_processed
             if prefix:
