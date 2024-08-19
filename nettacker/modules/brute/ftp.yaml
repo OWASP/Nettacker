@@ -14,7 +14,7 @@ payloads:
     steps:
       - method: brute_force
         timeout: 3
-        host: "{target}"
+        host: '{target}'
         ports:
           - 21
         usernames:
@@ -30,11 +30,12 @@ payloads:
             suffix:
             interceptors:
             data:
-              passwords: read_file_as_array('passwords/top_1000_common_passwords.txt')
+              passwords:
+                read_from_file:
+                  - passwords/top_1000_common_passwords.txt
         response:
           condition_type: or
           conditions:
             successful_login:
-              regex: ""
+              regex: ''
               reverse: false
-
