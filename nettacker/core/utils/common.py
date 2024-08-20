@@ -200,16 +200,41 @@ AVAILABLE_DATA_FUNCTIONS = {
 }
 
 
+def fuzzer_function_read_file_as_array(filename):
+    from nettacker.config import PathConfig
+
+    return open(PathConfig().payloads_dir / filename).read().split("\n")
+
+
 def apply_data_functions(data):
-    for item in data:
+    def apply_data_functions_new():
         if item not in AVAILABLE_DATA_FUNCTIONS:
-            continue
+            return
 
         for fn_name in data[item]:
             if fn_name in AVAILABLE_DATA_FUNCTIONS[item]:
                 fn = getattr(importlib.import_module("nettacker.core.fuzzer"), fn_name)
                 if fn is not None:
-                    data[item] = fn(*data[item][fn_name])
+                    original_data[item] = fn(*data[item][fn_name])
+
+    def apply_data_functions_old():
+        function_results = {}
+        globals().update(locals())
+        exec(
+            "fuzzer_function = {fuzzer_function}".format(fuzzer_function=data[item]),
+            globals(),
+            function_results,
+        )
+        original_data[item] = function_results["fuzzer_function"]
+
+    original_data = copy.deepcopy(data)
+    for item in data:
+        if isinstance((data[item]), str) and data[item].startswith("fuzzer_function"):
+            apply_data_functions_old()
+        else:
+            apply_data_functions_new()
+
+    return original_data
 
 
 def fuzzer_repeater_perform(arrays):
@@ -219,9 +244,7 @@ def fuzzer_repeater_perform(arrays):
             continue
 
         data = arrays[array_name]["nettacker_fuzzer"]["data"]
-        apply_data_functions(data)
-
-        data_matrix = arrays_to_matrix(data)
+        data_matrix = arrays_to_matrix(apply_data_functions(data))
         prefix = arrays[array_name]["nettacker_fuzzer"]["prefix"]
         input_format = arrays[array_name]["nettacker_fuzzer"]["input_format"]
         interceptors = copy.deepcopy(arrays[array_name]["nettacker_fuzzer"]["interceptors"])
