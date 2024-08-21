@@ -36,8 +36,7 @@ payloads:
                 - 80
                 - 443
               paths:
-                read_from_file:
-                  - wordlists/wp_theme_small.txt
+                read_from_file: wordlists/wp_theme_small.txt
               
         response:
           condition_type: or

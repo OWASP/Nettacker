@@ -30,8 +30,7 @@ payloads:
             interceptors:
             data:
               # urls:
-              #   read_from_file:
-              #     - wordlists/admin_wordlist.txt
+              #   read_from_file: wordlists/admin_wordlist.txt
               schema:
                 - "http"
                 - "https"

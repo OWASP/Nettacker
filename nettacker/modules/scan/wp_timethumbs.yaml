@@ -36,8 +36,7 @@ payloads:
                 - 80
                 - 443
               paths:
-                read_from_file:
-                  - wordlists/wp_timethumbs.txt
+                read_from_file: wordlists/wp_timethumbs.txt
               
               
         response:
