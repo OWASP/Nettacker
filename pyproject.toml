@@ -38,6 +38,9 @@ documentation = "https://github.com/OWASP/Nettacker/wiki"
 
 packages = [{ include = "nettacker"}]
 
+[tool.nettacker]
+release_name = "QUIN"
+
 [tool.poetry.dependencies]
 python = "^3.9, <3.13"
 aiohttp = "^3.9.5"
@@ -56,6 +59,7 @@ pyyaml = "^6.0.1"
 requests = "^2.31.0"
 sqlalchemy = "^2.0.22"
 texttable = "^1.7.0"
+tomli = "^2.0.1"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.16.1"

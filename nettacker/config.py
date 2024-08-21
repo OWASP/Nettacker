@@ -1,6 +1,8 @@
-import importlib.metadata
 import inspect
+from functools import lru_cache
 from pathlib import Path
+
+import tomli
 
 from nettacker.core.utils.common import now, generate_random_token
 
@@ -8,6 +10,7 @@ CWD = Path.cwd()
 PACKAGE_PATH = Path(__file__).parent
 
 
+@lru_cache(maxsize=128)
 def version_info():
     """
     version information of the framework
@@ -15,11 +18,10 @@ def version_info():
     Returns:
         an array of version and code name
     """
+    with open("pyproject.toml", "rb") as toml_file:
+        tools = tomli.load(toml_file)["tool"]
 
-    return (
-        importlib.metadata.version("nettacker"),
-        open(PathConfig.release_name_file).read().strip(),
-    )
+    return tools["poetry"]["version"], tools["nettacker"]["release_name"]
 
 
 class ConfigBase:
