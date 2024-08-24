@@ -1,0 +1,52 @@
+name: "PYPI Publish"
+on:
+  workflow_dispatch: 
+jobs:
+  publish-to-test-pypi:
+    name: Publish to Test PyPI
+
+    if: |
+      ${{
+        github.repository == 'owasp/nettacker' &&
+        github.event_name == 'push' &&
+        github.ref_name == 'implement-package-publishing-poc' }}
+    # environment: test
+    needs:
+      - build-package
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get package artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist
+
+      - name: Publish package distributions to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+  publish-to-pypi:
+    name: Publish to PyPI
+    if: |
+      ${{ github.repository == 'owasp/nettacker' &&
+          github.event_name == 'push' &&
+          github.ref_name == 'implement-package-publishing-poc' }}
+    # environment: release
+    needs:
+      - build-package
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get package artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist
+    
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
