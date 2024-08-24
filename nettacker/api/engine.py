@@ -5,6 +5,7 @@ import os
 import random
 import string
 import time
+from threading import Thread
 from types import SimpleNamespace
 
 from flask import Flask, jsonify
@@ -205,9 +206,9 @@ def new_scan():
 
     nettacker_app = Nettacker(api_arguments=SimpleNamespace(**form_values))
     app.config["OWASP_NETTACKER_CONFIG"]["options"] = nettacker_app.arguments
-    # new_process = multiprocessing.Process(target=start_scan_processes, args=(options,))
-    # new_process.start()
-    nettacker_app.run()
+    thread = Thread(target=nettacker_app.run)
+    thread.start()
+
     return jsonify(vars(nettacker_app.arguments)), 200
 
 

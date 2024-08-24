@@ -39,7 +39,8 @@ log = logger.get_logger()
 
 class Nettacker(ArgParser):
     def __init__(self, api_arguments=None):
-        self.print_logo()
+        if not api_arguments:
+            self.print_logo()
         self.check_dependencies()
 
         log.info(_("scan_started"))
