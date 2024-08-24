@@ -7,12 +7,12 @@ OWASP Nettacker
 [![repo size ](https://img.shields.io/github/repo-size/OWASP/Nettacker)](https://github.com/OWASP/Nettacker)
 
 
-<img src="https://raw.githubusercontent.com/OWASP/Nettacker/master/web/static/img/owasp-nettacker.png" width="200"><img src="https://raw.githubusercontent.com/OWASP/Nettacker/master/web/static/img/owasp.png" width="500">
+<img src="https://raw.githubusercontent.com/OWASP/Nettacker/master/nettacker/web/static/img/owasp-nettacker.png" width="200"><img src="https://raw.githubusercontent.com/OWASP/Nettacker/master/nettacker/web/static/img/owasp.png" width="500">
 
 
 **DISCLAIMER**
 
-* ***THIS SOFTWARE WAS CREATED FOR AUTOMATED PENETRATION TESTING AND INFORMATION GATHERING. CONTRIBUTORS WILL NOT BE RESPONSIBLE FOR ANY ILLEGAL USAGE.***
+* ***THIS SOFTWARE WAS CREATED FOR AUTOMATED PENETRATION TESTING AND INFORMATION GATHERING. YOU MUST USE THIS SOFTWARE IN A RESPONSIBLE AND ETHICAL MANNER. DO NOT TARGET SYSTEMS OR APPLICATIONS WITHOUT OBTAINING PERMISSIONS OR CONSENT FROM THE SYSTEM OWNERS OR ADMINISTRATORS. CONTRIBUTORS WILL NOT BE RESPONSIBLE FOR ANY ILLEGAL USAGE.***
 
 ![2018-01-19_0-45-07](https://user-images.githubusercontent.com/7676267/35123376-283d5a3e-fcb7-11e7-9b1c-92b78ed4fecc.gif)
 
@@ -21,11 +21,10 @@ OWASP Nettacker project is created to automate information gathering, vulnerabil
 
 * OWASP Page: https://owasp.org/www-project-nettacker/
 * Wiki: https://github.com/OWASP/Nettacker/wiki
+* Slack: #project-nettacker on https://owasp.slack.com
 * Installation: https://github.com/OWASP/Nettacker/wiki/Installation
 * Usage: https://github.com/OWASP/Nettacker/wiki/Usage
 * GitHub: https://github.com/OWASP/Nettacker
-* Slack: #project-nettacker on https://owasp.slack.com
-* Mailing List: https://groups.google.com/forum/#!forum/owasp-nettacker
 * Docker Image: https://hub.docker.com/r/owasp/nettacker
 * How to use the Dockerfile: https://github.com/OWASP/Nettacker/wiki/Installation#docker
 * OpenHub: https://www.openhub.net/p/OWASP-Nettacker
