@@ -1,0 +1,42 @@
+info:
+  name: admin_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: Admin Directory Finder
+  reference:
+  profiles:
+    - scan
+    - http
+    - backup
+    - low_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{urls}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              urls: 
+                read_from_file: wordlists/admin_wordlist.txt
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            status_code:
+              regex: 200|403|401
+              reverse: false

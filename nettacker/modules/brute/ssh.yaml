@@ -1,0 +1,40 @@
+info:
+  name: ssh_brute
+  author: OWASP Nettacker Team
+  severity: 3
+  description: SSH Bruteforcer
+  reference:
+  profiles:
+    - brute
+    - brute_force
+    - ssh
+
+payloads:
+  - library: ssh
+    steps:
+      - method: brute_force
+        timeout: 3
+        host: '{target}'
+        ports:
+          - 22
+          - 2222
+        usernames:
+          - root
+          - admin
+          - user
+          - test
+        passwords:
+          nettacker_fuzzer:
+            input_format: '{{passwords}}'
+            prefix:
+            suffix:
+            interceptors:
+            data:
+              passwords:
+                read_from_file: passwords/top_1000_common_passwords.txt
+        response:
+          condition_type: or
+          conditions:
+            successful_login:
+              regex: ''
+              reverse: false

@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: "Dockerfile"
-    command: python3 nettacker.py --start-api --api-host 0.0.0.0
+    command: poetry run python nettacker.py --start-api --api-host 0.0.0.0
     ports:
       - 5000:5000
     volumes:

@@ -1,0 +1,47 @@
+info:
+  name: wordpress_version_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: Directory, Backup finder
+  reference:
+  profiles:
+    - scan
+    - http
+    - backup
+    - low_severity
+    - wp
+    - wp_timethumbs
+    - wordpress
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              paths:
+                read_from_file: wordlists/wp_timethumbs.txt
+              
+              
+        response:
+          condition_type: or
+          conditions:
+            status_code:
+              regex: 200|403|401
+              reverse: false

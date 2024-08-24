@@ -1,0 +1,41 @@
+info:
+  name: ftps_brute
+  author: OWASP Nettacker Team
+  severity: 3
+  description: FTPS Bruteforcer
+  reference:
+  profiles:
+    - brute
+    - brute_force
+    - ftp
+
+payloads:
+  - library: ftps
+    steps:
+      - method: brute_force
+        timeout: 3
+        host: "{target}"
+        ports:
+          - 990
+        usernames:
+          - root
+          - admin
+          - user
+          - test
+          - anonymous
+        passwords:
+          nettacker_fuzzer:
+            input_format: '{{passwords}}'
+            prefix:
+            suffix:
+            interceptors:
+            data:
+              passwords:
+                read_from_file: passwords/top_1000_common_passwords.txt
+        response:
+          condition_type: or
+          conditions:
+            successful_login:
+              regex: ""
+              reverse: false
+

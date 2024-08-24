@@ -1,0 +1,1977 @@
+info:
+  name: waf_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: waf detect
+  reference:
+  profiles:
+    - scan
+    - http
+    - backup
+    - low_severity
+    - waf
+
+payloads:
+  - library: http
+    steps:
+      - method: get  ## meant to store the response
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: true
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              # urls:
+              #   read_from_file: wordlists/admin_wordlist.txt
+              schema:
+                # - "http"
+                - "https"
+              ports:
+                # - 80
+                - 443
+        response:
+          save_to_temp_events_only: valid_request_status
+          condition_type: or
+          conditions:
+            status_code:
+              regex: ^[1-5][0-9][0-9]
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: true
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/?{{query}}={{param}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              query:
+                - a
+                # - q
+                # - s
+                # - page
+                # - file
+                # - download
+                # - site
+                # - date
+                # - action
+              param:
+                - <script>alert(\"NETTACKER\");</script> #xss
+                # - UNION SELECT ALL FROM information_schema AND ' or SLEEP(5) or ' #sqli
+                # - /bin/cat /etc/passwd; ping 127.0.0.1; curl google.com #os
+                # - <!ENTITY xxe SYSTEM \"file:///etc/shadow\">]><pwn>&hack;</pwn> #xxe
+                # - ../../../../etc/passwd #lfi
+        response:
+          dependent_on_temp_event: valid_request_status
+          condition_type: or
+          log: WAF detected, Got differenet response from original request status code dependent_on_temp_event[0]['status_code'][0]
+          conditions:
+            status_code:
+              regex: dependent_on_temp_event[0]['status_code'][0]
+              reverse: true
+            iterative_response_match:
+              360WangZhanBao (360 Technologies):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: wzws\-waf\-cgi/|wangshan\.360\.cn
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: qianxin\-waf
+                        reverse: false
+                      WZWS-Ray:
+                        regex: .+?
+                        reverse: false
+                      X-Powered-By-360WZB:
+                        regex: .+?
+                        reverse: false
+                    status_code:
+                      regex: '493'
+                      reverse: false
+                  log: 360WangZhanBao (360 Technologies) Found
+              ACE XML Gateway (Cisco):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: ACE XML Gateway
+                        reverse: false
+                  log: ACE XML Gateway (Cisco) Found
+              ASP.NET Generic (Microsoft):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: iis (\d+.)+?detailed error|potentially dangerous request querystring|application
+                        error from being viewed remotely (for security reasons)?|An application
+                        error occurred on the server
+                      reverse: false
+                  log: ASP.NET Generic (Microsoft) Found
+              ASPA Firewall (ASPA Engineering Co.):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      ASPA-Cache-Status:
+                        regex: .+?
+                        reverse: false
+                      Server:
+                        regex: ASPA[\-_]?WAF
+                        reverse: false
+                  log: ASPA Firewall (ASPA Engineering Co.) Found
+              AWS Elastic Load Balancer (Amazon):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: aws.?elb
+                        reverse: false
+                      Set-Cookie:
+                        regex: ^aws.?alb=
+                        reverse: false
+                      X-AMZ-ID:
+                        regex: .+?
+                        reverse: false
+                      X-AMZ-Request-ID:
+                        regex: .+?
+                        reverse: false
+                  log: AWS Elastic Load Balancer (Amazon) Found
+              AireeCDN (Airee):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: airee\.cloud
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: Airee
+                        reverse: false
+                      X-Cache:
+                        regex: (\w+\.)?airee\.cloud
+                        reverse: false
+                  log: AireeCDN (Airee) Found
+              Airlock (Phion/Ergon):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: server detected a syntax error in your request
+                      reverse: false
+                    headers:
+                      Set-Cookie:
+                        regex: ^al[_-]?(sess|lb)=
+                        reverse: false
+                  log: Airlock (Phion/Ergon) Found
+              Alert Logic (Alert Logic):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*<(title|h\d{{1}})>requested url cannot be found)(?=.*we are
+                        sorry.{{0,10}}?but the page you are looking for cannot be found)(?=.*back
+                        to previous page)(?=.*proceed to homepage)(?=.*reference id).*$
+                      reverse: false
+                  log: Alert Logic (Alert Logic) Found
+              AliYunDun (Alibaba Cloud Computing):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*error(s)?\.aliyun(dun)?\.(com|net)?)(?=.*cdn\.aliyun(cs)?\.com).*$
+                      reverse: false
+                    headers:
+                      Set-Cookie:
+                        regex: (?s)^(?=.*^aliyungf_tc=).*$
+                        reverse: false
+                    status_code:
+                      regex: (?s)^(?=.*405).*$
+                      reverse: false
+                  log: AliYunDun (Alibaba Cloud Computing) Found
+              AnYu (AnYu Technologies):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: anyu.{{0,10}}?the green channel|your access has been intercepted by
+                        anyu
+                      reverse: false
+                  log: AnYu (AnYu Technologies) Found
+              Anquanbao (Anquanbao):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: aqb_cc/error/
+                      reverse: false
+                    headers:
+                      X-Powered-By-Anquanbao:
+                        regex: .+?
+                        reverse: false
+                  log: Anquanbao (Anquanbao) Found
+              AppWall (Radware) condition1:
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: CloudWebSec\.radware\.com
+                      reverse: false
+                    headers:
+                      X-SL-CompState:
+                        regex: .+
+                        reverse: false
+                  log: AppWall (Radware) Found
+              AppWall (Radware) condition2:
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*because we have detected unauthorized activity)(?=.*<title>Unauthorized
+                        Request Blocked)(?=.*if you believe that there has been some mistake)(?=.*\?Subject=Security
+                        Page.{{0,10}}?Case Number).*$
+                      reverse: false
+                  log: AppWall (Radware) Found
+              Approach (Approach):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: approach.{{0,10}}?web application (firewall|filtering)|approach.{{0,10}}?infrastructure
+                        team
+                      reverse: false
+                  log: Approach (Approach) Found
+              Armor Defense (Armor):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: blocked by website protection from armor|please create an armor support
+                        ticket
+                      reverse: false
+                  log: Armor Defense (Armor) Found
+              ArvanCloud (ArvanCloud):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: ArvanCloud
+                        reverse: false
+                  log: ArvanCloud (ArvanCloud) Found
+              Astra (Czar Securities):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: astrawebsecurity\.freshdesk\.com|www\.getastra\.com/assets/images
+                      reverse: false
+                    headers:
+                      Set-Cookie:
+                        regex: ^cz_astra_csrf_cookie
+                        reverse: false
+                  log: Astra (Czar Securities) Found
+              AzionCDN (AzionCDN):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: Azion([-_]CDN)?
+                        reverse: false
+                  log: AzionCDN (AzionCDN) Found
+              Azure Front Door (Microsoft):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      X-Azure-Ref:
+                        regex: .+?
+                        reverse: false
+                  log: Azure Front Door (Microsoft) Found
+              BIG-IP AP Manager (F5 Networks) condition1:
+                response:
+                  condition_type: and
+                  conditions:
+                    headers:
+                      Set-Cookie:
+                        regex: (?s)^(?=.*^LastMRH_Session)(?=.*^MRHSession).*$
+                        reverse: false
+                  log: BIG-IP AP Manager (F5 Networks) Found
+              BIG-IP AP Manager (F5 Networks) condition2:
+                response:
+                  condition_type: and
+                  conditions:
+                    headers:
+                      Server:
+                        regex: Big([-_])?IP
+                        reverse: false
+                      Set-Cookie:
+                        regex: (?s)^(?=.*^MRHSession).*$
+                        reverse: false
+                  log: BIG-IP AP Manager (F5 Networks) Found
+              BIG-IP AP Manager (F5 Networks) condition3:
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Set-Cookie:
+                        regex: ^F5_fullWT|^F5_fullWT|^F5_HT_shrinked
+                        reverse: false
+                  log: BIG-IP AP Manager (F5 Networks) Found
+              BIG-IP AppSec Manager (F5 Networks):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*the requested url was rejected)(?=.*please consult with your
+                        administrator).*$
+                      reverse: false
+                  log: BIG-IP AppSec Manager (F5 Networks) Found
+              BIG-IP Local Traffic Manager (F5 Networks):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Set-Cookie:
+                        regex: ^bigipserver
+                        reverse: false
+                      X-Cnection:
+                        regex: close
+                        reverse: false
+                  log: BIG-IP Local Traffic Manager (F5 Networks) Found
+              Barikode (Ethic Ninja):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: <strong>barikode<.strong>
+                      reverse: false
+                  log: Barikode (Ethic Ninja) Found
+              Barracuda (Barracuda Networks):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Barracuda.Networks
+                      reverse: false
+                    headers:
+                      Set-Cookie:
+                        regex: ^barra_counter_session=|^BNI__BARRACUDA_LB_COOKIE=|^BNI_persistence=|^BN[IE]S_.*?=
+                        reverse: false
+                  log: Barracuda (Barracuda Networks) Found
+              Bekchy (Faydata Technologies Inc.):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Bekchy.{{0,10}}?Access Denied|bekchy\.com/report
+                      reverse: false
+                  log: Bekchy (Faydata Technologies Inc.) Found
+              Beluga CDN (Beluga):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: Beluga
+                        reverse: false
+                      Set-Cookie:
+                        regex: ^beluga_request_trail=
+                        reverse: false
+                  log: Beluga CDN (Beluga) Found
+              BinarySec (BinarySec):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: BinarySec
+                        reverse: false
+                      x-binarysec-nocache:
+                        regex: .+
+                        reverse: false
+                      x-binarysec-via:
+                        regex: .+
+                        reverse: false
+                  log: BinarySec (BinarySec) Found
+              BitNinja (BitNinja):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Security check by BitNinja|Visitor anti-robot validation
+                      reverse: false
+                  log: BitNinja (BitNinja) Found
+              BlockDoS (BlockDoS):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: blockdos\.net
+                        reverse: false
+                  log: BlockDoS (BlockDoS) Found
+              Bluedon (Bluedon IST):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: bluedon web application firewall
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: BDWAF
+                        reverse: false
+                  log: Bluedon (Bluedon IST) Found
+              BulletProof Security Pro (AITpro Security):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*\+?bpsMessage)(?=.*403 Forbidden Error Page)(?=.*If you arrived
+                        here due to a search).*$
+                      reverse: false
+                  log: BulletProof Security Pro (AITpro Security) Found
+              CacheFly CDN (CacheFly):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      BestCDN:
+                        regex: Cachefly
+                        reverse: false
+                      Set-Cookie:
+                        regex: ^cfly_req.*=
+                        reverse: false
+                  log: CacheFly CDN (CacheFly) Found
+              CacheWall (Varnish):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: security by cachewall|403 naughty.{{0,10}}?not nice!|varnish cache
+                        server
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: Varnish
+                        reverse: false
+                      X-Cachewall-Action:
+                        regex: .+?
+                        reverse: false
+                      X-Cachewall-Reason:
+                        regex: .+?
+                        reverse: false
+                      X-Varnish:
+                        regex: .+
+                        reverse: false
+                  log: CacheWall (Varnish) Found
+              CdnNS Application Gateway (CdnNs/WdidcNet):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: cdnnswaf application gateway
+                      reverse: false
+                  log: CdnNS Application Gateway (CdnNs/WdidcNet) Found
+              ChinaCache Load Balancer (ChinaCache):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Powered-By-ChinaCache:
+                        regex: .+
+                        reverse: false
+                  log: ChinaCache Load Balancer (ChinaCache) Found
+              Chuang Yu Shield (Yunaq):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: www\.365cyd\.com|help\.365cyd\.com/cyd\-error\-help.html\?code=403
+                      reverse: false
+                  log: Chuang Yu Shield (Yunaq) Found
+              Cloud Protector (Rohde & Schwarz CyberSecurity):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Cloud Protector.*?by Rohde.{{3,8}}?Schwarz Cybersecurity|https?:\/\/(?:www\.)?cloudprotector\.com\/
+                      reverse: false
+                  log: Cloud Protector (Rohde & Schwarz CyberSecurity) Found
+              Cloudbric (Penta Security):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: <title>Cloudbric.{{0,5}}?ERROR!|Your request was blocked by Cloudbric|please
+                        contact Cloudbric Support|cloudbric\.zendesk\.com|Cloudbric Help Center|malformed
+                        request syntax.{{0,4}}?invalid request message framing.{{0,4}}?or deceptive
+                        request routing
+                      reverse: false
+                  log: Cloudbric (Penta Security) Found
+              Cloudflare (Cloudflare Inc.):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Set-Cookie:
+                        regex: __cfduid
+                        reverse: false
+                      cf-ray:
+                        regex: .+?
+                        reverse: false
+                      server:
+                        regex: cloudflare[-_]nginx
+                        reverse: false
+                  log: Cloudflare (Cloudflare Inc.) Found
+              Cloudfloor (Cloudfloor DNS):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: <(title|h\d{{1}})>CloudfloorDNS.{{0,6}}?Web Application Firewall Error|www\.cloudfloordns\.com/contact
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: CloudfloorDNS(.WAF)?
+                        reverse: false
+                  log: Cloudfloor (Cloudfloor DNS) Found
+              Cloudfront (Amazon):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Generated by cloudfront \(CloudFront\)
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: Cloudfront
+                        reverse: false
+                      Via:
+                        regex: ([0-9\.]+?)? \w+?\.cloudfront\.net \(Cloudfront\)
+                        reverse: false
+                      X-Amz-Cf-Id:
+                        regex: .+?
+                        reverse: false
+                      X-Cache:
+                        regex: Error from Cloudfront
+                        reverse: false
+                  log: Cloudfront (Amazon) Found
+              Comodo cWatch (Comodo CyberSecurity):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: Protected by COMODO WAF(.+)?
+                        reverse: false
+                  log: Comodo cWatch (Comodo CyberSecurity) Found
+              CrawlProtect (Jean-Denis Brun):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: <title>crawlprotect|this site is protected by crawlprotect
+                      reverse: false
+                    headers:
+                      Set-Cookie:
+                        regex: ^crawlprotecttag=
+                        reverse: false
+                  log: CrawlProtect (Jean-Denis Brun) Found
+              DDoS-GUARD (DDOS-GUARD CORP.):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: ddos-guard
+                        reverse: false
+                      Set-Cookie:
+                        regex: ^__ddg1.*?=|^__ddg2.*?=|^__ddgid.*?=|^__ddgmark.*?=
+                        reverse: false
+                  log: DDoS-GUARD (DDOS-GUARD CORP.) Found
+              DOSarrest (DOSarrest Internet Security):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: DOSarrest(.*)?
+                        reverse: false
+                      X-DIS-Request-ID:
+                        regex: .+
+                        reverse: false
+                  log: DOSarrest (DOSarrest Internet Security) Found
+              DataPower (IBM):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      X-Backside-Transport:
+                        regex: (OK|FAIL)
+                        reverse: false
+                  log: DataPower (IBM) Found
+              DenyALL (Rohde & Schwarz CyberSecurity):
+                response:
+                  condition_type: and
+                  conditions:
+                    reason:
+                      regex: (?s)^(?=.*Condition Intercepted).*$
+                      reverse: false
+                    status_code:
+                      regex: (?s)^(?=.*200).*$
+                      reverse: false
+                  log: DenyALL (Rohde & Schwarz CyberSecurity) Found
+              Distil (Distil Networks):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: cdn\.distilnetworks\.com/images/anomaly\.detected\.png|distilCaptchaForm|distilCallbackGuard
+                      reverse: false
+                  log: Distil (Distil Networks) Found
+              DotDefender (Applicure Technologies):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: dotdefender blocked your request|Applicure is the leading provider
+                        of web application security
+                      reverse: false
+                    headers:
+                      X-dotDefender-denied:
+                        regex: .+?
+                        reverse: false
+                  log: DotDefender (Applicure Technologies) Found
+              DynamicWeb Injection Check (DynamicWeb):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: by dynamic check(.{{0,10}}?module)?
+                      reverse: false
+                    headers:
+                      X-403-Status-By:
+                        regex: dw.inj.check
+                        reverse: false
+                  log: DynamicWeb Injection Check (DynamicWeb) Found
+              Edgecast (Verizon Digital Media):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: ^ECS(.*)?
+                        reverse: false
+                  log: Edgecast (Verizon Digital Media) Found
+              Eisoo Cloud Firewall (Eisoo):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: <link.{{0,10}}?href=\"/eisoo\-firewall\-block\.css|www\.eisoo\.com|&copy;
+                        \d{{4}} Eisoo Inc
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: EisooWAF(\-AZURE)?/?
+                        reverse: false
+                  log: Eisoo Cloud Firewall (Eisoo) Found
+              Expression Engine (EllisLab):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: invalid get data
+                      reverse: false
+                    headers:
+                      Set-Cookie:
+                        regex: ^exp_track.+?=|^exp_last_.+?=
+                        reverse: false
+                  log: Expression Engine (EllisLab) Found
+              Fastly (Fastly CDN):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      X-Fastly-Request-ID:
+                        regex: \w+
+                        reverse: false
+                  log: Fastly (Fastly CDN) Found
+              FirePass (F5 Networks) condition1:
+                response:
+                  condition_type: and
+                  conditions:
+                    headers:
+                      Location:
+                        regex: \/my\.logon\.php3
+                        reverse: false
+                      Set-Cookie:
+                        regex: (?s)^(?=.*^VHOST).*$
+                        reverse: false
+                  log: FirePass (F5 Networks) Found
+              FirePass (F5 Networks) condition2:
+                response:
+                  condition_type: and
+                  conditions:
+                    headers:
+                      Set-Cookie:
+                        regex: (?s)^(?=.*^F5_fire.+?)(?=.*^F5_passid_shrinked).*$
+                        reverse: false
+                  log: FirePass (F5 Networks) Found
+              FortiWeb (Fortinet) condition1:
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: .fgd_icon
+                      reverse: false
+                    headers:
+                      Set-Cookie:
+                        regex: ^FORTIWAFSID=
+                        reverse: false
+                  log: FortiWeb (Fortinet) Found
+              FortiWeb (Fortinet) condition2:
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*fgd_icon)(?=.*web.page.blocked)(?=.*url)(?=.*attack.id)(?=.*message.id)(?=.*client.ip).*$
+                      reverse: false
+                  log: FortiWeb (Fortinet) Found
+              GoDaddy Website Protection (GoDaddy):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: GoDaddy (security|website firewall)
+                      reverse: false
+                  log: GoDaddy Website Protection (GoDaddy) Found
+              Greywizard (Grey Wizard):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: <(title|h\d{{1}})>Grey Wizard|contact the website owner or Grey Wizard|We.ve
+                        detected attempted attack or non standard traffic from your ip address
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: greywizard
+                        reverse: false
+                  log: Greywizard (Grey Wizard) Found
+              Huawei Cloud Firewall (Huawei):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: hwclouds\.com|hws_security@
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: HuaweiCloudWAF
+                        reverse: false
+                      Set-Cookie:
+                        regex: ^HWWAFSESID=
+                        reverse: false
+                  log: Huawei Cloud Firewall (Huawei) Found
+              HyperGuard (Art of Defense):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Set-Cookie:
+                        regex: ^WODSESSION=
+                        reverse: false
+                  log: HyperGuard (Art of Defense) Found
+              ISA Server (Microsoft):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: The.{{0,10}}?(isa.)?server.{{0,10}}?denied the specified uniform resource
+                        locator \(url\)
+                      reverse: false
+                  log: ISA Server (Microsoft) Found
+              Imunify360 (CloudLinux):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: protected.by.{{0,10}}?imunify360|powered.by.{{0,10}}?imunify360|imunify360.preloader
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: imunify360.{{0,10}}?
+                        reverse: false
+                  log: Imunify360 (CloudLinux) Found
+              Incapsula (Imperva Inc.):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: incapsula incident id|powered by incapsula|/_Incapsula_Resource
+                      reverse: false
+                    headers:
+                      Set-Cookie:
+                        regex: ^incap_ses.*?=|^visid_incap.*?=
+                        reverse: false
+                  log: Incapsula (Imperva Inc.) Found
+              IndusGuard (Indusface):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: This website is secured against online attacks. Your request was blocked
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: IF_WAF
+                        reverse: false
+                  log: IndusGuard (Indusface) Found
+              Instart DX (Instart Logic) condition1:
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      X-Instart-Cache:
+                        regex: .+
+                        reverse: false
+                      X-Instart-Request-ID:
+                        regex: .+
+                        reverse: false
+                      X-Instart-WL:
+                        regex: .+
+                        reverse: false
+                  log: Instart DX (Instart Logic) Found
+              Instart DX (Instart Logic) condition2:
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*the requested url was rejected)(?=.*please consult with your
+                        administrator)(?=.*your support id is).*$
+                      reverse: false
+                  log: Instart DX (Instart Logic) Found
+              Janusec Application Gateway (Janusec):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: janusec application gateway
+                      reverse: false
+                  log: Janusec Application Gateway (Janusec) Found
+              Jiasule (Jiasule):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: notice\-jiasule|static\.jiasule\.com
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: jiasule\-waf
+                        reverse: false
+                      Set-Cookie:
+                        regex: ^jsl_tracking(.+)?=|__jsluid=
+                        reverse: false
+                  log: Jiasule (Jiasule) Found
+              KS-WAF (KnownSec):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: /ks[-_]waf[-_]error\.png
+                      reverse: false
+                  log: KS-WAF (KnownSec) Found
+              KeyCDN (KeyCDN):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: KeyCDN
+                        reverse: false
+                  log: KeyCDN (KeyCDN) Found
+              Kona SiteDefender (Akamai):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: AkamaiGHost
+                        reverse: false
+                  log: Kona SiteDefender (Akamai) Found
+              LimeLight CDN (LimeLight):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Set-Cookie:
+                        regex: ^limelight|^l[mg]_sessid=
+                        reverse: false
+                  log: LimeLight CDN (LimeLight) Found
+              LiteSpeed (LiteSpeed Technologies) condition1:
+                response:
+                  condition_type: and
+                  conditions:
+                    headers:
+                      Server:
+                        regex: LiteSpeed
+                        reverse: false
+                    status_code:
+                      regex: (?s)^(?=.*403).*$
+                      reverse: false
+                  log: LiteSpeed (LiteSpeed Technologies) Found
+              LiteSpeed (LiteSpeed Technologies) condition2:
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Proudly powered by litespeed web server|www\.litespeedtech\.com/error\-page
+                      reverse: false
+                  log: LiteSpeed (LiteSpeed Technologies) Found
+              Malcare (Inactiv):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: firewall.{{0,15}}?powered.by.{{0,15}}?malcare.{{0,15}}?pro|blocked
+                        because of malicious activities
+                      reverse: false
+                  log: Malcare (Inactiv) Found
+              MaxCDN (MaxCDN):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      X-CDN:
+                        regex: maxcdn
+                        reverse: false
+                  log: MaxCDN (MaxCDN) Found
+              Mission Control Shield (Mission Control):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: Mission Control Application Shield
+                        reverse: false
+                  log: Mission Control Shield (Mission Control) Found
+              ModSecurity (SpiderLabs) condition1:
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: This error was generated by Mod.?Security|rules of the mod.security.module|mod.security.rules
+                        triggered|Protected by Mod.?Security|/modsecurity[\-_]errorpage/|modsecurity
+                        iis
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: (mod_security|Mod_Security|NOYB)
+                        reverse: false
+                  log: ModSecurity (SpiderLabs) Found
+              ModSecurity (SpiderLabs) condition2:
+                response:
+                  condition_type: and
+                  conditions:
+                    reason:
+                      regex: (?s)^(?=.*ModSecurity Action).*$
+                      reverse: false
+                    status_code:
+                      regex: (?s)^(?=.*403).*$
+                      reverse: false
+                  log: ModSecurity (SpiderLabs) Found
+              ModSecurity (SpiderLabs) condition3:
+                response:
+                  condition_type: and
+                  conditions:
+                    reason:
+                      regex: (?s)^(?=.*ModSecurity Action).*$
+                      reverse: false
+                    status_code:
+                      regex: (?s)^(?=.*406).*$
+                      reverse: false
+                  log: ModSecurity (SpiderLabs) Found
+              NAXSI (NBS Systems):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: blocked by naxsi|naxsi blocked information
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: naxsi(.+)?
+                        reverse: false
+                      X-Data-Origin:
+                        regex: ^naxsi(.+)?
+                        reverse: false
+                  log: NAXSI (NBS Systems) Found
+              NSFocus (NSFocus Global Inc.):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: NSFocus
+                        reverse: false
+                  log: NSFocus (NSFocus Global Inc.) Found
+              Nemesida (PentestIt):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: '@?nemesida(\-security)?\.com|Suspicious activity detected.{{0,10}}?Access
+                        to the site is blocked|nwaf@'
+                      reverse: false
+                    status_code:
+                      regex: '222'
+                      reverse: false
+                  log: Nemesida (PentestIt) Found
+              NetContinuum (Barracuda Networks):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Set-Cookie:
+                        regex: ^NCI__SessionId=
+                        reverse: false
+                  log: NetContinuum (Barracuda Networks) Found
+              NetScaler AppFirewall (Citrix Systems):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: (NS Transaction|AppFW Session) id|Violation Category.{{0,5}}?APPFW_|Citrix\|NetScaler
+                      reverse: false
+                    headers:
+                      Cneonction:
+                        regex: ^(keep alive|close)
+                        reverse: false
+                      Set-Cookie:
+                        regex: ^(ns_af=|citrix_ns_id|NSC_)
+                        reverse: false
+                      Via:
+                        regex: NS\-CACHE
+                        reverse: false
+                      nnCoection:
+                        regex: ^(keep alive|close)
+                        reverse: false
+                  log: NetScaler AppFirewall (Citrix Systems) Found
+              NevisProxy (AdNovum):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Set-Cookie:
+                        regex: ^Navajo|^NP_ID
+                        reverse: false
+                  log: NevisProxy (AdNovum) Found
+              Newdefend (NewDefend):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: www\.newdefend\.com/feedback|/nd\-block/
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: Newdefend
+                        reverse: false
+                  log: Newdefend (NewDefend) Found
+              NexusGuard Firewall (NexusGuard):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Powered by Nexusguard|nexusguard\.com/wafpage/.+#\d{{3}};
+                      reverse: false
+                  log: NexusGuard Firewall (NexusGuard) Found
+              NinjaFirewall (NinTechNet):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*<title>NinjaFirewall.{{0,10}}?\d{{3}}.forbidden)(?=.*For
+                        security reasons?.{{0,10}}?it was blocked and logged).*$
+                      reverse: false
+                  log: NinjaFirewall (NinTechNet) Found
+              NullDDoS Protection (NullDDoS):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: NullDDoS(.System)?
+                        reverse: false
+                  log: NullDDoS Protection (NullDDoS) Found
+              OnMessage Shield (BlackBaud):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Blackbaud K\-12 conducts routine maintenance|onMessage SHEILD|maintenance\.blackbaud\.com|status\.blackbaud\.com
+                      reverse: false
+                    headers:
+                      X-Engine:
+                        regex: onMessage Shield
+                        reverse: false
+                  log: OnMessage Shield (BlackBaud) Found
+              Open-Resty Lua Nginx (FLOSS) condition1:
+                response:
+                  condition_type: and
+                  conditions:
+                    headers:
+                      Server:
+                        regex: ^openresty/[0-9\.]+?
+                        reverse: false
+                    status_code:
+                      regex: (?s)^(?=.*403).*$
+                      reverse: false
+                  log: Open-Resty Lua Nginx (FLOSS) Found
+              Open-Resty Lua Nginx (FLOSS) condition2:
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*openresty/[0-9\.]+?).*$
+                      reverse: false
+                    status_code:
+                      regex: (?s)^(?=.*406).*$
+                      reverse: false
+                  log: Open-Resty Lua Nginx (FLOSS) Found
+              Oracle Cloud (Oracle):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: <title>fw_error_www|src=\"/oralogo_small\.gif\"|www\.oracleimg\.com/us/assets/metrics/ora_ocom\.js
+                      reverse: false
+                  log: Oracle Cloud (Oracle) Found
+              PT Application Firewall (Positive Technologies):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*<h1.{{0,10}}?Forbidden)(?=.*<pre>Request.ID:.{{0,10}}?\d{{4}}\-(\d{{2}})+.{{0,35}}?pre>).*$
+                      reverse: false
+                  log: PT Application Firewall (Positive Technologies) Found
+              Palo Alto Next Gen Firewall (Palo Alto Networks):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Download of virus.spyware blocked|Palo Alto Next Generation Security
+                        Platform
+                      reverse: false
+                  log: Palo Alto Next Gen Firewall (Palo Alto Networks) Found
+              PentaWAF (Global Network Services):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Penta.?Waf/[0-9\.]+?.server
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: PentaWaf(/[0-9\.]+)?
+                        reverse: false
+                  log: PentaWAF (Global Network Services) Found
+              PerimeterX (PerimeterX):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: www\.perimeterx\.(com|net)/whywasiblocked|client\.perimeterx\.(net|com)|denied
+                        because we believe you are using automation tools
+                      reverse: false
+                  log: PerimeterX (PerimeterX) Found
+              PowerCDN (PowerCDN):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Via:
+                        regex: (.*)?powercdn.com(.*)?
+                        reverse: false
+                      X-CDN:
+                        regex: PowerCDN
+                        reverse: false
+                      X-Cache:
+                        regex: (.*)?powercdn.com(.*)?
+                        reverse: false
+                  log: PowerCDN (PowerCDN) Found
+              Profense (ArmorLogic):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: Profense
+                        reverse: false
+                      Set-Cookie:
+                        regex: ^PLBSID=
+                        reverse: false
+                  log: Profense (ArmorLogic) Found
+              Puhui (Puhui):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: Puhui[\-_]?WAF
+                        reverse: false
+                  log: Puhui (Puhui) Found
+              Qcloud (Tencent Cloud):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: "(?s)^(?=.*\u817E\u8BAF\u4E91Web\u5E94\u7528\u9632\u706B\u5899).*$"
+                      reverse: false
+                    status_code:
+                      regex: (?s)^(?=.*403).*$
+                      reverse: false
+                  log: Qcloud (Tencent Cloud) Found
+              Qiniu (Qiniu CDN):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      X-Qiniu-CDN:
+                        regex: \d+?
+                        reverse: false
+                  log: Qiniu (Qiniu CDN) Found
+              Qrator (Qrator):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: QRATOR
+                        reverse: false
+                  log: Qrator (Qrator) Found
+              RSFirewall (RSJoomla!):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: com_rsfirewall_(\d{{3}}_forbidden|event)?
+                      reverse: false
+                  log: RSFirewall (RSJoomla!) Found
+              RayWAF (WebRay Solutions):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      DrivedBy:
+                        regex: RaySrv.RayEng/[0-9\.]+?
+                        reverse: false
+                      Server:
+                        regex: WebRay\-WAF
+                        reverse: false
+                  log: RayWAF (WebRay Solutions) Found
+              Reblaze (Reblaze) condition1:
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: Reblaze Secure Web Gateway
+                        reverse: false
+                      Set-Cookie:
+                        regex: ^rbzid
+                        reverse: false
+                  log: Reblaze (Reblaze) Found
+              Reblaze (Reblaze) condition2:
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*current session has been terminated)(?=.*do not hesitate
+                        to contact us)(?=.*access denied \(\d{{3}}\)).*$
+                      reverse: false
+                  log: Reblaze (Reblaze) Found
+              RequestValidationMode (Microsoft):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Request Validation has detected a potentially dangerous client input|ASP\.NET
+                        has detected data in the request|HttpRequestValidationException
+                      reverse: false
+                  log: RequestValidationMode (Microsoft) Found
+              SEnginx (Neusoft):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: SENGINX\-ROBOT\-MITIGATION
+                      reverse: false
+                  log: SEnginx (Neusoft) Found
+              Sabre Firewall (Sabre) condition1:
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: dxsupport\.sabre\.com
+                      reverse: false
+                  log: Sabre Firewall (Sabre) Found
+              Sabre Firewall (Sabre) condition2:
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*<title>Application Firewall Error)(?=.*add some important
+                        details to the email for us to investigate).*$
+                      reverse: false
+                  log: Sabre Firewall (Sabre) Found
+              Safe3 Web Firewall (Safe3):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Safe3waf/[0-9\.]+?
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: Safe3 Web Firewall
+                        reverse: false
+                      X-Powered-By:
+                        regex: Safe3WAF/[\.0-9]+?
+                        reverse: false
+                  log: Safe3 Web Firewall (Safe3) Found
+              Safedog (SafeDog):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: safedogsite/broswer_logo\.jpg|404\.safedog\.cn/sitedog_stat.html|404\.safedog\.cn/images/safedogsite/head\.png
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: Safedog
+                        reverse: false
+                      Set-Cookie:
+                        regex: ^safedog\-flow\-item=
+                        reverse: false
+                  log: Safedog (SafeDog) Found
+              Safeline (Chaitin Tech.):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: 'safeline|<!\-\-\sevent id:'
+                      reverse: false
+                  log: Safeline (Chaitin Tech.) Found
+              SecKing (SecKing):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: secking(.?waf)?
+                        reverse: false
+                  log: SecKing (SecKing) Found
+              SecuPress WP Security (SecuPress):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: <(title|h\d{{1}})>SecuPress
+                      reverse: false
+                  log: SecuPress WP Security (SecuPress) Found
+              Secure Entry (United Security Providers):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: Secure Entry Server
+                        reverse: false
+                  log: Secure Entry (United Security Providers) Found
+              SecureSphere (Imperva Inc.):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*<(title|h2)>Error)(?=.*The incident ID is)(?=.*This page
+                        can't be displayed)(?=.*Contact support for additional information).*$
+                      reverse: false
+                  log: SecureSphere (Imperva Inc.) Found
+              ServerDefender VP (Port80 Software):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      X-Pint:
+                        regex: p(ort\-)?80
+                        reverse: false
+                  log: ServerDefender VP (Port80 Software) Found
+              Shadow Daemon (Zecure):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*<h\d{{1}}>\d{{3}}.forbidden<.h\d{{1}}>)(?=.*request forbidden
+                        by administrative rules).*$
+                      reverse: false
+                  log: Shadow Daemon (Zecure) Found
+              Shield Security (One Dollar Plugin):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: You were blocked by the Shield|remaining transgression\(s\) against
+                        this site|Something in the URL.{{0,5}}?Form or Cookie data wasn\'t appropriate
+                      reverse: false
+                  log: Shield Security (One Dollar Plugin) Found
+              SiteGround (SiteGround):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Our system thinks you might be a robot!|access is restricted due to
+                        a security rule
+                      reverse: false
+                  log: SiteGround (SiteGround) Found
+              SiteGuard (Sakura Inc.):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Powered by SiteGuard|The server refuse to browse the page
+                      reverse: false
+                  log: SiteGuard (Sakura Inc.) Found
+              Sitelock (TrueShield):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: SiteLock will remember you|Sitelock is leader in Business Website Security
+                        Services|sitelock[_\-]shield([_\-]logo|[\-_]badge)?|SiteLock incident ID
+                      reverse: false
+                  log: Sitelock (TrueShield) Found
+              SonicWall (Dell):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: <(title|h\d{{1}})>Web Site Blocked|\+?nsa_banner
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: SonicWALL
+                        reverse: false
+                  log: SonicWall (Dell) Found
+              Squarespace (Squarespace):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: status\.squarespace\.com|BRICK\-\d{{2}}
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: Squarespace
+                        reverse: false
+                      Set-Cookie:
+                        regex: ^SS_ANALYTICS_ID=|^SS_MATTR=|^SS_MID=|SS_CVT=
+                        reverse: false
+                  log: Squarespace (Squarespace) Found
+              SquidProxy IDS (SquidProxy):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*Access control configuration prevents your request).*$
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: squid(/[0-9\.]+)?
+                        reverse: false
+                  log: SquidProxy IDS (SquidProxy) Found
+              StackPath (StackPath):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*This website is using a security service to protect itself)(?=.*You
+                        performed an action that triggered the service and blocked your request).*$
+                      reverse: false
+                  log: StackPath (StackPath) Found
+              Sucuri CloudProxy (Sucuri Inc.):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Access Denied.{{0,6}}?Sucuri Website Firewall|<title>Sucuri WebSite
+                        Firewall.{{0,6}}?(CloudProxy)?.{{0,6}}?Access Denied|sucuri\.net/privacy\-policy|cdn\.sucuri\.net/sucuri[-_]firewall[-_]block\.css|cloudproxy@sucuri\.net
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: Sucuri(\-Cloudproxy)?
+                        reverse: false
+                      X-Sucuri-Block:
+                        regex: .+?
+                        reverse: false
+                      X-Sucuri-Cache:
+                        regex: .+?
+                        reverse: false
+                      X-Sucuri-ID:
+                        regex: .+?
+                        reverse: false
+                  log: Sucuri CloudProxy (Sucuri Inc.) Found
+              Tencent Cloud Firewall (Tencent Technologies):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: waf\.tencent\-?cloud\.com/
+                      reverse: false
+                  log: Tencent Cloud Firewall (Tencent Technologies) Found
+              Teros (Citrix Systems):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Set-Cookie:
+                        regex: ^st8id=
+                        reverse: false
+                  log: Teros (Citrix Systems) Found
+              Trafficshield (F5 Networks):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: F5-TrafficShield
+                        reverse: false
+                      Set-Cookie:
+                        regex: ^ASINFO=
+                        reverse: false
+                  log: Trafficshield (F5 Networks) Found
+              TransIP Web Firewall (TransIP):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      X-TransIP-Backend:
+                        regex: .+
+                        reverse: false
+                      X-TransIP-Balancer:
+                        regex: .+
+                        reverse: false
+                  log: TransIP Web Firewall (TransIP) Found
+              UEWaf (UCloud):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: /uewaf_deny_pages/default/img/|ucloud\.cn
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: uewaf(/[0-9\.]+)?
+                        reverse: false
+                  log: UEWaf (UCloud) Found
+              URLMaster SecurityCheck (iFinity/DotNetNuke) condition1:
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      X-UrlMaster-Debug:
+                        regex: .+
+                        reverse: false
+                      X-UrlMaster-Ex:
+                        regex: .+
+                        reverse: false
+                  log: URLMaster SecurityCheck (iFinity/DotNetNuke) Found
+              URLMaster SecurityCheck (iFinity/DotNetNuke) condition2:
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*Ur[li]RewriteModule)(?=.*SecurityCheck).*$
+                      reverse: false
+                  log: URLMaster SecurityCheck (iFinity/DotNetNuke) Found
+              URLScan (Microsoft):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Rejected[-_]By[_-]UrlScan|A custom filter or module.{{0,4}}?such as
+                        URLScan
+                      reverse: false
+                  log: URLScan (Microsoft) Found
+              UTM Web Protection (Sophos) condition1:
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: www\.sophos\.com|Powered by.?(Sophos)? UTM Web Protection
+                      reverse: false
+                  log: UTM Web Protection (Sophos) Found
+              UTM Web Protection (Sophos) condition2:
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*<title>Access to the requested URL was blocked)(?=.*Access
+                        to the requested URL was blocked)(?=.*incident was logged with the following
+                        log identifier)(?=.*Inbound Anomaly Score exceeded)(?=.*Your cache administrator
+                        is).*$
+                      reverse: false
+                  log: UTM Web Protection (Sophos) Found
+              Varnish (OWASP):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Request rejected by xVarnish\-WAF
+                      reverse: false
+                  log: Varnish (OWASP) Found
+              Viettel (Cloudrity):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Access Denied.{{0,10}}?Viettel WAF|cloudrity\.com\.(vn)?/|Viettel WAF
+                        System
+                      reverse: false
+                  log: Viettel (Cloudrity) Found
+              VirusDie (VirusDie LLC):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: cdn\.virusdie\.ru/splash/firewallstop\.png|copy.{{0,10}}?Virusdie\.ru
+                      reverse: false
+                  log: VirusDie (VirusDie LLC) Found
+              WP Cerber Security (Cerber Tech):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*your request looks suspicious or similar to automated)(?=.*our
+                        server stopped processing your request)(?=.*We.re sorry.{{0,10}}?you are
+                        not allowed to proceed)(?=.*requests from spam posting software)(?=.*<title>403
+                        Access Forbidden).*$
+                      reverse: false
+                  log: WP Cerber Security (Cerber Tech) Found
+              WTS-WAF (WTS):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: <(title|h\d{{1}})>WTS\-WAF
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: wts/[0-9\.]+?
+                        reverse: false
+                  log: WTS-WAF (WTS) Found
+              Wallarm (Wallarm Inc.):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: nginx[\-_]wallarm
+                        reverse: false
+                  log: Wallarm (Wallarm Inc.) Found
+              WatchGuard (WatchGuard Technologies):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Request denied by WatchGuard Firewall|WatchGuard Technologies Inc\.
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: WatchGuard
+                        reverse: false
+                  log: WatchGuard (WatchGuard Technologies) Found
+              WebARX (WebARX Security Solutions):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: WebARX.{{0,10}}?Web Application Firewall|www\.webarxsecurity\.com|/wp\-content/plugins/webarx/includes/
+                      reverse: false
+                  log: WebARX (WebARX Security Solutions) Found
+              WebKnight (AQTRONIX) condition1:
+                response:
+                  condition_type: and
+                  conditions:
+                    reason:
+                      regex: (?s)^(?=.*No Hacking).*$
+                      reverse: false
+                    status_code:
+                      regex: (?s)^(?=.*999).*$
+                      reverse: false
+                  log: WebKnight (AQTRONIX) Found
+              WebKnight (AQTRONIX) condition2:
+                response:
+                  condition_type: and
+                  conditions:
+                    reason:
+                      regex: (?s)^(?=.*Hack Not Found).*$
+                      reverse: false
+                    status_code:
+                      regex: (?s)^(?=.*404).*$
+                      reverse: false
+                  log: WebKnight (AQTRONIX) Found
+              WebKnight (AQTRONIX) condition3:
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: WebKnight Application Firewall Alert|What is webknight\?|AQTRONIX WebKnight
+                        is an application firewall|WebKnight will take over and protect|aqtronix\.com/WebKnight|AQTRONIX.{{0,10}}?WebKnight
+                      reverse: false
+                  log: WebKnight (AQTRONIX) Found
+              WebLand (WebLand):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: protected by webland
+                        reverse: false
+                  log: WebLand (WebLand) Found
+              WebSEAL (IBM):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: This is a WebSEAL error message template file|WebSEAL server received
+                        an invalid HTTP request
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: WebSEAL
+                        reverse: false
+                  log: WebSEAL (IBM) Found
+              WebTotem (WebTotem):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: The current request was blocked.{{0,8}}?>WebTotem
+                      reverse: false
+                  log: WebTotem (WebTotem) Found
+              West263 CDN (West263CDN):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      X-Cache:
+                        regex: WS?T263CDN
+                        reverse: false
+                  log: West263 CDN (West263CDN) Found
+              Wordfence (Defiant):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Generated by Wordfence|broke one of (the )?Wordfence (advanced )?blocking
+                        rules|/plugins/wordfence
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: wf[_\-]?WAF
+                        reverse: false
+                  log: Wordfence (Defiant) Found
+              XLabs Security WAF (XLabs):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Secured:
+                        regex: ^By XLabs Security
+                        reverse: false
+                      Server:
+                        regex: XLabs[-_]?.?WAF
+                        reverse: false
+                      X-CDN:
+                        regex: XLabs Security
+                        reverse: false
+                  log: XLabs Security WAF (XLabs) Found
+              Xuanwudun (Xuanwudun):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: admin\.dbappwaf\.cn/(index\.php/Admin/ClientMisinform/)?|class=.(db[\-_]?)?waf(.)?([\-_]?row)?>
+                      reverse: false
+                  log: Xuanwudun (Xuanwudun) Found
+              YXLink (YxLink Technologies):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: Yxlink([\-_]?WAF)?
+                        reverse: false
+                      Set-Cookie:
+                        regex: ^yx_ci_session=|^yx_language=
+                        reverse: false
+                  log: YXLink (YxLink Technologies) Found
+              Yundun (Yundun):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Blocked by YUNDUN Cloud WAF|yundun\.com/yd[-_]http[_-]error/|www\.yundun\.com/(static/js/fingerprint\d{{1}}?\.js)?
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: YUNDUN
+                        reverse: false
+                      Set-Cookie:
+                        regex: ^yd_cookie=
+                        reverse: false
+                      X-Cache:
+                        regex: YUNDUN
+                        reverse: false
+                  log: Yundun (Yundun) Found
+              Yunjiasu (Baidu Cloud Computing):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: Yunjiasu(.+)?
+                        reverse: false
+                  log: Yunjiasu (Baidu Cloud Computing) Found
+              Yunsuo (Yunsuo):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: class=\"yunsuologo\"
+                      reverse: false
+                    headers:
+                      Set-Cookie:
+                        regex: ^yunsuo_session=
+                        reverse: false
+                  log: Yunsuo (Yunsuo) Found
+              ZScaler (Accenture):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: Access Denied.{{0,10}}?Accenture Policy|policies\.accenture\.com|login\.zscloud\.net/img_logo_new1\.png|Zscaler
+                        to protect you from internet threats|Internet Security by ZScaler|Accenture.{{0,10}}?webfilters
+                        indicate that the site likely contains
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: ZScaler
+                        reverse: false
+                  log: ZScaler (Accenture) Found
+              Zenedge (Zenedge):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: /__zenedge/
+                      reverse: false
+                    headers:
+                      Server:
+                        regex: ZENEDGE
+                        reverse: false
+                      X-Zen-Fury:
+                        regex: .+?
+                        reverse: false
+                  log: Zenedge (Zenedge) Found
+              aeSecure (aeSecure):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: aesecure_denied\.png
+                      reverse: false
+                    headers:
+                      aeSecure-code:
+                        regex: .+?
+                        reverse: false
+                  log: aeSecure (aeSecure) Found
+              eEye SecureIIS (BeyondTrust):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: SecureIIS is an internet security application|Download SecureIIS Personal
+                        Edition|https?://www\.eeye\.com/Secure\-?IIS
+                      reverse: false
+                  log: eEye SecureIIS (BeyondTrust) Found
+              pkSecurity IDS (pkSec) condition1:
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*pk.?Security.?Module)(?=.*Security.Alert).*$
+                      reverse: false
+                  log: pkSecurity IDS (pkSec) Found
+              pkSecurity IDS (pkSec) condition2:
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: As this could be a potential hack attack|A safety critical (call|request)
+                        was (detected|discovered) and blocked|maximum number of reloads per minute
+                        and prevented access
+                      reverse: false
+                  log: pkSecurity IDS (pkSec) Found
+              wpmudev WAF (Incsub) condition1:
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*href="http(s)?.\/\/wpmudev.com\/.{{0,15}}?)(?=.*Click on
+                        the Logs tab, then the WAF Log.)(?=.*Choose your site from the list).*$
+                      reverse: false
+                    status_code:
+                      regex: (?s)^(?=.*403).*$
+                      reverse: false
+                  log: wpmudev WAF (Incsub) Found
+              wpmudev WAF (Incsub) condition2:
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*<h1>Whoops, this request has been blocked!)(?=.*This request
+                        has been deemed suspicious)(?=.*possible attack on our servers.).*$
+                      reverse: false
+                    status_code:
+                      regex: (?s)^(?=.*403).*$
+                      reverse: false
+                  log: wpmudev WAF (Incsub) Found
+
+
