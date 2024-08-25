@@ -1,0 +1,12 @@
+site_name: OWASP Nettacker Documentation
+theme:
+  name: material
+nav:
+  - Home: Home.md
+  - Installation: Installation.md
+  - Usage: Usage.md
+  - Modules: Modules.md
+  - Media: Media.md
+  - API: API.md
+  - Contributing: Developers.md
+  - Events: Events.md
