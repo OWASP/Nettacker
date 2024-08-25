@@ -1,13 +1,14 @@
 # OWASP Nettacker
 
-### Wiki sections are visible in the sidebar (right).
+###  Table of contents sections are also visible in the sidebar (right).
 
-<img src="https://raw.githubusercontent.com/viraintel/OWASP-Nettacker/master/web/static/img/owasp-nettacker.png" width="200"><img src="https://raw.githubusercontent.com/viraintel/OWASP-Nettacker/master/web/static/img/owasp.png" width="500">
+<img src="https://raw.githubusercontent.com/OWASP/Nettacker/master/nettacker/web/static/img/owasp-nettacker.png" width="200"><img src="https://raw.githubusercontent.com/OWASP/Nettacker/master/nettacker/web/static/img/owasp.png" width="500">
+
 
 - [Introduction](#introduction)
   * [Links](#links)
-- [[Installation|Installation]]
-- [[Usage|Usage]]
+- [Installation](Installation.md)
+- [Usage](Usage.md)
 
 # Introduction
 
@@ -18,13 +19,13 @@ OWASP Nettacker is open-source software written in Python language using **YAML-
 
 ## Links
 
-* OWASP Page: https://www.owasp.org/index.php/OWASP_Nettacker
-* Wiki: https://github.com/OWASP/OWASP-Nettacker/wiki
-* Github: https://github.com/OWASP/OWASP-Nettacker
-* Slack: #project-nettacker on https://owasp.slack.com
-* Mailing List: https://groups.google.com/forum/#!forum/owasp-nettacker
-* Docker Image: https://hub.docker.com/r/alirazmjoo/owaspnettacker/
+* OWASP Page: https://www.owasp.org/nettacker
+* Wiki: https://github.com/OWASP/Nettacker/wiki
+* GitHub: https://github.com/OWASP/Nettacker
+* Official Docker Image: https://hub.docker.com/r/owasp/nettacker/
+* Slack: #project-nettacker on https://owasp.slack.com  (OWASP Slack inivite at https://owasp.org/slack/invite)
+
 * OpenHub: https://www.openhub.net/p/OWASP-Nettacker
 * CI: https://github.com/OWASP/Nettacker/actions
-* **Donate**: https://www.owasp.org/index.php/OWASP_Nettacker
-* Maintainer: https://www.secologist.com/
+* **Donate**: [https://www.owasp.org/](https://owasp.org/donate/?reponame=www-project-nettacker&title=OWASP+Nettacker)
+* Original Creator/Maintainer: https://www.secologist.com/
