@@ -390,6 +390,22 @@ class ArgParser(ArgumentParser):
             default=Config.settings.ping_before_scan,
             help=_("ping_before_scan"),
         )
+        method_options.add_argument(
+            "-K",
+            "--scan-compare",
+            action="store",
+            dest="scan_compare_id",
+            default=Config.settings.scan_compare_id,
+            help=_("compare_scans"),
+        )
+        method_options.add_argument(
+            "-J",
+            "--compare-report-path",
+            action="store",
+            dest="compare_report_path_filename",
+            default=Config.settings.compare_report_path_filename,
+            help=_("compare_report_path_filename"),
+        )
 
         # API Options
         api_options = self.add_argument_group(_("API"), _("API_options"))

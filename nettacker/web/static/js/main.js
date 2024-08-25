@@ -85,6 +85,7 @@ $(document).ready(function () {
     $("#new_scan").addClass("hidden");
     $("#get_results").addClass("hidden");
     $("#crawler_area").addClass("hidden");
+    $("#compare_area").addClass("hidden");
     $("#home").removeClass("hidden");
   });
 
@@ -100,6 +101,7 @@ $(document).ready(function () {
         $("#get_results").addClass("hidden");
         $("#crawler_area").addClass("hidden");
         $("#login_first").addClass("hidden");
+        $("#compare_area").addClass("hidden");
         $("#new_scan").removeClass("hidden");
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
@@ -107,6 +109,7 @@ $(document).ready(function () {
         $("#get_results").addClass("hidden");
         $("#crawler_area").addClass("hidden");
         $("#new_scan").addClass("hidden");
+        $("#compare_area").addClass("hidden");
         $("#login_first").removeClass("hidden");
       });
   });
@@ -116,6 +119,7 @@ $(document).ready(function () {
     $("#home").addClass("hidden");
     $("#new_scan").addClass("hidden");
     $("#crawler_area").addClass("hidden");
+    $("#compare_area").addClass("hidden");
     $("#get_results").removeClass("hidden");
   });
 
@@ -124,7 +128,88 @@ $(document).ready(function () {
     $("#home").addClass("hidden");
     $("#new_scan").addClass("hidden");
     $("#get_results").addClass("hidden");
+    $("#compare_area").addClass("hidden");
     $("#crawler_area").removeClass("hidden");
+  });
+
+  // Compare scans
+  $("#compare_btn").click(function() {
+    $("#home").addClass("hidden");
+    $("#new_scan").addClass("hidden");
+    $("#get_results").addClass("hidden");
+    $("#crawler_area").addClass("hidden");
+    $("#compare_area").removeClass("hidden");
+  });
+
+  // Show the scan compare area
+  $("#compare_btn").click(function() {
+    $.ajax({
+      type: "GET",
+      url: "/session/check",
+      dataType: "text",
+    })
+      .done(function (res) {
+        $("#home").addClass("hidden");
+        $("#new_scan").addClass("hidden");
+        $("#get_results").addClass("hidden");
+        $("#crawler_area").addClass("hidden");
+        $("#login_first").addClass("hidden");
+        $("#compare_area").removeClass("hidden");
+      })
+      .fail(function (jqXHR, textStatus, errorThrown) {
+        $("#home").addClass("hidden");
+        $("#get_results").addClass("hidden");
+        $("#crawler_area").addClass("hidden");
+        $("#new_scan").addClass("hidden");
+        $("#compare_area").addClass("hidden");
+        $("#login_first").removeClass("hidden");
+      });
+  });
+
+  // Create the compare report
+  $("#create_compare_report").click(function() {
+    var tmp_data = {
+      scan_id_first: $("#scan_id_first").val(),
+      scan_id_second: $("#scan_id_second").val(),
+      compare_report_path: $("#compare_report_path").val(),
+    };
+    var key = "";
+    var data = {};
+    for (key in tmp_data) {
+      if (
+        tmp_data[key] != "" &&
+        tmp_data[key] != false &&
+        tmp_data[key] != null
+      ) {
+        data[key] = tmp_data[key];
+      }
+    }
+    $.ajax({
+      type: "POST",
+      url: "/compare/scans",
+      data: data,
+    })
+      .done(function (response, textStatus, jqXHR) {
+        if (response.status === "success") {
+          $("#success_report").removeClass("hidden");
+          setTimeout('$("#success_report").addClass("animated fadeOut");', 5000);
+          setTimeout('$("#success_report").addClass("hidden");', 6000);
+          $("#success_report").removeClass("animated fadeOut");
+        }
+        else {
+          document.getElementById("report_error_msg").innerHTML = response.message;
+          $("#failed_report").removeClass("hidden");
+          setTimeout('$("#failed_report").addClass("hidden");', 5000);
+        }})
+      .fail(function (jqXHR, textStatus, errorThrown) {
+        var errorMessage = "An error occurred while comparing scans.";
+        if(jqXHR.responseJSON && jqXHR.responseJSON.msg){
+          errorMessage = jqXHR.responseJSON.msg;
+        }
+        document.getElementById("report_error_msg").innerHTML = errorMessage;
+        $("#failed_report").removeClass("hidden");
+        setTimeout('$("#failed_report").addClass("hidden");', 5000);
+      });
   });
 
   // start tutorial
@@ -179,7 +264,7 @@ $(document).ready(function () {
           position: "right",
         },
         {
-          element: document.querySelectorAll("#report_path_filename")[0],
+          element: document.querySelectorAll("#output_file")[0],
           intro:
             "Enter the location of the file you want your output in or leave it to the default value.",
           position: "right",
@@ -209,6 +294,12 @@ $(document).ready(function () {
           element: document.querySelectorAll("#crawler_btn")[0],
           intro:
             "Click here to view all the results sorted by the target on which it was performed.",
+          position: "right",
+        },
+        {
+          element: document.querySelectorAll("#compare_btn_ul")[0],
+          intro:
+            "Click here to compare two scans and generate a compare report",
           position: "right",
         },
         {
@@ -525,6 +616,7 @@ $(document).ready(function () {
           $("#nxt_prv_btn").addClass("hidden");
           $("#home").addClass("hidden");
           $("#crawler_area").addClass("hidden");
+          $("#compare_area").addClass("hidden");
         } else {
           $("#login_first").addClass("hidden");
           $("#scan_results").removeClass("hidden");
@@ -894,6 +986,7 @@ function filter_large_content(content, filter_rate){
           $("#crw_nxt_prv_btn").addClass("hidden");
           $("#home").addClass("hidden");
           $("#crawler_area").addClass("hidden");
+          $("#compare_area").addClass("hidden");
         } else {
           $("#login_first").addClass("hidden");
           $("#crawl_results").removeClass("hidden");
@@ -960,6 +1053,7 @@ function filter_large_content(content, filter_rate){
           $("#crw_nxt_prv_btn").addClass("hidden");
           $("#home").addClass("hidden");
           $("#crawler_area").addClass("hidden");
+          $("#compare_area").addClass("hidden");
         } else {
           $("#login_first").addClass("hidden");
           $("#crawl_results").removeClass("hidden");

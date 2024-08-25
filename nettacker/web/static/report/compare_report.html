@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nettacker Scan Comparison Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --background-color: #ecf0f1;
+            --text-color: #34495e;
+            --border-color: #bdc3c7;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--secondary-color);
+            text-align: center;
+            font-size: 26px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-color);
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+
+        .label {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 3px;
+            font-size: 13px;
+        }
+
+        .value {
+            margin-left: 15px;
+            font-size: 15px;
+        }
+
+        .list {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        #list_yellow {
+            background-color: #ffe359;
+            font-weight: 10px;
+        }
+
+        #list_red {
+            font-weight: 10px;
+            background-color: red;
+        }
+
+        .list-item {
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            .section {
+                padding: 10px;
+            }
+
+            .item {
+                padding: 8px;
+            }
+
+            .label, .value, .list-item {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nettacker Scan Comparison Report</h1>
+        <div id="report-container"></div>
+    </div>
+
+    <script>
+        const jsonData = __data_will_locate_here__;
+
+        const reportContainer = document.getElementById('report-container');
+
+        function generateReport(data) {
+            let reportContent = '';
+
+            // Scan Details Section
+            reportContent += `
+                <div class="section">
+                    <h2>Scan Details</h2>
+                    <div class="item">
+                        <div class="label">Current Scan:</div>
+                        <div class="value">ID: ${data.curr_scan_details[0]}</div>
+                        <div class="value">Date: ${data.curr_scan_details[1]}</div>
+                    </div>
+                    <div class="item">
+                        <div class="label">Comparison Scan:</div>
+                        <div class="value">ID: ${data.comp_scan_details[0]}</div>
+                        <div class="value">Date: ${data.comp_scan_details[1]}</div>
+                    </div>
+                </div>`;
+
+            // Target Sets Section
+            reportContent += `
+                <div class="section">
+                    <h2>Target Sets</h2>
+                    <div class="item">
+                        <div class="label">Current Targets:</div>
+                        <ul class="list">
+                            ${data.curr_target_set[0].map(target => `<li class="list-item">${target}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="item">
+                        <div class="label">Comparison Targets:</div>
+                        <ul class="list">
+                            ${data.comp_target_set[0].map(target => `<li class="list-item">${target}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>`;
+
+            // Scan Results Section
+            reportContent += `
+                <div class="section">
+                    <h2>Scan Results</h2>
+                    <div class="item">
+                        <div class="label">Current Scan Results:</div>
+                        <ul class="list">
+                            ${data.curr_scan_result.map(result => `<li class="list-item">Target: ${result[0]}, Scan Type: ${result[1]}, Port: ${result[2]}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="item">
+                        <div class="label">Comparison Scan Results:</div>
+                        <ul class="list">
+                            ${data.comp_scan_result.map(result => `<li class="list-item">Target: ${result[0]}, Scan Type: ${result[1]}, Port: ${result[2]}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>`;
+
+            // Changes Section
+            reportContent += `
+                <div class="section">
+                    <h2>Changes Detected</h2>
+                    <div class="item">
+                        <div class="label">New Targets Discovered:</div>
+                        <ul class="list">
+                            ${data.new_targets_discovered.map(target => `<li class="list-item" id="list_yellow">Target: ${target[0]}, Scan Type: ${target[1]}, Port: ${target[2]}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="item">
+                        <div class="label">Old Targets Not Detected:</div>
+                        <ul class="list" id="list_red">
+                            ${data.old_targets_not_detected.map(target => `<li class="list-item" id="list_red">Target: ${target[0]}, Scan Type: ${target[1]}, Port: ${target[2]}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>`;
+
+            reportContainer.innerHTML = reportContent;
+        }
+
+        generateReport(jsonData);
+    </script>
+</body>
+</html>

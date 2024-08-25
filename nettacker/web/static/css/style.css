@@ -2,7 +2,7 @@ body {
     background: url("/img/background.jpeg")
 }
 
-#new_scan, #home, #get_results,#crawler_area {
+#new_scan, #home, #get_results,#crawler_area,#compare_area{
     background: #FEFCFF;
     padding: 20px;
     border-radius: 5px;

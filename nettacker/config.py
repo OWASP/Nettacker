@@ -148,6 +148,12 @@ class DefaultSettings(ConfigBase):
     usernames_list = None
     verbose_event = False
     verbose_mode = False
+    scan_compare_id = None
+    compare_report_path_filename = "{results_path}/results_{date_time}_{random_chars}.json".format(
+        results_path=PathConfig.results_dir,
+        date_time=now(format="%Y_%m_%d_%H_%M_%S"),
+        random_chars=generate_random_token(10),
+    )
 
 
 class Config:

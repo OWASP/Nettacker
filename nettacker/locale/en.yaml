@@ -117,4 +117,9 @@ username_list: username(s) list, separate with ","
 verbose_mode: verbose mode level (0-5) (default 0)
 wrong_hardware_usage: "You must select one of these profiles for hardware usage. (low, normal, high, maximum)"
 invalid_scan_id: your scan id is not valid!
-
+compare_scans: compare current scan to old scans using the unique scan_id
+compare_report_path_filename: the file-path to store the compare_scan report
+no_scan_to_compare: the scan_id to be compared not found
+compare_report_saved: "compare results saved in {0}"
+build_compare_report: "building compare report"
+finish_build_report: "Finished building compare report"
