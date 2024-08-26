@@ -100,12 +100,12 @@ def is_weak_cipher_suite(host, port, timeout):
         if test_single_cipher(host, port, cipher, timeout):
             supported_ciphers.append(cipher)
 
-    weak_ciphers = ["LOW", "EXP", "eNULL", "aNULL", "RC4", "DES", "MD5", "DH", "ADH"]
+    weak_ciphers = {"LOW", "EXP", "eNULL", "aNULL", "RC4", "DES", "MD5", "DH", "ADH"}
     for cipher in supported_ciphers:
         if cipher in weak_ciphers:
-            return (supported_ciphers, True)
+            return supported_ciphers, True
 
-    return (supported_ciphers, False)
+    return supported_ciphers, False
 
 
 def create_tcp_socket(host, port, timeout):
