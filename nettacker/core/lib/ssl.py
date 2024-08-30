@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import logging
 import socket
 import ssl
@@ -21,7 +19,7 @@ def is_weak_hash_algo(algo):
 
 
 def is_weak_ssl_version(host, port, timeout):
-    def test_ssl_verison(host, port, timeout, ssl_version=None):
+    def test_ssl_version(host, port, timeout, ssl_version=None):
         try:
             context = ssl.SSLContext(ssl_version)
             socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -50,7 +48,7 @@ def is_weak_ssl_version(host, port, timeout):
             lowest_version = version
             supported_versions.append(version)
 
-    return (supported_versions, lowest_version not in {"TLSv1.2", "TLSv1.3"})
+    return supported_versions, lowest_version not in {"TLSv1.2", "TLSv1.3"}
 
 
 def is_weak_cipher_suite(host, port, timeout):
