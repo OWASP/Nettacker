@@ -1,4 +1,5 @@
 from unittest.mock import patch
+
 from nettacker.core.lib.socket import create_tcp_socket, SocketEngine
 from tests.common import TestCase
 

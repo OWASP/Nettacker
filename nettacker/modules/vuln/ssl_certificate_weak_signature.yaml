@@ -1,5 +1,5 @@
 info:
-  name: ssl_certificate_vuln
+  name: ssl_certificate_weak_signature_vuln
   author: Captain-T2004
   severity: 6
   description: check if there are any ssl_certificate vulnerabilities present 
@@ -28,8 +28,6 @@ payloads:
         response:
           condition_type: or
           conditions:
-            self_signed:
-              reverse: false
             grouped_conditions:
               condition_type: and
               conditions:

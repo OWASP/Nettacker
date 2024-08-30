@@ -49,10 +49,12 @@ class Module:
             "subdomain_scan",
             "icmp_scan",
             "port_scan",
-            "ssl_version_vuln",
+            "ssl_weak_version_vuln",
             "ssl_weak_cipher_vuln",
-            "ssl_signed_certificate_vuln",
+            "ssl_certificate_weak_signature_vuln",
+            "ssl_self_signed_certificate_vuln",
             "ssl_expired_certificate_vuln",
+            "ssl_expiring_certificate_scan",
         ]
 
         contents = TemplateLoader("port_scan", {"target": ""}).load()

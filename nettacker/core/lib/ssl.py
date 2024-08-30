@@ -18,14 +18,19 @@ def is_weak_hash_algo(algo):
     return False
 
 
+def create_socket_connection(context, host, port, timeout):
+    socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket_connection.settimeout(timeout)
+    socket_connection.connect((host, port))
+    socket_connection = context.wrap_socket(socket_connection, server_hostname=host)
+    return socket_connection
+
+
 def is_weak_ssl_version(host, port, timeout):
     def test_ssl_version(host, port, timeout, ssl_version=None):
         try:
             context = ssl.SSLContext(ssl_version)
-            socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            socket_connection.settimeout(timeout)
-            socket_connection.connect((host, port))
-            socket_connection = context.wrap_socket(socket_connection, server_hostname=host)
+            socket_connection = create_socket_connection(context, host, port, timeout)
             return socket_connection.version()
 
         except ssl.SSLError:
@@ -43,7 +48,7 @@ def is_weak_ssl_version(host, port, timeout):
     supported_versions = []
     lowest_version = ""
     for ssl_version in ssl_versions:
-        version = test_ssl_verison(host, port, timeout, ssl_version=ssl_version)
+        version = test_ssl_version(host, port, timeout, ssl_version=ssl_version)
         if version:
             lowest_version = version
             supported_versions.append(version)
@@ -58,11 +63,7 @@ def is_weak_cipher_suite(host, port, timeout):
             context.check_hostname = False
             context.verify_mode = ssl.CERT_NONE
             context.set_ciphers(cipher)
-
-            socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            socket_connection.settimeout(timeout)
-            socket_connection.connect((host, port))
-            socket_connection = context.wrap_socket(socket_connection, server_hostname=host)
+            create_socket_connection(context, host, port, timeout)
             return True
 
         except ssl.SSLError:
@@ -126,6 +127,25 @@ def create_tcp_socket(host, port, timeout):
     return socket_connection, ssl_flag
 
 
+def get_cert_info(cert):
+    x509 = crypto.load_certificate(crypto.FILETYPE_PEM, cert)
+    weak_signing_algo = is_weak_hash_algo(str(x509.get_signature_algorithm()))
+    cert_activation = datetime.strptime(x509.get_notBefore().decode("utf-8"), "%Y%m%d%H%M%S%z")
+    cert_expires = datetime.strptime(x509.get_notAfter().decode("utf-8"), "%Y%m%d%H%M%S%z")
+    return {
+        "expired": x509.has_expired(),
+        "self_signed": x509.get_issuer() == x509.get_subject(),
+        "issuer": str(x509.get_issuer()),
+        "subject": str(x509.get_subject()),
+        "signing_algo": str(x509.get_signature_algorithm()),
+        "weak_signing_algo": weak_signing_algo,
+        "activation_date": cert_activation.strftime("%Y/%m/%d"),
+        "not_activated": (cert_activation - datetime.now(timezone.utc)).days > 0,
+        "expiration_date": cert_expires.strftime("%Y/%m/%d"),
+        "expiring_soon": (cert_expires - datetime.now(timezone.utc)).days < 30,
+    }
+
+
 class SslLibrary(BaseLibrary):
     def ssl_certificate_scan(self, host, port, timeout):
         tcp_socket = create_tcp_socket(host, port, timeout)
@@ -134,33 +154,19 @@ class SslLibrary(BaseLibrary):
 
         socket_connection, ssl_flag = tcp_socket
         peer_name = socket_connection.getpeername()
-        if ssl_flag:
-            cert = ssl.get_server_certificate((host, port))
-            x509 = crypto.load_certificate(crypto.FILETYPE_PEM, cert)
-            weak_signing_algo = is_weak_hash_algo(str(x509.get_signature_algorithm()))
-            cert_activation = datetime.strptime(
-                x509.get_notBefore().decode("utf-8"), "%Y%m%d%H%M%S%z"
-            )
-            cert_expires = datetime.strptime(x509.get_notAfter().decode("utf-8"), "%Y%m%d%H%M%S%z")
-
-            return {
-                "expired": x509.has_expired(),
-                "self_signed": x509.get_issuer() == x509.get_subject(),
-                "signing_algo": str(x509.get_signature_algorithm()),
-                "weak_signing_algo": weak_signing_algo,
-                "activation_date": cert_activation.strftime("%d/%m/%Y"),
-                "not_activated": (cert_activation - datetime.now(timezone.utc)).days > 0,
-                "expiration_date": cert_expires.strftime("%d/%m/%Y"),
-                "expiring_soon": (cert_expires - datetime.now(timezone.utc)).days < 30,
-                "ssl_flag": ssl_flag,
-                "peer_name": peer_name,
-                "service": socket.getservbyport(int(port)),
-            }
-        return {
+        scan_info = {
             "ssl_flag": ssl_flag,
             "peer_name": peer_name,
             "service": socket.getservbyport(int(port)),
         }
+
+        if ssl_flag:
+            cert = ssl.get_server_certificate((host, port))
+            cert_info = get_cert_info(cert)
+            scan_info = cert_info | scan_info
+            return scan_info
+
+        return scan_info
 
     def ssl_version_and_cipher_scan(self, host, port, timeout):
         tcp_socket = create_tcp_socket(host, port, timeout)
@@ -171,6 +177,11 @@ class SslLibrary(BaseLibrary):
         peer_name = socket_connection.getpeername()
 
         if ssl_flag:
+            try:
+                cert = ssl.get_server_certificate((host, port))
+            except ssl.SSLError:
+                cert = None
+            cert_info = get_cert_info(cert) if cert else None
             ssl_ver, weak_version = is_weak_ssl_version(host, port, timeout)
             cipher_suite, weak_cipher_suite = is_weak_cipher_suite(host, port, timeout)
 
@@ -179,6 +190,9 @@ class SslLibrary(BaseLibrary):
                 "weak_version": weak_version,
                 "cipher_suite": cipher_suite,
                 "weak_cipher_suite": weak_cipher_suite,
+                "issuer": cert_info["issuer"] if cert_info else "NA",
+                "subject": cert_info["subject"] if cert_info else "NA",
+                "expiration_date": cert_info["expiration_date"] if cert_info else "NA",
                 "ssl_flag": ssl_flag,
                 "peer_name": peer_name,
                 "service": socket.getservbyport(int(port)),

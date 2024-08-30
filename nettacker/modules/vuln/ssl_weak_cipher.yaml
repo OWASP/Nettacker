@@ -1,5 +1,5 @@
 info:
-  name: ssl_version_vuln
+  name: ssl_weak_cipher_vuln
   author: Captain-T2004
   severity: 6
   description: check if ssl version is unsafe or uses any bad ciphers.
@@ -36,4 +36,3 @@ payloads:
                   reverse: false
                 cipher_suite:
                   reverse: false
-            

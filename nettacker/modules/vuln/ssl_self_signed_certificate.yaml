@@ -1,10 +1,10 @@
 info:
-  name: ssl_expired_certificate_vuln
+  name: ssl_self_signed_certificate_vuln
   author: Captain-T2004
   severity: 6
-  description: check if there are any ssl_certificate vulnerabilities present 
+  description: check if the ssl certificate is self-signed
   reference:
-    - https://www.beyondsecurity.com/resources/vulnerabilities/ssl-certificate-expiry
+    - https://www.ssl.com/article/ssl-tls-self-signed-certificates/
   profiles:
     - scan
     - ssl
@@ -28,18 +28,12 @@ payloads:
         response:
           condition_type: or
           conditions:
-            grouped_conditions_1:
+            grouped_conditions:
               condition_type: and
               conditions:
-                expired:
+                self_signed:
                   reverse: false
-                expiration_date:
+                issuer:
                   reverse: false
-            grouped_conditions_2:
-              condition_type: and
-              conditions:
-                not_activated:
+                subject:
                   reverse: false
-                activation_date:
-                  reverse: false
-            

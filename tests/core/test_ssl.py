@@ -53,27 +53,30 @@ class Mockx509Object:
 
 
 class Responses:
-    ssl_version_vuln = {
+    ssl_weak_version_vuln = {
         "ssl_version": ["TLSv1"],
         "weak_version": True,
         "ssl_flag": True,
+        "issuer": "test_issuer",
+        "subject": "test_subject",
+        "expiration_date": "2100/12/07",
     }
 
     ssl_certificate_expired = {
         "expired": True,
-        "expiration_date": "07/12/2023",
+        "expiration_date": "2023/12/07",
         "not_activated": False,
-        "activation_date": "07/12/2023",
+        "activation_date": "2023/12/07",
         "expiring_soon": True,
         "ssl_flag": True,
     }
 
     ssl_certificate_deactivated = {
         "expired": False,
-        "expiration_date": "07/12/2100",
+        "expiration_date": "2100/12/07",
         "expiring_soon": False,
         "not_activated": True,
-        "activation_date": "07/12/2100",
+        "activation_date": "2100/12/07",
         "ssl_flag": True,
     }
 
@@ -81,7 +84,7 @@ class Responses:
 
 
 class Substeps:
-    ssl_version_vuln = {
+    ssl_weak_version_vuln = {
         "method": "ssl_version_and_cipher_scan",
         "response": {
             "condition_type": "or",
@@ -91,6 +94,9 @@ class Substeps:
                     "conditions": {
                         "weak_version": {"reverse": False},
                         "ssl_version": {"reverse": False},
+                        "issuer": {"reverse": False},
+                        "subject": {"reverse": False},
+                        "expiration_date": {"reverse": False},
                     },
                 }
             },
@@ -110,13 +116,6 @@ class Substeps:
                     },
                 },
                 "grouped_conditions_2": {
-                    "condition_type": "and",
-                    "conditions": {
-                        "expiring_soon": {"reverse": False},
-                        "expiration_date": {"reverse": False},
-                    },
-                },
-                "grouped_conditions_3": {
                     "condition_type": "and",
                     "conditions": {
                         "not_activated": {"reverse": False},
@@ -164,6 +163,9 @@ class TestSocketMethod(TestCase):
                 "peer_name": "example.com",
                 "cipher_suite": ["HIGH"],
                 "weak_cipher_suite": False,
+                "issuer": "NA",
+                "subject": "NA",
+                "expiration_date": "NA",
             },
         )
 
@@ -180,6 +182,9 @@ class TestSocketMethod(TestCase):
                 "peer_name": "example.com",
                 "cipher_suite": ["LOW"],
                 "weak_cipher_suite": True,
+                "issuer": "NA",
+                "subject": "NA",
+                "expiration_date": "NA",
             },
         )
 
@@ -223,10 +228,12 @@ class TestSocketMethod(TestCase):
                 "ssl_flag": True,
                 "service": "http",
                 "self_signed": False,
+                "issuer": "test_issuer",
+                "subject": "test_subject",
                 "expiring_soon": False,
-                "expiration_date": "07/12/2100",
+                "expiration_date": "2100/12/07",
                 "not_activated": False,
-                "activation_date": "07/12/2023",
+                "activation_date": "2023/12/07",
                 "signing_algo": "test_algo",
                 "weak_signing_algo": False,
                 "peer_name": "example.com",
@@ -250,10 +257,12 @@ class TestSocketMethod(TestCase):
                 "ssl_flag": True,
                 "service": "http",
                 "self_signed": True,
+                "issuer": "test_issuer_subject",
+                "subject": "test_issuer_subject",
                 "expiring_soon": False,
-                "expiration_date": "07/12/2100",
+                "expiration_date": "2100/12/07",
                 "not_activated": True,
-                "activation_date": "07/12/2100",
+                "activation_date": "2100/12/07",
                 "signing_algo": "test_algo",
                 "weak_signing_algo": True,
                 "peer_name": "example.com",
@@ -358,7 +367,7 @@ class TestSocketMethod(TestCase):
             engine.response_conditions_matched(
                 Substep.ssl_expired_certificate_scan, Response.ssl_certificate_expired
             ),
-            {"expired": True, "expiration_date": "07/12/2023", "expiring_soon": True},
+            {"expired": True, "expiration_date": "2023/12/07"},
         )
         # ssl_certificate_scan_not_activated
         self.assertEqual(
@@ -366,21 +375,29 @@ class TestSocketMethod(TestCase):
                 Substep.ssl_expired_certificate_scan,
                 Response.ssl_certificate_deactivated,
             ),
-            {"not_activated": True, "activation_date": "07/12/2100"},
+            {"not_activated": True, "activation_date": "2100/12/07"},
         )
 
-        # ssl_version_vuln
+        # ssl_weak_version_vuln
         self.assertEqual(
             engine.response_conditions_matched(
-                Substep.ssl_version_vuln, Response.ssl_version_vuln
+                Substep.ssl_weak_version_vuln, Response.ssl_weak_version_vuln
             ),
-            {"weak_version": True, "ssl_version": ["TLSv1"]},
+            {
+                "weak_version": True,
+                "ssl_version": ["TLSv1"],
+                "issuer": "test_issuer",
+                "subject": "test_subject",
+                "expiration_date": "2100/12/07",
+            },
         )
 
         # ssl_* scans with ssl_flag = False
         self.assertEqual(
-            engine.response_conditions_matched(Substep.ssl_version_vuln, Response.ssl_off), []
+            engine.response_conditions_matched(Substep.ssl_weak_version_vuln, Response.ssl_off), []
         )
 
         # * scans with response None i.e. TCP connection failed(None)
-        self.assertEqual(engine.response_conditions_matched(Substep.ssl_version_vuln, None), [])
+        self.assertEqual(
+            engine.response_conditions_matched(Substep.ssl_weak_version_vuln, None), []
+        )
