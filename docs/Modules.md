@@ -123,6 +123,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 
 ## Vuln Modules
 
+* '**apache_ofbiz_cve_2024_38856**' - check the target for Apache OFBiz CVE-2024-38856
 * '**apache_struts_vuln**' - check Apache Struts for CVE-2017-5638
 * '**Bftpd_double_free_vuln**' - check bftpd for CVE-2007-2010
 * '**Bftpd_memory_leak_vuln**' - check bftpd for CVE-2017-16892

