@@ -156,3 +156,26 @@ jobs:
         with:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
+
+  publish-to-pypi:
+    name: Publish PyPI package
+    if: |
+      github.repository == 'owasp/nettacker' &&
+      github.event_name == 'push' &&
+      startsWith(github.event.ref, 'refs/tags/v')
+    environment: release
+    needs:
+      - build-package
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
