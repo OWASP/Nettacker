@@ -6,8 +6,8 @@ on:
   - workflow_dispatch
 
 jobs:
-  run-pytest:
-    name: Run pytest
+  run-tests:
+    name: Run tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +28,8 @@ jobs:
 
   build-package:
     name: Build package
-    needs: run-pytest
+    needs: 
+      - run-tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -56,6 +57,8 @@ jobs:
 
   test-docker-image:
     name: Test Docker image
+    needs: 
+      - run-tests
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -144,6 +147,8 @@ jobs:
       github.repository == 'owasp/nettacker' &&
       github.event_name == 'push' &&
       startsWith(github.event.ref, 'refs/tags/v')
+    needs:
+      - test-docker-image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
