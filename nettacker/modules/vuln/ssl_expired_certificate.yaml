@@ -28,8 +28,6 @@ payloads:
         response:
           condition_type: or
           conditions:
-            subject:
-                  reverse: false
             grouped_conditions_1:
               condition_type: and
               conditions:
@@ -37,11 +35,15 @@ payloads:
                   reverse: false
                 expiration_date:
                   reverse: false
+                subject:
+                  reverse: false
             grouped_conditions_2:
               condition_type: and
               conditions:
                 not_activated:
                   reverse: false
                 activation_date:
+                  reverse: false
+                subject:
                   reverse: false
             

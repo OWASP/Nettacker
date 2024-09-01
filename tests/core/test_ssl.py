@@ -130,7 +130,6 @@ class Substeps:
         "response": {
             "condition_type": "or",
             "conditions": {
-                "subject": {"reverse": False},
                 "grouped_conditions_1": {
                     "condition_type": "and",
                     "conditions": {

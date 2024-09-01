@@ -36,3 +36,9 @@ payloads:
                   reverse: false
                 cipher_suite:
                   reverse: false
+                issuer:
+                  reverse: false
+                subject:
+                  reverse: false
+                expiration_date:
+                  reverse: false

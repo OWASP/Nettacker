@@ -27,8 +27,6 @@ payloads:
           - 8080
         response:
           condition_type: or
-          subject:
-                  reverse: false
           conditions:
             grouped_conditions:
               condition_type: and
@@ -36,4 +34,6 @@ payloads:
                 expiring_soon:
                   reverse: false
                 expiration_date:
+                  reverse: false
+                subject:
                   reverse: false
