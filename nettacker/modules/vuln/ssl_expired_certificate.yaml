@@ -28,6 +28,8 @@ payloads:
         response:
           condition_type: or
           conditions:
+            subject:
+                  reverse: false
             grouped_conditions_1:
               condition_type: and
               conditions:

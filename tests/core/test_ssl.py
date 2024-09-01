@@ -24,10 +24,30 @@ class MockConnectionObject:
         return self.Version
 
 
+class SubjectObject:
+    def __init__(self, subject="subject"):
+        self.subject = subject
+
+    def get_components(self):
+        return [
+            (b"component", str.encode(self.subject)),
+        ]
+
+
+class IssuerObject:
+    def __init__(self, issuer="issuer"):
+        self.issuer = issuer
+
+    def get_components(self):
+        return [
+            (b"component", str.encode(self.issuer)),
+        ]
+
+
 class Mockx509Object:
     def __init__(self, issuer, subject, is_expired, expire_date, activation_date, signing_algo):
-        self.issuer = issuer
-        self.subject = subject
+        self.issuer = IssuerObject(issuer)
+        self.subject = SubjectObject(subject)
         self.expired = is_expired
         self.expire_date = expire_date
         self.activation_date = activation_date
@@ -57,26 +77,28 @@ class Responses:
         "ssl_version": ["TLSv1"],
         "weak_version": True,
         "ssl_flag": True,
-        "issuer": "test_issuer",
-        "subject": "test_subject",
-        "expiration_date": "2100/12/07",
+        "issuer": "NA",
+        "subject": "NA",
+        "expiration_date": "NA",
     }
 
     ssl_certificate_expired = {
         "expired": True,
-        "expiration_date": "2023/12/07",
+        "expiration_date": "2023-12-07",
+        "subject": "component=subject",
         "not_activated": False,
-        "activation_date": "2023/12/07",
+        "activation_date": "2023-12-07",
         "expiring_soon": True,
         "ssl_flag": True,
     }
 
     ssl_certificate_deactivated = {
         "expired": False,
-        "expiration_date": "2100/12/07",
+        "expiration_date": "2100-12-07",
         "expiring_soon": False,
         "not_activated": True,
-        "activation_date": "2100/12/07",
+        "activation_date": "2100-12-07",
+        "subject": "component=subject",
         "ssl_flag": True,
     }
 
@@ -103,16 +125,18 @@ class Substeps:
         },
     }
 
-    ssl_expired_certificate_scan = {
+    ssl_certificate_expired_vuln = {
         "method": "ssl_certificate_scan",
         "response": {
             "condition_type": "or",
             "conditions": {
+                "subject": {"reverse": False},
                 "grouped_conditions_1": {
                     "condition_type": "and",
                     "conditions": {
                         "expired": {"reverse": False},
                         "expiration_date": {"reverse": False},
+                        "subject": {"reverse": False},
                     },
                 },
                 "grouped_conditions_2": {
@@ -120,6 +144,7 @@ class Substeps:
                     "conditions": {
                         "not_activated": {"reverse": False},
                         "activation_date": {"reverse": False},
+                        "subject": {"reverse": False},
                     },
                 },
             },
@@ -210,6 +235,7 @@ class TestSocketMethod(TestCase):
         PORT = 80
         TIMEOUT = 60
 
+        # TESTING AGAINST A CORRECT CERTIFICATE
         mock_hash_check.return_value = False
         mock_connection.return_value = (MockConnectionObject(HOST, "TLSv1.3"), True)
         mock_x509.return_value = Mockx509Object(
@@ -228,18 +254,19 @@ class TestSocketMethod(TestCase):
                 "ssl_flag": True,
                 "service": "http",
                 "self_signed": False,
-                "issuer": "test_issuer",
-                "subject": "test_subject",
+                "issuer": "component=test_issuer",
+                "subject": "component=test_subject",
                 "expiring_soon": False,
-                "expiration_date": "2100/12/07",
+                "expiration_date": "2100-12-07",
                 "not_activated": False,
-                "activation_date": "2023/12/07",
+                "activation_date": "2023-12-07",
                 "signing_algo": "test_algo",
                 "weak_signing_algo": False,
                 "peer_name": "example.com",
             },
         )
 
+        # TESTING AGAINST A SELF-SIGNED CERTIFICATE
         mock_hash_check.return_value = True
         mock_connection.return_value = (MockConnectionObject(HOST, "TLSv1.3"), True)
         mock_x509.return_value = Mockx509Object(
@@ -257,18 +284,19 @@ class TestSocketMethod(TestCase):
                 "ssl_flag": True,
                 "service": "http",
                 "self_signed": True,
-                "issuer": "test_issuer_subject",
-                "subject": "test_issuer_subject",
+                "issuer": "component=test_issuer_subject",
+                "subject": "component=test_issuer_subject",
                 "expiring_soon": False,
-                "expiration_date": "2100/12/07",
+                "expiration_date": "2100-12-07",
                 "not_activated": True,
-                "activation_date": "2100/12/07",
+                "activation_date": "2100-12-07",
                 "signing_algo": "test_algo",
                 "weak_signing_algo": True,
                 "peer_name": "example.com",
             },
         )
 
+        # TESTING IF ssl_flag is False
         mock_connection.return_value = (MockConnectionObject(HOST), False)
         self.assertEqual(
             library.ssl_certificate_scan(HOST, PORT, TIMEOUT),
@@ -362,20 +390,24 @@ class TestSocketMethod(TestCase):
         Substep = Substeps()
         Response = Responses()
 
-        # ssl_certificate_scan_expired
+        # ssl_certificate_expired_vuln
         self.assertEqual(
             engine.response_conditions_matched(
-                Substep.ssl_expired_certificate_scan, Response.ssl_certificate_expired
+                Substep.ssl_certificate_expired_vuln, Response.ssl_certificate_expired
             ),
-            {"expired": True, "expiration_date": "2023/12/07"},
+            {"subject": "component=subject", "expired": True, "expiration_date": "2023-12-07"},
         )
-        # ssl_certificate_scan_not_activated
+        # ssl_certificate_expired_vuln(not activated)
         self.assertEqual(
             engine.response_conditions_matched(
-                Substep.ssl_expired_certificate_scan,
+                Substep.ssl_certificate_expired_vuln,
                 Response.ssl_certificate_deactivated,
             ),
-            {"not_activated": True, "activation_date": "2100/12/07"},
+            {
+                "subject": "component=subject",
+                "not_activated": True,
+                "activation_date": "2100-12-07",
+            },
         )
 
         # ssl_weak_version_vuln
@@ -386,9 +418,9 @@ class TestSocketMethod(TestCase):
             {
                 "weak_version": True,
                 "ssl_version": ["TLSv1"],
-                "issuer": "test_issuer",
-                "subject": "test_subject",
-                "expiration_date": "2100/12/07",
+                "issuer": "NA",
+                "subject": "NA",
+                "expiration_date": "NA",
             },
         )
 

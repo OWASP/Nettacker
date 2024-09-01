@@ -130,18 +130,24 @@ def create_tcp_socket(host, port, timeout):
 def get_cert_info(cert):
     x509 = crypto.load_certificate(crypto.FILETYPE_PEM, cert)
     weak_signing_algo = is_weak_hash_algo(str(x509.get_signature_algorithm()))
-    cert_activation = datetime.strptime(x509.get_notBefore().decode("utf-8"), "%Y%m%d%H%M%S%z")
     cert_expires = datetime.strptime(x509.get_notAfter().decode("utf-8"), "%Y%m%d%H%M%S%z")
+    cert_activation = datetime.strptime(x509.get_notBefore().decode("utf-8"), "%Y%m%d%H%M%S%z")
+    issuer_str = ", ".join(
+        f"{name.decode()}={value.decode()}" for name, value in x509.get_issuer().get_components()
+    )
+    subject_str = ", ".join(
+        f"{name.decode()}={value.decode()}" for name, value in x509.get_subject().get_components()
+    )
     return {
         "expired": x509.has_expired(),
-        "self_signed": x509.get_issuer() == x509.get_subject(),
-        "issuer": str(x509.get_issuer()),
-        "subject": str(x509.get_subject()),
+        "self_signed": issuer_str == subject_str,
+        "issuer": issuer_str,
+        "subject": subject_str,
         "signing_algo": str(x509.get_signature_algorithm()),
         "weak_signing_algo": weak_signing_algo,
-        "activation_date": cert_activation.strftime("%Y/%m/%d"),
+        "activation_date": cert_activation.strftime("%Y-%m-%d"),
         "not_activated": (cert_activation - datetime.now(timezone.utc)).days > 0,
-        "expiration_date": cert_expires.strftime("%Y/%m/%d"),
+        "expiration_date": cert_expires.strftime("%Y-%m-%d"),
         "expiring_soon": (cert_expires - datetime.now(timezone.utc)).days < 30,
     }
 
