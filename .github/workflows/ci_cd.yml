@@ -108,8 +108,12 @@ jobs:
             poetry run python nettacker.py -i 127.0.0.1 -L fa -u user1,user2 -p pass1,pass2 --profile all \
               -g 21,25,80,443 -t 1000 -T 3 --graph d3_tree_v2_graph -v --skip-service-discovery
 
-  publish-to-docker-registry:
-    name: Publish Docker image
+  publish-nettacker-dev-to-docker-registry:
+    name: Publish nettacker:dev Docker image
+    if: |
+      github.repository == 'owasp/nettacker' &&
+      github.event_name == 'push' &&
+      github.ref_name == 'master'
     needs:
       - test-docker-image
     runs-on: ubuntu-latest
@@ -123,6 +127,9 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -130,6 +137,37 @@ jobs:
           file: Dockerfile
           push: true
           tags: owasp/nettacker:dev
+
+  publish-nettacker-latest-to-docker-registry:
+    name: Publish nettacker:latest Docker image
+    if: |
+      github.repository == 'owasp/nettacker' &&
+      github.event_name == 'push' &&
+      startsWith(github.event.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: owasp/nettacker:latest
 
   publish-to-test-pypi:
     name: Publish Test PyPI package
