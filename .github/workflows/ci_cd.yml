@@ -5,6 +5,10 @@ on:
   - push
   - workflow_dispatch
 
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.repository }}-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+
 jobs:
   pre-commit:
     name: Run pre-commit
