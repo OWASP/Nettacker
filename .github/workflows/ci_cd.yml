@@ -5,12 +5,60 @@ on:
   - push
   - workflow_dispatch
 
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.repository }}-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+
 jobs:
-  run-tests:
-    name: Run tests
+  pre-commit:
+    name: Run pre-commit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.1
+
+  code-ql:
+    name: CodeQL
+    needs:
+      - pre-commit
+    permissions:
+      security-events: write
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language:
+          - javascript
+          - python
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:${{ matrix.language }}
+
+  run-tests:
+    name: Run tests
+    needs:
+      - pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -28,11 +76,12 @@ jobs:
 
   build-package:
     name: Build package
-    needs: 
+    needs:
       - run-tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -57,11 +106,11 @@ jobs:
 
   test-docker-image:
     name: Test Docker image
-    needs: 
+    needs:
       - run-tests
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo
+      - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Build Docker image
@@ -121,7 +170,7 @@ jobs:
       - test-docker-image
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Login to Docker Hub
@@ -151,7 +200,7 @@ jobs:
       - test-docker-image
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up QEMU
