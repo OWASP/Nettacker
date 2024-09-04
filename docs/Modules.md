@@ -148,10 +148,11 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 * '**ProFTPd_integer_overflow_vuln**' - check ProFTPd for CVE-2011-1137
 * '**ProFTPd_memory_leak_vuln**' - check ProFTPd for CVE-2001-0136
 * '**ProFTPd_restriction_bypass_vuln**' - check ProFTPd for CVE-2009-3639
-* '**self_signed_certificate_vuln**' - check for self-signed SSL certificate
 * '**server_version_vuln**' - check if the web server is leaking server banner in 'Server' response header
-* '**ssl_certificate_expired_vuln**' - check if SSL certificate has expired 
-* '**weak_signature_algorithm_vuln**'- check if SSL certificate is signed using SHA-1
+* '**ssl_signed_certificate_vuln**' - check for self-signed & other signing issues(weak signing algorithm) in SSL certificate
+* '**ssl_expired_certificate_vuln**' - check if SSL certificate has expired or is close to expiring
+* '**ssl_version_vuln**' - check if the server's SSL configuration supports old and insecure SSL versions
+* '**ssl_weak_cipher_vuln**' - check if server's SSL configuration supports weak cipher suites
 * '**wordpress_dos_cve_2018_6389_vuln**' - check if Wordpress is vulnerable to CVE-2018-6389 Denial Of Service (DOS) 
 * '**wp_xmlrpc_bruteforce_vuln**' - check if Wordpress is vulnerable to credential Brute Force via XMLRPC wp.getUsersBlogs
 * '**wp_xmlrpc_pingback_vuln**' - check if Wordpress is vulnerable to XMLRPC pingback 

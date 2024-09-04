@@ -24,5 +24,5 @@ The OWASP Nettacker Events page lists various conferences and meetups where the 
 * OWASP Nettacker was presented at **OWASP Kyiv** Chapter by **Sam Stepanyan** [[1](https://www.youtube.com/watch?v=KrwQlgeZn7I)]
 * OWASP Nettacker was presented at the **AppSec Engineer** session by **Sam Stepanyan** [[1](https://www.youtube.com/watch?v=eXzIPuTtqAQ)]
 * OWASP Nettacker was presented at **Security BSides Dublin 2022** conference by **Sam Stepanyan** [[1](https://www.youtube.com/watch?v=GcRFkZEaWqI)]
-* OWASP Netacker was presented et the **Appplication Security Podcast** by **Sam Stepanyan** [[1](https://www.youtube.com/watch?v=tqZ8Lmucujw)]
+* OWASP Nettacker was presented at the **Application Security Podcast** by **Sam Stepanyan** [[1](https://www.youtube.com/watch?v=tqZ8Lmucujw)]
 * OWASP Nettacker was presented at the **OWASP Global AppSec DC 2023 Conference** by **Sam Stepanyan** [[1](https://www.youtube.com/watch?v=yZxjBme029A)] 

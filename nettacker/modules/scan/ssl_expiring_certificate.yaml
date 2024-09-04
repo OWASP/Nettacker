@@ -1,0 +1,39 @@
+info:
+  name: ssl_expiring_certificate_scan
+  author: Captain-T2004
+  severity: 6
+  description: check if the ssl certificate is expiring soon
+  reference:
+    - https://www.beyondsecurity.com/resources/vulnerabilities/ssl-certificate-expiry
+  profiles:
+    - scan
+    - ssl
+
+payloads:
+  - library: ssl
+    steps:
+      - method: ssl_certificate_scan
+        timeout: 3
+        host: "{target}"
+        ports:
+          - 21
+          - 25
+          - 110
+          - 143
+          - 443
+          - 587
+          - 990
+          - 1080
+          - 8080
+        response:
+          condition_type: or
+          conditions:
+            grouped_conditions:
+              condition_type: and
+              conditions:
+                expiring_soon:
+                  reverse: false
+                expiration_date:
+                  reverse: false
+                subject:
+                  reverse: false
