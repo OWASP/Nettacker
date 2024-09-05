@@ -49,7 +49,7 @@ payloads:
         headers:
           User-Agent: "{user_agent}"
         ssl: false
-        url: "https://www.threatcrowd.org/searchApi/v2/domain/report/?domain={target}"
+        url: "https://api.subdomain.center/?domain={target}"
         response:
           condition_type: and
           conditions:
@@ -81,7 +81,7 @@ payloads:
         headers:
           User-Agent: "{user_agent}"
         ssl: false
-        url: "https://dns.bufferover.run/dns?q={target}"
+        url: "https://app.netlas.io/api/domains/?q=*.{target}"
         response:
           condition_type: and
           conditions:
@@ -113,7 +113,7 @@ payloads:
         headers:
           User-Agent: "{user_agent}"
         ssl: false
-        url: "https://api.threatminer.org/v2/domain.php?q={target}&api=True&rt=5"
+        url: "https://api.hackertarget.com/hostsearch/?q={target}"
         response:
           condition_type: and
           conditions:
