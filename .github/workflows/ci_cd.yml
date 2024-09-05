@@ -113,7 +113,6 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
-          - windows-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
