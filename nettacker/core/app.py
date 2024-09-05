@@ -69,29 +69,17 @@ class Nettacker(ArgParser):
         if sys.platform not in {"darwin", "linux"}:
             die_failure(_("error_platform"))
 
-        if not os.path.exists(Config.path.home_dir):
-            try:
-                os.mkdir(Config.path.home_dir)
-                os.mkdir(Config.path.tmp_dir)
-                os.mkdir(Config.path.results_dir)
-            except Exception:
-                die_failure("cannot access the directory {0}".format(Config.path.home_dir))
-        if not os.path.exists(Config.path.tmp_dir):
-            try:
-                os.mkdir(Config.path.tmp_dir)
-            except Exception:
-                die_failure("cannot access the directory {0}".format(Config.path.tmp_dir))
-        if not os.path.exists(Config.path.results_dir):
-            try:
-                os.mkdir(Config.path.results_dir)
-            except Exception:
-                die_failure("cannot access the directory {0}".format(Config.path.results_dir))
+        try:
+            Config.path.tmp_dir.mkdir(exist_ok=True, parents=True)
+            Config.path.results_dir.mkdir(exist_ok=True, parents=True)
+        except PermissionError:
+            die_failure("Cannot access the directory {0}".format(Config.path.tmp_dir))
 
         if Config.db.engine == "sqlite":
             try:
-                if not os.path.isfile(Config.path.database_file):
+                if not Config.path.database_file.exists():
                     sqlite_create_tables()
-            except Exception:
+            except PermissionError:
                 die_failure("cannot access the directory {0}".format(Config.path.home_dir))
         elif Config.db.engine == "mysql":
             try:

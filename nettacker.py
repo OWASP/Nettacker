@@ -1,7 +1,6 @@
 """OWASP Nettacker application entry point."""
 
-from nettacker.core.app import Nettacker
+from nettacker.main import run
 
 if __name__ == "__main__":
-    app = Nettacker()
-    app.run()
+    run()

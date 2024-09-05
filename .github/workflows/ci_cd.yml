@@ -104,6 +104,40 @@ jobs:
           name: dist
           path: dist
 
+  test-build-package:
+    name: Test build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: build-package
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Get package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Run tests
+        shell: bash
+        run: |
+          rm -rf nettacker
+          python -m pip install dist/*.whl
+          nettacker --version
+          python -m pip uninstall -y nettacker
+          python -m pip install dist/*.tar.gz
+          nettacker --version
+
   test-docker-image:
     name: Test Docker image
     needs:
@@ -231,7 +265,7 @@ jobs:
       github.ref_name == 'master'
     environment: dev
     needs:
-      - build-package
+      - test-build-package
     permissions:
       contents: read
       id-token: write
@@ -257,7 +291,7 @@ jobs:
       startsWith(github.event.ref, 'refs/tags/v')
     environment: release
     needs:
-      - build-package
+      - test-build-package
     permissions:
       contents: read
       id-token: write
