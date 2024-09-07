@@ -1,14 +1,13 @@
-version: "3"
-
 services:
   nettacker:
     build:
       context: .
-      dockerfile: "Dockerfile"
-    command: poetry run python nettacker.py --start-api --api-host 0.0.0.0
+      dockerfile: Dockerfile
+    command: poetry run python ./nettacker.py --start-api --api-host 0.0.0.0
+    container_name: nettacker
+    environment:
+      - docker_env=true
     ports:
       - 5000:5000
     volumes:
-      - ./:/usr/src/owaspnettacker
-    environment:
-      - docker_env=true
+      - ./nettacker:/usr/src/owaspnettacker/nettacker
