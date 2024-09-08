@@ -10,6 +10,7 @@ concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
 
 jobs:
+  # Code quality checks.
   pre-commit:
     name: Run pre-commit
     runs-on: ubuntu-latest
@@ -51,6 +52,7 @@ jobs:
         with:
           category: /language:${{ matrix.language }}
 
+  # Code tests.
   run-tests:
     name: Run tests
     needs:
@@ -90,8 +92,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install --upgrade poetry
+          python -m pip install --upgrade pip poetry
           poetry install
 
       - name: Build package
@@ -138,6 +139,7 @@ jobs:
           python -m pip install dist/*.tar.gz
           nettacker --version
 
+  # Docker related jobs.
   test-docker-image:
     name: Test Docker image
     needs:
@@ -194,6 +196,49 @@ jobs:
             poetry run python nettacker.py -i 127.0.0.1 -L fa -u user1,user2 -p pass1,pass2 --profile all \
               -g 21,25,80,443 -t 1000 -T 3 --graph d3_tree_v2_graph -v --skip-service-discovery
 
+  test-docker-image-build:
+    name: Test Docker ${{ matrix.docker-version }} image build
+    needs:
+      - run-tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        docker-version:
+          - '24.0.6-1~ubuntu.22.04~jammy'
+          - '23.0.6-1~ubuntu.22.04~jammy'
+          - '20.10.13~3-0~ubuntu-jammy'
+    steps:
+      - name: Uninstall pre-installed Docker
+        run: |
+          sudo apt-get remove docker-ce docker-ce-cli
+
+        # https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
+      - name: Install Docker ${{ matrix.docker-version }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install ca-certificates curl gnupg
+          sudo install -m 0755 -d /etc/apt/keyrings
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+          sudo chmod a+r /etc/apt/keyrings/docker.gpg
+          echo \
+            "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+            "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+            sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          sudo apt-get update
+          sudo apt-get install docker-ce=5:${{ matrix.docker-version }} docker-ce-cli=5:${{ matrix.docker-version }}
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Print Docker version
+        run: docker -v
+
+      - name: Build Nettacker image
+        run: docker build . -t nettacker
+
+      - name: Run pip install
+        run: docker run nettacker pip install .
+
   publish-nettacker-dev-to-docker-registry:
     name: Publish nettacker:dev Docker image
     if: |
@@ -202,6 +247,7 @@ jobs:
       github.ref_name == 'master'
     needs:
       - test-docker-image
+      - test-docker-image-build
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -232,6 +278,7 @@ jobs:
       startsWith(github.event.ref, 'refs/tags/v')
     needs:
       - test-docker-image
+      - test-docker-image-build
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
