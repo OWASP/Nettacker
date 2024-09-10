@@ -1,7 +1,6 @@
 FROM python:3.11.10-slim
 
-RUN mkdir -p .data/results && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install -y gcc libssl-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
@@ -9,11 +8,10 @@ RUN mkdir -p .data/results && \
 
 WORKDIR /usr/src/owaspnettacker
 
-COPY .data .data
 COPY nettacker nettacker
 COPY nettacker.py poetry.lock pyproject.toml README.md ./
 
-RUN poetry install --no-root --without dev --without test
+RUN poetry install --no-cache --no-root --without dev --without test
 
 ENV docker_env=true
 
