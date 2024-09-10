@@ -1,4 +1,4 @@
-FROM python:3.11.9-slim
+FROM python:3.11.10-slim
 
 RUN mkdir -p .data/results && \
     apt-get update && \
