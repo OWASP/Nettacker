@@ -205,11 +205,7 @@ class Nettacker(ArgParser):
         exit_code = self.start_scan(scan_id)
         create_report(self.arguments, scan_id)
         if self.arguments.scan_compare_id is not None:
-            create_compare_report(
-                scan_id,
-                self.arguments.scan_compare_id,
-                self.arguments.compare_report_path_filename,
-            )
+            create_compare_report(self.arguments, scan_id)
         log.info(_("done"))
 
         return exit_code

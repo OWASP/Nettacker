@@ -99,17 +99,17 @@ def build_text_table(events):
 
 
 def create_compare_text_table(results):
-    _table = texttable.Texttable()
+    table = texttable.Texttable()
     table_headers = list(results.keys())
-    _table.add_rows([table_headers])
-    _table.add_rows(
+    table.add_rows([table_headers])
+    table.add_rows(
         [
             table_headers,
             [results[col] for col in table_headers],
         ]
     )
-    _table.set_cols_width([len(i) for i in table_headers])
-    return _table.draw() + "\n\n"
+    table.set_cols_width([len(i) for i in table_headers])
+    return table.draw() + "\n\n"
 
 
 def create_report(options, scan_id):
@@ -205,7 +205,7 @@ def create_report(options, scan_id):
     return True
 
 
-def create_compare_report(scan_id, comp_id, filepath):
+def create_compare_report(options, scan_id):
     """
     if compare_id is given then create the report of comparision b/w scans
     Args:
@@ -214,6 +214,7 @@ def create_compare_report(scan_id, comp_id, filepath):
     Returns:
         True if success otherwise None
     """
+    comp_id = options["scan_compare_id"] if isinstance(options, dict) else options.scan_compare_id
     scan_log_curr = get_logs_by_scan_id(scan_id)
     scan_logs_comp = get_logs_by_scan_id(comp_id)
 
@@ -249,7 +250,11 @@ def create_compare_report(scan_id, comp_id, filepath):
         "new_targets_discovered": tuple(curr_modules_ports - comp_modules_ports),
         "old_targets_not_detected": tuple(comp_modules_ports - curr_modules_ports),
     }
-    compare_report_path_filename = filepath
+    compare_report_path_filename = (
+        options["compare_report_path_filename"]
+        if isinstance(options, dict)
+        else options.compare_report_path_filename
+    )
     if (
         len(compare_report_path_filename) >= 5 and compare_report_path_filename[-5:] == ".html"
     ) or (len(compare_report_path_filename) >= 4 and compare_report_path_filename[-4:] == ".htm"):

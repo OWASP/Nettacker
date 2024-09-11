@@ -230,9 +230,12 @@ def compare_scans():
     compare_report_path_filename = get_value(flask_request, "compare_report_path")
     if not compare_report_path_filename:
         compare_report_path_filename = nettacker_application_config["compare_report_path_filename"]
-
+    compare_options = {
+        "scan_compare_id": scan_id_second,
+        "compare_report_path_filename": compare_report_path_filename,
+    }
     try:
-        result = create_compare_report(scan_id_first, scan_id_second, compare_report_path_filename)
+        result = create_compare_report(compare_options, scan_id_first)
         if result:
             return jsonify(
                 structure(
@@ -242,7 +245,7 @@ def compare_scans():
             ), 200
         return jsonify(structure(status="error", msg="Scan ID not found")), 404
     except (FileNotFoundError, PermissionError, IOError):
-        return jsonify(structure(status="error", msg="Not a valid filepath")), 500
+        return jsonify(structure(status="error", msg="Invalid file path")), 500
 
 
 @app.route("/session/check", methods=["GET"])
