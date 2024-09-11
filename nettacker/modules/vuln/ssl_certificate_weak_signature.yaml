@@ -1,0 +1,37 @@
+info:
+  name: ssl_certificate_weak_signature_vuln
+  author: Captain-T2004
+  severity: 6
+  description: check if there are any ssl_certificate vulnerabilities present 
+  reference:
+    - https://www.ssl.com/article/ssl-tls-self-signed-certificates/
+  profiles:
+    - scan
+    - ssl
+
+payloads:
+  - library: ssl
+    steps:
+      - method: ssl_certificate_scan
+        timeout: 3
+        host: "{target}"
+        ports:
+          - 21
+          - 25
+          - 110
+          - 143
+          - 443
+          - 587
+          - 990
+          - 1080
+          - 8080
+        response:
+          condition_type: or
+          conditions:
+            grouped_conditions:
+              condition_type: and
+              conditions:
+                weak_signing_algo:
+                  reverse: false
+                signing_algo:
+                  reverse: false

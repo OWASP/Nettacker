@@ -1,0 +1,44 @@
+info:
+  name: ssl_weak_cipher_vuln
+  author: Captain-T2004
+  severity: 6
+  description: check if ssl version is unsafe or uses any bad ciphers.
+  reference:
+    - https://www.manageengine.com/privileged-access-management/help/ssl_vulnerability.html
+    - https://www.acunetix.com/vulnerabilities/web/tls-ssl-weak-cipher-suites/
+  profiles:
+    - scan
+    - ssl
+
+payloads:
+  - library: ssl
+    steps:
+      - method: ssl_version_and_cipher_scan
+        timeout: 3
+        host: "{target}"
+        ports:
+          - 21
+          - 25
+          - 110
+          - 143
+          - 443
+          - 587
+          - 990
+          - 1080
+          - 8080
+        response:
+          condition_type: or
+          conditions:
+            grouped_conditions:
+              condition_type: and
+              conditions:
+                weak_cipher_suite:
+                  reverse: false
+                cipher_suite:
+                  reverse: false
+                issuer:
+                  reverse: false
+                subject:
+                  reverse: false
+                expiration_date:
+                  reverse: false

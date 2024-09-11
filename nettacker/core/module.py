@@ -45,7 +45,17 @@ class Module:
         self.skip_service_discovery = options.skip_service_discovery
 
         self.discovered_services = None
-        self.ignored_core_modules = ["subdomain_scan", "icmp_scan", "port_scan"]
+        self.ignored_core_modules = [
+            "subdomain_scan",
+            "icmp_scan",
+            "port_scan",
+            "ssl_weak_version_vuln",
+            "ssl_weak_cipher_vuln",
+            "ssl_certificate_weak_signature_vuln",
+            "ssl_self_signed_certificate_vuln",
+            "ssl_expired_certificate_vuln",
+            "ssl_expiring_certificate_scan",
+        ]
 
         contents = TemplateLoader("port_scan", {"target": ""}).load()
         self.service_discovery_signatures = list(

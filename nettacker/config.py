@@ -2,8 +2,7 @@ import inspect
 from functools import lru_cache
 from pathlib import Path
 
-import tomli
-
+from nettacker import version
 from nettacker.core.utils.common import now, generate_random_token
 
 CWD = Path.cwd()
@@ -18,10 +17,8 @@ def version_info():
     Returns:
         an array of version and code name
     """
-    with open("pyproject.toml", "rb") as toml_file:
-        tools = tomli.load(toml_file)["tool"]
 
-    return tools["poetry"]["version"], tools["nettacker"]["release_name"]
+    return version.__version__, version.__release_name__
 
 
 class ConfigBase:

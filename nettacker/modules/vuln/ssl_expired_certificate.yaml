@@ -1,0 +1,49 @@
+info:
+  name: ssl_expired_certificate_vuln
+  author: Captain-T2004
+  severity: 6
+  description: check if there are any ssl_certificate vulnerabilities present 
+  reference:
+    - https://www.beyondsecurity.com/resources/vulnerabilities/ssl-certificate-expiry
+  profiles:
+    - scan
+    - ssl
+
+payloads:
+  - library: ssl
+    steps:
+      - method: ssl_certificate_scan
+        timeout: 3
+        host: "{target}"
+        ports:
+          - 21
+          - 25
+          - 110
+          - 143
+          - 443
+          - 587
+          - 990
+          - 1080
+          - 8080
+        response:
+          condition_type: or
+          conditions:
+            grouped_conditions_1:
+              condition_type: and
+              conditions:
+                expired:
+                  reverse: false
+                expiration_date:
+                  reverse: false
+                subject:
+                  reverse: false
+            grouped_conditions_2:
+              condition_type: and
+              conditions:
+                not_activated:
+                  reverse: false
+                activation_date:
+                  reverse: false
+                subject:
+                  reverse: false
+            
