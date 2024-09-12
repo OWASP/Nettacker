@@ -1,5 +1,6 @@
 import re
 
+
 def structure(status="", msg=""):
     """
     basic JSON message structure
@@ -13,6 +14,7 @@ def structure(status="", msg=""):
     """
     return {"status": status, "msg": msg}
 
+
 def sanitize_path(path):
     """
     Sanitize the file path to preven unathorized access
@@ -22,15 +24,15 @@ def sanitize_path(path):
     Returns:
         sanitized_path
     """
-    allowed_pattern = r'^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)?$'
-    
-    components = re.split(r'[/\\]', path)
-    
+    allowed_pattern = r"^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)?$"
+
+    components = re.split(r"[/\\]", path)
+
     sanitized_components = []
     for component in components:
         if re.match(allowed_pattern, component):
             sanitized_components.append(component)
 
-    sanitized_path = '_'.join(sanitized_components)
-    
+    sanitized_path = "_".join(sanitized_components)
+
     return sanitized_path

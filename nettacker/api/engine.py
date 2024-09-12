@@ -231,10 +231,10 @@ def compare_scans():
     if not compare_report_path_filename:
         compare_report_path_filename = nettacker_application_config["compare_report_path_filename"]
 
-    base_path = str(nettacker_application_config['api_base_path'])
+    base_path = str(nettacker_application_config["api_base_path"])
     compare_report_path_filename = sanitize_path(compare_report_path_filename)
     fullpath = os.path.normpath(os.path.join(base_path, compare_report_path_filename))
-    
+
     if not fullpath.startswith(base_path):
         return jsonify(structure(status="error", msg="Invalid file path")), 500
 
