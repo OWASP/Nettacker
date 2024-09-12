@@ -23,7 +23,7 @@ from nettacker.api.core import (
     languages_to_country,
     api_key_is_valid,
 )
-from nettacker.api.helpers import structure
+from nettacker.api.helpers import structure, sanitize_path
 from nettacker.config import Config
 from nettacker.core.app import Nettacker
 from nettacker.core.die import die_failure
@@ -230,9 +230,17 @@ def compare_scans():
     compare_report_path_filename = get_value(flask_request, "compare_report_path")
     if not compare_report_path_filename:
         compare_report_path_filename = nettacker_application_config["compare_report_path_filename"]
+
+    base_path = str(nettacker_application_config['api_base_path'])
+    compare_report_path_filename = sanitize_path(compare_report_path_filename)
+    fullpath = os.path.normpath(os.path.join(base_path, compare_report_path_filename))
+    
+    if not fullpath.startswith(base_path):
+        return jsonify(structure(status="error", msg="Invalid file path")), 500
+
     compare_options = {
         "scan_compare_id": scan_id_second,
-        "compare_report_path_filename": compare_report_path_filename,
+        "compare_report_path_filename": fullpath,
     }
     try:
         result = create_compare_report(compare_options, scan_id_first)
