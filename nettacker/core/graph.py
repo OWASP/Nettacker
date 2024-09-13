@@ -2,18 +2,20 @@ import csv
 import html
 import importlib
 import json
+import os
 from datetime import datetime
 
 import texttable
 
 from nettacker import logger
-from nettacker.config import version_info
+from nettacker.config import Config, version_info
 from nettacker.core.die import die_failure
 from nettacker.core.messages import messages as _
-from nettacker.core.utils.common import merge_logs_to_list, now
+from nettacker.core.utils.common import merge_logs_to_list, now, sanitize_path
 from nettacker.database.db import get_logs_by_scan_id, submit_report_to_db, get_options_by_scan_id
 
 log = logger.get_logger()
+nettacker_path_config = Config.path
 
 
 def build_graph(graph_name, events):
@@ -255,29 +257,37 @@ def create_compare_report(options, scan_id):
         if isinstance(options, dict)
         else options.compare_report_path_filename
     )
-    if (
-        len(compare_report_path_filename) >= 5 and compare_report_path_filename[-5:] == ".html"
-    ) or (len(compare_report_path_filename) >= 4 and compare_report_path_filename[-4:] == ".htm"):
+
+    base_path = str(nettacker_path_config.compare_results_base_path)
+    compare_report_path_filename = sanitize_path(compare_report_path_filename)
+    fullpath = os.path.normpath(os.path.join(base_path, compare_report_path_filename))
+
+    if not fullpath.startswith(base_path):
+        raise PermissionError
+
+    if (len(fullpath) >= 5 and fullpath[-5:] == ".html") or (
+        len(fullpath) >= 4 and fullpath[-4:] == ".htm"
+    ):
         html_report = build_compare_report(compare_results)
-        with open(compare_report_path_filename, "w", encoding="utf-8") as compare_report:
+        with open(fullpath, "w", encoding="utf-8") as compare_report:
             compare_report.write(html_report + "\n")
             compare_report.close()
-    elif len(compare_report_path_filename) >= 5 and compare_report_path_filename[-5:] == ".json":
-        with open(compare_report_path_filename, "w", encoding="utf-8") as compare_report:
+    elif len(fullpath) >= 5 and fullpath[-5:] == ".json":
+        with open(fullpath, "w", encoding="utf-8") as compare_report:
             compare_report.write(str(json.dumps(compare_results)) + "\n")
             compare_report.close()
-    elif len(compare_report_path_filename) >= 5 and compare_report_path_filename[-4:] == ".csv":
+    elif len(fullpath) >= 5 and fullpath[-4:] == ".csv":
         keys = compare_results.keys()
-        with open(compare_report_path_filename, "a") as csvfile:
+        with open(fullpath, "a") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=keys)
             if csvfile.tell() == 0:
                 writer.writeheader()
             writer.writerow(compare_results)
             csvfile.close()
     else:
-        with open(compare_report_path_filename, "w", encoding="utf-8") as compare_report:
+        with open(fullpath, "w", encoding="utf-8") as compare_report:
             compare_report.write(create_compare_text_table(compare_results))
 
     log.write(create_compare_text_table(compare_results))
-    log.info(_("compare_report_saved").format(compare_report_path_filename))
+    log.info(_("compare_report_saved").format(fullpath))
     return True

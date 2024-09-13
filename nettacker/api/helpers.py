@@ -1,5 +1,5 @@
-import re
-
+from nettacker.core.utils.common import now, generate_random_token
+from nettacker.config import Config
 
 def structure(status="", msg=""):
     """
@@ -15,24 +15,8 @@ def structure(status="", msg=""):
     return {"status": status, "msg": msg}
 
 
-def sanitize_path(path):
-    """
-    Sanitize the file path to preven unathorized access
-    Args:
-        path: filepath(user input)
-
-    Returns:
-        sanitized_path
-    """
-    allowed_pattern = r"^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)?$"
-
-    components = re.split(r"[/\\]", path)
-
-    sanitized_components = []
-    for component in components:
-        if re.match(allowed_pattern, component):
-            sanitized_components.append(component)
-
-    sanitized_path = "_".join(sanitized_components)
-
-    return sanitized_path
+def generate_compare_filepath():
+    return "/results_{date_time}_{random_chars}.json".format(
+        date_time=now(format="%Y_%m_%d_%H_%M_%S"),
+        random_chars=generate_random_token(10),
+    )

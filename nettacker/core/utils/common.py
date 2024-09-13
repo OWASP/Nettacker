@@ -350,3 +350,26 @@ def sort_dictionary(dictionary):
     if etc_flag:
         sorted_dictionary["..."] = {}
     return sorted_dictionary
+
+
+def sanitize_path(path):
+    """
+    Sanitize the file path to preven unathorized access
+    Args:
+        path: filepath(user input)
+
+    Returns:
+        sanitized_path
+    """
+    allowed_pattern = r"^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)?$"
+
+    components = re.split(r"[/\\]", path)
+
+    sanitized_components = []
+    for component in components:
+        if re.match(allowed_pattern, component):
+            sanitized_components.append(component)
+
+    sanitized_path = "_".join(sanitized_components)
+
+    return sanitized_path
