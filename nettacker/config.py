@@ -151,7 +151,6 @@ class DefaultSettings(ConfigBase):
         date_time=now(format="%Y_%m_%d_%H_%M_%S"),
         random_chars=generate_random_token(10),
     )
-    
 
 
 class Config:

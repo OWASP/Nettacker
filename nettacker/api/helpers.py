@@ -1,5 +1,5 @@
 from nettacker.core.utils.common import now, generate_random_token
-from nettacker.config import Config
+
 
 def structure(status="", msg=""):
     """
