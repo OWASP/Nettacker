@@ -102,7 +102,6 @@ class PathConfig:
     tmp_dir = CWD / ".data/tmp"
     web_static_dir = PACKAGE_PATH / "web/static"
     user_agents_file = PACKAGE_PATH / "lib/payloads/User-Agents/web_browsers_user_agents.txt"
-    compare_results_base_path = CWD / "results"
 
 
 class DefaultSettings(ConfigBase):
@@ -147,10 +146,7 @@ class DefaultSettings(ConfigBase):
     verbose_event = False
     verbose_mode = False
     scan_compare_id = None
-    compare_report_path_filename = "/results_{date_time}_{random_chars}.json".format(
-        date_time=now(format="%Y_%m_%d_%H_%M_%S"),
-        random_chars=generate_random_token(10),
-    )
+    compare_report_path_filename = ""
 
 
 class Config:

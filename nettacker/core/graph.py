@@ -11,7 +11,12 @@ from nettacker import logger
 from nettacker.config import Config, version_info
 from nettacker.core.die import die_failure
 from nettacker.core.messages import messages as _
-from nettacker.core.utils.common import merge_logs_to_list, now, sanitize_path
+from nettacker.core.utils.common import (
+    merge_logs_to_list,
+    now,
+    sanitize_path,
+    generate_compare_filepath,
+)
 from nettacker.database.db import get_logs_by_scan_id, submit_report_to_db, get_options_by_scan_id
 
 log = logger.get_logger()
@@ -252,13 +257,16 @@ def create_compare_report(options, scan_id):
         "new_targets_discovered": tuple(curr_modules_ports - comp_modules_ports),
         "old_targets_not_detected": tuple(comp_modules_ports - curr_modules_ports),
     }
-    compare_report_path_filename = (
-        options["compare_report_path_filename"]
-        if isinstance(options, dict)
-        else options.compare_report_path_filename
-    )
+    if isinstance(options, dict):
+        compare_report_path_filename = options["compare_report_path_filename"]
+    else:
+        compare_report_path_filename = (
+            options.compare_report_path_filename
+            if len(options.compare_report_path_filename) != 0
+            else generate_compare_filepath(scan_id)
+        )
 
-    base_path = str(nettacker_path_config.compare_results_base_path)
+    base_path = str(nettacker_path_config.results_dir)
     compare_report_path_filename = sanitize_path(compare_report_path_filename)
     fullpath = os.path.normpath(os.path.join(base_path, compare_report_path_filename))
 

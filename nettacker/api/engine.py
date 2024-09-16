@@ -23,13 +23,13 @@ from nettacker.api.core import (
     languages_to_country,
     api_key_is_valid,
 )
-from nettacker.api.helpers import structure, generate_compare_filepath
+from nettacker.api.helpers import structure
 from nettacker.config import Config
 from nettacker.core.app import Nettacker
 from nettacker.core.die import die_failure
 from nettacker.core.graph import create_compare_report
 from nettacker.core.messages import messages as _
-from nettacker.core.utils.common import now
+from nettacker.core.utils.common import now, generate_compare_filepath
 from nettacker.database.db import (
     create_connection,
     get_logs_by_scan_id,
@@ -229,7 +229,7 @@ def compare_scans():
 
     compare_report_path_filename = get_value(flask_request, "compare_report_path")
     if not compare_report_path_filename:
-        compare_report_path_filename = generate_compare_filepath()
+        compare_report_path_filename = generate_compare_filepath(scan_id_first)
 
     compare_options = {
         "scan_compare_id": scan_id_second,

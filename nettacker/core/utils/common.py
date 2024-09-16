@@ -373,3 +373,10 @@ def sanitize_path(path):
     sanitized_path = "_".join(sanitized_components)
 
     return sanitized_path
+
+
+def generate_compare_filepath(scan_id):
+    return "/report_compare_{date_time}_{scan_id}.json".format(
+        date_time=now(format="%Y_%m_%d_%H_%M_%S"),
+        scan_id=scan_id,
+    )
