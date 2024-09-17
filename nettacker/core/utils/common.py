@@ -118,10 +118,12 @@ def generate_new_sub_steps(sub_steps, data_matrix, arrays):
                 exec(
                     "original_sub_steps{key_name} = {matrix_value}".format(
                         key_name=re_address_repeaters_key_name(array_name),
-                        matrix_value='"' + str(array[array_name_position]) + '"'
-                        if isinstance(array[array_name_position], int)
-                        or isinstance(array[array_name_position], str)
-                        else array[array_name_position],
+                        matrix_value=(
+                            '"' + str(array[array_name_position]) + '"'
+                            if isinstance(array[array_name_position], int)
+                            or isinstance(array[array_name_position], str)
+                            else array[array_name_position]
+                        ),
                     )
                 )
             array_name_position += 1
@@ -361,15 +363,13 @@ def sanitize_path(path):
     Returns:
         sanitized_path
     """
-    allowed_pattern = r"^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)?$"
-
-    components = re.split(r"[/\\]", path)
-
-sanitized_components = [component for component in components if re.match(allowed_pattern, component)]
-
-    sanitized_path = "_".join(sanitized_components)
-
-    return sanitized_path
+    return "_".join(
+        [
+            component
+            for component in re.split(r"[/\\]", path)
+            if re.match(r"^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)?$", component)
+        ]
+    )
 
 
 def generate_compare_filepath(scan_id):
