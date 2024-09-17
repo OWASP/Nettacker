@@ -247,7 +247,7 @@ def compare_scans():
             ), 200
         return jsonify(structure(status="error", msg="Scan ID not found")), 404
     except (FileNotFoundError, PermissionError, IOError):
-        return jsonify(structure(status="error", msg="Invalid file path")), 500
+        return jsonify(structure(status="error", msg="Invalid file path")), 400
 
 
 @app.route("/session/check", methods=["GET"])

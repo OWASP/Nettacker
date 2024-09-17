@@ -279,11 +279,9 @@ def create_compare_report(options, scan_id):
         html_report = build_compare_report(compare_results)
         with open(fullpath, "w", encoding="utf-8") as compare_report:
             compare_report.write(html_report + "\n")
-            compare_report.close()
     elif len(fullpath) >= 5 and fullpath[-5:] == ".json":
         with open(fullpath, "w", encoding="utf-8") as compare_report:
             compare_report.write(str(json.dumps(compare_results)) + "\n")
-            compare_report.close()
     elif len(fullpath) >= 5 and fullpath[-4:] == ".csv":
         keys = compare_results.keys()
         with open(fullpath, "a") as csvfile:
@@ -291,7 +289,6 @@ def create_compare_report(options, scan_id):
             if csvfile.tell() == 0:
                 writer.writeheader()
             writer.writerow(compare_results)
-            csvfile.close()
     else:
         with open(fullpath, "w", encoding="utf-8") as compare_report:
             compare_report.write(create_compare_text_table(compare_results))

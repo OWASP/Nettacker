@@ -365,10 +365,7 @@ def sanitize_path(path):
 
     components = re.split(r"[/\\]", path)
 
-    sanitized_components = []
-    for component in components:
-        if re.match(allowed_pattern, component):
-            sanitized_components.append(component)
+sanitized_components = [component for component in components if re.match(allowed_pattern, component)]
 
     sanitized_path = "_".join(sanitized_components)
 
