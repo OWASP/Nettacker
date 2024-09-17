@@ -117,6 +117,8 @@ def remove_old_logs(options):
         HostsLog.target == options["target"],
         HostsLog.module_name == options["module_name"],
         HostsLog.scan_unique_id != options["scan_id"],
+        HostsLog.scan_unique_id != options["scan_compare_id"],
+        # Don't remove old logs if they are to be used for the scan reports
     ).delete(synchronize_session=False)
     return send_submit_query(session)
 
@@ -359,6 +361,21 @@ def get_logs_by_scan_id(scan_id):
             "json_event": log.json_event,
         }
         for log in session.query(HostsLog).filter(HostsLog.scan_unique_id == scan_id).all()
+    ]
+
+
+def get_options_by_scan_id(scan_id):
+    """
+    select all stored options of the scan by scan id hash
+    Args:
+        scan_id: scan id hash
+    Returns:
+        an array with a dict with stored options or an empty array
+    """
+    session = create_connection()
+    return [
+        {"options": log.options}
+        for log in session.query(Report).filter(Report.scan_unique_id == scan_id).all()
     ]
 
 
