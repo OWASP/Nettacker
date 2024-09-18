@@ -1,13 +1,12 @@
 info:
-  name: wordpress_version_scan
+  name: wp_plugin_scan
   author: OWASP Nettacker Team
   severity: 3
-  description: Directory, Backup finder
+  description: WordPress plugin finder. Uses wordlists/wp_plugin_small.txt which lists plugins with previously known vulnerabilities
   reference:
   profiles:
     - scan
     - http
-    - backup
     - low_severity
     - wp
     - wordpress
@@ -44,6 +43,9 @@ payloads:
             content:
               regex: "Tags:"
               reverse: false
+            content:
+              regex: Stable\stag:\s(\d+.\d+.\d+)
+              reverse: false  
             status_code:
               regex: "200"
               reverse: false
