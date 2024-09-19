@@ -44,6 +44,3 @@ payloads:
             status_code:
               regex: 200|403|401
               reverse: false
-        
-  
-     
