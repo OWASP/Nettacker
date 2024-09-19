@@ -12,7 +12,7 @@ from nettacker import logger
 from nettacker.config import Config, version_info
 from nettacker.core.arg_parser import ArgParser
 from nettacker.core.die import die_failure
-from nettacker.core.graph import create_report
+from nettacker.core.graph import create_report, create_compare_report
 from nettacker.core.ip import (
     get_ip_range,
     generate_ip_range,
@@ -204,6 +204,8 @@ class Nettacker(ArgParser):
 
         exit_code = self.start_scan(scan_id)
         create_report(self.arguments, scan_id)
+        if self.arguments.scan_compare_id is not None:
+            create_compare_report(self.arguments, scan_id)
         log.info(_("done"))
 
         return exit_code
@@ -231,6 +233,7 @@ class Nettacker(ArgParser):
                             "target": target,
                             "module_name": module_name,
                             "scan_id": scan_id,
+                            "scan_compare_id": self.arguments.scan_compare_id,
                         }
                     )
 

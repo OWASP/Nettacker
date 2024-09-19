@@ -27,8 +27,9 @@ from nettacker.api.helpers import structure
 from nettacker.config import Config
 from nettacker.core.app import Nettacker
 from nettacker.core.die import die_failure
+from nettacker.core.graph import create_compare_report
 from nettacker.core.messages import messages as _
-from nettacker.core.utils.common import now
+from nettacker.core.utils.common import now, generate_compare_filepath
 from nettacker.database.db import (
     create_connection,
     get_logs_by_scan_id,
@@ -210,6 +211,43 @@ def new_scan():
     thread.start()
 
     return jsonify(vars(nettacker_app.arguments)), 200
+
+
+@app.route("/compare/scans", methods=["POST"])
+def compare_scans():
+    """
+    compare two scans through the API
+    Returns:
+        Success if the comparision is successfull and report is saved and error if not.
+    """
+    api_key_is_valid(app, flask_request)
+
+    scan_id_first = get_value(flask_request, "scan_id_first")
+    scan_id_second = get_value(flask_request, "scan_id_second")
+    if not scan_id_first or not scan_id_second:
+        return jsonify(structure(status="error", msg="Invalid Scan IDs")), 400
+
+    compare_report_path_filename = get_value(flask_request, "compare_report_path")
+    if not compare_report_path_filename:
+        compare_report_path_filename = generate_compare_filepath(scan_id_first)
+
+    compare_options = {
+        "scan_compare_id": scan_id_second,
+        "compare_report_path_filename": compare_report_path_filename,
+    }
+
+    try:
+        result = create_compare_report(compare_options, scan_id_first)
+        if result:
+            return jsonify(
+                structure(
+                    status="success",
+                    msg="scan_comparison_completed",
+                )
+            ), 200
+        return jsonify(structure(status="error", msg="Scan ID not found")), 404
+    except (FileNotFoundError, PermissionError, IOError):
+        return jsonify(structure(status="error", msg="Invalid file path")), 400
 
 
 @app.route("/session/check", methods=["GET"])

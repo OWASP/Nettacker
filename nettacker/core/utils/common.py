@@ -118,10 +118,12 @@ def generate_new_sub_steps(sub_steps, data_matrix, arrays):
                 exec(
                     "original_sub_steps{key_name} = {matrix_value}".format(
                         key_name=re_address_repeaters_key_name(array_name),
-                        matrix_value='"' + str(array[array_name_position]) + '"'
-                        if isinstance(array[array_name_position], int)
-                        or isinstance(array[array_name_position], str)
-                        else array[array_name_position],
+                        matrix_value=(
+                            '"' + str(array[array_name_position]) + '"'
+                            if isinstance(array[array_name_position], int)
+                            or isinstance(array[array_name_position], str)
+                            else array[array_name_position]
+                        ),
                     )
                 )
             array_name_position += 1
@@ -350,3 +352,28 @@ def sort_dictionary(dictionary):
     if etc_flag:
         sorted_dictionary["..."] = {}
     return sorted_dictionary
+
+
+def sanitize_path(path):
+    """
+    Sanitize the file path to preven unathorized access
+    Args:
+        path: filepath(user input)
+
+    Returns:
+        sanitized_path
+    """
+    return "_".join(
+        [
+            component
+            for component in re.split(r"[/\\]", path)
+            if re.match(r"^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)?$", component)
+        ]
+    )
+
+
+def generate_compare_filepath(scan_id):
+    return "/report_compare_{date_time}_{scan_id}.json".format(
+        date_time=now(format="%Y_%m_%d_%H_%M_%S"),
+        scan_id=scan_id,
+    )

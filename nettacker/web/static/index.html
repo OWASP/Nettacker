@@ -104,6 +104,11 @@
                         <li id="new_scan_ul">
                         <button id="new_scan_btn" class="btn btn-warning navbar-btn">New Scan</button>
                         </li>
+                        <li id="compare_btn_ul">
+                            <button id="compare_btn" class="btn btn-info navbar-btn">
+                                Compare
+                            </button>
+                        </li>
                         <li id="logout_btn" class="hidden">
                                 <button type="submit" action="javascript:do_logout()"
                                    class="btn btn-info navbar-btn"
@@ -370,6 +375,43 @@
           </li>
         </ul>
         <br><br><br>
+    </div>
+    <script>
+        var compare_page = 1;
+    </script>
+    <div id="compare_area" class="hidden">
+        <h2>Compare Scan Results</h2>
+        <ul class="nav nav-tabs">
+        </ul><br>
+        <form id="compare_form">
+            <div class="input-group col-xs-5">
+                <span class="input-group-addon">scan ID</span>
+                <input id="scan_id_first" type="text" class="form-control" placeholder="Enter first scan ID">
+            </div>
+            <br>
+            <div class="input-group col-xs-5">
+                <span class="input-group-addon">scan ID</span>
+                <input id="scan_id_second" type="text" class="form-control" placeholder="Enter second scan ID">
+            </div>
+            <h3>Output(HTML/JSON/CSV/TXT)</h3>
+            <div class="input-group col-xs-5">
+                <span class="input-group-addon">filename</span>
+                <input id="compare_report_path" type="text" class="form-control" placeholder="Additional Info">
+            </div>
+            <br>
+            <ul id="create_compare_report" class="btn btn-primary" action="javascript:create_compare_report()">
+                Submit
+            </ul>
+        </form>
+        <br><br>
+        <div id="success_report" class="alert alert-success hidden text-justify">
+            <strong>Success!</strong> Compare report saved at the filepath<br>
+        </div>
+        <div id="failed_report" class="alert alert-danger hidden shake animated text-justify">
+            <strong>Failed!</strong><br>
+            <p id="report_error_msg"></p>
+        </div>
+        <br><br>
     </div>
     </body>
     <br><br>

@@ -11,7 +11,6 @@ info:
     - low_severity
     - wp
     - wordpress
-
 payloads:
   - library: http
     steps:
@@ -36,13 +35,12 @@ payloads:
                 - 443
               #We are using small txt file. Work need to be done for handling user input based format files
               paths:
-                read_from_file: wordlists/wp_plugin_small.txt
-              
+                read_from_file: wordlists/wp_plugin_small.txt            
         response:
           condition_type: and
           conditions:
             content:
-              regex: "Tags:"
+              regex: Stable\stag:\s(\d+\.\d+\.\d+)
               reverse: false
             status_code:
               regex: "200"

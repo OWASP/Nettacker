@@ -49,7 +49,7 @@ file_write_error: الملف "{0}" غير قابل للكتابة!
 scan_method_select: يرجى اختيار طريقة المسح الخاصة بك!
 remove_temp: إزالة الملفات المؤقتة!
 sorting_results: نتائج الفرز!
-done: فعله!
+done: تم الانتهاء!
 start_attack: البدء في الهجوم {0} ، {1} من {2}
 module_not_available: هذه الوحدة "{0}" غير متوفرة
 error_platform: للأسف ، يمكن تشغيل هذا الإصدار من البرنامج على Linux / osx / windows.
@@ -63,7 +63,7 @@ checking: جارٍ التحقق {0} ...
 HOST: مضيف
 USERNAME: اسم المستخدم
 PASSWORD: كلمه السر
-PORT: ميناء
+PORT: منفذ
 TYPE: اكتب
 DESCRIPTION: وصف
 verbose_mode: مستوى وضع verbose (0-5) (افتراضي 0)
@@ -241,3 +241,8 @@ no_response: لا يمكن الحصول على استجابة من الهدف
 category_framework: "الفئة: {0} ، وأطر العمل: {1} تم العثور عليها!"
 nothing_found: لم يتم العثور على شيء في {0} في {1}!
 no_auth: "لم يتم العثور على أي مصادقة في {0}: {1}"
+compare_report_path_filename: "المسار المراد تخزين فيه نتيجة التقرير الخاص بـ مقارنة الفحص"
+no_scan_to_compare: "المعرف الخاص بالفحص الذي يجب مقارنته ليس موجودا"
+compare_report_saved: "نتيجة المقارنة تم حفظها في {0}"
+build_compare_report: "يتم اعداد تقرير المقارنة"
+finished_build_report: "تم الانتهاء من اعداد تقرير المقارنة"
