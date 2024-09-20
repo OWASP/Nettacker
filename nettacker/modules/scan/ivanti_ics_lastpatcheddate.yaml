@@ -43,6 +43,6 @@ payloads:
               Last-Modified:
                 regex: .*  
                 reverse: false
-            Content-Type: 
-              regex: "javascript"
-              reverse: false
+              Content-Type: 
+                regex: "javascript"
+                reverse: false
