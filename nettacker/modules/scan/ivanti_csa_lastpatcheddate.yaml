@@ -1,0 +1,48 @@
+info:
+  name: ivanti_csa_lastpatcheddate_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: Ivanti CSA Last Patched Date Scan
+  reference: https://www.bleepingcomputer.com/news/security/ivanti-warns-of-another-critical-csa-flaw-exploited-in-attacks/
+  profiles:
+    - scan
+    - http
+    - ivanti
+    - low_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: head
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/allowed/ivanti-logo.png"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          log: "response_dependent['headers']['Last-Modified']"
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            headers:
+              Last-Modified:
+                regex: .*  
+                reverse: false
+              Content-Type: 
+                regex: ^image\/png$
+                reverse: false
