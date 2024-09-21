@@ -205,7 +205,7 @@ class Nettacker(ArgParser):
         create_report(self.arguments, scan_id)
         if self.arguments.scan_compare_id is not None:
             create_compare_report(self.arguments, scan_id)
-        log.info("ScanID: {0} ".format(scan_id)+_("done"))
+        log.info("ScanID: {0} ".format(scan_id) + _("done"))
 
         return exit_code
 
