@@ -175,6 +175,7 @@ def create_report(options, scan_id):
             + "</div>"
             + '<p class="footer">'
             + _("nettacker_version_details").format(version_info()[0], version_info()[1], now())
+            + " ScanID: {0}".format(scan_id)
             + "</p>"
             + log_data.json_parse_js
         )
