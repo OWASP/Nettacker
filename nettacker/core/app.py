@@ -193,7 +193,7 @@ class Nettacker(ArgParser):
             True when it ends
         """
         scan_id = utils.generate_random_token(32)
-
+        log.info("ScanID: {0}".format(scan_id))
         log.info(_("regrouping_targets"))
         # find total number of targets + types + expand (subdomain, IPRanges, etc)
         # optimize CPU usage
@@ -201,12 +201,11 @@ class Nettacker(ArgParser):
         if not self.arguments.targets:
             log.info(_("no_live_service_found"))
             return True
-
         exit_code = self.start_scan(scan_id)
         create_report(self.arguments, scan_id)
         if self.arguments.scan_compare_id is not None:
             create_compare_report(self.arguments, scan_id)
-        log.info(_("done"))
+        log.info("ScanID: {0} ".format(scan_id) + _("done"))
 
         return exit_code
 
