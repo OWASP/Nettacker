@@ -1,9 +1,11 @@
 name: CI/CD
 
 on:
-  - pull_request
-  - push
-  - workflow_dispatch
+  pull_request:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
 
 concurrency:
   cancel-in-progress: true
@@ -307,7 +309,7 @@ jobs:
   publish-to-test-pypi:
     name: Publish Test PyPI package
     if: |
-      github.repository == 'owasp/nettacker' &&
+      github.repository == 'OWASP/Nettacker' &&
       github.event_name == 'push' &&
       github.ref_name == 'master'
     environment: dev
@@ -333,9 +335,9 @@ jobs:
   publish-to-pypi:
     name: Publish PyPI package
     if: |
-      github.repository == 'owasp/nettacker' &&
+      github.repository == 'OWASP/Nettacker' &&
       github.event_name == 'push' &&
-      startsWith(github.event.ref, 'refs/tags/v')
+      startsWith(github.event.ref, 'refs/tags/')
     environment: release
     needs:
       - test-build-package
