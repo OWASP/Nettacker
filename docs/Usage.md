@@ -22,8 +22,8 @@ By using the `--help`/`-h` switch you can read the help menu in the CLI:
   / __ \ \        / /\    / ____|  __ \
  | |  | \ \  /\  / /  \  | (___ | |__) |
  | |  | |\ \/  \/ / /\ \  \___ \|  ___/
- | |__| | \  /\  / ____ \ ____) | |     Version 0.0.2
-  \____/   \/  \/_/    \_\_____/|_|     BIST
+ | |__| | \  /\  / ____ \ ____) | |     Version 0.4.0
+  \____/   \/  \/_/    \_\_____/|_|     QUIN
                           _   _      _   _             _
                          | \ | |    | | | |           | |
   github.com/OWASP       |  \| | ___| |_| |_ __ _  ___| | _____ _ __
@@ -31,17 +31,16 @@ By using the `--help`/`-h` switch you can read the help menu in the CLI:
   z3r0d4y.com            | |\  |  __/ |_| || (_| | (__|   <  __/ |
                          |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|
 
-
-
-
-usage: Nettacker [-L LANGUAGE] [-v] [-V] [-o REPORT_PATH_FILENAME] [--graph GRAPH_NAME] [-h] [-i TARGETS]
-                 [-l TARGETS_LIST] [-m SELECTED_MODULES] [--modules-extra-args MODULES_EXTRA_ARGS]
-                 [--show-all-modules] [--profile PROFILES] [--show-all-profiles] [-x EXCLUDED_MODULES]
-                 [-u USERNAMES] [-U USERNAMES_LIST] [-p PASSWORDS] [-P PASSWORDS_LIST] [-g PORTS]
-                 [--user-agent USER_AGENT] [-T TIMEOUT] [-w TIME_SLEEP_BETWEEN_REQUESTS] [-r] [-s]
-                 [-t THREAD_PER_HOST] [-M PARALLEL_MODULE_SCAN] [--set-hardware-usage SET_HARDWARE_USAGE]
-                 [-R SOCKS_PROXY] [--retries RETRIES] [--ping-before-scan] [--start-api]
-                 [--api-host API_HOSTNAME] [--api-port API_PORT] [--api-debug-mode]
+[2024-09-26 07:51:08][+] Nettacker engine started ...
+[2024-09-26 07:51:09][+] 106 modules loaded ...
+usage: Nettacker [-L LANGUAGE] [-v] [--verbose-event] [-V] [-o REPORT_PATH_FILENAME] [--graph GRAPH_NAME] [-h]
+                 [-i TARGETS] [-l TARGETS_LIST] [-m SELECTED_MODULES] [--modules-extra-args MODULES_EXTRA_ARGS]
+                 [--show-all-modules] [--profile PROFILES] [--show-all-profiles] [-x EXCLUDED_MODULES] [-u USERNAMES]
+                 [-U USERNAMES_LIST] [-p PASSWORDS] [-P PASSWORDS_LIST] [-g PORTS] [--user-agent USER_AGENT]
+                 [-T TIMEOUT] [-w TIME_SLEEP_BETWEEN_REQUESTS] [-r] [-s] [-d] [-t THREAD_PER_HOST]
+                 [-M PARALLEL_MODULE_SCAN] [--set-hardware-usage SET_HARDWARE_USAGE] [-R SOCKS_PROXY]
+                 [--retries RETRIES] [--ping-before-scan] [-K SCAN_COMPARE_ID] [-J COMPARE_REPORT_PATH_FILENAME]
+                 [--start-api] [--api-host API_HOSTNAME] [--api-port API_PORT] [--api-debug-mode]
                  [--api-access-key API_ACCESS_KEY] [--api-client-whitelisted-ips API_CLIENT_WHITELISTED_IPS]
                  [--api-access-log API_ACCESS_LOG] [--api-cert API_CERT] [--api-cert-key API_CERT_KEY]
 
@@ -49,14 +48,15 @@ Engine:
   Engine input options
 
   -L LANGUAGE, --language LANGUAGE
-                        select a language ['id', 'it', 'hy', 'el', 'ar', 'ur', 'hi', 'vi', 'ps', 'nl', 'tr',
-                        'iw', 'zh-cn', 'ja', 'es', 'ru', 'fa', 'fr', 'en', 'ko', 'de']
+                        select a language ['iw', 'nl', 'es', 'ru', 'de', 'ur', 'pt-br', 'fr', 'el', 'hy', 'ko', 'en',
+                        'ja', 'bn', 'it', 'tr', 'ar', 'zh-cn', 'hi', 'vi', 'id', 'fa', 'ps']
   -v, --verbose         verbose mode level (0-5) (default 0)
+  --verbose-event       enable verbose event to see state of each thread
   -V, --version         show software version
   -o REPORT_PATH_FILENAME, --output REPORT_PATH_FILENAME
                         save all logs in file (results.txt, results.csv, results.html, results.json)
-  --graph GRAPH_NAME    build a graph of all activities and information, you must use HTML output. available
-                        graphs: ['d3_tree_v2_graph', 'd3_tree_v1_graph']
+  --graph GRAPH_NAME    build a graph of all activities and information, you must use HTML output. available graphs:
+                        ['d3_tree_v2_graph', 'd3_tree_v1_graph']
   -h, --help            Show Nettacker Help Menu
 
 Target:
@@ -71,25 +71,22 @@ Method:
   Scan method options
 
   -m SELECTED_MODULES, --modules SELECTED_MODULES
-                        choose modules ['http_options_enabled_vuln', 'clickjacking_vuln',
-                        'wp_xmlrpc_bruteforce_vuln', 'graphql_vuln', 'content_security_policy_vuln',
-                        'xdebug_rce_vuln', 'x_powered_by_vuln', 'wp_xmlrpc_pingback_vuln', 'http_cors_vuln',
-                        'f5_cve_2020_5902_vuln', '...', 'all'] to see full list use --show-all-modules
+                        choose modules ['accela_cve_2021_34370_vuln', 'admin_scan',
+                        'adobe_coldfusion_cve_2023_26360_vuln', 'apache_cve_2021_41773_vuln',
+                        'apache_cve_2021_42013_vuln', 'apache_ofbiz_cve_2024_38856_vuln', 'apache_struts_vuln',
+                        'aviatrix_cve_2021_40870_vuln', 'cisco_hyperflex_cve_2021_1497_vuln',
+                        'citrix_cve_2019_19781_vuln'] to see full list use --show-all-modules
   --modules-extra-args MODULES_EXTRA_ARGS
-                        add extra args to pass to modules (e.g. --modules-extra-args
-                        "x_api_key=123&xyz_passwd=abc"
+                        add extra args to pass to modules (e.g. --modules-extra-args "x_api_key=123&xyz_passwd=abc"
   --show-all-modules    show all modules and their information
-  --profile PROFILES    select profile ['vuln', 'vulnerability', 'http', 'low_severity', 'medium_severity',
-                        'wordpress', 'wp', 'information_gathering', 'graphql', 'csp', 'critical_severity',
-                        'cve', 'f5', 'takeover', 'high_severity', 'citrix', 'apache_struts', 'vbulletin',
-                        'msexchange', 'brute', 'brute_force', 'telnet', 'ssh', 'smtp', 'ftp', 'scan',
-                        'backup', 'infortmation', 'info', 'reverse_lookup', 'drupal', 'all']
+  --profile PROFILES    select profile ['accela', 'adobe', 'apache', 'apache_ofbiz', 'apache_struts', 'atlassian',
+                        'aviatrix', 'backup', 'brute', 'brute_force']
   --show-all-profiles   show all profiles and their information
   -x EXCLUDED_MODULES, --exclude-modules EXCLUDED_MODULES
-                        choose scan method to exclude ['http_options_enabled_vuln', 'clickjacking_vuln',
-                        'wp_xmlrpc_bruteforce_vuln', 'graphql_vuln', 'content_security_policy_vuln',
-                        'xdebug_rce_vuln', 'x_powered_by_vuln', 'wp_xmlrpc_pingback_vuln', 'http_cors_vuln',
-                        'f5_cve_2020_5902_vuln', '...']
+                        choose scan method to exclude ['accela_cve_2021_34370_vuln', 'admin_scan',
+                        'adobe_coldfusion_cve_2023_26360_vuln', 'apache_cve_2021_41773_vuln',
+                        'apache_cve_2021_42013_vuln', 'apache_ofbiz_cve_2024_38856_vuln', 'apache_struts_vuln',
+                        'aviatrix_cve_2021_40870_vuln', 'cisco_hyperflex_cve_2021_1497_vuln']
   -u USERNAMES, --usernames USERNAMES
                         username(s) list, separate with ","
   -U USERNAMES_LIST, --users-list USERNAMES_LIST
@@ -101,14 +98,16 @@ Method:
   -g PORTS, --ports PORTS
                         port(s) list, separate with ","
   --user-agent USER_AGENT
-                        Select a user agent to send with HTTP requests or enter "random_user_agent" to
-                        randomize the User-Agent in the requests.
+                        Select a user agent to send with HTTP requests or enter "random_user_agent" to randomize the
+                        User-Agent in the requests.
   -T TIMEOUT, --timeout TIMEOUT
                         read password(s) from file
   -w TIME_SLEEP_BETWEEN_REQUESTS, --time-sleep-between-requests TIME_SLEEP_BETWEEN_REQUESTS
                         time to sleep between each request
   -r, --range           scan all IPs in the range
   -s, --sub-domains     find and scan subdomains
+  -d, --skip-service-discovery
+                        skip service discovery before scan and enforce all modules to scan anyway
   -t THREAD_PER_HOST, --thread-per-host THREAD_PER_HOST
                         thread numbers for connections to a host
   -M PARALLEL_MODULE_SCAN, --parallel-module-scan PARALLEL_MODULE_SCAN
@@ -116,12 +115,15 @@ Method:
   --set-hardware-usage SET_HARDWARE_USAGE
                         Set hardware usage while scanning. (low, normal, high, maximum)
   -R SOCKS_PROXY, --socks-proxy SOCKS_PROXY
-                        outgoing connections proxy (socks). example socks5: 127.0.0.1:9050,
-                        socks://127.0.0.1:9050 socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050,
-                        authentication: socks://username: password@127.0.0.1,
-                        socks4://username:password@127.0.0.1, socks5://username:password@127.0.0.1
+                        outgoing connections proxy (socks). example socks5: 127.0.0.1:9050, socks://127.0.0.1:9050
+                        socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050, authentication: socks://username:
+                        password@127.0.0.1, socks4://username:password@127.0.0.1, socks5://username:password@127.0.0.1
   --retries RETRIES     Retries when the connection timeout (default 3)
   --ping-before-scan    ping before scan the host
+  -K SCAN_COMPARE_ID, --scan-compare SCAN_COMPARE_ID
+                        compare current scan to old scans using the unique scan_id
+  -J COMPARE_REPORT_PATH_FILENAME, --compare-report-path COMPARE_REPORT_PATH_FILENAME
+                        the file-path to store the compare_scan report
 
 API:
   API options
@@ -157,13 +159,12 @@ The `-L` is the language flag and in this case sets the output language to Farsi
 * You can fix Persian (Farsi) and other Unicode languages RTL and Chars with [bicon](https://www.google.com/search?q=Persian+support+with+bicon&oq=Persian+support+with+bicon&aqs=chrome..69i57.178j0j7&sourceid=chrome&ie=UTF-8) in terminal/windows bash.
 ```
 $ python nettacker.py --help -L fa
-
    ______          __      _____ _____
   / __ \ \        / /\    / ____|  __ \
  | |  | \ \  /\  / /  \  | (___ | |__) |
  | |  | |\ \/  \/ / /\ \  \___ \|  ___/
- | |__| | \  /\  / ____ \ ____) | |     Version 0.0.2
-  \____/   \/  \/_/    \_\_____/|_|     BIST
+ | |__| | \  /\  / ____ \ ____) | |     Version 0.4.0
+  \____/   \/  \/_/    \_\_____/|_|     QUIN
                           _   _      _   _             _
                          | \ | |    | | | |           | |
   github.com/OWASP       |  \| | ___| |_| |_ __ _  ___| | _____ _ __
@@ -171,17 +172,18 @@ $ python nettacker.py --help -L fa
   z3r0d4y.com            | |\  |  __/ |_| || (_| | (__|   <  __/ |
                          |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|
 
+[2024-09-26 07:53:24][+] انجین Nettacker آغاز به کار کرد ...
 
 
-
-usage: Nettacker [-L LANGUAGE] [-v] [-V] [-o REPORT_PATH_FILENAME] [--graph GRAPH_NAME] [-h] [-i TARGETS]
-                 [-l TARGETS_LIST] [-m SELECTED_MODULES] [--modules-extra-args MODULES_EXTRA_ARGS]
-                 [--show-all-modules] [--profile PROFILES] [--show-all-profiles] [-x EXCLUDED_MODULES]
-                 [-u USERNAMES] [-U USERNAMES_LIST] [-p PASSWORDS] [-P PASSWORDS_LIST] [-g PORTS]
-                 [--user-agent USER_AGENT] [-T TIMEOUT] [-w TIME_SLEEP_BETWEEN_REQUESTS] [-r] [-s]
-                 [-t THREAD_PER_HOST] [-M PARALLEL_MODULE_SCAN] [--set-hardware-usage SET_HARDWARE_USAGE]
-                 [-R SOCKS_PROXY] [--retries RETRIES] [--ping-before-scan] [--start-api]
-                 [--api-host API_HOSTNAME] [--api-port API_PORT] [--api-debug-mode]
+[2024-09-26 07:53:25][+] 106 ماژول بارگزاری شد ...
+usage: Nettacker [-L LANGUAGE] [-v] [--verbose-event] [-V] [-o REPORT_PATH_FILENAME] [--graph GRAPH_NAME] [-h]
+                 [-i TARGETS] [-l TARGETS_LIST] [-m SELECTED_MODULES] [--modules-extra-args MODULES_EXTRA_ARGS]
+                 [--show-all-modules] [--profile PROFILES] [--show-all-profiles] [-x EXCLUDED_MODULES] [-u USERNAMES]
+                 [-U USERNAMES_LIST] [-p PASSWORDS] [-P PASSWORDS_LIST] [-g PORTS] [--user-agent USER_AGENT]
+                 [-T TIMEOUT] [-w TIME_SLEEP_BETWEEN_REQUESTS] [-r] [-s] [-d] [-t THREAD_PER_HOST]
+                 [-M PARALLEL_MODULE_SCAN] [--set-hardware-usage SET_HARDWARE_USAGE] [-R SOCKS_PROXY]
+                 [--retries RETRIES] [--ping-before-scan] [-K SCAN_COMPARE_ID] [-J COMPARE_REPORT_PATH_FILENAME]
+                 [--start-api] [--api-host API_HOSTNAME] [--api-port API_PORT] [--api-debug-mode]
                  [--api-access-key API_ACCESS_KEY] [--api-client-whitelisted-ips API_CLIENT_WHITELISTED_IPS]
                  [--api-access-log API_ACCESS_LOG] [--api-cert API_CERT] [--api-cert-key API_CERT_KEY]
 
@@ -189,14 +191,15 @@ usage: Nettacker [-L LANGUAGE] [-v] [-V] [-o REPORT_PATH_FILENAME] [--graph GRAP
   گزینه های ورودی انجین
 
   -L LANGUAGE, --language LANGUAGE
-                        یک زبان انتخاب کنید ['id', 'it', 'hy', 'el', 'ar', 'ur', 'hi', 'vi', 'ps', 'nl', 'tr',
-                        'iw', 'zh-cn', 'ja', 'es', 'ru', 'fa', 'fr', 'en', 'ko', 'de']
+                        یک زبان انتخاب کنید ['bn', 'de', 'nl', 'iw', 'es', 'pt-br', 'ar', 'tr', 'el', 'ko', 'ru', 'hi',
+                        'it', 'en', 'fr', 'id', 'ps', 'ur', 'zh-cn', 'hy', 'fa', 'ja', 'vi']
   -v, --verbose         سطح حالت پرگویی (0-5) (پیشفرض 0)
+  --verbose-event       enable verbose event to see state of each thread
   -V, --version         نمایش ورژن نرم افزار
   -o REPORT_PATH_FILENAME, --output REPORT_PATH_FILENAME
                         ذخیره کردن کل لاگ ها در فایل (result.txt، result.html، results.json)
-  --graph GRAPH_NAME    ساخت گراف از همه فعالیت ها و اطلاعات، شما باید از خروجی HTML استفاده کنید. گراف های در
-                        دسترس: ['d3_tree_v2_graph', 'd3_tree_v1_graph']
+  --graph GRAPH_NAME    ساخت گراف از همه فعالیت ها و اطلاعات، شما باید از خروجی HTML استفاده کنید. گراف های در دسترس:
+                        ['d3_tree_v1_graph', 'd3_tree_v2_graph']
   -h, --help            نشان دادن منوی کمک Nettacker
 
 هدف:
@@ -211,25 +214,22 @@ usage: Nettacker [-L LANGUAGE] [-v] [-V] [-o REPORT_PATH_FILENAME] [--graph GRAP
   گزینه های متود های اسکن
 
   -m SELECTED_MODULES, --modules SELECTED_MODULES
-                        متود اسکن را انتخاب کنید ['http_options_enabled_vuln', 'clickjacking_vuln',
-                        'wp_xmlrpc_bruteforce_vuln', 'graphql_vuln', 'content_security_policy_vuln',
-                        'xdebug_rce_vuln', 'x_powered_by_vuln', 'wp_xmlrpc_pingback_vuln', 'http_cors_vuln',
-                        'f5_cve_2020_5902_vuln', '...', 'all']
+                        متود اسکن را انتخاب کنید ['accela_cve_2021_34370_vuln', 'admin_scan',
+                        'adobe_coldfusion_cve_2023_26360_vuln', 'apache_cve_2021_41773_vuln',
+                        'apache_cve_2021_42013_vuln', 'apache_ofbiz_cve_2024_38856_vuln', 'apache_struts_vuln',
+                        'aviatrix_cve_2021_40870_vuln', 'cisco_hyperflex_cve_2021_1497_vuln',
+                        'citrix_cve_2019_19781_vuln']
   --modules-extra-args MODULES_EXTRA_ARGS
-                        add extra args to pass to modules (e.g. --modules-extra-args
-                        "x_api_key=123&xyz_passwd=abc"
+                        add extra args to pass to modules (e.g. --modules-extra-args "x_api_key=123&xyz_passwd=abc"
   --show-all-modules    show all modules and their information
-  --profile PROFILES    انتخاب پروفایل ['vuln', 'vulnerability', 'http', 'low_severity', 'medium_severity',
-                        'wordpress', 'wp', 'information_gathering', 'graphql', 'csp', 'critical_severity',
-                        'cve', 'f5', 'takeover', 'high_severity', 'citrix', 'apache_struts', 'vbulletin',
-                        'msexchange', 'brute', 'brute_force', 'telnet', 'ssh', 'smtp', 'ftp', 'scan',
-                        'backup', 'infortmation', 'info', 'reverse_lookup', 'drupal', 'all']
+  --profile PROFILES    انتخاب پروفایل ['accela', 'adobe', 'apache', 'apache_ofbiz', 'apache_struts', 'atlassian',
+                        'aviatrix', 'backup', 'brute', 'brute_force']
   --show-all-profiles   show all profiles and their information
   -x EXCLUDED_MODULES, --exclude-modules EXCLUDED_MODULES
-                        انتخاب متود اسکن استثنا ['http_options_enabled_vuln', 'clickjacking_vuln',
-                        'wp_xmlrpc_bruteforce_vuln', 'graphql_vuln', 'content_security_policy_vuln',
-                        'xdebug_rce_vuln', 'x_powered_by_vuln', 'wp_xmlrpc_pingback_vuln', 'http_cors_vuln',
-                        'f5_cve_2020_5902_vuln', '...']
+                        انتخاب متود اسکن استثنا ['accela_cve_2021_34370_vuln', 'admin_scan',
+                        'adobe_coldfusion_cve_2023_26360_vuln', 'apache_cve_2021_41773_vuln',
+                        'apache_cve_2021_42013_vuln', 'apache_ofbiz_cve_2024_38856_vuln', 'apache_struts_vuln',
+                        'aviatrix_cve_2021_40870_vuln', 'cisco_hyperflex_cve_2021_1497_vuln']
   -u USERNAMES, --usernames USERNAMES
                         لیست نام کاربری (ها)، با "," جدا شود
   -U USERNAMES_LIST, --users-list USERNAMES_LIST
@@ -241,14 +241,16 @@ usage: Nettacker [-L LANGUAGE] [-v] [-V] [-o REPORT_PATH_FILENAME] [--graph GRAP
   -g PORTS, --ports PORTS
                         لیست درگاه (ها)، با "," جدا شود
   --user-agent USER_AGENT
-                        Select a user agent to send with HTTP requests or enter "random_user_agent" to
-                        randomize the User-Agent in the requests.
+                        Select a user agent to send with HTTP requests or enter "random_user_agent" to randomize the
+                        User-Agent in the requests.
   -T TIMEOUT, --timeout TIMEOUT
                         خواندن کلمه عبور (ها) از فایل
   -w TIME_SLEEP_BETWEEN_REQUESTS, --time-sleep-between-requests TIME_SLEEP_BETWEEN_REQUESTS
                         زمان مکث بین هر درخواست
   -r, --range           اسکن تمام آی پی ها در رنج
   -s, --sub-domains     پیدا کردن و اسکن کردن ساب دامین ها
+  -d, --skip-service-discovery
+                        skip service discovery before scan and enforce all modules to scan anyway
   -t THREAD_PER_HOST, --thread-per-host THREAD_PER_HOST
                         تعداد ریسه ها برای ارتباطات با یک هاست
   -M PARALLEL_MODULE_SCAN, --parallel-module-scan PARALLEL_MODULE_SCAN
@@ -262,6 +264,10 @@ usage: Nettacker [-L LANGUAGE] [-v] [-V] [-o REPORT_PATH_FILENAME] [--graph GRAP
                         socks5://username:password@127.0.0.1
   --retries RETRIES     سعی مجدد وقتی که ارتباط قطع شد (پیشفرض 3)
   --ping-before-scan    پینگ کردن هست قبل از اسکن
+  -K SCAN_COMPARE_ID, --scan-compare SCAN_COMPARE_ID
+                        compare current scan to old scans using the unique scan_id
+  -J COMPARE_REPORT_PATH_FILENAME, --compare-report-path COMPARE_REPORT_PATH_FILENAME
+                        the file-path to store the compare_scan report
 
 API:
   API گزینه های
@@ -274,8 +280,7 @@ API:
   --api-access-key API_ACCESS_KEY
                         کلید دسترسی API
   --api-client-whitelisted-ips API_CLIENT_WHITELISTED_IPS
-                        تعریف کردن لیست سفید، با "," جدا کنید (مثال: 127.0.0.1, 192.168.1.1/24,
-                        10.0.0.1-10.0.0.255)
+                        تعریف کردن لیست سفید، با "," جدا کنید (مثال: 127.0.0.1, 192.168.1.1/24, 10.0.0.1-10.0.0.255)
   --api-access-log API_ACCESS_LOG
                         اسم فایل لیست دسترسی به API
   --api-cert API_CERT   API CERTIFICATE

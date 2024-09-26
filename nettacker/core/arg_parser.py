@@ -336,7 +336,8 @@ class ArgParser(ArgumentParser):
             help=_("subdomains"),
         )
         method_options.add_argument(
-            "--skip-service-discovery",
+            "-d",
+            "--skip-service-discovery",           
             action="store_true",
             default=Config.settings.skip_service_discovery,
             dest="skip_service_discovery",
