@@ -337,7 +337,7 @@ class ArgParser(ArgumentParser):
         )
         method_options.add_argument(
             "-d",
-            "--skip-service-discovery",           
+            "--skip-service-discovery",
             action="store_true",
             default=Config.settings.skip_service_discovery,
             dest="skip_service_discovery",
