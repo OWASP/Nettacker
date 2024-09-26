@@ -1,0 +1,47 @@
+info:
+  name: ivanti_vtm_version_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: Ivanti vTM Version Scan
+  reference: https://www.helpnetsecurity.com/2024/09/25/cve-2024-7593-exploited/
+  profiles:
+    - scan
+    - http
+    - ivanti
+    - low_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/apps/zxtm/login.cgi"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 9090
+        response:
+          condition_type: and
+          log: "response_dependent['content']"
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            headers:
+              Pragma:
+                regex: no-cache
+                reverse: false
+            content:
+              regex: |
+                <span class="version">([0-9]+(?:\.[0-9]+)*[A-Za-z0-9]*)<\/span>
+              reverse: false
