@@ -20,6 +20,7 @@ OWASP Nettacker Modules can be of type **Scan** (scan for something), **Vuln** (
 * '**http_redirect_scan**' - Scan the target and test if it returns an HTTP redirect 3xx response code and print the destination
 * '**http_status_scan**' - Scan the target and return the HTTP status code
 * '**ivanti_csa_lastpatcheddate_scan**' - Scan the target for Ivanti CSA appliance and return its last patched date
+* '**ivanti_vtm_version_scan**' - Scan the target for Ivanti vTM appliance and return its version number
 * '**joomla_template_scan**' - Scan the target for Joomla templates (identify Joomla sites)
 * '**joomla_user_enum_scan**' - Scan the target and enumerate Joomla users
 * '**joomla_version_scan**' - Scan the target and identify the Joomla version
