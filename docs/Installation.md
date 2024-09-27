@@ -52,7 +52,7 @@ PLEASE NOTE: Python version 3.10 or higher is required to run Nettacker.  You ca
 python3 -V
 ```
 
-If you have Python v3.10.15 or higher you should be able to run OWASP Nettacker via command:
+If you have Python 3.10 or higher you should be able to run OWASP Nettacker via command:
 
 `python3 nettacker.py`
 
