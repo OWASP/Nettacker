@@ -46,7 +46,7 @@ pip3 install nettacker
 nettacker --help
 ```
 
-PLEASE NOTE: Python version 3.10.15 or higher is required to run Nettacker.  You can check the version of Python3 installed by running:
+PLEASE NOTE: Python version 3.10 or higher is required to run Nettacker.  You can check the version of Python3 installed by running:
 
 ```
 python3 -V
