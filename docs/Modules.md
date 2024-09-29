@@ -12,6 +12,7 @@ OWASP Nettacker Modules can be of type **Scan** (scan for something), **Vuln** (
 * '**citrix_lastpatcheddate_scan**'  Scan the target and try to detect Citrix Netscaler Gateway and it's last patched date
 * '**cms_detection_scan**' - Scan the target and try to detect the CMS (Wordpress, Drupal or Joomla) using response fingerprinting
 * '**confluence_version_scan**' - Scan the target and identify the Confluence version
+* '**cups_version_scan**' - Scan the target and identify the CUPS version (on port 631)
 * '**dir_scan**' - Scan the target for well-known directories
 * '**drupal_modules_scan**' - Scan the target for popular Drupal modules
 * '**drupal_theme_scan**' - Scan the target for popular Drupal themes
