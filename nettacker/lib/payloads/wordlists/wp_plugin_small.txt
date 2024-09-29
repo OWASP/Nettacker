@@ -189,6 +189,7 @@ stats
 store-locator-le
 subscribe-to-comments
 tagninja
+the-events-calendar
 the-welcomizer
 thecartpress
 thinkun-remind
