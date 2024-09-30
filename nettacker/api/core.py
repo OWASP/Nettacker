@@ -128,6 +128,7 @@ def get_file(filename):
     except IOError:
         abort(404)
 
+
 def api_key_is_valid(app, flask_request):
     """
     check the validity of API key
