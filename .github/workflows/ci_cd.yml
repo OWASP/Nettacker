@@ -4,10 +4,10 @@ on:
   merge_group:
   pull_request:
     branches:
-      - main
+      - master
   push:
     branches:
-      - main
+      - master
     tags:
       - '*'
   workflow_dispatch:
