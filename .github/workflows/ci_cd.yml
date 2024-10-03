@@ -3,7 +3,11 @@ name: CI/CD
 on:
   merge_group:
   pull_request:
+    branches:
+      - master
   push:
+    branches:
+      - master
     tags:
       - '*'
   workflow_dispatch:
