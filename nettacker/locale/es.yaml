@@ -261,3 +261,8 @@ no_response: no puede obtener respuesta del objetivo
 category_framework: "categoría: {0}, marcos: {1} encontrado!"
 nothing_found: nada encontrado en {0} en {1}!
 no_auth: "No se encontró autorización en {0}: {1}"
+compare_report_path_filename: "la ruta del archivo para almacenar el informe de comparación de escaneos"
+no_scan_to_compare: "el ID de escaneo a comparar no se encontró"
+compare_report_saved: "resultados de la comparación guardados en {0}"
+build_compare_report: "generando informe de comparación"
+finish_build_report: "Finalizada la generación del informe de comparación"
