@@ -115,6 +115,7 @@ lazyest-gallery
 leaguemanager
 like-dislike-counter-for-posts-pages-and-comments
 link-library
+litespeed-cache
 lisl-last-image-slider
 livesig
 login-lockdown
