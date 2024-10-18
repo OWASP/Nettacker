@@ -11,6 +11,8 @@ import string
 import sys
 import time
 
+import numpy
+
 from nettacker import logger
 
 log = logger.get_logger()
@@ -181,9 +183,21 @@ def generate_and_replace_md5(content):
     )
 
 
-def arrays_to_matrix(arrays):
-    import numpy
+def generate_target_groups(targets, set_hardware_usage):
+    if not targets:
+        return targets
 
+    targets_total = len(targets)
+    return [
+        targets.tolist()
+        for targets in numpy.array_split(
+            targets,
+            (set_hardware_usage if set_hardware_usage <= targets_total else targets_total),
+        )
+    ]
+
+
+def arrays_to_matrix(arrays):
     return (
         numpy.array(numpy.meshgrid(*[arrays[array_name] for array_name in arrays]))
         .T.reshape(-1, len(arrays.keys()))

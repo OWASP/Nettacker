@@ -17,7 +17,7 @@ from nettacker.core.ip import (
 )
 from nettacker.core.messages import messages as _
 from nettacker.core.template import TemplateLoader
-from nettacker.core.utils import common as utils
+from nettacker.core.utils import common as common_utils
 from nettacker.logger import TerminalCodes, get_logger
 
 log = get_logger()
@@ -92,7 +92,7 @@ class ArgParser(ArgumentParser):
             if len(module_names) == limit:
                 module_names["..."] = {}
                 break
-        module_names = utils.sort_dictionary(module_names)
+        module_names = common_utils.sort_dictionary(module_names)
         module_names["all"] = {}
 
         return module_names
@@ -118,11 +118,11 @@ class ArgParser(ArgumentParser):
                 else:
                     profiles[tag].append(key)
                 if len(profiles) == limit:
-                    profiles = utils.sort_dictionary(profiles)
+                    profiles = common_utils.sort_dictionary(profiles)
                     profiles["..."] = []
                     profiles["all"] = []
                     return profiles
-        profiles = utils.sort_dictionary(profiles)
+        profiles = common_utils.sort_dictionary(profiles)
         profiles["all"] = []
 
         return profiles
@@ -612,7 +612,9 @@ class ArgParser(ArgumentParser):
         # threading & processing
         if options.set_hardware_usage not in {"low", "normal", "high", "maximum"}:
             die_failure(_("wrong_hardware_usage"))
-        options.set_hardware_usage = utils.select_maximum_cpu_core(options.set_hardware_usage)
+        options.set_hardware_usage = common_utils.select_maximum_cpu_core(
+            options.set_hardware_usage
+        )
 
         options.thread_per_host = int(options.thread_per_host)
         if options.thread_per_host < 1:
