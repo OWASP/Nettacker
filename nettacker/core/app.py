@@ -6,7 +6,6 @@ import sys
 from threading import Thread
 
 import multiprocess
-import numpy
 
 from nettacker import logger
 from nettacker.config import Config, version_info
@@ -26,7 +25,7 @@ from nettacker.core.ip import (
 from nettacker.core.messages import messages as _
 from nettacker.core.module import Module
 from nettacker.core.socks_proxy import set_socks_proxy
-from nettacker.core.utils import common as utils
+from nettacker.core.utils import common as common_utils
 from nettacker.core.utils.common import wait_for_threads_to_finish
 from nettacker.database.db import find_events, remove_old_logs
 from nettacker.database.mysql import mysql_create_database, mysql_create_tables
@@ -192,7 +191,7 @@ class Nettacker(ArgParser):
         Returns:
             True when it ends
         """
-        scan_id = utils.generate_random_token(32)
+        scan_id = common_utils.generate_random_token(32)
         log.info("ScanID: {0}".format(scan_id))
         log.info(_("regrouping_targets"))
         # find total number of targets + types + expand (subdomain, IPRanges, etc)
@@ -210,18 +209,9 @@ class Nettacker(ArgParser):
         return exit_code
 
     def start_scan(self, scan_id):
-        number_of_total_targets = len(self.arguments.targets)
-        target_groups = [
-            targets.tolist()
-            for targets in numpy.array_split(
-                self.arguments.targets,
-                (
-                    self.arguments.set_hardware_usage
-                    if self.arguments.set_hardware_usage <= len(self.arguments.targets)
-                    else number_of_total_targets
-                ),
-            )
-        ]
+        target_groups = common_utils.generate_target_groups(
+            self.arguments.targets, self.arguments.set_hardware_usage
+        )
         log.info(_("removing_old_db_records"))
 
         for target_group in target_groups:
@@ -239,7 +229,7 @@ class Nettacker(ArgParser):
         for _i in range(target_groups.count([])):
             target_groups.remove([])
 
-        log.info(_("start_multi_process").format(number_of_total_targets, len(target_groups)))
+        log.info(_("start_multi_process").format(len(self.arguments.targets), len(target_groups)))
         active_processes = []
         for t_id, target_groups in enumerate(target_groups):
             process = multiprocess.Process(
