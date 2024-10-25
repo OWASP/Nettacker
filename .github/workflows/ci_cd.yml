@@ -28,7 +28,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
+
       - name: Run pre-commit
         uses: pre-commit/action@v3.0.1
 
@@ -64,7 +65,19 @@ jobs:
     name: Run tests
     needs:
       - pre-commit
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+        python-version:
+          - '3.9'
+          - '3.10'
+          - '3.11'
+          - '3.12'
+          - '3.13'
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -72,7 +85,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: |
@@ -95,7 +108,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
 
       - name: Install dependencies
         run: |
@@ -114,13 +127,19 @@ jobs:
 
   test-build-package:
     name: Test build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
     needs: build-package
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os:
           - macos-latest
           - ubuntu-latest
+        python-version:
+          - '3.9'
+          - '3.10'
+          - '3.11'
+          - '3.12'
+          - '3.13'
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -128,7 +147,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python-version }}
 
       - name: Get package artifacts
         uses: actions/download-artifact@v4
