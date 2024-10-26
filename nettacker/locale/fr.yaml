@@ -264,3 +264,8 @@ no_response: ne peut pas obtenir de réponse de la cible
 category_framework: "catégorie: {0}, frameworks: {1} trouvé!"
 nothing_found: rien trouvé sur {0} dans {1}!
 no_auth: "Aucune autorisation trouvée sur {0}: {1}"
+compare_report_path_filename: "l'emplacement du fichier où stocker le rapport de comparaison de scan"
+no_scan_to_compare: "l'id du scan à comparer est introuvable"
+compare_report_saved: "résultats de la comparaison sauvagardés dans {0}"
+build_compare_report: "élaboration du rapport de comparaison"
+finish_build_report: "rapport de comparaison terminé"
