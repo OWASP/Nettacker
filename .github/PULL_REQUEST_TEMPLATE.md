@@ -1,16 +1,44 @@
-#### Checklist
-- [ ] I have followed the [Contributor Guidelines](https://github.com/OWASP/Nettacker/wiki/Developers#contribution-guidelines).
-- [ ] The code has been thoroughly tested in my local development environment with flake8 and pylint.
-- [ ] The code is Python 3 compatible.
-- [ ] The code follows the PEP8 styling guidelines with 4 spaces indentation.
-- [ ] This Pull Request relates to only one issue or only one feature
-- [ ] I have referenced the corresponding issue number in my commit message
-- [ ] I have added the relevant documentation.
-- [ ] My branch is up-to-date with the Upstream master branch.
+<!--
+  Thanks for contributing to OWASP Nettacker!
+-->
 
-#### Changes proposed in this pull request
+## Proposed change
 
-#### Your development environment
-- OS: `x`
-- OS Version: `x`
-- Python Version: `x`
+<!--
+  Describe the big picture of your changes.
+  Don't forget to link your PR to an existing issue if any.
+-->
+
+Your PR description goes here.
+
+## Type of change
+
+<!--
+  Type of change you want to introduce. Please, check one (1) box only!
+  If your PR requires multiple boxes to be checked, most likely it needs to
+  be split into multiple PRs.
+-->
+
+- [ ] New core framework functionality
+- [ ] Bugfix (non-breaking change which fixes an issue)
+- [ ] Code refactoring without any functionality changes
+- [ ] New or existing module/payload change
+- [ ] Localization improvement
+- [ ] Dependency upgrade
+- [ ] Documentation improvement
+
+## Checklist
+
+<!--
+  Put an `x` in the boxes that apply. You can change them after PR is created.
+-->
+
+- [ ] I've followed the [contributing guidelines][contributing-guidelines]
+- [ ] I've run `make pre-commit`, it didn't generate any changes
+- [ ] I've run `make test`, all tests passed locally
+
+<!--
+  Thanks again for your contribution!
+-->
+
+[contributing-guidelines]: https://nettacker.readthedocs.io/en/latest/Developers/
