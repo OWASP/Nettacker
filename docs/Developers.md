@@ -1,4 +1,4 @@
-We gladly support and appreciate anyone who is interested in contributing to OWASP Nettacker Project. Overall contributors may focus on developing core framework, modules or payloads, language libraries and media. After reading this document you should be able to get the basic knowledge to start developing. Please note that we are using PEP8 python code style and using [Codacy](https://app.codacy.com/app/zdresearch/OWASP-Nettacker/dashboard) to figure the code quality. In addition, [GitHub Actions](https://github.com/OWASP/Nettacker/actions) will check your PR automatically on all supported Python versions. Before sending your PR, make sure you added **code-based documentation** to your codes and read the PR template. If you use any code/library/module with a license, add the license into external license file.
+We gladly support and appreciate anyone who is interested in contributing to OWASP Nettacker. Overall contributors may focus on developing core framework, modules or payloads, language libraries, and media. After reading this document you should be able to get the basic knowledge to start developing. Please note that we are using PEP8 Python code style and [GitHub Actions](https://github.com/OWASP/Nettacker/actions) for checking all new PRs automatically against supported Python versions. If you use any code/library/module with a license, add the license into external license file.
 
 * [Code of Conduct](https://github.com/OWASP/Nettacker/blob/master/CODE_OF_CONDUCT.md)
 * [Issue Template](https://github.com/OWASP/Nettacker/blob/master/.github/ISSUE_TEMPLATE.md)
@@ -27,7 +27,7 @@ In case of any doubts regarding the guidelines please contact the project leader
 
 # Roadmap
 
-Developers always could be aware of the OWASP Nettacker project roadmap by checking
+Developers always could be aware of the OWASP Nettacker roadmap by checking
 
 * 1- Project Management Page <https://github.com/OWASP/Nettacker/projects>
 * 2- Issues Page <https://github.com/OWASP/OWASP-Nettacker/issues>
