@@ -10,6 +10,7 @@ import re
 import string
 import sys
 import time
+from itertools import product
 
 from nettacker import logger
 
@@ -181,14 +182,27 @@ def generate_and_replace_md5(content):
     )
 
 
-def arrays_to_matrix(arrays):
-    import numpy
+def generate_target_groups(targets, set_hardware_usage):
+    """
+    Split a list of targets into smaller sublists based on a specified size.
+    """
+    if not targets:
+        return targets
 
-    return (
-        numpy.array(numpy.meshgrid(*[arrays[array_name] for array_name in arrays]))
-        .T.reshape(-1, len(arrays.keys()))
-        .tolist()
-    )
+    targets_total = len(targets)
+    split_size = min(set_hardware_usage, targets_total)
+
+    # Calculate the size of each chunk.
+    chunk_size = (targets_total + split_size - 1) // split_size
+
+    return [targets[i : i + chunk_size] for i in range(0, targets_total, chunk_size)]
+
+
+def arrays_to_matrix(arrays):
+    """
+    Generate a Cartesian product of input arrays as a list of lists.
+    """
+    return [list(item) for item in product(*[arrays[array_name] for array_name in arrays])]
 
 
 def string_to_bytes(string):
