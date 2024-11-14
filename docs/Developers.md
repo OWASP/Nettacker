@@ -1,45 +1,40 @@
-We gladly support and appreciate anyone is interested to contribute to the OWASP Nettacker Project. Overall developers may focus on developing core framework, modules or payloads, language libraries and media. After reading this document you should be able to get the basic knowledge to start developing. Please consider that we are using PEP8 python code style and using [Codacy](https://app.codacy.com/app/zdresearch/OWASP-Nettacker/dashboard) to figure the code quality. In addition, [GitHub Actions](https://github.com/OWASP/Nettacker/actions) will check your PR automatically on several Python versions (2.x, 3.x). Before sending your PR, make sure you added **code-based documentation** to your codes and read the PR template. If you use any code/library/module with a license, add the license into external license file.
+We gladly support and appreciate anyone who is interested in contributing to OWASP Nettacker. Overall contributors may focus on developing core framework, modules or payloads, language libraries, and media. After reading this document you should be able to get the basic knowledge to start developing. Please note that we are using PEP8 Python code style and [GitHub Actions](https://github.com/OWASP/Nettacker/actions) for checking all new PRs automatically against supported Python versions. If you use any code/library/module with a license, add the license into external license file.
 
-* [Code of Conduct](https://github.com/zdresearch/OWASP-Nettacker/blob/master/CODE_OF_CONDUCT.md)
-* [Issue Template](https://github.com/zdresearch/OWASP-Nettacker/blob/master/ISSUE_TEMPLATE.md)
-* **[PR Template](https://github.com/zdresearch/OWASP-Nettacker/blob/master/PULL_REQUEST_TEMPLATE.md)**
-* [License](https://github.com/zdresearch/OWASP-Nettacker/blob/master/LICENSE)
-* [External Licenses](https://github.com/zdresearch/OWASP-Nettacker/blob/master/EXTERNAL_LIBRARIES_LICENSES.md)
+* [Code of Conduct](https://github.com/OWASP/Nettacker/blob/master/CODE_OF_CONDUCT.md)
+* [Issue Template](https://github.com/OWASP/Nettacker/blob/master/.github/ISSUE_TEMPLATE.md)
+* [PR Template](https://github.com/OWASP/Nettacker/blob/master/.github/PULL_REQUEST_TEMPLATE.md)
+* [License](https://github.com/OWASP/Nettacker/blob/master/LICENSE)
+* [External Licenses](https://github.com/OWASP/Nettacker/blob/master/EXTERNAL_LIBRARIES_LICENSES.md)
+
 ________
-- [Contribution Guidelines](#contribution-guidelines)
-- [Roadmap](#roadmap)
-- [Creating Media](#creating-media)
-- [Contribute to Language Libraries](#contribute-to-language-libraries)
+
+* [Contribution Guidelines](#contribution-guidelines)
+* [Roadmap](#roadmap)
+* [Creating Media](#creating-media)
+* [Contribute to Language Libraries](#contribute-to-language-libraries)
   * [Add a New Language Library](#add-a-new-language-library)
   * [Modify/Update Language Libraries](#modify-update-language-libraries)
 
-
 # Contribution Guidelines
-These are the guidelines you need to keep in mind while contributing:
-- The code must have been thoroughly tested in your local development environment.
-- The code must be both python 2 and 3 compatible.
-- The code must follow the PEP8 styling guidelines with a 4 spaces indentation.
-- Each pull request should have only one commit related to each update.
-- Please open different pull requests for individual updates.
-- The commit messages should be meaningful.
-- Be sure to add the concerned documentation for the added feature.
-- The branch in the pull request must be up-to-date with the `master` of Upstream.
-- Please follow the clean code guidelines [1](https://github.com/rmariano/Clean-code-in-Python/blob/master/build/Clean%20code%20in%20Python.pdf) and [2](https://github.com/zedr/clean-code-python).
 
-For any doubts regarding the guidelines please contact the project leaders.
+These are the guidelines you need to keep in mind while contributing:
+
+* Use the automated checks: run `make pre-commit` and `make test`
+* Thoroughly test your code locally.
+* Be sure to add/update related documentation.
+
+In case of any doubts regarding the guidelines please contact the project leaders.
 
 # Roadmap
 
-Developers always could be aware of the OWASP Nettacker project roadmap by checking
+Developers always could be aware of the OWASP Nettacker roadmap by checking
 
-* 1- Project Management Page https://github.com/OWASP/Nettacker/projects
-* 2- Issues Page https://github.com/OWASP/OWASP-Nettacker/issues
-
-To contribute OWASP Nettacker. Existing Issues, Tasks, Code Style Issues are great opportunity to start developing the OWASP Nettacker.
+* 1- Project Management Page <https://github.com/OWASP/Nettacker/projects>
+* 2- Issues Page <https://github.com/OWASP/OWASP-Nettacker/issues>
 
 # Creating Media
 
-We appreciated all kind of media to demonstrate the OWASP Nettacker in any language and environment. It is a great activity to help us grow our framework and get more publicity. Currently, we collected a few media on [Media](https://github.com/zdresearch/OWASP-Nettacker/wiki/Media) page. Feel free to post your Media on [this](https://github.com/zdresearch/OWASP-Nettacker/issues/1) page.
+We appreciated all kind of media to demonstrate the OWASP Nettacker in any language and environment. It is a great activity to help us grow our framework and get more publicity. Currently, we collected a few media on [Media](https://github.com/OWASP/Nettacker/wiki/Media) page. Feel free to post your Media on [this](https://github.com/OWASP/Nettacker/issues/1) page.
 
 # Contribute to Language Libraries
 
@@ -56,7 +51,7 @@ In some cases language library does not exist, you can create a new file and add
 
 ## Modify/Update Language Libraries
 
-To contribute to the existing libraries, You may go to `lib/messages` select the file you want to contribute and 
+To contribute to the existing libraries, You may go to `lib/messages` select the file you want to contribute and
 
 * 1- Translate English messages to the selected language.
 * 2- Compare the language library with **English** library and add new messages to this library and translate them.
@@ -173,7 +168,6 @@ lib.get(verify=False, timeout=3, cert="", stream=False, proxies="", url="http://
 
 ```
 
-
 # Contribute to Code Functionality & API & WebUI
 
-go nuts!
+Go nuts!
