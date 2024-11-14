@@ -285,3 +285,5 @@ the-plus-addons-for-elementor-page-builder
 wp-seopress
 media-library-assistant
 forminator
+happy-elementor-addons
+chart-builder
