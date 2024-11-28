@@ -53,6 +53,8 @@ Installing OWASP Nettacker using `pipx` is a convenient method for managing Pyth
 Here’s how you can install OWASP Nettacker using `pipx`:
 
 1. Install pipx using apt or pip
+
+   
 Using apt:
 ```
 sudo apt update
@@ -67,7 +69,7 @@ python3 -m pip install --user pipx
 python3 -m pipx ensurepath
 ```
 
-2. Install nettacker using pipx
+2. Install **nettacker** using pipx
 ```
 pipx install nettacker
 nettacker --help
@@ -107,12 +109,13 @@ nettacker --help
 
 ### Install Nettacker using Git Clone and Poetry
 
-``` sudo apt update
-    sudo apt install python3-poetry git
-    git clone https://github.com/OWASP/Nettacker --depth 1
-    cd Nettacker
-    poetry install
-    poetry run nettacker --help
+```
+sudo apt update
+sudo apt install python3-poetry git
+git clone https://github.com/OWASP/Nettacker --depth 1
+cd Nettacker
+poetry install
+poetry run nettacker --help
 ```
 
 ### What Happened to requirements.txt in Nettacker?
@@ -120,7 +123,14 @@ nettacker --help
 In recent updates to OWASP Nettacker, the project has transitioned away from using the traditional `requirements.txt` file for dependency management. Starting from version 0.4.0, Nettacker adopted Poetry as its package manager instead of the `requirements.txt` file. Poetry simplifies dependency management, handling both the installation of dependencies and packaging more efficiently.
 
 Now, the dependencies for Nettacker are listed in `pyproject.toml`, which is a modern PEP 518 standard.  `pyproject.toml` is also used by Poetry package manager, and the installation process follows a different approach:
- You can install Nettacker directly from PyPI with the command `pip3 install nettacker` or if you have already cloned Nettacker git repo you can run `pip install .` inside the Nettacker folder.
+
+ You can install Nettacker directly from PyPI with the command:
+ `pip3 install nettacker` 
+ or if you have already cloned Nettacker git repo you can run:
+ 
+ `pip install .` 
+ 
+inside the Nettacker folder.
 
 
 To see the list of command options you can use:
@@ -135,8 +145,8 @@ or
 nettacker -h
 ```
 
-
 ### Install Nettacker Using Docker
+
 ```
 docker pull owasp/nettacker
 docker run -it owasp/nettacker /bin/bash
