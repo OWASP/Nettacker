@@ -5,13 +5,12 @@ import os
 import random
 import string
 import time
+
 from threading import Thread
 from types import SimpleNamespace
-
 from flask import Flask, jsonify
 from flask import request as flask_request
 from flask import render_template, abort, Response, make_response
-
 from nettacker import logger
 from nettacker.api.core import (
     get_value,
