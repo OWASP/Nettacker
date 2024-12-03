@@ -1,13 +1,12 @@
-import inspect
-from functools import lru_cache
-from pathlib import Path
-
-from nettacker import version
-from nettacker.core.utils.common import now, generate_random_token
-
 CWD = Path.cwd()
 PACKAGE_PATH = Path(__file__).parent
 
+import inspect
+
+from functools import lru_cache
+from pathlib import Path
+from nettacker import version
+from nettacker.core.utils.common import now, generate_random_token
 
 @lru_cache(maxsize=128)
 def version_info():
