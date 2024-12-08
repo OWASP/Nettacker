@@ -289,3 +289,4 @@ happy-elementor-addons
 chart-builder
 really-simple-ssl
 wordpress-seo
+gutentor
