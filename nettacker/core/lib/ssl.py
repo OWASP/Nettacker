@@ -1,6 +1,7 @@
 import logging
 import socket
 import ssl
+import sys
 from datetime import datetime, timezone
 
 from OpenSSL import crypto
@@ -117,7 +118,12 @@ def create_tcp_socket(host, port, timeout):
         return None
 
     try:
-        socket_connection = ssl.wrap_socket(socket_connection)
+        if sys.version_info >= (3, 12):
+            socket_connection = ssl.create_default_context().wrap_socket(
+                socket_connection, server_hostname=host
+            )
+        else:
+            socket_connection = ssl.wrap_socket(socket_connection)
         ssl_flag = True
     except Exception:
         socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

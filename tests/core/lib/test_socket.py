@@ -1,3 +1,4 @@
+import sys
 from unittest.mock import patch
 
 from nettacker.core.lib.socket import create_tcp_socket, SocketEngine
@@ -9,6 +10,10 @@ class Responses:
 
     tcp_connect_send_and_receive = {
         "response": 'HTTP/1.1 400 Bad Request\r\nServer: Apache/2.4.62 (Debian)\r\nContent-Length: 302\r\nConnection: close\r\nContent-Type: text/html; charset=iso-8859-1\r\n\r\n<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">\n<html><head>\n<title>400 Bad Request</title>\n</head><body>\n<h1>Bad Request</h1>\n<p>Your browser sent a request that this server could not understand.<br />\n</p>\n<hr>\n<address>Apache/2.4.62 (Debian)</address>\n</body></html>\n',
+        "peer_name": (
+            "127.0.0.1",
+            80,
+        ),
         "ssl_flag": True,
     }
 
@@ -114,7 +119,7 @@ class Substeps:
 
 class TestSocketMethod(TestCase):
     @patch("socket.socket")
-    @patch("ssl.wrap_socket")
+    @patch("ssl.SSLContext.wrap_socket" if sys.version_info >= (3, 12) else "ssl.wrap_socket")
     def test_create_tcp_socket(self, mock_wrap, mock_socket):
         HOST = "example.com"
         PORT = 80
@@ -124,7 +129,10 @@ class TestSocketMethod(TestCase):
         socket_instance = mock_socket.return_value
         socket_instance.settimeout.assert_called_with(TIMEOUT)
         socket_instance.connect.assert_called_with((HOST, PORT))
-        mock_wrap.assert_called_with(socket_instance)
+        if sys.version_info >= (3, 12):
+            mock_wrap.assert_called_with(socket_instance, **{"server_hostname": "example.com"})
+        else:
+            mock_wrap.assert_called_with(socket_instance)
 
     def test_response_conditions_matched(self):
         # tests the response conditions matched for different scan methods

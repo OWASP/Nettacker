@@ -8,6 +8,7 @@ import select
 import socket
 import ssl
 import struct
+import sys
 import time
 
 from nettacker.core.lib.base import BaseEngine, BaseLibrary
@@ -21,21 +22,22 @@ def create_tcp_socket(host, port, timeout):
         socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         socket_connection.settimeout(timeout)
         socket_connection.connect((host, port))
-        ssl_flag = False
     except ConnectionRefusedError:
         return None
 
     try:
-        socket_connection = ssl.wrap_socket(socket_connection)
-        ssl_flag = True
+        if sys.version_info >= (3, 12):
+            return ssl.create_default_context().wrap_socket(
+                socket_connection, server_hostname=host
+            ), True
+        else:
+            return ssl.wrap_socket(socket_connection), True
     except Exception:
-        socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socket_connection.settimeout(timeout)
-        socket_connection.connect((host, port))
+        pass
     # finally:
     #     socket_connection.shutdown()
 
-    return socket_connection, ssl_flag
+    return socket_connection, False
 
 
 class SocketLibrary(BaseLibrary):

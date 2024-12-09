@@ -1,4 +1,5 @@
 import ssl
+import sys
 from unittest.mock import patch
 
 from nettacker.core.lib.ssl import (
@@ -153,7 +154,7 @@ class Substeps:
 
 class TestSocketMethod(TestCase):
     @patch("socket.socket")
-    @patch("ssl.wrap_socket")
+    @patch("ssl.SSLContext.wrap_socket" if sys.version_info >= (3, 12) else "ssl.wrap_socket")
     def test_create_tcp_socket(self, mock_wrap, mock_socket):
         HOST = "example.com"
         PORT = 80
@@ -163,7 +164,10 @@ class TestSocketMethod(TestCase):
         socket_instance = mock_socket.return_value
         socket_instance.settimeout.assert_called_with(TIMEOUT)
         socket_instance.connect.assert_called_with((HOST, PORT))
-        mock_wrap.assert_called_with(socket_instance)
+        if sys.version_info >= (3, 12):
+            mock_wrap.assert_called_with(socket_instance, server_hostname=HOST)
+        else:
+            mock_wrap.assert_called_with(socket_instance)
 
     @patch("nettacker.core.lib.ssl.is_weak_cipher_suite")
     @patch("nettacker.core.lib.ssl.is_weak_ssl_version")
