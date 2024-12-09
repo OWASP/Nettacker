@@ -233,11 +233,10 @@ class SocketEngine(BaseEngine):
             return response
         if sub_step["method"] == "tcp_connect_send_and_receive":
             if response:
-                received_content = response["response"]
                 for condition in conditions:
                     regex = re.findall(
                         re.compile(conditions[condition]["regex"]),
-                        received_content
+                        response["response"]
                         if condition != "open_port"
                         else str(response["peer_name"][1]),
                     )
