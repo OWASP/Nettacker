@@ -11,6 +11,7 @@ from types import SimpleNamespace
 from flask import Flask, jsonify
 from flask import request as flask_request
 from flask import render_template, abort, Response, make_response
+from werkzeug.utils import secure_filename
 
 from nettacker import logger
 from nettacker.api.core import (
@@ -47,6 +48,7 @@ log = logger.get_logger()
 app = Flask(__name__, template_folder=str(Config.path.web_static_dir))
 app.config.from_object(__name__)
 
+nettacker_path_config = Config.path
 nettacker_application_config = Config.settings.as_dict()
 nettacker_application_config.update(Config.api.as_dict())
 del nettacker_application_config["api_access_key"]
@@ -191,6 +193,33 @@ def index():
     )
 
 
+def sanitize_report_path_filename(report_path_filename):
+    """
+    sanitize the report_path_filename
+
+    Args:
+        report_path_filename: the report path filename
+
+    Returns:
+        the sanitized report path filename
+    """
+    filename = secure_filename(os.path.basename(report_path_filename))
+    if not filename:
+        return False
+    # Define a list or tuple of valid extensions
+    VALID_EXTENSIONS = (".html", ".htm", ".txt", ".json", ".csv")
+    if "." in filename:
+        if filename.endswith(VALID_EXTENSIONS):
+            safe_report_path = nettacker_path_config.results_dir / filename
+        else:
+            return False
+    else:
+        safe_report_path = nettacker_path_config.results_dir / filename
+    if not safe_report_path.is_relative_to(nettacker_path_config.results_dir):
+        return False
+    return safe_report_path
+
+
 @app.route("/new/scan", methods=["GET", "POST"])
 def new_scan():
     """
@@ -201,6 +230,11 @@ def new_scan():
     """
     api_key_is_valid(app, flask_request)
     form_values = dict(flask_request.form)
+    raw_report_path_filename = form_values.get("report_path_filename")
+    report_path_filename = sanitize_report_path_filename(raw_report_path_filename)
+    if not report_path_filename:
+        return jsonify(structure(status="error", msg="Invalid report filename")), 400
+    form_values["report_path_filename"] = str(report_path_filename)
     for key in nettacker_application_config:
         if key not in form_values:
             form_values[key] = nettacker_application_config[key]
@@ -273,7 +307,13 @@ def session_set():
     """
     api_key_is_valid(app, flask_request)
     res = make_response(jsonify(structure(status="ok", msg=_("browser_session_valid"))))
-    res.set_cookie("key", value=app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"])
+    res.set_cookie(
+        "key",
+        value=app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"],
+        httponly=True,
+        samesite="Lax",
+        secure=True,
+    )
     return res
 
 
