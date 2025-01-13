@@ -1028,7 +1028,7 @@ payloads:
           condition_type: or
           conditions:
             open_port:
-              regex: ""
+              regex: \d{{1,5}}
               reverse: false
 
             ftp: &ftp
