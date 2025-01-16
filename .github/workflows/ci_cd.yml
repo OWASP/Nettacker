@@ -20,7 +20,7 @@ jobs:
   # Code quality checks.
   pre-commit:
     name: Run pre-commit
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
       - pre-commit
     permissions:
       security-events: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -64,7 +64,7 @@ jobs:
     name: Run tests
     needs:
       - pre-commit
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -87,7 +87,7 @@ jobs:
     name: Build package
     needs:
       - run-tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -120,7 +120,7 @@ jobs:
       matrix:
         os:
           - macos-latest
-          - ubuntu-latest
+          - ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -151,7 +151,7 @@ jobs:
     name: Test Docker image
     needs:
       - run-tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -207,7 +207,7 @@ jobs:
     name: Test Docker ${{ matrix.docker-version }} image build
     needs:
       - run-tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         docker-version:
@@ -255,7 +255,7 @@ jobs:
     needs:
       - test-docker-image
       - test-docker-image-build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -286,7 +286,7 @@ jobs:
     needs:
       - test-docker-image
       - test-docker-image-build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -323,7 +323,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Get package artifacts
         uses: actions/download-artifact@v4
@@ -349,7 +349,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Get package artifacts
         uses: actions/download-artifact@v4
