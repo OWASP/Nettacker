@@ -18,7 +18,6 @@ from nettacker.api.core import (
 from nettacker.config import Config
 from nettacker.core.app import Nettacker
 
-# Constants for testing
 TEST_API_KEY = "test_key"
 TEST_FILE_CONTENT = b"test content"
 TEST_FILE_NAME = "test.txt"
@@ -94,15 +93,12 @@ def test_mime_types_returns_correct_mappings():
     """Test that mime_types returns correct content type mappings."""
     mime_dict = mime_types()
 
-    # Verify return type
     assert isinstance(mime_dict, dict)
 
-    # Verify common mime types
     assert mime_dict[".pdf"] == "application/pdf"
     assert mime_dict[".jpg"] == "image/jpeg"
     assert mime_dict[".html"] == "text/html"
 
-    # Verify dictionary has comprehensive mappings
     assert len(mime_dict) > 50
 
 
@@ -175,16 +171,13 @@ def test_languages_to_country_generates_correct_html(mock_get_languages):
 
     result = languages_to_country()
 
-    # Verify basic structure
     assert isinstance(result, str)
 
-    # Verify each language has correct flag and structure
     expected_flags = {"en": "us", "es": "es", "fr": "fr"}
     for lang, flag in expected_flags.items():
         assert f"flag-icon-{flag}" in result
         assert f'value="{lang}"' in result
 
-    # Verify English is selected by default
     assert "selected" in result and 'value="en"' in result
 
 
@@ -196,14 +189,11 @@ def test_graphs_generates_correct_html(mock_load_graphs):
 
     result = graphs()
 
-    # Verify basic structure
     assert isinstance(result, str)
 
-    # Verify 'None' option exists
     assert 'value=""' in result
     assert "None" in result
 
-    # Verify each graph option exists
     for graph in test_graphs:
         assert f'value="{graph}"' in result
         assert 'class="radio"' in result
@@ -217,10 +207,8 @@ def test_profiles_generates_correct_html(mock_load_profiles):
 
     result = profiles()
 
-    # Verify basic structure
     assert isinstance(result, str)
 
-    # Verify each profile has correct label and class
     style_map = {"scan": "success", "brute": "warning", "vulnerability": "danger"}
 
     for profile, style in style_map.items():
@@ -237,16 +225,13 @@ def test_scan_methods_generates_correct_html(mock_load_modules):
 
     result = scan_methods()
 
-    # Verify basic structure
     assert isinstance(result, str)
 
-    # Verify 'all' module is excluded
     assert "all" not in result
 
-    # Verify each module has correct styling
     assert "port_scan" in result
-    assert "label-success" in result  # for _scan
+    assert "label-success" in result
     assert "ssh_brute" in result
-    assert "label-warning" in result  # for _brute
+    assert "label-warning" in result
     assert "wp_vuln" in result
-    assert "label-danger" in result  # for _vuln
+    assert "label-danger" in result
