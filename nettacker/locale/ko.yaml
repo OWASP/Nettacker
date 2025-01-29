@@ -207,3 +207,8 @@ no_response: 목표에서 응답을 얻을 수 없다.
 category_framework: "카테고리 : {0}, 프레임 워크 : {1}이 (가) 발견되었습니다!"
 nothing_found: "{1}의 {0}에 아무것도 없습니다!"
 no_auth: "{0}에서 인증을 찾을 수 없습니다 : {1}"
+compare_report_path_filename: "비교 스캔 보고서를 저장할 파일 경로"
+no_scan_to_compare: "비교할 scan_id를 찾을 수 없습니다"
+compare_report_saved: "비교 결과가 {0}에 저장되었습니다"
+build_compare_report: "비교 보고서 생성 중"
+finish_build_report: "비교 보고서 생성 완료"
