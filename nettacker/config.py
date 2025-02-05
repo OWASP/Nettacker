@@ -61,23 +61,23 @@ class DbConfig(ConfigBase):
     """
     Database Config (could be modified by user)
     For sqlite database:
-        fill the name of the DB as sqlite,
-        DATABASE as the name of the db user wants
+        fill the name of the "engine" as sqlite and
+        "name" as the name of the db user wants (or leave it be)
         other details can be left empty
     For mysql users:
-        fill the name of the DB as mysql
-        DATABASE as the name of the database you want to create
+        fill the name of the "engine" as "mysql"
+        "name" as the name of the database you want to create
         USERNAME, PASSWORD, HOST and the PORT of the MySQL server
         need to be filled respectively
 
     """
 
-    engine = "sqlite"
-    name = str(CWD / ".data/nettacker.db")
-    host = ""
-    port = ""
-    username = ""
-    password = ""
+    engine = "sqlite"                               # If using MySQL, then replace with "mysql"
+    name = str(CWD / ".data/nettacker.db")          # If using MySQL, replace with DB name
+    host = ""                                       # If using MySQL, replace with hostname, usually 'localhost'
+    port = ""                                       # If MySQL, replace with 3306 (default port) as an integer
+    username = ""                                   # Fill as required, leave empty for SQLite
+    password = ""                                   # Fill as required, leave empty for SQLite
 
 
 class PathConfig:

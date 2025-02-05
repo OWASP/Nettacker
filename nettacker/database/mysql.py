@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 from nettacker.config import Config
 from nettacker.database.models import Base
@@ -10,14 +10,17 @@ def mysql_create_database():
     database for the first time when you run the nettacker module.
     """
     engine = create_engine(
-        "mysql://{username}:{password}@{host}:{port}".format(**Config.db.as_dict())
+        "mysql+pymysql://{username}:{password}@{host}:{port}".format(**Config.db.as_dict())
     )
-    existing_databases = engine.execute("SHOW DATABASES;")
-    existing_databases = [d[0] for d in existing_databases]
+    try:
+        with engine.connect() as conn:
+            existing_databases = conn.execute(text("SHOW DATABASES;"))
+            existing_databases = [d[0] for d in existing_databases]
 
-    if Config.db.name not in existing_databases:
-        engine.execute("CREATE DATABASE {0} ".format(Config.db.name))
-
+            if Config.db.name not in existing_databases:
+                conn.execute(text("CREATE DATABASE {0} ".format(Config.db.name)))
+    except Exception as e:
+        print(e)
 
 def mysql_create_tables():
     """
@@ -31,6 +34,6 @@ def mysql_create_tables():
         True if success otherwise False
     """
     db_engine = create_engine(
-        "mysql://{username}:{password}@{host}:{port}/{name}".format(**Config.db.as_dict())
+        "mysql+pymysql://{username}:{password}@{host}:{port}/{name}".format(**Config.db.as_dict())
     )
     Base.metadata.create_all(db_engine)

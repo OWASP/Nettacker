@@ -30,7 +30,7 @@ def db_inputs(connection_type):
         "postgres": "postgres+psycopg2://{username}:{password}@{host}:{port}/{name}".format(
             **context
         ),
-        "mysql": "mysql://{username}:{password}@{host}:{port}/{name}".format(**context),
+        "mysql": "mysql+pymysql://{username}:{password}@{host}:{port}/{name}".format(**context),
         "sqlite": "sqlite:///{name}".format(**context),
     }[connection_type]
 
@@ -42,9 +42,14 @@ def create_connection():
     Returns:
         connection if success otherwise False
     """
+    connection_args = {}
+
+    if Config.db.engine.startswith('sqlite'):
+        connection_args["check_same_thread"] = False
+
     db_engine = create_engine(
         db_inputs(Config.db.engine),
-        connect_args={"check_same_thread": False},
+        connect_args=connection_args,                   # MySQL does not require this parameter
         pool_pre_ping=True,
     )
     Session = sessionmaker(bind=db_engine)
@@ -113,14 +118,23 @@ def remove_old_logs(options):
         True if success otherwise False
     """
     session = create_connection()
-    session.query(HostsLog).filter(
-        HostsLog.target == options["target"],
-        HostsLog.module_name == options["module_name"],
-        HostsLog.scan_unique_id != options["scan_id"],
-        HostsLog.scan_unique_id != options["scan_compare_id"],
-        # Don't remove old logs if they are to be used for the scan reports
-    ).delete(synchronize_session=False)
-    return send_submit_query(session)
+    try:
+        session.query(HostsLog).filter(
+            HostsLog.target == options["target"],
+            HostsLog.module_name == options["module_name"],
+            or_(
+                HostsLog.scan_unique_id != options["scan_id"],
+                HostsLog.scan_unique_id != options["scan_compare_id"]
+            )
+        ).delete(synchronize_session=False)
+
+        session.commit()                            # This ensures changes are saved in the MySQL server
+        return True
+    except Exception as e:
+        session.rollback()                          # Implement rollback in case of error
+        return False
+    finally:
+        session.close()
 
 
 def submit_logs_to_db(log):
