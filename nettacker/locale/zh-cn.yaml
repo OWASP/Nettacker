@@ -187,3 +187,8 @@ no_response: 无法从目标获得回应
 category_framework: 类别：{0}，框架：{1}找到了！
 nothing_found: 在{1}的{0}中找不到任何内容！
 no_auth: 在{0}上找不到验证码：{1}
+compare_report_path_filename: "保存对比扫描报告的文件路径"
+no_scan_to_compare: "未找到要比较的 scan_id"
+compare_report_saved: "对比结果已保存到 {0}"
+build_compare_report: "正在生成对比报告"
+finish_build_report: "对比报告生成完成" 
