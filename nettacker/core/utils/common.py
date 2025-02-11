@@ -30,15 +30,27 @@ def replace_dependent_response(log, response_dependent):
         return log
 
 
-def merge_logs_to_list(result, log_list=[]):
+def merge_logs_to_list(result, log_list=[], module_name=''):
     if isinstance(result, dict):
-        for i in result:
-            if "log" == i:
-                log_list.append(result["log"])
-            else:
-                merge_logs_to_list(result[i], log_list)
-    return list(set(log_list))
+        if "admin_scan" in module_name.strip():
+            for i in result:
+                # Things important in an admin scan
+                if "url" == i.strip() or "status_code" == i.strip():
+                    print(i)
+                    if "url" == i.strip():
+                        log_list.append(f'URL: {result[i]} \n')
+                    else:
+                        log_list.append(f"status_code: {result[i]} \n")
+                else:
+                    merge_logs_to_list(result[i], log_list)
+        else:
+            for i in result:
+                if "log" == i:
+                    log_list.append(result["log"])
+                else:
+                    merge_logs_to_list(result[i], log_list)
 
+    return list(set(log_list))
 
 def reverse_and_regex_condition(regex, reverse):
     if regex:
