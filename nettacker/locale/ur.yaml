@@ -257,3 +257,11 @@ no_response: ہدف سے جواب نہیں مل سکا
 category_framework: "زمرہ: {0}، فریم ورک: {1} پایا!"
 nothing_found: "{0} میں {1} میں کچھ بھی نہیں مل سکا!"
 no_auth: "{0}: {1} پر کوئی مصنف نہیں ملا."
+compare_report_path_filename: "کمپیر اسکین رپورٹ کو محفوظ کرنے کا فائل کا راستہ"
+no_scan_to_compare: "موازنہ کے لیے دیا گیا اسکین آئی ڈی نہیں ملا"
+compare_report_saved: "کمپیر کے نتائج کو {0} میں محفوظ کیا گیا ہے"
+build_compare_report: "کمپیر رپورٹ بنائی جا رہی ہے"
+finish_build_report: "کمپیر رپورٹ مکمل کر لی گئی ہے"
+
+
+
