@@ -694,14 +694,16 @@ class ArgParser(ArgumentParser):
                 options.graph_name = None
         # check base path
         if options.url_base_path:
-            if options.url_base_path.startswith('/'):
+            if options.url_base_path.startswith("/"):
                 for target in options.targets:
-                    log.info(_("starting_with_base_path").format(target, str(options.url_base_path)))
+                    log.info(
+                        _("starting_with_base_path").format(target, str(options.url_base_path))
+                    )
             else:
                 updated_base_path = f"/{options.url_base_path}"
                 for target in options.targets:
                     log.info(_("starting_with_base_path").format(target, updated_base_path))
-        # check modules extra args 
+        # check modules extra args
         if options.modules_extra_args:
             all_args = {}
             for args in options.modules_extra_args.split("&"):
