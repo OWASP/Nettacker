@@ -131,6 +131,7 @@ class DefaultSettings(ConfigBase):
     show_all_profiles = False
     show_help_menu = False
     show_version = False
+    url_base_path = None
     skip_service_discovery = False
     socks_proxy = None
     targets = None

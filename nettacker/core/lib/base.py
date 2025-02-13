@@ -120,6 +120,9 @@ class BaseEngine(ABC):
         request_number_counter,
         total_number_of_requests,
     ):
+        if options.get("url_base_path"):
+            target = target + options.get("url_base_path")
+            
         if "save_to_temp_events_only" in event.get("response", ""):
             submit_temp_logs_to_db(
                 {

@@ -123,3 +123,5 @@ no_scan_to_compare: the scan_id to be compared not found
 compare_report_saved: "compare results saved in {0}"
 build_compare_report: "building compare report"
 finish_build_report: "Finished building compare report"
+url_base_path: set the base path (as "/pathname") to start enumeration from
+starting_with_base_path: "Scanning {0} with base directory: {1}"

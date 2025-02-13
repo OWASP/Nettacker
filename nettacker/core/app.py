@@ -170,6 +170,11 @@ class Nettacker(ArgParser):
             self.arguments.selected_modules = selected_modules
             if "port_scan" in self.arguments.selected_modules:
                 self.arguments.selected_modules.remove("port_scan")
+
+            if self.arguments.url_base_path:
+                for ind, target in enumerate(targets):
+                    targets[ind] += self.arguments.url_base_path
+
             self.arguments.targets = self.filter_target_by_event(targets, scan_id, "port_scan")
             self.arguments.skip_service_discovery = False
 

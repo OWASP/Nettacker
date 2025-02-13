@@ -21,7 +21,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/{{urls}}/"
+            input_format: "{{schema}}://{target}/{{urls}}/"
             prefix: ""
             suffix: ""
             interceptors:
@@ -31,9 +31,6 @@ payloads:
               schema:
                 - "http"
                 - "https"
-              ports:
-                - 80
-                - 443
         response:
           condition_type: and
           log: "response_dependent['url']"          

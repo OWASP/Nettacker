@@ -400,6 +400,14 @@ class ArgParser(ArgumentParser):
             help=_("compare_scans"),
         )
         method_options.add_argument(
+            "-B",
+            "--base-path",
+            action="store",
+            dest="url_base_path",
+            default=Config.settings.url_base_path,
+            help=_("url_base_path"),
+        )
+        method_options.add_argument(
             "-J",
             "--compare-report-path",
             action="store",
@@ -684,7 +692,16 @@ class ArgParser(ArgumentParser):
             ):
                 log.warn(_("graph_output"))
                 options.graph_name = None
-        # check modules extra args
+        # check base path
+        if options.url_base_path:
+            if options.url_base_path.startswith('/'):
+                for target in options.targets:
+                    log.info(_("starting_with_base_path").format(target, str(options.url_base_path)))
+            else:
+                updated_base_path = f"/{options.url_base_path}"
+                for target in options.targets:
+                    log.info(_("starting_with_base_path").format(target, updated_base_path))
+        # check modules extra args 
         if options.modules_extra_args:
             all_args = {}
             for args in options.modules_extra_args.split("&"):
