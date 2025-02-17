@@ -54,12 +54,38 @@ class SocketLibrary(BaseLibrary):
         }
 
     def tcp_connect_send_and_receive(self, host, port, timeout):
+        """
+        Catches leaked banners by sending first a NULL probe and
+        if none recieved then an arbitrary probe. This can catch
+        all services including SSH, FTP that send their banners
+        without probing and HTTP which need bytes.
+        """
         tcp_socket = create_tcp_socket(host, port, timeout)
         if tcp_socket is None:
             return None
 
         socket_connection, ssl_flag = tcp_socket
         peer_name = socket_connection.getpeername()
+        socket_connection.settimeout(2)
+
+        try:
+            response = socket_connection.recv(1024 * 1024 * 10)
+            if response:
+                return {
+                    "peer_name": peer_name,
+                    "service": socket.getservbyport(port),
+                    "response": response.decode(errors="ignore"),
+                    "ssl_flag": ssl_flag,
+                }
+        except socket.timeout:
+            response = b""
+        except Exception:
+            try:
+                socket_connection.close()
+                response = b""
+            except Exception:
+                response = b""
+
         try:
             socket_connection.send(b"ABC\x00\r\n\r\n\r\n" * 10)
             response = socket_connection.recv(1024 * 1024 * 10)
