@@ -7,6 +7,7 @@ info:
     - https://security.paloaltonetworks.com/CVE-2025-0108
     - https://www.assetnote.io/resources/research/nginx-apache-path-confusion-to-auth-bypass-in-pan-os
     - https://www.bleepingcomputer.com/news/security/hackers-exploit-authentication-bypass-in-palo-alto-networks-pan-os/
+    - https://thehackernews.com/2025/02/cisa-adds-palo-alto-networks-and.html
   profiles:
     - vuln
     - vulnerability
@@ -16,6 +17,7 @@ info:
     - paloalto
     - paloalto_panos
     - panos
+    - cisa_kev
   
 
 payloads:
