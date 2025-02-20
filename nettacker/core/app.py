@@ -139,7 +139,7 @@ class Nettacker(ArgParser):
                 targets.append(target)
         self.arguments.targets = targets
         self.arguments.url_base_path = base_path
-        
+
         # subdomain_scan
         if self.arguments.scan_subdomains:
             selected_modules = self.arguments.selected_modules
