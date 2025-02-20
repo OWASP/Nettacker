@@ -106,6 +106,7 @@ class Nettacker(ArgParser):
             a generator
         """
         targets = []
+        base_path = ""
         for target in self.arguments.targets:
             if "://" in target:
                 try:
