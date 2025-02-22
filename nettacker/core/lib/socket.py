@@ -258,6 +258,11 @@ class SocketEngine(BaseEngine):
         return []
 
     def apply_extra_data(self, sub_step, response):
+        try:
+            sub_step["response"]["service"] = response.get("service")
+        except AttributeError:  # This just means the particular port was undetected
+            pass
+
         sub_step["response"]["ssl_flag"] = (
             response["ssl_flag"] if isinstance(response, dict) else False
         )
