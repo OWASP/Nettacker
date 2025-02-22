@@ -1,6 +1,6 @@
 OWASP Nettacker
 =========
-[![Build Status](https://github.com/OWASP/Nettacker/workflows/CI/badge.svg?branch=master)](https://github.com/OWASP/Nettacker/actions/workflows/CI.yml)
+[![Build Status](https://github.com/OWASP/Nettacker/workflows/CI/badge.svg)](https://github.com/OWASP/Nettacker/actions/workflows/CI.yml)
 [![Apache License](https://img.shields.io/badge/License-Apache%20v2-green.svg)](https://github.com/OWASP/Nettacker/blob/master/LICENSE)
 [![Twitter](https://img.shields.io/badge/Twitter-@iotscan-blue.svg)](https://twitter.com/iotscan)
 ![GitHub contributors](https://img.shields.io/github/contributors/OWASP/Nettacker)
@@ -14,7 +14,7 @@ OWASP Nettacker
 
 **DISCLAIMER**
 
-* ***THIS SOFTWARE WAS CREATED FOR AUTOMATED PENETRATION TESTING AND INFORMATION GATHERING. YOU MUST USE THIS SOFTWARE IN A RESPONSIBLE AND ETHICAL MANNER. DO NOT TARGET SYSTEMS OR APPLICATIONS WITHOUT OBTAINING PERMISSIONS OR CONSENT FROM THE SYSTEM OWNERS OR ADMINISTRATORS. CONTRIBUTORS WILL NOT BE RESPONSIBLE FOR ANY ILLEGAL USAGE.***
+⚠️ ***THIS SOFTWARE WAS CREATED FOR AUTOMATED PENETRATION TESTING AND INFORMATION GATHERING. YOU MUST USE THIS SOFTWARE IN A RESPONSIBLE AND ETHICAL MANNER. DO NOT TARGET SYSTEMS OR APPLICATIONS WITHOUT OBTAINING PERMISSIONS OR CONSENT FROM THE SYSTEM OWNERS OR ADMINISTRATORS. CONTRIBUTORS WILL NOT BE RESPONSIBLE FOR ANY ILLEGAL USAGE.***
 
 ![2018-01-19_0-45-07](https://user-images.githubusercontent.com/7676267/35123376-283d5a3e-fcb7-11e7-9b1c-92b78ed4fecc.gif)
 
@@ -34,18 +34,38 @@ OWASP Nettacker project is created to automate information gathering, vulnerabil
 * **Read More**: https://www.secologist.com/open-source-projects
 
 ____________
-Quick Setup & Run
+Quick Setup & Run With Docker
 ============
 ```bash
-$ docker-compose up -d && docker exec -it nettacker-nettacker-1 /bin/bash
-# poetry run python nettacker.py -i owasp.org -s -m port_scan
+$ docker-compose up -d && docker exec -it nettacker /bin/bash
+$ poetry run nettacker -i owasp.org -s -m port_scan
 ```
+* The above command will run a port scan on all subdomains of owasp.org - use responsibly!
 * Results are accessible from your (https://localhost:5000) or https://nettacker-api.z3r0d4y.com:5000/ (pointed to your localhost)
 * The local database is `.data/nettacker.db` (sqlite).
 * Default results path is `.data/results`
 * `docker-compose` will share your nettacker folder, so you will not lose any data after `docker-compose down`
-* To see the API key in you can run `docker logs nettacker_nettacker_1`.
-* More details and setup without docker https://github.com/OWASP/Nettacker/wiki/Installation
+* To see the API key in you can run `docker logs nettacker`.
+* More details and setup without docker [https://nettacker.readthedocs.io/Installation](https://nettacker.readthedocs.io/en/latest/Installation/)
+____________
+Install with PIP (locally)
+============
+```bash
+$ pip install .
+$ nettacker -h
+```
+____________
+Install with PIP (from PyPI)
+============
+```bash
+$ pip install nettacker
+$ nettacker -h
+```
+____________
+Documentation
+============
+Full documentation is available on: [https://nettacker.readthedocs.io](https://nettacker.readthedocs.io)
+
 _____________
 Thanks to our awesome contributors
 ============
