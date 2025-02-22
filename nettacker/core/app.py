@@ -105,10 +105,19 @@ class Nettacker(ArgParser):
         Returns:
             a generator
         """
-
         targets = []
+        base_path = ""
         for target in self.arguments.targets:
             if "://" in target:
+                try:
+                    if not target.split("://")[1].split("/")[1]:
+                        base_path = ""
+                    else:
+                        base_path = "/".join(target.split("://")[1].split("/")[1:])
+                        if base_path[-1] != "/":
+                            base_path += "/"
+                except IndexError:
+                    base_path = ""
                 # remove url proto; uri; port
                 target = target.split("://")[1].split("/")[0].split(":")[0]
                 targets.append(target)
@@ -130,6 +139,7 @@ class Nettacker(ArgParser):
             else:
                 targets.append(target)
         self.arguments.targets = targets
+        self.arguments.url_base_path = base_path
 
         # subdomain_scan
         if self.arguments.scan_subdomains:
@@ -172,7 +182,6 @@ class Nettacker(ArgParser):
                 self.arguments.selected_modules.remove("port_scan")
             self.arguments.targets = self.filter_target_by_event(targets, scan_id, "port_scan")
             self.arguments.skip_service_discovery = False
-
         return list(set(self.arguments.targets))
 
     def filter_target_by_event(self, targets, scan_id, module_name):
@@ -252,7 +261,6 @@ class Nettacker(ArgParser):
         options = copy.deepcopy(self.arguments)
 
         socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
-
         module = Module(
             module_name,
             options,
