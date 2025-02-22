@@ -1,16 +1,16 @@
 from collections import Counter
-
 import pytest
-
-from tests.common import TestCase
-
+from tests.test_common import TestCase
 
 class TestPasswords(TestCase):
-    top_1000_common_passwords_path = "lib/payloads/passwords/top_1000_common_passwords.txt"
+
+    def setUp(self):
+        super().setUp()  # Call parent setup to ensure nettacker_path is set
+        self.top_1000_common_passwords_path = self.nettacker_path / "lib" / "payloads" / "passwords" / "top_1000_common_passwords.txt"
 
     @pytest.mark.xfail(reason="It currently contains 1001 passwords.")
     def test_top_1000_common_passwords(self):
-        with open(self.nettacker_path / self.top_1000_common_passwords_path) as top_1000_file:
+        with open(self.top_1000_common_passwords_path) as top_1000_file:
             top_1000_passwords = [line.strip() for line in top_1000_file.readlines()]
 
         self.assertEqual(len(top_1000_passwords), 1000, "There should be exactly 1000 passwords")
