@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nettacker"
-version = "0.4.0"
+version = "0.4.1"
 description = "Automates information gathering, vulnerability scanning and aids penetration testing engagements in general"
 license = "Apache-2.0"
 readme = "README.md"
@@ -34,7 +34,7 @@ keywords = [
 
 homepage = "https://owasp.org/www-project-nettacker"
 repository = "https://github.com/OWASP/Nettacker"
-documentation = "https://github.com/OWASP/Nettacker/wiki"
+documentation = "https://nettacker.readthedocs.io
 
 packages = [{ include = "nettacker"}]
 
