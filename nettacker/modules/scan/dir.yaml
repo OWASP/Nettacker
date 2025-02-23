@@ -21,7 +21,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/{{urls}}/"
+            input_format: "{{schema}}://{target}:{{ports}}/{url_base_path}{{urls}}/"
             prefix: ""
             suffix: ""
             interceptors:
