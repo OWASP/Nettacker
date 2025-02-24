@@ -123,3 +123,4 @@ no_scan_to_compare: the scan_id to be compared not found
 compare_report_saved: "compare results saved in {0}"
 build_compare_report: "building compare report"
 finish_build_report: "Finished building compare report"
+user_wordlist: "Allows users to enter their own wordlist"

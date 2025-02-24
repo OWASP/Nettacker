@@ -127,6 +127,7 @@ class DefaultSettings(ConfigBase):
     scan_subdomains = False
     selected_modules = None
     url_base_path = None
+    user_wordlist = None
     set_hardware_usage = "maximum"  # low, normal, high, maximum
     show_all_modules = False
     show_all_profiles = False
