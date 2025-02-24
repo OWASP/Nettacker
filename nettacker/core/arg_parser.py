@@ -414,7 +414,7 @@ class ArgParser(ArgumentParser):
             dest="user_wordlist",
             default=Config.settings.user_wordlist,
             help=_("user_wordlist"),
-            )
+        )
 
         # API Options
         api_options = self.add_argument_group(_("API"), _("API_options"))
