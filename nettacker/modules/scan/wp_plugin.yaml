@@ -35,6 +35,7 @@ payloads:
                 - 443
               #We are using small txt file. Work need to be done for handling user input based format files
               paths:
+                custom_file_read: "{user_wordlist}"
                 read_from_file: wordlists/wp_plugin_small.txt            
         response:
           condition_type: and

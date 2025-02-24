@@ -407,6 +407,14 @@ class ArgParser(ArgumentParser):
             default=Config.settings.compare_report_path_filename,
             help=_("compare_report_path_filename"),
         )
+        method_options.add_argument(
+            "-W",
+            "--wordlist",
+            action="store",
+            dest="user_wordlist",
+            default=Config.settings.user_wordlist,
+            help=_("user_wordlist"),
+            )
 
         # API Options
         api_options = self.add_argument_group(_("API"), _("API_options"))
