@@ -159,6 +159,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 * '**ssl_version_vuln**' - check if the server's SSL configuration supports old and insecure SSL versions
 * '**ssl_weak_cipher_vuln**' - check if server's SSL configuration supports weak cipher suites
 * '**wordpress_dos_cve_2018_6389_vuln**' - check if Wordpress is vulnerable to CVE-2018-6389 Denial Of Service (DOS) 
+* '**wp_plugin_cve_2023_47668_vuln**' - check the target for CVE-2023-47668 
 * '**wp_xmlrpc_bruteforce_vuln**' - check if Wordpress is vulnerable to credential Brute Force via XMLRPC wp.getUsersBlogs
 * '**wp_xmlrpc_pingback_vuln**' - check if Wordpress is vulnerable to XMLRPC pingback 
 * '**x_powered_by_vuln**' - check if the web server is leaking server configuration in 'X-Powered-By' response header
