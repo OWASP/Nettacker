@@ -1083,7 +1083,7 @@ payloads:
               reverse: false
 
             ssh:
-              regex: "openssh|\\-OpenSSH\\_|\\r\\nProtocol mism|\\_sshlib|\\x00\\x1aversion info line too long|SSH Windows NT Server|WinNT sshd|sshd| SSH Secure Shell|WinSSHD"
+              regex: "openssh|\\-OpenSSH\\_|\\r?\\n?Protocol mism|\\_sshlib|\\x00\\x1aversion info line too long|SSH Windows NT Server|WinNT sshd|sshd| SSH Secure Shell|WinSSHD|SSH-[\\d.]+-[A-Za-z0-9_\\-]+|SSH-[\\d.]+\\r?\\n?"
               reverse: false
 
             telnet:
