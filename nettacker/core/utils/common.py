@@ -232,6 +232,7 @@ def apply_data_functions(data):
                 fn = getattr(importlib.import_module("nettacker.core.fuzzer"), fn_name)
                 if fn is not None and data[item][fn_name]:
                     original_data[item] = fn(data[item][fn_name])
+                    break
 
     def apply_data_functions_old():
         function_results = {}
