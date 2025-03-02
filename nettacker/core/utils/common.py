@@ -210,7 +210,7 @@ def string_to_bytes(string):
 
 
 AVAILABLE_DATA_FUNCTIONS = {
-    "passwords": {"custom_file_read", "read_from_file"},
+    "passwords": {"read_from_file"},
     "paths": {"custom_file_read", "read_from_file"},
     "urls": {"custom_file_read", "read_from_file"},
 }
