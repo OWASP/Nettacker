@@ -4,8 +4,8 @@ info:
   severity: 9.8
   description: A significant vulnerability discovered in the user registration component of the ProfilePress WordPress plugin. This security issue, identified as CVE-2021-34621, enables unauthorized users to register on websites with administrator privileges, which could result in a full compromise of the site's security.
   references: 
-    - https://nvd.nist.gov/vuln/detail/CVE-2024-2011
-    - https://blog.securelayer7.net/easily-exploitable-critical-vulnerability-in-profilepress-plugin-of-wordpress-cve-2021-34621/
+    - https://nvd.nist.gov/vuln/detail/CVE-2021-34621
+    - https://blog.securelayer7.net/easily-exploitable-critical-vulnerability-in-profilepress-plugin-of-wordpress-cve-2021-34621
   profiles:
     - vuln
     - vulnerability
@@ -13,7 +13,6 @@ info:
     - high_severity
     - wordpress
     - wp
-    - profile_press
 
 payloads:
   - library: http
@@ -32,7 +31,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/wp-admin/admin-ajax.php/"
+            input_format: "{{schema}}://{target}:{{ports}}/wp-admin/admin-ajax.php"
             prefix: ""
             suffix: ""
             interceptors:
