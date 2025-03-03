@@ -157,6 +157,7 @@ class BaseEngine(ABC):
                     "target": target,
                     "module_name": module_name,
                     "scan_id": scan_id,
+                    "service": event["response"].get("service"),
                     "port": event.get("ports")
                     or event.get("port")
                     or (
