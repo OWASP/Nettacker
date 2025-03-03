@@ -1,0 +1,54 @@
+info:
+  name: wp_plugin_cve_2023_47668_vuln
+  author: Manushya-a
+  severity: 5.3
+  description: The Membership Plugin Restrict Content plugin for WordPress is vulnerable to Sensitive Information Exposure in all versions up to, and including, 3.2.7 via the legacy log file. This makes it possible for unauthenticated attackers to extract sensitive data including debug information.
+  references: 
+    - https://nvd.nist.gov/vuln/detail/CVE-2023-47668
+    - https://wpscan.com/vulnerability/b7e164be-6b22-42dc-a43f-229a482f463d/
+    
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - medium_severity
+    - wordpress
+    - wp
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Accept-Language: en-US
+          Content-Type: text/plain
+          Accept: text/html
+          Accept-Encoding: gzip, deflate, br
+          Connection: keep-alive
+
+        allow_redirects: true
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/wp-content/uploads/rcp-debug.log"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "wp_rcp_discounts"
+              reverse: false
