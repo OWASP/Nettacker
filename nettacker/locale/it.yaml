@@ -247,3 +247,9 @@ no_response: tidak bisa mendapatkan respons dari target
 category_framework: "kategori: {0}, kerangka kerja: {1} ditemukan!"
 nothing_found: tidak ditemukan apa pun di {0} dalam {1}!
 no_auth: "Tidak ada auth yang ditemukan pada {0}: {1}"
+compare_report_path_filename: "Il percorso del file per memorizzare il report compare_scan"
+no_scan_to_compare: "L'ID della scansione da confrontare non è stato trovato"
+compare_report_saved: "Risultati del confronto salvati in {0}"
+build_compare_report: "Creazione del report di confronto"
+finish_build_report: "Creazione del report di confronto completata"
+
