@@ -187,3 +187,8 @@ no_response: ターゲットからの応答を得ることができません
 category_framework: カテゴリ：{0}、フレームワーク：{1}が見つかりました！
 nothing_found: "{1}の{0}に何も見つかりません！"
 no_auth: "{0}で認証が見つかりません：{1}"
+compare_report_path_filename: "compare_scanレポートを保存するためのファイルパス"
+no_scan_to_compare: "比較対象のscan_idが見つかりません"
+compare_report_saved: "比較結果が{0}に保存されました"
+build_compare_report: "比較レポートを作成中"
+finish_build_report: "比較レポートの作成が完了しました"
