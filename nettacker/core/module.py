@@ -39,7 +39,6 @@ class Module:
                 self.module_inputs[module_extra_args] = self.module_inputs["modules_extra_args"][
                     module_extra_args
                 ]
-
         self.target = target
 
         self.scan_id = scan_id
