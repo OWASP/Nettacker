@@ -39,8 +39,6 @@ class Module:
                 self.module_inputs[module_extra_args] = self.module_inputs["modules_extra_args"][
                     module_extra_args
                 ]
-        if options.user_wordlist:
-            self.module_inputs["read_from_file"] = options.user_wordlist
 
         self.target = target
 
