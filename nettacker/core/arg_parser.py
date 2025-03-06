@@ -413,7 +413,7 @@ class ArgParser(ArgumentParser):
             action="store",
             default=Config.settings.user_wordlist,
             dest="read_from_file",
-            help=_("user_wordlist")
+            help=_("user_wordlist"),
         )
 
         # API Options
