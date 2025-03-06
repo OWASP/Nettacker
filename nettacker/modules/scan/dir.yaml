@@ -27,7 +27,6 @@ payloads:
             interceptors:
             data:
               urls:
-                custom_file_read: "{user_wordlist}"
                 read_from_file: wordlists/dir_wordlist.txt
               schema:
                 - "http"

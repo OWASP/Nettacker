@@ -36,7 +36,6 @@ payloads:
                 - 80
                 - 443
               paths:
-                custom_file_read: "{user_wordlist}"
                 read_from_file: wordlists/wp_theme_small.txt
               
         response:
