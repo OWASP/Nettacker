@@ -1,10 +1,10 @@
 import ssl
 from unittest.mock import patch
 
+from nettacker.core.lib.socket import create_tcp_socket
 from nettacker.core.lib.ssl import (
     SslEngine,
     SslLibrary,
-    create_tcp_socket,
     is_weak_hash_algo,
     is_weak_ssl_version,
     is_weak_cipher_suite,
@@ -153,7 +153,7 @@ class Substeps:
 
 class TestSocketMethod(TestCase):
     @patch("socket.socket")
-    @patch("ssl.wrap_socket")
+    @patch("nettacker.core.lib.socket.wrap_socket_to_ssl")
     def test_create_tcp_socket(self, mock_wrap, mock_socket):
         HOST = "example.com"
         PORT = 80
@@ -167,7 +167,7 @@ class TestSocketMethod(TestCase):
 
     @patch("nettacker.core.lib.ssl.is_weak_cipher_suite")
     @patch("nettacker.core.lib.ssl.is_weak_ssl_version")
-    @patch("nettacker.core.lib.ssl.create_tcp_socket")
+    @patch("nettacker.core.lib.socket.create_tcp_socket")
     def test_ssl_version_and_cipher_scan(self, mock_connection, mock_ssl_check, mock_cipher_check):
         library = SslLibrary()
         HOST = "example.com"
@@ -222,7 +222,7 @@ class TestSocketMethod(TestCase):
             },
         )
 
-    @patch("nettacker.core.lib.ssl.create_tcp_socket")
+    @patch("nettacker.core.lib.socket.create_tcp_socket")
     @patch("nettacker.core.lib.ssl.is_weak_hash_algo")
     @patch("nettacker.core.lib.ssl.crypto.load_certificate")
     @patch("nettacker.core.lib.ssl.ssl.get_server_certificate")
