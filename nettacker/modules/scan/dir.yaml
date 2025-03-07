@@ -26,7 +26,7 @@ payloads:
             suffix: ""
             interceptors:
             data:
-              urls: 
+              urls:
                 read_from_file: wordlists/dir_wordlist.txt
               schema:
                 - "http"

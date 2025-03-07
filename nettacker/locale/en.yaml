@@ -35,6 +35,7 @@ cannot_run_api_server: You can't run API Server through itself!
 error_target: Cannot specify the target(s)
 error_target_file: "Cannot specify the target(s), unable to open file: {0}"
 error_username: "Cannot specify the username(s), unable to open file: {0}"
+error_passwords: "Cannot specify the password(s), unable to open file: {0}"
 exclude_scan_method: choose scan method to exclude {0}
 file_write_error: file "{0}" is not writable!
 library_not_supported: library [{0}] is not support!
@@ -123,3 +124,4 @@ no_scan_to_compare: the scan_id to be compared not found
 compare_report_saved: "compare results saved in {0}"
 build_compare_report: "building compare report"
 finish_build_report: "Finished building compare report"
+user_wordlist: "Allows users to enter their own wordlist"
