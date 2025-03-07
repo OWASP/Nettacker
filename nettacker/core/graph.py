@@ -85,6 +85,8 @@ def build_text_table(events):
     _table.add_rows([table_headers])
     for event in events:
         log = merge_logs_to_list(json.loads(event["json_event"]), [])
+        if json.loads(event["json_event"])["response"].get("service"):
+            log.append(f"Service: {json.loads(event['json_event'])['response']['service']}")
         _table.add_rows(
             [
                 table_headers,
