@@ -36,12 +36,10 @@ backup-db
 mysql.sql
 phpmyadmin
 admin
-administrator
 server-status
 server-info
 info.php
 php.php
-info.php
 phpinfo.php
 test.php
 .git
@@ -131,15 +129,12 @@ admin/account.asp
 admin/account.html
 admin/account.php
 admin/add_banner.php/
-admin/
 addblog.php
 admin/add_gallery_image.php
 admin/add.php
 admin/add
 room.php
-admin/add
 slider.php
-admin/
 add_testimonials.php
 admin/admin/
 admin/adminarea.php
@@ -151,15 +146,12 @@ admin/AdminHome.php
 admin/admin.html
 admin/admin_index.php
 admin/admin_login.asp
-admin/admin
 login.asp/admin/adminLogin.asp
 admin/admin_login.html/admin/admin
 login.html
 admin/adminLogin.html
 admin/admin_login.php
-admin/admin
 login.php
-admin/
 adminLogin.php
 admin/admin_management.php
 admin/admin.php
@@ -172,7 +164,6 @@ admin_area/admin.asp
 adminarea/admin.asp
 admin_area/admin.html
 adminarea/admin.html
-admin_area/
 admin.php
 adminarea/admin.php
 admin_area/index.asp
@@ -191,7 +182,6 @@ admin.asp
 admin/banner.php
 admin/banners_report.php
 admin/category.php
-admin/
 change_gallery.php
 admin/checklogin.php
 admin/configration.php
@@ -235,7 +225,6 @@ admin.html
 admin/index.asp
 admin/index
 digital.php
-admin/
 index.html
 admin/index.php
 admin/index_ref.php
@@ -251,7 +240,6 @@ administratie/
 administration/
 administration.html
 administration.php
-administrator
 _administrator_/
 _administrator/
 administrator/
@@ -263,7 +251,6 @@ administrator.asp
 administrator.html
 administrator/index.asp
 administrator/index.html
-administrator/
 index.php
 administratorlogin/
 administrator/login.asp
@@ -271,35 +258,24 @@ administratorlogin.asp
 administrator/login.html
 administrator/login.php
 administratorlogin.php
-administratorlogin.php
 administrator.php
 administrators/
 administrivia/
-admin/
 leads.php
 admin/list_gallery.php
 admin/login
 adminLogin/
 admin_login.asp
-admin
 login.asp
 admin/login.asp
 adminLogin.asp
-admin/login
-home.php
 admin_login.html
-admin
-login.html
 admin/login.html
 adminLogin.html
 ADMIN/login.html/admin_login.php
 admin_login.php
-admin
-login.php 
-admin
 login.php/
 admin/login.php
-adminLogin.php
 ADMIN/login.php
 admin/login_success.php
 admin/loginsuccess.php
@@ -307,7 +283,6 @@ admin/log.php
 admin_main.html
 admin/main_page.php
 admin/main.php/
-admin/
 ManageAdmin.php
 admin/manageImages.php
 admin/manage_team.php
@@ -321,7 +296,6 @@ admin/pages/home_admin.php
 adminpanel//adminpanel.asp
 adminpanel.html
 adminpanel.php
-admin.php
 Admin/private/
 adminpro/
 admin/product.php
@@ -358,11 +332,7 @@ autologin/
 banneradmin/
 base/admin/
 bb
-admin/
 bbadmin/
-bb
-admin/admin.asp
-bb
 admin/admin.html /bb
 admin/admin.php /bb
 admin/index.asp /bb
@@ -370,13 +340,10 @@ admin/index.html /bb
 admin/index.php /bb
 admin/login.asp /bb
 admin/login.html /bb
-admin/login.php
 bigadmin/
 blogindex/
 cadmins/
 ccms/
-ccms/
-index.php
 ccms/login.php
 ccp14admin/
 cms/
@@ -416,7 +383,6 @@ forum/admin
 globes_admin/
 home.asp
 home.html
-home.php
 hpwebjetadmin/
 include/admin.php
 includes/login.php
@@ -427,23 +393,17 @@ irc
 macadmin/
 links/login.php
 LiveUser_Admin/
-login/
 login1/
-login.asp
 login_db/
 loginflat/
-login.html
 login/login.php
-login.php
 login
 redirect/
 logins/
-login
 us/
 logon/
 logo_sysadmin/
 Lotus_Domino_Admin/
-macadmin/
 mag/admin/
 maintenance/
 manage_admin.php
@@ -457,13 +417,10 @@ members/
 memlogin/
 meta_login/
 modelsearch/
-admin.asp
 modelsearch/admin.html
 modelsearch/admin.php
 modelsearch/index.asp
 modelsearch/index.html
-modelsearch/
-index.php
 modelsearch/login.asp
 modelsearch/login.html
 modelsearch/login.php
@@ -484,17 +441,11 @@ newsadmin/
 nsw/admin/login.php
 openvpnadmin/
 pages/admin/admin
-login.asp
-pages/admin/admin
-login.html
-pages/admin/admin
 login.php /panel/
 panel
 administracion/ /panel
 administracion/admin.asp
-panel
 administracion/admin.html
-panel
 administracion/admin.php /panel
 administracion/index.asp /panel
 administracion/index.html /panel
@@ -513,19 +464,17 @@ platz_login/
 pma/
 power_user/
 project
-admins/
 pureadmin/
 radmind/
 radmind
 1/ /rcjakar/admin/login.php
 rcLogin/
- /server/
+/server/
 Server/
 ServerAdministrator/
 server_admin_small/
 Server.asp
 Server.html
-Server.php
 showlogin/
 simpleLogin/
 site/admin/
@@ -538,7 +487,6 @@ site_admin/login.php
 siteadmin/login.php
 smblogin/
 sql
-admin/
 sshadmin/
 ss_vms_admin_sm/
 staradmin/
@@ -554,7 +502,7 @@ administration/ /typo3/ /ur
 admin/ /ur
 admin.asp /ur
 admin.html /ur
-admin.php /useradmin/ /user.asp 
+admin.php /useradmin/ /user.asp
 user.html
 UserLogin/ /user.php
 usuario/ /usuarios/ /usuarios// /usuarios/login.php
@@ -576,11 +524,10 @@ webadmin.php
 webmaster/ /websvn/ /wizmysqladmin/ /wp
 admin/ /wp
 login/ /wplogin/ /wp
-login.php
 xlogin/
 yonetici.asp
 yonetici.html
-yonetici.php 
+yonetici.php
 yonetim.asp
 yonetim.html
 yonetim.php

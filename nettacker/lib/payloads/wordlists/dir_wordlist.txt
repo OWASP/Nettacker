@@ -436,7 +436,6 @@ cfg
 cfide
 cgi
 cgi-bin
-cgi-bin
 cgi-exe
 cgi-home
 cgi-local
