@@ -280,7 +280,6 @@ redux-framework
 loginizer
 wp-file-manager
 sucuri-scanner
-ninja-forms
 the-plus-addons-for-elementor-page-builder
 wp-seopress
 media-library-assistant

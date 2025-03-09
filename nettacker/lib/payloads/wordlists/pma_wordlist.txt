@@ -3,7 +3,6 @@ accounts/login/
 admin1.php/
 admin.php/
 admin.html/
-admin1.php/
 admin1.html/
 login.php/
 admin/cp.php/
@@ -57,12 +56,10 @@ phpMyAdmin-2.6.1-pl2/
 phpMyAdmin-2.6.1-pl3/
 phpMyAdmin-2.6.2-rc1/
 phpMyAdmin-2.6.2-beta1/
-phpMyAdmin-2.6.2-rc1/
 phpMyAdmin-2.6.2/
 phpMyAdmin-2.6.2-pl1/
 phpMyAdmin-2.6.3/
 phpMyAdmin-2.6.3-rc1/
-phpMyAdmin-2.6.3/
 phpMyAdmin-2.6.3-pl1/
 phpMyAdmin-2.6.4-rc1/
 phpMyAdmin-2.6.4-pl1/
