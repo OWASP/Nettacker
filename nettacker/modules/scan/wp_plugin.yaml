@@ -9,7 +9,6 @@ info:
     - http
     - backup
     - low_severity
-    - wp
     - wordpress
 payloads:
   - library: http

@@ -8,7 +8,6 @@ info:
     - vuln
     - http
     - wordpress
-    - wp
 
 payloads:
   - library: http
