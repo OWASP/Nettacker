@@ -102,7 +102,6 @@ wp-plugins/image-symlinks/thumb.php
 wp-plugins/image-symlinks/thumb/thumb.php
 wp-plugins/image-symlinks/thumb/timthumb.php
 wp-plugins/image-symlinks/timthumb.php
-wp-plugins/image-symlinks/timthumb.php
 wp-plugins/image-symlinks/timthumb/timthumb.php
 wp-plugins/image-symlinks/tools/thumb.php
 wp-plugins/image-symlinks/tools/thumb/thumb.php
@@ -271,7 +270,6 @@ wp-content/themes/abstract/scripts/thumb/timthumb.php
 wp-content/themes/abstract/scripts/timthumb.php
 wp-content/themes/abstract/scripts/timthumb/timthumb.php
 wp-content/themes/abstract/thumb.php
-wp-content/themes/abstract/thumb.php
 wp-content/themes/abstract/thumb/thumb.php
 wp-content/themes/abstract/thumb/timthumb.php
 wp-content/themes/abstract/timthumb.php
@@ -424,10 +422,8 @@ wp-content/themes/backstage/scripts/thumb/timthumb.php
 wp-content/themes/backstage/scripts/timthumb.php
 wp-content/themes/backstage/scripts/timthumb/timthumb.php
 wp-content/themes/backstage/thumb.php
-wp-content/themes/backstage/thumb.php
 wp-content/themes/backstage/thumb/thumb.php
 wp-content/themes/backstage/thumb/timthumb.php
-wp-content/themes/backstage/timthumb.php
 wp-content/themes/backstage/timthumb.php
 wp-content/themes/backstage/timthumb/timthumb.php
 wp-content/themes/backstage/tools/thumb.php
@@ -502,7 +498,6 @@ wp-content/themes/bloggingstream/scripts/thumb/thumb.php
 wp-content/themes/bloggingstream/scripts/thumb/timthumb.php
 wp-content/themes/bloggingstream/scripts/timthumb.php
 wp-content/themes/bloggingstream/scripts/timthumb/timthumb.php
-wp-content/themes/bloggingstream/thumb.php
 wp-content/themes/bloggingstream/thumb.php
 wp-content/themes/bloggingstream/thumb/thumb.php
 wp-content/themes/bloggingstream/thumb/timthumb.php
@@ -621,10 +616,8 @@ wp-content/themes/canvas/scripts/thumb/timthumb.php
 wp-content/themes/canvas/scripts/timthumb.php
 wp-content/themes/canvas/scripts/timthumb/timthumb.php
 wp-content/themes/canvas/thumb.php
-wp-content/themes/canvas/thumb.php
 wp-content/themes/canvas/thumb/thumb.php
 wp-content/themes/canvas/thumb/timthumb.php
-wp-content/themes/canvas/timthumb.php
 wp-content/themes/canvas/timthumb.php
 wp-content/themes/canvas/timthumb/timthumb.php
 wp-content/themes/canvas/tools/thumb.php
@@ -635,7 +628,6 @@ wp-content/themes/canvas/tools/timthumb/timthumb.php
 wp-content/themes/canvaswoo/thumb.php
 wp-content/themes/Chameleon/imthumb.php
 wp-content/themes/Chameleon/scripts/timthumb.php
-wp-content/themes/Chameleon/thumb.php
 wp-content/themes/Chameleon/thumb.php
 wp-content/themes/Chameleon/timthumb.php
 wp-content/themes/Chameleon/tools/timthumb.php
@@ -742,10 +734,8 @@ wp-content/themes/continuum/scripts/thumb/timthumb.php
 wp-content/themes/continuum/scripts/timthumb.php
 wp-content/themes/continuum/scripts/timthumb/timthumb.php
 wp-content/themes/continuum/thumb.php
-wp-content/themes/continuum/thumb.php
 wp-content/themes/continuum/thumb/thumb.php
 wp-content/themes/continuum/thumb/timthumb.php
-wp-content/themes/continuum/timthumb.php
 wp-content/themes/continuum/timthumb.php
 wp-content/themes/continuum/timthumb/timthumb.php
 wp-content/themes/continuum/tools/thumb.php
@@ -825,7 +815,6 @@ wp-content/themes/DailyNotes/thumb.php
 wp-content/themes/DailyNotes/thumb/thumb.php
 wp-content/themes/DailyNotes/thumb/timthumb.php
 wp-content/themes/DailyNotes/timthumb.php
-wp-content/themes/DailyNotes/timthumb.php
 wp-content/themes/DailyNotes/timthumb/timthumb.php
 wp-content/themes/DailyNotes/tools/thumb.php
 wp-content/themes/DailyNotes/tools/thumb/thumb.php
@@ -904,10 +893,8 @@ wp-content/themes/DelicateNews/scripts/thumb/timthumb.php
 wp-content/themes/DelicateNews/scripts/timthumb.php
 wp-content/themes/DelicateNews/scripts/timthumb/timthumb.php
 wp-content/themes/DelicateNews/thumb.php
-wp-content/themes/DelicateNews/thumb.php
 wp-content/themes/DelicateNews/thumb/thumb.php
 wp-content/themes/DelicateNews/thumb/timthumb.php
-wp-content/themes/DelicateNews/timthumb.php
 wp-content/themes/DelicateNews/timthumb.php
 wp-content/themes/DelicateNews/timthumb/timthumb.php
 wp-content/themes/DelicateNews/tools/thumb.php
@@ -972,7 +959,6 @@ wp-content/themes/deliciousmagazine/scripts/thumb/thumb.php
 wp-content/themes/deliciousmagazine/scripts/thumb/timthumb.php
 wp-content/themes/deliciousmagazine/scripts/timthumb.php
 wp-content/themes/deliciousmagazine/scripts/timthumb/timthumb.php
-wp-content/themes/deliciousmagazine/thumb.php
 wp-content/themes/deliciousmagazine/thumb.php
 wp-content/themes/deliciousmagazine/thumb/thumb.php
 wp-content/themes/deliciousmagazine/thumb/timthumb.php
@@ -1078,10 +1064,8 @@ wp-content/themes/ecobiz/scripts/thumb/timthumb.php
 wp-content/themes/ecobiz/scripts/timthumb.php
 wp-content/themes/ecobiz/scripts/timthumb/timthumb.php
 wp-content/themes/ecobiz/thumb.php
-wp-content/themes/ecobiz/thumb.php
 wp-content/themes/ecobiz/thumb/thumb.php
 wp-content/themes/ecobiz/thumb/timthumb.php
-wp-content/themes/ecobiz/timthumb.php
 wp-content/themes/ecobiz/timthumb.php
 wp-content/themes/eCobiz/timthumb.php
 wp-content/themes/ecobiz/timthumb.phptimthumb.php
@@ -1094,7 +1078,6 @@ wp-content/themes/ecobiz/tools/timthumb/timthumb.php
 wp-content/themes/editorial/functions/thumb.php
 wp-content/themes/eGallery/timthumb.php
 wp-content/themes/eGamer/thumb.php
-wp-content/themes/eGamer/timthumb.php
 wp-content/themes/eGamer/tools/timthumb.php
 wp-content/themes/elefolio/functions/thumb.php
 wp-content/themes/elefolio/thumb.php
@@ -1248,7 +1231,6 @@ wp-content/themes/groovyblog/scripts/thumb/thumb.php
 wp-content/themes/groovyblog/scripts/thumb/timthumb.php
 wp-content/themes/groovyblog/scripts/timthumb.php
 wp-content/themes/groovyblog/scripts/timthumb/timthumb.php
-wp-content/themes/groovyblog/thumb.php
 wp-content/themes/groovyblog/thumb.php
 wp-content/themes/groovyblog/thumb/thumb.php
 wp-content/themes/groovyblog/thumb/timthumb.php
@@ -1457,10 +1439,8 @@ wp-content/themes/LondonLive/scripts/timthumb.php
 wp-content/themes/LondonLive/scripts/timthumb/timthumb.php
 wp-content/themes/londonlive/thumb.php
 wp-content/themes/LondonLive/thumb.php
-wp-content/themes/LondonLive/thumb.php
 wp-content/themes/LondonLive/thumb/thumb.php
 wp-content/themes/LondonLive/thumb/timthumb.php
-wp-content/themes/LondonLive/timthumb.php
 wp-content/themes/LondonLive/timthumb.php
 wp-content/themes/LondonLive/timthumb/timthumb.php
 wp-content/themes/LondonLive/tools/thumb.php
@@ -1557,7 +1537,6 @@ wp-content/themes/modularity/images/timthumb.php
 wp-content/themes/modularity/includes/thumb.php
 wp-content/themes/modularity/includes/thumb/thumb.php
 wp-content/themes/modularity/includes/thumb/timthumb.php
-wp-content/themes/modularity/includes/timthumb.php
 wp-content/themes/modularity/includes/timthumb/timthumb.php
 wp-content/themes/modularity/inc/thumb.php
 wp-content/themes/modularity/inc/timthumb.php
@@ -1593,10 +1572,8 @@ wp-content/themes/modularity/scripts/thumb/timthumb.php
 wp-content/themes/modularity/scripts/timthumb.php
 wp-content/themes/modularity/scripts/timthumb/timthumb.php
 wp-content/themes/modularity/thumb.php
-wp-content/themes/modularity/thumb.php
 wp-content/themes/modularity/thumb/thumb.php
 wp-content/themes/modularity/thumb/timthumb.php
-wp-content/themes/modularity/timthumb.php
 wp-content/themes/modularity/timthumb.php
 wp-content/themes/modularity/timthumb/timthumb.php
 wp-content/themes/modularity/tools/thumb.php
@@ -1609,7 +1586,6 @@ wp-content/themes/moi-magazine/timthumb.php
 wp-content/themes/multidesign/scripts/thumb.php
 wp-content/themes/multidesign/scripts/timthumb.php
 wp-content/themes/multidesign/timthumb.php
-wp-content/themes/MyCuisine/timthumb.php
 wp-content/themes/MyCuisine/timthumb.php
 wp-content/themes/MyCuisine/timthumb.phpthumb.php
 wp-content/themes/MyCuisine/timthumb.phptimthumb.php
@@ -1711,10 +1687,8 @@ wp-content/themes/newsworld/scripts/thumb/timthumb.php
 wp-content/themes/newsworld/scripts/timthumb.php
 wp-content/themes/newsworld/scripts/timthumb/timthumb.php
 wp-content/themes/newsworld/thumb.php
-wp-content/themes/newsworld/thumb.php
 wp-content/themes/newsworld/thumb/thumb.php
 wp-content/themes/newsworld/thumb/timthumb.php
-wp-content/themes/newsworld/timthumb.php
 wp-content/themes/newsworld/timthumb.php
 wp-content/themes/newsworld/timthumb/timthumb.php
 wp-content/themes/newsworld/tools/thumb.php
@@ -1769,7 +1743,6 @@ wp-content/themes/optimizepress/scripts/timthumb.php
 wp-content/themes/OptimizePress/scripts/timthumb.php
 wp-content/themes/OptimizePress/thumb.php
 wp-content/themes/Optimizepress/timthumb.php
-wp-content/themes/OptimizePress/timthumb.php
 wp-content/themes/OptimizePress/timthumb.php
 wp-content/themes/OptimizePress/timthumb.phpthumb.php
 wp-content/themes/OptimizePress/timthumb.phptimthumb.php
@@ -1870,11 +1843,9 @@ wp-content/themes/premiumnews/scripts/thumb/timthumb.php
 wp-content/themes/premiumnews/scripts/timthumb.php
 wp-content/themes/premiumnews/scripts/timthumb/timthumb.php
 wp-content/themes/premiumnews/thumb.php
-wp-content/themes/premiumnews/thumb.php
 wp-content/themes/premiumnews/thumb.phptimthumb.php
 wp-content/themes/premiumnews/thumb/thumb.php
 wp-content/themes/premiumnews/thumb/timthumb.php
-wp-content/themes/premiumnews/timthumb.php
 wp-content/themes/premiumnews/timthumb.php
 wp-content/themes/premiumnews/timthumb.phptimthumb.php
 wp-content/themes/premiumnews/timthumb/timthumb.php
@@ -2056,10 +2027,8 @@ wp-content/themes/sealight/scripts/thumb/timthumb.php
 wp-content/themes/sealight/scripts/timthumb.php
 wp-content/themes/sealight/scripts/timthumb/timthumb.php
 wp-content/themes/sealight/thumb.php
-wp-content/themes/sealight/thumb.php
 wp-content/themes/sealight/thumb/thumb.php
 wp-content/themes/sealight/thumb/timthumb.php
-wp-content/themes/sealight/timthumb.php
 wp-content/themes/sealight/timthumb.php
 wp-content/themes/sealight/timthumb/timthumb.php
 wp-content/themes/sealight/tools/thumb.php
@@ -2129,11 +2098,9 @@ wp-content/themes/SimplePress/scripts/timthumb.php
 wp-content/themes/SimplePress/scripts/timthumb/timthumb.php
 wp-content/themes/simplepress/SimplePress/timthumb.php
 wp-content/themes/SimplePress/thumb.php
-wp-content/themes/SimplePress/thumb.php
 wp-content/themes/SimplePress/thumb/thumb.php
 wp-content/themes/SimplePress/thumb/timthumb.php
 wp-content/themes/simplepress/timthumb.php
-wp-content/themes/SimplePress/timthumb.php
 wp-content/themes/SimplePress/timthumb.php
 wp-content/themes/SimplePress/timthumb.phptimthumb.php
 wp-content/themes/SimplePress/timthumb/timthumb.php
@@ -2366,10 +2333,8 @@ wp-content/themes/typebased/scripts/thumb/timthumb.php
 wp-content/themes/typebased/scripts/timthumb.php
 wp-content/themes/typebased/scripts/timthumb/timthumb.php
 wp-content/themes/typebased/thumb.php
-wp-content/themes/typebased/thumb.php
 wp-content/themes/typebased/thumb/thumb.php
 wp-content/themes/typebased/thumb/timthumb.php
-wp-content/themes/typebased/timthumb.php
 wp-content/themes/typebased/timthumb.php
 wp-content/themes/typebased/timthumb/timthumb.php
 wp-content/themes/typebased/tools/thumb.php
