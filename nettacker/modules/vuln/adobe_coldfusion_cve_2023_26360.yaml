@@ -9,7 +9,6 @@ info:
     - http://packetstormsecurity.com/files/172079/Adobe-ColdFusion-Unauthenticated-Remote-Code-Execution.html
   profiles:
     - vuln
-    - vulnerability
     - http
     - critical_severity
     - cve

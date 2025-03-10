@@ -8,7 +8,6 @@ info:
     - https://github.com/exponentcms/exponent-cms/blob/a9fa9358c5e8dc2ce7ad61d7d5bea38505b8515c/exponent_constants.php#L56-L64
   profiles:
     - vuln
-    - vulnerability
     - http
     - medium_severity
     - cve
