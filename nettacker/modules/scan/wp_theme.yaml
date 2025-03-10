@@ -39,8 +39,12 @@ payloads:
                 read_from_file: wordlists/wp_theme_small.txt
               
         response:
-          condition_type: or
+          condition_type: and
+          log: "response_dependent['url']"
           conditions:
             status_code:
               regex: 200|403|401
+              reverse: false
+            url:
+              regex: .*
               reverse: false

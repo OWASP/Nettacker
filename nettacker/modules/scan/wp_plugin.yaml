@@ -38,10 +38,14 @@ payloads:
                 read_from_file: wordlists/wp_plugin_small.txt            
         response:
           condition_type: and
+          log: "response_dependent['url']"
           conditions:
             content:
               regex: Stable\stag:\s(\d+\.\d+\.\d+)
               reverse: false
             status_code:
               regex: "200"
+              reverse: false
+            url:
+              regex: .*
               reverse: false
