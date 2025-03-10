@@ -8,7 +8,6 @@ info:
     - vuln
     - http
     - medium_severity
-    - cve_2021_38702
     - cve2021
     - cve
     - cyberoam
