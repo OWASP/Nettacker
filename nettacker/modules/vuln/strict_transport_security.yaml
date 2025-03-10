@@ -8,7 +8,6 @@ info:
     - https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/02-Configuration_and_Deployment_Management_Testing/07-Test_HTTP_Strict_Transport_Security
   profiles:
     - vuln
-    - vulnerability
     - http
     - low_severity
 

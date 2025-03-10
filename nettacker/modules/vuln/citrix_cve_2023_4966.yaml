@@ -10,7 +10,6 @@ info:
     - https://github.com/advisories/GHSA-2g42-2pwg-93cj
   profiles:
     - vuln
-    - vulnerability
     - http
     - high_severity
     - cve
