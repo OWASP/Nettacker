@@ -676,6 +676,12 @@ class ArgParser(ArgumentParser):
                 options.passwords = list(set(open(options.passwords_list).read().split("\n")))
             except Exception:
                 die_failure(_("error_passwords").format(options.passwords_list))
+        # Check custom wordlist
+        if options.read_from_file:
+            try:
+                open(options.read_from_file).read().split("\n")
+            except Exception:
+                die_failure(_("error_wordlist").format(options.read_from_file))
         # Check output file
         try:
             temp_file = open(options.report_path_filename, "w")
