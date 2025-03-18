@@ -1026,6 +1026,7 @@ payloads:
           - 65389
         response:
           condition_type: or
+          log: "response_dependent['response']['service']"
           conditions:
             open_port:
               regex: \d{{1,5}}
