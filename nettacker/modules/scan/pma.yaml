@@ -35,8 +35,12 @@ payloads:
                 - 80
                 - 443
         response:
-          condition_type: or
+          log: "response_dependent['url']"
+          condition_type: and
           conditions:
             status_code:
               regex: 200|403|401
+              reverse: false
+            url:
+              regex: .*
               reverse: false
