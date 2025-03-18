@@ -7,7 +7,6 @@ info:
     - https://www.twcert.org.tw/tw/cp-132-4962-44cd2-1.html
   profiles:
     - vuln
-    - vulnerability
     - http
     - medium_severity
     - cve2021
