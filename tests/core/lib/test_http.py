@@ -1,6 +1,5 @@
+from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock, Mock, patch
-
-import pytest
 
 from nettacker.core.lib.http import (
     HttpEngine,
@@ -14,7 +13,12 @@ class MockResponse:
     """Mock HTTP response for testing."""
 
     def __init__(
-        self, status=200, content=b"success", headers={}, reason="OK", url="http://test.com"
+        self,
+        status=200,
+        content=b"success",
+        headers={},
+        reason="OK",
+        url="http://test.com",
     ):
         self.status = status
         self.content = Mock()
@@ -43,18 +47,16 @@ class AsyncContextManagerMock:
         pass
 
 
-class TestPerformRequestAction:
-    @pytest.mark.asyncio
+class TestPerformRequestAction(IsolatedAsyncioTestCase):
     async def test_successful_request(self):
         """Test perform_request_action with a successful response."""
         mock_response = MockResponse()
         action = AsyncContextManagerMock(return_value=mock_response)
         result = await perform_request_action(action, {"url": "http://test.com"})
-        assert result["status_code"] == "200"
-        assert result["content"] == b"success"
-        assert result["url"] == "http://test.com"
+        self.assertEqual(result["status_code"], "200")
+        self.assertEqual(result["content"], b"success")
+        self.assertEqual(result["url"], "http://test.com")
 
-    @pytest.mark.asyncio
     async def test_request_timing(self):
         """Test perform_request_action includes response time."""
         mock_start_time = Mock(return_value=1.0)
@@ -65,18 +67,16 @@ class TestPerformRequestAction:
             mock_response = MockResponse()
             action = AsyncContextManagerMock(return_value=mock_response)
             result = await perform_request_action(action, {"url": "http://test.com"})
-            assert pytest.approx(result["responsetime"]) == 0.1
+            self.assertAlmostEqual(result["responsetime"], 0.1)
 
-    @pytest.mark.asyncio
     async def test_request_error(self):
         """Test perform_request_action with a request error."""
         action = AsyncContextManagerMock(exception=Exception("Request failed"))
-        with pytest.raises(Exception, match="Request failed"):
+        with self.assertRaisesRegex(Exception, "Request failed"):
             await perform_request_action(action, {"url": "http://test.com"})
 
 
-class TestSendRequest:
-    @pytest.mark.asyncio
+class TestSendRequest(IsolatedAsyncioTestCase):
     async def test_method_execution(self):
         """Test send_request executes the specified method."""
         options = {"url": "http://test.com"}
@@ -90,10 +90,9 @@ class TestSendRequest:
             session_instance.get = mock_cm
 
             result = await send_request(options, "get")
-            assert result["status_code"] == "200"
-            assert result["content"] == b"success"
+            self.assertEqual(result["status_code"], "200")
+            self.assertEqual(result["content"], b"success")
 
-    @pytest.mark.asyncio
     async def test_session_cleanup(self):
         """Test that session is cleaned up in success and failure cases."""
         options = {"url": "http://test.com"}
@@ -109,8 +108,8 @@ class TestSendRequest:
             session_instance.get = mock_cm
 
             result = await send_request(options, "get")
-            assert result["status_code"] == "200"
-            assert session_instance.__aexit__.called
+            self.assertEqual(result["status_code"], "200")
+            self.assertTrue(session_instance.__aexit__.called)
 
         # Test error case
         with patch("aiohttp.ClientSession") as mock_session:
@@ -122,160 +121,155 @@ class TestSendRequest:
             session_instance.get = mock_cm
 
             result = await send_request(options, "get")
-            assert result is None
-            assert session_instance.__aexit__.called
+            self.assertIsNone(result)
+            self.assertTrue(session_instance.__aexit__.called)
 
 
-class TestResponseConditionsMatched:
-    @pytest.mark.parametrize(
-        "sub_step, response, expected",
-        [
-            # Test status_code with AND condition
-            (
-                {
-                    "response": {
-                        "condition_type": "and",
-                        "conditions": {"status_code": {"regex": "200", "reverse": False}},
-                    }
-                },
-                {"status_code": "200", "content": "test"},
-                {"status_code": ["200"]},
-            ),
-            # Test content with AND condition
-            (
-                {
-                    "response": {
-                        "condition_type": "and",
-                        "conditions": {"content": {"regex": "test", "reverse": False}},
-                    }
-                },
-                {"status_code": "200", "content": "test content"},
-                {"content": ["test"]},
-            ),
-            # Test content with reverse AND condition
-            (
-                {
-                    "response": {
-                        "condition_type": "and",
-                        "conditions": {"content": {"regex": "test", "reverse": True}},
-                    }
-                },
-                {"status_code": "200", "content": "other"},
-                {"content": True},
-            ),
-            # Test headers with AND condition
-            (
-                {
-                    "response": {
-                        "condition_type": "and",
-                        "conditions": {
-                            "headers": {"Server": {"regex": "nginx", "reverse": False}}
-                        },
-                    }
-                },
-                {"status_code": "200", "headers": {"Server": "nginx"}},
-                {"headers": {"Server": ["nginx"]}},
-            ),
-            # Test reason with AND condition
-            (
-                {
-                    "response": {
-                        "condition_type": "and",
-                        "conditions": {"reason": {"regex": "OK", "reverse": False}},
-                    }
-                },
-                {"status_code": "200", "reason": "OK"},
-                {"reason": ["OK"]},
-            ),
-            # Test url with AND condition
-            (
-                {
-                    "response": {
-                        "condition_type": "and",
-                        "conditions": {"url": {"regex": "test.com", "reverse": False}},
-                    }
-                },
-                {"status_code": "200", "url": "http://test.com"},
-                {"url": ["test.com"]},
-            ),
-            # Test null response
-            (
-                {
-                    "response": {
-                        "condition_type": "and",
-                        "conditions": {"status_code": {"regex": "404", "reverse": False}},
-                    }
-                },
-                None,
-                {},
-            ),
-            # Test binary content with AND condition
-            (
-                {
-                    "response": {
-                        "condition_type": "and",
-                        "conditions": {"content": {"regex": "test", "reverse": False}},
-                    }
-                },
-                {"status_code": "200", "content": "test binary"},
-                {"content": ["test"]},
-            ),
-            # Test headers with OR condition
-            (
-                {
-                    "response": {
-                        "condition_type": "or",
-                        "conditions": {
-                            "headers": {"X-Test": {"regex": "value", "reverse": False}}
-                        },
-                    }
-                },
-                {"status_code": "200", "headers": {"X-Test": "value"}},
-                {"headers": {"X-Test": ["value"]}},
-            ),
-            # Test reason with reverse OR condition
-            (
-                {
-                    "response": {
-                        "condition_type": "or",
-                        "conditions": {"reason": {"regex": "Not Found", "reverse": True}},
-                    }
-                },
-                {"status_code": "200", "reason": "OK"},
-                {"reason": True},
-            ),
-        ],
-    )
-    def test_conditions(self, sub_step, response, expected):
-        """Test response_conditions_matched with various conditions."""
+class TestResponseConditionsMatched(IsolatedAsyncioTestCase):
+    def test_conditions_status_code_and(self):
+        """Test status_code with AND condition."""
+        sub_step = {
+            "response": {
+                "condition_type": "and",
+                "conditions": {"status_code": {"regex": "200", "reverse": False}},
+            }
+        }
+        response = {"status_code": "200", "content": "test"}
         result = response_conditions_matched(sub_step, response)
-        assert result == expected
+        self.assertEqual(result, {"status_code": ["200"]})
 
-    @pytest.mark.parametrize(
-        "operator, threshold, responsetime, expected",
-        [
+    def test_conditions_content_and(self):
+        """Test content with AND condition."""
+        sub_step = {
+            "response": {
+                "condition_type": "and",
+                "conditions": {"content": {"regex": "test", "reverse": False}},
+            }
+        }
+        response = {"status_code": "200", "content": "test content"}
+        result = response_conditions_matched(sub_step, response)
+        self.assertEqual(result, {"content": ["test"]})
+
+    def test_conditions_content_reverse_and(self):
+        """Test content with reverse AND condition."""
+        sub_step = {
+            "response": {
+                "condition_type": "and",
+                "conditions": {"content": {"regex": "test", "reverse": True}},
+            }
+        }
+        response = {"status_code": "200", "content": "other"}
+        result = response_conditions_matched(sub_step, response)
+        self.assertEqual(result, {"content": True})
+
+    def test_conditions_headers_and(self):
+        """Test headers with AND condition."""
+        sub_step = {
+            "response": {
+                "condition_type": "and",
+                "conditions": {"headers": {"Server": {"regex": "nginx", "reverse": False}}},
+            }
+        }
+        response = {"status_code": "200", "headers": {"Server": "nginx"}}
+        result = response_conditions_matched(sub_step, response)
+        self.assertEqual(result, {"headers": {"Server": ["nginx"]}})
+
+    def test_conditions_reason_and(self):
+        """Test reason with AND condition."""
+        sub_step = {
+            "response": {
+                "condition_type": "and",
+                "conditions": {"reason": {"regex": "OK", "reverse": False}},
+            }
+        }
+        response = {"status_code": "200", "reason": "OK"}
+        result = response_conditions_matched(sub_step, response)
+        self.assertEqual(result, {"reason": ["OK"]})
+
+    def test_conditions_url_and(self):
+        """Test url with AND condition."""
+        sub_step = {
+            "response": {
+                "condition_type": "and",
+                "conditions": {"url": {"regex": "test.com", "reverse": False}},
+            }
+        }
+        response = {"status_code": "200", "url": "http://test.com"}
+        result = response_conditions_matched(sub_step, response)
+        self.assertEqual(result, {"url": ["test.com"]})
+
+    def test_conditions_null_response(self):
+        """Test null response."""
+        sub_step = {
+            "response": {
+                "condition_type": "and",
+                "conditions": {"status_code": {"regex": "404", "reverse": False}},
+            }
+        }
+        result = response_conditions_matched(sub_step, None)
+        self.assertEqual(result, {})
+
+    def test_conditions_binary_content_and(self):
+        """Test binary content with AND condition."""
+        sub_step = {
+            "response": {
+                "condition_type": "and",
+                "conditions": {"content": {"regex": "test", "reverse": False}},
+            }
+        }
+        response = {"status_code": "200", "content": "test binary"}
+        result = response_conditions_matched(sub_step, response)
+        self.assertEqual(result, {"content": ["test"]})
+
+    def test_conditions_headers_or(self):
+        """Test headers with OR condition."""
+        sub_step = {
+            "response": {
+                "condition_type": "or",
+                "conditions": {"headers": {"X-Test": {"regex": "value", "reverse": False}}},
+            }
+        }
+        response = {"status_code": "200", "headers": {"X-Test": "value"}}
+        result = response_conditions_matched(sub_step, response)
+        self.assertEqual(result, {"headers": {"X-Test": ["value"]}})
+
+    def test_conditions_reason_reverse_or(self):
+        """Test reason with reverse OR condition."""
+        sub_step = {
+            "response": {
+                "condition_type": "or",
+                "conditions": {"reason": {"regex": "Not Found", "reverse": True}},
+            }
+        }
+        response = {"status_code": "200", "reason": "OK"}
+        result = response_conditions_matched(sub_step, response)
+        self.assertEqual(result, {"reason": True})
+
+    def test_responsetime_operators(self):
+        """Test response_conditions_matched with responsetime operators."""
+        test_cases = [
             ("==", 0.1, 0.1, {"responsetime": 0.1}),
             ("!=", 0.2, 0.1, {"responsetime": 0.1}),
             ("<", 0.2, 0.1, {"responsetime": 0.1}),
             (">", 0.05, 0.1, {"responsetime": 0.1}),
             ("<=", 0.1, 0.1, {"responsetime": 0.1}),
             (">=", 0.1, 0.1, {"responsetime": 0.1}),
-        ],
-    )
-    def test_responsetime_operators(self, operator, threshold, responsetime, expected):
-        """Test response_conditions_matched with responsetime operators."""
-        sub_step = {
-            "response": {
-                "condition_type": "and",
-                "conditions": {"responsetime": f"{operator} {threshold}"},
-            }
-        }
-        response = {"responsetime": responsetime}
-        result = response_conditions_matched(sub_step, response)
-        assert result == expected
+        ]
+
+        for operator, threshold, responsetime, expected in test_cases:
+            with self.subTest(operator=operator):
+                sub_step = {
+                    "response": {
+                        "condition_type": "and",
+                        "conditions": {"responsetime": f"{operator} {threshold}"},
+                    }
+                }
+                response = {"responsetime": responsetime}
+                result = response_conditions_matched(sub_step, response)
+                self.assertEqual(result, expected)
 
 
-class TestHttpEngine:
+class TestHttpEngine(IsolatedAsyncioTestCase):
     def test_run_method_with_retries(self):
         """Test HttpEngine.run with successful request and retries."""
         engine = HttpEngine()
@@ -310,8 +304,8 @@ class TestHttpEngine:
                 request_number_counter=1,
                 total_number_of_requests=1,
             )
-            assert mock_send.called
-            assert result is True
+            self.assertTrue(mock_send.called)
+            self.assertTrue(result)
 
     def test_connection_error_retry(self):
         """Test HttpEngine.run retries on connection error."""
@@ -350,8 +344,8 @@ class TestHttpEngine:
                 request_number_counter=1,
                 total_number_of_requests=1,
             )
-            assert mock_send.call_count == 2
-            assert result is True
+            self.assertEqual(mock_send.call_count, 2)
+            self.assertTrue(result)
 
     def test_iterative_response_matching(self):
         """Test HttpEngine.run with iterative response matching."""
@@ -404,9 +398,11 @@ class TestHttpEngine:
                 request_number_counter=1,
                 total_number_of_requests=1,
             )
-            assert "match1" in sub_step["response"]["conditions_results"]
-            assert sub_step["response"]["conditions_results"]["match1"]["content"] == ["pattern1"]
-            assert result is True
+            self.assertIn("match1", sub_step["response"]["conditions_results"])
+            self.assertEqual(
+                sub_step["response"]["conditions_results"]["match1"]["content"], ["pattern1"]
+            )
+            self.assertTrue(result)
 
     def test_invalid_method(self):
         """Test HttpEngine.run with an invalid HTTP method."""
@@ -435,5 +431,5 @@ class TestHttpEngine:
                 request_number_counter=1,
                 total_number_of_requests=1,
             )
-            assert mock_send.called
-            assert result is False
+            self.assertTrue(mock_send.called)
+            self.assertFalse(result)
