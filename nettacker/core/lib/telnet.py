@@ -6,12 +6,12 @@ from nettacker.core.lib.base import BaseEngine, BaseLibrary
 class TelnetLibrary(BaseLibrary):
     client = telnetlib.Telnet
 
-    def brute_force(host, port, username, password, timeout):
+    def brute_force(self, host, port, username, password, timeout):
         connection = telnetlib.Telnet(host, port, timeout)
         connection.read_until(b"login: ")
-        connection.write(username + "\n")
+        connection.write(username.encode("utf-8") + b"\n")
         connection.read_until(b"Password: ")
-        connection.write(password + "\n")
+        connection.write(password.encode("utf-8") + b"\n")
         connection.close()
 
         return {
