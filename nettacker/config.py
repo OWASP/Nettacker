@@ -69,15 +69,20 @@ class DbConfig(ConfigBase):
         NAME as the name of the database you want to create
         USERNAME, PASSWORD, HOST and the PORT of the MySQL server
         need to be filled respectively (default port is 3306)
+    For postgres users:
+        fill the Engine name of the DB as postgres
+        NAME as the name of the database user wants
+        USERNAME, PASSWORD, HOST and the PORT of the Postgres server
+        need to be filled respectively (default port is 5432)
 
     """
 
-    engine = "mysql"
-    name = "testing"
+    engine = "postgres"
+    name = "test_db"
     host = "localhost"
-    port = 3306
-    username = "root"
-    password = "new_password"
+    port = 5432
+    username = "test"
+    password = "testing"
 
 
 class PathConfig:

@@ -27,7 +27,7 @@ def db_inputs(connection_type):
     """
     context = Config.db.as_dict()
     return {
-        "postgres": "postgres+psycopg2://{username}:{password}@{host}:{port}/{name}".format(
+        "postgres": "postgresql+psycopg2://{username}:{password}@{host}:{port}/{name}?sslmode=disable".format(
             **context
         ),
         "mysql": "mysql+pymysql://{username}:{password}@{host}:{port}/{name}".format(**context),
