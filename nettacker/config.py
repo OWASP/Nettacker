@@ -68,7 +68,7 @@ class DbConfig(ConfigBase):
         fill the ENGINE name of the DB as mysql
         NAME as the name of the database you want to create
         USERNAME, PASSWORD, HOST and the PORT of the MySQL server
-        need to be filled respectively
+        need to be filled respectively (default port is 3306)
 
     """
 

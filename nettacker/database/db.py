@@ -50,6 +50,7 @@ def create_connection():
     db_engine = create_engine(
         db_inputs(Config.db.engine),
         connect_args=connection_args,
+        pool_size=50,
         pool_pre_ping=True,
     )
     Session = sessionmaker(bind=db_engine)
