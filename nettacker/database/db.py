@@ -30,7 +30,7 @@ def db_inputs(connection_type):
         "postgres": "postgres+psycopg2://{username}:{password}@{host}:{port}/{name}".format(
             **context
         ),
-        "mysql": "mysql://{username}:{password}@{host}:{port}/{name}".format(**context),
+        "mysql": "mysql+pymysql://{username}:{password}@{host}:{port}/{name}".format(**context),
         "sqlite": "sqlite:///{name}".format(**context),
     }[connection_type]
 
@@ -42,9 +42,14 @@ def create_connection():
     Returns:
         connection if success otherwise False
     """
+    connection_args = {}
+
+    if Config.db.engine.startswith("sqlite"):
+        connection_args["check_same_thread"] = False
+
     db_engine = create_engine(
         db_inputs(Config.db.engine),
-        connect_args={"check_same_thread": False},
+        connect_args=connection_args,
         pool_pre_ping=True,
     )
     Session = sessionmaker(bind=db_engine)
