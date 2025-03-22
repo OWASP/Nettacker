@@ -77,12 +77,12 @@ class DbConfig(ConfigBase):
 
     """
 
-    engine = "postgres"
-    name = "test_db"
-    host = "localhost"
-    port = 5432
-    username = "test"
-    password = "testing"
+    engine = "sqlite"
+    name = str(CWD / ".data/nettacker.db")
+    host = ""
+    port = ""
+    username = ""
+    password = ""
 
 
 class PathConfig:
