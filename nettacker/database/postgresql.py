@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.exc import OperationalError
 
 from nettacker.config import Config
@@ -20,8 +20,9 @@ def postgres_create_database():
         Base.metadata.create_all(engine)
     except OperationalError:
         # if the database does not exist
-        engine = create_engine("postgresql+psycopg2://{username}:{password}@{host}:{port}/{name}".format(
-            **Config.db.as_dict()
+        engine = create_engine(
+            "postgresql+psycopg2://{username}:{password}@{host}:{port}/{name}".format(
+                **Config.db.as_dict()
             )
         )
         conn = engine.connect()
