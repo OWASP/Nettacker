@@ -11,7 +11,7 @@ import struct
 import time
 
 from nettacker.core.lib.base import BaseEngine, BaseLibrary
-from nettacker.core.utils.common import reverse_and_regex_condition
+from nettacker.core.utils.common import reverse_and_regex_condition, replace_dependent_response
 
 log = logging.getLogger(__name__)
 
@@ -248,9 +248,15 @@ class SocketEngine(BaseEngine):
                 if "open_port" in condition_results and len(condition_results) > 1:
                     del condition_results["open_port"]
                     del conditions["open_port"]
+
                 if condition_type == "and":
                     return condition_results if len(condition_results) == len(conditions) else []
                 if condition_type == "or":
+                    if sub_step["response"].get("log", False):
+                        matched_service = list(condition_results.keys())[0]
+                        matched_response = condition_results.get(matched_service)
+                        if "response_dependent" in sub_step["response"]["log"]:
+                            condition_results["log"] = f"{matched_service} - {matched_response}"
                     return condition_results if condition_results else []
                 return []
         if sub_step["method"] == "socket_icmp":
