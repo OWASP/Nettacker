@@ -43,7 +43,9 @@ def get_ip_range(ip):
                 requests.get(
                     f"https://rest.db.ripe.net/search.json?query-string={ip}&flags=no-filtering"
                 ).content
-            )["objects"]["object"][0]["primary-key"]["attribute"][0]["value"].replace(" ", "")
+            )["objects"]["object"][0]["primary-key"]["attribute"][0]["value"].replace(
+                " ", ""
+            )
         )
     except Exception:
         return [ip]

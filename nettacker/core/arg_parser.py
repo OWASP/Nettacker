@@ -86,7 +86,9 @@ class ArgParser(ArgumentParser):
             library = str(module_name).split("/")[-1].split(".")[0]
             category = str(module_name).split("/")[-2]
             module = f"{library}_{category}"
-            contents = yaml.safe_load(TemplateLoader(module).open().split("payload:")[0])
+            contents = yaml.safe_load(
+                TemplateLoader(module).open().split("payload:")[0]
+            )
             module_names[module] = contents["info"] if full_details else None
 
             if len(module_names) == limit:
@@ -494,7 +496,9 @@ class ArgParser(ArgumentParser):
         options = self.api_arguments or self.parse_args()
 
         if options.language not in self.languages:
-            die_failure("Please select one of these languages {0}".format(self.languages))
+            die_failure(
+                "Please select one of these languages {0}".format(self.languages)
+            )
 
         # Check Help Menu
         if options.show_help_menu:
@@ -528,7 +532,9 @@ class ArgParser(ArgumentParser):
                         TerminalCodes.GREEN.value,
                         ", ".join(
                             [
-                                "{key}: {value}".format(key=key, value=self.modules[module][key])
+                                "{key}: {value}".format(
+                                    key=key, value=self.modules[module][key]
+                                )
                                 for key in self.modules[module]
                             ]
                         ),
@@ -557,8 +563,8 @@ class ArgParser(ArgumentParser):
 
             if options.api_client_whitelisted_ips:
                 if isinstance(options.api_client_whitelisted_ips, str):
-                    options.api_client_whitelisted_ips = options.api_client_whitelisted_ips.split(
-                        ","
+                    options.api_client_whitelisted_ips = (
+                        options.api_client_whitelisted_ips.split(",")
                     )
                     whitelisted_ips = []
                     for ip in options.api_client_whitelisted_ips:
@@ -599,7 +605,9 @@ class ArgParser(ArgumentParser):
                 options.selected_modules = list(set(self.modules.keys()))
                 options.selected_modules.remove("all")
             else:
-                options.selected_modules = list(set(options.selected_modules.split(",")))
+                options.selected_modules = list(
+                    set(options.selected_modules.split(","))
+                )
             for module_name in options.selected_modules:
                 if module_name not in self.modules:
                     die_failure(_("scan_module_not_found").format(module_name))
@@ -665,7 +673,9 @@ class ArgParser(ArgumentParser):
             options.usernames = list(set(options.usernames.split(",")))
         elif options.usernames_list:
             try:
-                options.usernames = list(set(open(options.usernames_list).read().split("\n")))
+                options.usernames = list(
+                    set(open(options.usernames_list).read().split("\n"))
+                )
             except Exception:
                 die_failure(_("error_username").format(options.usernames_list))
         # Check password list
@@ -673,7 +683,9 @@ class ArgParser(ArgumentParser):
             options.passwords = list(set(options.passwords.split(",")))
         elif options.passwords_list:
             try:
-                options.passwords = list(set(open(options.passwords_list).read().split("\n")))
+                options.passwords = list(
+                    set(open(options.passwords_list).read().split("\n"))
+                )
             except Exception:
                 die_failure(_("error_passwords").format(options.passwords_list))
         # Check custom wordlist

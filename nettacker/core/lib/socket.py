@@ -154,7 +154,9 @@ class SocketLibrary(BaseLibrary):
         icmp_echo_request = 8
         # Make a dummy header with a 0 checksum.
         dummy_checksum = 0
-        header = struct.pack("bbHHh", icmp_echo_request, 0, dummy_checksum, random_integer, 1)
+        header = struct.pack(
+            "bbHHh", icmp_echo_request, 0, dummy_checksum, random_integer, 1
+        )
         data = (
             struct.pack("d", time.time())
             + struct.pack("d", time.time())
@@ -211,7 +213,9 @@ class SocketLibrary(BaseLibrary):
             ) = struct.unpack("bbHHh", icmp_header)
             if packet_id == random_integer:
                 packet_bytes = struct.calcsize("d")
-                time_sent = struct.unpack("d", received_packet[28 : 28 + packet_bytes])[0]
+                time_sent = struct.unpack("d", received_packet[28 : 28 + packet_bytes])[
+                    0
+                ]
                 delay = time_received - time_sent
                 break
 
@@ -236,12 +240,16 @@ class SocketEngine(BaseEngine):
                 for condition in conditions:
                     regex = re.findall(
                         re.compile(conditions[condition]["regex"]),
-                        response["response"]
-                        if condition != "open_port"
-                        else str(response["peer_name"][1]),
+                        (
+                            response["response"]
+                            if condition != "open_port"
+                            else str(response["peer_name"][1])
+                        ),
                     )
                     reverse = conditions[condition]["reverse"]
-                    condition_results[condition] = reverse_and_regex_condition(regex, reverse)
+                    condition_results[condition] = reverse_and_regex_condition(
+                        regex, reverse
+                    )
                 for condition in copy.deepcopy(condition_results):
                     if not condition_results[condition]:
                         del condition_results[condition]
@@ -249,7 +257,11 @@ class SocketEngine(BaseEngine):
                     del condition_results["open_port"]
                     del conditions["open_port"]
                 if condition_type == "and":
-                    return condition_results if len(condition_results) == len(conditions) else []
+                    return (
+                        condition_results
+                        if len(condition_results) == len(conditions)
+                        else []
+                    )
                 if condition_type == "or":
                     return condition_results if condition_results else []
                 return []

@@ -21,10 +21,14 @@ def start(events):
     for event in events:
         if event["target"] not in normalisedjson["children"]:
             normalisedjson["children"].update({event["target"]: {}})
-            normalisedjson["children"][event["target"]].update({event["module_name"]: []})
+            normalisedjson["children"][event["target"]].update(
+                {event["module_name"]: []}
+            )
 
         if event["module_name"] not in normalisedjson["children"][event["target"]]:
-            normalisedjson["children"][event["target"]].update({event["module_name"]: []})
+            normalisedjson["children"][event["target"]].update(
+                {event["module_name"]: []}
+            )
         normalisedjson["children"][event["target"]][event["module_name"]].append(
             f"target: {event['target']}, module_name: {event['module_name']}, port: "
             f"{event['port']}, event: {event['event']}"
@@ -35,8 +39,12 @@ def start(events):
     for target in list(normalisedjson["children"].keys()):
         for module_name in list(normalisedjson["children"][target].keys()):
             for description in normalisedjson["children"][target][module_name]:
-                children_array = [{"name": module_name, "children": [{"name": description}]}]
-                d3_structure["children"].append({"name": target, "children": children_array})
+                children_array = [
+                    {"name": module_name, "children": [{"name": description}]}
+                ]
+                d3_structure["children"].append(
+                    {"name": target, "children": children_array}
+                )
 
     data = (
         open(Config.path.web_static_dir / "report/d3_tree_v1.html")

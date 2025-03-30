@@ -257,7 +257,10 @@ def select_reports(page):
     session = create_connection()
     try:
         search_data = (
-            session.query(Report).order_by(Report.id.desc()).offset((page * 10) - 10).limit(10)
+            session.query(Report)
+            .order_by(Report.id.desc())
+            .offset((page * 10) - 10)
+            .limit(10)
         )
         for data in search_data:
             tmp = {
@@ -324,7 +327,9 @@ def last_host_logs(page):
                 # ],
                 "events": [
                     _.event
-                    for _ in session.query(HostsLog).filter(HostsLog.target == host.target).all()
+                    for _ in session.query(HostsLog)
+                    .filter(HostsLog.target == host.target)
+                    .all()
                 ],
             },
         }
@@ -360,7 +365,9 @@ def get_logs_by_scan_id(scan_id):
             "event": json.loads(log.event),
             "json_event": log.json_event,
         }
-        for log in session.query(HostsLog).filter(HostsLog.scan_unique_id == scan_id).all()
+        for log in session.query(HostsLog)
+        .filter(HostsLog.scan_unique_id == scan_id)
+        .all()
     ]
 
 
@@ -457,7 +464,10 @@ def logs_to_report_html(target):
             event["json_event"],
         )
     html_content += (
-        log_data.table_end + '<p class="footer">' + messages("nettacker_report") + "</p>"
+        log_data.table_end
+        + '<p class="footer">'
+        + messages("nettacker_report")
+        + "</p>"
     )
     return html_content
 
@@ -529,15 +539,21 @@ def search_logs(page, query):
                         n += 1
                 if data.target == selected[capture]["target"]:
                     if data.module_name not in selected[capture]["info"]["module_name"]:
-                        selected[capture]["info"]["module_name"].append(data.module_name)
+                        selected[capture]["info"]["module_name"].append(
+                            data.module_name
+                        )
                     if data.date not in selected[capture]["info"]["date"]:
                         selected[capture]["info"]["date"].append(data.date)
                     if data.port not in selected[capture]["info"]["port"]:
                         selected[capture]["info"]["port"].append(json.loads(data.port))
                     if data.event not in selected[capture]["info"]["event"]:
-                        selected[capture]["info"]["event"].append(json.loads(data.event))
+                        selected[capture]["info"]["event"].append(
+                            json.loads(data.event)
+                        )
                     if data.json_event not in selected[capture]["info"]["json_event"]:
-                        selected[capture]["info"]["json_event"].append(json.loads(data.json_event))
+                        selected[capture]["info"]["json_event"].append(
+                            json.loads(data.json_event)
+                        )
     except Exception:
         return structure(status="error", msg="database error!")
     if len(selected) == 0:

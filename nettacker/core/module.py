@@ -36,9 +36,9 @@ class Module:
 
         if options.modules_extra_args:
             for module_extra_args in self.module_inputs["modules_extra_args"]:
-                self.module_inputs[module_extra_args] = self.module_inputs["modules_extra_args"][
-                    module_extra_args
-                ]
+                self.module_inputs[module_extra_args] = self.module_inputs[
+                    "modules_extra_args"
+                ][module_extra_args]
         self.target = target
 
         self.scan_id = scan_id
@@ -70,8 +70,13 @@ class Module:
         ]
 
     def load(self):
-        self.module_content = TemplateLoader(self.module_name, self.module_inputs).load()
-        if not self.skip_service_discovery and self.module_name not in self.ignored_core_modules:
+        self.module_content = TemplateLoader(
+            self.module_name, self.module_inputs
+        ).load()
+        if (
+            not self.skip_service_discovery
+            and self.module_name not in self.ignored_core_modules
+        ):
             services = {}
             for service in find_events(self.target, "port_scan", self.scan_id):
                 service_event = json.loads(service.json_event)
@@ -100,12 +105,16 @@ class Module:
                         step = TemplateLoader.parse(
                             step, {"port": self.discovered_services[payload["library"]]}
                         )
-                        self.module_content["payloads"][index_payload]["steps"][index_step] = step
+                        self.module_content["payloads"][index_payload]["steps"][
+                            index_step
+                        ] = step
                         index_step += 1
                 index_payload += 1
 
     def generate_loops(self):
-        self.module_content["payloads"] = expand_module_steps(self.module_content["payloads"])
+        self.module_content["payloads"] = expand_module_steps(
+            self.module_content["payloads"]
+        )
 
     def sort_loops(self):
         steps = []

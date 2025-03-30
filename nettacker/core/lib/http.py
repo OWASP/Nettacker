@@ -10,7 +10,10 @@ import aiohttp
 import uvloop
 
 from nettacker.core.lib.base import BaseEngine
-from nettacker.core.utils.common import replace_dependent_response, reverse_and_regex_condition
+from nettacker.core.utils.common import (
+    replace_dependent_response,
+    reverse_and_regex_condition,
+)
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
@@ -45,7 +48,9 @@ def response_conditions_matched(sub_step, response):
     condition_results = {}
     for condition in conditions:
         if condition in ["reason", "status_code", "content", "url"]:
-            regex = re.findall(re.compile(conditions[condition]["regex"]), response[condition])
+            regex = re.findall(
+                re.compile(conditions[condition]["regex"]), response[condition]
+            )
             reverse = conditions[condition]["reverse"]
             condition_results[condition] = reverse_and_regex_condition(regex, reverse)
         if condition == "headers":
@@ -58,9 +63,11 @@ def response_conditions_matched(sub_step, response):
                 try:
                     regex = re.findall(
                         re.compile(conditions["headers"][header]["regex"]),
-                        response["headers"][header.lower()]
-                        if header.lower() in response["headers"]
-                        else False,
+                        (
+                            response["headers"][header.lower()]
+                            if header.lower() in response["headers"]
+                            else False
+                        ),
                     )
                     condition_results["headers"][header] = reverse_and_regex_condition(
                         regex, reverse
@@ -68,7 +75,9 @@ def response_conditions_matched(sub_step, response):
                 except TypeError:
                     condition_results["headers"][header] = []
         if condition == "responsetime":
-            if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
+            if len(conditions[condition].split()) == 2 and conditions[
+                condition
+            ].split()[0] in [
                 "==",
                 "!=",
                 ">=",
@@ -92,7 +101,8 @@ def response_conditions_matched(sub_step, response):
         if (
             "headers" not in condition_results
             and (
-                list(condition_results.values()).count([]) != len(list(condition_results.values()))
+                list(condition_results.values()).count([])
+                != len(list(condition_results.values()))
             )
         ) or (
             "headers" in condition_results
@@ -116,7 +126,8 @@ def response_conditions_matched(sub_step, response):
             return {}
     if condition_type.lower() == "and":
         if [] in condition_results.values() or (
-            "headers" in condition_results and [] in condition_results["headers"].values()
+            "headers" in condition_results
+            and [] in condition_results["headers"].values()
         ):
             return {}
         else:
