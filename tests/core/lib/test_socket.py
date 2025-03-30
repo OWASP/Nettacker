@@ -1,48 +1,49 @@
 from unittest.mock import patch
 from nettacker.core.lib.socket import create_tcp_socket, SocketEngine
 from tests.common import TestCase
+import re
 
-# Mock responses for various scan methods
+
 class Responses:
-    tcp_connect_only = socket_icmp = {}
+    tcp_connect_only = socket_icmp = {"response": "default"}
 
     tcp_connect_send_and_receive = {
-        "response": (
-            'HTTP/1.1 400 Bad Request\r\n'
-            'Server: Apache/2.4.62 (Debian)\r\n'
-            'Content-Length: 302\r\n'
-            'Connection: close\r\n'
-            'Content-Type: text/html; charset=iso-8859-1\r\n\r\n'
-            '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">\n<html><head>\n'
-            '<title>400 Bad Request</title>\n</head><body>\n<h1>Bad Request</h1>\n'
-            '<p>Your browser sent a request that this server could not understand.<br />\n'
-            '</p>\n<hr>\n'
-            '<address>Apache/2.4.62 (Debian)</address>\n</body></html>\n'
-        ),
+        "response": 'HTTP/1.1 400 Bad Request\r\n'
+                    'Server: Apache/2.4.62 (Debian)\r\n'
+                    'Content-Length: 302\r\n'
+                    'Connection: close\r\n'
+                    'Content-Type: text/html; charset=iso-8859-1\r\n\r\n'
+                    '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">\n<html><head>\n'
+                    '<title>400 Bad Request</title>\n</head><body>\n<h1>Bad Request</h1>\n'
+                    '<p>Your browser sent a request that this server could not understand.<br />\n</p>\n<hr>\n'
+                    '<address>Apache/2.4.62 (Debian)</address>\n</body></html>\n',
         "peer_name": ("127.0.0.1", 80),
-        "ssl_flag": True,
-    }
-
-    ssl_version_scan = {
-        "ssl_version": "TLSv1",
-        "weak_version": True,
-        "weak_cipher_suite": True,
         "ssl_flag": True,
     }
 
     none = None
 
-# Mock substeps for different scan methods
+
 class Substeps:
     tcp_connect_send_and_receive = {
         "method": "tcp_connect_send_and_receive",
         "response": {
             "condition_type": "or",
             "conditions": {
-                "open_port": {"regex": "", "reverse": False},
-                "ftp": {"regex": "220 FTP Server ready|Connection closed; transfer aborted", "reverse": False},
-                "http": {"regex": "HTTPStatus.BAD_REQUEST|Content-Length: \\d+", "reverse": False},
-                # Add more protocols as needed
+                "ftp": {"regex": "220 FTP Server ready", "reverse": False},
+                "http": {
+                    "regex": "HTTP/1.1 \\d+|Content-Length: \\d+|Server: [^\\r\\n]+|Content-Type: [^\\r\\n]+",
+                    "reverse": False,
+                },
+                "ssh": {"regex": "OpenSSH", "reverse": False},
+                "smtp": {"regex": "ESMTP", "reverse": False},
+                "rsync": {"regex": "@RSYNCD:", "reverse": False},
+                "telnet": {"regex": "Telnet", "reverse": False},
+                "imap": {"regex": "IMAP4rev1", "reverse": False},
+                "mariadb": {"regex": "MariaDB", "reverse": False},
+                "mysql": {"regex": "MySQL", "reverse": False},
+                "pop3": {"regex": r"\+OK POP3", "reverse": False},
+                "ldap": {"regex": "LDAP", "reverse": False},
             },
         },
     }
@@ -51,7 +52,7 @@ class Substeps:
         "method": "tcp_connect_only",
         "response": {
             "condition_type": "or",
-            "conditions": {"time_response": {"regex": "", "reverse": False}},
+            "conditions": {"time_response": {"regex": ".*", "reverse": False}},
         },
     }
 
@@ -59,11 +60,11 @@ class Substeps:
         "method": "socket_icmp",
         "response": {
             "condition_type": "or",
-            "conditions": {"time_response": {"regex": "", "reverse": False}},
+            "conditions": {"time_response": {"regex": ".*", "reverse": False}},
         },
     }
 
-# Test cases for socket methods
+
 class TestSocketMethod(TestCase):
     @patch("socket.socket")
     @patch("ssl.wrap_socket")
@@ -91,29 +92,55 @@ class TestSocketMethod(TestCase):
 
         # Test socket_icmp method
         self.assertEqual(
-            engine.response_conditions_matched(Substep.socket_icmp, Response.socket_icmp),
+            engine.response_conditions_matched(
+                Substep.socket_icmp, Response.socket_icmp
+            ),
             Response.socket_icmp,
         )
 
-        # Test tcp_connect_send_and_receive method
-        self.assertEqual(
-            sorted(
-                engine.response_conditions_matched(
-                    Substep.tcp_connect_send_and_receive,
-                    Response.tcp_connect_send_and_receive,
-                )
-            ),
-            sorted({"http": ["Content-Type: ", "Content-Length: 302", "HTTP/1.1 400", "Server: "]}),
-        )
+        # Test tcp_connect_send_and_receive method with various protocols
+        protocols = {
+            "http": [
+                "HTTP/1.1 400",
+                "Content-Length: 302",
+                "Content-Type: text/html; charset=iso-8859-1",
+                "Server: Apache/2.4.62 (Debian)",
+            ],
+            "ftp": ["220 FTP Server ready"],
+            "ssh": ["OpenSSH"],
+            "telnet": ["Telnet"],
+            "smtp": ["ESMTP"],
+            "imap": ["IMAP4rev1"],
+            "mariadb": ["MariaDB"],
+            "mysql": ["MySQL"],
+            "pop3": ["+OK POP3"],
+            "ldap": ["LDAP"],
+        }
 
-        # Test tcp_connect_only method
+        for protocol, expected_matches in protocols.items():
+            response_result = engine.response_conditions_matched(
+                Substep.tcp_connect_send_and_receive,
+                {"response": "\r\n".join(expected_matches)},
+            )
+
+            self.assertIn(protocol, response_result, f"Missing protocol {protocol} in response")
+            self.assertTrue(
+                set(expected_matches).issubset(response_result.get(protocol, [])),
+                f"Expected matches not found in response for {protocol}"
+            )
+
+        # Test tcp_connect_only
         self.assertEqual(
-            engine.response_conditions_matched(Substep.tcp_connect_only, Response.tcp_connect_only),
+            engine.response_conditions_matched(
+                Substep.tcp_connect_only, Response.tcp_connect_only
+            ),
             Response.tcp_connect_only,
         )
 
-        # Test failed connection with None response
+        # Test response conditions when the response is None
         self.assertEqual(
-            engine.response_conditions_matched(Substep.tcp_connect_send_and_receive, Response.none),
+            engine.response_conditions_matched(
+                Substep.tcp_connect_send_and_receive, Response.none
+            ),
             [],
         )

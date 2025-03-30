@@ -62,25 +62,23 @@ class ApiConfig(ConfigBase):
 
 class DbConfig(ConfigBase):
     """
-    Database Config (could be modified by user)
-    For sqlite database:
-        fill the name of the DB as sqlite,
-        DATABASE as the name of the db user wants
-        other details can be left empty
-    For mysql users:
-        fill the name of the DB as mysql
-        DATABASE as the name of the database you want to create
-        USERNAME, PASSWORD, HOST and the PORT of the MySQL server
-        need to be filled respectively
+    Database Config (updated for MySQL integration)
 
+    Attributes:
+        - engine: Specify database engine ('sqlite' or 'mysql').
+        - database: Database name (for MySQL) or file path (for SQLite).
+        - host: Hostname for MySQL (default: 'localhost').
+        - port: Port for MySQL (default: 3306).
+        - username: Username for MySQL login.
+        - password: Password for MySQL login.
     """
 
-    engine = "sqlite"
-    name = str(CWD / ".data/nettacker.db")
-    host = ""
-    port = ""
-    username = ""
-    password = ""
+    engine = "sqlite"  # Default to SQLite
+    database = str(CWD / ".data/nettacker.db")  # SQLite file path or MySQL schema name
+    host = "localhost"  # Required for MySQL
+    port = "3306"  # Default MySQL port
+    username = "root"  # Required for MySQL
+    password = ""  # Required for MySQL
 
 
 class PathConfig:
