@@ -31,7 +31,8 @@ class ConfigBase:
             (
                 attribute[0]
                 for attribute in inspect.getmembers(self)
-                if not attribute[0].startswith("_") and not inspect.ismethod(attribute[1])
+                if not attribute[0].startswith("_")
+                and not inspect.ismethod(attribute[1])
             )
         )
         self.idx = 0
@@ -45,7 +46,9 @@ class ApiConfig(ConfigBase):
 
     api_access_log = str(CWD / ".data/nettacker.log")
     api_access_key = generate_random_token(32)
-    api_client_whitelisted_ips = []  # disabled - to enable please put an array with list of ips/cidr/ranges
+    api_client_whitelisted_ips = (
+        []
+    )  # disabled - to enable please put an array with list of ips/cidr/ranges
     # [
     #     "127.0.0.1",
     #     "10.0.0.0/24",
@@ -101,7 +104,9 @@ class PathConfig:
     results_dir = CWD / ".data/results"
     tmp_dir = CWD / ".data/tmp"
     web_static_dir = PACKAGE_PATH / "web/static"
-    user_agents_file = PACKAGE_PATH / "lib/payloads/User-Agents/web_browsers_user_agents.txt"
+    user_agents_file = (
+        PACKAGE_PATH / "lib/payloads/User-Agents/web_browsers_user_agents.txt"
+    )
 
 
 class DefaultSettings(ConfigBase):
@@ -117,10 +122,12 @@ class DefaultSettings(ConfigBase):
     ping_before_scan = False
     ports = None
     profiles = None
-    report_path_filename = "{results_path}/results_{date_time}_{random_chars}.html".format(
-        results_path=PathConfig.results_dir,
-        date_time=now(format="%Y_%m_%d_%H_%M_%S"),
-        random_chars=generate_random_token(10),
+    report_path_filename = (
+        "{results_path}/results_{date_time}_{random_chars}.html".format(
+            results_path=PathConfig.results_dir,
+            date_time=now(format="%Y_%m_%d_%H_%M_%S"),
+            random_chars=generate_random_token(10),
+        )
     )
     retries = 1
     scan_ip_range = False

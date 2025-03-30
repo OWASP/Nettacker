@@ -45,7 +45,9 @@ class IssuerObject:
 
 
 class Mockx509Object:
-    def __init__(self, issuer, subject, is_expired, expire_date, activation_date, signing_algo):
+    def __init__(
+        self, issuer, subject, is_expired, expire_date, activation_date, signing_algo
+    ):
         self.issuer = IssuerObject(issuer)
         self.subject = SubjectObject(subject)
         self.expired = is_expired
@@ -168,7 +170,9 @@ class TestSocketMethod(TestCase):
     @patch("nettacker.core.lib.ssl.is_weak_cipher_suite")
     @patch("nettacker.core.lib.ssl.is_weak_ssl_version")
     @patch("nettacker.core.lib.ssl.create_tcp_socket")
-    def test_ssl_version_and_cipher_scan(self, mock_connection, mock_ssl_check, mock_cipher_check):
+    def test_ssl_version_and_cipher_scan(
+        self, mock_connection, mock_ssl_check, mock_cipher_check
+    ):
         library = SslLibrary()
         HOST = "example.com"
         PORT = 80
@@ -338,7 +342,9 @@ class TestSocketMethod(TestCase):
             "TLSv1.3",
         ]
         self.assertEqual(is_weak_cipher_suite(HOST, PORT, TIMEOUT), (cipher_list, True))
-        context_instance.wrap_socket.assert_called_with(socket_instance, server_hostname=HOST)
+        context_instance.wrap_socket.assert_called_with(
+            socket_instance, server_hostname=HOST
+        )
         socket_instance.settimeout.assert_called_with(TIMEOUT)
         socket_instance.connect.assert_called_with((HOST, PORT))
 
@@ -360,13 +366,17 @@ class TestSocketMethod(TestCase):
         socket_instance = mock_socket.return_value
         context_instance = mock_context.return_value
 
-        context_instance.wrap_socket.return_value = MockConnectionObject(HOST, "TLSv1.3")
+        context_instance.wrap_socket.return_value = MockConnectionObject(
+            HOST, "TLSv1.3"
+        )
         self.assertEqual(
             is_weak_ssl_version(HOST, PORT, TIMEOUT),
             (["TLSv1.3", "TLSv1.3", "TLSv1.3", "TLSv1.3"], False),
         )
 
-        context_instance.wrap_socket.return_value = MockConnectionObject(HOST, "TLSv1.1")
+        context_instance.wrap_socket.return_value = MockConnectionObject(
+            HOST, "TLSv1.1"
+        )
         self.assertEqual(
             is_weak_ssl_version(HOST, PORT, TIMEOUT),
             (["TLSv1.1", "TLSv1.1", "TLSv1.1", "TLSv1.1"], True),
@@ -381,7 +391,9 @@ class TestSocketMethod(TestCase):
         socket_instance.settimeout.assert_called_with(TIMEOUT)
         socket_instance.connect.assert_called_with((HOST, PORT))
 
-        context_instance.wrap_socket.assert_called_with(socket_instance, server_hostname=HOST)
+        context_instance.wrap_socket.assert_called_with(
+            socket_instance, server_hostname=HOST
+        )
 
     def test_response_conditions_matched(self):
         # tests the response conditions matched for different scan methods
@@ -394,7 +406,11 @@ class TestSocketMethod(TestCase):
             engine.response_conditions_matched(
                 Substep.ssl_certificate_expired_vuln, Response.ssl_certificate_expired
             ),
-            {"subject": "component=subject", "expired": True, "expiration_date": "2023-12-07"},
+            {
+                "subject": "component=subject",
+                "expired": True,
+                "expiration_date": "2023-12-07",
+            },
         )
         # ssl_certificate_expired_vuln(not activated)
         self.assertEqual(
@@ -425,7 +441,10 @@ class TestSocketMethod(TestCase):
 
         # ssl_* scans with ssl_flag = False
         self.assertEqual(
-            engine.response_conditions_matched(Substep.ssl_weak_version_vuln, Response.ssl_off), []
+            engine.response_conditions_matched(
+                Substep.ssl_weak_version_vuln, Response.ssl_off
+            ),
+            [],
         )
 
         # * scans with response None i.e. TCP connection failed(None)

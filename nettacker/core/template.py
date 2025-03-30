@@ -18,7 +18,9 @@ class TemplateLoader:
                     if module_inputs[key]:
                         module_content[key] = module_inputs[key]
                 elif isinstance(module_content[key], (dict, list)):
-                    module_content[key] = TemplateLoader.parse(module_content[key], module_inputs)
+                    module_content[key] = TemplateLoader.parse(
+                        module_content[key], module_inputs
+                    )
         elif isinstance(module_content, list):
             array_index = 0
             for key in copy.deepcopy(module_content):
