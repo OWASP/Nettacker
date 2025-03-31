@@ -1,256 +1,118 @@
----
-scan_started: Nettacker motoru başladı ...
-options: python nettacker.py [seçenekler]
-help_menu: Nettacker Yardım Menüsünü Göster
-license: Lütfen lisans ve sözleşmeleri okuyun https://github.com/OWASP/Nettacker
+API: API
+API_access_key: API erişim anahtarı
+API_access_log_file: API erişim günlüğü dosya adı
+API_cert: API CERTIFICATE
+API_cert_key: API CERTIFICATE Key
+API_debug: API hata ayıklama modu
+API_host: API ana bilgisayar adresi
+API_invalid: geçersiz API anahtarı
+API_key: "* API Anahtarı: {0}"
+API_options: API seçenekleri
+API_port: API bağlantı noktası numarası
+Method: Yöntem
+skip_service_discovery: skip service discovery before scan and enforce all modules to scan anyway
+no_live_service_found: no any live service found to scan.
+icmp_need_root_access: to use icmp_scan module or --ping-before-scan you need to run the script as root!
+available_graph: "Tüm aktiviteler ve bilgiler için bir grafik oluşturmak, HTML çıkışı kullanmalısınız. mevcut grafikler: {0}"
+browser_session_killed: tarayıcı oturumunuz öldürüldü
+browser_session_valid: tarayıcınızın oturumu geçerli
+build_graph: bina grafiği ...
+connection_retries: Bağlantı zaman aşımı olduğunda tekrar dener (varsayılan 3)
+current_version: "{0} {1} {2} {6} OWASP Nettacker sürümünü {3} {4} {5} kod adıyla çalıştırıyorsunuz"
+database_connect_fail: Veritabanına bağlanılamadı!
+database_connection_failed: Connection to the selected db failed
+define_white_list: "ile beyaz liste konaklarını tanımlar, (örnek: 127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)"
 engine: Motor
+filtered_content: '... [see the full content in the report]'
 engine_input: Motor girişi seçenekleri
-select_language: bir dil seçin {0}
+Invalid_whatcms_api_key: "{0}"
+searching_whatcms_database: Searching for CMS on whatcms.org...
+whatcms_monthly_quota_exceeded: You have exceeded your monthly WHATCMS request quota
+finished_module: finished module {0} towards the target {1} | module thread number {2} from {3}!
+modules_extra_args_help: add extra args to pass to modules (e.g. --modules-extra-args "x_api_key=123&xyz_passwd=abc"
+choose_scan_method: tarama yöntemini seçin {0}
+cannot_run_api_server: You can't run API Server through itself!
+error_target: Hedef (ler) belirtilemiyor
+error_target_file: "Dosya açılamayan hedef (ler) belirtilemiyor: {0}"
+error_username: "Dosya açılamayan kullanıcı adı (lar) belirtilemez: {0}"
+error_passwords: "Cannot specify the password(s), unable to open file: {0}"
+error_wordlist: "Cannot specify the word(s), unable to open file {0}"
+exclude_scan_method: "{0} öğesini hariç tutmak için tarama yöntemini seçin"
+file_write_error: '"{0}" dosyası yazılabilir değil!'
+library_not_supported: library [{0}] is not support!
+removing_old_db_records: Removing old database record for selected targets and modules.
+regrouping_targets: regrouping targets based on hardware resources!
+finish_build_graph: bina grafiğini bitir!
+finished_parallel_module_scan: process-{0}|{1}|{2}| finished module thread number {3} from {4}
+graph_message: Bu grafik OWASP Nettacker tarafından oluşturuldu. Grafik tüm modül aktivitelerini, ağ haritasını ve hassas bilgileri içerir. Lütfen güvenilir değilse, bu dosyayı kimseyle paylaşmayın.
+graph_module_404: "Bu grafik modülü bulunamadı: {0}"
+graph_module_unavailable: bu "{0}" grafik modülü mevcut değil
+graph_output: Grafik özelliğini kullanmak için çıktı dosya adınız ".html" veya ".htm" ile bitmelidir!
+help_menu: Nettacker Yardım Menüsünü Göster
+done: bitmiş!
+error_platform: ne yazık ki yazılımın bu sürümü sadece linux / osx / windows üzerinde çalıştırılabilir.
+file_saved: "report saved in {0} and database"
+inserting_report_db: raporu veritabanına eklemek
+invalid_database: Please select from mysql or sqlite in the configuration file
+invalid_json_type_to_db: "Invalid type of JSON data for the database. Skipping the submission to database. Data:{0}"
+license: Lütfen lisans ve sözleşmeleri okuyun https://github.com/OWASP/Nettacker
+loaded_modules: "{0} modül yüklendi ..."
+loading_modules: loading all modules... it might get some time!
+loading_profiles: loading all profiles... it might get some time!
+module_profile_full_information: "{0}{1}{2}: {3}"
+nettacker_report: OWASP Nettacker Raporu
+nettacker_version_details: "Yazılım Ayrıntıları: {2} içindeki OWASP Nettacker sürümü {0} [{1}]"
+not_found: Bulunamadı!
+outgoing_proxy: "giden bağlantılar proxy'si (socks). örnek socks5: 127.0.0.1: 9050, çorap: //127.0.0.1: 9050 socks5: //127.0.0.1: 9050 veya socks4: çorap4: //127.0.0.1: 9050, kimlik doğrulama: çorap: // kullanıcı adı: şifre @ 127.0.0.1, socks4: // kullanıcı adı: password@127.0.0.1, socks5: // kullanıcı adı: password@127.0.0.1"
+password_separator: şifre listesi "," ile ayrı
+pentest_graphs: Sızma Test Grafikleri
+ping_before_scan: ana bilgisayarı taramadan önce ping
+port_separator: port (lar) listesi, "," ile ayrı
+ports_int: portlar tamsayı olmalıdır! (ör. 80, 80, 1080, 80, 1080-1300, 9000, 12000-15000)
+profile_404: '"{0}" profili bulunamadı!'
 range: tüm IP'leri aralıkta tara
-subdomains: alt alanları bul ve tara
-thread_number_connections: Bir ana bilgisayara bağlantı için iş parçacığı numaraları
-thread_number_hosts: tarama konakları için iş parçacığı numaraları
+read_passwords: dosyadan şifre (ler) oku
+read_target: dosyadan hedef (ler) oku
+removing_logs_db: eski günlükleri db'den kaldırma
 save_logs: tüm kayıtları dosyaya kaydet (results.txt, results.html, results.json)
+scan_method_options: Tarama yöntemi seçenekleri
+scan_method_select: lütfen tarama yönteminizi seçin!
+scan_module_not_found: bu tarama modülü [{0}] bulunamadı!
+scan_started: Nettacker motoru başladı ...
+select_language: bir dil seçin {0}
+select_profile: profil seç {0}
+select_user_agent: "Select a user agent to send with HTTP requests or enter \"random_user_agent\" to randomize the User-Agent in the requests."
+send_success_event_from_module: "process-{0}|{1}|{2}|module-thread {3}/{4}|request-thread {5}/{6}|{7}|\nsuccess_condition (s): \n{8}"
+send_unsuccess_event_from_module: "process-{0}|{1}|{2}|module-thread {3}/{4}|request-thread {5}/{6}| all conditions failed"
+sending_module_request: "process-{0}|{1}|{2}|module-thread {3}/{4}| sending request {5} from {6}"
+verbose_event: enable verbose event to see state of each thread
+no_events_for_report: there are no events exist to create a report! skipping this section.
+set_hardware_usage: Set hardware usage while scanning. (low, normal, high, maximum)
+show_all_modules: show all modules and their information
+show_all_profiles: show all profiles and their information
+single_process_started: process-{0}| process is started!
+software_version: yazılım sürümünü göster
+start_api_server: API hizmetini başlat
+start_multi_process: imported {0} targets in {1} process(es).
+start_parallel_module_scan: process-{0}|{1}|{2}| started module thread number {3} from {4}
+subdomains: alt alanları bul ve tara
 target: Hedef
 target_input: Hedef giriş seçenekleri
 target_list: hedef (ler) listesi, "," ile ayrı
-read_target: dosyadan hedef (ler) oku
-scan_method_options: Tarama yöntemi seçenekleri
-choose_scan_method: tarama yöntemini seçin {0}
-exclude_scan_method: "{0} öğesini hariç tutmak için tarama yöntemini seçin"
-username_list: kullanıcı adı (lar) listesi, "," ile ayrı
-username_from_file: dosyadan kullanıcı adlarını oku
-password_separator: şifre listesi "," ile ayrı
-read_passwords: dosyadan şifre (ler) oku
-port_separator: port (lar) listesi, "," ile ayrı
+thread_number_connections: Bir ana bilgisayara bağlantı için iş parçacığı numaraları
+thread_number_modules: parallel module scan for hosts
 time_to_sleep: her istek arasında uyumak için zaman
-error_target: Hedef (ler) belirtilemiyor
-error_target_file: "Dosya açılamayan hedef (ler) belirtilemiyor: {0}"
-thread_number_warning:
-  100'den daha düşük iplik numarası kullanmak daha iyi, BTW devam
-  ediyor ...
-settimeout: zaman aşımını {0} saniye olarak ayarlayın, çok büyük değil mi? devam
-  ettikçe ...
-scan_module_not_found: bu tarama modülü [{0}] bulunamadı!
-error_exclude_all: tüm tarama yöntemlerini hariç tutamazsınız
-exclude_module_error: hariç tutmak için seçtiğiniz {0} modülü bulunamadı!
-method_inputs:
-  "yöntem girişlerini girin, örneğin: ftp_brute_users = test, admin &
-  ftp_brute_passwds = read_from_file: /tmp/pass.txt&ftp_brute_port=21"
-error_reading_file: "{0} dosyası okunamıyor"
-error_username: "Dosya açılamayan kullanıcı adı (lar) belirtilemez: {0}"
-found: "{0} bulundu! ({1}: {2})"
-error_password_file: "Dosya açılamayan şifre (ler) belirtilemez: {0}"
-file_write_error: '"{0}" dosyası yazılabilir değil!'
-scan_method_select: lütfen tarama yönteminizi seçin!
-remove_temp: geçici dosyaları kaldırarak!
-sorting_results: sıralama sonuçları!
-done: bitmiş!
-start_attack: "{0}, {1} arasında {1} saldırmaya başlama"
-module_not_available: '"{0}" bu modül mevcut değil'
-error_platform:
-  ne yazık ki yazılımın bu sürümü sadece linux / osx / windows üzerinde
-  çalıştırılabilir.
-python_version_error: Python sürümünüz desteklenmiyor!
-skip_duplicate_target:
-  yinelenen hedefi atla (bazı alt alanlar / alan adları aynı
-  IP'ye ve Aralıklara sahip olabilir)
-unknown_target: bilinmeyen hedef türü [{0}]
-checking_range: "{0} aralığında kontrol ediliyor ..."
-checking: "{0} kontrol ediliyor ..."
-HOST: HOST
-USERNAME: KULLANICI ADI
-PASSWORD: PAROLA
-PORT: LİMAN
-TYPE: TİP
-DESCRIPTION: AÇIKLAMA
-verbose_mode: ayrıntılı mod düzeyi (0-5) (varsayılan 0)
-software_version: yazılım sürümünü göster
-check_updates: güncellemeleri kontrol ediniz
-outgoing_proxy:
-  "giden bağlantılar proxy'si (socks). örnek socks5: 127.0.0.1: 9050,
-  çorap: //127.0.0.1: 9050 socks5: //127.0.0.1: 9050 veya socks4: çorap4: //127.0.0.1:
-  9050, kimlik doğrulama: çorap: // kullanıcı adı: şifre @ 127.0.0.1, socks4: // kullanıcı
-  adı: password@127.0.0.1, socks5: // kullanıcı adı: password@127.0.0.1"
-valid_socks_address:
-  "lütfen geçerli bir çorap adresi ve port giriniz. örnek socks5:
-  127.0.0.1: 9050, çorap: //127.0.0.1: 9050, çorap5: //127.0.0.1: 9050 veya çorap4:
-  çorap4: //127.0.0.1: 9050, kimlik doğrulama: çorap: // kullanıcı adı: şifre @ 127.0.0.1,
-  socks4: // kullanıcı adı: password@127.0.0.1, socks5: // kullanıcı adı: password@127.0.0.1"
-connection_retries: Bağlantı zaman aşımı olduğunda tekrar dener (varsayılan 3)
-ftp_connectiontimeout: "{0} ile ftp bağlantısı: {1} zaman aşımı, {2} atlama: {3}"
-login_successful: BAŞARIYLA GİRİŞ YAPTI!
-login_list_error: BAŞARILI OLMAK ÜZERE, LİSANS KOMİSYONU İÇİN İZİN VERİLDİ!
-ftp_connection_failed:
-  "{0} için ftp bağlantısı: {1} başarısız oldu, tüm adımı atladım
-  {süreç {2}} {2}]! bir sonraki adıma geçmek"
-input_target_error:
-  "{0} modülü için giriş hedefi {1} atlama, DOMAIN, HTTP veya SINGLE_IPv4
-  olmalıdır"
-user_pass_found: "user: {0} pass: {1} host: {2} bağlantı noktası: {3} bulundu!"
-file_listing_error: "(LİSTE DOSYALARI İÇİN İZİN YOK)"
-trying_message:
-  "{3} {4}: {5} ({6}) 'daki {2} sürecindeki {1} hesabının {0} değerini
-  denemek"
-smtp_connectiontimeout: "{0} için smtp bağlantısı: {1} zaman aşımı, {2} atlama: {3}"
-smtp_connection_failed:
-  "{0} için smtp bağlantısı: {1} başarısız oldu, tüm adımı atla
-  {süreç {2}} {2}]! bir sonraki adıma geçmek"
-ssh_connectiontimeout: "{0} ile ssh bağlantısı: {1} zaman aşımı, {2} atlama: {3}"
-ssh_connection_failed:
-  "{0} için ssh bağlantısı: {1} başarısız oldu, tüm adımı atladı
-  {süreç {2} {2}]! bir sonraki adıma geçmek"
-port/type: "{0} / {1}"
-port_found: "host: {0} port: {1} ({2}) bulundu!"
-target_submitted: "{0} hedefi gönderildi!"
-current_version:
-  "{0} {1} {2} {6} OWASP Nettacker sürümünü {3} {4} {5} kod adıyla
-  çalıştırıyorsunuz"
-feature_unavailable:
-  Bu özellik henüz mevcut değil! son sürümü almak için lütfen git
-  klon https://github.com/OWASP/Nettacker.git veya pip install -U OWASP-Nettacker
-  çalıştırın.
-available_graph:
-  "Tüm aktiviteler ve bilgiler için bir grafik oluşturmak, HTML çıkışı
-  kullanmalısınız. mevcut grafikler: {0}"
-graph_output:
-  Grafik özelliğini kullanmak için çıktı dosya adınız ".html" veya ".htm"
-  ile bitmelidir!
-build_graph: bina grafiği ...
-finish_build_graph: bina grafiğini bitir!
-pentest_graphs: Sızma Test Grafikleri
-graph_message:
-  Bu grafik OWASP Nettacker tarafından oluşturuldu. Grafik tüm modül
-  aktivitelerini, ağ haritasını ve hassas bilgileri içerir. Lütfen güvenilir değilse,
-  bu dosyayı kimseyle paylaşmayın.
-nettacker_report: OWASP Nettacker Raporu
-nettacker_version_details:
-  "Yazılım Ayrıntıları: {2} içindeki OWASP Nettacker sürümü
-  {0} [{1}]"
-no_open_ports: açık bağlantı noktası bulunamadı!
-no_user_passwords: kullanıcı / şifre bulunamadı!
-loaded_modules: "{0} modül yüklendi ..."
-graph_module_404: "Bu grafik modülü bulunamadı: {0}"
-graph_module_unavailable: bu "{0}" grafik modülü mevcut değil
-ping_before_scan: ana bilgisayarı taramadan önce ping
-skipping_target:
-  Taramadan önce --ping -ping gerçek olduğundan ve yanıt vermediğinden
-  {0} hedefleme yöntemini ve {1} tarama yöntemini atlıyor!
-not_last_version: OWASP Nettacker'ın son sürümünü kullanmıyorsunuz, lütfen güncelleyin.
-cannot_update:
-  güncellemeyi kontrol edemezsiniz, lütfen internet bağlantınızı kontrol
-  edin.
-last_version: OWASP Nettacker'ın son sürümünü kullanıyorsunuz ...
-directoy_listing: dizin girişi {0} bulundu
-insert_port_message:
-  lütfen URL yerine -g veya --methods-args anahtarından bağlantı
-  noktası ekleyin
-http_connectiontimeout: http bağlantısı {0} zaman aşımı!
-wizard_mode: sihirbaz modunu başlat
-directory_file_404: "{1} numaralı bağlantı noktasında {0} için dizin veya dosya bulunamadı"
-open_error: "{0} açılamıyor"
-dir_scan_get:
-  dir_scan_http_method değeri GET veya HEAD olmalı, varsayılanı GET olarak
-  ayarlanmış olmalıdır.
-list_methods: tüm yöntemleri listeler
-module_args_error: "{0} modül hatalarını alamıyor"
-trying_process:
-  "{3} tarihinde {1} {1} tarihinde {1} {0} tarihinde {4} {5} tarihinde
-  {0} denemeyi"
-domain_found: "alan bulundu: {0}"
-TIME: ZAMAN
-CATEGORY: KATEGORİ
-module_pattern_404: "{0} desenli bir modül bulamıyor!"
-enter_default: lütfen {0} girin Varsayılan [{1}]>
-enter_choices_default: lütfen {0} girin seçimler [{1}] | Varsayılan [{2}]>
-all_targets: hedefler
-all_thread_numbers: iş parçacığı numarası
-out_file: çıktı dosya adı
-all_scan_methods: tarama yöntemleri
-all_scan_methods_exclude: dışlamak için tarama yöntemleri
-all_usernames: kullanıcı adları
-all_passwords: şifreler
-timeout_seconds: zaman aşımı saniye
-all_ports: port numaraları
-all_verbose_level: ayrıntılı seviye
-all_socks_proxy: çorap vekil
-retries_number: yeniden deneme sayısı
-graph: grafik
-subdomain_found: "alt alan bulundu: {0}"
-select_profile: profil seç {0}
-profile_404: '"{0}" profili bulunamadı!'
-waiting: "{0} için bekliyor"
-vulnerable: "{0} için savunmasız"
-target_vulnerable: "{0} hedefi: {1}, {2} için savunmasız!"
-no_vulnerability_found: hiçbir güvenlik açığı bulunamadı! ({0})
-Method: Yöntem
-API: API
-API_options: API seçenekleri
-start_api_server: API hizmetini başlat
-API_host: API ana bilgisayar adresi
-API_port: API bağlantı noktası numarası
-API_debug: API hata ayıklama modu
-API_access_key: API erişim anahtarı
-white_list_API: API'ye bağlanmak için beyaz liste ana bilgisayarlarına izin ver
-define_white_list:
-  "ile beyaz liste konaklarını tanımlar, (örnek: 127.0.0.1, 192.168.0.1/24,
-  10.0.0.1-10.0.0.255)"
-gen_API_access_log: API erişim günlüğü oluştur
-API_access_log_file: API erişim günlüğü dosya adı
-API_port_int: API portu bir tamsayı olmalı!
-unknown_ip_input:
-  bilinmeyen giriş türü, kabul edilen türler SINGLE_IPv4, RANGE_IPv4,
-  CIDR_IPv4 şeklindedir.
-API_key: "* API Anahtarı: {0}"
-ports_int: portlar tamsayı olmalıdır! (ör. 80, 80, 1080, 80, 1080-1300, 9000, 12000-15000)
-through_API: OWASP Nettacker API'sı aracılığıyla
-API_invalid: geçersiz API anahtarı
 unauthorized_IP: IP'niz yetkili değil
-not_found: Bulunamadı!
-no_subdomain_found: "subdomain_scan: alt alan adı bulunamadı!"
-viewdns_domain_404: "viewdns_reverse_ip_lookup_scan: alan adı bulunamadı!"
-browser_session_valid: tarayıcınızın oturumu geçerli
-browser_session_killed: tarayıcı oturumunuz öldürüldü
 updating_database: veritabanını güncellemek ...
-database_connect_fail: Veritabanına bağlanılamadı!
-inserting_report_db: raporu veritabanına eklemek
-inserting_logs_db: günlükleri veritabanına eklemek
-removing_logs_db: eski günlükleri db'den kaldırma
-len_subdomain_found: "{0} alt alan bulundu!"
-len_domain_found: "{0} alan (lar) bulundu!"
-phpmyadmin_dir_404: phpmyadmin dir bulunamadı!
-DOS_send: DoS paketlerini {0} adresine göndermek
-host_up: "{0} doldu! Geri ping atma zamanı {1}"
-host_down: "{0} ping edilemiyor!"
-root_required: bunun kök olarak çalıştırılması gerekiyor
-admin_scan_get:
-  admin_scan_http_method değeri GET veya HEAD olmalı, varsayılanı GET
-  olarak ayarlanmış olmalıdır.
-telnet_connectiontimeout:
-  "{0} ile telnet bağlantısı: {1} zaman aşımı, {2} atlama:
-  {3}"
-telnet_connection_failed:
-  "{0} ile telnet bağlantısı: {1} başarısız oldu, tüm adımı
-  atladı {süreç {2}} {2}]! bir sonraki adıma geçmek"
-http_auth_success:
-  "http temel kimlik doğrulama başarısı - ana bilgisayar: {2}: {3},
-  kullanıcı: {0}, pass: {1} bulundu!"
-http_auth_failed:
-  "http temel kimlik doğrulaması {0} tarihinde başarısız oldu: {3}
-  {1} kullanarak: {2}"
-http_form_auth_success:
-  "http formu kimlik doğrulama başarısı - ana bilgisayar: {2}:
-  {3}, kullanıcı: {0}, pass: {1} bulundu!"
-http_form_auth_failed:
-  "http formu kimlik doğrulaması {0} için başarısız oldu: {3}
-  {1} kullanarak: {2}"
-http_ntlm_success:
-  "http ntlm kimlik doğrulama başarısı - ana bilgisayar: {2}: {3},
-  kullanıcı: {0}, pass: {1} bulundu!"
-http_ntlm_failed:
-  "http ntlm kimlik doğrulaması {0} tarihinde başarısız oldu: {3}
-  {1} kullanarak: {2}"
-no_response: hedeften cevap alamıyor
-category_framework: "kategori: {0}, çerçeveler: {1} bulundu!"
-nothing_found: "{1} 'de {0} tarihinde hiçbir şey bulunamadı!"
-no_auth: "{0} tarihinde hiçbir kimlik bulunamadı: {1}"
+username_from_file: dosyadan kullanıcı adlarını oku
+username_list: kullanıcı adı (lar) listesi, "," ile ayrı
+verbose_mode: ayrıntılı mod düzeyi (0-5) (varsayılan 0)
+wrong_hardware_usage: "You must select one of these profiles for hardware usage. (low, normal, high, maximum)"
+invalid_scan_id: your scan id is not valid!
+compare_scans: compare current scan to old scans using the unique scan_id
+compare_report_path_filename: the file-path to store the compare_scan report
+no_scan_to_compare: the scan_id to be compared not found
+compare_report_saved: "compare results saved in {0}"
+build_compare_report: "building compare report"
+finish_build_report: "Finished building compare report"
+user_wordlist: "Allows users to enter their own wordlist"
