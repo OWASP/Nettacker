@@ -12,8 +12,9 @@ Description:
      and prevents automatic line wrapping.
 """
 
-import sys
 import os
+import sys
+
 from ruamel.yaml import YAML
 
 if len(sys.argv) != 3:
@@ -25,15 +26,15 @@ locale_folder = sys.argv[2]
 
 yaml = YAML()
 yaml.preserve_quotes = True  # Preserve original quotes
-yaml.width = 4096            # Set a large width to avoid automatic line wrapping
+yaml.width = 4096  # Set a large width to avoid automatic line wrapping
 
 # Load the English reference file
-with open(en_file, 'r', encoding='utf-8') as f:
+with open(en_file, "r", encoding="utf-8") as f:
     en_data = yaml.load(f)
 
 # Process all .yaml files in the folder except the English file
 for filename in os.listdir(locale_folder):
-    if not filename.endswith('.yaml'):
+    if not filename.endswith(".yaml"):
         continue
     if filename == os.path.basename(en_file):
         continue
@@ -42,7 +43,7 @@ for filename in os.listdir(locale_folder):
     output_path = os.path.join(locale_folder, filename)
 
     # Load the target locale file
-    with open(target_path, 'r', encoding='utf-8') as f:
+    with open(target_path, "r", encoding="utf-8") as f:
         target_data = yaml.load(f)
 
     # Build a new dictionary following the order of keys in en.yaml
@@ -54,7 +55,7 @@ for filename in os.listdir(locale_folder):
             new_data[key] = en_data[key]
 
     # Output the result to a new file
-    with open(output_path, 'w', encoding='utf-8') as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         yaml.dump(new_data, f)
 
     print("Updated file has been output to", output_path)
