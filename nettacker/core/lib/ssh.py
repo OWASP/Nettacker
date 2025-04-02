@@ -21,9 +21,11 @@ class SshLibrary(BaseLibrary):
             **{
                 "hostname": host,
                 "port": port,
-                "auth_strategy": Password(username=username, password_getter=lambda: password)
-                if password
-                else NoneAuth(username=username),
+                "auth_strategy": (
+                    Password(username=username, password_getter=lambda: password)
+                    if password
+                    else NoneAuth(username=username)
+                ),
             }
         )
 

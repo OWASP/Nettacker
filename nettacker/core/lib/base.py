@@ -10,7 +10,11 @@ import yaml
 from nettacker.config import Config
 from nettacker.core.messages import messages as _
 from nettacker.core.utils.common import merge_logs_to_list
-from nettacker.database.db import find_temp_events, submit_temp_logs_to_db, submit_logs_to_db
+from nettacker.database.db import (
+    find_temp_events,
+    submit_temp_logs_to_db,
+    submit_logs_to_db,
+)
 from nettacker.logger import get_logger, TerminalCodes
 
 log = get_logger()
@@ -46,13 +50,17 @@ class BaseEngine(ABC):
                     filter_index += 1
             return content
 
-    def get_dependent_results_from_database(self, target, module_name, scan_id, event_names):
+    def get_dependent_results_from_database(
+        self, target, module_name, scan_id, event_names
+    ):
         events = []
         for event_name in event_names.split(","):
             while True:
                 event = find_temp_events(target, module_name, scan_id, event_name)
                 if event:
-                    events.append(json.loads(event.event)["response"]["conditions_results"])
+                    events.append(
+                        json.loads(event.event)["response"]["conditions_results"]
+                    )
                     break
                 time.sleep(0.1)
         return events
@@ -93,7 +101,9 @@ class BaseEngine(ABC):
                             globals().update(locals())
                             generate_new_step = copy.deepcopy(sub_step[key])
                             key_name = re.findall(
-                                re.compile("dependent_on_temp_event\\['\\S+\\]\\[\\S+\\]"),
+                                re.compile(
+                                    "dependent_on_temp_event\\['\\S+\\]\\[\\S+\\]"
+                                ),
                                 generate_new_step,
                             )[0]
                             try:
@@ -133,9 +143,9 @@ class BaseEngine(ABC):
                     "data": response,
                 }
             )
-        if event["response"]["conditions_results"] and "save_to_temp_events_only" not in event.get(
-            "response", ""
-        ):
+        if event["response"][
+            "conditions_results"
+        ] and "save_to_temp_events_only" not in event.get("response", ""):
             # remove sensitive information before submitting to db
 
             options = copy.deepcopy(options)
@@ -168,7 +178,9 @@ class BaseEngine(ABC):
                     ),
                     "event": " ".join(yaml.dump(event_request_keys).split())
                     + " conditions: "
-                    + " ".join(yaml.dump(event["response"]["conditions_results"]).split()),
+                    + " ".join(
+                        yaml.dump(event["response"]["conditions_results"]).split()
+                    ),
                     "json_event": event,
                 }
             )
@@ -187,7 +199,9 @@ class BaseEngine(ABC):
                         self.filter_large_content(
                             "\n".join(
                                 [
-                                    TerminalCodes.PURPLE.value + key + TerminalCodes.RESET.value
+                                    TerminalCodes.PURPLE.value
+                                    + key
+                                    + TerminalCodes.RESET.value
                                     for key in log_list
                                 ]
                             ),
@@ -207,9 +221,15 @@ class BaseEngine(ABC):
                         total_number_of_requests,
                         " ".join(
                             [
-                                TerminalCodes.YELLOW.value + key + TerminalCodes.RESET.value
-                                if ":" in key
-                                else TerminalCodes.GREEN.value + key + TerminalCodes.RESET.value
+                                (
+                                    TerminalCodes.YELLOW.value
+                                    + key
+                                    + TerminalCodes.RESET.value
+                                    if ":" in key
+                                    else TerminalCodes.GREEN.value
+                                    + key
+                                    + TerminalCodes.RESET.value
+                                )
                                 for key in yaml.dump(event_request_keys).split()
                             ]
                         ),
@@ -217,11 +237,15 @@ class BaseEngine(ABC):
                             "conditions: "
                             + " ".join(
                                 [
-                                    TerminalCodes.PURPLE.value + key + TerminalCodes.RESET.value
-                                    if ":" in key
-                                    else TerminalCodes.GREEN.value
-                                    + key
-                                    + TerminalCodes.RESET.value
+                                    (
+                                        TerminalCodes.PURPLE.value
+                                        + key
+                                        + TerminalCodes.RESET.value
+                                        if ":" in key
+                                        else TerminalCodes.GREEN.value
+                                        + key
+                                        + TerminalCodes.RESET.value
+                                    )
                                     for key in yaml.dump(
                                         event["response"]["conditions_results"]
                                     ).split()
@@ -274,7 +298,9 @@ class BaseEngine(ABC):
         for attr_name in ("ports", "usernames", "passwords"):
             if attr_name in sub_step:
                 value = sub_step.pop(attr_name)
-                sub_step[attr_name.rstrip("s")] = int(value) if attr_name == "ports" else value
+                sub_step[attr_name.rstrip("s")] = (
+                    int(value) if attr_name == "ports" else value
+                )
 
         if "dependent_on_temp_event" in backup_response:
             temp_event = self.get_dependent_results_from_database(

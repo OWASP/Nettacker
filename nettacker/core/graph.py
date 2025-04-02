@@ -17,7 +17,11 @@ from nettacker.core.utils.common import (
     sanitize_path,
     generate_compare_filepath,
 )
-from nettacker.database.db import get_logs_by_scan_id, submit_report_to_db, get_options_by_scan_id
+from nettacker.database.db import (
+    get_logs_by_scan_id,
+    submit_report_to_db,
+    get_options_by_scan_id,
+)
 
 log = logger.get_logger()
 nettacker_path_config = Config.path
@@ -100,7 +104,9 @@ def build_text_table(events):
     return (
         _table.draw()
         + "\n\n"
-        + _("nettacker_version_details").format(version_info()[0], version_info()[1], now())
+        + _("nettacker_version_details").format(
+            version_info()[0], version_info()[1], now()
+        )
         + "\n"
     )
 
@@ -163,7 +169,9 @@ def create_report(options, scan_id):
                 event["target"],
                 event["module_name"],
                 event["port"],
-                "<br>".join(log_list) if log_list else "Detected",  # event["event"], #log
+                (
+                    "<br>".join(log_list) if log_list else "Detected"
+                ),  # event["event"], #log
                 index,
                 html.escape(event["json_event"]),
             )
@@ -174,7 +182,9 @@ def create_report(options, scan_id):
             + str(index - 1)
             + "</div>"
             + '<p class="footer">'
-            + _("nettacker_version_details").format(version_info()[0], version_info()[1], now())
+            + _("nettacker_version_details").format(
+                version_info()[0], version_info()[1], now()
+            )
             + " ScanID: {0}".format(scan_id)
             + "</p>"
             + log_data.json_parse_js
@@ -192,7 +202,9 @@ def create_report(options, scan_id):
             writer = csv.DictWriter(csvfile, fieldnames=keys)
             writer.writeheader()
             for log_list in all_scan_logs:
-                dict_data = {key: value for key, value in log_list.items() if key in keys}
+                dict_data = {
+                    key: value for key, value in log_list.items() if key in keys
+                }
                 writer.writerow(dict_data)
             csvfile.close()
 
@@ -222,7 +234,11 @@ def create_compare_report(options, scan_id):
     Returns:
         True if success otherwise None
     """
-    comp_id = options["scan_compare_id"] if isinstance(options, dict) else options.scan_compare_id
+    comp_id = (
+        options["scan_compare_id"]
+        if isinstance(options, dict)
+        else options.scan_compare_id
+    )
     scan_log_curr = get_logs_by_scan_id(scan_id)
     scan_logs_comp = get_logs_by_scan_id(comp_id)
 

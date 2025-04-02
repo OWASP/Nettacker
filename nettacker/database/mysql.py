@@ -31,6 +31,8 @@ def mysql_create_tables():
         True if success otherwise False
     """
     db_engine = create_engine(
-        "mysql://{username}:{password}@{host}:{port}/{name}".format(**Config.db.as_dict())
+        "mysql://{username}:{password}@{host}:{port}/{name}".format(
+            **Config.db.as_dict()
+        )
     )
     Base.metadata.create_all(db_engine)

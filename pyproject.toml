@@ -1,18 +1,21 @@
 [tool.poetry]
 name = "nettacker"
 version = "0.4.0"
-description = "Automates information gathering, vulnerability scanning and aids penetration testing engagements in general"
+description = "Automates information gathering, vulnerability scanning, and aids penetration testing engagements in general"
 license = "Apache-2.0"
 readme = "README.md"
-
 authors = ["OWASP Nettacker Contributors"]
+
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
+
 keywords = [
     "automation",
     "bruteforce",
@@ -36,7 +39,7 @@ homepage = "https://owasp.org/www-project-nettacker"
 repository = "https://github.com/OWASP/Nettacker"
 documentation = "https://github.com/OWASP/Nettacker/wiki"
 
-packages = [{ include = "nettacker"}]
+packages = [{ include = "nettacker" }]
 
 [tool.nettacker]
 release_name = "QUIN"
@@ -45,7 +48,7 @@ release_name = "QUIN"
 nettacker = "nettacker.main:run"
 
 [tool.poetry.dependencies]
-python = "^3.9, <3.13"
+python = ">=3.9"
 aiohttp = "^3.9.5"
 argparse = "^1.4.0"
 asyncio = "^3.4.3"
@@ -62,7 +65,7 @@ requests = "^2.32.3"
 sqlalchemy = "^2.0.22"
 texttable = "^1.7.0"
 zipp = "^3.19.1"
-uvloop = "^0.21.0"
+uvloop = { version = "^0.21.0", markers = "sys_platform != 'win32'" }
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.16.1"
@@ -93,9 +96,6 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 99
-
-# [tool.ruff.lint]
-# select = ["E4", "E7", "E9", "F", "T"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

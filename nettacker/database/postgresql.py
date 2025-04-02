@@ -20,7 +20,9 @@ def postgres_create_database():
         Base.metadata.create_all(engine)
     except OperationalError:
         # if the database does not exist
-        engine = create_engine("postgres+psycopg2://postgres:postgres@localhost/postgres")
+        engine = create_engine(
+            "postgres+psycopg2://postgres:postgres@localhost/postgres"
+        )
         conn = engine.connect()
         conn.execute("commit")
         conn.execute(f"CREATE DATABASE {Config.db.name}")

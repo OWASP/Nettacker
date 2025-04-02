@@ -18,8 +18,12 @@ def set_socks_proxy(socks_proxy):
     if socks_proxy:
         import socks
 
-        socks_version = socks.SOCKS5 if socks_proxy.startswith("socks5://") else socks.SOCKS4
-        socks_proxy = socks_proxy.split("://")[1] if "://" in socks_proxy else socks_proxy
+        socks_version = (
+            socks.SOCKS5 if socks_proxy.startswith("socks5://") else socks.SOCKS4
+        )
+        socks_proxy = (
+            socks_proxy.split("://")[1] if "://" in socks_proxy else socks_proxy
+        )
         if "@" in socks_proxy:
             socks_username = socks_proxy.split(":")[0]
             socks_password = socks_proxy.split(":")[1].split("@")[0]

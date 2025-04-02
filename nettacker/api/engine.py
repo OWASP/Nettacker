@@ -273,12 +273,15 @@ def compare_scans():
     try:
         result = create_compare_report(compare_options, scan_id_first)
         if result:
-            return jsonify(
-                structure(
-                    status="success",
-                    msg="scan_comparison_completed",
-                )
-            ), 200
+            return (
+                jsonify(
+                    structure(
+                        status="success",
+                        msg="scan_comparison_completed",
+                    )
+                ),
+                200,
+            )
         return jsonify(structure(status="error", msg="Scan ID not found")), 404
     except (FileNotFoundError, PermissionError, IOError):
         return jsonify(structure(status="error", msg="Invalid file path")), 400
@@ -326,7 +329,9 @@ def session_kill():
         a 200 HTTP response with set-cookie to "expired"
         to unset the cookie on the browser
     """
-    res = make_response(jsonify(structure(status="ok", msg=_("browser_session_killed"))))
+    res = make_response(
+        jsonify(structure(status="ok", msg=_("browser_session_killed")))
+    )
     res.set_cookie("key", "", expires=0)
     return res
 
@@ -367,7 +372,9 @@ def get_result_content():
     return Response(
         file_content,
         mimetype=mime_types().get(os.path.splitext(filename)[1], "text/plain"),
-        headers={"Content-Disposition": "attachment;filename=" + filename.split("/")[-1]},
+        headers={
+            "Content-Disposition": "attachment;filename=" + filename.split("/")[-1]
+        },
     )
 
 
@@ -412,10 +419,14 @@ def get_results_csv():  # todo: need to fix time format
     keys = data[0].keys()
     filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".csv"
     with open(filename, "w") as report_path_filename:
-        dict_writer = csv.DictWriter(report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL)
+        dict_writer = csv.DictWriter(
+            report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL
+        )
         dict_writer.writeheader()
         for event in data:
-            dict_writer.writerow({key: value for key, value in event.items() if key in keys})
+            dict_writer.writerow(
+                {key: value for key, value in event.items() if key in keys}
+            )
     with open(filename, "r") as report_path_filename:
         reader = report_path_filename.read()
     return Response(
@@ -495,10 +506,14 @@ def get_logs_csv():
         + "".join(random.choice(string.ascii_lowercase) for _ in range(10))
     )
     with open(filename, "w") as report_path_filename:
-        dict_writer = csv.DictWriter(report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL)
+        dict_writer = csv.DictWriter(
+            report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL
+        )
         dict_writer.writeheader()
         for event in data:
-            dict_writer.writerow({key: value for key, value in event.items() if key in keys})
+            dict_writer.writerow(
+                {key: value for key, value in event.items() if key in keys}
+            )
     with open(filename, "r") as report_path_filename:
         reader = report_path_filename.read()
     return Response(
@@ -576,7 +591,9 @@ def start_api_server(options):
         options: all options
     """
     # Starting the API
-    log.write_to_api_console(_("API_key").format(options.api_port, options.api_access_key))
+    log.write_to_api_console(
+        _("API_key").format(options.api_port, options.api_access_key)
+    )
     p = multiprocessing.Process(target=start_api_subprocess, args=(options,))
     p.start()
     # Sometimes it's take much time to terminate flask with CTRL+C

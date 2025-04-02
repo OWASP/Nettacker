@@ -51,7 +51,9 @@ def reverse_and_regex_condition(regex, reverse):
         return []
 
 
-def wait_for_threads_to_finish(threads, maximum=None, terminable=False, sub_process=False):
+def wait_for_threads_to_finish(
+    threads, maximum=None, terminable=False, sub_process=False
+):
     while threads:
         try:
             for thread in threads:
@@ -139,7 +141,9 @@ def find_repeaters(sub_content, root, arrays):
         for key in sub_content:
             root = original_root
             root += key + "/"
-            temporary_content[key], _root, arrays = find_repeaters(sub_content[key], root, arrays)
+            temporary_content[key], _root, arrays = find_repeaters(
+                sub_content[key], root, arrays
+            )
         sub_content = copy.deepcopy(temporary_content)
         root = original_root
     if (not isinstance(sub_content, (bool, int, float))) and (
@@ -177,7 +181,9 @@ def generate_and_replace_md5(content):
         md5_content = md5_content.encode()
     md5_hash = hashlib.md5(md5_content).hexdigest()
     return content.replace(
-        "NETTACKER_MD5_GENERATOR_START" + md5_content_backup + "NETTACKER_MD5_GENERATOR_STOP",
+        "NETTACKER_MD5_GENERATOR_START"
+        + md5_content_backup
+        + "NETTACKER_MD5_GENERATOR_STOP",
         md5_hash,
     )
 
@@ -202,7 +208,9 @@ def arrays_to_matrix(arrays):
     """
     Generate a Cartesian product of input arrays as a list of lists.
     """
-    return [list(item) for item in product(*[arrays[array_name] for array_name in arrays])]
+    return [
+        list(item) for item in product(*[arrays[array_name] for array_name in arrays])
+    ]
 
 
 def string_to_bytes(string):
@@ -263,7 +271,9 @@ def fuzzer_repeater_perform(arrays):
         data_matrix = arrays_to_matrix(apply_data_functions(data))
         prefix = arrays[array_name]["nettacker_fuzzer"]["prefix"]
         input_format = arrays[array_name]["nettacker_fuzzer"]["input_format"]
-        interceptors = copy.deepcopy(arrays[array_name]["nettacker_fuzzer"]["interceptors"])
+        interceptors = copy.deepcopy(
+            arrays[array_name]["nettacker_fuzzer"]["interceptors"]
+        )
         if interceptors:
             interceptors = interceptors.split(",")
         suffix = arrays[array_name]["nettacker_fuzzer"]["suffix"]
@@ -281,7 +291,9 @@ def fuzzer_repeater_perform(arrays):
             if interceptors:
                 interceptors_function += "interceptors_function_processed = "
                 for interceptor in interceptors[::-1]:
-                    interceptors_function += "{interceptor}(".format(interceptor=interceptor)
+                    interceptors_function += "{interceptor}(".format(
+                        interceptor=interceptor
+                    )
                 interceptors_function += "input_format.format(**formatted_data)" + str(
                     ")" * interceptors_function.count("(")
                 )
@@ -317,7 +329,9 @@ def expand_protocol(protocol):
 def expand_step(step):
     arrays = fuzzer_repeater_perform(find_repeaters(step, "", {}))
     if arrays:
-        return generate_new_sub_steps(step, class_to_value(arrays_to_matrix(arrays)), arrays)
+        return generate_new_sub_steps(
+            step, class_to_value(arrays_to_matrix(arrays)), arrays
+        )
     else:
         # Minimum 1 step in array
         return [step]
