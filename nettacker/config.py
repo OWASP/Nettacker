@@ -12,12 +12,11 @@ PACKAGE_PATH = Path(__file__).parent
 @lru_cache(maxsize=128)
 def version_info():
     """
-    version information of the framework
+    Version information of the framework.
 
     Returns:
-        an array of version and code name
+        A tuple containing version and code name.
     """
-
     return version.__version__, version.__release_name__
 
 
@@ -46,14 +45,7 @@ class ApiConfig(ConfigBase):
 
     api_access_log = str(CWD / ".data/nettacker.log")
     api_access_key = generate_random_token(32)
-    api_client_whitelisted_ips = (
-        []
-    )  # disabled - to enable please put an array with list of ips/cidr/ranges
-    # [
-    #     "127.0.0.1",
-    #     "10.0.0.0/24",
-    #     "192.168.1.1-192.168.1.255"
-    # ],
+    api_client_whitelisted_ips = []  # Disabled - can be set as an array of IPs
     api_debug_mode = False
     api_hostname = "0.0.0.0"
     api_port = 5000
@@ -62,11 +54,11 @@ class ApiConfig(ConfigBase):
 
 class DbConfig(ConfigBase):
     """
-    Database Config (updated for MySQL integration)
+    Database Config (supports both SQLite and MySQL).
 
     Attributes:
         - engine: Specify database engine ('sqlite' or 'mysql').
-        - database: Database name (for MySQL) or file path (for SQLite).
+        - name: Database name (for MySQL) or file path (for SQLite).
         - host: Hostname for MySQL (default: 'localhost').
         - port: Port for MySQL (default: 3306).
         - username: Username for MySQL login.
@@ -74,7 +66,7 @@ class DbConfig(ConfigBase):
     """
 
     engine = "sqlite"  # Default to SQLite
-    database = str(CWD / ".data/nettacker.db")  # SQLite file path or MySQL schema name
+    name = str(CWD / ".data/nettacker.db")  # SQLite file path or MySQL schema name
     host = "localhost"  # Required for MySQL
     port = "3306"  # Default MySQL port
     username = "root"  # Required for MySQL
@@ -83,10 +75,10 @@ class DbConfig(ConfigBase):
 
 class PathConfig:
     """
-    home path for the framework (could be modify by user)
+    Home path configuration for the framework.
 
     Returns:
-        a JSON contain the working, tmp and results path
+        JSON containing working, tmp, and results path.
     """
 
     data_dir = CWD / ".data"
@@ -133,7 +125,7 @@ class DefaultSettings(ConfigBase):
     selected_modules = None
     url_base_path = None
     read_from_file = ""
-    set_hardware_usage = "maximum"  # low, normal, high, maximum
+    set_hardware_usage = "maximum"  # Options: low, normal, high, maximum
     show_all_modules = False
     show_all_profiles = False
     show_help_menu = False

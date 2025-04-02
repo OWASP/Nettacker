@@ -1,0 +1,25 @@
+# Core Network/Web Requirements
+requests>=2.31.0,<3.0.0  # Modern TLS support
+beautifulsoup4>=4.12.0    # HTML parsing (works with 3.13)
+lxml>=5.1.0               # XML/HTML processing
+PySocks>=1.7.1            # SOCKS proxy support
+
+# Security/Protocol Libraries
+paramiko>=3.4.0           # SSH (updated for 3.13)
+scapy>=2.5.0              # Packet manipulation
+pyopenssl>=23.2.0         # Cryptography
+pycryptodome>=3.19.0      # Crypto operations
+
+# System/DNS
+psutil>=5.9.5             # System monitoring
+dnspython>=2.4.0          # DNS toolkit
+
+# Web Framework
+flask>=3.0.0              # Compatible with 3.13
+
+# Utilities
+colorama>=0.4.6           # Cross-platform colored output
+
+
+cryptography>=41.0.0 --no-binary cryptography
+asyncssh>=2.14.0 ; python_version >= '3.13'

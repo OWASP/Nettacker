@@ -5,9 +5,12 @@ import copy
 import random
 import re
 import time
+import ssl
+from typing import Dict, Any, Optional, Union
 
 import aiohttp
 import uvloop
+from aiohttp import ClientSession, ClientTimeout
 
 from nettacker.core.lib.base import BaseEngine
 from nettacker.core.utils.common import (
@@ -17,198 +20,265 @@ from nettacker.core.utils.common import (
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
+# Constants for secure defaults
+DEFAULT_TIMEOUT = ClientTimeout(total=30)
+DEFAULT_HEADERS = {
+    'Accept-Encoding': 'gzip, deflate',
+    'Connection': 'close'
+}
+MIN_TLS_VERSION = ssl.TLSVersion.TLSv1_2
 
-async def perform_request_action(action, request_options):
-    start_time = time.time()
-    async with action(**request_options) as response:
+async def perform_request_action(
+    action: callable,
+    request_options: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Perform an HTTP request and return processed response."""
+    start_time = time.monotonic()
+    try:
+        async with action(**request_options) as response:
+            content = await response.read()
+            try:
+                content_str = content.decode('utf-8', errors='ignore')
+            except UnicodeDecodeError:
+                content_str = content.decode('latin-1', errors='ignore')
+            
+            return {
+                "reason": str(response.reason),
+                "url": str(response.url),
+                "status_code": response.status,
+                "content": content_str,
+                "raw_content": content,
+                "headers": {k.lower(): v for k, v in response.headers.items()},
+                "responsetime": time.monotonic() - start_time,
+                "success": True
+            }
+    except Exception as e:
         return {
-            "reason": response.reason,
-            "url": str(response.url),
-            "status_code": str(response.status),
-            "content": await response.content.read(),
-            "headers": dict(response.headers),
-            "responsetime": time.time() - start_time,
+            "error": str(e),
+            "responsetime": time.monotonic() - start_time,
+            "success": False
         }
 
+async def send_request(
+    request_options: Dict[str, Any],
+    method: str
+) -> Dict[str, Any]:
+    """Send an HTTP request with proper SSL and timeout configuration."""
+    ssl_context = ssl.create_default_context()
+    ssl_context.minimum_version = MIN_TLS_VERSION
+    
+    # Merge default headers
+    headers = request_options.get('headers', {})
+    request_options['headers'] = {**DEFAULT_HEADERS, **headers}
+    
+    # Configure timeout
+    request_options.setdefault('timeout', DEFAULT_TIMEOUT)
+    
+    async with ClientSession(
+        connector=aiohttp.TCPConnector(ssl=ssl_context),
+        raise_for_status=False
+    ) as session:
+        action = getattr(session, method.lower(), None)
+        if action is None:
+            raise ValueError(f"Invalid HTTP method: {method}")
+            
+        try:
+            response = await perform_request_action(action, request_options)
+            if not response.get('success', False):
+                raise aiohttp.ClientError(response.get('error', 'Unknown error'))
+            return response
+        except Exception as e:
+            return {
+                "error": str(e),
+                "success": False
+            }
 
-async def send_request(request_options, method):
-    async with aiohttp.ClientSession() as session:
-        action = getattr(session, method, None)
-        response = await asyncio.gather(
-            *[asyncio.ensure_future(perform_request_action(action, request_options))]
-        )
-        return response[0]
-
-
-def response_conditions_matched(sub_step, response):
-    if not response:
+def response_conditions_matched(
+    sub_step: Dict[str, Any],
+    response: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Check if response matches the defined conditions."""
+    if not response or not response.get('success', False):
         return {}
-    condition_type = sub_step["response"]["condition_type"]
+
+    condition_type = sub_step["response"]["condition_type"].lower()
     conditions = sub_step["response"]["conditions"]
     condition_results = {}
+
+    # Process standard conditions
     for condition in conditions:
         if condition in ["reason", "status_code", "content", "url"]:
-            regex = re.findall(
-                re.compile(conditions[condition]["regex"]), response[condition]
-            )
-            reverse = conditions[condition]["reverse"]
-            condition_results[condition] = reverse_and_regex_condition(regex, reverse)
-        if condition == "headers":
-            # convert headers to case insensitive dict
-            for key in response["headers"].copy():
-                response["headers"][key.lower()] = response["headers"][key]
+            try:
+                regex = re.findall(
+                    re.compile(conditions[condition]["regex"]),
+                    str(response.get(condition, ""))
+                )
+                condition_results[condition] = reverse_and_regex_condition(
+                    regex,
+                    conditions[condition]["reverse"]
+                )
+            except re.error:
+                condition_results[condition] = []
+
+        elif condition == "headers":
             condition_results["headers"] = {}
             for header in conditions["headers"]:
-                reverse = conditions["headers"][header]["reverse"]
                 try:
+                    header_value = response["headers"].get(header.lower(), "")
                     regex = re.findall(
                         re.compile(conditions["headers"][header]["regex"]),
-                        (
-                            response["headers"][header.lower()]
-                            if header.lower() in response["headers"]
-                            else False
-                        ),
+                        str(header_value)
                     )
                     condition_results["headers"][header] = reverse_and_regex_condition(
-                        regex, reverse
+                        regex,
+                        conditions["headers"][header]["reverse"]
                     )
-                except TypeError:
+                except (TypeError, KeyError):
                     condition_results["headers"][header] = []
-        if condition == "responsetime":
-            if len(conditions[condition].split()) == 2 and conditions[
-                condition
-            ].split()[0] in [
-                "==",
-                "!=",
-                ">=",
-                "<=",
-                ">",
-                "<",
-            ]:
-                exec(
-                    "condition_results['responsetime'] = response['responsetime'] if ("
-                    + "response['responsetime'] {0} float(conditions['responsetime'].split()[-1])".format(
-                        conditions["responsetime"].split()[0]
-                    )
-                    + ") else []"
-                )
-            else:
+
+        elif condition == "responsetime":
+            try:
+                time_cond = conditions["responsetime"].split()
+                if len(time_cond) == 2 and time_cond[0] in ["==", "!=", ">=", "<=", ">", "<"]:
+                    op = time_cond[0]
+                    threshold = float(time_cond[1])
+                    response_time = response["responsetime"]
+                    
+                    # Safely evaluate the condition
+                    condition_met = eval(f"{response_time} {op} {threshold}", {}, {})
+                    condition_results["responsetime"] = response_time if condition_met else []
+                else:
+                    condition_results["responsetime"] = []
+            except (ValueError, AttributeError):
                 condition_results["responsetime"] = []
-    if condition_type.lower() == "or":
-        # if one of the values are matched, it will be a string or float object in the array
-        # we count False in the array and if it's not all []; then we know one of the conditions
-        # is matched.
-        if (
-            "headers" not in condition_results
-            and (
-                list(condition_results.values()).count([])
-                != len(list(condition_results.values()))
-            )
+
+    # Process condition type (AND/OR)
+    if condition_type == "or":
+        if any(
+            result != [] 
+            for result in condition_results.values() 
+            if not isinstance(result, dict)
         ) or (
-            "headers" in condition_results
-            and (
-                len(list(condition_results.values()))
-                + len(list(condition_results["headers"].values()))
-                - list(condition_results.values()).count([])
-                - list(condition_results["headers"].values()).count([])
-                - 1
-                != 0
-            )
+            "headers" in condition_results 
+            and any(result != [] for result in condition_results["headers"].values())
         ):
-            if sub_step["response"].get("log", False):
-                condition_results["log"] = sub_step["response"]["log"]
-                if "response_dependent" in condition_results["log"]:
-                    condition_results["log"] = replace_dependent_response(
-                        condition_results["log"], condition_results
-                    )
-            return condition_results
-        else:
-            return {}
-    if condition_type.lower() == "and":
-        if [] in condition_results.values() or (
-            "headers" in condition_results
-            and [] in condition_results["headers"].values()
+            return _add_log_to_conditions(sub_step, condition_results)
+        return {}
+
+    elif condition_type == "and":
+        if not any(
+            result == [] 
+            for result in condition_results.values() 
+            if not isinstance(result, dict)
+        ) and (
+            "headers" not in condition_results 
+            or not any(result == [] for result in condition_results["headers"].values())
         ):
-            return {}
-        else:
-            if sub_step["response"].get("log", False):
-                condition_results["log"] = sub_step["response"]["log"]
-                if "response_dependent" in condition_results["log"]:
-                    condition_results["log"] = replace_dependent_response(
-                        condition_results["log"], condition_results
-                    )
-            return condition_results
+            return _add_log_to_conditions(sub_step, condition_results)
+        return {}
+
     return {}
 
+def _add_log_to_conditions(
+    sub_step: Dict[str, Any],
+    condition_results: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Add log information to condition results if configured."""
+    if sub_step["response"].get("log", False):
+        condition_results["log"] = sub_step["response"]["log"]
+        if "response_dependent" in condition_results["log"]:
+            condition_results["log"] = replace_dependent_response(
+                condition_results["log"],
+                condition_results
+            )
+    return condition_results
 
 class HttpEngine(BaseEngine):
-    def run(
+    async def run(
         self,
-        sub_step,
-        module_name,
-        target,
-        scan_id,
-        options,
-        process_number,
-        module_thread_number,
-        total_module_thread_number,
-        request_number_counter,
-        total_number_of_requests,
-    ):
-        backup_method = copy.deepcopy(sub_step["method"])
-        backup_response = copy.deepcopy(sub_step["response"])
-        backup_iterative_response_match = copy.deepcopy(
-            sub_step["response"]["conditions"].get("iterative_response_match", None)
-        )
-        if options["user_agent"] == "random_user_agent":
+        sub_step: Dict[str, Any],
+        module_name: str,
+        target: str,
+        scan_id: str,
+        options: Dict[str, Any],
+        process_number: int,
+        module_thread_number: int,
+        total_module_thread_number: int,
+        request_number_counter: int,
+        total_number_of_requests: int,
+    ) -> Any:
+        """Execute the HTTP request and process results."""
+        # Preserve original configuration
+        original_config = {
+            "method": copy.deepcopy(sub_step["method"]),
+            "response": copy.deepcopy(sub_step["response"]),
+            "iterative_match": copy.deepcopy(
+                sub_step["response"]["conditions"].get("iterative_response_match")
+            )
+        }
+
+        # Configure request
+        if options.get("user_agent") == "random_user_agent":
             sub_step["headers"]["User-Agent"] = random.choice(options["user_agents"])
-        del sub_step["method"]
-        if "dependent_on_temp_event" in backup_response:
+
+        # Handle dependencies
+        if "dependent_on_temp_event" in original_config["response"]:
             temp_event = self.get_dependent_results_from_database(
                 target,
                 module_name,
                 scan_id,
-                backup_response["dependent_on_temp_event"],
+                original_config["response"]["dependent_on_temp_event"],
             )
             sub_step = self.replace_dependent_values(sub_step, temp_event)
-        backup_response = copy.deepcopy(sub_step["response"])
-        del sub_step["response"]
-        for _i in range(options["retries"]):
+
+        # Prepare for request
+        method = sub_step.pop("method")
+        response_config = sub_step.pop("response")
+
+        # Execute request with retries
+        response = {}
+        for _ in range(options.get("retries", 3)):
             try:
-                response = asyncio.run(send_request(sub_step, backup_method))
-                response["content"] = response["content"].decode(errors="ignore")
-                break
-            except Exception:
-                response = []
-        sub_step["method"] = backup_method
-        sub_step["response"] = backup_response
+                response = await send_request(sub_step, method)
+                if response.get("success", False):
+                    response["content"] = response.get("content", "")
+                    break
+            except Exception as e:
+                response = {"error": str(e), "success": False}
 
-        if backup_iterative_response_match is not None:
-            backup_iterative_response_match = copy.deepcopy(
-                sub_step["response"]["conditions"].get("iterative_response_match")
+        # Restore original configuration
+        sub_step["method"] = method
+        sub_step["response"] = response_config
+
+        # Process iterative response matching if configured
+        iterative_match = None
+        if original_config["iterative_match"] is not None:
+            iterative_match = sub_step["response"]["conditions"].pop(
+                "iterative_response_match",
+                None
             )
-            del sub_step["response"]["conditions"]["iterative_response_match"]
 
+        # Evaluate response conditions
         sub_step["response"]["conditions_results"] = response_conditions_matched(
-            sub_step, response
+            sub_step,
+            response
         )
 
-        if backup_iterative_response_match is not None and (
+        # Process iterative matches if conditions met
+        if iterative_match and (
             sub_step["response"]["conditions_results"]
-            or sub_step["response"]["condition_type"] == "or"
+            or sub_step["response"]["condition_type"].lower() == "or"
         ):
-            sub_step["response"]["conditions"][
-                "iterative_response_match"
-            ] = backup_iterative_response_match
-            for key in sub_step["response"]["conditions"]["iterative_response_match"]:
+            sub_step["response"]["conditions"]["iterative_response_match"] = iterative_match
+            for key in iterative_match:
                 result = response_conditions_matched(
-                    sub_step["response"]["conditions"]["iterative_response_match"][key],
-                    response,
+                    iterative_match[key],
+                    response
                 )
                 if result:
                     sub_step["response"]["conditions_results"][key] = result
 
-        return self.process_conditions(
+        return await self.process_conditions(
             sub_step,
             module_name,
             target,

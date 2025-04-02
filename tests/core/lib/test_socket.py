@@ -1,7 +1,8 @@
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from nettacker.core.lib.socket import create_tcp_socket, SocketEngine
 from tests.common import TestCase
 import re
+import sys
 
 
 class Responses:
@@ -67,8 +68,7 @@ class Substeps:
 
 class TestSocketMethod(TestCase):
     @patch("socket.socket")
-    @patch("ssl.wrap_socket")
-    def test_create_tcp_socket(self, mock_wrap, mock_socket):
+    def test_create_tcp_socket(self, mock_socket):
         """
         Test the creation of a TCP socket with mocked socket and SSL wrap.
         """
@@ -76,11 +76,20 @@ class TestSocketMethod(TestCase):
         PORT = 80
         TIMEOUT = 60
 
-        create_tcp_socket(HOST, PORT, TIMEOUT)
+        # Mock SSL context creation based on Python version
+        if sys.version_info >= (3, 13):
+            mock_ssl_context = MagicMock()
+            with patch('ssl.create_default_context', return_value=mock_ssl_context):
+                create_tcp_socket(HOST, PORT, TIMEOUT)
+                mock_ssl_context.wrap_socket.assert_called_with(mock_socket.return_value)
+        else:
+            with patch("ssl.wrap_socket") as mock_wrap:
+                create_tcp_socket(HOST, PORT, TIMEOUT)
+                mock_wrap.assert_called_with(mock_socket.return_value)
+
         socket_instance = mock_socket.return_value
         socket_instance.settimeout.assert_called_with(TIMEOUT)
         socket_instance.connect.assert_called_with((HOST, PORT))
-        mock_wrap.assert_called_with(socket_instance)
 
     def test_response_conditions_matched(self):
         """
