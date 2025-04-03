@@ -74,7 +74,8 @@ class DbConfig(ConfigBase):
         NAME as the name of the database user wants
         USERNAME, PASSWORD, HOST and the PORT of the Postgres server
         need to be filled respectively (default port is 5432)
-
+        Set ssl_mode to "require" if you need to use encrypted
+        databases.
     """
 
     engine = "sqlite"
@@ -83,6 +84,7 @@ class DbConfig(ConfigBase):
     port = ""
     username = ""
     password = ""
+    ssl_mode = "disable"
 
 
 class PathConfig:
