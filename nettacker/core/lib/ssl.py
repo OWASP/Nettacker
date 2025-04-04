@@ -107,24 +107,9 @@ def is_weak_cipher_suite(host, port, timeout):
     return supported_ciphers, False
 
 
-def create_tcp_socket(host, port, timeout):
-    try:
-        socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socket_connection.settimeout(timeout)
-        socket_connection.connect((host, port))
-        ssl_flag = False
-    except ConnectionRefusedError:
-        return None
-
-    try:
-        socket_connection = ssl.wrap_socket(socket_connection)
-        ssl_flag = True
-    except Exception:
-        socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socket_connection.settimeout(timeout)
-        socket_connection.connect((host, port))
-
-    return socket_connection, ssl_flag
+def wrap_socket_to_ssl(socket_connection):
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)  # noqa
+    return context.wrap_socket(socket_connection)
 
 
 def get_cert_info(cert):
@@ -154,6 +139,8 @@ def get_cert_info(cert):
 
 class SslLibrary(BaseLibrary):
     def ssl_certificate_scan(self, host, port, timeout):
+        from nettacker.core.lib.socket import create_tcp_socket
+
         tcp_socket = create_tcp_socket(host, port, timeout)
         if tcp_socket is None:
             return None
@@ -175,6 +162,8 @@ class SslLibrary(BaseLibrary):
         return scan_info
 
     def ssl_version_and_cipher_scan(self, host, port, timeout):
+        from nettacker.core.lib.socket import create_tcp_socket
+
         tcp_socket = create_tcp_socket(host, port, timeout)
         if tcp_socket is None:
             return None

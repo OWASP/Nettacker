@@ -6,11 +6,11 @@ import os
 import re
 import select
 import socket
-import ssl
 import struct
 import time
 
 from nettacker.core.lib.base import BaseEngine, BaseLibrary
+from nettacker.core.lib.ssl import wrap_socket_to_ssl
 from nettacker.core.utils.common import reverse_and_regex_condition
 
 log = logging.getLogger(__name__)
@@ -21,21 +21,15 @@ def create_tcp_socket(host, port, timeout):
         socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         socket_connection.settimeout(timeout)
         socket_connection.connect((host, port))
-        ssl_flag = False
     except ConnectionRefusedError:
         return None
 
     try:
-        socket_connection = ssl.wrap_socket(socket_connection)
-        ssl_flag = True
+        return wrap_socket_to_ssl(socket_connection), True
     except Exception:
-        socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socket_connection.settimeout(timeout)
-        socket_connection.connect((host, port))
-    # finally:
-    #     socket_connection.shutdown()
+        pass
 
-    return socket_connection, ssl_flag
+    return socket_connection, False
 
 
 class SocketLibrary(BaseLibrary):

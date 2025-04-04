@@ -118,7 +118,7 @@ class Substeps:
 
 class TestSocketMethod(TestCase):
     @patch("socket.socket")
-    @patch("ssl.wrap_socket")
+    @patch("nettacker.core.lib.socket.wrap_socket_to_ssl")
     def test_create_tcp_socket(self, mock_wrap, mock_socket):
         HOST = "example.com"
         PORT = 80
