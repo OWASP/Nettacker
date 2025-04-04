@@ -8,7 +8,6 @@ info:
     - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-40875
   profiles:
     - vuln
-    - vulnerability
     - http
     - medium_severity
     - cve2021

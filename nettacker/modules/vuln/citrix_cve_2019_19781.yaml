@@ -7,7 +7,6 @@ info:
     - https://support.citrix.com/article/CTX267027
   profiles:
     - vuln
-    - vulnerability
     - http
     - high_severity
     - cve

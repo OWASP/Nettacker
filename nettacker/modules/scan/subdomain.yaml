@@ -6,8 +6,6 @@ info:
   reference:
   profiles:
     - scan
-    - information_gathering
-    - infortmation
     - info
     - low_severity
 
