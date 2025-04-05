@@ -45,7 +45,7 @@ release_name = "QUIN"
 nettacker = "nettacker.main:run"
 
 [tool.poetry.dependencies]
-python = "^3.9, <3.13"
+python = "^3.9, <3.13.2"
 aiohttp = "^3.9.5"
 argparse = "^1.4.0"
 asyncio = "^3.4.3"
