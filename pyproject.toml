@@ -4,7 +4,6 @@ version = "0.4.0"
 description = "Automates information gathering, vulnerability scanning and aids penetration testing engagements in general"
 license = "Apache-2.0"
 readme = "README.md"
-
 authors = ["OWASP Nettacker Contributors"]
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
@@ -12,6 +11,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12"
 ]
 keywords = [
     "automation",
@@ -31,11 +31,9 @@ keywords = [
     "vulnerability-management",
     "vulnerability-scanner",
 ]
-
 homepage = "https://owasp.org/www-project-nettacker"
 repository = "https://github.com/OWASP/Nettacker"
 documentation = "https://github.com/OWASP/Nettacker/wiki"
-
 packages = [{ include = "nettacker"}]
 
 [tool.nettacker]
@@ -46,10 +44,10 @@ nettacker = "nettacker.main:run"
 
 [tool.poetry.dependencies]
 python = "^3.9, <3.13"
-aiohttp = "^3.9.5"
+aiohttp = ">=3.9.5,<4.0.0"
 argparse = "^1.4.0"
 asyncio = "^3.4.3"
-flask = "^3.0.1"
+flask = ">=3.0.1,<4.0.0"
 ipaddr = "^2.2.0"
 multiprocess = "^0.70.15"
 netaddr = "^0.9.0"
