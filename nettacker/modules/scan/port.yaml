@@ -1026,70 +1026,72 @@ payloads:
           - 65389
         response:
           condition_type: or
+          log: "response_dependent['service']"
           conditions:
-            open_port:
-              regex: \d{{1,5}}
-              reverse: false
+            service:
+              open_port:
+                regex: \d{{1,5}}
+                reverse: false
 
-            ftp: &ftp
-              regex: "220-You are user number|530 USER and PASS required|Invalid command: try being more creative|220 \\S+ FTP (Service|service|Server|server)|220 FTP Server ready|Directory status|Service closing control connection|Requested file action|Connection closed; transfer aborted|Directory not empty"
-              reverse: false
-            ftps: *ftp
+              ftp: &ftp
+                regex: "220-You are user number|530 USER and PASS required|Invalid command: try being more creative|220 \\S+ FTP (Service|service|Server|server)|220 FTP Server ready|Directory status|Service closing control connection|Requested file action|Connection closed; transfer aborted|Directory not empty"
+                reverse: false
+              ftps: *ftp
 
-            http:
-              regex: "HTTPStatus.BAD_REQUEST|HTTP\\/[\\d.]+\\s+[\\d]+|Server: |Content-Length: \\d+|Content-Type: |Access-Control-Request-Headers: |Forwarded: |Proxy-Authorization: |User-Agent: |X-Forwarded-Host: |Content-MD5: |Access-Control-Request-Method: |Accept-Language: "
-              reverse: false
+              http:
+                regex: "HTTPStatus.BAD_REQUEST|HTTP\\/[\\d.]+\\s+[\\d]+|Server: |Content-Length: \\d+|Content-Type: |Access-Control-Request-Headers: |Forwarded: |Proxy-Authorization: |User-Agent: |X-Forwarded-Host: |Content-MD5: |Access-Control-Request-Method: |Accept-Language: "
+                reverse: false
 
-            imap:
-              regex: "Internet Mail Server|IMAP4 service|BYE Hi This is the IMAP SSL Redirect|LITERAL\\+ SASL\\-IR LOGIN\\-REFERRALS ID ENABLE IDLE AUTH\\=PLAIN AUTH\\=LOGIN AUTH\\=DIGEST\\-MD5 AUTH\\=CRAM-MD5|CAPABILITY completed|OK IMAPrev1|LITERAL\\+ SASL\\-IR LOGIN\\-REFERRALS ID ENABLE IDLE NAMESPACE AUTH\\=PLAIN AUTH\\=LOGIN|BAD Error in IMAP command received by server|IMAP4rev1 SASL-IR|OK \\[CAPABILITY IMAP4rev1"
-              reverse: false
+              imap:
+                regex: "Internet Mail Server|IMAP4 service|BYE Hi This is the IMAP SSL Redirect|LITERAL\\+ SASL\\-IR LOGIN\\-REFERRALS ID ENABLE IDLE AUTH\\=PLAIN AUTH\\=LOGIN AUTH\\=DIGEST\\-MD5 AUTH\\=CRAM-MD5|CAPABILITY completed|OK IMAPrev1|LITERAL\\+ SASL\\-IR LOGIN\\-REFERRALS ID ENABLE IDLE NAMESPACE AUTH\\=PLAIN AUTH\\=LOGIN|BAD Error in IMAP command received by server|IMAP4rev1 SASL-IR|OK \\[CAPABILITY IMAP4rev1"
+                reverse: false
 
-            mariadb:
-              regex: "is not allowed to connect to this MariaDB server"
-              reverse: false
+              mariadb:
+                regex: "is not allowed to connect to this MariaDB server"
+                reverse: false
 
-            mysql:
-              regex: "is not allowed to connect to this MySQL server"
-              reverse: false
+              mysql:
+                regex: "is not allowed to connect to this MySQL server"
+                reverse: false
 
-            nntp:
-              regex: "NetWare\\-News\\-Server|NetWare nntpd|nntp|Leafnode nntpd|InterNetNews NNRP server INN"
-              reverse: false
+              nntp:
+                regex: "NetWare\\-News\\-Server|NetWare nntpd|nntp|Leafnode nntpd|InterNetNews NNRP server INN"
+                reverse: false
 
-            pop3: &pop3
-              regex: "POP3|POP3 gateway ready|POP3 Server|Welcome to mpopd|OK Hello there"
-              reverse: false
-            pop3s: *pop3
+              pop3: &pop3
+                regex: "POP3|POP3 gateway ready|POP3 Server|Welcome to mpopd|OK Hello there"
+                reverse: false
+              pop3s: *pop3
 
-            portmap:
-              regex: "Program	Version	Protocol	Port|portmapper|nfs	2|nlockmgr	1"
-              reverse: false
+              portmap:
+                regex: "Program	Version	Protocol	Port|portmapper|nfs	2|nlockmgr	1"
+                reverse: false
 
-            postgressql:
-              regex: "FATAL 1\\:  invalid length of startup packet|received invalid response to SSL negotiation\\:|unsupported frontend protocol|fe\\_sendauth\\: no password supplied|no pg\\_hba\\.conf entry for host"
-              reverse: false
+              postgressql:
+                regex: "FATAL 1\\:  invalid length of startup packet|received invalid response to SSL negotiation\\:|unsupported frontend protocol|fe\\_sendauth\\: no password supplied|no pg\\_hba\\.conf entry for host"
+                reverse: false
 
-            pptp:
-              regex: "Hostname: pptp server|Vendor: Fortinet pptp"
-              reverse: false
+              pptp:
+                regex: "Hostname: pptp server|Vendor: Fortinet pptp"
+                reverse: false
 
-            smtp: &smtp
-              regex: "Fidelix Fx2020|ESMTP|Server ready|SMTP synchronization error|220-Greetings|ESMTP Arnet Email Security|SMTP 2.0"
-              reverse: false
-            smtps: *smtp
+              smtp: &smtp
+                regex: "Fidelix Fx2020|ESMTP|Server ready|SMTP synchronization error|220-Greetings|ESMTP Arnet Email Security|SMTP 2.0"
+                reverse: false
+              smtps: *smtp
 
-            rsync:
-              regex: "@RSYNCD\\:"
-              reverse: false
+              rsync:
+                regex: "@RSYNCD\\:"
+                reverse: false
 
-            ssh:
-              regex: "openssh|\\-OpenSSH\\_|\\r?\\n?Protocol mism|\\_sshlib|\\x00\\x1aversion info line too long|SSH Windows NT Server|WinNT sshd|sshd| SSH Secure Shell|WinSSHD|SSH-[\\d.]+-[A-Za-z0-9_\\-]+|SSH-[\\d.]+\\r?\\n?"
-              reverse: false
+              ssh:
+                regex: "openssh|\\-OpenSSH\\_|\\r?\\n?Protocol mism|\\_sshlib|\\x00\\x1aversion info line too long|SSH Windows NT Server|WinNT sshd|sshd| SSH Secure Shell|WinSSHD|SSH-[\\d.]+-[A-Za-z0-9_\\-]+|SSH-[\\d.]+\\r?\\n?"
+                reverse: false
 
-            telnet:
-              regex: "Check Point FireWall-1 authenticated Telnet server running on|Raptor Firewall Secure Gateway|No more connections are allowed to telnet server|Closing Telnet connection due to host problems|NetportExpress|WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING|Login authentication|recommended to use Stelnet|is not a secure protocol|Welcome to Microsoft Telnet Servic|no decompiling or reverse-engineering shall be allowed"
-              reverse: false
+              telnet:
+                regex: "Check Point FireWall-1 authenticated Telnet server running on|Raptor Firewall Secure Gateway|No more connections are allowed to telnet server|Closing Telnet connection due to host problems|NetportExpress|WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING|Login authentication|recommended to use Stelnet|is not a secure protocol|Welcome to Microsoft Telnet Servic|no decompiling or reverse-engineering shall be allowed"
+                reverse: false
 
-            amqp:
-              regex: "AMQP"
-              reverse: false
+              amqp:
+                regex: "AMQP"
+                reverse: false

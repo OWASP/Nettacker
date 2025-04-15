@@ -11,7 +11,7 @@ import struct
 import time
 
 from nettacker.core.lib.base import BaseEngine, BaseLibrary
-from nettacker.core.utils.common import reverse_and_regex_condition
+from nettacker.core.utils.common import reverse_and_regex_condition, replace_dependent_response
 
 log = logging.getLogger(__name__)
 
@@ -226,7 +226,9 @@ class SocketEngine(BaseEngine):
     library = SocketLibrary
 
     def response_conditions_matched(self, sub_step, response):
-        conditions = sub_step["response"]["conditions"]
+        conditions = sub_step["response"]["conditions"].get(
+            "service", sub_step["response"]["conditions"]
+        )
         condition_type = sub_step["response"]["condition_type"]
         condition_results = {}
         if sub_step["method"] == "tcp_connect_only":
@@ -242,15 +244,35 @@ class SocketEngine(BaseEngine):
                     )
                     reverse = conditions[condition]["reverse"]
                     condition_results[condition] = reverse_and_regex_condition(regex, reverse)
+
+                    if condition_results[condition]:
+                        default_service = response["service"]
+                        ssl_flag = response["ssl_flag"]
+                        matched_regex = condition_results[condition]
+
+                        log_response = {
+                            "running_service": condition,
+                            "matched_regex": matched_regex,
+                            "default_service": default_service,
+                            "ssl_flag": ssl_flag,
+                        }
+                        condition_results["service"] = [str(log_response)]
                 for condition in copy.deepcopy(condition_results):
                     if not condition_results[condition]:
                         del condition_results[condition]
+
                 if "open_port" in condition_results and len(condition_results) > 1:
                     del condition_results["open_port"]
                     del conditions["open_port"]
-                if condition_type == "and":
+                if condition_type.lower() == "and":
                     return condition_results if len(condition_results) == len(conditions) else []
-                if condition_type == "or":
+                if condition_type.lower() == "or":
+                    if sub_step["response"].get("log", False):
+                        condition_results["log"] = sub_step["response"]["log"]
+                        if "response_dependent" in condition_results["log"]:
+                            condition_results["log"] = replace_dependent_response(
+                                condition_results["log"], condition_results
+                            )
                     return condition_results if condition_results else []
                 return []
         if sub_step["method"] == "socket_icmp":
