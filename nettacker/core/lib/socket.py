@@ -226,7 +226,9 @@ class SocketEngine(BaseEngine):
     library = SocketLibrary
 
     def response_conditions_matched(self, sub_step, response):
-        conditions = sub_step["response"]["conditions"]["service"]
+        conditions = sub_step["response"]["conditions"].get(
+            "service", sub_step["response"]["conditions"]
+        )
         condition_type = sub_step["response"]["condition_type"]
         condition_results = {}
         if sub_step["method"] == "tcp_connect_only":
@@ -242,17 +244,17 @@ class SocketEngine(BaseEngine):
                     )
                     reverse = conditions[condition]["reverse"]
                     condition_results[condition] = reverse_and_regex_condition(regex, reverse)
-                    
+
                     if condition_results[condition]:
                         default_service = response["service"]
                         ssl_flag = response["ssl_flag"]
                         matched_regex = condition_results[condition]
 
                         log_response = {
-                        "running_service": condition,
-                        "matched_regex": matched_regex,
-                        "default_service": default_service,
-                        "ssl_flag": ssl_flag
+                            "running_service": condition,
+                            "matched_regex": matched_regex,
+                            "default_service": default_service,
+                            "ssl_flag": ssl_flag,
                         }
                         condition_results["service"] = [str(log_response)]
                 for condition in copy.deepcopy(condition_results):
