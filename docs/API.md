@@ -75,7 +75,7 @@ At the first, you must send an API key through the request each time you send a 
 To submit a new scan follow this step.
 
 ```python
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07", "targets": "127.0.0.1,owasp.org", "scan_method": "port_scan"})
+>>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07", "targets": "127.0.0.1,owasp.org", "selected_modules": "port_scan", "report_path_filename": "/home/test.html"})
 >>> r.status_code
 200
 >>> import json
@@ -120,7 +120,7 @@ To submit a new scan follow this step.
 }
 ```
 
-Please note, `targets` and `scan_method` are **necessary** to submit a new scan unless you modify the config file before! The `scan_method` could be empty if you define the `profile`.
+Please note, `targets` and `selected_modules` are **necessary** to submit a new scan unless you modify the config file before! The `selected_modules` could be empty if you define the `profile`.
 
 ```python
 >>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07"})
@@ -131,7 +131,7 @@ Please note, `targets` and `scan_method` are **necessary** to submit a new scan 
 >>> r.content
 u'{"msg":"please choose your scan method!","status":"error"}\n'
 
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "09877e92c75f6afdca6ae61ad3f53727", "targets": "127.0.0.1", "scan_method": "dir_scan,port_scan"})
+>>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "09877e92c75f6afdca6ae61ad3f53727", "targets": "127.0.0.1", "selected_modules": "dir_scan,port_scan", "report_path_filename": "/home/test.html"})
 >>> print json.dumps(json.loads(r.content), sort_keys=True, indent=4)
 {
     "backup_ports": null, 
@@ -429,7 +429,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 </div>
 <style type="text/css">
 
-	.header{
+    .header{
     margin:2%;
     text-align:center;
   }
@@ -677,7 +677,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 </div>
 <style type="text/css">
 
-	.header{
+    .header{
     margin:2%;
     text-align:center;
   }
@@ -741,4 +741,4 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
     }
 ]
 >>>
-```
+```l
