@@ -665,7 +665,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 ```
 ## Generate a HTML Scan Result for a Host
 ```python
->>> r = s.get("https://localhost:5000/logs/get_html?host=127.0.0.1")
+>>> r = s.get("https://localhost:5000/logs/get_html?target=127.0.0.1&key=<your_api_key>")
 >>> print r.content[:1000]
 <!DOCTYPE html>
 <!-- THIS PAGE COPIED AND MODIFIED FROM http://bl.ocks.org/robschmuecker/7880033-->
@@ -706,7 +706,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 
 ### Get the Scan Result in JSON Type
 ```python
->>> r = s.get("https://localhost:5000/logs/get_json?host=owasp.org")
+>>> r = s.get("https://localhost:5000/logs/get_json?target=owasp.org&key=<your_api_key>")
 >>> print(json.dumps(json.loads(r.content), sort_keys=True, indent=4))
 [
     {
@@ -741,4 +741,4 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
     }
 ]
 >>>
-```l
+```
