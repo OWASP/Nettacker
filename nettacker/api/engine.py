@@ -43,6 +43,10 @@ from nettacker.database.db import (
 )
 from nettacker.database.models import Report
 
+# Monkey-patching the Server header to avoid exposing the actual version
+from werkzeug.serving import WSGIRequestHandler
+WSGIRequestHandler.version_string = lambda self: "API"
+
 log = logger.get_logger()
 
 app = Flask(__name__, template_folder=str(Config.path.web_static_dir))
@@ -154,6 +158,17 @@ def access_log(response):
             ).encode()
         )
         log_request.close()
+        # Set security headers
+        # Prevent MIME type sniffing
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        # Clickjacking protection
+        response.headers["X-Frame-Options"] = "SAMEORIGIN"
+        # Cross-site scripting protection (IE, Edge)
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        # Upgrade insecure requests via CSP 
+        response.headers["Content-Security-Policy"] = "upgrade-insecure-requests"
+        # Referrer policy
+        response.headers["Referrer-Policy"] = "no-referrer-when-downgrade"
     return response
 
 
