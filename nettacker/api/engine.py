@@ -11,6 +11,7 @@ from types import SimpleNamespace
 from flask import Flask, jsonify
 from flask import request as flask_request
 from flask import render_template, abort, Response, make_response
+from werkzeug.serving import WSGIRequestHandler
 from werkzeug.utils import secure_filename
 
 from nettacker import logger
@@ -44,8 +45,6 @@ from nettacker.database.db import (
 from nettacker.database.models import Report
 
 # Monkey-patching the Server header to avoid exposing the actual version
-from werkzeug.serving import WSGIRequestHandler
-
 WSGIRequestHandler.version_string = lambda self: "API"
 
 log = logger.get_logger()
