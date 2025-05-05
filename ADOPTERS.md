@@ -15,18 +15,18 @@
 
  | Logo | Name | Description | Website |
  | ---- | ---- | ----------- | ------- |
- | <!-- ![Acme Logo](path/to/logo.png) --> | **Acme Corp** | Uses Nettacker for automated penetration testing. | https://acme.example.com |
- | <!-- ![SecurityCo Logo](path/to/securityco-logo.png) --> | **SecurityCo** | Integrates Nettacker into their CI/CD pipeline for continuous security assessment. | https://securityco.example.org |
+ | <!-- ![Acme Logo](path/to/logo.png) --> | **Example Acme Corp** | Uses Nettacker for automated penetration testing. | https://acme.example.com |
+ | <!-- ![SecurityCo Logo](path/to/securityco-logo.png) --> | **Example SecurityCo** | Integrates Nettacker into their CI/CD pipeline for continuous security assessment. | https://securityco.example.org |
 
  ## Community Projects
 
- - **Project X** — integrates Nettacker for infrastructure scanning in Kubernetes environments.
- - **OpenScan** — extends Nettacker modules for custom vulnerability detection.
+ - **Example project X** — integrates Nettacker for infrastructure scanning in Kubernetes environments.
+ - **Example tool** — extends Nettacker modules for custom vulnerability detection.
 
  ## Individuals
 
- - **Alice Smith** — security researcher (Twitter: @alice)
- - **Bob Johnson** — open source contributor.
+ - **Alice Smith example person** — security researcher (Twitter: @alice)
+
 
  ## Thank You
  Thanks to everyone using and contributing to OWASP Nettacker! We appreciate your support and feedback.
