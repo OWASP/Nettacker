@@ -45,6 +45,7 @@ from nettacker.database.models import Report
 
 # Monkey-patching the Server header to avoid exposing the actual version
 from werkzeug.serving import WSGIRequestHandler
+
 WSGIRequestHandler.version_string = lambda self: "API"
 
 log = logger.get_logger()
@@ -165,7 +166,7 @@ def access_log(response):
         response.headers["X-Frame-Options"] = "SAMEORIGIN"
         # Cross-site scripting protection (IE, Edge)
         response.headers["X-XSS-Protection"] = "1; mode=block"
-        # Upgrade insecure requests via CSP 
+        # Upgrade insecure requests via CSP
         response.headers["Content-Security-Policy"] = "upgrade-insecure-requests"
         # Referrer policy
         response.headers["Referrer-Policy"] = "no-referrer-when-downgrade"
