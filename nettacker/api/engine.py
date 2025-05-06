@@ -133,9 +133,22 @@ def limit_remote_addr():
 
 
 @app.after_request
+def set_security_headers(response):
+    """
+    Add common security headers to every response.
+    """
+    response.headers.setdefault("Content-Security-Policy", "upgrade-insecure-requests")
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+    response.headers.setdefault("X-XSS-Protection", "1; mode=block")
+    response.headers.setdefault("Referrer-Policy", "no-referrer-when-downgrade")
+    return response
+
+
+@app.after_request
 def access_log(response):
     """
-    if access log enabled, its writing the logs
+    Write to the access log file if enabled.
 
     Args:
         response: the flask response
@@ -158,17 +171,6 @@ def access_log(response):
             ).encode()
         )
         log_request.close()
-        # Set security headers
-        # Prevent MIME type sniffing
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        # Clickjacking protection
-        response.headers["X-Frame-Options"] = "SAMEORIGIN"
-        # Cross-site scripting protection (IE, Edge)
-        response.headers["X-XSS-Protection"] = "1; mode=block"
-        # Upgrade insecure requests via CSP
-        response.headers["Content-Security-Policy"] = "upgrade-insecure-requests"
-        # Referrer policy
-        response.headers["Referrer-Policy"] = "no-referrer-when-downgrade"
     return response
 
 
