@@ -187,6 +187,8 @@ class SslLibrary(BaseLibrary):
                 cert = ssl.get_server_certificate((host, port))
             except ssl.SSLError:
                 cert = None
+            except socket.gaierror:
+                cert = None
             cert_info = get_cert_info(cert) if cert else None
             ssl_ver, weak_version = is_weak_ssl_version(host, port, timeout)
             cipher_suite, weak_cipher_suite = is_weak_cipher_suite(host, port, timeout)
