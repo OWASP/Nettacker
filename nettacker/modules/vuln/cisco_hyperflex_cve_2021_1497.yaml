@@ -8,7 +8,6 @@ info:
     - https://packetstormsecurity.com/files/162976/Cisco-HyperFlex-HX-Data-Platform-Command-Execution.html
   profiles:
     - vuln
-    - vulnerability
     - http
     - high_severity
     - cve
