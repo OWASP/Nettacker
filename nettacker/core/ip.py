@@ -2,7 +2,6 @@ import json
 
 import netaddr
 import requests
-from netaddr import iprange_to_cidrs, IPNetwork
 
 
 def generate_ip_range(ip_range):
@@ -16,11 +15,11 @@ def generate_ip_range(ip_range):
         an array with CIDRs
     """
     if "/" in ip_range:
-        return [ip.format() for ip in [cidr for cidr in IPNetwork(ip_range)]]
+        return [ip.format() for ip in [cidr for cidr in netaddr.IPNetwork(ip_range)]]
     else:
         ips = []
         for generator_ip_range in [
-            cidr.iter_hosts() for cidr in iprange_to_cidrs(*ip_range.rsplit("-"))
+            cidr.iter_hosts() for cidr in netaddr.iprange_to_cidrs(*ip_range.rsplit("-"))
         ]:
             for ip in generator_ip_range:
                 ips.append(ip.format())
@@ -68,7 +67,7 @@ def is_ipv4_range(ip_range):
             "/" in ip_range
             and "." in ip_range
             and "-" not in ip_range
-            and netaddr.IPNetwork(ip_range)
+            and bool(netaddr.IPNetwork(ip_range))
         )
     except Exception:
         return False
@@ -80,7 +79,7 @@ def is_ipv4_cidr(ip_range):
             "/" not in ip_range
             and "." in ip_range
             and "-" in ip_range
-            and iprange_to_cidrs(*ip_range.split("-"))
+            and bool(netaddr.iprange_to_cidrs(*ip_range.split("-")))
         )
     except Exception:
         return False
@@ -96,7 +95,7 @@ def is_single_ipv6(ip):
     Returns:
          True if it's IPv6 otherwise False
     """
-    return netaddr.valid_ipv6(str(ip))
+    return netaddr.valid_ipv6(ip)
 
 
 def is_ipv6_range(ip_range):
@@ -105,7 +104,7 @@ def is_ipv6_range(ip_range):
             "/" not in ip_range
             and ":" in ip_range
             and "-" in ip_range
-            and iprange_to_cidrs(*ip_range.split("-"))
+            and bool(netaddr.iprange_to_cidrs(*ip_range.split("-")))
         )
     except Exception:
         return False
@@ -117,7 +116,7 @@ def is_ipv6_cidr(ip_range):
             "/" in ip_range
             and ":" in ip_range
             and "-" not in ip_range
-            and netaddr.IPNetwork(ip_range)
+            and bool(netaddr.IPNetwork(ip_range))
         )
     except Exception:
         return False
