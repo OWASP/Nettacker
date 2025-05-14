@@ -7,7 +7,7 @@ class TelnetLibrary(BaseLibrary):
     client = telnetlib.Telnet
 
     def brute_force(self, host, port, username, password, timeout):
-        connection = telnetlib.Telnet(host, port, timeout)
+        connection = self.client(host, port, timeout)
         connection.read_until(b"login: ")
         connection.write(username.encode("utf-8") + b"\n")
         connection.read_until(b"Password: ")

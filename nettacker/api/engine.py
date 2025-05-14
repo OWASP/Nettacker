@@ -11,6 +11,7 @@ from types import SimpleNamespace
 from flask import Flask, jsonify
 from flask import request as flask_request
 from flask import render_template, abort, Response, make_response
+from werkzeug.serving import WSGIRequestHandler
 from werkzeug.utils import secure_filename
 
 from nettacker import logger
@@ -42,6 +43,9 @@ from nettacker.database.db import (
     logs_to_report_html,
 )
 from nettacker.database.models import Report
+
+# Monkey-patching the Server header to avoid exposing the actual version
+WSGIRequestHandler.version_string = lambda self: "API"
 
 log = logger.get_logger()
 
@@ -129,9 +133,22 @@ def limit_remote_addr():
 
 
 @app.after_request
+def set_security_headers(response):
+    """
+    Add common security headers to every response.
+    """
+    response.headers.setdefault("Content-Security-Policy", "upgrade-insecure-requests")
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+    response.headers.setdefault("X-XSS-Protection", "1; mode=block")
+    response.headers.setdefault("Referrer-Policy", "no-referrer-when-downgrade")
+    return response
+
+
+@app.after_request
 def access_log(response):
     """
-    if access log enabled, its writing the logs
+    Write to the access log file if enabled.
 
     Args:
         response: the flask response

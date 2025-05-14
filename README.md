@@ -1,6 +1,6 @@
 OWASP Nettacker
 =========
-[![Build Status](https://github.com/OWASP/Nettacker/workflows/CI/badge.svg?branch=master)](https://github.com/OWASP/Nettacker/actions/workflows/CI.yml)
+[![Build Status](https://github.com/OWASP/Nettacker/actions/workflows/ci_cd.yml/badge.svg?branch=master)](https://github.com/OWASP/Nettacker/actions/workflows/ci_cd.yml/badge.svg?branch=master)
 [![Apache License](https://img.shields.io/badge/License-Apache%20v2-green.svg)](https://github.com/OWASP/Nettacker/blob/master/LICENSE)
 [![Twitter](https://img.shields.io/badge/Twitter-@iotscan-blue.svg)](https://twitter.com/iotscan)
 ![GitHub contributors](https://img.shields.io/github/contributors/OWASP/Nettacker)
@@ -50,6 +50,15 @@ _____________
 Thanks to our awesome contributors
 ============
 ![Awesome Contributors](https://contrib.rocks/image?repo=OWASP/Nettacker)
+
+## Adopters
+
+We’re grateful to the organizations, community projects, and individuals who adopt and rely on OWASP Nettacker for their security workflows.
+
+If you’re using OWASP Nettacker in your organization or project, we’d love to hear from you! Feel free to add your details to the [ADOPTERS.md](ADOPTERS.md) file by submitting a pull request or reach out to us via GitHub issues. Let’s showcase how Nettacker is making a difference in the security community!
+
+ See [ADOPTERS.md](ADOPTERS.md) for details.
+
 _____________
 
 ## ***IoT Scanner***

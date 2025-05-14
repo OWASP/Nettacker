@@ -9,13 +9,15 @@ logging.getLogger("paramiko.transport").disabled = True
 
 
 class SshLibrary(BaseLibrary):
+    client = SSHClient
+
     def brute_force(self, *args, **kwargs):
         host = kwargs["host"]
         port = kwargs["port"]
         username = kwargs["username"]
         password = kwargs["password"]
 
-        connection = SSHClient()
+        connection = self.client()
         connection.set_missing_host_key_policy(AutoAddPolicy())
         connection.connect(
             **{
