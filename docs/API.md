@@ -75,7 +75,7 @@ At the first, you must send an API key through the request each time you send a 
 To submit a new scan follow this step.
 
 ```python
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07", "targets": "127.0.0.1,owasp.org", "scan_method": "port_scan"})
+>>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07", "targets": "127.0.0.1,owasp.org", "selected_modules": "port_scan", "report_path_filename": "/home/test.html"})
 >>> r.status_code
 200
 >>> import json
@@ -120,7 +120,7 @@ To submit a new scan follow this step.
 }
 ```
 
-Please note, `targets` and `scan_method` are **necessary** to submit a new scan unless you modify the config file before! The `scan_method` could be empty if you define the `profile`.
+Please note, `targets` and `selected_modules` are **necessary** to submit a new scan unless you modify the config file before! The `selected_modules` could be empty if you define the `profile`.
 
 ```python
 >>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07"})
@@ -131,7 +131,7 @@ Please note, `targets` and `scan_method` are **necessary** to submit a new scan 
 >>> r.content
 u'{"msg":"please choose your scan method!","status":"error"}\n'
 
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "09877e92c75f6afdca6ae61ad3f53727", "targets": "127.0.0.1", "scan_method": "dir_scan,port_scan"})
+>>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "09877e92c75f6afdca6ae61ad3f53727", "targets": "127.0.0.1", "selected_modules": "dir_scan,port_scan", "report_path_filename": "/home/test.html"})
 >>> print json.dumps(json.loads(r.content), sort_keys=True, indent=4)
 {
     "backup_ports": null, 
@@ -429,7 +429,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 </div>
 <style type="text/css">
 
-	.header{
+    .header{
     margin:2%;
     text-align:center;
   }
@@ -665,7 +665,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 ```
 ## Generate a HTML Scan Result for a Host
 ```python
->>> r = s.get("https://localhost:5000/logs/get_html?host=127.0.0.1")
+>>> r = s.get("https://localhost:5000/logs/get_html?target=127.0.0.1&key=<your_api_key>")
 >>> print r.content[:1000]
 <!DOCTYPE html>
 <!-- THIS PAGE COPIED AND MODIFIED FROM http://bl.ocks.org/robschmuecker/7880033-->
@@ -677,7 +677,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 </div>
 <style type="text/css">
 
-	.header{
+    .header{
     margin:2%;
     text-align:center;
   }
@@ -706,7 +706,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 
 ### Get the Scan Result in JSON Type
 ```python
->>> r = s.get("https://localhost:5000/logs/get_json?host=owasp.org")
+>>> r = s.get("https://localhost:5000/logs/get_json?target=owasp.org&key=<your_api_key>")
 >>> print(json.dumps(json.loads(r.content), sort_keys=True, indent=4))
 [
     {
