@@ -1,17 +1,14 @@
 info:
-  name: wordpress_version_scan
-  author: OWASP Nettacker Team
+  name: config_file_scan
+  author: Manushya-a
   severity: 3
-  description: Directory, Backup finder
+  description: Configuration file finder
   reference:
   profiles:
     - scan
     - http
     - backup
     - low_severity
-    - wp
-    - wordpress
-    - wp_theme
 
 payloads:
   - library: http
@@ -24,27 +21,26 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/wp-content/themes/{{paths}}"
+            input_format: "{{schema}}://{target}:{{ports}}/{url_base_path}{{urls}}"
             prefix: ""
             suffix: ""
             interceptors:
             data:
+              urls:
+                read_from_file: wordlists/config_wordlist.txt
               schema:
                 - "http"
                 - "https"
               ports:
                 - 80
                 - 443
-              paths:
-                read_from_file: wordlists/wp_theme_small.txt
-              
         response:
           condition_type: and
           log: "response_dependent['url']"
           conditions:
-            status_code:
-              regex: 200|403|401
-              reverse: false
             url:
               regex: .*
+              reverse: false 
+            status_code:
+              regex: 200|403|401
               reverse: false
