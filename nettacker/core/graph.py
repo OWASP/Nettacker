@@ -5,6 +5,7 @@ import json
 import os
 from datetime import datetime
 import yaml
+import uuid
 
 import texttable
 
@@ -126,43 +127,56 @@ def create_dd_specific_json(all_scan_logs):
 
     findings = []
 
-    modules_used = {log["module_name"].strip() for log in all_scan_logs}
-    print(modules_used)
-    date_ = {log["date"].strip() for log in all_scan_logs}
     module_path = Config.path.modules_dir
-    submodules_used = {
-        f"{str(module_path).strip()}/{i.split('_')[-1].strip()}/{'_'.join(i.split('_')[0:-1])}.yaml"
-        for i in modules_used
-    }
 
-    for module_name, module_file, date in zip(modules_used, submodules_used, date_):
-        with open(module_file) as fp:
-            data = yaml.safe_load(fp)
+    for log in all_scan_logs:
+        module_name = log["module_name"].strip()
+        date = log["date"].split(" ")[0].strip()
+        port = log.get("port", "").__str__().strip()
+        impact = log.get("event", "").strip()
+        severity_justification = log.get("json_event", "").strip()
+        service = log.get("target", "").strip()
+        unique_id = log.get("scan_id", uuid.uuid4().hex)
 
-        severity = data["info"]["severity"]
-        description = data["info"]["description"]
+        module_file = f"{str(module_path).strip()}/{module_name.split('_')[-1].strip()}/{'_'.join(module_name.split('_')[0:-1])}.yaml"
 
-        if severity >= 9:
-            severity = severity_mapping.get(5)
-        elif severity >= 7:
-            severity = severity_mapping.get(4)
-        elif severity >= 4:
-            severity = severity_mapping.get(3)
-        elif severity > 0:
-            severity = severity_mapping.get(2)
+        try:
+            with open(module_file) as fp:
+                data = yaml.safe_load(fp)
+                severity_raw = data["info"].get("severity", 0)
+                description = data["info"].get("description", "")
+        except Exception as e:
+            severity_raw = 1  # Default to Info
+            description = "No description available."
+
+        if severity_raw >= 9:
+            severity = severity_mapping[5]
+        elif severity_raw >= 7:
+            severity = severity_mapping[4]
+        elif severity_raw >= 4:
+            severity = severity_mapping[3]
+        elif severity_raw > 0:
+            severity = severity_mapping[2]
         else:
-            severity = severity_mapping.get(1)
+            severity = severity_mapping[1]
 
-        findings.append(
-            {
-                "title": module_name.strip(),
-                "severity": severity.strip(),
-                "description": description.strip(),
-                "date": date.split(" ")[0].strip()
-            }
-        )
+        finding = {
+            "date": date,
+            "title": module_name,
+            "description": description.strip(),
+            "severity": severity,
+            "param": port,
+            "impact": impact,
+            "severity_justification": severity_justification,
+            "service": service,
+            "unique_id_from_tool": unique_id,
+            "static_finding": False,
+            "dynamic_finding": True
+        }
 
-    return str(json.dumps({"findings": findings}, indent=4))
+        findings.append(finding)
+
+    return json.dumps({"findings": findings}, indent=4)
 
 
 def create_sarif_report(all_scan_logs):
