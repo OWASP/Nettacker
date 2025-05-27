@@ -10,7 +10,6 @@ info:
    
   profiles:
     - vuln
-    - vulnerability
     - http
     - critical_severity
     - cve
