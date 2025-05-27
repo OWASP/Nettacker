@@ -1,27 +1,29 @@
 info:
-  name: pop3_brute
+  name: smb_brute
   author: OWASP Nettacker Team
   severity: 3
-  description: POP3 SSL Bruteforcer
+  description: SMB Bruteforcer
   reference:
   profiles:
     - brute
     - brute_force
-    - pop3
+    - smb
 
 payloads:
-  - library: pop3s
+  - library: smb
     steps:
       - method: brute_force
         timeout: 3
-        host: "{target}"
+        host: '{target}'
         ports:
-          - 995
+          - 445
         usernames:
-          - root
+          - administrator
           - admin
+          - root
           - user
           - test
+          - guest
         passwords:
           nettacker_fuzzer:
             input_format: '{{passwords}}'
@@ -35,5 +37,5 @@ payloads:
           condition_type: or
           conditions:
             successful_login:
-              regex: ""
+              regex: ''
               reverse: false
