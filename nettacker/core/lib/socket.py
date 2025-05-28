@@ -73,7 +73,7 @@ class SocketLibrary(BaseLibrary):
                 service_name = socket.getservbyport(port)
             except OSError:
                 service_name = "unknown"
-            
+
             try:
                 socket_connection.send(b"ABC\x00\r\n\r\n\r\n" * 10)
                 response = socket_connection.recv(1024 * 1024 * 10)
