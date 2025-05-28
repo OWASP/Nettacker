@@ -24,6 +24,9 @@ def create_tcp_socket(host, port, timeout):
         ssl_flag = False
     except ConnectionRefusedError:
         return None
+    except socket.timeout:
+        # Incicates a filtered port
+        return "filtered_port"
 
     try:
         socket_connection = ssl.wrap_socket(socket_connection)
@@ -55,26 +58,37 @@ class SocketLibrary(BaseLibrary):
 
     def tcp_connect_send_and_receive(self, host, port, timeout):
         tcp_socket = create_tcp_socket(host, port, timeout)
-        if tcp_socket is None:
-            return None
-
-        socket_connection, ssl_flag = tcp_socket
-        peer_name = socket_connection.getpeername()
-        try:
-            socket_connection.send(b"ABC\x00\r\n\r\n\r\n" * 10)
-            response = socket_connection.recv(1024 * 1024 * 10)
-            socket_connection.close()
-        # except ConnectionRefusedError:
-        #     return None
-        except Exception:
+        if not isinstance(tcp_socket, tuple):
+            if tcp_socket is None:
+                return None
+            elif tcp_socket == "filtered_port":
+                peer_name = (host, port)
+                service_name = "filtered"
+                response = b""
+                ssl_flag = False
+        else:
+            socket_connection, ssl_flag = tcp_socket
+            peer_name = socket_connection.getpeername()
             try:
+                service_name = socket.getservbyport(port)
+            except OSError:
+                service_name = "unknown"
+            
+            try:
+                socket_connection.send(b"ABC\x00\r\n\r\n\r\n" * 10)
+                response = socket_connection.recv(1024 * 1024 * 10)
                 socket_connection.close()
-                response = b""
+            # except ConnectionRefusedError:
+            #     return None
             except Exception:
-                response = b""
+                try:
+                    socket_connection.close()
+                    response = b""
+                except Exception:
+                    response = b""
         return {
             "peer_name": peer_name,
-            "service": socket.getservbyport(port),
+            "service": service_name,
             "response": response.decode(errors="ignore"),
             "ssl_flag": ssl_flag,
         }
