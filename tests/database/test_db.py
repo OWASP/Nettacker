@@ -1,7 +1,7 @@
 import json
-import pytest
-from unittest.mock import Mock, patch, MagicMock, call
 from datetime import datetime
+from unittest.mock import Mock, patch, MagicMock, call
+
 import apsw
 
 from nettacker.database.db import (
@@ -21,22 +21,18 @@ from nettacker.database.db import (
     get_options_by_scan_id,
     logs_to_report_json,
     logs_to_report_html,
-    search_logs
+    search_logs,
 )
 
 
 class TestDatabase:
-
     def setup_method(self):
         self.sample_event = {
             "date": "2024-01-01 10:00:00",
             "scan_id": "test_scan_123",
-            "options": {
-                "report_path_filename": "/tmp/test_report.json",
-                "target": "192.168.1.1"
-            }
+            "options": {"report_path_filename": "/tmp/test_report.json", "target": "192.168.1.1"},
         }
-        
+
         self.sample_log = {
             "target": "192.168.1.1",
             "date": datetime(2024, 1, 1, 10, 0, 0),
@@ -44,7 +40,7 @@ class TestDatabase:
             "scan_id": "test_scan_123",
             "port": {"port": 80, "protocol": "tcp"},
             "event": {"status": "open"},
-            "json_event": {"service": "http"}
+            "json_event": {"service": "http"},
         }
 
         self.sample_log_temp = {
@@ -61,106 +57,107 @@ class TestDatabase:
         # For search_logs
         self.page = 1
         self.query = "test"
-        
+
         self.target = "192.168.1.1"
         self.module = "port_scan"
         self.scan_id = "scan_123"
         self.event_name = "event_abc"
 
-# -------------------------------------------------------
-#                   Tests for db_inputs
-# -------------------------------------------------------
+    # -------------------------------------------------------
+    #                   Tests for db_inputs
+    # -------------------------------------------------------
 
-    @patch('nettacker.database.db.Config')
+    @patch("nettacker.database.db.Config")
     def test_db_inputs_postgres(self, mock_config):
         mock_config.db.as_dict.return_value = {
-            'username': 'user',
-            'password': 'pass',
-            'host': 'localhost',
-            'port': '5432',
-            'name': 'testdb',
-            'ssl_mode': 'require'
+            "username": "user",
+            "password": "pass",
+            "host": "localhost",
+            "port": "5432",
+            "name": "testdb",
+            "ssl_mode": "require",
         }
-        
-        result = db_inputs('postgres')
+
+        result = db_inputs("postgres")
         expected = "postgresql+psycopg2://user:pass@localhost:5432/testdb?sslmode=require"
         assert result == expected
 
-    @patch('nettacker.database.db.Config')
+    @patch("nettacker.database.db.Config")
     def test_db_inputs_mysql(self, mock_config):
         mock_config.db.as_dict.return_value = {
-            'username': 'user',
-            'password': 'pass',
-            'host': 'localhost',
-            'port': '3306',
-            'name': 'testdb',
-            'ssl_mode': 'disable',
-            'journal_mode': 'WAL',
-            'synchronous_mode': 'NORMAL'
+            "username": "user",
+            "password": "pass",
+            "host": "localhost",
+            "port": "3306",
+            "name": "testdb",
+            "ssl_mode": "disable",
+            "journal_mode": "WAL",
+            "synchronous_mode": "NORMAL",
         }
-        
-        result = db_inputs('mysql')
+
+        result = db_inputs("mysql")
         expected = "mysql+pymysql://user:pass@localhost:3306/testdb"
         assert result == expected
 
-# -------------------------------------------------------
-#              tests for create_connection
-# -------------------------------------------------------
+    # -------------------------------------------------------
+    #              tests for create_connection
+    # -------------------------------------------------------
 
-    @patch('nettacker.database.db.apsw.Connection')
-    @patch('nettacker.database.db.Config')
-    @patch('nettacker.database.db.config')
-    def test_create_connection_sqlite(self, mock_config_instance, mock_config_class, mock_apsw_conn):
+    @patch("nettacker.database.db.apsw.Connection")
+    @patch("nettacker.database.db.Config")
+    @patch("nettacker.database.db.config")
+    def test_create_connection_sqlite(
+        self, mock_config_instance, mock_config_class, mock_apsw_conn
+    ):
         mock_config_class.db.engine = "sqlite:///test.db"
         mock_config_class.db.journal_mode = "WAL"
         mock_config_class.db.synchronous_mode = "NORMAL"
         mock_config_instance.db.as_dict.return_value = {"name": "/tmp/test.db"}
         mock_config_instance.settings.timeout = 30
-        
+
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_connection.cursor.return_value = mock_cursor
         mock_apsw_conn.return_value = mock_connection
-        
+
         result = create_connection()
-        
+
         mock_apsw_conn.assert_called_once_with("/tmp/test.db")
         mock_connection.setbusytimeout.assert_called_once_with(3000)
         mock_cursor.execute.assert_any_call("PRAGMA journal_mode=WAL")
         mock_cursor.execute.assert_any_call("PRAGMA synchronous=NORMAL")
-        
+
         assert result == (mock_connection, mock_cursor)
 
-
-    @patch('nettacker.database.db.create_engine')
-    @patch('nettacker.database.db.sessionmaker')
-    @patch('nettacker.database.db.Config')
+    @patch("nettacker.database.db.create_engine")
+    @patch("nettacker.database.db.sessionmaker")
+    @patch("nettacker.database.db.Config")
     def test_create_connection_mysql(self, mock_config, mock_sessionmaker, mock_create_engine):
         mock_config.db.engine = "mysql"
         mock_session_class = Mock()
         mock_session = Mock()
         mock_session_class.return_value = mock_session
         mock_sessionmaker.return_value = mock_session_class
-        
-        with patch('nettacker.database.db.db_inputs', return_value="mysql://test"):
+
+        with patch("nettacker.database.db.db_inputs", return_value="mysql://test"):
             result = create_connection()
-            
+
         mock_create_engine.assert_called_once()
         mock_sessionmaker.assert_called_once()
         assert result == mock_session
 
-# -------------------------------------------------------
-#              tests for send_submit_query
-# -------------------------------------------------------
+    # -------------------------------------------------------
+    #              tests for send_submit_query
+    # -------------------------------------------------------
 
     def test_send_submit_query_sqlite_success(self):
         """Test send_submit_query with SQLite connection - success case"""
         mock_connection = Mock()
         mock_cursor = Mock()
         session = (mock_connection, mock_cursor)
-        
+
         result = send_submit_query(session)
-        
+
         mock_connection.execute.assert_called_once_with("COMMIT")
         mock_connection.close.assert_called_once()
         assert result is True
@@ -170,13 +167,13 @@ class TestDatabase:
         mock_connection = Mock()
         mock_cursor = Mock()
         session = (mock_connection, mock_cursor)
-        
+
         # First call fails, second succeeds, third rollback
         mock_connection.execute.side_effect = [Exception("Lock error"), None, None]
-        
-        with patch('time.sleep'):
+
+        with patch("time.sleep"):
             result = send_submit_query(session)
-        
+
         assert mock_connection.execute.call_count == 3
         mock_connection.execute.assert_any_call("ROLLBACK")
         mock_connection.execute.assert_any_call("COMMIT")
@@ -205,9 +202,9 @@ class TestDatabase:
 
     def test_send_submit_query_sqlalchemy_success(self):
         mock_session = Mock()
-        
+
         result = send_submit_query(mock_session)
-        
+
         mock_session.commit.assert_called_once()
         assert result is True
 
@@ -223,21 +220,21 @@ class TestDatabase:
         assert mock_session.commit.call_count >= 99
         mock_warn.assert_called_with("mocked fail message")
 
-# -------------------------------------------------------
-#             tests for submit_report_to_db
-# -------------------------------------------------------
+    # -------------------------------------------------------
+    #             tests for submit_report_to_db
+    # -------------------------------------------------------
 
-    @patch('nettacker.database.db.create_connection')
-    @patch('nettacker.database.db.send_submit_query')
+    @patch("nettacker.database.db.create_connection")
+    @patch("nettacker.database.db.send_submit_query")
     def test_submit_report_to_db_sqlite(self, mock_send_submit, mock_create_conn):
         """Test submit_report_to_db with SQLite"""
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
         mock_send_submit.return_value = True
-        
+
         result = submit_report_to_db(self.sample_event)
-        
+
         mock_cursor.execute.assert_any_call("BEGIN")
         mock_cursor.execute.assert_any_call(
             """
@@ -248,15 +245,14 @@ class TestDatabase:
                 "2024-01-01 10:00:00",
                 "test_scan_123",
                 "/tmp/test_report.json",
-                json.dumps(self.sample_event["options"])
-            )
+                json.dumps(self.sample_event["options"]),
+            ),
         )
         assert result is True
 
-
-    @patch('nettacker.database.db.create_connection')
-    @patch('nettacker.database.db.send_submit_query')
-    @patch('nettacker.database.db.Report')
+    @patch("nettacker.database.db.create_connection")
+    @patch("nettacker.database.db.send_submit_query")
+    @patch("nettacker.database.db.Report")
     def test_submit_report_to_db_sqlalchemy(self, mock_report, mock_send_submit, mock_create_conn):
         """Test submit_report_to_db with SQLAlchemy"""
         mock_session = Mock()
@@ -264,35 +260,35 @@ class TestDatabase:
         mock_send_submit.return_value = True
         mock_report_instance = Mock()
         mock_report.return_value = mock_report_instance
-        
+
         result = submit_report_to_db(self.sample_event)
-        
+
         mock_session.add.assert_called_once_with(mock_report_instance)
         mock_send_submit.assert_called_once_with(mock_session)
         assert result is True
 
-# -------------------------------------------------------
-#             tests for remove_old_logs
-# -------------------------------------------------------
+    # -------------------------------------------------------
+    #             tests for remove_old_logs
+    # -------------------------------------------------------
 
-    @patch('nettacker.database.db.create_connection')
-    @patch('nettacker.database.db.send_submit_query')
+    @patch("nettacker.database.db.create_connection")
+    @patch("nettacker.database.db.send_submit_query")
     def test_remove_old_logs_sqlite(self, mock_send_submit, mock_create_conn):
         """Test remove_old_logs with SQLite"""
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
         mock_send_submit.return_value = True
-        
+
         options = {
             "target": "192.168.1.1",
             "module_name": "port_scan",
             "scan_id": "current_scan",
-            "scan_compare_id": "compare_scan"
+            "scan_compare_id": "compare_scan",
         }
-        
+
         result = remove_old_logs(options)
-        
+
         mock_cursor.execute.assert_any_call("BEGIN")
         mock_cursor.execute.assert_any_call(
             """
@@ -302,10 +298,9 @@ class TestDatabase:
                       AND scan_unique_id != ?
                       AND scan_unique_id != ?
                 """,
-            ("192.168.1.1", "port_scan", "current_scan", "compare_scan")
+            ("192.168.1.1", "port_scan", "current_scan", "compare_scan"),
         )
         assert result is True
-
 
     @patch("nettacker.database.db.send_submit_query", return_value=True)
     @patch("nettacker.database.db.create_connection")
@@ -337,14 +332,16 @@ class TestDatabase:
         # Assert final result
         assert result is True
 
-# -------------------------------------------------------
-#             tests for submit_logs_to_db
-# -------------------------------------------------------
+    # -------------------------------------------------------
+    #             tests for submit_logs_to_db
+    # -------------------------------------------------------
 
-    @patch('nettacker.database.db.create_connection')
-    @patch('nettacker.database.db.send_submit_query')
-    @patch('nettacker.database.db.Config')
-    def test_submit_logs_to_db_sqlite_success(self, mock_config, mock_send_submit, mock_create_conn):
+    @patch("nettacker.database.db.create_connection")
+    @patch("nettacker.database.db.send_submit_query")
+    @patch("nettacker.database.db.Config")
+    def test_submit_logs_to_db_sqlite_success(
+        self, mock_config, mock_send_submit, mock_create_conn
+    ):
         """Test submit_logs_to_db with SQLite - success case"""
         mock_connection = Mock()
         mock_cursor = Mock()
@@ -352,9 +349,9 @@ class TestDatabase:
         mock_send_submit.return_value = True
         mock_connection.in_transaction = False
         mock_config.settings.max_retries = 3
-        
+
         result = submit_logs_to_db(self.sample_log)
-        
+
         mock_connection.execute.assert_called_with("BEGIN")
         mock_cursor.execute.assert_called_with(
             """
@@ -368,8 +365,8 @@ class TestDatabase:
                 "test_scan_123",
                 json.dumps({"port": 80, "protocol": "tcp"}),
                 json.dumps({"status": "open"}),
-                json.dumps({"service": "http"})
-            )
+                json.dumps({"service": "http"}),
+            ),
         )
         assert result is True
 
@@ -424,10 +421,12 @@ class TestDatabase:
         }
 
         submit_logs_to_db(log)
-        mock_warn.assert_has_calls([
-        call("[Retry 1/1] Database is locked. Retrying..."),
-        call("All retries exhausted. Skipping this log.")
-        ])
+        mock_warn.assert_has_calls(
+            [
+                call("[Retry 1/1] Database is locked. Retrying..."),
+                call("All retries exhausted. Skipping this log."),
+            ]
+        )
 
     @patch("nettacker.database.db.create_connection")
     def test_sqlite_operational_error(self, mock_create_conn):
@@ -449,7 +448,6 @@ class TestDatabase:
 
         result = submit_logs_to_db(log)
         assert result is False
-
 
     @patch("nettacker.database.db.create_connection")
     def test_sqlite_generic_exception(self, mock_create_conn):
@@ -509,15 +507,16 @@ class TestDatabase:
         result = submit_logs_to_db(log)
         assert result is False
 
+    # -------------------------------------------------------
+    #           tests for submit_temp_logs_to_db
+    # -------------------------------------------------------
 
-# -------------------------------------------------------
-#           tests for submit_temp_logs_to_db
-# -------------------------------------------------------
-
-    @patch('nettacker.database.db.create_connection')
-    @patch('nettacker.database.db.send_submit_query')
-    @patch('nettacker.database.db.Config')
-    def test_submit_temp_logs_to_db_sqlite_success(self, mock_config, mock_send_submit, mock_create_conn):
+    @patch("nettacker.database.db.create_connection")
+    @patch("nettacker.database.db.send_submit_query")
+    @patch("nettacker.database.db.Config")
+    def test_submit_temp_logs_to_db_sqlite_success(
+        self, mock_config, mock_send_submit, mock_create_conn
+    ):
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
@@ -550,7 +549,6 @@ class TestDatabase:
         assert result is False
         mock_warn.assert_called_once_with("invalid log")
 
-
     @patch("nettacker.database.db.Config.settings.retry_delay", 0)
     @patch("nettacker.database.db.Config.settings.max_retries", 1)
     @patch("nettacker.database.db.logging.warn")
@@ -563,11 +561,13 @@ class TestDatabase:
         mock_create_conn.return_value = (mock_conn, mock_cursor)
 
         result = submit_temp_logs_to_db(self.sample_log_temp)
-        mock_warn.assert_has_calls([
-        call("[Retry 1/1] Database is locked. Retrying..."),
-        call("All retries exhausted. Skipping this log.")
-        ])
-        assert result is True   # we're continuing operation hence it returns True
+        mock_warn.assert_has_calls(
+            [
+                call("[Retry 1/1] Database is locked. Retrying..."),
+                call("All retries exhausted. Skipping this log."),
+            ]
+        )
+        assert result is True  # we're continuing operation hence it returns True
 
     @patch("nettacker.database.db.create_connection")
     def test_temp_log_operational_error(self, mock_create_conn):
@@ -604,18 +604,20 @@ class TestDatabase:
         mock_send.assert_called_with(mock_session)
         assert result is True
 
-    @patch('nettacker.database.db.create_connection')
+    @patch("nettacker.database.db.create_connection")
     def test_submit_temp_logs_to_db_sqlite(self, mock_create_conn):
         """Test submit_temp_logs_to_db with SQLite"""
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
         mock_connection.in_transaction = False
-        
-        with patch('nettacker.database.db.send_submit_query', return_value=True) as mock_send_submit:
-            with patch('nettacker.database.db.Config') as mock_config:
+
+        with patch(
+            "nettacker.database.db.send_submit_query", return_value=True
+        ):
+            with patch("nettacker.database.db.Config") as mock_config:
                 mock_config.settings.max_retries = 3
-                
+
                 temp_log = {
                     "target": "192.168.1.1",
                     "date": datetime(2024, 1, 1),
@@ -624,11 +626,11 @@ class TestDatabase:
                     "event_name": "test_event",
                     "port": {"port": 80},
                     "event": {"status": "test"},
-                    "data": {"info": "test_data"}
+                    "data": {"info": "test_data"},
                 }
-                
+
                 result = submit_temp_logs_to_db(temp_log)
-                
+
                 mock_cursor.execute.assert_any_call("BEGIN")
                 mock_cursor.execute.assert_any_call(
                     """
@@ -643,14 +645,14 @@ class TestDatabase:
                         "test_event",
                         json.dumps({"port": 80}),
                         json.dumps({"status": "test"}),
-                        json.dumps({"info": "test_data"})
-                    )
+                        json.dumps({"info": "test_data"}),
+                    ),
                 )
                 assert result is True
 
-# -------------------------------------------------------
-#           tests for find_temp_events
-# -------------------------------------------------------
+    # -------------------------------------------------------
+    #           tests for find_temp_events
+    # -------------------------------------------------------
 
     @patch("nettacker.database.db.create_connection")
     def test_sqlite_successful_lookup(self, mock_create_conn):
@@ -701,7 +703,6 @@ class TestDatabase:
         assert result == []
         mock_warn.assert_called_once_with("database fail")
 
-
     @patch("nettacker.database.db.create_connection")
     def test_sqlalchemy_successful_lookup(self, mock_create_conn):
         mock_session = MagicMock()
@@ -721,17 +722,17 @@ class TestDatabase:
         result = find_temp_events(self.target, self.module, self.scan_id, self.event_name)
         assert result is None
 
-    @patch('nettacker.database.db.create_connection')
+    @patch("nettacker.database.db.create_connection")
     def test_find_temp_events_sqlite(self, mock_create_conn):
         """Test find_temp_events with SQLite"""
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
-        
+
         mock_cursor.fetchone.return_value = ('{"test": "data"}',)
-        
+
         result = find_temp_events("192.168.1.1", "port_scan", "scan_123", "event_1")
-        
+
         mock_cursor.execute.assert_called_with(
             """
                         SELECT event
@@ -739,55 +740,52 @@ class TestDatabase:
                         WHERE target = ? AND module_name = ? AND scan_unique_id = ? AND event_name = ?
                         LIMIT 1
                     """,
-            ("192.168.1.1", "port_scan", "scan_123", "event_1")
+            ("192.168.1.1", "port_scan", "scan_123", "event_1"),
         )
         assert result == {"test": "data"}
 
-# -------------------------------------------------------
-#               tests for find_events
-# -------------------------------------------------------
+    # -------------------------------------------------------
+    #               tests for find_events
+    # -------------------------------------------------------
 
-    @patch('nettacker.database.db.create_connection')
+    @patch("nettacker.database.db.create_connection")
     def test_find_events_sqlite(self, mock_create_conn):
         """Test find_events with SQLite"""
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
-        
-        mock_cursor.fetchall.return_value = [
-            ('{"event1": "data1"}',),
-            ('{"event2": "data2"}',)
-        ]
-        
+
+        mock_cursor.fetchall.return_value = [('{"event1": "data1"}',), ('{"event2": "data2"}',)]
+
         result = find_events("192.168.1.1", "port_scan", "scan_123")
-        
+
         mock_cursor.execute.assert_called_with(
             """
                 SELECT json_event FROM scan_events
                 WHERE target = ? AND module_name = ? and scan_unique_id = ?
                 """,
-            ("192.168.1.1", "port_scan", "scan_123")
+            ("192.168.1.1", "port_scan", "scan_123"),
         )
         expected = ['{"event1": "data1"}', '{"event2": "data2"}']
         assert result == expected
 
-# -------------------------------------------------------
-#               tests for select_reports
-# -------------------------------------------------------
+    # -------------------------------------------------------
+    #               tests for select_reports
+    # -------------------------------------------------------
 
-    @patch('nettacker.database.db.create_connection')
+    @patch("nettacker.database.db.create_connection")
     def test_select_reports_sqlite(self, mock_create_conn):
         """Test select_reports with SQLite"""
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
-        
+
         mock_cursor.fetchall.return_value = [
             (1, "2024-01-01", "scan_123", "/tmp/report.json", '{"target": "192.168.1.1"}')
         ]
-        
+
         result = select_reports(1)
-        
+
         mock_cursor.execute.assert_called_with(
             """
                 SELECT id, date, scan_unique_id, report_path_filename, options
@@ -795,186 +793,203 @@ class TestDatabase:
                 ORDER BY id DESC
                 LIMIT 10 OFFSET ?
                 """,
-            (0,)
+            (0,),
         )
-        
-        expected = [{
-            "id": 1,
-            "date": "2024-01-01",
-            "scan_id": "scan_123",
-            "report_path_filename": "/tmp/report.json",
-            "options": {"target": "192.168.1.1"}
-        }]
+
+        expected = [
+            {
+                "id": 1,
+                "date": "2024-01-01",
+                "scan_id": "scan_123",
+                "report_path_filename": "/tmp/report.json",
+                "options": {"target": "192.168.1.1"},
+            }
+        ]
         assert result == expected
 
-# -------------------------------------------------------
-#               tests for get_scan_result
-# -------------------------------------------------------
+    # -------------------------------------------------------
+    #               tests for get_scan_result
+    # -------------------------------------------------------
 
-    @patch('nettacker.database.db.create_connection')
-    @patch('builtins.open', create=True)
+    @patch("nettacker.database.db.create_connection")
+    @patch("builtins.open", create=True)
     def test_get_scan_result_sqlite(self, mock_open, mock_create_conn):
         """Test get_scan_result with SQLite"""
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
-        
+
         mock_cursor.fetchone.return_value = ("/tmp/report.json",)
         mock_file = Mock()
         mock_file.read.return_value = b'{"result": "data"}'
         mock_open.return_value = mock_file
-        
+
         result = get_scan_result(1)
-        
+
         mock_cursor.execute.assert_called_with(
             """
             SELECT report_path_filename from reports
             WHERE id = ?
-            """, (1,)
+            """,
+            (1,),
         )
-        
+
         filename, content = result
         assert filename == "/tmp/report.json"
         assert content == b'{"result": "data"}'
 
+    # -------------------------------------------------------
+    #               tests for last_host_logs
+    # -------------------------------------------------------
 
-# -------------------------------------------------------
-#               tests for last_host_logs
-# -------------------------------------------------------
-
-    @patch('nettacker.database.db.create_connection')
+    @patch("nettacker.database.db.create_connection")
     def test_last_host_logs_sqlite(self, mock_create_conn):
         """Test last_host_logs with SQLite"""
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
-        
+
         # Mock the sequence of database calls
         mock_cursor.fetchall.side_effect = [
             [("192.168.1.1",)],  # targets
-            [("port_scan",)],    # module_names for target
+            [("port_scan",)],  # module_names for target
             [("port_scan",), ("vuln_scan",)],  # events for target
         ]
         mock_cursor.fetchone.return_value = ("2024-01-01",)  # latest_date
-        
+
         result = last_host_logs(1)
-        
+
         # Verify the structure of the result
         assert len(result) == 1
         assert result[0]["target"] == "192.168.1.1"
         assert "info" in result[0]
 
+    # -------------------------------------------------------
+    #               tests for get_logs_by_scan_id
+    # -------------------------------------------------------
 
-# -------------------------------------------------------
-#               tests for get_logs_by_scan_id
-# -------------------------------------------------------
-
-    @patch('nettacker.database.db.create_connection')
+    @patch("nettacker.database.db.create_connection")
     def test_get_logs_by_scan_id_sqlite(self, mock_create_conn):
         """Test get_logs_by_scan_id with SQLite"""
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
-        
+
         mock_cursor.fetchall.return_value = [
-            ("scan_123", "192.168.1.1", "port_scan", "2024-01-01", 
-             '{"port": 80}', '{"status": "open"}', '{"service": "http"}')
+            (
+                "scan_123",
+                "192.168.1.1",
+                "port_scan",
+                "2024-01-01",
+                '{"port": 80}',
+                '{"status": "open"}',
+                '{"service": "http"}',
+            )
         ]
-        
+
         result = get_logs_by_scan_id("scan_123")
-        
+
         mock_cursor.execute.assert_called_with(
             """
             SELECT scan_unique_id, target, module_name, date, port, event, json_event
             from scan_events
             WHERE scan_unique_id = ?
-            """, ("scan_123",)
+            """,
+            ("scan_123",),
         )
-        
-        expected = [{
-            "scan_id": "scan_123",
-            "target": "192.168.1.1",
-            "module_name": "port_scan",
-            "date": "2024-01-01",
-            "port": {"port": 80},
-            "event": {"status": "open"},
-            "json_event": {"service": "http"}
-        }]
+
+        expected = [
+            {
+                "scan_id": "scan_123",
+                "target": "192.168.1.1",
+                "module_name": "port_scan",
+                "date": "2024-01-01",
+                "port": {"port": 80},
+                "event": {"status": "open"},
+                "json_event": {"service": "http"},
+            }
+        ]
         assert result == expected
 
-# -------------------------------------------------------
-#               tests for get_options_by_scan_id
-# -------------------------------------------------------
+    # -------------------------------------------------------
+    #               tests for get_options_by_scan_id
+    # -------------------------------------------------------
 
-    @patch('nettacker.database.db.create_connection')
+    @patch("nettacker.database.db.create_connection")
     def test_get_options_by_scan_id_sqlite(self, mock_create_conn):
         """Test get_options_by_scan_id with SQLite"""
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
-        
+
         mock_cursor.fetchall.return_value = [('{"target": "192.168.1.1"}',)]
-        
+
         result = get_options_by_scan_id("scan_123")
-        
+
         mock_cursor.execute.assert_called_with(
             """
             SELECT options from reports
             WHERE scan_unique_id = ?
             """,
-            ("scan_123",)
+            ("scan_123",),
         )
-        
+
         expected = [{"options": '{"target": "192.168.1.1"}'}]
         assert result == expected
 
-# -------------------------------------------------------
-#               tests for logs_to_report_json
-# -------------------------------------------------------
+    # -------------------------------------------------------
+    #               tests for logs_to_report_json
+    # -------------------------------------------------------
 
-    @patch('nettacker.database.db.create_connection')
+    @patch("nettacker.database.db.create_connection")
     def test_logs_to_report_json_sqlite(self, mock_create_conn):
         """Test logs_to_report_json with SQLite"""
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
-        
+
         mock_cursor.fetchall.return_value = [
-            ("scan_123", "192.168.1.1", '{"port": 80}', 
-             '{"status": "open"}', '{"service": "http"}')
+            (
+                "scan_123",
+                "192.168.1.1",
+                '{"port": 80}',
+                '{"status": "open"}',
+                '{"service": "http"}',
+            )
         ]
-        
+
         result = logs_to_report_json("192.168.1.1")
-        
+
         mock_cursor.execute.assert_called_with(
             """
                 SELECT scan_unique_id, target, port, event, json_event
                 FROM scan_events WHERE target = ?
                 """,
-            ("192.168.1.1",)
+            ("192.168.1.1",),
         )
-        
-        expected = [{
-            "scan_id": "scan_123",
-            "target": "192.168.1.1",
-            "port": {"port": 80},
-            "event": {"status": "open"},
-            "json_event": {"service": "http"}
-        }]
+
+        expected = [
+            {
+                "scan_id": "scan_123",
+                "target": "192.168.1.1",
+                "port": {"port": 80},
+                "event": {"status": "open"},
+                "json_event": {"service": "http"},
+            }
+        ]
         assert result == expected
 
-# -------------------------------------------------------
-#               tests for logs_to_report_html
-# -------------------------------------------------------
+    # -------------------------------------------------------
+    #               tests for logs_to_report_html
+    # -------------------------------------------------------
 
-
-    @patch('nettacker.lib.html_log.log_data.table_title', "<html><head>{}</head><body>{}")
-    @patch('nettacker.lib.html_log.log_data.css_1', "css_content")
-    @patch('nettacker.lib.html_log.log_data.table_items', "<tr><td>...</td></tr>")
-    @patch('nettacker.lib.html_log.log_data.table_end', "</table>")
-    @patch('nettacker.core.graph.build_graph')
-    @patch('nettacker.database.db.create_connection')
-    @patch('nettacker.database.db.messages')
+    @patch("nettacker.lib.html_log.log_data.table_title", "<html><head>{}</head><body>{}")
+    @patch("nettacker.lib.html_log.log_data.css_1", "css_content")
+    @patch("nettacker.lib.html_log.log_data.table_items", "<tr><td>...</td></tr>")
+    @patch("nettacker.lib.html_log.log_data.table_end", "</table>")
+    @patch("nettacker.core.graph.build_graph")
+    @patch("nettacker.database.db.create_connection")
+    @patch("nettacker.database.db.messages")
     def test_logs_to_report_html_sqlite(self, mock_messages, mock_create_conn, mock_build_graph):
         """Test logs_to_report_html with SQLite"""
 
@@ -985,8 +1000,15 @@ class TestDatabase:
 
         # Simulated query result from the logs table
         mock_cursor.fetchall.return_value = [
-            ("2024-01-01", "192.168.1.1", "port_scan", "scan_123",
-             '{"port": 80}', '{"status": "open"}', '{"service": "http"}')
+            (
+                "2024-01-01",
+                "192.168.1.1",
+                "port_scan",
+                "scan_123",
+                '{"port": 80}',
+                '{"status": "open"}',
+                '{"service": "http"}',
+            )
         ]
 
         # Simulated return values for graph and messages
@@ -1002,15 +1024,19 @@ class TestDatabase:
         assert "</table>" in result
         assert "Generated by Nettacker" in result
 
-
-    @patch('nettacker.lib.html_log.log_data.table_title', "<html><head>{}</head><body>{}")
-    @patch('nettacker.lib.html_log.log_data.css_1', "css_content")
-    @patch('nettacker.lib.html_log.log_data.table_items', "<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td><td>{6}</td></tr>")
-    @patch('nettacker.lib.html_log.log_data.table_end', "</table>")
-    @patch('nettacker.core.graph.build_graph')
-    @patch('nettacker.database.db.create_connection')
-    @patch('nettacker.database.db.messages', return_value="Generated by Nettacker")
-    def test_logs_to_report_html_sqlalchemy(self, mock_messages, mock_create_conn, mock_build_graph):
+    @patch("nettacker.lib.html_log.log_data.table_title", "<html><head>{}</head><body>{}")
+    @patch("nettacker.lib.html_log.log_data.css_1", "css_content")
+    @patch(
+        "nettacker.lib.html_log.log_data.table_items",
+        "<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td><td>{6}</td></tr>",
+    )
+    @patch("nettacker.lib.html_log.log_data.table_end", "</table>")
+    @patch("nettacker.core.graph.build_graph")
+    @patch("nettacker.database.db.create_connection")
+    @patch("nettacker.database.db.messages", return_value="Generated by Nettacker")
+    def test_logs_to_report_html_sqlalchemy(
+        self, mock_messages, mock_create_conn, mock_build_graph
+    ):
         """Test logs_to_report_html with SQLAlchemy fallback"""
 
         # Simulate SQLAlchemy session
@@ -1044,50 +1070,55 @@ class TestDatabase:
         assert "192.168.1.1" in result
         assert "scan_123" in result
 
+    # -------------------------------------------------------
+    #               tests for search_logs
+    # -------------------------------------------------------
 
-# -------------------------------------------------------
-#               tests for search_logs
-# -------------------------------------------------------
-
-    @patch('nettacker.database.db.create_connection')
+    @patch("nettacker.database.db.create_connection")
     def test_search_logs_sqlite(self, mock_create_conn):
         """Test search_logs with SQLite"""
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
-        
+
         # Mock the sequence of calls for search
         mock_cursor.fetchall.side_effect = [
             [("192.168.1.1",)],  # targets matching query
-            [("2024-01-01", "port_scan", '{"port": 80}', 
-              '{"status": "open"}', '{"service": "http"}')]  # results for target
+            [
+                (
+                    "2024-01-01",
+                    "port_scan",
+                    '{"port": 80}',
+                    '{"status": "open"}',
+                    '{"service": "http"}',
+                )
+            ],  # results for target
         ]
-        
+
         result = search_logs(1, "192.168")
-        
+
         # Verify search query structure
         search_call = mock_cursor.execute.call_args_list[0]
         assert "%192.168%" in search_call[0][1]
-        
+
         assert len(result) == 1
         assert result[0]["target"] == "192.168.1.1"
 
-    @patch('nettacker.database.db.create_connection')
-    @patch('nettacker.database.db.structure')
+    @patch("nettacker.database.db.create_connection")
+    @patch("nettacker.database.db.structure")
     def test_search_logs_no_results(self, mock_structure, mock_create_conn):
         """Test search_logs with no results"""
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
-        
+
         mock_cursor.fetchall.return_value = []
         mock_structure.return_value = {"status": "finished", "msg": "No more search results"}
-        
+
         result = search_logs(1, "nonexistent")
-        
+
         mock_structure.assert_called_with(status="finished", msg="No more search results")
         assert result == {"status": "finished", "msg": "No more search results"}
-
 
     @patch("nettacker.database.db.create_connection")
     def test_sqlite_path_exception(self, mock_create_conn):
@@ -1100,7 +1131,6 @@ class TestDatabase:
         assert result["status"] == "error"
         assert "database error" in result["msg"]
 
-
     @patch("nettacker.database.db.create_connection")
     def test_sqlalchemy_path_success(self, mock_create_conn):
         mock_session = MagicMock()
@@ -1108,7 +1138,9 @@ class TestDatabase:
 
         host_mock = MagicMock()
         host_mock.target = "192.168.1.1"
-        mock_session.query().filter().group_by().order_by().offset().limit().__iter__.return_value = [host_mock]
+        mock_session.query().filter().group_by().order_by().offset().limit().__iter__.return_value = [
+            host_mock
+        ]
 
         data_mock = MagicMock()
         data_mock.target = "192.168.1.1"
@@ -1127,7 +1159,9 @@ class TestDatabase:
     def test_sqlalchemy_path_exception(self, mock_create_conn):
         mock_session = MagicMock()
         mock_create_conn.return_value = mock_session
-        mock_session.query().filter().group_by().order_by().offset().limit.side_effect = Exception("boom")
+        mock_session.query().filter().group_by().order_by().offset().limit.side_effect = Exception(
+            "boom"
+        )
 
         result = search_logs(self.page, self.query)
         assert result["status"] == "error"
