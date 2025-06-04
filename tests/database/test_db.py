@@ -612,9 +612,7 @@ class TestDatabase:
         mock_create_conn.return_value = (mock_connection, mock_cursor)
         mock_connection.in_transaction = False
 
-        with patch(
-            "nettacker.database.db.send_submit_query", return_value=True
-        ):
+        with patch("nettacker.database.db.send_submit_query", return_value=True):
             with patch("nettacker.database.db.Config") as mock_config:
                 mock_config.settings.max_retries = 3
 
