@@ -82,7 +82,11 @@ class DbConfig(ConfigBase):
     For sqlite database:
         fill the name of the DB as sqlite,
         DATABASE as the name of the db user wants
-        other details can be left empty
+        Set the journal_mode (default="WAL") and
+        synchronous_mode (deafault="NORMAL"). Rest
+        of the fields can be left emptyAdd commentMore actions
+        This is the default database:
+        str(CWD / ".data/nettacker.db")
     For mysql users:
         fill the ENGINE name of the DB as mysql
         NAME as the name of the database you want to create
@@ -104,6 +108,8 @@ class DbConfig(ConfigBase):
     username = ""
     password = ""
     ssl_mode = "disable"
+    journal_mode = "WAL"
+    synchronous_mode = "NORMAL"
 
 
 class PathConfig:
@@ -151,6 +157,8 @@ class DefaultSettings(ConfigBase):
         random_chars=generate_random_token(10),
     )
     retries = 1
+    max_retries = 3
+    retry_delay = 0.1
     scan_ip_range = False
     scan_subdomains = False
     selected_modules = None

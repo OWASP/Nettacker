@@ -6,6 +6,7 @@ import importlib
 import math
 import multiprocessing
 import random
+import json
 import re
 import string
 import sys
@@ -32,6 +33,10 @@ def replace_dependent_response(log, response_dependent):
 
 def merge_logs_to_list(result, log_list=[]):
     if isinstance(result, dict):
+        # Doesn't hurt normal operations
+        if "json_event" in list(result.keys()):
+            if not isinstance(result["json_event"], dict):
+                result["json_event"] = json.loads(result["json_event"])
         for i in result:
             if "log" == i:
                 log_list.append(result["log"])
