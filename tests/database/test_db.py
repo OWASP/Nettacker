@@ -1,9 +1,11 @@
 import json
 from datetime import datetime
-from unittest.mock import Mock, patch, MagicMock, call
+from unittest.mock import Mock, patch, MagicMock, call, mock_open
 
 import apsw
+import logging
 
+from nettacker.api.helpers import structure
 from nettacker.database.db import (
     db_inputs,
     create_connection,
@@ -767,6 +769,39 @@ class TestDatabase:
         expected = ['{"event1": "data1"}', '{"event2": "data2"}']
         assert result == expected
 
+    @patch("nettacker.database.db.logging.warn")
+    @patch("nettacker.database.db.create_connection")
+    def test_find_events_sqlite_exception(self, mock_create_conn, mock_warn):
+        mock_connection = Mock()
+        mock_cursor = Mock()
+        mock_create_conn.return_value = (mock_connection, mock_cursor)
+
+        mock_cursor.execute.side_effect = Exception("DB error")
+        result = find_events("192.168.1.1", "http", "scan_123")
+
+        assert result == []
+        mock_warn.assert_called_once_with("Database query failed...")
+
+    @patch("nettacker.database.db.create_connection")
+    def test_find_events_sqlalchemy(self, mock_create_conn):
+        mock_session = Mock()
+        mock_create_conn.return_value = mock_session
+
+        mock_row1 = Mock()
+        mock_row2 = Mock()
+        mock_row1.json_event = '{"event": "scan started"}'
+        mock_row2.json_event = '{"event": "port open"}'
+        mock_session.query.return_value.filter.return_value.all.return_value = [mock_row1, mock_row2]
+
+        result = find_events("192.168.1.1", "http", "scan_123")
+        assert result == [
+            '{"event": "scan started"}',
+            '{"event": "port open"}'
+        ]
+
+        mock_session.query.assert_called_once()
+        mock_session.query.return_value.filter.return_value.all.assert_called_once()
+
     # -------------------------------------------------------
     #               tests for select_reports
     # -------------------------------------------------------
@@ -782,7 +817,7 @@ class TestDatabase:
             (1, "2024-01-01", "scan_123", "/tmp/report.json", '{"target": "192.168.1.1"}')
         ]
 
-        result = select_reports(1)
+        result = select_reports(self.page)
 
         mock_cursor.execute.assert_called_with(
             """
@@ -805,6 +840,50 @@ class TestDatabase:
         ]
         assert result == expected
 
+    @patch("nettacker.database.db.logging.warn")
+    @patch("nettacker.database.db.create_connection")
+    def test_select_reports_sqlite_exception(self, mock_create_conn, mock_warn):
+        mock_connection = Mock()
+        mock_cursor = Mock()
+        mock_create_conn.return_value = (mock_connection, mock_cursor)
+        mock_cursor.query.side_effect = Exception("DB Error")
+
+        result = select_reports(self.page)
+        assert result == structure(status="error", msg="database error!")
+        mock_warn.assert_called_once_with("Could not retrieve report...")
+
+
+    @patch("nettacker.database.db.create_connection")
+    def test_select_reports_sqlalchemy(self, mock_create_conn):
+        mock_session = Mock()
+        mock_create_conn.return_value = mock_session
+
+        mock_report = Mock()
+        mock_report.id = 1
+        mock_report.date = "2024-01-01"
+        mock_report.scan_unique_id = "scan_123"
+        mock_report.report_path_filename = "/tmp/report.json"
+        mock_report.options = json.dumps({"target": "192.168.1.1"})
+
+        mock_session.query.return_value.order_by.return_value.offset.return_value.limit.return_value = [mock_report]
+        result = select_reports(self.page)
+
+        assert result == [{
+            "id": 1,
+            "date": "2024-01-01",
+            "scan_id": "scan_123",
+            "report_path_filename": "/tmp/report.json",
+            "options": {"target": "192.168.1.1"}
+        }]
+
+
+    @patch("nettacker.database.db.create_connection")
+    def test_select_reports_sqlalchemy_exception(self, mock_create_conn):
+        mock_session = Mock()
+        mock_create_conn.return_value = mock_session
+        mock_session.query.side_effect = Exception("DB Error")
+        result = select_reports(self.page)
+        assert result == structure(status="error", msg="database error!")
     # -------------------------------------------------------
     #               tests for get_scan_result
     # -------------------------------------------------------
@@ -836,6 +915,22 @@ class TestDatabase:
         assert filename == "/tmp/report.json"
         assert content == b'{"result": "data"}'
 
+    @patch("nettacker.database.db.create_connection")
+    @patch("builtins.open", new_callable=mock_open, read_data=b"mock file content")
+    def test_get_scan_result_sqlalchemy(self, mock_open_builtin, mock_create_conn):
+        mock_session = Mock()
+        mock_create_conn.return_value = mock_session
+
+        mock_report = Mock()
+        mock_report.report_path_filename = "/tmp/mock_report.json"
+
+        mock_session.query.return_value.filter_by.return_value.first.return_value = mock_report
+
+        filename, content = get_scan_result(1)
+        assert filename == "/tmp/mock_report.json"
+        assert content == b"mock file content"
+
+        mock_open_builtin.assert_called_once_with("/tmp/mock_report.json", "rb")
     # -------------------------------------------------------
     #               tests for last_host_logs
     # -------------------------------------------------------
@@ -849,7 +944,7 @@ class TestDatabase:
 
         # Mock the sequence of database calls
         mock_cursor.fetchall.side_effect = [
-            [("192.168.1.1",)],  # targets
+            [(self.target,)],  # targets
             [("port_scan",)],  # module_names for target
             [("port_scan",), ("vuln_scan",)],  # events for target
         ]
