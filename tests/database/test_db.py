@@ -3,7 +3,6 @@ from datetime import datetime
 from unittest.mock import Mock, patch, MagicMock, call, mock_open
 
 import apsw
-import logging
 
 from nettacker.api.helpers import structure
 from nettacker.database.db import (
@@ -791,13 +790,13 @@ class TestDatabase:
         mock_row2 = Mock()
         mock_row1.json_event = '{"event": "scan started"}'
         mock_row2.json_event = '{"event": "port open"}'
-        mock_session.query.return_value.filter.return_value.all.return_value = [mock_row1, mock_row2]
+        mock_session.query.return_value.filter.return_value.all.return_value = [
+            mock_row1,
+            mock_row2,
+        ]
 
         result = find_events("192.168.1.1", "http", "scan_123")
-        assert result == [
-            '{"event": "scan started"}',
-            '{"event": "port open"}'
-        ]
+        assert result == ['{"event": "scan started"}', '{"event": "port open"}']
 
         mock_session.query.assert_called_once()
         mock_session.query.return_value.filter.return_value.all.assert_called_once()
@@ -852,7 +851,6 @@ class TestDatabase:
         assert result == structure(status="error", msg="database error!")
         mock_warn.assert_called_once_with("Could not retrieve report...")
 
-
     @patch("nettacker.database.db.create_connection")
     def test_select_reports_sqlalchemy(self, mock_create_conn):
         mock_session = Mock()
@@ -865,17 +863,20 @@ class TestDatabase:
         mock_report.report_path_filename = "/tmp/report.json"
         mock_report.options = json.dumps({"target": "192.168.1.1"})
 
-        mock_session.query.return_value.order_by.return_value.offset.return_value.limit.return_value = [mock_report]
+        mock_session.query.return_value.order_by.return_value.offset.return_value.limit.return_value = [
+            mock_report
+        ]
         result = select_reports(self.page)
 
-        assert result == [{
-            "id": 1,
-            "date": "2024-01-01",
-            "scan_id": "scan_123",
-            "report_path_filename": "/tmp/report.json",
-            "options": {"target": "192.168.1.1"}
-        }]
-
+        assert result == [
+            {
+                "id": 1,
+                "date": "2024-01-01",
+                "scan_id": "scan_123",
+                "report_path_filename": "/tmp/report.json",
+                "options": {"target": "192.168.1.1"},
+            }
+        ]
 
     @patch("nettacker.database.db.create_connection")
     def test_select_reports_sqlalchemy_exception(self, mock_create_conn):
@@ -884,6 +885,7 @@ class TestDatabase:
         mock_session.query.side_effect = Exception("DB Error")
         result = select_reports(self.page)
         assert result == structure(status="error", msg="database error!")
+
     # -------------------------------------------------------
     #               tests for get_scan_result
     # -------------------------------------------------------
@@ -931,6 +933,7 @@ class TestDatabase:
         assert content == b"mock file content"
 
         mock_open_builtin.assert_called_once_with("/tmp/mock_report.json", "rb")
+
     # -------------------------------------------------------
     #               tests for last_host_logs
     # -------------------------------------------------------
