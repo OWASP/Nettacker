@@ -24,17 +24,17 @@ class SmbLibrary(BaseLibrary):
             domain = kwargs["domain"]
             response.update({"domain": domain})
 
-        password = ''
+        password = ""
         if "password" in kwargs:
             password = kwargs["password"]
             response.update({"password": password})
 
-        lm = ''
+        lm = ""
         if "lm" in kwargs:
             lm = kwargs["lm"]
             response.update({"lm": lm})
 
-        nt = ''
+        nt = ""
         if "nt" in kwargs:
             nt = kwargs["nt"]
             response.update({"nt": nt})
