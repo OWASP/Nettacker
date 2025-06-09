@@ -13,7 +13,7 @@ class TestDie(TestCase):
         reset_code = TerminalCodes.RESET.value
         die_success()
         success_message = mock_stdout.getvalue()
-        assert reset_code in success_message
+        self.assertIn(reset_code, success_message)
         mock_exit.assert_called_once_with(0)
 
     @patch("sys.stdout", new_callable=StringIO)
@@ -22,5 +22,5 @@ class TestDie(TestCase):
         test_message = "Test error message"
         die_failure(test_message)
         error_message = mock_stdout.getvalue()
-        assert test_message in error_message
+        self.assertIn(test_message, error_message)
         mock_exit.assert_called_once_with(1)
