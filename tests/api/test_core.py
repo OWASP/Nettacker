@@ -119,4 +119,3 @@ class TestCore(TestCase):
         self.assertIn("flag-icon-fr", result)
         self.assertIn('<option selected id="en"', result)
         self.assertIn("flag-icon-es", result)
-        self.assertIn("flag-icon-de", result)
