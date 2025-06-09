@@ -1,7 +1,8 @@
 from unittest.mock import patch
 
+import pytest
+
 from nettacker.core.lib.socket import create_tcp_socket, SocketEngine
-from tests.common import TestCase
 
 
 class Responses:
@@ -123,7 +124,22 @@ class Substeps:
     }
 
 
-class TestSocketMethod(TestCase):
+@pytest.fixture
+def socket_engine():
+    return SocketEngine()
+
+
+@pytest.fixture
+def substeps():
+    return Substeps()
+
+
+@pytest.fixture
+def responses():
+    return Responses()
+
+
+class TestSocketMethod:
     @patch("socket.socket")
     @patch("ssl.wrap_socket")
     def test_create_tcp_socket(self, mock_wrap, mock_socket):
@@ -137,50 +153,43 @@ class TestSocketMethod(TestCase):
         socket_instance.connect.assert_called_with((HOST, PORT))
         mock_wrap.assert_called_with(socket_instance)
 
-    def test_response_conditions_matched(self):
-        # tests the response conditions matched for different scan methods
-        engine = SocketEngine()
-        Substep = Substeps()
-        Response = Responses()
+    def test_response_conditions_matched_socket_icmp(self, socket_engine, substeps, responses):
+        result = socket_engine.response_conditions_matched(
+            substeps.socket_icmp, responses.socket_icmp
+        )
+        assert result == responses.socket_icmp
 
-        # socket_icmp
-        self.assertEqual(
-            engine.response_conditions_matched(Substep.socket_icmp, Response.socket_icmp),
-            Response.socket_icmp,
+    def test_response_conditions_matched_tcp_connect_send_and_receive(
+        self, socket_engine, substeps, responses
+    ):
+        result = socket_engine.response_conditions_matched(
+            substeps.tcp_connect_send_and_receive, responses.tcp_connect_send_and_receive
         )
 
-        # tcp_connect_send_and_receive, Port scan's substeps are taken for the test
-        self.assertEqual(
-            sorted(
-                engine.response_conditions_matched(
-                    Substep.tcp_connect_send_and_receive, Response.tcp_connect_send_and_receive
-                )
-            ),
-            sorted(
-                {
-                    "http": ["Content-Type: ", "Content-Length: 302", "HTTP/1.1 400", "Server: "],
-                    "log": [
-                        "{'running_service': 'http', 'matched_regex': ['Server: ', 'HTTP/1.1 400', 'Content-Length: 302', 'Content-Type: '], 'default_service': 'http', 'ssl_flag': True}"
-                    ],
-                    "service": [
-                        "{'running_service': 'http', 'matched_regex': ['Server: ', 'HTTP/1.1 400', 'Content-Length: 302', 'Content-Type: '], 'default_service': 'http', 'ssl_flag': True}"
-                    ],
-                }
-            ),
-        )
+        expected = {
+            "http": ["Content-Type: ", "Content-Length: 302", "HTTP/1.1 400", "Server: "],
+            "log": [
+                "{'running_service': 'http', 'matched_regex': ['Server: ', 'HTTP/1.1 400', 'Content-Length: 302', 'Content-Type: '], 'default_service': 'http', 'ssl_flag': True}"
+            ],
+            "service": [
+                "{'running_service': 'http', 'matched_regex': ['Server: ', 'HTTP/1.1 400', 'Content-Length: 302', 'Content-Type: '], 'default_service': 'http', 'ssl_flag': True}"
+            ],
+        }
 
-        # tcp_connect_only
-        self.assertEqual(
-            engine.response_conditions_matched(
-                Substep.tcp_connect_only, Response.tcp_connect_only
-            ),
-            Response.tcp_connect_only,
-        )
+        assert sorted(result) == sorted(expected)
 
-        # * scans with response None i.e. TCP connection failed(None)
-        self.assertEqual(
-            engine.response_conditions_matched(
-                Substep.tcp_connect_send_and_receive, Response.none
-            ),
-            [],
+    def test_response_conditions_matched_tcp_connect_only(
+        self, socket_engine, substeps, responses
+    ):
+        result = socket_engine.response_conditions_matched(
+            substeps.tcp_connect_only, responses.tcp_connect_only
         )
+        assert result == responses.tcp_connect_only
+
+    def test_response_conditions_matched_with_none_response(
+        self, socket_engine, substeps, responses
+    ):
+        result = socket_engine.response_conditions_matched(
+            substeps.tcp_connect_send_and_receive, responses.none
+        )
+        assert result == []
