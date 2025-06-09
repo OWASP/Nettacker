@@ -1,5 +1,6 @@
 import os
 from unittest.mock import patch, MagicMock, mock_open
+from pathlib import Path
 
 from flask import Flask, Request
 from werkzeug.exceptions import NotFound
@@ -38,27 +39,27 @@ class TestCore(TestCase):
 
     @patch("builtins.open", new_callable=mock_open, read_data="test_data")
     def test_get_file_valid(self, mock_open):
-        Config.path.web_static_dir = os.getcwd()
-        filename = os.path.join(Config.path.web_static_dir, "test.txt")
+        Config.path.web_static_dir = Path.cwd()
+        filename = Config.path.web_static_dir / "test.txt"
         self.assertEqual(get_file(filename), "test_data")
 
     @patch("builtins.open", side_effect=IOError)
     def test_get_file_ioerror(self, mock_open):
-        Config.path.web_static_dir = os.getcwd()
-        filename = os.path.join(Config.path.web_static_dir, "test.txt")
+        Config.path.web_static_dir = Path.cwd()
+        filename = Config.path.web_static_dir / "test.txt"
         with self.assertRaises(NotFound):
             get_file(filename)
 
     @patch("builtins.open", side_effect=ValueError)
     def test_get_file_valueerror(self, mock_open):
-        Config.path.web_static_dir = os.getcwd()
-        filename = os.path.join(Config.path.web_static_dir, "test.txt")
+        Config.path.web_static_dir = Path.cwd()
+        filename = Config.path.web_static_dir / "test.txt"
         with self.assertRaises(NotFound):
             get_file(filename)
 
     def test_get_file_outside_web_static_dir(self):
-        Config.path.web_static_dir = os.path.abspath("/safe/dir")
-        filename = os.path.abspath("/unauthorized/access.txt")
+        Config.path.web_static_dir = Path("/safe/dir").resolve()
+        filename = Path("/unauthorized/access.txt").resolve()
         with self.assertRaises(NotFound):
             get_file(filename)
 
