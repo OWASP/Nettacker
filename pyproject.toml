@@ -64,6 +64,7 @@ texttable = "^1.7.0"
 zipp = "^3.19.1"
 uvloop = "^0.21.0"
 pymysql = "^1.1.1"
+impacket = "^0.11.0"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.16.1"
