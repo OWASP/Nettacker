@@ -7,8 +7,6 @@ info:
   profiles:
     - scan
     - http
-    - information_gathering
-    - infortmation
     - info
     - low_severity
 

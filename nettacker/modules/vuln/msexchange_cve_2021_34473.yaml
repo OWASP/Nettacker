@@ -8,7 +8,6 @@ info:
     - https://blog.orange.tw/2021/08/proxylogon-a-new-attack-surface-on-ms-exchange-part-1.html
   profiles:
     - vuln
-    - vulnerability
     - http
     - critical_severity
     - msexchange
