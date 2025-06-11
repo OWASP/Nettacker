@@ -93,7 +93,7 @@ def test_is_ipv4_cidr():
 
 
 def test_is_single_ipv6():
-    assert is_single_ipv6("2001:0db8:85a3:0000:0000:8a2e:0370:7334") 
+    assert is_single_ipv6("2001:0db8:85a3:0000:0000:8a2e:0370:7334")
     assert not is_single_ipv6("127.0.0.1")
     assert not is_single_ipv6("2001:db8:3333:4444:5555:6666:7777:88g8")
 
