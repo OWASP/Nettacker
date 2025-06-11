@@ -1,48 +1,29 @@
 from collections import Counter
+from pathlib import Path
 
-from tests.common import TestCase
+import pytest
 
 wordlists = {
-    "admin_file": ["lib/payloads/wordlists/admin_wordlist.txt", 533],
-    "dir_file": ["lib/payloads/wordlists/dir_wordlist.txt", 1966],
-    "pma_file": ["lib/payloads/wordlists/pma_wordlist.txt", 174],
-    "wp_plugin_small_file": ["lib/payloads/wordlists/wp_plugin_small.txt", 291],
-    "wp_theme_small_file": ["lib/payloads/wordlists/wp_theme_small.txt", 41],
-    "wp_timethumb_file": ["lib/payloads/wordlists/wp_timethumbs.txt", 2424],
+    "admin_file": ("nettacker/lib/payloads/wordlists/admin_wordlist.txt", 533),
+    "dir_file": ("nettacker/lib/payloads/wordlists/dir_wordlist.txt", 1966),
+    "pma_file": ("nettacker/lib/payloads/wordlists/pma_wordlist.txt", 174),
+    "wp_plugin_small_file": ("nettacker/lib/payloads/wordlists/wp_plugin_small.txt", 291),
+    "wp_theme_small_file": ("nettacker/lib/payloads/wordlists/wp_theme_small.txt", 41),
+    "wp_timethumb_file": ("nettacker/lib/payloads/wordlists/wp_timethumbs.txt", 2424),
 }
 
+nettacker_path = Path(__file__).parent.parent.parent.parent
 
-class TestWordlists(TestCase):
-    def test_admin_wordlist(self):
-        self.run_wordlist_test("admin_file")
 
-    def test_dir_wordlist(self):
-        self.run_wordlist_test("dir_file")
+@pytest.mark.parametrize("key", list(wordlists.keys()))
+def test_wordlist(key):
+    wordlist_path, expected_length = wordlists[key]
+    full_path = nettacker_path / wordlist_path
 
-    def test_pma_wordlist(self):
-        self.run_wordlist_test("pma_file")
+    with open(full_path) as f:
+        paths = [line.strip() for line in f.readlines()]
 
-    def test_wp_plugin_small_wordlist(self):
-        self.run_wordlist_test("wp_plugin_small_file")
-
-    def test_wp_theme_small_wordlist(self):
-        self.run_wordlist_test("wp_theme_small_file")
-
-    def test_wp_timethumb_wordlist(self):
-        self.run_wordlist_test("wp_timethumb_file")
-
-    def run_wordlist_test(self, key):
-        wordlist_path = wordlists[key][0]
-        wordlist_length = wordlists[key][1]
-
-        with open(self.nettacker_path / wordlist_path) as wordlist_file:
-            paths = [line.strip() for line in wordlist_file.readlines()]
-
-        self.assertEqual(
-            len(paths), wordlist_length, f"There are {wordlist_length} paths in {key}"
-        )
-        self.assertEqual(
-            len(set(paths)),
-            len(paths),
-            f"The paths aren't unique in {key}: {Counter(paths).most_common(1)[0][0]}",
-        )
+    assert len(paths) == expected_length, f"There are {expected_length} paths in {key}"
+    assert len(set(paths)) == len(
+        paths
+    ), f"The paths aren't unique in {key}: {Counter(paths).most_common(1)[0][0]}"
