@@ -75,36 +75,36 @@ def test_get_ip_range(mock_get):
 
 
 def test_is_single_ipv4():
-    assert is_single_ipv4("127.0.0.1") is True
-    assert is_single_ipv4("2001:0DC8:E004:0001:0000:0000:0000:F00A") is False
-    assert is_single_ipv4("256.0.0.1") is False
+    assert is_single_ipv4("127.0.0.1")
+    assert not is_single_ipv4("2001:0DC8:E004:0001:0000:0000:0000:F00A")
+    assert not is_single_ipv4("256.0.0.1")
 
 
 def test_is_ipv4_range():
-    assert is_ipv4_range("192.168.1.0/24") is True
-    assert is_ipv4_range("127.0.0.1") is False
-    assert is_ipv4_range("192.168.1.0/100") is False
+    assert is_ipv4_range("192.168.1.0/24")
+    assert not is_ipv4_range("127.0.0.1")
+    assert not is_ipv4_range("192.168.1.0/100")
 
 
 def test_is_ipv4_cidr():
-    assert is_ipv4_cidr("192.168.1.1-192.168.1.100") is True
-    assert is_ipv4_cidr("192.168.1.1/24") is False
-    assert is_ipv4_cidr("192.168.1.1-192.168.1.256") is False
+    assert is_ipv4_cidr("192.168.1.1-192.168.1.100")
+    assert not is_ipv4_cidr("192.168.1.1/24")
+    assert not is_ipv4_cidr("192.168.1.1-192.168.1.256")
 
 
 def test_is_single_ipv6():
-    assert is_single_ipv6("2001:0db8:85a3:0000:0000:8a2e:0370:7334") is True
-    assert is_single_ipv6("127.0.0.1") is False
-    assert is_single_ipv6("2001:db8:3333:4444:5555:6666:7777:88g8") is False
+    assert is_single_ipv6("2001:0db8:85a3:0000:0000:8a2e:0370:7334") 
+    assert not is_single_ipv6("127.0.0.1")
+    assert not is_single_ipv6("2001:db8:3333:4444:5555:6666:7777:88g8")
 
 
 def test_is_ipv6_range():
-    assert is_ipv6_range("2001:db8::1-2001:db8::100") is True
-    assert is_ipv6_range("2001:db8::/64") is False
-    assert is_ipv6_range("2001:db8::1-2001:db8::1g0") is False
+    assert is_ipv6_range("2001:db8::1-2001:db8::100")
+    assert not is_ipv6_range("2001:db8::/64")
+    assert not is_ipv6_range("2001:db8::1-2001:db8::1g0")
 
 
 def test_is_ipv6_cidr():
-    assert is_ipv6_cidr("2001:db8:abcd:0012::/64") is True
-    assert is_ipv6_cidr("2001:db8::/129") is False
-    assert is_ipv6_cidr("2001:dg8:abcd:0012::/64") is False
+    assert is_ipv6_cidr("2001:db8:abcd:0012::/64")
+    assert not is_ipv6_cidr("2001:db8::/129")
+    assert not is_ipv6_cidr("2001:dg8:abcd:0012::/64")
