@@ -3,9 +3,11 @@ import html
 import importlib
 import json
 import os
+import uuid
 from datetime import datetime
 
 import texttable
+import yaml
 
 from nettacker import logger
 from nettacker.config import Config, version_info
@@ -119,6 +121,106 @@ def create_compare_text_table(results):
     return table.draw() + "\n\n"
 
 
+def create_dd_specific_json(all_scan_logs):
+    severity_mapping = {1: "Info", 2: "Low", 3: "Medium", 4: "High", 5: "Critical"}
+
+    findings = []
+
+    module_path = Config.path.modules_dir
+
+    for log in all_scan_logs:
+        module_name = log["module_name"].strip()
+        date = log["date"].split(" ")[0].strip()
+        port = log.get("port", "").__str__().strip()
+        impact = log.get("event", "").strip()
+        severity_justification = log.get("json_event", "").strip()
+        service = log.get("target", "").strip()
+        unique_id = log.get("scan_id", uuid.uuid4().hex)
+
+        module_file = f"{str(module_path).strip()}/{module_name.split('_')[-1].strip()}/{'_'.join(module_name.split('_')[0:-1])}.yaml"
+
+        try:
+            with open(module_file) as fp:
+                data = yaml.safe_load(fp)
+                severity_raw = data["info"].get("severity", 0)
+                description = data["info"].get("description", "")
+        except Exception:
+            severity_raw = 1  # Default to Info
+            description = "No description available."
+
+        if severity_raw >= 9:
+            severity = severity_mapping[5]
+        elif severity_raw >= 7:
+            severity = severity_mapping[4]
+        elif severity_raw >= 4:
+            severity = severity_mapping[3]
+        elif severity_raw > 0:
+            severity = severity_mapping[2]
+        else:
+            severity = severity_mapping[1]
+
+        finding = {
+            "date": date,
+            "title": module_name,
+            "description": description.strip(),
+            "severity": severity,
+            "param": port,
+            "impact": impact,
+            "severity_justification": severity_justification,
+            "service": service,
+            "unique_id_from_tool": unique_id,
+            "static_finding": False,
+            "dynamic_finding": True,
+        }
+
+        findings.append(finding)
+
+    return json.dumps({"findings": findings}, indent=4)
+
+
+def create_sarif_report(all_scan_logs):
+    """
+    Takes all_scan_logs and converts them to a SARIF based json
+    format. The schema and version used are 2.1.0 linked below.
+    The following conversions are made:
+    ruleId: name of the module
+    message: event value for each log in all_scan_logs
+    locations.physicalLocations.artifactLocation.uri: target value
+    webRequest.properties.json_event: json_event value for each log in all_scan_logs
+    properties.scan_id: scan_id unique value for each run
+    properties.date: date field specified in all_scan_logs
+    """
+
+    sarif_structure = {
+        "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+        "version": "2.1.0",
+        "runs": [
+            {
+                "tool": {
+                    "driver": {
+                        "name": "Nettacker",
+                        "version": "0.4.0",
+                        "informationUri": "https://github.com/OWASP/Nettacker",
+                    }
+                },
+                "results": [],
+            }
+        ],
+    }
+
+    for log in all_scan_logs:
+        sarif_result = {
+            "ruleId": log["module_name"],
+            "message": {"text": log["event"]},
+            "locations": [{"physicalLocation": {"artifactLocation": {"uri": log["target"]}}}],
+            "webRequest": {"properties": {"json_event": log["json_event"]}},
+            "properties": {"scan_id": log["scan_id"], "date": log["date"]},
+        }
+        sarif_structure["runs"][0]["results"].append(sarif_result)
+
+    return str(json.dumps(sarif_structure, indent=2))
+
+
 def create_report(options, scan_id):
     """
     sort all events, create log file in HTML/TEXT/JSON and remove old logs
@@ -182,10 +284,22 @@ def create_report(options, scan_id):
         with open(report_path_filename, "w", encoding="utf-8") as report_file:
             report_file.write(html_table_content + "\n")
             report_file.close()
+
+    elif len(report_path_filename) >= 5 and report_path_filename[-8:].lower() == ".dd.json":
+        with open(report_path_filename, "w", encoding="utf-8") as report_file:
+            dd_content_json = create_dd_specific_json(all_scan_logs)
+            report_file.write(dd_content_json + "\n")
+
     elif len(report_path_filename) >= 5 and report_path_filename[-5:] == ".json":
         with open(report_path_filename, "w", encoding="utf-8") as report_file:
             report_file.write(str(json.dumps(all_scan_logs)) + "\n")
             report_file.close()
+
+    elif len(report_path_filename) >= 6 and report_path_filename[-6:].lower() == ".sarif":
+        with open(report_path_filename, "w", encoding="utf-8") as report_file:
+            sarif_content = create_sarif_report(all_scan_logs)
+            report_file.write(sarif_content + "\n")
+
     elif len(report_path_filename) >= 5 and report_path_filename[-4:] == ".csv":
         keys = all_scan_logs[0].keys()
         with open(report_path_filename, "a") as csvfile:
