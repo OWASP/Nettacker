@@ -23,9 +23,10 @@ Your PR description goes here.
 - [ ] Bugfix (non-breaking change which fixes an issue)
 - [ ] Code refactoring without any functionality changes
 - [ ] New or existing module/payload change
-- [ ] Localization improvement
+- [ ] Documentation/localization improvement
+- [ ] Test coverage improvement
 - [ ] Dependency upgrade
-- [ ] Documentation improvement
+- [ ] Other improvement (best practice, cleanup, optimization, etc)
 
 ## Checklist
 
