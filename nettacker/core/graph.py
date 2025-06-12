@@ -3,11 +3,11 @@ import html
 import importlib
 import json
 import os
-from datetime import datetime
-import yaml
 import uuid
+from datetime import datetime
 
 import texttable
+import yaml
 
 from nettacker import logger
 from nettacker.config import Config, version_info
@@ -121,7 +121,6 @@ def create_compare_text_table(results):
     return table.draw() + "\n\n"
 
 
-
 def create_dd_specific_json(all_scan_logs):
     severity_mapping = {1: "Info", 2: "Low", 3: "Medium", 4: "High", 5: "Critical"}
 
@@ -145,7 +144,7 @@ def create_dd_specific_json(all_scan_logs):
                 data = yaml.safe_load(fp)
                 severity_raw = data["info"].get("severity", 0)
                 description = data["info"].get("description", "")
-        except Exception as e:
+        except Exception:
             severity_raw = 1  # Default to Info
             description = "No description available."
 
@@ -171,7 +170,7 @@ def create_dd_specific_json(all_scan_logs):
             "service": service,
             "unique_id_from_tool": unique_id,
             "static_finding": False,
-            "dynamic_finding": True
+            "dynamic_finding": True,
         }
 
         findings.append(finding)
@@ -186,53 +185,36 @@ def create_sarif_report(all_scan_logs):
     The following conversions are made:
     ruleId: name of the module
     message: event value for each log in all_scan_logs
-    locations.physicalLocations.artifactLocation.uri: target value 
+    locations.physicalLocations.artifactLocation.uri: target value
     webRequest.properties.json_event: json_event value for each log in all_scan_logs
     properties.scan_id: scan_id unique value for each run
     properties.date: date field specified in all_scan_logs
     """
 
     sarif_structure = {
-    "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
-    "version": "2.1.0",
-    "runs": [
-        {
-            "tool": {
-                "driver": {
-                    "name": "Nettacker",
-                    "version": "0.4.0",
-                    "informationUri": "https://github.com/OWASP/Nettacker"
-                }
-            },
-            "results": []
-        }
-            ]
-                        }
+        "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+        "version": "2.1.0",
+        "runs": [
+            {
+                "tool": {
+                    "driver": {
+                        "name": "Nettacker",
+                        "version": "0.4.0",
+                        "informationUri": "https://github.com/OWASP/Nettacker",
+                    }
+                },
+                "results": [],
+            }
+        ],
+    }
 
     for log in all_scan_logs:
         sarif_result = {
             "ruleId": log["module_name"],
-            "message": {
-                "text": log["event"]
-            },
-            "locations": [
-                {
-                    "physicalLocation": {
-                        "artifactLocation": {
-                            "uri": log["target"]
-                        }
-                    }
-                }
-            ],
-            "webRequest": {
-                "properties": {
-                    "json_event": log["json_event"]
-                }
-            },
-            "properties": {
-                "scan_id": log["scan_id"],
-                "date": log["date"]
-            }
+            "message": {"text": log["event"]},
+            "locations": [{"physicalLocation": {"artifactLocation": {"uri": log["target"]}}}],
+            "webRequest": {"properties": {"json_event": log["json_event"]}},
+            "properties": {"scan_id": log["scan_id"], "date": log["date"]},
         }
         sarif_structure["runs"][0]["results"].append(sarif_result)
 
@@ -312,7 +294,7 @@ def create_report(options, scan_id):
         with open(report_path_filename, "w", encoding="utf-8") as report_file:
             report_file.write(str(json.dumps(all_scan_logs)) + "\n")
             report_file.close()
-    
+
     elif len(report_path_filename) >= 6 and report_path_filename[-6:].lower() == ".sarif":
         with open(report_path_filename, "w", encoding="utf-8") as report_file:
             sarif_content = create_sarif_report(all_scan_logs)
