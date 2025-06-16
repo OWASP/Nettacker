@@ -5,6 +5,7 @@ import json
 import os
 import uuid
 from datetime import datetime
+from pathlib import Path
 
 import texttable
 import yaml
@@ -130,23 +131,28 @@ def create_dd_specific_json(all_scan_logs):
 
     for log in all_scan_logs:
         module_name = log["module_name"].strip()
-        date = log["date"].split(" ")[0].strip()
-        port = log.get("port", "").__str__().strip()
+        date = log["date"].split()[0].strip()
+        port = str(log.get("port", "")).strip()
         impact = log.get("event", "").strip()
         severity_justification = log.get("json_event", "").strip()
         service = log.get("target", "").strip()
         unique_id = log.get("scan_id", uuid.uuid4().hex)
 
-        module_file = f"{str(module_path).strip()}/{module_name.split('_')[-1].strip()}/{'_'.join(module_name.split('_')[0:-1])}.yaml"
+        parts = module_name.strip().split("_")
+        category = parts[-1]
+        library = "_".join(parts[:-1])
+        module_file = f"{str(module_path).strip()}/{category}/{library}.yaml"
 
         try:
-            with open(module_file) as fp:
+            with Path(module_file).open() as fp:
                 data = yaml.safe_load(fp)
                 severity_raw = data["info"].get("severity", 0)
                 description = data["info"].get("description", "")
-        except Exception:
+        except KeyError:
             severity_raw = 1  # Default to Info
             description = "No description available."
+        except FileNotFoundError:
+            pass  # This means the module_file logic failed. Shouldn't happen
 
         if severity_raw >= 9:
             severity = severity_mapping[5]
@@ -159,21 +165,21 @@ def create_dd_specific_json(all_scan_logs):
         else:
             severity = severity_mapping[1]
 
-        finding = {
-            "date": date,
-            "title": module_name,
-            "description": description.strip(),
-            "severity": severity,
-            "param": port,
-            "impact": impact,
-            "severity_justification": severity_justification,
-            "service": service,
-            "unique_id_from_tool": unique_id,
-            "static_finding": False,
-            "dynamic_finding": True,
-        }
-
-        findings.append(finding)
+        findings.append(
+            {
+                "date": date,
+                "title": module_name,
+                "description": description.strip(),
+                "severity": severity,
+                "param": port,
+                "impact": impact,
+                "severity_justification": severity_justification,
+                "service": service,
+                "unique_id_from_tool": unique_id,
+                "static_finding": False,
+                "dynamic_finding": True,
+            }
+        )
 
     return json.dumps({"findings": findings}, indent=4)
 
@@ -281,37 +287,34 @@ def create_report(options, scan_id):
             + "</p>"
             + log_data.json_parse_js
         )
-        with open(report_path_filename, "w", encoding="utf-8") as report_file:
+        with Path(report_path_filename).open("w", encoding="utf-8") as report_file:
             report_file.write(html_table_content + "\n")
-            report_file.close()
 
     elif len(report_path_filename) >= 5 and report_path_filename[-8:].lower() == ".dd.json":
-        with open(report_path_filename, "w", encoding="utf-8") as report_file:
+        with Path(report_path_filename).open("w", encoding="utf-8") as report_file:
             dd_content_json = create_dd_specific_json(all_scan_logs)
             report_file.write(dd_content_json + "\n")
 
     elif len(report_path_filename) >= 5 and report_path_filename[-5:] == ".json":
-        with open(report_path_filename, "w", encoding="utf-8") as report_file:
+        with Path(report_path_filename).open("w", encoding="utf-8") as report_file:
             report_file.write(str(json.dumps(all_scan_logs)) + "\n")
-            report_file.close()
 
     elif len(report_path_filename) >= 6 and report_path_filename[-6:].lower() == ".sarif":
-        with open(report_path_filename, "w", encoding="utf-8") as report_file:
+        with Path(report_path_filename).open("w", encoding="utf-8") as report_file:
             sarif_content = create_sarif_report(all_scan_logs)
             report_file.write(sarif_content + "\n")
 
     elif len(report_path_filename) >= 5 and report_path_filename[-4:] == ".csv":
         keys = all_scan_logs[0].keys()
-        with open(report_path_filename, "a") as csvfile:
+        with Path(report_path_filename).open("a") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=keys)
             writer.writeheader()
             for log_list in all_scan_logs:
                 dict_data = {key: value for key, value in log_list.items() if key in keys}
                 writer.writerow(dict_data)
-            csvfile.close()
 
     else:
-        with open(report_path_filename, "w", encoding="utf-8") as report_file:
+        with Path(report_path_filename).open("w", encoding="utf-8") as report_file:
             report_file.write(build_text_table(all_scan_logs))
 
     log.write(build_text_table(all_scan_logs))
@@ -392,20 +395,20 @@ def create_compare_report(options, scan_id):
         len(fullpath) >= 4 and fullpath[-4:] == ".htm"
     ):
         html_report = build_compare_report(compare_results)
-        with open(fullpath, "w", encoding="utf-8") as compare_report:
+        with Path(fullpath).open("w", encoding="utf-8") as compare_report:
             compare_report.write(html_report + "\n")
     elif len(fullpath) >= 5 and fullpath[-5:] == ".json":
-        with open(fullpath, "w", encoding="utf-8") as compare_report:
+        with Path(fullpath).open("w", encoding="utf-8") as compare_report:
             compare_report.write(str(json.dumps(compare_results)) + "\n")
     elif len(fullpath) >= 5 and fullpath[-4:] == ".csv":
         keys = compare_results.keys()
-        with open(fullpath, "a") as csvfile:
+        with Path(fullpath).open("a") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=keys)
             if csvfile.tell() == 0:
                 writer.writeheader()
             writer.writerow(compare_results)
     else:
-        with open(fullpath, "w", encoding="utf-8") as compare_report:
+        with Path(fullpath).open("w", encoding="utf-8") as compare_report:
             compare_report.write(create_compare_text_table(compare_results))
 
     log.write(create_compare_text_table(compare_results))
