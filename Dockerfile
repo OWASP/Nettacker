@@ -1,5 +1,8 @@
 FROM python:3.11.11-slim
 
+# Create a non-root user for security
+RUN groupadd -r nettacker --gid=1000 && useradd -r -g nettacker --uid=1000 --no-log-init --shell=/bin/false nettacker
+
 RUN apt-get update && \
     apt-get install -y gcc libssl-dev && \
     apt-get clean && \
