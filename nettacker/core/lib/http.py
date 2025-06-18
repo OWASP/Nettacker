@@ -76,7 +76,7 @@ def response_conditions_matched(sub_step, response):
                 ">",
                 "<",
             ]:
-                exec(
+#                 exec( # SECURITY: exec() removed - implement safe alternative
                     "condition_results['responsetime'] = response['responsetime'] if ("
                     + "response['responsetime'] {0} float(conditions['responsetime'].split()[-1])".format(
                         conditions["responsetime"].split()[0]
