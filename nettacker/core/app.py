@@ -158,7 +158,7 @@ class Nettacker(ArgParser):
 
             for target in copy.deepcopy(self.arguments.targets):
                 for row in find_events(target, "subdomain_scan", scan_id):
-                    for sub_domain in json.loads(row.json_event)["response"]["conditions_results"][
+                    for sub_domain in json.loads(row)["response"]["conditions_results"][
                         "content"
                     ]:
                         if sub_domain not in self.arguments.targets:
