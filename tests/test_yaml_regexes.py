@@ -1,10 +1,14 @@
 import os
 import re
-import yaml
+
 import pytest
+import yaml
 
 BASE_DIRS = ["nettacker/modules/vuln", "nettacker/modules/scan"]
-DUMMY_TEST_STRING = "This is a random string for testing regex 220-You are user number HTTP/1.1 200 OK"
+DUMMY_TEST_STRING = (
+    "This is a random string for testing regex 220-You are user number HTTP/1.1 200 OK"
+)
+
 
 def get_yaml_files():
     for base in BASE_DIRS:
@@ -12,9 +16,11 @@ def get_yaml_files():
             if file.endswith(".yaml"):
                 yield os.path.join(base, file)
 
+
 def load_yaml(file_path):
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
+
 
 def extract_http_regexes(payloads):
     regexes = []
@@ -26,6 +32,7 @@ def extract_http_regexes(payloads):
             if "content" in conditions and "regex" in conditions["content"]:
                 regexes.append(conditions["content"]["regex"])
     return regexes
+
 
 def extract_socket_regexes(file_name, payloads):
     regexes = []
@@ -49,13 +56,15 @@ def extract_socket_regexes(file_name, payloads):
 
     return regexes
 
+
 def is_valid_regex(regex: str) -> bool:
     try:
         pattern = re.compile(regex)
         re.findall(pattern, DUMMY_TEST_STRING)
         return True
-    except Exception as e:
+    except Exception:
         return False
+
 
 @pytest.mark.parametrize("yaml_file", list(get_yaml_files()))
 def test_yaml_regexes_valid(yaml_file):
