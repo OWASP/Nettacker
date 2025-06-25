@@ -19,6 +19,7 @@ from nettacker.core.messages import messages as _
 from nettacker.core.template import TemplateLoader
 from nettacker.core.utils import common as common_utils
 from nettacker.logger import TerminalCodes, get_logger
+from nettacker import all_module_severity_and_desc
 
 log = get_logger()
 
@@ -80,7 +81,6 @@ class ArgParser(ArgumentParser):
             an array of all module names
         """
         # Search for Modules
-
         module_names = {}
         for module_name in sorted(Config.path.modules_dir.glob("**/*.yaml")):
             library = str(module_name).split("/")[-1].split(".")[0]
@@ -88,6 +88,7 @@ class ArgParser(ArgumentParser):
             module = f"{library}_{category}"
             contents = yaml.safe_load(TemplateLoader(module).open().split("payload:")[0])
             module_names[module] = contents["info"] if full_details else None
+            all_module_severity_and_desc[module] = {"severity": contents["info"]["severity"], "desc": contents["info"]["description"]}
 
             if len(module_names) == limit:
                 module_names["..."] = {}

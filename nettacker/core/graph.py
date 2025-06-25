@@ -21,6 +21,7 @@ from nettacker.core.utils.common import (
     generate_compare_filepath,
 )
 from nettacker.database.db import get_logs_by_scan_id, submit_report_to_db, get_options_by_scan_id
+from nettacker import all_module_severity_and_desc
 
 log = logger.get_logger()
 nettacker_path_config = Config.path
@@ -127,8 +128,6 @@ def create_dd_specific_json(all_scan_logs):
 
     findings = []
 
-    module_path = Config.path.modules_dir
-
     for log in all_scan_logs:
         module_name = log["module_name"].strip()
         date = log["date"].split()[0].strip()
@@ -137,22 +136,9 @@ def create_dd_specific_json(all_scan_logs):
         severity_justification = log.get("json_event", "").strip()
         service = log.get("target", "").strip()
         unique_id = log.get("scan_id", uuid.uuid4().hex)
-
-        parts = module_name.strip().split("_")
-        category = parts[-1]
-        library = "_".join(parts[:-1])
-        module_file = f"{str(module_path).strip()}/{category}/{library}.yaml"
-
-        try:
-            with Path(module_file).open() as fp:
-                data = yaml.safe_load(fp)
-                severity_raw = data["info"].get("severity", 0)
-                description = data["info"].get("description", "")
-        except KeyError:
-            severity_raw = 1  # Default to Info
-            description = "No description available."
-        except FileNotFoundError:
-            pass  # This means the module_file logic failed. Shouldn't happen
+        print(f"\n\n This is all_module_severity_and_desc: {all_module_severity_and_desc} \n\n")
+        severity_raw = all_module_severity_and_desc[module_name].get("severity", 0)
+        description = all_module_severity_and_desc[module_name].get("desc", "")
 
         if severity_raw >= 9:
             severity = severity_mapping[5]
