@@ -40,5 +40,5 @@ payloads:
           condition_type: or
           conditions:
             content:
-              regex: \/(?i)\badministrator\/templates\b\/(.+?)\/|\/(?i)templates\/(.+?)\/
+              regex: (?i)\/\badministrator\/templates\b\/(.+?)\/|\/templates\/(.+?)\/
               reverse: false
