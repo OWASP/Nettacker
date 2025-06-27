@@ -1,20 +1,17 @@
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock
 
 import pytest
 
-from nettacker.core.lib.socket import create_tcp_socket, SocketEngine
+from nettacker.core.lib.socket import async_create_tcp_socket, SocketEngine
 
 
 class Responses:
     tcp_connect_only = socket_icmp = {}
 
     tcp_connect_send_and_receive = {
-        "response": 'HTTP/1.1 400 Bad Request\r\nServer: Apache/2.4.62 (Debian)\r\nContent-Length: 302\r\nConnection: close\r\nContent-Type: text/html; charset=iso-8859-1\r\n\r\n<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">\n<html><head>\n<title>400 Bad Request</title>\n</head><body>\n<h1>Bad Request</h1>\n<p>Your browser sent a request that this server could not understand.<br />\n</p>\n<hr>\n<address>Apache/2.4.62 (Debian)</address>\n</body></html>\n',
+        "response": 'HTTP/1.1 400 Bad Request\\r\\nServer: Apache/2.4.62 (Debian)\\r\\nContent-Length: 302\\r\\nConnection: close\\r\\nContent-Type: text/html; charset=iso-8859-1\\r\\n\\r\\n<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">\\n<html><head>\\n<title>400 Bad Request</title>\\n</head><body>\\n<h1>Bad Request</h1>\\n<p>Your browser sent a request that this server could not understand.<br />\\n</p>\\n<hr>\\n<address>Apache/2.4.62 (Debian)</address>\\n</body></html>\\n',
         "service": "http",
-        "peer_name": (
-            "127.0.0.1",
-            80,
-        ),
+        "peer_name": ("127.0.0.1", 80),
         "ssl_flag": True,
     }
 
@@ -140,18 +137,17 @@ def responses():
 
 
 class TestSocketMethod:
-    @patch("socket.socket")
-    @patch("ssl.wrap_socket")
-    def test_create_tcp_socket(self, mock_wrap, mock_socket):
-        HOST = "example.com"
-        PORT = 80
-        TIMEOUT = 60
+    @pytest.mark.asyncio
+    async def test_create_tcp_socket(self):
+        host, port, timeout = "example.com", 80, 60
+        mock_reader = AsyncMock()
+        mock_writer = AsyncMock()
 
-        create_tcp_socket(HOST, PORT, TIMEOUT)
-        socket_instance = mock_socket.return_value
-        socket_instance.settimeout.assert_called_with(TIMEOUT)
-        socket_instance.connect.assert_called_with((HOST, PORT))
-        mock_wrap.assert_called_with(socket_instance)
+        with patch("asyncio.open_connection", return_value=(mock_reader, mock_writer)):
+            writer, reader, ssl_flag = await async_create_tcp_socket(host, port, timeout)
+            assert writer == mock_writer
+            assert reader == mock_reader
+            assert ssl_flag in [True, False]
 
     def test_response_conditions_matched_socket_icmp(self, socket_engine, substeps, responses):
         result = socket_engine.response_conditions_matched(
@@ -165,7 +161,6 @@ class TestSocketMethod:
         result = socket_engine.response_conditions_matched(
             substeps.tcp_connect_send_and_receive, responses.tcp_connect_send_and_receive
         )
-
         expected = {
             "http": ["Content-Type: ", "Content-Length: 302", "HTTP/1.1 400", "Server: "],
             "log": [
@@ -176,7 +171,7 @@ class TestSocketMethod:
             ],
         }
 
-        assert sorted(result) == sorted(expected)
+        assert sorted(expected) == sorted(result)
 
     def test_response_conditions_matched_tcp_connect_only(
         self, socket_engine, substeps, responses

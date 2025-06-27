@@ -1,3 +1,4 @@
+import asyncio
 import copy
 import json
 import re
@@ -285,7 +286,10 @@ class BaseEngine(ABC):
         action = getattr(self.library(), backup_method)
         for _i in range(options["retries"]):
             try:
-                response = action(**sub_step)
+                if asyncio.iscoroutinefunction(action):
+                    response = asyncio.run(action(**sub_step))
+                else:
+                    response = action(**sub_step)
                 break
             except Exception:
                 response = []
