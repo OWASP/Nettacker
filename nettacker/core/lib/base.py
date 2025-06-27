@@ -1,10 +1,11 @@
+import asyncio
 import copy
 import json
 import re
 import time
 from abc import ABC
 from datetime import datetime
-import asyncio
+
 import yaml
 
 from nettacker.config import Config

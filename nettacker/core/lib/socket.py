@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import asyncio
 import copy
 import logging
 import os
@@ -9,12 +10,12 @@ import socket
 import ssl
 import struct
 import time
-import asyncio
 
 from nettacker.core.lib.base import BaseEngine, BaseLibrary
 from nettacker.core.utils.common import reverse_and_regex_condition, replace_dependent_response
 
 log = logging.getLogger(__name__)
+
 
 async def async_create_tcp_socket(host, port, timeout):
     ssl_context = ssl.create_default_context()
@@ -26,7 +27,7 @@ async def async_create_tcp_socket(host, port, timeout):
         ssl_flag = True
 
         return writer, reader, ssl_flag
-    
+
     except (ssl.SSLError, ConnectionRefusedError, asyncio.TimeoutError, OSError):
         try:
             reader, writer = await asyncio.wait_for(
@@ -37,28 +38,6 @@ async def async_create_tcp_socket(host, port, timeout):
             return writer, reader, ssl_flag
         except Exception:
             return None
-
-
-def create_tcp_socket(host, port, timeout):
-    try:
-        socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socket_connection.settimeout(timeout)
-        socket_connection.connect((host, port))
-        ssl_flag = False
-    except ConnectionRefusedError:
-        return None
-
-    try:
-        socket_connection = ssl.wrap_socket(socket_connection)
-        ssl_flag = True
-    except Exception:
-        socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socket_connection.settimeout(timeout)
-        socket_connection.connect((host, port))
-    # finally:
-    #     socket_connection.shutdown()
-
-    return socket_connection, ssl_flag
 
 
 class SocketLibrary(BaseLibrary):
