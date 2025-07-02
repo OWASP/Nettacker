@@ -52,7 +52,7 @@ class SocketLibrary(BaseLibrary):
             known_service = socket.getservbyport(port)
         except OSError:
             known_service = "unknown"
-        
+
         return {
             "peer_name": peer_name,
             "service": known_service,
@@ -64,7 +64,7 @@ class SocketLibrary(BaseLibrary):
             known_service = socket.getservbyport(port)
         except OSError:
             known_service = "unknown"
-            
+
         tcp_socket = create_tcp_socket(host, port, timeout)
         if tcp_socket is None:
             return None
