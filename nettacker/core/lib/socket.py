@@ -49,22 +49,17 @@ class SocketLibrary(BaseLibrary):
         socket_connection.close()
 
         try:
-            known_service = socket.getservbyport(port)
+            service = socket.getservbyport(port)
         except OSError:
-            known_service = "unknown"
+            service = "unknown"
 
         return {
             "peer_name": peer_name,
-            "service": known_service,
+            "service": service,
             "ssl_flag": ssl_flag,
         }
 
     def tcp_connect_send_and_receive(self, host, port, timeout):
-        try:
-            known_service = socket.getservbyport(port)
-        except OSError:
-            known_service = "unknown"
-
         tcp_socket = create_tcp_socket(host, port, timeout)
         if tcp_socket is None:
             return None
@@ -83,10 +78,16 @@ class SocketLibrary(BaseLibrary):
                 response = b""
             except Exception:
                 response = b""
+
+        try:
+            service = socket.getservbyport(port)
+        except OSError:
+            service = "unknown"
+
         return {
             "peer_name": peer_name,
-            "service": known_service,
             "response": response.decode(errors="ignore"),
+            "service": service,
             "ssl_flag": ssl_flag,
         }
 
