@@ -20,6 +20,8 @@ logs.txt
 results.*
 .owasp-nettacker*
 .data*
+*.sarif
+*.dd.json
 *.DS_Store
 *.swp
 

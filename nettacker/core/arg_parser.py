@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 
 import yaml
 
+from nettacker import all_module_severity_and_desc
 from nettacker.config import version_info, Config
 from nettacker.core.die import die_failure, die_success
 from nettacker.core.ip import (
@@ -80,7 +81,6 @@ class ArgParser(ArgumentParser):
             an array of all module names
         """
         # Search for Modules
-
         module_names = {}
         for module_name in sorted(Config.path.modules_dir.glob("**/*.yaml")):
             library = str(module_name).split("/")[-1].split(".")[0]
@@ -88,6 +88,10 @@ class ArgParser(ArgumentParser):
             module = f"{library}_{category}"
             contents = yaml.safe_load(TemplateLoader(module).open().split("payload:")[0])
             module_names[module] = contents["info"] if full_details else None
+            all_module_severity_and_desc[module] = {
+                "severity": contents["info"]["severity"],
+                "desc": contents["info"]["description"],
+            }
 
             if len(module_names) == limit:
                 module_names["..."] = {}
