@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import asyncio
 import copy
 import logging
 import os
@@ -16,62 +17,69 @@ from nettacker.core.utils.common import reverse_and_regex_condition, replace_dep
 log = logging.getLogger(__name__)
 
 
-def create_tcp_socket(host, port, timeout):
+async def async_create_tcp_socket(host, port, timeout):
+    ssl_context = ssl.create_default_context()
     try:
-        socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socket_connection.settimeout(timeout)
-        socket_connection.connect((host, port))
-        ssl_flag = False
-    except ConnectionRefusedError:
-        return None
-
-    try:
-        socket_connection = ssl.wrap_socket(socket_connection)
+        reader, writer = await asyncio.wait_for(
+            asyncio.open_connection(host, port, ssl=ssl_context),
+            timeout=timeout,
+        )
         ssl_flag = True
-    except Exception:
-        socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socket_connection.settimeout(timeout)
-        socket_connection.connect((host, port))
-    # finally:
-    #     socket_connection.shutdown()
 
-    return socket_connection, ssl_flag
+        return writer, reader, ssl_flag
+
+    except (ssl.SSLError, ConnectionRefusedError, asyncio.TimeoutError, OSError):
+        try:
+            reader, writer = await asyncio.wait_for(
+                asyncio.open_connection(host, port), timeout=timeout
+            )
+            ssl_flag = False
+
+            return writer, reader, ssl_flag
+        except Exception:
+            return None
 
 
 class SocketLibrary(BaseLibrary):
-    def tcp_connect_only(self, host, port, timeout):
-        tcp_socket = create_tcp_socket(host, port, timeout)
+    async def tcp_connect_only(self, host, port, timeout):
+        tcp_socket = await async_create_tcp_socket(host, port, timeout)
         if tcp_socket is None:
             return None
 
-        socket_connection, ssl_flag = tcp_socket
-        peer_name = socket_connection.getpeername()
-        socket_connection.close()
+        writer, reader, ssl_flag = tcp_socket
+        peer_name = writer.get_extra_info("peername")
+        writer.close()
+        await writer.wait_closed()
+
         return {
             "peer_name": peer_name,
             "service": socket.getservbyport(int(port)),
             "ssl_flag": ssl_flag,
         }
 
-    def tcp_connect_send_and_receive(self, host, port, timeout):
-        tcp_socket = create_tcp_socket(host, port, timeout)
+    async def tcp_connect_send_and_receive(self, host, port, timeout):
+        tcp_socket = await async_create_tcp_socket(host, port, timeout)
         if tcp_socket is None:
             return None
 
-        socket_connection, ssl_flag = tcp_socket
-        peer_name = socket_connection.getpeername()
+        writer, reader, ssl_flag = tcp_socket
+        peer_name = writer.get_extra_info("peername")
         try:
-            socket_connection.send(b"ABC\x00\r\n\r\n\r\n" * 10)
-            response = socket_connection.recv(1024 * 1024 * 10)
-            socket_connection.close()
-        # except ConnectionRefusedError:
-        #     return None
+            writer.write(b"ABC\x00\r\n\r\n\r\n" * 10)
+            await writer.drain()
+
+            response = await asyncio.wait_for(reader.read(1024 * 1024), timeout=timeout)
+            writer.close()
+            await writer.wait_closed()
+
         except Exception:
             try:
-                socket_connection.close()
+                writer.close()
+                await writer.wait_closed()
                 response = b""
             except Exception:
                 response = b""
+
         return {
             "peer_name": peer_name,
             "service": socket.getservbyport(port),
