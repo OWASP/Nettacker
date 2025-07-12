@@ -243,8 +243,8 @@ def test_sort_loops_behavior(mock_loader_cls, mock_find_events, mock_parse, opti
     assert "save_to_temp_events_only" not in steps[2][0]["response"]
 
 
-def loader_side_effect(name, inputs):
-    # HELPER
+def start_test_loader_side_effect(name, inputs):
+    # HELPER for start test
     mock_inst = MagicMock()
 
     if name == "port_scan":
@@ -256,10 +256,7 @@ def loader_side_effect(name, inputs):
             "payloads": [
                 {
                     "library": "http",
-                    "steps": [
-                        [{"id": 1}],
-                        [{"id": 2}],
-                    ],
+                    "steps": [[{"response": {}, "id": 1}], [{"response": {}, "id": 2}]],
                 }
             ]
         }
@@ -273,7 +270,9 @@ def loader_side_effect(name, inputs):
 @patch("nettacker.core.module.importlib.import_module")
 @patch("nettacker.core.module.time.sleep", return_value=None)
 @patch("nettacker.core.module.wait_for_threads_to_finish")
+@patch("nettacker.core.module.TemplateLoader")
 def test_start_creates_threads_minimal(
+    mock_loader_cls,
     mock_wait,
     mock_sleep,
     mock_import_module,
@@ -281,6 +280,8 @@ def test_start_creates_threads_minimal(
     options,
     module_args,
 ):
+    mock_loader_cls.side_effect = start_test_loader_side_effect
+
     fake_engine = MagicMock()
     mock_import_module.return_value = MagicMock(HttpEngine=MagicMock(return_value=fake_engine))
 
@@ -292,6 +293,8 @@ def test_start_creates_threads_minimal(
     module.discovered_services = {"http": [80]}
     module.service_discovery_signatures = ["http"]
 
+    # The module_content should be set by the Module constructor via the loader
+    # But let's also set it explicitly to ensure the test works
     module.module_content = {
         "payloads": [
             {
@@ -300,7 +303,9 @@ def test_start_creates_threads_minimal(
             }
         ]
     }
+
     module.start()
+
     assert mock_thread_cls.call_count == 2
 
     expected_ids = {1, 2}
