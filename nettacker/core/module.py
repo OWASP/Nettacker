@@ -76,6 +76,7 @@ class Module:
     def load(self):
         self.module_content = TemplateLoader(self.module_name, self.module_inputs).load()
         if not self.skip_service_discovery and self.module_name not in self.ignored_core_modules:
+
             services = {}
             for service in find_events(self.target, "port_scan", self.scan_id):
                 service_event = json.loads(service.json_event)
@@ -109,8 +110,12 @@ class Module:
                 index_payload += 1
 
     def generate_loops(self):
+        if self.module_inputs["excluded_ports"]:
+            excluded_port_set = set(self.module_inputs["excluded_ports"])
+            all_ports = self.module_content["payloads"][0]["steps"][0]["ports"]
+            all_ports[:] = [port for port in all_ports if port not in excluded_port_set]
         self.module_content["payloads"] = expand_module_steps(self.module_content["payloads"])
-
+        
     def sort_loops(self):
         steps = []
         for index in range(len(self.module_content["payloads"])):
@@ -152,7 +157,6 @@ class Module:
                 importlib.import_module(f"nettacker.core.lib.{library.lower()}"),
                 f"{library.capitalize()}Engine",
             )()
-
             for step in payload["steps"]:
                 for sub_step in step:
                     thread = Thread(
