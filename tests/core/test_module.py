@@ -270,9 +270,11 @@ def start_test_loader_side_effect(name, inputs):
 @patch("nettacker.core.module.importlib.import_module")
 @patch("nettacker.core.module.time.sleep", return_value=None)
 @patch("nettacker.core.module.wait_for_threads_to_finish")
+@patch("nettacker.core.module.find_events")
 @patch("nettacker.core.module.TemplateLoader")
 def test_start_creates_threads_minimal(
     mock_loader_cls,
+    mock_find_events,
     mock_wait,
     mock_sleep,
     mock_import_module,
@@ -281,6 +283,8 @@ def test_start_creates_threads_minimal(
     module_args,
 ):
     mock_loader_cls.side_effect = start_test_loader_side_effect
+
+    mock_find_events.return_value = []
 
     fake_engine = MagicMock()
     mock_import_module.return_value = MagicMock(HttpEngine=MagicMock(return_value=fake_engine))
