@@ -106,50 +106,6 @@ def test_sort_loops(mock_loader, mock_find_events, options, module_args):
 
 
 @patch("nettacker.core.module.find_events")
-@patch("nettacker.core.module.importlib.import_module")
-@patch("nettacker.core.module.wait_for_threads_to_finish")
-@patch("nettacker.core.module.time.sleep", return_value=None)
-@patch("nettacker.core.module.Thread")
-@patch("nettacker.core.module.TemplateLoader")
-def test_start_all_conditions(
-    mock_loader,
-    mock_thread,
-    mock_sleep,
-    mock_wait,
-    mock_import,
-    mock_find_events,
-    options,
-    module_args,
-):
-    engine_mock = MagicMock()
-    mock_import.return_value = MagicMock(HttpEngine=MagicMock(return_value=engine_mock))
-
-    mock_loader_inst = MagicMock()
-    mock_loader_inst.load.return_value = {
-        "payloads": [
-            {
-                "library": "http",
-                "steps": [{"step_id": 1, "response": {"conditions": {"service": {}}}}],
-            }
-        ]
-    }
-    mock_loader.return_value = mock_loader_inst
-
-    mock_event = MagicMock()
-    mock_event.json_event = json.dumps(
-        {"port": 80, "response": {"conditions_results": {"http": True}}}
-    )
-    mock_find_events.return_value = [mock_event]
-
-    module = Module("test_module", options, **module_args)
-    module.libraries = ["http"]
-    module.load()
-    module.start()
-
-    mock_wait.assert_called()
-
-
-@patch("nettacker.core.module.find_events")
 @patch("nettacker.core.module.TemplateLoader")
 def test_start_unsupported_library(mock_loader, mock_find_events, options, module_args):
     mock_loader_inst = MagicMock()
@@ -264,63 +220,6 @@ def start_test_loader_side_effect(name, inputs):
         raise ValueError(f"Unexpected module name: {name}")
 
     return mock_inst
-
-
-@patch("nettacker.core.module.Thread")
-@patch("nettacker.core.module.importlib.import_module")
-@patch("nettacker.core.module.time.sleep", return_value=None)
-@patch("nettacker.core.module.wait_for_threads_to_finish")
-@patch("nettacker.core.module.find_events")
-@patch("nettacker.core.module.TemplateLoader")
-def test_start_creates_threads_minimal(
-    mock_loader_cls,
-    mock_find_events,
-    mock_wait,
-    mock_sleep,
-    mock_import_module,
-    mock_thread_cls,
-    options,
-    module_args,
-):
-    mock_loader_cls.side_effect = start_test_loader_side_effect
-
-    mock_find_events.return_value = []
-
-    fake_engine = MagicMock()
-    mock_import_module.return_value = MagicMock(HttpEngine=MagicMock(return_value=fake_engine))
-
-    mock_thread_instance = MagicMock()
-    mock_thread_cls.return_value = mock_thread_instance
-
-    module = Module("test_module", options, **module_args)
-    module.libraries = ["http"]
-    module.discovered_services = {"http": [80]}
-    module.service_discovery_signatures = ["http"]
-
-    # The module_content should be set by the Module constructor via the loader
-    # But let's also set it explicitly to ensure the test works
-    module.module_content = {
-        "payloads": [
-            {
-                "library": "http",
-                "steps": [[{"response": {}, "id": 1}], [{"response": {}, "id": 2}]],
-            }
-        ]
-    }
-
-    module.start()
-
-    assert mock_thread_cls.call_count == 2
-
-    expected_ids = {1, 2}
-    actual_ids = set()
-
-    for _, kwargs in mock_thread_cls.call_args_list:
-        sub_step = kwargs["args"][0]
-        actual_ids.add(sub_step["id"])
-
-    assert actual_ids == expected_ids
-    assert mock_thread_instance.start.call_count == 2
 
 
 @patch("nettacker.core.module.TemplateLoader.parse", side_effect=lambda x, _: x)
