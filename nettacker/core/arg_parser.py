@@ -255,7 +255,7 @@ class ArgParser(ArgumentParser):
             help=_("exclude_scan_method").format(exclude_modules),
         )
         method_options.add_argument(
-            "-xg",
+            "-X",
             "--exclude-ports",
             action="store",
             dest="excluded_ports",
