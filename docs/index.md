@@ -27,7 +27,7 @@ python nettacker.py -i example.com --profile scan -v
 python nettacker.py -i example.com -m port_scan -o results.json --graph d3_tree
 
 # Scan multiple targets listed in a file
-python nettacker.py -T targets.txt -m subdomain_scan
+python nettacker.py --read-file targets.txt -m subdomain_scan
 Use --help to explore more flags:
 
 bash
