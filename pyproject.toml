@@ -46,7 +46,7 @@ nettacker = "nettacker.main:run"
 
 [tool.poetry.dependencies]
 python = "^3.9, <3.13"
-aiohttp = "^3.9.5"
+aiohttp = "3.10.11"
 argparse = "^1.4.0"
 asyncio = "^3.4.3"
 flask = "^3.0.1"
