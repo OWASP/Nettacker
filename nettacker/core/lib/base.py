@@ -1,3 +1,4 @@
+import ast
 import copy
 import json
 import re
@@ -76,7 +77,7 @@ class BaseEngine(ABC):
                                 generate_new_step,
                             )[0]
                             try:
-                                key_value = eval(key_name)
+                                key_value = ast.literal_eval(key_name)
                             except Exception:
                                 key_value = "error"
                             sub_step[key] = sub_step[key].replace(key_name, key_value)
@@ -97,7 +98,7 @@ class BaseEngine(ABC):
                                 generate_new_step,
                             )[0]
                             try:
-                                key_value = eval(key_name)
+                                key_value = ast.literal_eval(key_name)
                             except Exception:
                                 key_value = "error"
                             sub_step[value_index] = sub_step[value_index].replace(
