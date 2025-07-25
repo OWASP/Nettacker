@@ -418,7 +418,7 @@ class ArgParser(ArgumentParser):
         method_options.add_argument(
             "-H",
             "--add-http-header",
-            action="store",
+            action="append",
             default=Config.settings.http_header,
             dest="http_header",
             help=_("http_header"),
@@ -647,13 +647,6 @@ class ArgParser(ArgumentParser):
             for excluded_module in options.excluded_modules:
                 if excluded_module in options.selected_modules:
                     options.selected_modules.remove(excluded_module)
-
-        # Check for http header
-        if options.http_header:
-            # Allow users to add multiple headers seperated by a comma
-            http_header_list = [i for i in options.http_header.split(",") if i != ""]
-            options.http_header = http_header_list
-
         # Check port(s)
         if options.ports:
             tmp_ports = []
