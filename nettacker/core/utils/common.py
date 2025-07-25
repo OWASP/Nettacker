@@ -143,9 +143,10 @@ def remove_sensitive_header_keys(event):
         event: The json event without the sensitive headers
     """
     from nettacker.config import sensitive_headers
+
     if not isinstance(event, dict):
         return event
-    
+
     if "headers" in event:
         if not isinstance(event["headers"], dict):
             return event
