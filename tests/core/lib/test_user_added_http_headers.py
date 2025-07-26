@@ -1,15 +1,10 @@
-# tests/test_http.py
 import asyncio
-
-# Import the module under test
 import importlib
 import time
 
 import pytest
 
-http = importlib.import_module(
-    "nettacker.core.lib.http"
-)  # adjust if it's inside a package, e.g. nettacker.core.http
+http = importlib.import_module("nettacker.core.lib.http")
 
 # ----------------------------
 # Helpers / Fakes
@@ -36,7 +31,9 @@ class FakeResponse:
 
 
 class FakeCtx:
-    """Mimic aiohttp's _RequestContextManager: awaitable + async context manager."""
+    """
+    Mimic aiohttp's _RequestContextManager: awaitable + async context manager.
+    """
 
     def __init__(self, response: FakeResponse):
         self._response = response
@@ -55,7 +52,9 @@ class FakeCtx:
 
 
 class FakeSession:
-    """Mimic aiohttp.ClientSession with a single method (get/post/etc.) returning FakeCtx."""
+    """
+    Mimic aiohttp.ClientSession with a single method (get/post/etc.) returning FakeCtx.
+    """
 
     def __init__(self, method_response_map):
         self._method_response_map = method_response_map
@@ -77,7 +76,9 @@ class FakeSession:
 
 
 class DummyEngine(http.HttpEngine):
-    """Override BaseEngine interactions to isolate run()."""
+    """
+    Override BaseEngine interactions to isolate run().
+    """
 
     def __init__(self):
         pass
@@ -167,10 +168,6 @@ async def test_send_request_uses_session_and_method(monkeypatch):
 
 # ----------------------------
 # Tests for response_conditions_matched
-# ----------------------------
-
-# ----------------------------
-# Tests for response_conditions_matched (Realistic sub_steps)
 # ----------------------------
 
 
@@ -294,7 +291,6 @@ def test_response_conditions_headers_case_insensitive():
         "content": "body",
     }
     out = http.response_conditions_matched(sub_step, response)
-    print("DEBUG:", out)
     assert out != {}
     assert out["headers"]["Content-Type"] == ["text/html"]
 
