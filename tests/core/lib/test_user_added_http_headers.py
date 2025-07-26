@@ -1,19 +1,20 @@
 # tests/test_http.py
 import asyncio
-import types
-import time
-import builtins
-
-import pytest
 
 # Import the module under test
 import importlib
+import time
 
-http = importlib.import_module("nettacker.core.lib.http")  # adjust if it's inside a package, e.g. nettacker.core.http
+import pytest
+
+http = importlib.import_module(
+    "nettacker.core.lib.http"
+)  # adjust if it's inside a package, e.g. nettacker.core.http
 
 # ----------------------------
 # Helpers / Fakes
 # ----------------------------
+
 
 class FakeContent:
     def __init__(self, data: bytes):
@@ -24,7 +25,9 @@ class FakeContent:
 
 
 class FakeResponse:
-    def __init__(self, *, reason="OK", url="http://example.com", status=200, headers=None, body=b"body"):
+    def __init__(
+        self, *, reason="OK", url="http://example.com", status=200, headers=None, body=b"body"
+    ):
         self.reason = reason
         self.url = url
         self.status = status
@@ -34,12 +37,14 @@ class FakeResponse:
 
 class FakeCtx:
     """Mimic aiohttp's _RequestContextManager: awaitable + async context manager."""
+
     def __init__(self, response: FakeResponse):
         self._response = response
 
     def __await__(self):
         async def _inner():
             return self._response
+
         return _inner().__await__()
 
     async def __aenter__(self):
@@ -51,13 +56,16 @@ class FakeCtx:
 
 class FakeSession:
     """Mimic aiohttp.ClientSession with a single method (get/post/etc.) returning FakeCtx."""
+
     def __init__(self, method_response_map):
         self._method_response_map = method_response_map
 
     def __getattr__(self, name):
         if name in self._method_response_map:
+
             def _caller(**kwargs):
                 return FakeCtx(self._method_response_map[name])
+
             return _caller
         raise AttributeError(name)
 
@@ -70,6 +78,7 @@ class FakeSession:
 
 class DummyEngine(http.HttpEngine):
     """Override BaseEngine interactions to isolate run()."""
+
     def __init__(self):
         pass
 
@@ -107,6 +116,7 @@ class DummyEngine(http.HttpEngine):
 # Tests for perform_request_action / send_request
 # ----------------------------
 
+
 def test_perform_request_action_happy_path(monkeypatch):
     # Freeze time to make responsetime predictable
     times = [1000.0, 1001.0]  # start, end
@@ -121,7 +131,9 @@ def test_perform_request_action_happy_path(monkeypatch):
     )
 
     async def run():
-        return await http.perform_request_action(lambda **_: FakeCtx(response), {"url": "http://example.com/hello"})
+        return await http.perform_request_action(
+            lambda **_: FakeCtx(response), {"url": "http://example.com/hello"}
+        )
 
     result = asyncio.run(run())
     assert result["reason"] == "Created"
@@ -160,6 +172,7 @@ async def test_send_request_uses_session_and_method(monkeypatch):
 # ----------------------------
 # Tests for response_conditions_matched (Realistic sub_steps)
 # ----------------------------
+
 
 def test_response_conditions_matched_status_code_match():
     sub_step = {
@@ -204,23 +217,23 @@ def test_response_conditions_or_typical_response_match():
         }
     }
     response = {
-        'reason': 'Moved Permanently',
-        'url': 'http://owasp.org',
-        'status_code': '301',
-        'content': '<html><h1>301 Moved Permanently</h1></html>',
-        'headers': {
-            'Date': 'Sat, 26 Jul 2025 09:28:43 GMT',
-            'Content-Type': 'text/html',
-            'Content-Length': '167',
-            'Server': 'cloudflare',
+        "reason": "Moved Permanently",
+        "url": "http://owasp.org",
+        "status_code": "301",
+        "content": "<html><h1>301 Moved Permanently</h1></html>",
+        "headers": {
+            "Date": "Sat, 26 Jul 2025 09:28:43 GMT",
+            "Content-Type": "text/html",
+            "Content-Length": "167",
+            "Server": "cloudflare",
         },
-        'responsetime': 0.27,
+        "responsetime": 0.27,
     }
 
     out = http.response_conditions_matched(sub_step, response)
     assert out != {}
     assert "log" in out
-    assert out["log"] == '301'
+    assert out["log"] == "301"
 
 
 def test_response_conditions_or_typical_response_no_match():
@@ -235,21 +248,22 @@ def test_response_conditions_or_typical_response_no_match():
         }
     }
     response = {
-        'reason': 'Moved Permanently',
-        'url': 'http://owasp.org',
-        'status_code': '301',  # Does not match 404
-        'content': '<html><h1>301 Moved Permanently</h1></html>',
-        'headers': {
-            'Date': 'Sat, 26 Jul 2025 09:28:43 GMT',
-            'Content-Type': 'text/html',
-            'Content-Length': '167',
-            'Server': 'cloudflare',
+        "reason": "Moved Permanently",
+        "url": "http://owasp.org",
+        "status_code": "301",  # Does not match 404
+        "content": "<html><h1>301 Moved Permanently</h1></html>",
+        "headers": {
+            "Date": "Sat, 26 Jul 2025 09:28:43 GMT",
+            "Content-Type": "text/html",
+            "Content-Length": "167",
+            "Server": "cloudflare",
         },
-        'responsetime': 0.27,
+        "responsetime": 0.27,
     }
 
     out = http.response_conditions_matched(sub_step, response)
     assert out == {}, "Expected empty result since no condition matched"
+
 
 def test_response_conditions_headers_case_insensitive():
     sub_step = {
@@ -332,6 +346,7 @@ def test_httpengine_run_happy_path_merges_headers_and_random_ua(monkeypatch):
             "headers": {"Server": "nginx"},
             "responsetime": 0.1,
         }
+
     monkeypatch.setattr(http, "send_request", fake_send_request)
 
     sub_step = {
@@ -407,9 +422,7 @@ def test_httpengine_run_with_iterative_response_match(monkeypatch):
                     "match1": {
                         "response": {
                             "condition_type": "and",
-                            "conditions": {
-                                "content": {"regex": r"abc", "reverse": False}
-                            },
+                            "conditions": {"content": {"regex": r"abc", "reverse": False}},
                         }
                     }
                 },
