@@ -9,7 +9,7 @@ import yaml
 
 from nettacker.config import Config
 from nettacker.core.messages import messages as _
-from nettacker.core.utils.common import merge_logs_to_list
+from nettacker.core.utils.common import merge_logs_to_list, remove_sensitive_header_keys
 from nettacker.database.db import find_temp_events, submit_temp_logs_to_db, submit_logs_to_db
 from nettacker.logger import get_logger, TerminalCodes
 
@@ -120,6 +120,8 @@ class BaseEngine(ABC):
         request_number_counter,
         total_number_of_requests,
     ):
+        # Remove sensitive keys from headers before submitting to DB
+        event = remove_sensitive_header_keys(event)
         if "save_to_temp_events_only" in event.get("response", ""):
             submit_temp_logs_to_db(
                 {
