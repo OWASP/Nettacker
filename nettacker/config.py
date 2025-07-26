@@ -115,6 +115,7 @@ class DefaultSettings(ConfigBase):
     """OWASP Nettacker Default Configuration"""
 
     excluded_modules = None
+    excluded_ports = None
     graph_name = "d3_tree_v2_graph"
     language = "en"
     modules_extra_args = None
