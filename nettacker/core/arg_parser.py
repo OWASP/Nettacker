@@ -423,6 +423,14 @@ class ArgParser(ArgumentParser):
             dest="read_from_file",
             help=_("user_wordlist"),
         )
+        method_options.add_argument(
+            "-H",
+            "--add-http-header",
+            action="append",
+            default=Config.settings.http_header,
+            dest="http_header",
+            help=_("http_header"),
+        )
 
         # API Options
         api_options = self.add_argument_group(_("API"), _("API_options"))

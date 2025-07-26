@@ -69,6 +69,7 @@ impacket = "^0.11.0"
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.16.1"
 ruff = ">=0.2.1,<0.8.0"
+pytest-asyncio = "^1.1.0"
 
 [tool.poetry.group.test.dependencies]
 coverage = "^7.3.2"
