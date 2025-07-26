@@ -125,7 +125,7 @@ Method:
   -J COMPARE_REPORT_PATH_FILENAME, --compare-report-path COMPARE_REPORT_PATH_FILENAME
                         the file-path to store the compare_scan report
   -H HTTP_HEADER, --add-http-header HTTP_HEADER
-                      Add custom HTTP headers to requests (format: 'key: value', comma-separated for multiple)
+                      Add custom HTTP headers to requests (format: 'key: value'). For multiple headers, use multiple -H flags
 
 
 API:
@@ -346,7 +346,7 @@ python nettacker.py -i owasp.org -s -m port_scan -t 10 -M 35 -g 20-100 --graph d
 * Using the `-H` command you can add your own HTTP headers to requests (useful for authentication) and chain it using multiple `-H` commands
 
 ```
-python nettacker.py -i owasp.org -s -m http_status_scan -H "Authentication: Basic abcd" -H "Content-Type: abcd" -t 100 -d
+python nettacker.py -i owasp.org -s -m http_status_scan -H "Authorization: Basic abcd" -H "Content-Type: abcd" -t 100 -d
 ```
 
 * If you use `-r` command, it will scan the IP range automatically by getting the range from the RIPE database online.
