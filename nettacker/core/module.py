@@ -114,9 +114,8 @@ class Module:
             if self.module_content and "ports" in self.module_content["payloads"][0]["steps"][0]:
                 all_ports = self.module_content["payloads"][0]["steps"][0]["ports"]
                 all_ports[:] = [port for port in all_ports if port not in excluded_port_set]
-            self.module_content["payloads"] = expand_module_steps(self.module_content["payloads"])
-        else:
-            self.module_content["payloads"] = expand_module_steps(self.module_content["payloads"])
+        
+        self.module_content["payloads"] = expand_module_steps(self.module_content["payloads"])
 
     def sort_loops(self):
         steps = []
