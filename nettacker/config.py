@@ -96,7 +96,8 @@ class PathConfig:
     """
 
     data_dir = CWD / ".nettacker/data"
-    database_file = CWD / ".nettacker/data/nettacker.db"
+    new_database_file = CWD / ".nettacker/data/nettacker.db"
+    old_database_file = CWD / ".data/nettacker.db"
     graph_dir = PACKAGE_PATH / "lib/graph"
     home_dir = CWD
     locale_dir = PACKAGE_PATH / "locale"
