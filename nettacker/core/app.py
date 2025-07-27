@@ -1,10 +1,10 @@
 import copy
 import json
 import os
+import shutil
 import socket
 import sys
 from threading import Thread
-import shutil
 
 import multiprocess
 
