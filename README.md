@@ -41,8 +41,8 @@ $ docker-compose up -d && docker exec -it nettacker-nettacker-1 /bin/bash
 # poetry run python nettacker.py -i owasp.org -s -m port_scan
 ```
 * Results are accessible from your (https://localhost:5000) or https://nettacker-api.z3r0d4y.com:5000/ (pointed to your localhost)
-* The local database is `.data/nettacker.db` (sqlite).
-* Default results path is `.data/results`
+* The local database is `.nettacker/data/nettacker.db` (sqlite).
+* Default results path is `.nettacker/data/results`
 * `docker-compose` will share your nettacker folder, so you will not lose any data after `docker-compose down`
 * To see the API key in you can run `docker logs nettacker_nettacker_1`.
 * More details and setup without docker https://github.com/OWASP/Nettacker/wiki/Installation
