@@ -98,6 +98,65 @@ def terminate_thread(thread, verbose=True):
     return True
 
 
+def get_http_header_key(http_header):
+    """
+    Return the HTTP header key based on the full string entered by the user
+    Args:
+        http_header: a string entered by the user following the -H flag
+    Returns:
+        1. The HTTP header key if http_header is a key-value pair
+        2. The http_header itself if http_header is NOT a key_value pair (i.e. http_header is a plain string)
+        3. An empty string if http_header is empty
+    Example:
+        http_header: "Authorization: Bearer abcdefgh"
+        Returns -> "Authorization"
+    """
+    # Split only at the first ":"
+    return http_header.split(":", 1)[0].strip()
+
+
+def get_http_header_value(http_header):
+    """
+    Return the HTTP header value based on the full string entered by the user
+    Args:
+        http_header: a string entered by the user following the -H flag
+    Returns:
+        1. The HTTP header value if http_header is a key-value pair
+        2. None if the http_header is empty or NOT a key-value pair
+    Example:
+        http_header: "Authorization: Bearer abcdefgh"
+        Returns -> "Bearer abcdefgh"
+    """
+    if not http_header or ":" not in http_header:
+        return None
+    # Split only at the first ":"
+    value = http_header.split(":", 1)[1].strip()
+    return value if value else None
+
+
+def remove_sensitive_header_keys(event):
+    """
+    Removes the sensitive headers that the user might add
+    Args:
+        event: The json event which contains the headers
+    Returns:
+        event: The json event without the sensitive headers
+    """
+    from nettacker.config import sensitive_headers
+
+    if not isinstance(event, dict):
+        return event
+
+    if "headers" in event:
+        if not isinstance(event["headers"], dict):
+            return event
+        for key in list(event["headers"].keys()):
+            if key.lower() in sensitive_headers:
+                del event["headers"][key]
+
+    return event
+
+
 def find_args_value(args_name):
     try:
         return sys.argv[sys.argv.index(args_name) + 1]
