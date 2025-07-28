@@ -255,6 +255,14 @@ class ArgParser(ArgumentParser):
             help=_("exclude_scan_method").format(exclude_modules),
         )
         method_options.add_argument(
+            "-X",
+            "--exclude-ports",
+            action="store",
+            dest="excluded_ports",
+            default=Config.settings.excluded_ports,
+            help=_("exclude_ports"),
+        )
+        method_options.add_argument(
             "-u",
             "--usernames",
             action="store",
@@ -414,6 +422,14 @@ class ArgParser(ArgumentParser):
             default=Config.settings.read_from_file,
             dest="read_from_file",
             help=_("user_wordlist"),
+        )
+        method_options.add_argument(
+            "-H",
+            "--add-http-header",
+            action="append",
+            default=Config.settings.http_header,
+            dest="http_header",
+            help=_("http_header"),
         )
 
         # API Options
@@ -641,21 +657,35 @@ class ArgParser(ArgumentParser):
                     options.selected_modules.remove(excluded_module)
         # Check port(s)
         if options.ports:
-            tmp_ports = []
+            tmp_ports = set()
             for port in options.ports.split(","):
                 try:
                     if "-" in port:
                         for port_number in range(
                             int(port.split("-")[0]), int(port.split("-")[1]) + 1
                         ):
-                            if port_number not in tmp_ports:
-                                tmp_ports.append(port_number)
+                            tmp_ports.add(port_number)
                     else:
-                        if int(port) not in tmp_ports:
-                            tmp_ports.append(int(port))
+                        tmp_ports.add(int(port))
                 except Exception:
                     die_failure(_("ports_int"))
-            options.ports = tmp_ports
+            options.ports = list(tmp_ports)
+        # Check for excluded ports
+        if options.excluded_ports:
+            tmp_excluded_ports = set()
+
+            for excluded_port in options.excluded_ports.split(","):
+                try:
+                    if "-" in excluded_port:
+                        for excluded_port_number in range(
+                            int(excluded_port.split("-")[0]), int(excluded_port.split("-")[1]) + 1
+                        ):
+                            tmp_excluded_ports.add(excluded_port_number)
+                    else:
+                        tmp_excluded_ports.add(int(excluded_port))
+                except Exception:
+                    die_failure(_("ports_int"))
+            options.excluded_ports = list(tmp_excluded_ports)
 
         if options.user_agent == "random_user_agent":
             options.user_agents = open(Config.path.user_agents_file).read().split("\n")

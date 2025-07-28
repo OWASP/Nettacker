@@ -10,7 +10,12 @@ import aiohttp
 import uvloop
 
 from nettacker.core.lib.base import BaseEngine
-from nettacker.core.utils.common import replace_dependent_response, reverse_and_regex_condition
+from nettacker.core.utils.common import (
+    replace_dependent_response,
+    reverse_and_regex_condition,
+    get_http_header_key,
+    get_http_header_value,
+)
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
@@ -144,6 +149,14 @@ class HttpEngine(BaseEngine):
         request_number_counter,
         total_number_of_requests,
     ):
+        if options["http_header"] is not None:
+            for header in options["http_header"]:
+                key = get_http_header_key(header).strip()
+                value = get_http_header_value(header)
+                if value is not None:
+                    sub_step["headers"][key] = value.strip()
+                else:
+                    sub_step["headers"][key] = ""
         backup_method = copy.deepcopy(sub_step["method"])
         backup_response = copy.deepcopy(sub_step["response"])
         backup_iterative_response_match = copy.deepcopy(
