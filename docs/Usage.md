@@ -35,9 +35,10 @@ By using the `--help`/`-h` switch you can read the help menu in the CLI:
 [2024-09-26 07:51:09][+] 106 modules loaded ...
 usage: Nettacker [-L LANGUAGE] [-v] [--verbose-event] [-V] [-o REPORT_PATH_FILENAME] [--graph GRAPH_NAME] [-h]
                  [-i TARGETS] [-l TARGETS_LIST] [-m SELECTED_MODULES] [--modules-extra-args MODULES_EXTRA_ARGS]
-                 [--show-all-modules] [--profile PROFILES] [--show-all-profiles] [-x EXCLUDED_MODULES] [-u USERNAMES]
-                 [-U USERNAMES_LIST] [-p PASSWORDS] [-P PASSWORDS_LIST] [-g PORTS] [--user-agent USER_AGENT]
-                 [-T TIMEOUT] [-w TIME_SLEEP_BETWEEN_REQUESTS] [-r] [-s] [-d] [-t THREAD_PER_HOST]
+                 [--show-all-modules] [--profile PROFILES] [--show-all-profiles] [-x EXCLUDED_MODULES] 
+                 [-X EXCLUDED_PORTS] [-u USERNAMES] [-U USERNAMES_LIST] [-p PASSWORDS] [-P PASSWORDS_LIST] [-g PORTS]
+                 [--user-agent USER_AGENT] [-T TIMEOUT] [-w TIME_SLEEP_BETWEEN_REQUESTS] [-r] [-s] [-d] [-t THREAD_PER_HOST]
+                 [--show-all-modules] [--profile PROFILES] [--show-all-profiles] [-x EXCLUDED_MODULES] [-H HTTP_HEADER]
                  [-M PARALLEL_MODULE_SCAN] [--set-hardware-usage SET_HARDWARE_USAGE] [-R SOCKS_PROXY]
                  [--retries RETRIES] [--ping-before-scan] [-K SCAN_COMPARE_ID] [-J COMPARE_REPORT_PATH_FILENAME]
                  [--start-api] [--api-host API_HOSTNAME] [--api-port API_PORT] [--api-debug-mode]
@@ -87,6 +88,8 @@ Method:
                         'adobe_coldfusion_cve_2023_26360_vuln', 'apache_cve_2021_41773_vuln',
                         'apache_cve_2021_42013_vuln', 'apache_ofbiz_cve_2024_38856_vuln', 'apache_struts_vuln',
                         'aviatrix_cve_2021_40870_vuln', 'cisco_hyperflex_cve_2021_1497_vuln']
+  -X EXCLUDED_PORTS, --exclude-ports 
+                        Ports to exclude (e.g. 80 || 80,443|| 1000-1300)
   -u USERNAMES, --usernames USERNAMES
                         username(s) list, separate with ","
   -U USERNAMES_LIST, --users-list USERNAMES_LIST
@@ -124,6 +127,9 @@ Method:
                         compare current scan to old scans using the unique scan_id
   -J COMPARE_REPORT_PATH_FILENAME, --compare-report-path COMPARE_REPORT_PATH_FILENAME
                         the file-path to store the compare_scan report
+  -H HTTP_HEADER, --add-http-header HTTP_HEADER
+                      Add custom HTTP headers to requests (format: 'key: value'). For multiple headers, use multiple -H flags
+
 
 API:
   API options
@@ -313,6 +319,7 @@ https://owasp.org
 ```
 python nettacker.py -i 192.168.1.1,192.168.1.2-192.168.1.10,127.0.0.1,owasp.org,192.168.2.1/24 -m port_scan -g 20-100 -t 10
 python nettacker.py -l targets.txt -m all -x port_scan -g 20-100 -t 5 -u root -p 123456,654321,123123
+python nettacker.py -l targets.txt -m all -t 100 -d -u root -p 12345,432123 -X 80
 ```
 
 * Here are some more command line examples:
@@ -338,6 +345,12 @@ python nettacker.py -i <CIDR/IP/Domain> -m f5_cve_2020_5902 -s
 
 ```
 python nettacker.py -i owasp.org -s -m port_scan -t 10 -M 35 -g 20-100 --graph d3_tree_v2_graph
+```
+
+* Using the `-H` command you can add your own HTTP headers to requests (useful for authentication) and chain it using multiple `-H` commands
+
+```
+python nettacker.py -i owasp.org -s -m http_status_scan -H "Authorization: Basic abcd" -H "Content-Type: abcd" -t 100 -d
 ```
 
 * If you use `-r` command, it will scan the IP range automatically by getting the range from the RIPE database online.
@@ -488,6 +501,8 @@ def nettacker_user_application_config():
         "graph_name": "d3_tree_v2_graph",
         "show_help_menu": False,
         "targets": None,
+        "url_base_path": None,
+        "http_header": None,
         "targets_list": None,
         "selected_modules": None,
         "excluded_modules": None,

@@ -40,6 +40,25 @@ class ConfigBase:
         yield from self.attributes
 
 
+# Some sensitive header fields for HTTP requests.
+# Please edit this if you don't want your HTTP header to be present in the logs
+sensitive_headers = {
+    "authorization",
+    "proxy-authorization",
+    "cookie",
+    "set-cookie",
+    "x-api-key",
+    "x-amz-security-token",
+    "x-amz-credential",
+    "x-amz-signature",
+    "x-session-id",
+    "x-csrf-token",
+    "x-auth-token",
+    "x-user-token",
+    "x-id-token",
+}
+
+
 class ApiConfig(ConfigBase):
     """OWASP Nettacker API Default Configuration"""
 
@@ -115,6 +134,7 @@ class DefaultSettings(ConfigBase):
     """OWASP Nettacker Default Configuration"""
 
     excluded_modules = None
+    excluded_ports = None
     graph_name = "d3_tree_v2_graph"
     language = "en"
     modules_extra_args = None
@@ -134,6 +154,7 @@ class DefaultSettings(ConfigBase):
     scan_subdomains = False
     selected_modules = None
     url_base_path = None
+    http_header = None
     read_from_file = ""
     set_hardware_usage = "maximum"  # low, normal, high, maximum
     show_all_modules = False
