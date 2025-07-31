@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import shutil
 import socket
 import sys
 from threading import Thread
@@ -76,8 +77,13 @@ class Nettacker(ArgParser):
 
         if Config.db.engine == "sqlite":
             try:
-                if not Config.path.database_file.exists():
-                    sqlite_create_tables()
+                if not Config.path.new_database_file.exists():
+                    Config.path.new_database_file.parent.mkdir(parents=True, exist_ok=True)
+                    if Config.path.old_database_file.exists():
+                        shutil.copy(Config.path.old_database_file, Config.path.new_database_file)
+                        log.warn("Database files migrated from .data to .nettacker ...")
+                    else:
+                        sqlite_create_tables()
             except PermissionError:
                 die_failure("cannot access the directory {0}".format(Config.path.home_dir))
         elif Config.db.engine == "mysql":
