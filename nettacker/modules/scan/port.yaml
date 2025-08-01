@@ -1047,11 +1047,11 @@ payloads:
                 reverse: false
 
               mariadb:
-                regex: "is not allowed to connect to this MariaDB server"
+                regex: "is not allowed to connect to this MariaDB server|mysql_native_password|\\d\\.\\d+\\.\\d+g?[a-zA-Z]*-MariaDB"
                 reverse: false
 
               mysql:
-                regex: "is not allowed to connect to this MySQL server|\\d\\.\\d+\\.\\d+g?[a-zA-Z]*"
+                regex: "is not allowed to connect to this MySQL server|\\d\\.\\d+\\.\\d+g?[a-zA-Z]*.*?caching_sha2_password"
                 reverse: false
 
               nntp:
