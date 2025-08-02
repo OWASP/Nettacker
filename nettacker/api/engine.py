@@ -263,7 +263,7 @@ def new_scan():
         form_values["http_header"] = http_header.split("\n")
     # Handle service discovery
     form_values["skip_service_discovery"] = (
-        form_values.get("skip_service_discovery", "").lower() == "true"
+        form_values.get("skip_service_discovery", "") == "true"
     )
     nettacker_app = Nettacker(api_arguments=SimpleNamespace(**form_values))
     app.config["OWASP_NETTACKER_CONFIG"]["options"] = nettacker_app.arguments
