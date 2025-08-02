@@ -162,6 +162,12 @@
                     <span class="input-group-addon"><i class="fa fa-space-shuttle"></i></span>
                     <input id="targets" type="text" class="form-control" data-role="tagsinput" placeholder="Add new target" >
                 </div>
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>
+                        <input id="skip_service_discovery" type="checkbox">
+                        <a class="label label-warning">Skip service discovery</a>
+                    </label>
+                </div>
                 <div id="scan_options_combined">
                 <h3>Profiles</h3>
                 <div class="form-group">
@@ -282,6 +288,26 @@
                             <span class="input-group-addon">Socks</span>
                             <input id="socks_proxy" type="text" class="form-control"
                                    placeholder="socks5://127.0.0.1:9050">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3>Exclude Ports</h3>
+                        <div class="input-group col-xs-12">
+                            <span class="input-group-addon">Exclude</span>
+                            <input id="exclude_ports" type="text" class="form-control"
+                                   placeholder="e.g., 80,443,8080">
+                        </div>
+                    </div>
+
+                    <!-- HTTP Headers -->
+                    <div class="col-md-6">
+                        <h3>HTTP Headers</h3>
+                        <div class="input-group col-xs-12">
+                            <span class="input-group-addon">Headers</span>
+                            <textarea class="form-control" rows="3" id="http_headers"
+                                      placeholder="Header: Value&#10;Another-Header: Value"></textarea>
                         </div>
                     </div>
                 </div>

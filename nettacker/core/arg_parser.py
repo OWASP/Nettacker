@@ -760,3 +760,4 @@ class ArgParser(ArgumentParser):
         options.retries = int(options.retries)
 
         self.arguments = options
+        print(f"these are the arguments: {self.arguments}")
