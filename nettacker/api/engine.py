@@ -250,7 +250,6 @@ def new_scan():
     # variables for future reference
     raw_report_path_filename = form_values.get("report_path_filename")
     http_header = form_values.get("http_header")
-    skip_service_discovery = form_values.get("skip_service_discovery")
     report_path_filename = sanitize_report_path_filename(raw_report_path_filename)
     if not report_path_filename:
         return jsonify(structure(status="error", msg="Invalid report filename")), 400
@@ -262,9 +261,7 @@ def new_scan():
     if http_header:
         form_values["http_header"] = http_header.split("\n")
     # Handle service discovery
-    form_values["skip_service_discovery"] = (
-        form_values.get("skip_service_discovery", "") == "true"
-    )
+    form_values["skip_service_discovery"] = form_values.get("skip_service_discovery", "") == "true"
     nettacker_app = Nettacker(api_arguments=SimpleNamespace(**form_values))
     app.config["OWASP_NETTACKER_CONFIG"]["options"] = nettacker_app.arguments
     thread = Thread(target=nettacker_app.run)
