@@ -343,9 +343,9 @@ $(document).ready(function () {
     }
 
     if (document.getElementById("skip_service_discovery").checked) {
-      var service_discovery = true;
+      var skip_service_discovery = true;
     } else {
-      var service_discovery = false;
+      var skip_service_discovery = false;
     }
     // profiles
     var p = [];
@@ -397,7 +397,7 @@ $(document).ready(function () {
       socks_proxy: $("#socks_proxy").val(),
       usernames: $("#usernames").val(),
       passwords: $("#passwords").val(),
-      skip_service_discovery: service_discovery,
+      skip_service_discovery: skip_service_discovery,
       excluded_ports: $('#exclude_ports').val(),
       http_header: $('#http_headers').val()
     };

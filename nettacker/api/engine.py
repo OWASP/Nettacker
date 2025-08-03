@@ -259,7 +259,9 @@ def new_scan():
             form_values[key] = nettacker_application_config[key]
     # Handle HTTP headers
     if http_header:
-        form_values["http_header"] = http_header.split("\n")
+        form_values["http_header"] = [
+            line.strip() for line in http_header.split("\n") if line.strip()
+        ]
     # Handle service discovery
     form_values["skip_service_discovery"] = form_values.get("skip_service_discovery", "") == "true"
     nettacker_app = Nettacker(api_arguments=SimpleNamespace(**form_values))
