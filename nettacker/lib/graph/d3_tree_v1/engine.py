@@ -23,7 +23,7 @@ def start(events):
     Returns:
         a graph in HTML
     """
-    
+
     # define  a normalised_json
     normalisedjson = {"name": "Started attack", "children": {}}
     # get data for normalised_json
