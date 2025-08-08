@@ -341,6 +341,12 @@ $(document).ready(function () {
     } else {
       var p_3 = false;
     }
+
+    if (document.getElementById("skip_service_discovery").checked) {
+      var skip_service_discovery = true;
+    } else {
+      var skip_service_discovery = false;
+    }
     // profiles
     var p = [];
     var n = 0;
@@ -391,6 +397,9 @@ $(document).ready(function () {
       socks_proxy: $("#socks_proxy").val(),
       usernames: $("#usernames").val(),
       passwords: $("#passwords").val(),
+      skip_service_discovery: skip_service_discovery,
+      excluded_ports: $('#exclude_ports').val(),
+      http_header: $('#http_headers').val()
     };
 
     // replace "" with null
