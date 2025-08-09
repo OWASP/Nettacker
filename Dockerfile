@@ -44,7 +44,7 @@ COPY --from=builder /usr/src/owaspnettacker/dist/*.whl .
 
 ENV PATH=/usr/src/owaspnettacker/.venv/bin:$PATH
 ### Use pip inside the venv to install just the nettacker wheel saving 50%+ space
-RUN ./.venv/bin/pip install --no-deps --no-cache-dir nettacker-*.whl && \
+RUN pip install --no-deps --no-cache-dir nettacker-*.whl && \
     rm -f nettacker-*.whl
 
 ### We now have Nettacker installed in the virtualenv with 'nettacker' command which is the new entrypoint
