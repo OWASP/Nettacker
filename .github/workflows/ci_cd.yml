@@ -161,46 +161,42 @@ jobs:
 
       - name: Test help menu
         run: |
-          docker run -e github_ci=true --rm nettacker \
-            poetry run python nettacker.py --help
+          docker run -e github_ci=true --rm nettacker --help
 
       - name: Test help menu in Persian
         run: |
-          docker run -e github_ci=true --rm nettacker \
-            poetry run python nettacker.py --help -L fa
+          docker run -e github_ci=true --rm nettacker --help -L fa
 
       - name: Show all modules
         run: |
-          docker run -e github_ci=true --rm nettacker \
-            poetry run python nettacker.py --show-all-modules
+          docker run -e github_ci=true --rm nettacker --show-all-modules
 
       - name: Show all profiles
         run: |
-          docker run -e github_ci=true --rm nettacker \
-            poetry run python nettacker.py --show-all-profiles
+          docker run -e github_ci=true --rm nettacker --show-all-profiles
 
       - name: Test all modules command + check if it's finish successfully + csv
         run: |
-          docker run -e github_ci=true --rm -i nettacker \
-            poetry run python nettacker.py -i 127.0.0.1 -u user1,user2 -p pass1,pass2 -m all -g 21,25,80,443 \
+          docker run -e github_ci=true --rm -i --add-host=host.docker.internal:host-gateway nettacker \
+            -i host.docker.internal -u user1,user2 -p pass1,pass2 -m all -g 21,25,80,443 \
               -t 1000 -T 3 -o out.csv
 
       - name: Test all modules command + check if it's finish successfully + csv
         run: |
-          docker run -e github_ci=true --rm -i nettacker \
-            poetry run python nettacker.py -i 127.0.0.1 -u user1,user2 -p pass1,pass2 -m all -g 21,25,80,443 \
+          docker run -e github_ci=true --rm -i --add-host=host.docker.internal:host-gateway nettacker \
+            -i host.docker.internal -u user1,user2 -p pass1,pass2 -m all -g 21,25,80,443 \
               -t 1000 -T 3 -o out.csv --skip-service-discovery
 
       - name: Test all modules command + check if it's finish successfully + with graph + Persian
         run: |
-          docker run -e github_ci=true --rm -i nettacker \
-            poetry run python nettacker.py -i 127.0.0.1 -L fa -u user1,user2 -p pass1,pass2 --profile all \
+          docker run -e github_ci=true --rm -i --add-host=host.docker.internal:host-gateway nettacker \
+             -i host.docker.internal -L fa -u user1,user2 -p pass1,pass2 --profile all \
               -g 21,25,80,443 -t 1000 -T 3 --graph d3_tree_v2_graph -v
 
       - name: Test all modules command + check if it's finish successfully + with graph + Persian
         run: |
-          docker run -e github_ci=true --rm -i nettacker \
-            poetry run python nettacker.py -i 127.0.0.1 -L fa -u user1,user2 -p pass1,pass2 --profile all \
+          docker run -e github_ci=true --rm -i --add-host=host.docker.internal:host-gateway nettacker \
+            -i host.docker.internal -L fa -u user1,user2 -p pass1,pass2 --profile all \
               -g 21,25,80,443 -t 1000 -T 3 --graph d3_tree_v2_graph -v --skip-service-discovery
 
   test-docker-image-build:
@@ -242,9 +238,6 @@ jobs:
 
       - name: Build Nettacker image
         run: docker build . -t nettacker
-
-      - name: Run pip install
-        run: docker run nettacker pip install .
 
   publish-nettacker-dev-to-docker-registry:
     name: Publish nettacker:dev Docker image
