@@ -172,9 +172,9 @@
                 <h3>Profiles</h3>
                 <div class="form-group">
                     <div id="profiles" class="checkbox text-justify">
-                        <label><input id="all" type="checkbox" class="check check-all-scans"><a
-                                class="label label-info">Select all profiles</a></label>&nbsp;&nbsp;&nbsp;&nbsp;
-                        {% autoescape off %}{{profile}}{% endautoescape %}
+            <label><input id="all_profiles" type="checkbox" class="check check-all-profiles"><a
+                class="label label-info">Select all profiles</a></label>&nbsp;&nbsp;&nbsp;&nbsp;
+            {% autoescape off %}{{profile}}{% endautoescape %}
                     </div>
                 </div>
                 <h3>Scan Methods</h3>
@@ -299,7 +299,7 @@
                             <input id="exclude_ports" type="text" class="form-control"
                                    placeholder="e.g., 80,443,8080">
                         </div>
-                    </div>
+                    </div>  
 
                     <!-- HTTP Headers -->
                     <div class="col-md-6">

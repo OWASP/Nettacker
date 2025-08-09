@@ -351,8 +351,10 @@ $(document).ready(function () {
     var p = [];
     var n = 0;
     $("#profiles input:checked").each(function () {
-      p[n] = this.id;
-      n += 1;
+      if (this.id !== "all_profiles") {
+        p[n] = this.id;
+        n += 1;
+      }
     });
     var profiles = p.join(",");
 
@@ -674,6 +676,10 @@ $(document).ready(function () {
 
   $(".checkbox-vulnerability").click(function () {
     $(".checkbox-vuln-module").prop("checked", $(this).prop("checked"));
+  });
+
+  $(".check-all-profiles").click(function () {
+    $("#profiles input[type='checkbox']").not(this).prop("checked", $(this).prop("checked"));
   });
 
   $(".check-all-scans").click(function () {
