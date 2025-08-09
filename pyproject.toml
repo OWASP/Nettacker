@@ -5,7 +5,9 @@ description = "Automates information gathering, vulnerability scanning and aids 
 license = "Apache-2.0"
 readme = "README.md"
 
-authors = ["OWASP Nettacker Contributors"]
+authors = ["OWASP Nettacker Contributors <nettacker-project@owasp.org>"]
+homepage = "https://owasp.org/nettacker"
+
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
