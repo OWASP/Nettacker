@@ -676,6 +676,10 @@ $(document).ready(function () {
     $(".checkbox-vuln-module").prop("checked", $(this).prop("checked"));
   });
 
+  $(".check-all-profiles").click(function () {
+    $("#profiles input[type='checkbox']").not(this).prop("checked", $(this).prop("checked"));
+  });
+
   $(".check-all-scans").click(function () {
     $(".checkbox-brute-module").prop("checked", $(this).prop("checked"));
     $(".checkbox-scan-module").prop("checked", $(this).prop("checked"));
