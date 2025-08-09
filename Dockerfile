@@ -1,13 +1,6 @@
 ### Multi-stage Dockerfile
 # Define the base image only once as a build argument
 ARG PYTHON_IMAGE=python:3.11.13-slim
-
-# OCI Lalbel
-LABEL org.opencontainers.image.title="OWASP Nettacker" \
-      org.opencontainers.image.description="Automated Penetration Testing Framework" \
-      org.opencontainers.image.url="https://owasp.org/nettacker" \
-      org.opencontainers.image.source="https://github.com/OWASP/Nettacker" \
-      org.opencontainers.image.licenses="Apache-2.0"
       
 ### Build stage
 FROM ${PYTHON_IMAGE} AS builder
@@ -38,6 +31,13 @@ RUN poetry build
 FROM ${PYTHON_IMAGE} AS runtime
 WORKDIR /usr/src/owaspnettacker
 
+# OCI Labels (attach to final image)
+LABEL org.opencontainers.image.title="OWASP Nettacker" \
+      org.opencontainers.image.description="Automated Penetration Testing Framework" \
+      org.opencontainers.image.url="https://owasp.org/nettacker" \
+      org.opencontainers.image.source="https://github.com/OWASP/Nettacker" \
+      org.opencontainers.image.licenses="Apache-2.0"
+      
 ### Bring from 'builder' just the virtualenv and the packaged Nettacker as a wheel 
 COPY --from=builder /usr/src/owaspnettacker/.venv ./.venv
 COPY --from=builder /usr/src/owaspnettacker/dist/*.whl .
