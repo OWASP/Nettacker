@@ -5,7 +5,11 @@ description = "Automates information gathering, vulnerability scanning and aids 
 license = "Apache-2.0"
 readme = "README.md"
 
-authors = ["OWASP Nettacker Contributors"]
+authors = ["OWASP Nettacker Contributors <nettacker-project@owasp.org>"]
+homepage = "https://owasp.org/nettacker"
+repository = "https://github.com/OWASP/Nettacker"
+documentation = "https://nettacker.readthedocs.io"
+
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
@@ -31,10 +35,6 @@ keywords = [
     "vulnerability-management",
     "vulnerability-scanner",
 ]
-
-homepage = "https://owasp.org/www-project-nettacker"
-repository = "https://github.com/OWASP/Nettacker"
-documentation = "https://github.com/OWASP/Nettacker/wiki"
 
 packages = [{ include = "nettacker"}]
 
