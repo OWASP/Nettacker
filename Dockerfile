@@ -2,6 +2,13 @@
 # Define the base image only once as a build argument
 ARG PYTHON_IMAGE=python:3.11.13-slim
 
+# OCI Lalbel
+LABEL org.opencontainers.image.title="OWASP Nettacker" \
+      org.opencontainers.image.description="Automated Penetration Testing Framework" \
+      org.opencontainers.image.url="https://owasp.org/nettacker" \
+      org.opencontainers.image.source="https://github.com/OWASP/Nettacker" \
+      org.opencontainers.image.licenses="Apache-2.0"
+      
 ### Build stage
 FROM ${PYTHON_IMAGE} AS builder
 ### Install OS dependencies and poetry package manager
@@ -37,7 +44,8 @@ COPY --from=builder /usr/src/owaspnettacker/dist/*.whl .
 
 ENV PATH=/usr/src/owaspnettacker/.venv/bin:$PATH
 ### Use pip inside the venv to install just the nettacker wheel saving 50%+ space
-RUN ./.venv/bin/pip install --no-deps --no-cache-dir nettacker-*.whl
+RUN ./.venv/bin/pip install --no-deps --no-cache-dir nettacker-*.whl && \
+    rm -f nettacker-*.whl
 
 ### We now have Nettacker installed in the virtualenv with 'nettacker' command which is the new entrypoint
 ENV docker_env=true
