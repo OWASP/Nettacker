@@ -19,7 +19,7 @@ logs.txt
 *.log
 results.*
 .owasp-nettacker*
-.data*
+.nettacker/data*
 *.DS_Store
 *.swp
 

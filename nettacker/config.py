@@ -62,7 +62,7 @@ sensitive_headers = {
 class ApiConfig(ConfigBase):
     """OWASP Nettacker API Default Configuration"""
 
-    api_access_log = str(CWD / ".data/nettacker.log")
+    api_access_log = str(CWD / ".nettacker/data/nettacker.log")
     api_access_key = generate_random_token(32)
     api_client_whitelisted_ips = []  # disabled - to enable please put an array with list of ips/cidr/ranges
     # [
@@ -98,7 +98,7 @@ class DbConfig(ConfigBase):
     """
 
     engine = "sqlite"
-    name = str(CWD / ".data/nettacker.db")
+    name = str(CWD / ".nettacker/data/nettacker.db")
     host = ""
     port = ""
     username = ""
@@ -114,8 +114,9 @@ class PathConfig:
         a JSON contain the working, tmp and results path
     """
 
-    data_dir = CWD / ".data"
-    database_file = CWD / ".data/nettacker.db"
+    data_dir = CWD / ".nettacker/data"
+    new_database_file = CWD / ".nettacker/data/nettacker.db"
+    old_database_file = CWD / ".data/nettacker.db"
     graph_dir = PACKAGE_PATH / "lib/graph"
     home_dir = CWD
     locale_dir = PACKAGE_PATH / "locale"
@@ -124,8 +125,8 @@ class PathConfig:
     modules_dir = PACKAGE_PATH / "modules"
     payloads_dir = PACKAGE_PATH / "lib/payloads"
     release_name_file = PACKAGE_PATH / "release_name.txt"
-    results_dir = CWD / ".data/results"
-    tmp_dir = CWD / ".data/tmp"
+    results_dir = CWD / ".nettacker/data/results"
+    tmp_dir = CWD / ".nettacker/data/tmp"
     web_static_dir = PACKAGE_PATH / "web/static"
     user_agents_file = PACKAGE_PATH / "lib/payloads/User-Agents/web_browsers_user_agents.txt"
 
