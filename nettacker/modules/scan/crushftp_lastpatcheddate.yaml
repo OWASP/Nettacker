@@ -42,5 +42,5 @@ payloads:
               reverse: false
             headers:
               Last-Modified:
-                regex: .*  
+                regex: .*
                 reverse: false
