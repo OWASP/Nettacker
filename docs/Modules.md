@@ -8,6 +8,7 @@ OWASP Nettacker Modules can be of type **Scan** (scan for something), **Vuln** (
 
 ## Scan Modules
 
+* '**adobe_aem_lastpatcheddate_scan**' - Scan the target for Adobe Experience Manager (AEM) and return its last patched date
 * '**admin_scan**'  - Scan the target for various Admin folders such as /admin /phpmyadmin /cmsadmin /wp-admin etc
 * '**citrix_lastpatcheddate_scan**'  Scan the target and try to detect Citrix Netscaler Gateway and it's last patched date
 * '**cms_detection_scan**' - Scan the target and try to detect the CMS (Wordpress, Drupal or Joomla) using response fingerprinting
