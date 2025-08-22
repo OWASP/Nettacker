@@ -1,5 +1,5 @@
 # Think of AGENTS.md as a README for AI agents: a dedicated, predictable place to provide the context and instructions to help AI coding agents work on your project.
-# See agents.md for more info
+# See https://agents.md for more info
 # Repository Guidelines
 ## Project Structure & Module Organization
 - Source: `nettacker/` (CLI: `nettacker/main.py`, API: `nettacker/api/`, core libs: `nettacker/core/`, modules: `nettacker/modules/`).
