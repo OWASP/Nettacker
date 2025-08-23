@@ -38,7 +38,7 @@ payloads:
                 - 8443
         response:
           condition_type: and
-          log: "response_dependent['headers']['Last-Modified']"
+          log: "response_dependent['headers']['last-modified']"
           conditions:
             status_code:
               regex: "200"
