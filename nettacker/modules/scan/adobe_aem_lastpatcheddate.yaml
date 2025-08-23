@@ -24,7 +24,7 @@ payloads:
             input_format: "{{schema}}://{target}:{{ports}}/libs/granite/core/content/login/clientlib.js"
             prefix: ""
             suffix: ""
-            interceptors:
+            interceptors: []
             data:
               schema:
                 - "http"
@@ -32,6 +32,10 @@ payloads:
               ports:
                 - 80
                 - 443
+                - 4502
+                - 4503
+                - 8080
+                - 8443
         response:
           condition_type: and
           log: "response_dependent['headers']['Last-Modified']"
