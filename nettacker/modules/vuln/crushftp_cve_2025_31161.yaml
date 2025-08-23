@@ -2,18 +2,23 @@ info:
   name: crushftp_cve_2025_31161_vuln
   author: OWASP Nettacker Team
   severity: 9.8
-  description: >  
+  severity: 9.8
+  description: >
     This module checks for a critical improper authentication vulnerability in CrushFTP
     (CVE-2025-31161). The vulnerability allows unauthenticated users to access sensitive
     files and execute arbitrary commands, leading to potential data exposure and system
-    compromise. 
+    compromise.
 
   reference:
-   - https://ccb.belgium.be/advisories/warning-critical-improper-authentication-vulnerability-crushftp-patch-immediately
-   - https://nvd.nist.gov/vuln/detail/CVE-2025-31161
-   - https://www.huntress.com/blog/crushftp-cve-2025-31161-auth-bypass-and-post-exploitation
-  
-  profiles:  
+    - https://ccb.belgium.be/advisories/warning-critical-improper-authentication-vulnerability-crushftp-patch-immediately
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-31161
+    - https://www.huntress.com/blog/crushftp-cve-2025-31161-auth-bypass-and-post-exploitation
+
+  profiles:
+    - crushftp
+    - vuln
+    - vulnerability
+
     - crushftp
     - vuln
     - vulnerability
