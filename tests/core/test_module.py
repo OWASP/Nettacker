@@ -10,8 +10,8 @@ class DummyOptions:
     def __init__(self):
         self.modules_extra_args = {"foo": "bar"}
         self.skip_service_discovery = False
-        self.time_sleep_between_requests = 0
         self.thread_per_host = 2
+        self.time_sleep_between_requests = 0
 
 
 @pytest.fixture
@@ -22,9 +22,9 @@ def options():
 @pytest.fixture
 def module_args():
     return {
-        "target": "127.0.0.1",
-        "scan_id": "scan123",
         "process_number": 1,
+        "scan_id": "scan123",
+        "target": "127.0.0.1",
         "thread_number": 1,
         "total_number_threads": 1,
     }
@@ -237,9 +237,9 @@ def test_sort_loops_behavior(mock_loader_cls, mock_find_events, mock_parse, opti
     steps = module.module_content["payloads"][0]["steps"]
 
     assert steps[0][0]["response"]["conditions"] == {"service": {}}
-    assert steps[1][0]["response"]["dependent_on_temp_event"] is True
-    assert steps[1][0]["response"]["save_to_temp_events_only"] is True
-    assert steps[2][0]["response"]["dependent_on_temp_event"] is True
+    assert steps[1][0]["response"]["dependent_on_temp_event"]
+    assert steps[1][0]["response"]["save_to_temp_events_only"]
+    assert steps[2][0]["response"]["dependent_on_temp_event"]
     assert "save_to_temp_events_only" not in steps[2][0]["response"]
 
 
