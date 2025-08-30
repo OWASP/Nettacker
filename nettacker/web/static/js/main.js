@@ -341,12 +341,20 @@ $(document).ready(function () {
     } else {
       var p_3 = false;
     }
+
+    if (document.getElementById("skip_service_discovery").checked) {
+      var skip_service_discovery = true;
+    } else {
+      var skip_service_discovery = false;
+    }
     // profiles
     var p = [];
     var n = 0;
     $("#profiles input:checked").each(function () {
-      p[n] = this.id;
-      n += 1;
+      if (this.id !== "all_profiles") {
+        p[n] = this.id;
+        n += 1;
+      }
     });
     var profiles = p.join(",");
 
@@ -391,6 +399,9 @@ $(document).ready(function () {
       socks_proxy: $("#socks_proxy").val(),
       usernames: $("#usernames").val(),
       passwords: $("#passwords").val(),
+      skip_service_discovery: skip_service_discovery,
+      excluded_ports: $('#exclude_ports').val(),
+      http_header: $('#http_headers').val()
     };
 
     // replace "" with null
@@ -665,6 +676,10 @@ $(document).ready(function () {
 
   $(".checkbox-vulnerability").click(function () {
     $(".checkbox-vuln-module").prop("checked", $(this).prop("checked"));
+  });
+
+  $(".check-all-profiles").click(function () {
+    $("#profiles input[type='checkbox']").not(this).prop("checked", $(this).prop("checked"));
   });
 
   $(".check-all-scans").click(function () {

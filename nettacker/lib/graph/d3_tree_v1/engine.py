@@ -4,6 +4,15 @@ from nettacker.config import Config
 from nettacker.core.messages import messages
 
 
+def escape_for_html_js(json_str: str) -> str:
+    """
+    This is necessary because some payloads have HTML tags for XSS
+    as in waf.yaml, which break the HTML and output no graph. These are unicode escape
+    characters for the same
+    """
+    return json_str.replace("<", "\\u003C").replace(">", "\\u003E").replace("&", "\\u0026")
+
+
 def start(events):
     """
     generate the d3_tree_v1_graph with events
@@ -41,7 +50,7 @@ def start(events):
     data = (
         open(Config.path.web_static_dir / "report/d3_tree_v1.html")
         .read()
-        .replace("__data_will_locate_here__", json.dumps(d3_structure))
+        .replace("__data_will_locate_here__", escape_for_html_js(json.dumps(d3_structure)))
         .replace("__title_to_replace__", messages("pentest_graphs"))
         .replace("__description_to_replace__", messages("graph_message"))
         .replace("__html_title_to_replace__", messages("nettacker_report"))

