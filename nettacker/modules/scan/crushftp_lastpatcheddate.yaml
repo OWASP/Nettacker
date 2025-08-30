@@ -1,20 +1,19 @@
 info:
-  name: joomla_version_scan
+  name:  crushftp_lastpatcheddate_scan
   author: OWASP Nettacker Team
   severity: 3
-  description: fetch joomla version from target
+  description: CrushFTP Last Patched Date Scan
   reference:
   profiles:
     - scan
     - http
-    - backup
+    - crushftp
     - low_severity
-    - joomla
 
 payloads:
   - library: http
     steps:
-      - method: get
+      - method: head
         timeout: 3
         headers:
           User-Agent: "{user_agent}"
@@ -22,23 +21,26 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            input_format: "{{schema}}://{target}:{{ports}}/WebInterface/CrushTunnel.jar"
             prefix: ""
             suffix: ""
             interceptors:
             data:
-              paths:
-                - ""
-                - administrator/
               schema:
                 - "http"
                 - "https"
               ports:
                 - 80
                 - 443
+                - 8080
         response:
-          condition_type: or
+          condition_type: and
+          log: "response_dependent['headers']['Last-Modified']"
           conditions:
-            content:
-              regex: (?i)\/\badministrator\/templates\b\/(.+?)\/|\/templates\/(.+?)\/
+            status_code:
+              regex: "200"
               reverse: false
+            headers:
+              Last-Modified:
+                regex: .*
+                reverse: false

@@ -8,10 +8,12 @@ OWASP Nettacker Modules can be of type **Scan** (scan for something), **Vuln** (
 
 ## Scan Modules
 
+* '**adobe_aem_lastpatcheddate_scan**' - Scan the target for Adobe Experience Manager (AEM) and return its last patched date
 * '**admin_scan**'  - Scan the target for various Admin folders such as /admin /phpmyadmin /cmsadmin /wp-admin etc
 * '**citrix_lastpatcheddate_scan**'  Scan the target and try to detect Citrix Netscaler Gateway and it's last patched date
 * '**cms_detection_scan**' - Scan the target and try to detect the CMS (Wordpress, Drupal or Joomla) using response fingerprinting
 * '**confluence_version_scan**' - Scan the target and identify the Confluence version
+* '**crushftp_lastpatcheddate_scan**' - Scan the target and try to detect CrushFTP and its last patched date
 * '**cups_version_scan**' - Scan the target and identify the CUPS version (on port 631)
 * '**dir_scan**' - Scan the target for well-known directories
 * '**drupal_modules_scan**' - Scan the target for popular Drupal modules
@@ -138,12 +140,14 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 * '**clickjacking_vuln**' - check the web server for missing 'X-Frame-Options' header (clickjacking protection)
 * '**content_security_policy_vuln**' - check the web server for missing 'Content-Security-Policy' header
 * '**content_type_options_vuln**' - check the web server for missing 'X-Content-Type-Options'=nosniff header
+* '**crushftp_cve_2025_31161_vuln**' - check the target for CrushFTP CVE-2025-31161 vulnerability
 * '**f5_cve_2020_5902_vuln**' - check the target for F5 RCE CVE-2020-5902 vulnerability 
 * '**heartbleed_vuln**' - check SSL for Heartbleed vulnerability (CVE-2014-0160)
 * '**msexchange_cve_2021_26855**' - check the target for MS Exchange SSRF CVE-2021-26855 (proxylogon/hafnium)
 * '**http_cors_vuln**' - check the web server for overly-permissive CORS (header 'Access-Control-Allow-Origin'=*)
 * '**options_method_enabled_vuln**' - check if OPTIONS method is enabled on the web server
-* '**paloalto_panos_cve_2025_0108_vuln** - check the target for PaloAlto PAN-OS CVE-2025-0108 vulnerability
+* '**paloalto_panos_cve_2025_0108_vuln**' - check the target for PaloAlto PAN-OS CVE-2025-0108 vulnerability
+* '**paloalto_globalprotect_cve_2025_0133_vuln**'  - check the target for PaloAlto GlobalProtect CVE-2025-0133 XSS vulnerability
 * '**ProFTPd_bypass_sqli_protection_vuln**' - check ProFTPd for CVE-2009-0543
 * '**ProFTPd_cpu_consumption_vuln**' - check ProFTPd for CVE-2008-7265
 * '**ProFTPd_directory_traversal_vuln**' - check ProFTPd for CVE-2010-3867

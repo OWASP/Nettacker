@@ -75,7 +75,7 @@ At the first, you must send an API key through the request each time you send a 
 To submit a new scan follow this step.
 
 ```python
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07", "targets": "127.0.0.1,owasp.org", "scan_method": "port_scan"})
+>>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07", "targets": "127.0.0.1,owasp.org", "selected_modules": "port_scan", "report_path_filename": "/home/test.html"})
 >>> r.status_code
 200
 >>> import json
@@ -85,15 +85,15 @@ To submit a new scan follow this step.
     "check_ranges": false, 
     "check_subdomains": false, 
     "database_host": "", 
-    "database_name": "/home/am4n/owasp-nettacker/.data/nettacker.db", 
+    "database_name": "/home/am4n/owasp-nettacker/.nettacker/data/nettacker.db", 
     "database_password": "", 
     "database_port": "", 
     "database_type": "sqlite", 
     "database_username": "", 
     "graph_flag": "d3_tree_v2_graph", 
-    "home_path": "/home/am4n/owasp-nettacker/.data", 
+    "home_path": "/home/am4n/owasp-nettacker/.nettacker/data", 
     "language": "en", 
-    "log_in_file": "/home/am4n/owasp-nettacker/.data/results/results_2020_06_09_10_36_56_mibtrtoacd.html", 
+    "log_in_file": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_36_56_mibtrtoacd.html", 
     "methods_args": {
         "as_user_set": "set_successfully"
     }, 
@@ -101,7 +101,7 @@ To submit a new scan follow this step.
     "ping_flag": false, 
     "ports": null, 
     "profile": null, 
-    "results_path": "/home/am4n/owasp-nettacker/.data/results", 
+    "results_path": "/home/am4n/owasp-nettacker/.nettacker/data/results", 
     "retries": 3, 
     "scan_method": [
         "port_scan"
@@ -114,13 +114,13 @@ To submit a new scan follow this step.
     "thread_number_host": 5, 
     "time_sleep": 0.0, 
     "timeout_sec": 3, 
-    "tmp_path": "/home/am4n/owasp-nettacker/.data/tmp", 
+    "tmp_path": "/home/am4n/owasp-nettacker/.nettacker/data/tmp", 
     "users": null, 
     "verbose_level": 0
 }
 ```
 
-Please note, `targets` and `scan_method` are **necessary** to submit a new scan unless you modify the config file before! The `scan_method` could be empty if you define the `profile`.
+Please note, `targets` and `selected_modules` are **necessary** to submit a new scan unless you modify the config file before! The `selected_modules` could be empty if you define the `profile`.
 
 ```python
 >>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07"})
@@ -131,22 +131,22 @@ Please note, `targets` and `scan_method` are **necessary** to submit a new scan 
 >>> r.content
 u'{"msg":"please choose your scan method!","status":"error"}\n'
 
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "09877e92c75f6afdca6ae61ad3f53727", "targets": "127.0.0.1", "scan_method": "dir_scan,port_scan"})
+>>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "09877e92c75f6afdca6ae61ad3f53727", "targets": "127.0.0.1", "selected_modules": "dir_scan,port_scan", "report_path_filename": "/home/test.html"})
 >>> print json.dumps(json.loads(r.content), sort_keys=True, indent=4)
 {
     "backup_ports": null, 
     "check_ranges": false, 
     "check_subdomains": false, 
     "database_host": "", 
-    "database_name": "/home/am4n/owasp-nettacker/.data/nettacker.db", 
+    "database_name": "/home/am4n/owasp-nettacker/.nettacker/data/nettacker.db", 
     "database_password": "", 
     "database_port": "", 
     "database_type": "sqlite", 
     "database_username": "", 
     "graph_flag": "d3_tree_v2_graph", 
-    "home_path": "/home/am4n/owasp-nettacker/.data", 
+    "home_path": "/home/am4n/owasp-nettacker/.nettacker/data", 
     "language": "en", 
-    "log_in_file": "/home/am4n/owasp-nettacker/.data/results/results_2020_06_09_10_47_08_dugacttfmf.html", 
+    "log_in_file": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_47_08_dugacttfmf.html", 
     "methods_args": {
         "as_user_set": "set_successfully"
     }, 
@@ -154,7 +154,7 @@ u'{"msg":"please choose your scan method!","status":"error"}\n'
     "ping_flag": false, 
     "ports": null, 
     "profile": null, 
-    "results_path": "/home/am4n/owasp-nettacker/.data/results", 
+    "results_path": "/home/am4n/owasp-nettacker/.nettacker/data/results", 
     "retries": 3, 
     "scan_method": [
         "dir_scan", 
@@ -168,7 +168,7 @@ u'{"msg":"please choose your scan method!","status":"error"}\n'
     "thread_number_host": 5, 
     "time_sleep": 0.0, 
     "timeout_sec": 3, 
-    "tmp_path": "/home/am4n/owasp-nettacker/.data/tmp", 
+    "tmp_path": "/home/am4n/owasp-nettacker/.nettacker/data/tmp", 
     "users": null, 
     "verbose_level": 0
 }
@@ -179,15 +179,15 @@ u'{"msg":"please choose your scan method!","status":"error"}\n'
     "check_ranges": false, 
     "check_subdomains": false, 
     "database_host": "", 
-    "database_name": "/home/am4n/owasp-nettacker/.data/nettacker.db", 
+    "database_name": "/home/am4n/owasp-nettacker/.nettacker/data/nettacker.db", 
     "database_password": "", 
     "database_port": "", 
     "database_type": "sqlite", 
     "database_username": "", 
     "graph_flag": "d3_tree_v2_graph", 
-    "home_path": "/home/am4n/owasp-nettacker/.data", 
+    "home_path": "/home/am4n/owasp-nettacker/.nettacker/data", 
     "language": "en", 
-    "log_in_file": "/home/am4n/owasp-nettacker/.data/results/results_2020_06_09_10_50_09_xjqatmkngn.html", 
+    "log_in_file": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_50_09_xjqatmkngn.html", 
     "methods_args": {
         "as_user_set": "set_successfully"
     }, 
@@ -195,7 +195,7 @@ u'{"msg":"please choose your scan method!","status":"error"}\n'
     "ping_flag": false, 
     "ports": null, 
     "profile": "information_gathering", 
-    "results_path": "/home/am4n/owasp-nettacker/.data/results", 
+    "results_path": "/home/am4n/owasp-nettacker/.nettacker/data/results", 
     "retries": 3, 
     "scan_method": [
         "port_scan"
@@ -208,7 +208,7 @@ u'{"msg":"please choose your scan method!","status":"error"}\n'
     "thread_number_host": 5, 
     "time_sleep": 0.0, 
     "timeout_sec": 3, 
-    "tmp_path": "/home/am4n/owasp-nettacker/.data/tmp", 
+    "tmp_path": "/home/am4n/owasp-nettacker/.nettacker/data/tmp", 
     "users": null, 
     "verbose_level": 0
 }
@@ -285,7 +285,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
         "language": "en", 
         "ports": "default", 
         "profile": null, 
-        "report_filename": "/home/am4n/owasp-nettacker/.data/results/results_2020_06_09_11_04_17_pisajfbfyp.html", 
+        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_11_04_17_pisajfbfyp.html", 
         "report_type": "HTML", 
         "scan_cmd": "nettacker.py -i 127.0.0.1 -m all -M 100", 
         "scan_id": "b745337b4feeb99cee3eb4ff4cb45fad", 
@@ -302,7 +302,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
         "language": "en", 
         "ports": "default", 
         "profile": null, 
-        "report_filename": "/home/am4n/owasp-nettacker/.data/results/results_2020_06_09_11_04_04_bdzipsmtcc.html", 
+        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_11_04_04_bdzipsmtcc.html", 
         "report_type": "HTML", 
         "scan_cmd": "nettacker.py -i 127.0.0.1 -m all", 
         "scan_id": "8e9a1b2fd03cb7b969d99beea1cff2aa", 
@@ -319,7 +319,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
         "language": "en", 
         "ports": "default", 
         "profile": null, 
-        "report_filename": "/home/am4n/owasp-nettacker/.data/results/results_2020_06_09_11_03_23_ubytvgauvj.html", 
+        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_11_03_23_ubytvgauvj.html", 
         "report_type": "HTML", 
         "scan_cmd": "nettacker.py -i 127.0.0.1 -m all -M 100 -t 1000", 
         "scan_id": "7d84af54f343e19671d1c52357bf928f", 
@@ -336,7 +336,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
         "language": "en", 
         "ports": "default", 
         "profile": null, 
-        "report_filename": "/home/am4n/owasp-nettacker/.data/results/results_2020_06_09_10_59_29_oyzxmegtuk.html", 
+        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_59_29_oyzxmegtuk.html", 
         "report_type": "HTML", 
         "scan_cmd": "nettacker.py -i 127.0.0.1 -m all -t 1000", 
         "scan_id": "d944c9a02053fd387d1e3343fec6b320", 
@@ -353,7 +353,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
         "language": "en", 
         "ports": "default", 
         "profile": "information_gathering", 
-        "report_filename": "/home/am4n/owasp-nettacker/.data/results/results_2020_06_09_10_50_09_xjqatmkngn.html", 
+        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_50_09_xjqatmkngn.html", 
         "report_type": "HTML", 
         "scan_cmd": "Through the OWASP Nettacker API", 
         "scan_id": "05ba4e5b839b5ba525c9a35baa8864a1", 
@@ -370,7 +370,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
         "language": "en", 
         "ports": "default", 
         "profile": null, 
-        "report_filename": "/home/am4n/owasp-nettacker/.data/results/results_2020_06_09_10_47_08_dugacttfmf.html", 
+        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_47_08_dugacttfmf.html", 
         "report_type": "HTML", 
         "scan_cmd": "Through the OWASP Nettacker API", 
         "scan_id": "18af7af856b4ceefac659a59c4908088", 
@@ -387,7 +387,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
         "language": "en", 
         "ports": "default", 
         "profile": null, 
-        "report_filename": "/home/am4n/owasp-nettacker/.data/results/results_2020_06_09_10_35_10_jvxotwxako.html", 
+        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_35_10_jvxotwxako.html", 
         "report_type": "HTML", 
         "scan_cmd": "Through the OWASP Nettacker API", 
         "scan_id": "78d253c3a28d2bb4f467ac040ccaa854", 
@@ -404,7 +404,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
         "language": "en", 
         "ports": "default", 
         "profile": null, 
-        "report_filename": "/home/am4n/owasp-nettacker/.data/results/results_2020_06_09_10_36_56_mibtrtoacd.html", 
+        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_36_56_mibtrtoacd.html", 
         "report_type": "HTML", 
         "scan_cmd": "Through the OWASP Nettacker API", 
         "scan_id": "708e1dcf0f2ce9fe71038ccea7bf28bb", 
@@ -429,7 +429,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 </div>
 <style type="text/css">
 
-	.header{
+    .header{
     margin:2%;
     text-align:center;
   }
@@ -665,7 +665,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 ```
 ## Generate a HTML Scan Result for a Host
 ```python
->>> r = s.get("https://localhost:5000/logs/get_html?host=127.0.0.1")
+>>> r = s.get("https://localhost:5000/logs/get_html?target=127.0.0.1&key=<your_api_key>")
 >>> print r.content[:1000]
 <!DOCTYPE html>
 <!-- THIS PAGE COPIED AND MODIFIED FROM http://bl.ocks.org/robschmuecker/7880033-->
@@ -677,7 +677,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 </div>
 <style type="text/css">
 
-	.header{
+    .header{
     margin:2%;
     text-align:center;
   }
@@ -706,7 +706,7 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 
 ### Get the Scan Result in JSON Type
 ```python
->>> r = s.get("https://localhost:5000/logs/get_json?host=owasp.org")
+>>> r = s.get("https://localhost:5000/logs/get_json?target=owasp.org&key=<your_api_key>")
 >>> print(json.dumps(json.loads(r.content), sort_keys=True, indent=4))
 [
     {

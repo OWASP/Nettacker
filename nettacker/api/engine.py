@@ -11,6 +11,7 @@ from types import SimpleNamespace
 from flask import Flask, jsonify
 from flask import request as flask_request
 from flask import render_template, abort, Response, make_response
+from werkzeug.serving import WSGIRequestHandler
 from werkzeug.utils import secure_filename
 
 from nettacker import logger
@@ -42,6 +43,9 @@ from nettacker.database.db import (
     logs_to_report_html,
 )
 from nettacker.database.models import Report
+
+# Monkey-patching the Server header to avoid exposing the actual version
+WSGIRequestHandler.version_string = lambda self: "API"
 
 log = logger.get_logger()
 
@@ -129,9 +133,22 @@ def limit_remote_addr():
 
 
 @app.after_request
+def set_security_headers(response):
+    """
+    Add common security headers to every response.
+    """
+    response.headers.setdefault("Content-Security-Policy", "upgrade-insecure-requests")
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+    response.headers.setdefault("X-XSS-Protection", "1; mode=block")
+    response.headers.setdefault("Referrer-Policy", "no-referrer-when-downgrade")
+    return response
+
+
+@app.after_request
 def access_log(response):
     """
-    if access log enabled, its writing the logs
+    Write to the access log file if enabled.
 
     Args:
         response: the flask response
@@ -230,7 +247,9 @@ def new_scan():
     """
     api_key_is_valid(app, flask_request)
     form_values = dict(flask_request.form)
+    # variables for future reference
     raw_report_path_filename = form_values.get("report_path_filename")
+    http_header = form_values.get("http_header")
     report_path_filename = sanitize_report_path_filename(raw_report_path_filename)
     if not report_path_filename:
         return jsonify(structure(status="error", msg="Invalid report filename")), 400
@@ -238,7 +257,13 @@ def new_scan():
     for key in nettacker_application_config:
         if key not in form_values:
             form_values[key] = nettacker_application_config[key]
-
+    # Handle HTTP headers
+    if http_header:
+        form_values["http_header"] = [
+            line.strip() for line in http_header.split("\n") if line.strip()
+        ]
+    # Handle service discovery
+    form_values["skip_service_discovery"] = form_values.get("skip_service_discovery", "") == "true"
     nettacker_app = Nettacker(api_arguments=SimpleNamespace(**form_values))
     app.config["OWASP_NETTACKER_CONFIG"]["options"] = nettacker_app.arguments
     thread = Thread(target=nettacker_app.run)

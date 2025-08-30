@@ -5,7 +5,11 @@ description = "Automates information gathering, vulnerability scanning and aids 
 license = "Apache-2.0"
 readme = "README.md"
 
-authors = ["OWASP Nettacker Contributors"]
+authors = ["OWASP Nettacker Contributors <nettacker-project@owasp.org>"]
+homepage = "https://owasp.org/nettacker"
+repository = "https://github.com/OWASP/Nettacker"
+documentation = "https://nettacker.readthedocs.io"
+
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
@@ -31,10 +35,6 @@ keywords = [
     "vulnerability-management",
     "vulnerability-scanner",
 ]
-
-homepage = "https://owasp.org/www-project-nettacker"
-repository = "https://github.com/OWASP/Nettacker"
-documentation = "https://github.com/OWASP/Nettacker/wiki"
 
 packages = [{ include = "nettacker"}]
 
@@ -64,10 +64,12 @@ texttable = "^1.7.0"
 zipp = "^3.19.1"
 uvloop = "^0.21.0"
 pymysql = "^1.1.1"
+impacket = "^0.11.0"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.16.1"
 ruff = ">=0.2.1,<0.8.0"
+pytest-asyncio = "^1.1.0"
 
 [tool.poetry.group.test.dependencies]
 coverage = "^7.3.2"
