@@ -234,6 +234,7 @@ def loader_side_effect(name, inputs):
     return mock_inst
 
 
+@patch("nettacker.core.module.find_events", return_value=[])
 @patch("nettacker.core.module.Thread")
 @patch("nettacker.core.module.importlib.import_module")
 @patch("nettacker.core.module.time.sleep", return_value=None)
@@ -243,15 +244,19 @@ def test_start_creates_threads_minimal(
     mock_sleep,
     mock_import_module,
     mock_thread_cls,
+    mock_find_events,
     options,
     module_args,
 ):
+    # Mock HttpEngine from the imported module
     fake_engine = MagicMock()
     mock_import_module.return_value = MagicMock(HttpEngine=MagicMock(return_value=fake_engine))
 
+    # Mock thread instances
     mock_thread_instance = MagicMock()
     mock_thread_cls.return_value = mock_thread_instance
 
+    # Create module with mocked attributes
     module = Module("test_module", options, **module_args)
     module.libraries = ["http"]
     module.discovered_services = {"http": [80]}
@@ -261,19 +266,23 @@ def test_start_creates_threads_minimal(
         "payloads": [
             {
                 "library": "http",
-                "steps": [[{"response": {}, "id": 1}], [{"response": {}, "id": 2}]],
+                "steps": [
+                    [{"response": {}, "id": 1}],
+                    [{"response": {}, "id": 2}],
+                ],
             }
         ]
     }
+
+    # Run
     module.start()
+
+    # Assert threads created twice
     assert mock_thread_cls.call_count == 2
 
+    # Collect actual IDs passed to Thread
     expected_ids = {1, 2}
-    actual_ids = set()
-
-    for _, kwargs in mock_thread_cls.call_args_list:
-        sub_step = kwargs["args"][0]
-        actual_ids.add(sub_step["id"])
+    actual_ids = {kwargs["args"][0]["id"] for _, kwargs in mock_thread_cls.call_args_list}
 
     assert actual_ids == expected_ids
     assert mock_thread_instance.start.call_count == 2
