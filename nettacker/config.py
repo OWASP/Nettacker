@@ -7,6 +7,7 @@ from nettacker.core.utils.common import now, generate_random_token
 
 CWD = Path.cwd()
 PACKAGE_PATH = Path(__file__).parent
+ROOT_PATH = Path(__file__).parent.parent
 
 
 @lru_cache(maxsize=128)
@@ -114,19 +115,19 @@ class PathConfig:
         a JSON contain the working, tmp and results path
     """
 
-    data_dir = CWD / ".nettacker/data"
-    new_database_file = CWD / ".nettacker/data/nettacker.db"
-    old_database_file = CWD / ".data/nettacker.db"
+    data_dir = ROOT_PATH / ".nettacker/data"
+    new_database_file = ROOT_PATH / ".nettacker/data/nettacker.db"
+    old_database_file = ROOT_PATH / ".data/nettacker.db"
     graph_dir = PACKAGE_PATH / "lib/graph"
-    home_dir = CWD
+    home_dir = ROOT_PATH
     locale_dir = PACKAGE_PATH / "locale"
     logo_file = PACKAGE_PATH / "logo.txt"
     module_protocols_dir = PACKAGE_PATH / "core/lib"
     modules_dir = PACKAGE_PATH / "modules"
     payloads_dir = PACKAGE_PATH / "lib/payloads"
     release_name_file = PACKAGE_PATH / "release_name.txt"
-    results_dir = CWD / ".nettacker/data/results"
-    tmp_dir = CWD / ".nettacker/data/tmp"
+    results_dir = ROOT_PATH / ".nettacker/data/results"
+    tmp_dir = ROOT_PATH / ".nettacker/data/tmp"
     web_static_dir = PACKAGE_PATH / "web/static"
     user_agents_file = PACKAGE_PATH / "lib/payloads/User-Agents/web_browsers_user_agents.txt"
 
