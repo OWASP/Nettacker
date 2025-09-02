@@ -181,7 +181,7 @@ class TestDatabase:
         assert result is True
 
     @patch("nettacker.database.db.messages", return_value="mocked fail message")
-    @patch("nettacker.database.db.logging.warn")
+    @patch("nettacker.database.db.logger.warn")
     def test_send_submit_query_sqlite_failure(self, mock_warn, mock_messages):
         def sqlite_execute_side_effect(query):
             if query == "COMMIT":
@@ -210,7 +210,7 @@ class TestDatabase:
         assert result is True
 
     @patch("nettacker.database.db.messages", return_value="mocked fail message")
-    @patch("nettacker.database.db.logging.warn")
+    @patch("nettacker.database.db.logger.warn")
     def test_send_submit_query_sqlalchemy_failure(self, mock_warn, mock_messages):
         mock_session = Mock()
         mock_session.commit.side_effect = [Exception("fail")] * 100
@@ -372,7 +372,7 @@ class TestDatabase:
         assert result is True
 
     @patch("nettacker.database.db.messages", return_value="invalid log")
-    @patch("nettacker.database.db.logging.warn")
+    @patch("nettacker.database.db.logger.warn")
     def test_log_not_dict(self, mock_warn, mock_messages):
         result = submit_logs_to_db("notadict")
         assert result is False
@@ -402,7 +402,7 @@ class TestDatabase:
 
     @patch("nettacker.database.db.Config.settings.retry_delay", 0)
     @patch("nettacker.database.db.Config.settings.max_retries", 1)
-    @patch("nettacker.database.db.logging.warn")
+    @patch("nettacker.database.db.logger.warn")
     @patch("nettacker.database.db.create_connection")
     def test_apsw_busy_error(self, mock_create_conn, mock_warn):
         mock_conn = Mock()
@@ -544,7 +544,7 @@ class TestDatabase:
         assert result is True
 
     @patch("nettacker.database.db.messages", return_value="invalid log")
-    @patch("nettacker.database.db.logging.warn")
+    @patch("nettacker.database.db.logger.warn")
     def test_temp_log_not_dict(self, mock_warn, mock_messages):
         result = submit_temp_logs_to_db("notadict")
         assert result is False
@@ -552,7 +552,7 @@ class TestDatabase:
 
     @patch("nettacker.database.db.Config.settings.retry_delay", 0)
     @patch("nettacker.database.db.Config.settings.max_retries", 1)
-    @patch("nettacker.database.db.logging.warn")
+    @patch("nettacker.database.db.logger.warn")
     @patch("nettacker.database.db.create_connection")
     def test_temp_log_busy_error(self, mock_create_conn, mock_warn):
         mock_conn = Mock()
@@ -687,7 +687,7 @@ class TestDatabase:
             result = find_temp_events(self.target, self.module, self.scan_id, self.event_name)
         assert result == []
 
-    @patch("nettacker.database.db.logging.warn")
+    @patch("nettacker.database.db.logger.warn")
     @patch("nettacker.database.db.messages", return_value="database fail")
     @patch("nettacker.database.db.create_connection")
     def test_sqlite_outer_exception(self, mock_create_conn, mock_messages, mock_warn):
@@ -732,15 +732,21 @@ class TestDatabase:
 
         result = find_temp_events("192.168.1.1", "port_scan", "scan_123", "event_1")
 
-        mock_cursor.execute.assert_called_with(
-            """
-                        SELECT event
-                        FROM temp_events
-                        WHERE target = ? AND module_name = ? AND scan_unique_id = ? AND event_name = ?
-                        LIMIT 1
-                    """,
-            ("192.168.1.1", "port_scan", "scan_123", "event_1"),
-        )
+        called_query, called_params = mock_cursor.execute.call_args[0]
+
+        expected_query = """
+            SELECT event
+            FROM temp_events
+            WHERE target = ? AND module_name = ? AND scan_unique_id = ? AND event_name = ?
+            LIMIT 1
+        """
+
+        # Normalize whitespace (collapse multiple spaces/newlines into one space)
+        def normalize(sql: str) -> str:
+            return " ".join(sql.split())
+
+        assert normalize(called_query) == normalize(expected_query)
+        assert called_params == ("192.168.1.1", "port_scan", "scan_123", "event_1")
         assert result == {"test": "data"}
 
     # -------------------------------------------------------
@@ -768,7 +774,7 @@ class TestDatabase:
         expected = ['{"event1": "data1"}', '{"event2": "data2"}']
         assert result == expected
 
-    @patch("nettacker.database.db.logging.warn")
+    @patch("nettacker.database.db.logger.warn")
     @patch("nettacker.database.db.create_connection")
     def test_find_events_sqlite_exception(self, mock_create_conn, mock_warn):
         mock_connection = Mock()
@@ -839,7 +845,7 @@ class TestDatabase:
         ]
         assert result == expected
 
-    @patch("nettacker.database.db.logging.warn")
+    @patch("nettacker.database.db.logger.warn")
     @patch("nettacker.database.db.create_connection")
     def test_select_reports_sqlite_exception(self, mock_create_conn, mock_warn):
         mock_connection = Mock()

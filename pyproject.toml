@@ -94,6 +94,9 @@ profile = "black"
 addopts = "--cov=nettacker --cov-config=pyproject.toml --cov-report term --cov-report xml --dist loadscope --no-cov-on-fail --numprocesses auto"
 asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
+markers = [
+    "asyncio: mark test as async"
+]
 
 [tool.ruff]
 line-length = 99
