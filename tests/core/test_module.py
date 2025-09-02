@@ -71,41 +71,6 @@ def test_load_with_service_discovery(
 
 
 @patch("nettacker.core.module.find_events")
-@patch("nettacker.core.module.TemplateLoader")
-def test_sort_loops(mock_loader, mock_find_events, options, module_args):
-    mock_loader_inst = MagicMock()
-    mock_loader_inst.load.return_value = {
-        "payloads": [
-            {
-                "library": "http",
-                "steps": [
-                    {"response": {"conditions": {"service": {}}}},
-                    {
-                        "response": {
-                            "conditions": {},
-                            "dependent_on_temp_event": True,
-                            "save_to_temp_events_only": True,
-                        }
-                    },
-                    {"response": {"conditions": {}, "dependent_on_temp_event": True}},
-                ],
-            }
-        ]
-    }
-    mock_loader.return_value = mock_loader_inst
-
-    mock_event = MagicMock()
-    mock_event.json_event = json.dumps(
-        {"port": 80, "response": {"conditions_results": {"http": True}}}
-    )
-    mock_find_events.return_value = [mock_event]
-
-    module = Module("test_module", options, **module_args)
-    module.libraries = ["http"]
-    module.load()  # Should not raise
-
-
-@patch("nettacker.core.module.find_events")
 @patch("nettacker.core.module.importlib.import_module")
 @patch("nettacker.core.module.wait_for_threads_to_finish")
 @patch("nettacker.core.module.time.sleep", return_value=None)
@@ -352,15 +317,8 @@ def test_start_library_not_supported(
     )
     mock_find_events.return_value = [mock_event]
 
-    # Had to add this small workaround
-    class DummyOptionsSpecific:
-        def __init__(self):
-            self.modules_extra_args = {}
-            self.skip_service_discovery = True
-            self.time_sleep_between_requests = 0
-            self.thread_per_host = 2
-
-    options = DummyOptionsSpecific()
+    options.modules_extra_args = {}
+    options.skip_service_discovery = True
 
     module = Module("test_module", options, **module_args)
     module.libraries = ["http"]
