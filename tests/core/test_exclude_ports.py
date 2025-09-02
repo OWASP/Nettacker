@@ -59,9 +59,12 @@ def test_load_with_service_discovery(
     }
     mock_loader.return_value = mock_loader_inst
 
-    mock_find_events.return_value = [
-        MagicMock(json_event='{"port": 80, "response": {"conditions_results": {"http": {}}}}')
-    ]
+    mock_event1 = MagicMock()
+    mock_event1.json_event = json.dumps(
+        {"port": 80, "response": {"conditions_results": {"http": {}}}}
+    )
+
+    mock_find_events.return_value = [mock_event1]
 
     module = Module("test_module", options, **module_args)
     module.load()
