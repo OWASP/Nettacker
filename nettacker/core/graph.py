@@ -134,10 +134,10 @@ def create_dd_specific_json(all_scan_logs):
         severity_justification = log.get("json_event", "").strip()
         service = log.get("target", "").strip()
         unique_id = log.get("scan_id", uuid.uuid4().hex)
-        print(f"\n\n This is all_module_severity_and_desc: {all_module_severity_and_desc} \n\n")
-        severity_raw = all_module_severity_and_desc[module_name].get("severity", 0)
-        description = all_module_severity_and_desc[module_name].get("desc", "")
 
+        metadata = all_module_severity_and_desc.get(module_name, {})
+        severity_raw = metadata.get("severity", 0)
+        description = metadata.get("desc", "")
         if severity_raw >= 9:
             severity = severity_mapping[5]
         elif severity_raw >= 7:
@@ -203,12 +203,15 @@ def create_sarif_report(all_scan_logs):
             "ruleId": log["module_name"],
             "message": {"text": log["event"]},
             "locations": [{"physicalLocation": {"artifactLocation": {"uri": log["target"]}}}],
-            "webRequest": {"properties": {"json_event": log["json_event"]}},
-            "properties": {"scan_id": log["scan_id"], "date": log["date"]},
+            "properties": {
+                "scan_id": log["scan_id"],
+                "date": log["date"],
+                "json_event": log["json_event"],
+            },
         }
         sarif_structure["runs"][0]["results"].append(sarif_result)
 
-    return str(json.dumps(sarif_structure, indent=2))
+    return json.dumps(sarif_structure, indent=2)
 
 
 def create_report(options, scan_id):

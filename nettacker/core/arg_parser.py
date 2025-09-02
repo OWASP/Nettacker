@@ -88,11 +88,11 @@ class ArgParser(ArgumentParser):
             module = f"{library}_{category}"
             contents = yaml.safe_load(TemplateLoader(module).open().split("payload:")[0])
             module_names[module] = contents["info"] if full_details else None
+            info = contents.get("info", {})
             all_module_severity_and_desc[module] = {
-                "severity": contents["info"]["severity"],
-                "desc": contents["info"]["description"],
+                "severity": info.get("severity", 0),
+                "desc": info.get("description", ""),
             }
-
             if len(module_names) == limit:
                 module_names["..."] = {}
                 break
