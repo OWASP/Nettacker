@@ -278,7 +278,7 @@ def submit_logs_to_db(log):
                     except Exception:
                         try:
                             if connection.in_transaction:
-                                cursor.execute("ROLLBACK")
+                                connection.execute("ROLLBACK")
                         except Exception:
                             pass
                         return False
@@ -286,7 +286,11 @@ def submit_logs_to_db(log):
                 logger.warn("All retries exhausted. Skipping this log.")
                 return True
             finally:
-                cursor.close()
+                try:
+                    cursor.close()
+                finally:
+                    connection.close()
+
         else:
             session.add(
                 HostsLog(
@@ -366,7 +370,7 @@ def submit_temp_logs_to_db(log):
                     except Exception:
                         try:
                             if connection.in_transaction:
-                                cursor.execute("ROLLBACK")
+                                connection.execute("ROLLBACK")
                         except Exception:
                             pass
                         return False
@@ -374,7 +378,10 @@ def submit_temp_logs_to_db(log):
                 logger.warn("All retries exhausted. Skipping this log.")
                 return True
             finally:
-                cursor.close()
+                try:
+                    cursor.close()
+                finally:
+                    connection.close()
         else:
             session.add(
                 TempEvents(
@@ -431,25 +438,16 @@ def find_temp_events(target, module_name, scan_id, event_name):
             return []
         return []
     else:
-        try:
-            for _ in range(1, 100):
-                try:
-                    return (
-                        session.query(TempEvents)
-                        .filter(
-                            TempEvents.target == target,
-                            TempEvents.module_name == module_name,
-                            TempEvents.scan_unique_id == scan_id,
-                            TempEvents.event_name == event_name,
-                        )
-                        .first()
-                    )
-                except Exception:
-                    time.sleep(0.1)
-        except Exception:
-            logger.warn(messages("database_connect_fail"))
-            return []
-        return []
+        return (
+            session.query(TempEvents)
+            .filter(
+                TempEvents.target == target,
+                TempEvents.module_name == module_name,
+                TempEvents.scan_unique_id == scan_id,
+                TempEvents.event_name == event_name,
+            )
+            .first()
+        )
 
 
 def find_events(target, module_name, scan_id):
