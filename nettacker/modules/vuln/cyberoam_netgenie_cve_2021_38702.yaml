@@ -6,10 +6,8 @@ info:
   reference: https://seclists.org/fulldisclosure/2021/Aug/20
   profiles:
     - vuln
-    - vulnerability
     - http
     - medium_severity
-    - cve_2021_38702
     - cve2021
     - cve
     - cyberoam

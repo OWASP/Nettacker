@@ -6,7 +6,6 @@ info:
   reference:
   profiles:
     - vuln
-    - information_gathering
     - http
     - low_severity
     - graphql
