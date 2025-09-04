@@ -375,7 +375,7 @@ python nettacker.py -i 192.168.1.1/24 -m *_scan,*_vuln
 
 ```
 python nettacker.py -i 192.168.1.1/24 --profile info
-python nettacker.py -i 192.168.1.1/24 --profile info,vulnerabilities
+python nettacker.py -i 192.168.1.1/24 --profile info,vuln
 python nettacker.py -i 192.168.1.1/24 --profile all
 ```
 
