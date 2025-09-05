@@ -8,7 +8,6 @@ info:
     - https://github.com/microsoft/omi
   profiles:
     - vuln
-    - vulnerability
     - http
     - critical_severity
     - cve2021

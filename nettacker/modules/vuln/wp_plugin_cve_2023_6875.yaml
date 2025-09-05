@@ -9,7 +9,6 @@ info:
     - https://www.cve.org/CVERecord?id=CVE-2023-6875
   profiles:
     - vuln
-    - vulnerability
     - http
     - critical_severity
     - cve2023

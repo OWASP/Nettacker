@@ -81,7 +81,7 @@ Method:
                         add extra args to pass to modules (e.g. --modules-extra-args "x_api_key=123&xyz_passwd=abc"
   --show-all-modules    show all modules and their information
   --profile PROFILES    select profile ['accela', 'adobe', 'apache', 'apache_ofbiz', 'apache_struts', 'atlassian',
-                        'aviatrix', 'backup', 'brute', 'brute_force']
+                        'aviatrix', 'backup', 'brute']
   --show-all-profiles   show all profiles and their information
   -x EXCLUDED_MODULES, --exclude-modules EXCLUDED_MODULES
                         choose scan method to exclude ['accela_cve_2021_34370_vuln', 'admin_scan',
@@ -229,7 +229,7 @@ usage: Nettacker [-L LANGUAGE] [-v] [--verbose-event] [-V] [-o REPORT_PATH_FILEN
                         add extra args to pass to modules (e.g. --modules-extra-args "x_api_key=123&xyz_passwd=abc"
   --show-all-modules    show all modules and their information
   --profile PROFILES    انتخاب پروفایل ['accela', 'adobe', 'apache', 'apache_ofbiz', 'apache_struts', 'atlassian',
-                        'aviatrix', 'backup', 'brute', 'brute_force']
+                        'aviatrix', 'backup', 'brute']
   --show-all-profiles   show all profiles and their information
   -x EXCLUDED_MODULES, --exclude-modules EXCLUDED_MODULES
                         انتخاب متود اسکن استثنا ['accela_cve_2021_34370_vuln', 'admin_scan',
@@ -374,8 +374,8 @@ python nettacker.py -i 192.168.1.1/24 -m *_scan,*_vuln
 * Use profiles for using all modules inside a given profile
 
 ```
-python nettacker.py -i 192.168.1.1/24 --profile information_gathering
-python nettacker.py -i 192.168.1.1/24 --profile information_gathering,vulnerabilities
+python nettacker.py -i 192.168.1.1/24 --profile info
+python nettacker.py -i 192.168.1.1/24 --profile info,vuln
 python nettacker.py -i 192.168.1.1/24 --profile all
 ```
 
@@ -411,43 +411,43 @@ python nettacker.py --show-all-modules
 
 
 
-[2021-08-31 17:42:06][+] http_options_enabled_vuln: name: http_options_enabled_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'low_severity']
-[2021-08-31 17:42:06][+] clickjacking_vuln: name: clickjacking_vuln, author: OWASP Nettacker Team, severity: 5, description: Clickjacking, also known as a "UI redress attack", is when an attacker uses multiple transparent or opaque layers to trick a user into clicking on a button, reference: https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html, profiles: ['vuln', 'vulnerability', 'http', 'medium_severity']
-[2021-08-31 17:42:06][+] wp_xmlrpc_bruteforce_vuln: name: wp_xmlrpc_bruteforce_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'low_severity', 'wordpress', 'wp']
-[2021-08-31 17:42:06][+] graphql_vuln: name: graphql_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'information_gathering', 'http', 'low_severity', 'graphql']
-[2021-08-31 17:42:06][+] content_security_policy_vuln: name: content_security_policy_vuln, author: OWASP Nettacker Team, severity: 3, description: Content-Security-Policy is the name of a HTTP response header that modern browsers use to enhance the security of the document (or web page). The Content-Security-Policy header allows you to restrict how resources such as JavaScript, CSS, or pretty much anything that the browser loads., reference: https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html, profiles: ['vuln', 'vulnerability', 'http', 'low_severity', 'csp']
-[2021-08-31 17:42:06][+] xdebug_rce_vuln: name: xdebug_rce_vuln, author: OWASP Nettacker Team, severity: 10, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'critical_severity']
-[2021-08-31 17:42:06][+] x_powered_by_vuln: name: x_powered_by_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'low_severity']
-[2021-08-31 17:42:06][+] wp_xmlrpc_pingback_vuln: name: wp_xmlrpc_pingback_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'wordpress', 'wp']
-[2021-08-31 17:42:06][+] http_cors_vuln: name: http_cors_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'low_severity']
-[2021-08-31 17:42:06][+] f5_cve_2020_5902_vuln: name: f5_cve_2020_5902_vuln, author: OWASP Nettacker Team, severity: 9, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'critical_severity', 'cve', 'f5']
-[2021-08-31 17:42:06][+] subdomain_takeover_vuln: name: subdomain_takeover_vuln, author: OWASP Nettacker Team, severity: 5, description: let us assume that example.com is the target and that the team running example.com have a bug bounty programme. While enumerating all of the subdomains belonging to example.com — a process that we will explore later — a hacker stumbles across subdomain.example.com, a subdomain pointing to GitHub pages. We can determine this by reviewing the subdomain's DNS records; in this example, subdomain.example.com has multiple A records pointing to GitHub's dedicated IP addresses for custom pages., reference: https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/02-Configuration_and_Deployment_Management_Testing/10-Test_for_Subdomain_Takeover, profiles: ['vuln', 'vulnerability', 'http', 'medium_severity', 'takeover']
-[2021-08-31 17:42:06][+] http_trace_enabled_vuln: name: http_trace_enabled_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'low_severity']
-[2021-08-31 17:42:06][+] http_cookie_vuln: name: http_cookie_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'low_severity']
-[2021-08-31 17:42:06][+] wp_xmlrpc_dos_vuln: name: wp_xmlrpc_dos_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'wordpress', 'wp']
-[2021-08-31 17:42:06][+] server_version_vuln: name: server_version_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'low_severity']
-[2021-08-31 17:42:06][+] x_xss_protection_vuln: name: x_xss_protection_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'low_severity']
-[2021-08-31 17:42:06][+] citrix_cve_2019_19781_vuln: name: citrix_cve_2019_19781_vuln, author: OWASP Nettacker Team, severity: 8, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'high_severity', 'cve', 'citrix']
-[2021-08-31 17:42:06][+] content_type_options_vuln: name: content_type_options_vuln, author: OWASP Nettacker Team, severity: 2, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'low_severity']
-[2021-08-31 17:42:06][+] apache_struts_vuln: name: apache_struts_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'low_severity', 'apache_struts']
-[2021-08-31 17:42:06][+] vbulletin_cve_2019_16759_vuln: name: vbulletin_cve_2019_16759_vuln, author: OWASP Nettacker Team, severity: 9, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'critical_severity', 'vbulletin', 'cve']
-[2021-08-31 17:42:06][+] msexchange_cve_2021_26855_vuln: name: msexchange_cve_2021_26855_vuln, author: OWASP Nettacker Team, severity: 9, description: None, reference: None, profiles: ['vuln', 'vulnerability', 'http', 'critical_severity', 'msexchange', 'cve']
-[2021-08-31 17:42:06][+] telnet_brute: name: telnet_brute, author: OWASP Nettacker Team, severity: 3, description: Telnet Bruteforcer, reference: None, profiles: ['brute', 'brute_force', 'telnet']
-[2021-08-31 17:42:06][+] ssh_brute: name: ssh_brute, author: OWASP Nettacker Team, severity: 3, description: SSH Bruteforcer, reference: None, profiles: ['brute', 'brute_force', 'ssh']
-[2021-08-31 17:42:06][+] smtp_brute: name: smtp_brute, author: OWASP Nettacker Team, severity: 3, description: SMTP Bruteforcer, reference: None, profiles: ['brute', 'brute_force', 'smtp']
-[2021-08-31 17:42:06][+] ftps_brute: name: ftps_brute, author: OWASP Nettacker Team, severity: 3, description: FTPS Bruteforcer, reference: None, profiles: ['brute', 'brute_force', 'ftp']
-[2021-08-31 17:42:06][+] smtps_brute: name: smtps_brute, author: OWASP Nettacker Team, severity: 3, description: SMTPS Bruteforcer, reference: None, profiles: ['brute', 'brute_force', 'smtp']
-[2021-08-31 17:42:06][+] ftp_brute: name: ftp_brute, author: OWASP Nettacker Team, severity: 3, description: FTP Bruteforcer, reference: None, profiles: ['brute', 'brute_force', 'ftp']
+[2021-08-31 17:42:06][+] http_options_enabled_vuln: name: http_options_enabled_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'http', 'low_severity']
+[2021-08-31 17:42:06][+] clickjacking_vuln: name: clickjacking_vuln, author: OWASP Nettacker Team, severity: 5, description: Clickjacking, also known as a "UI redress attack", is when an attacker uses multiple transparent or opaque layers to trick a user into clicking on a button, reference: https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html, profiles: ['vuln', 'http', 'medium_severity']
+[2021-08-31 17:42:06][+] wp_xmlrpc_bruteforce_vuln: name: wp_xmlrpc_bruteforce_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'http', 'low_severity', 'wordpress']
+[2021-08-31 17:42:06][+] graphql_vuln: name: graphql_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'http', 'low_severity', 'graphql']
+[2021-08-31 17:42:06][+] content_security_policy_vuln: name: content_security_policy_vuln, author: OWASP Nettacker Team, severity: 3, description: Content-Security-Policy is the name of a HTTP response header that modern browsers use to enhance the security of the document (or web page). The Content-Security-Policy header allows you to restrict how resources such as JavaScript, CSS, or pretty much anything that the browser loads., reference: https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html, profiles: ['vuln', 'http', 'low_severity', 'csp']
+[2021-08-31 17:42:06][+] xdebug_rce_vuln: name: xdebug_rce_vuln, author: OWASP Nettacker Team, severity: 10, description: None, reference: None, profiles: ['vuln', 'http', 'critical_severity']
+[2021-08-31 17:42:06][+] x_powered_by_vuln: name: x_powered_by_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'http', 'low_severity']
+[2021-08-31 17:42:06][+] wp_xmlrpc_pingback_vuln: name: wp_xmlrpc_pingback_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'http', 'wordpress']
+[2021-08-31 17:42:06][+] http_cors_vuln: name: http_cors_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'http', 'low_severity']
+[2021-08-31 17:42:06][+] f5_cve_2020_5902_vuln: name: f5_cve_2020_5902_vuln, author: OWASP Nettacker Team, severity: 9, description: None, reference: None, profiles: ['vuln', 'http', 'critical_severity', 'cve', 'f5']
+[2021-08-31 17:42:06][+] subdomain_takeover_vuln: name: subdomain_takeover_vuln, author: OWASP Nettacker Team, severity: 5, description: let us assume that example.com is the target and that the team running example.com have a bug bounty programme. While enumerating all of the subdomains belonging to example.com — a process that we will explore later — a hacker stumbles across subdomain.example.com, a subdomain pointing to GitHub pages. We can determine this by reviewing the subdomain's DNS records; in this example, subdomain.example.com has multiple A records pointing to GitHub's dedicated IP addresses for custom pages., reference: https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/02-Configuration_and_Deployment_Management_Testing/10-Test_for_Subdomain_Takeover, profiles: ['vuln', 'http', 'medium_severity', 'takeover']
+[2021-08-31 17:42:06][+] http_trace_enabled_vuln: name: http_trace_enabled_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'http', 'low_severity']
+[2021-08-31 17:42:06][+] http_cookie_vuln: name: http_cookie_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'http', 'low_severity']
+[2021-08-31 17:42:06][+] wp_xmlrpc_dos_vuln: name: wp_xmlrpc_dos_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'http', 'wordpress']
+[2021-08-31 17:42:06][+] server_version_vuln: name: server_version_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'http', 'low_severity']
+[2021-08-31 17:42:06][+] x_xss_protection_vuln: name: x_xss_protection_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'http', 'low_severity']
+[2021-08-31 17:42:06][+] citrix_cve_2019_19781_vuln: name: citrix_cve_2019_19781_vuln, author: OWASP Nettacker Team, severity: 8, description: None, reference: None, profiles: ['vuln', 'http', 'high_severity', 'cve', 'citrix']
+[2021-08-31 17:42:06][+] content_type_options_vuln: name: content_type_options_vuln, author: OWASP Nettacker Team, severity: 2, description: None, reference: None, profiles: ['vuln', 'http', 'low_severity']
+[2021-08-31 17:42:06][+] apache_struts_vuln: name: apache_struts_vuln, author: OWASP Nettacker Team, severity: 3, description: None, reference: None, profiles: ['vuln', 'http', 'low_severity', 'apache_struts']
+[2021-08-31 17:42:06][+] vbulletin_cve_2019_16759_vuln: name: vbulletin_cve_2019_16759_vuln, author: OWASP Nettacker Team, severity: 9, description: None, reference: None, profiles: ['vuln', 'http', 'critical_severity', 'vbulletin', 'cve']
+[2021-08-31 17:42:06][+] msexchange_cve_2021_26855_vuln: name: msexchange_cve_2021_26855_vuln, author: OWASP Nettacker Team, severity: 9, description: None, reference: None, profiles: ['vuln', 'http', 'critical_severity', 'msexchange', 'cve']
+[2021-08-31 17:42:06][+] telnet_brute: name: telnet_brute, author: OWASP Nettacker Team, severity: 3, description: Telnet Bruteforcer, reference: None, profiles: ['brute', 'telnet']
+[2021-08-31 17:42:06][+] ssh_brute: name: ssh_brute, author: OWASP Nettacker Team, severity: 3, description: SSH Bruteforcer, reference: None, profiles: ['brute', 'ssh']
+[2021-08-31 17:42:06][+] smtp_brute: name: smtp_brute, author: OWASP Nettacker Team, severity: 3, description: SMTP Bruteforcer, reference: None, profiles: ['brute', 'smtp']
+[2021-08-31 17:42:06][+] ftps_brute: name: ftps_brute, author: OWASP Nettacker Team, severity: 3, description: FTPS Bruteforcer, reference: None, profiles: ['brute', 'ftp']
+[2021-08-31 17:42:06][+] smtps_brute: name: smtps_brute, author: OWASP Nettacker Team, severity: 3, description: SMTPS Bruteforcer, reference: None, profiles: ['brute', 'smtp']
+[2021-08-31 17:42:06][+] ftp_brute: name: ftp_brute, author: OWASP Nettacker Team, severity: 3, description: FTP Bruteforcer, reference: None, profiles: ['brute', 'ftp']
 [2021-08-31 17:42:06][+] whatcms_scan: name: dir_scan, author: OWASP Nettacker Team, severity: 3, description: Directory, Backup finder, reference: https://www.zaproxy.org/docs/alerts/10095/, profiles: ['scan', 'http', 'backup', 'low_severity']
-[2021-08-31 17:42:06][+] icmp_scan: name: icmp_scan, author: OWASP Nettacker Team, severity: 0, description: check if host is alive through ICMP, reference: None, profiles: ['scan', 'information_gathering', 'infortmation', 'info', 'low_severity']
-[2021-08-31 17:42:06][+] subdomain_scan: name: subdomain_scan, author: OWASP Nettacker Team, severity: 0, description: Find subdomains using different sources on internet, reference: None, profiles: ['scan', 'information_gathering', 'infortmation', 'info', 'low_severity']
-[2021-08-31 17:42:06][+] port_scan: id: port_scan, author: OWASP Nettacker Team, severity: 0, description: Find open ports and services, reference: None, profiles: ['scan', 'http', 'information_gathering', 'infortmation', 'info', 'low_severity']
+[2021-08-31 17:42:06][+] icmp_scan: name: icmp_scan, author: OWASP Nettacker Team, severity: 0, description: check if host is alive through ICMP, reference: None, profiles: ['scan', 'info', 'low_severity']
+[2021-08-31 17:42:06][+] subdomain_scan: name: subdomain_scan, author: OWASP Nettacker Team, severity: 0, description: Find subdomains using different sources on internet, reference: None, profiles: ['scan', 'info', 'low_severity']
+[2021-08-31 17:42:06][+] port_scan: id: port_scan, author: OWASP Nettacker Team, severity: 0, description: Find open ports and services, reference: None, profiles: ['scan', 'http', 'info', 'low_severity']
 [2021-08-31 17:42:06][+] admin_scan: name: admin_scan, author: OWASP Nettacker Team, severity: 3, description: Admin Directory Finder, reference: None, profiles: ['scan', 'http', 'backup', 'low_severity']
 [2021-08-31 17:42:06][+] dir_scan: name: dir_scan, author: OWASP Nettacker Team, severity: 3, description: Directory, Backup finder, reference: https://www.zaproxy.org/docs/alerts/10095/, profiles: ['scan', 'http', 'backup', 'low_severity']
 [2021-08-31 17:42:06][+] viewdns_reverse_iplookup_scan: name: viewdns_reverse_iplookup_scan, author: OWASP Nettacker Team, severity: 3, description: reverse lookup for target ip, reference: None, profiles: ['scan', 'http', 'backup', 'low_severity', 'reverse_lookup']
 [2021-08-31 17:42:06][+] drupal_version_scan: name: drupal_version_scan, author: OWASP Nettacker Team, severity: 3, description: fetch drupal version from target, reference: None, profiles: ['scan', 'http', 'backup', 'low_severity', 'drupal']
 [2021-08-31 17:42:06][+] joomla_version_scan: name: drupal_version_scan, author: OWASP Nettacker Team, severity: 3, description: fetch drupal version from target, reference: None, profiles: ['scan', 'http', 'backup', 'low_severity', 'drupal']
-[2021-08-31 17:42:06][+] wordpress_version_scan: name: wordpress_version_scan, author: OWASP Nettacker Team, severity: 3, description: Directory, Backup finder, reference: None, profiles: ['scan', 'http', 'backup', 'low_severity', 'wp', 'wordpress']
+[2021-08-31 17:42:06][+] wordpress_version_scan: name: wordpress_version_scan, author: OWASP Nettacker Team, severity: 3, description: Directory, Backup finder, reference: None, profiles: ['scan', 'http', 'backup', 'low_severity', 'wordpress']
 [2021-08-31 17:42:06][+] pma_scan: name: pma_scan, author: OWASP Nettacker Team, severity: 3, description: php my admin finder, reference: None, profiles: ['scan', 'http', 'backup', 'low_severity']
 [2021-08-31 17:42:06][+] all:
 ```
@@ -470,8 +470,6 @@ info:
   reference:
   profiles:
     - scan
-    - information_gathering
-    - infortmation
     - info
     - low_severity
     - asset_discovery(new added profile)

@@ -7,12 +7,10 @@ info:
     - https://github.com/MobiusBinary/CVE-2021-41648
   profiles:
     - vuln
-    - vulnerability
     - http
     - high_severity
     - cve2021
     - cve
-    - puneethreddyhc
     - sqli
 
 payloads:
