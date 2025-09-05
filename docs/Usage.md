@@ -203,7 +203,7 @@ usage: Nettacker [-L LANGUAGE] [-v] [--verbose-event] [-V] [-o REPORT_PATH_FILEN
   --verbose-event       enable verbose event to see state of each thread
   -V, --version         نمایش ورژن نرم افزار
   -o REPORT_PATH_FILENAME, --output REPORT_PATH_FILENAME
-                        ذخیره کردن کل لاگ ها در فایل (result.txt، result.html، results.json, results.sarif, results.dd.json)
+                        ذخیره کردن کل لاگ ها در فایل (results.txt، results.html، results.csv, results.json, results.sarif, results.dd.json)
   --graph GRAPH_NAME    ساخت گراف از همه فعالیت ها و اطلاعات، شما باید از خروجی HTML استفاده کنید. گراف های در دسترس:
                         ['d3_tree_v1_graph', 'd3_tree_v2_graph']
   -h, --help            نشان دادن منوی کمک Nettacker
