@@ -657,7 +657,7 @@ The default database is SQLite. You can, however, configure the db to your likin
 
 ## SQLite configuration
 
-The configruations are for a SQLite wrapper called **APSW** (Another Python SQLite Wrapper). The configurations can be found inside `nettacker/config.py` file under the `DBConfig` class. 
+The configurations below are for a SQLite wrapper called **APSW** (Another Python SQLite Wrapper). The configurations can be found inside `nettacker/config.py` file under the `DBConfig` class. 
 
 
     engine = "sqlite"
