@@ -84,7 +84,7 @@ class DbConfig(ConfigBase):
         DATABASE as the name of the db user wants
         Set the journal_mode (default="WAL") and
         synchronous_mode (default="NORMAL"). Rest
-        of the fields can be left emptyAdd commentMore actions
+        of the fields can be left empty
         This is the default database:
         str(CWD / ".data/nettacker.db")
     For mysql users:
