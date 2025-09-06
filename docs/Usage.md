@@ -55,7 +55,7 @@ Engine:
   --verbose-event       enable verbose event to see state of each thread
   -V, --version         show software version
   -o REPORT_PATH_FILENAME, --output REPORT_PATH_FILENAME
-                        save all logs in file (results.txt, results.csv, results.html, results.json)
+                        save all logs in file (results.txt, results.csv, results.html, results.json, results.sarif, results.dd.json)
   --graph GRAPH_NAME    build a graph of all activities and information, you must use HTML output. available graphs:
                         ['d3_tree_v2_graph', 'd3_tree_v1_graph']
   -h, --help            Show Nettacker Help Menu
@@ -203,7 +203,7 @@ usage: Nettacker [-L LANGUAGE] [-v] [--verbose-event] [-V] [-o REPORT_PATH_FILEN
   --verbose-event       enable verbose event to see state of each thread
   -V, --version         نمایش ورژن نرم افزار
   -o REPORT_PATH_FILENAME, --output REPORT_PATH_FILENAME
-                        ذخیره کردن کل لاگ ها در فایل (result.txt، result.html، results.json)
+                        ذخیره کردن کل لاگ ها در فایل (results.txt، results.html، results.csv, results.json, results.sarif, results.dd.json)
   --graph GRAPH_NAME    ساخت گراف از همه فعالیت ها و اطلاعات، شما باید از خروجی HTML استفاده کنید. گراف های در دسترس:
                         ['d3_tree_v1_graph', 'd3_tree_v2_graph']
   -h, --help            نشان دادن منوی کمک Nettacker
@@ -527,6 +527,22 @@ def nettacker_user_application_config():
         "show_all_profiles": False,
         "modules_extra_args": None
     }
+```
+
+* Nettacker supports five different output types for the final report
+
+1. HTML (.html) -> This also renders the graph
+2. CSV (.csv)
+3. JSON (.json)
+4. SARIF (.sarif)
+5. DefectDojo compatible json (.dd.json)
+
+These output types will help with integration with different softwares and dashboards. To set the output mode use the `-o` or `--output` flag
+
+```
+python nettacker.py -i 192.168.1.1/24 --profile information_gathering -o report.sarif
+python nettacker.py -i 192.168.1.1/24 --profile information_gathering -o report.json
+python nettacker.py -i 192.168.1.1/24 --profile information_gathering --output report.dd.json
 ```
 
 # API and WebUI
