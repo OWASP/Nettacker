@@ -86,7 +86,7 @@ class DbConfig(ConfigBase):
         synchronous_mode (default="NORMAL"). Rest
         of the fields can be left empty
         This is the default database:
-        str(CWD / ".data/nettacker.db")
+        str(CWD / ".nettacker/data/nettacker.db")
     For mysql users:
         fill the ENGINE name of the DB as mysql
         NAME as the name of the database you want to create
