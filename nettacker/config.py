@@ -148,6 +148,9 @@ class DefaultSettings(ConfigBase):
     parallel_module_scan = 1
     passwords = None
     passwords_list = None
+    use_apsw_for_sqlite = (
+        False  # Setting to toggle between APSW and SQLAlchemy for sqlite databases
+    )
     ping_before_scan = False
     ports = None
     profiles = None

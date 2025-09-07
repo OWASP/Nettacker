@@ -36,6 +36,7 @@ def db_inputs(connection_type):
             **context
         ),
         "mysql": "mysql+pymysql://{username}:{password}@{host}:{port}/{name}".format(**context),
+        "sqlite": "sqlite:///{name}".format(**context),
     }[connection_type]
 
 
@@ -47,7 +48,7 @@ def create_connection():
     for mysql and postgresql, it returns the connection or False if
     connection failed.
     """
-    if Config.db.engine.startswith("sqlite"):
+    if Config.db.engine.startswith("sqlite") and Config.settings.use_apsw_for_sqlite:
         if apsw is None:
             raise ImportError("APSW is required for SQLite backend.")
         # In case of sqlite, the name parameter is the database path
@@ -68,11 +69,14 @@ def create_connection():
             raise
 
     else:
-        # Both MySQL and PostgreSQL don't need a
-        # connect_args value for check_same_thread
+        connection_args = {}
+
+        if Config.db.engine.startswith("sqlite"):
+            connection_args["check_same_thread"] = False
+
         db_engine = create_engine(
             db_inputs(Config.db.engine),
-            connect_args={},
+            connect_args=connection_args,
             pool_size=50,
             pool_pre_ping=True,
         )
