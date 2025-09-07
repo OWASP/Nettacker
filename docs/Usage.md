@@ -672,6 +672,8 @@ The configurations below are for a SQLite wrapper called **APSW** (Another Pytho
 
 These are the default and recommended settings. Feel free to play around and change them according to need. To use SQLite database, ensure that the `engine` value is set to `sqlite` and the `name` is the path to your database. The `journal_mode` and `synchronous_mode` are chosen to be optimal for multithreaded I/O operations.
 
+> Note: You can choose to use a lite wrapper for Sqlite called APSW by setting the `use_apsw_for_sqlite` parameter inside config to True for performance enhancements.
+
 ## MySQL configuration:
 
 The MySQL database can be configured in `nettacker/config.py` file under the `DBConfig` class. Here is a sample configuration:
