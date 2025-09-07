@@ -128,7 +128,7 @@ def create_dd_specific_json(all_scan_logs):
 
     for log in all_scan_logs:
         module_name = log["module_name"].strip()
-        date = log["date"].split()[0].strip()
+        date = datetime.strptime(log["date"], "%Y-%m-%d %H:%M:%S.%f").strftime("%m/%d/%Y")
         port = str(log.get("port", "")).strip()
         impact = log.get("event", "").strip()
         severity_justification = log.get("json_event", "").strip()
