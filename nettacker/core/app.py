@@ -66,7 +66,7 @@ class Nettacker(ArgParser):
         log.reset_color()
 
     def check_dependencies(self):
-        if sys.platform not in {"darwin", "linux"}:
+        if sys.platform not in {"darwin", "linux", "freebsd13", "freebsd14", "freebsd15"}:
             die_failure(_("error_platform"))
 
         try:
