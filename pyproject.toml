@@ -65,7 +65,7 @@ zipp = "^3.19.1"
 uvloop = "^0.21.0"
 pymysql = "^1.1.1"
 impacket = "^0.11.0"
-
+apsw = "^3.50.0.0"
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.16.1"
 ruff = ">=0.2.1,<0.13.0"
@@ -94,6 +94,9 @@ profile = "black"
 addopts = "--cov=nettacker --cov-config=pyproject.toml --cov-report term --cov-report xml --dist loadscope --no-cov-on-fail --numprocesses auto"
 asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
+markers = [
+    "asyncio: mark test as async"
+]
 
 [tool.ruff]
 line-length = 99
