@@ -1073,6 +1073,11 @@ def search_logs(page, query):
             connection.close()
 
         except Exception:
+            try:
+                cursor.close()
+                connection.close()
+            except Exception:
+                pass
             return structure(status="error", msg="database error!")
 
         if len(selected) == 0:
