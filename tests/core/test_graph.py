@@ -130,7 +130,7 @@ def test_create_report_html(
         {"date": "now", "target": "x", "module_name": "mod", "port": 80, "json_event": "{}"}
     ],
 )
-@patch("builtins.open", new_callable=mock_open)
+@patch("nettacker.core.graph.Path.open", new_callable=mock_open)
 @patch("nettacker.core.graph.submit_report_to_db")
 def test_json_report(mock_submit, mock_open_file, mock_get_logs):
     options = MagicMock()
@@ -148,7 +148,7 @@ def test_json_report(mock_submit, mock_open_file, mock_get_logs):
     ],
 )
 @patch("csv.DictWriter")
-@patch("builtins.open", new_callable=mock_open)
+@patch("nettacker.core.graph.Path.open", new_callable=mock_open)
 @patch("nettacker.core.graph.submit_report_to_db")
 def test_csv_report(mock_submit, mock_open_file, mock_csv_writer, mock_get_logs):
     options = MagicMock()
@@ -168,7 +168,7 @@ def test_csv_report(mock_submit, mock_open_file, mock_csv_writer, mock_get_logs)
     ],
 )
 @patch("nettacker.core.graph.build_text_table", return_value="text table")
-@patch("builtins.open", new_callable=mock_open)
+@patch("nettacker.core.graph.Path.open", new_callable=mock_open)
 @patch("nettacker.core.graph.submit_report_to_db")
 def test_text_report(mock_submit, mock_open_file, mock_build_text, mock_get_logs):
     options = MagicMock()
@@ -182,7 +182,7 @@ def test_text_report(mock_submit, mock_open_file, mock_build_text, mock_get_logs
 @patch("nettacker.core.graph.get_logs_by_scan_id")
 @patch("nettacker.core.graph.get_options_by_scan_id")
 @patch("nettacker.core.graph.build_compare_report", return_value="<html-report>")
-@patch("nettacker.core.graph.open", new_callable=mock_open)
+@patch("nettacker.core.graph.Path.open", new_callable=mock_open)
 @patch("nettacker.core.graph.os.path.normpath", side_effect=lambda x: x)
 @patch("nettacker.core.graph.os.path.join", side_effect=lambda *args: "/".join(args))
 @patch("nettacker.core.graph.create_compare_text_table", return_value="text-report")
@@ -267,7 +267,7 @@ def test_permission_error(mock_join, mock_norm, mock_opts, mock_logs):
 @patch("nettacker.core.graph.get_logs_by_scan_id")
 @patch("nettacker.core.graph.get_options_by_scan_id")
 @patch("nettacker.core.graph.create_compare_text_table", return_value="some-text")
-@patch("nettacker.core.graph.open", new_callable=mock_open)
+@patch("nettacker.core.graph.Path.open", new_callable=mock_open)
 def test_dict_options(mock_open_file, mock_text, mock_opts, mock_logs):
     dummy_log = {
         "target": "1.1.1.1",

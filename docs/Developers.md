@@ -19,6 +19,7 @@ ________
 
 These are the guidelines you need to keep in mind while contributing:
 
+* Start by familiarising yourself with the Nettacker Codebase: [Codebase Overview](CodebaseOverview.md)
 * Use the automated checks: run `make pre-commit` and `make test`
 * Thoroughly test your code locally.
 * Be sure to add/update related documentation.
@@ -44,8 +45,8 @@ OWASP Nettacker is using multi-language libraries (default English) to create a 
 
 In some cases language library does not exist, you can create a new file and add it to the framework.
 
-* 1- Goto `lib/messages`
-* 2- Name your message library e.g. `fa.yaml`
+* 1- Goto `nettacker/locale`
+* 2- Name your message library in accordance with the ISO two-letter code e.g. `fa.yaml`
 * 3- Copy the default language lib (`en.yaml`) and start your translation.
 * 4- **Please notice that you should not change the key-value like `scan_started`, `options` and etc. you just need to modify the Values.**
 
@@ -59,7 +60,7 @@ To contribute to the existing libraries, You may go to `lib/messages` select the
 
 # Contribute to Modules
 
-Modules exist in path `/modules/module_category`. Currently, we have three categories (scan, brute, vuln). if you need to add more just create a directory with a name! To start a new module you should understand what kind of protocol you want to use. The list of protocols and module functionalities are in `core/module_protocols`. To understand how they work read the below example.
+Modules exist in path `nettacker/modules/module_category`. Currently, we have three categories (scan, brute, vuln). if you need to add more just create a directory with a name! To start a new module you should understand what kind of protocol you want to use. The list of protocols and module functionalities are in `core/module_protocols`. To understand how they work read the below example.
 
 ```yaml
 info: # this section is to store information about module
