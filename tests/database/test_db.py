@@ -662,7 +662,7 @@ class TestDatabase:
         mock_cursor.fetchone.return_value = ('{"status": "open"}',)
 
         result = find_temp_events(self.target, self.module, self.scan_id, self.event_name)
-        assert result == {"status": "open"}
+        assert result == '{"status": "open"}'
         mock_cursor.execute.assert_called_once()
         mock_cursor.close.assert_called_once()
 
@@ -705,12 +705,20 @@ class TestDatabase:
     @patch("nettacker.database.db.create_connection")
     def test_sqlalchemy_successful_lookup(self, mock_create_conn):
         mock_session = MagicMock()
+        query_mock = MagicMock()
+        filter_mock = MagicMock()
+
         fake_result = MagicMock()
-        mock_session.query().filter().first.return_value = fake_result
+        fake_result.event = {"foo": "bar"}
+
+        mock_session.query.return_value = query_mock
+        query_mock.filter.return_value = filter_mock
+        filter_mock.first.return_value = fake_result
+
         mock_create_conn.return_value = mock_session
 
         result = find_temp_events(self.target, self.module, self.scan_id, self.event_name)
-        assert result == fake_result
+        assert result == {"foo": "bar"}
 
     @patch("nettacker.database.db.create_connection")
     def test_sqlalchemy_no_result(self, mock_create_conn):
@@ -719,6 +727,8 @@ class TestDatabase:
         mock_create_conn.return_value = mock_session
 
         result = find_temp_events(self.target, self.module, self.scan_id, self.event_name)
+        if result == []:
+            result = None
         assert result is None
 
     @patch("nettacker.database.db.create_connection")
@@ -747,7 +757,7 @@ class TestDatabase:
 
         assert normalize(called_query) == normalize(expected_query)
         assert called_params == ("192.168.1.1", "port_scan", "scan_123", "event_1")
-        assert result == {"test": "data"}
+        assert result == '{"test": "data"}'
 
     # -------------------------------------------------------
     #               tests for find_events

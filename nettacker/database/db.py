@@ -165,6 +165,7 @@ def submit_report_to_db(event):
             return False
         finally:
             cursor.close()
+            connection.close()
     else:
         session.add(
             Report(
@@ -216,6 +217,7 @@ def remove_old_logs(options):
             return False
         finally:
             cursor.close()
+            connection.close()
     else:
         session.query(HostsLog).filter(
             HostsLog.target == options["target"],
@@ -290,10 +292,8 @@ def submit_logs_to_db(log):
                 logger.warn("All retries exhausted. Skipping this log.")
                 return True
             finally:
-                try:
-                    cursor.close()
-                finally:
-                    connection.close()
+                cursor.close()
+                connection.close()
 
         else:
             session.add(
@@ -382,10 +382,8 @@ def submit_temp_logs_to_db(log):
                 logger.warn("All retries exhausted. Skipping this log.")
                 return True
             finally:
-                try:
-                    cursor.close()
-                finally:
-                    connection.close()
+                cursor.close()
+                connection.close()
         else:
             session.add(
                 TempEvents(
@@ -434,15 +432,16 @@ def find_temp_events(target, module_name, scan_id, event_name):
 
             row = cursor.fetchone()
             cursor.close()
+            connection.close()
             if row:
-                return json.loads(row[0])
+                return row[0]
             return []
         except Exception:
             logger.warn(messages("database_connect_fail"))
             return []
         return []
     else:
-        return (
+        result = (
             session.query(TempEvents)
             .filter(
                 TempEvents.target == target,
@@ -452,6 +451,8 @@ def find_temp_events(target, module_name, scan_id, event_name):
             )
             .first()
         )
+
+        return result.event if result else []
 
 
 def find_events(target, module_name, scan_id):
@@ -481,6 +482,7 @@ def find_events(target, module_name, scan_id):
 
             rows = cursor.fetchall()
             cursor.close()
+            connection.close()
             if rows:
                 return [json.dumps((json.loads(row[0]))) for row in rows]
             return []
@@ -532,6 +534,7 @@ def select_reports(page):
             rows = cursor.fetchall()
 
             cursor.close()
+            connection.close()
             for row in rows:
                 tmp = {
                     "id": row[0],
@@ -588,6 +591,7 @@ def get_scan_result(id):
 
         row = cursor.fetchone()
         cursor.close()
+        connection.close()
         if row:
             filename = row[0]
             try:
@@ -685,6 +689,7 @@ def last_host_logs(page):
                     }
                 )
             cursor.close()
+            connection.close()
             return hosts
 
         except Exception:
@@ -758,6 +763,7 @@ def get_logs_by_scan_id(scan_id):
         rows = cursor.fetchall()
 
         cursor.close()
+        connection.close()
         return [
             {
                 "scan_id": row[0],
@@ -807,6 +813,7 @@ def get_options_by_scan_id(scan_id):
         )
         rows = cursor.fetchall()
         cursor.close()
+        connection.close()
         if rows:
             return [{"options": row[0]} for row in rows]
 
@@ -842,6 +849,7 @@ def logs_to_report_json(target):
             )
             rows = cursor.fetchall()
             cursor.close()
+            connection.close()
             if rows:
                 for log in rows:
                     data = {
@@ -899,6 +907,7 @@ def logs_to_report_html(target):
 
         rows = cursor.fetchall()
         cursor.close()
+        connection.close()
         logs = [
             {
                 "date": log[0],
@@ -1061,6 +1070,7 @@ def search_logs(page, query):
 
                 selected.append(tmp)
             cursor.close()
+            connection.close()
 
         except Exception:
             return structure(status="error", msg="database error!")
