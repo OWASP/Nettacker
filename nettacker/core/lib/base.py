@@ -52,7 +52,7 @@ class BaseEngine(ABC):
             while True:
                 event = find_temp_events(target, module_name, scan_id, event_name)
                 if event:
-                    events.append(json.loads(event.event)["response"]["conditions_results"])
+                    events.append(json.loads(event)["response"]["conditions_results"])
                     break
                 time.sleep(0.1)
         return events
