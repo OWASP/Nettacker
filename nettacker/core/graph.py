@@ -373,7 +373,7 @@ def create_compare_report(options, scan_id):
 
     base_path = str(nettacker_path_config.results_dir)
     compare_report_path_filename = sanitize_path(compare_report_path_filename)
-    fullpath = os.path.normpath(os.path.join(base_path, compare_report_path_filename))
+    fullpath = str(Path(base_path) / compare_report_path_filename)
 
     if not fullpath.startswith(base_path):
         raise PermissionError

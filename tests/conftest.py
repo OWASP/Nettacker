@@ -1,9 +1,9 @@
 import sys
-from os.path import abspath, dirname, join
+from pathlib import Path
 
-project_root = dirname(dirname(__file__))
-nettacker_dir = abspath(join(project_root, "nettacker"))
-tests_dir = abspath(join(project_root, "tests"))
+project_root = Path(__file__).parent.parent
+nettacker_dir = str(project_root / "nettacker")
+tests_dir = str(project_root / "tests")
 
 sys.path.insert(0, nettacker_dir)
 sys.path.insert(1, tests_dir)
