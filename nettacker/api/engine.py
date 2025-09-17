@@ -1,10 +1,10 @@
 import csv
 import json
 import multiprocessing
-import os
 import random
 import string
 import time
+from pathlib import Path
 from threading import Thread
 from types import SimpleNamespace
 
@@ -187,8 +187,8 @@ def get_statics(path):
     """
     static_types = mime_types()
     return Response(
-        get_file(os.path.join(Config.path.web_static_dir, path)),
-        mimetype=static_types.get(os.path.splitext(path)[1], "text/html"),
+        get_file(Config.path.web_static_dir / path),
+        mimetype=static_types.get(Path(path).suffix, "text/html"),
     )
 
 
@@ -220,7 +220,7 @@ def sanitize_report_path_filename(report_path_filename):
     Returns:
         the sanitized report path filename
     """
-    filename = secure_filename(os.path.basename(report_path_filename))
+    filename = secure_filename(Path(report_path_filename).name)
     if not filename:
         return False
     # Define a list or tuple of valid extensions
@@ -391,7 +391,7 @@ def get_result_content():
 
     return Response(
         file_content,
-        mimetype=mime_types().get(os.path.splitext(filename)[1], "text/plain"),
+        mimetype=mime_types().get(Path(filename).suffix, "text/plain"),
         headers={"Content-Disposition": "attachment;filename=" + filename.split("/")[-1]},
     )
 
