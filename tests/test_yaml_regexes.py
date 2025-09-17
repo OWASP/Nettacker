@@ -1,5 +1,6 @@
 import os
 import re
+from pathlib import Path
 
 import pytest
 import yaml
@@ -14,7 +15,7 @@ def get_yaml_files():
     for base in BASE_DIRS:
         for file in os.listdir(base):
             if file.endswith(".yaml"):
-                yield os.path.join(base, file)
+                yield str(Path(base) / file)
 
 
 def load_yaml(file_path):
@@ -77,7 +78,7 @@ def test_yaml_regexes_valid(yaml_file):
     if payloads[0].get("library") == "http":
         regexes = extract_http_regexes(payloads)
     elif payloads[0].get("library") == "socket":
-        file_name = os.path.basename(yaml_file)
+        file_name = Path(yaml_file).name
         regexes = extract_socket_regexes(file_name, payloads)
     else:
         pytest.skip(f"Unknown library type in {yaml_file}")
