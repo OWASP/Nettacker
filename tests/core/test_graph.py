@@ -183,13 +183,9 @@ def test_text_report(mock_submit, mock_open_file, mock_build_text, mock_get_logs
 @patch("nettacker.core.graph.get_options_by_scan_id")
 @patch("nettacker.core.graph.build_compare_report", return_value="<html-report>")
 @patch("nettacker.core.graph.Path.open", new_callable=mock_open)
-@patch("nettacker.core.graph.os.path.normpath", side_effect=lambda x: x)
-@patch("nettacker.core.graph.os.path.join", side_effect=lambda *args: "/".join(args))
 @patch("nettacker.core.graph.create_compare_text_table", return_value="text-report")
 def test_html_json_csv_text(
     mock_text_table,
-    mock_join,
-    mock_norm,
     mock_open_file,
     mock_build_html,
     mock_get_opts,
@@ -247,9 +243,7 @@ def test_no_comparison_logs(mock_logs):
 
 @patch("nettacker.core.graph.get_logs_by_scan_id")
 @patch("nettacker.core.graph.get_options_by_scan_id")
-@patch("nettacker.core.graph.os.path.normpath", side_effect=lambda x: "/etc/passwd")
-@patch("nettacker.core.graph.os.path.join", side_effect=lambda *args: "/etc/passwd")
-def test_permission_error(mock_join, mock_norm, mock_opts, mock_logs):
+def test_permission_error(mock_opts, mock_logs):
     dummy_log = {
         "target": "1.1.1.1",
         "module_name": "mod",

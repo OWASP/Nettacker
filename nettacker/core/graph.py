@@ -2,7 +2,6 @@ import csv
 import html
 import importlib
 import json
-import os
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -371,11 +370,11 @@ def create_compare_report(options, scan_id):
             else generate_compare_filepath(scan_id)
         )
 
-    base_path = str(nettacker_path_config.results_dir)
+    base_path = nettacker_path_config.results_dir
     compare_report_path_filename = sanitize_path(compare_report_path_filename)
-    fullpath = os.path.normpath(os.path.join(base_path, compare_report_path_filename))
+    fullpath = (base_path / compare_report_path_filename).resolve()
 
-    if not fullpath.startswith(base_path):
+    if not str(fullpath).startswith(str(base_path.resolve())):
         raise PermissionError
 
     if (len(fullpath) >= 5 and fullpath[-5:] == ".html") or (
