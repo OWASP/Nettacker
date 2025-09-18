@@ -446,7 +446,9 @@ def sanitize_path(path):
 
 
 def generate_compare_filepath(scan_id):
-    return "/report_compare_{date_time}_{scan_id}.json".format(
+    from pathlib import Path
+    filename = "report_compare_{date_time}_{scan_id}.json".format(
         date_time=now(format="%Y_%m_%d_%H_%M_%S"),
         scan_id=scan_id,
     )
+    return str(Path("/") / filename)
