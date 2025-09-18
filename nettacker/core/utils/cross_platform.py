@@ -81,9 +81,13 @@ class CrossPlatformPathHandler:
             str: Path with normalized separators
         """
         if platform.system() == "Windows":
+            # On Windows, pathlib handles this naturally
             return str(Path(path))
         else:
-            return Path(path).as_posix()
+            # On Unix-like systems, manually convert backslashes to forward slashes
+            # because pathlib treats backslashes as valid filename characters
+            normalized_path = path.replace('\\', '/')
+            return str(Path(normalized_path))
     
     @staticmethod
     def generate_safe_filename(filename: str, replacement_char: str = "_") -> str:
@@ -97,11 +101,17 @@ class CrossPlatformPathHandler:
         Returns:
             str: Safe filename for current platform
         """
-        # Common invalid characters across platforms
-        invalid_chars = '<>:"|?*\0'
-        if platform.system() != "Windows":
-            # On Unix-like systems, only null byte and forward slash are truly invalid
-            invalid_chars = '\0/'
+        # Start with common invalid characters
+        invalid_chars = '<>:"|?*\0/'
+        
+        # On Windows, these are additional restrictions, on Unix we're more permissive
+        if platform.system() == "Windows":
+            # Windows has the most restrictions
+            invalid_chars = '<>:"|?*\0/\\'
+        else:
+            # Unix-like systems: be conservative and sanitize common problematic chars
+            # but allow more flexibility
+            invalid_chars = '<>:"|?*\0'
         
         safe_name = filename
         
