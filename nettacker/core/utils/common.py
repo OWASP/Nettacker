@@ -13,6 +13,7 @@ import time
 from itertools import product
 
 from nettacker import logger
+from nettacker.core.utils.path_utils import create_repeater_key_name, safe_join_path
 
 log = logger.get_logger()
 
@@ -165,7 +166,7 @@ def find_args_value(args_name):
 
 
 def re_address_repeaters_key_name(key_name):
-    return "".join(["['" + _key + "']" for _key in key_name.split("/")[:-1]])
+    return create_repeater_key_name(key_name)
 
 
 def generate_new_sub_steps(sub_steps, data_matrix, arrays):
@@ -197,7 +198,7 @@ def find_repeaters(sub_content, root, arrays):
         original_root = root
         for key in sub_content:
             root = original_root
-            root += key + "/"
+            root = safe_join_path(root, key, "")
             temporary_content[key], _root, arrays = find_repeaters(sub_content[key], root, arrays)
         sub_content = copy.deepcopy(temporary_content)
         root = original_root

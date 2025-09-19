@@ -5,6 +5,7 @@ import yaml
 
 from nettacker.config import Config
 from nettacker.core.utils.common import find_args_value
+from nettacker.core.utils.path_utils import get_filename_stem, build_message_path
 
 
 def application_language():
@@ -33,7 +34,7 @@ def get_languages():
     languages_list = []
 
     for language in Config.path.locale_dir.glob("*.yaml"):
-        languages_list.append(str(language).split("/")[-1].split(".")[0])
+        languages_list.append(get_filename_stem(str(language)))
     return list(set(languages_list))
 
 
@@ -41,13 +42,11 @@ class load_message:
     def __init__(self):
         self.language = application_language()
         self.messages = load_yaml(
-            "{messages_path}/{language}.yaml".format(
-                messages_path=Config.path.locale_dir, language=self.language
-            )
+            build_message_path(Config.path.locale_dir, self.language)
         )
         if self.language != "en":
             self.messages_en = load_yaml(
-                "{messages_path}/en.yaml".format(messages_path=Config.path.locale_dir)
+                build_message_path(Config.path.locale_dir, "en")
             )
             for message_id in self.messages_en:
                 if message_id not in self.messages:

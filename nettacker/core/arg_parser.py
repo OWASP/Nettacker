@@ -19,6 +19,7 @@ from nettacker.core.ip import (
 from nettacker.core.messages import messages as _
 from nettacker.core.template import TemplateLoader
 from nettacker.core.utils import common as common_utils
+from nettacker.core.utils.path_utils import get_path_component, get_filename_stem
 from nettacker.logger import TerminalCodes, get_logger
 
 log = get_logger()
@@ -51,7 +52,7 @@ class ArgParser(ArgumentParser):
 
         graph_names = []
         for graph_library in Config.path.graph_dir.glob("*/engine.py"):
-            graph_names.append(str(graph_library).split("/")[-2] + "_graph")
+            graph_names.append(get_path_component(str(graph_library), -2) + "_graph")
         return list(set(graph_names))
 
     @staticmethod
@@ -65,7 +66,7 @@ class ArgParser(ArgumentParser):
         languages_list = []
 
         for language in Config.path.locale_dir.glob("*.yaml"):
-            languages_list.append(str(language).split("/")[-1].split(".")[0])
+            languages_list.append(get_filename_stem(str(language)))
 
         return list(set(languages_list))
 
@@ -83,8 +84,8 @@ class ArgParser(ArgumentParser):
         # Search for Modules
         module_names = {}
         for module_name in sorted(Config.path.modules_dir.glob("**/*.yaml")):
-            library = str(module_name).split("/")[-1].split(".")[0]
-            category = str(module_name).split("/")[-2]
+            library = get_filename_stem(str(module_name))
+            category = get_path_component(str(module_name), -2)
             module = f"{library}_{category}"
             contents = yaml.safe_load(TemplateLoader(module).open().split("payload:")[0])
             module_names[module] = contents["info"] if full_details else None
