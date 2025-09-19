@@ -32,6 +32,7 @@ from nettacker.core.die import die_failure
 from nettacker.core.graph import create_compare_report
 from nettacker.core.messages import messages as _
 from nettacker.core.utils.common import now, generate_compare_filepath
+from nettacker.core.utils.path_utils import get_filename_without_path
 from nettacker.database.db import (
     create_connection,
     get_logs_by_scan_id,
@@ -392,7 +393,7 @@ def get_result_content():
     return Response(
         file_content,
         mimetype=mime_types().get(os.path.splitext(filename)[1], "text/plain"),
-        headers={"Content-Disposition": "attachment;filename=" + filename.split("/")[-1]},
+        headers={"Content-Disposition": "attachment;filename=" + get_filename_without_path(filename)},
     )
 
 
