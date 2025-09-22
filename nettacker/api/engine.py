@@ -392,7 +392,7 @@ def get_result_content():
     return Response(
         file_content,
         mimetype=mime_types().get(Path(filename).suffix, "text/plain"),
-        headers={"Content-Disposition": "attachment;filename=" + filename.split("/")[-1]},
+        headers={"Content-Disposition": f'attachment; filename="{Path(filename).name}"'},
     )
 
 

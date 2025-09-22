@@ -117,13 +117,16 @@ def get_file(filename):
     Returns:
         content of the file or abort(404)
     """
-    if not str(Path(filename).resolve()).startswith(str(Config.path.web_static_dir.resolve())):
+    base = Config.path.web_static_dir.resolve()
+    try:
+        target = Path(filename).resolve(strict=True)
+    except FileNotFoundError:
+        abort(404)
+    if not target.is_relative_to(base):
         abort(404)
     try:
-        return open(filename, "rb").read()
-    except ValueError:
-        abort(404)
-    except IOError:
+        return target.read_bytes()
+    except OSError:
         abort(404)
 
 
