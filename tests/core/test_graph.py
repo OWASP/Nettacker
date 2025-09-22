@@ -243,7 +243,8 @@ def test_no_comparison_logs(mock_logs):
 
 @patch("nettacker.core.graph.get_logs_by_scan_id")
 @patch("nettacker.core.graph.get_options_by_scan_id")
-def test_permission_error(mock_opts, mock_logs):
+@patch("nettacker.core.graph.sanitize_path", return_value="../../etc/passwd")
+def test_permission_error(mock_sanitize, mock_opts, mock_logs):
     dummy_log = {
         "target": "1.1.1.1",
         "module_name": "mod",
