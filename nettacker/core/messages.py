@@ -1,4 +1,5 @@
 import sys
+import os
 from io import StringIO
 
 import yaml
@@ -20,52 +21,51 @@ def application_language():
 
 
 def load_yaml(filename):
-    return yaml.load(StringIO(open(filename, "r").read()), Loader=yaml.FullLoader)
+    with open(filename, "r", encoding="utf-8") as f:
+        return yaml.load(f, Loader=yaml.FullLoader)
 
 
 def get_languages():
-    """
-    Get available languages
-
-    Returns:
-        an array of languages
-    """
     languages_list = []
-
     for language in Config.path.locale_dir.glob("*.yaml"):
-        languages_list.append(str(language).split("/")[-1].split(".")[0])
+        languages_list.append(os.path.splitext(os.path.basename(str(language)))[0])
     return list(set(languages_list))
-
 
 class load_message:
     def __init__(self):
         self.language = application_language()
-        self.messages = load_yaml(
-            "{messages_path}/{language}.yaml".format(
-                messages_path=Config.path.locale_dir, language=self.language
-            )
-        )
+        print(f"[DEBUG] Selected language: {self.language}")
+        print(f"[DEBUG] Available languages: {get_languages()}")
+        # Build path safely
+        language_file = os.path.join(Config.path.locale_dir, f"{self.language}.yaml")
+        self.messages = load_yaml(language_file)
+
         if self.language != "en":
-            self.messages_en = load_yaml(
-                "{messages_path}/en.yaml".format(messages_path=Config.path.locale_dir)
-            )
-            for message_id in self.messages_en:
-                if message_id not in self.messages:
-                    self.messages[message_id] = self.messages_en[message_id]
+         fallback_file = os.path.join(Config.path.locale_dir, "en.yaml")
+         self.messages_en = load_yaml(fallback_file)
+
+         for message_id in self.messages_en:
+             if message_id not in self.messages:
+                 self.messages[message_id] = self.messages_en[message_id]
+        print(f"[DEBUG] Selected language: {self.language}")
 
 
-message_cache = load_message().messages
+try:
+    message_cache = load_message().messages
+except Exception as e:
+    print(f"[!] Failed to load messages: {e}")
+    message_cache = {}
 
 
 def messages(msg_id):
     """
-    load a message from message library with specified language
+    Load a message from the message library with the selected language.
 
     Args:
-        msg_id: message id
+        msg_id: message ID
 
     Returns:
-        the message content in the selected language if
-        message found otherwise return message in English
+        The message content in the selected language if found,
+        otherwise returns the message ID itself as a fallback.
     """
-    return message_cache[str(msg_id)]
+    return message_cache.get(str(msg_id), str(msg_id))

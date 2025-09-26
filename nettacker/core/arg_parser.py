@@ -51,23 +51,17 @@ class ArgParser(ArgumentParser):
 
         graph_names = []
         for graph_library in Config.path.graph_dir.glob("*/engine.py"):
-            graph_names.append(str(graph_library).split("/")[-2] + "_graph")
+            import os
+            graph_names.append(os.path.basename(os.path.dirname(str(graph_library))) + "_graph")
         return list(set(graph_names))
 
     @staticmethod
     def load_languages():
-        """
-        Get available languages
-
-        Returns:
-            an array of languages
-        """
-        languages_list = []
-
-        for language in Config.path.locale_dir.glob("*.yaml"):
-            languages_list.append(str(language).split("/")[-1].split(".")[0])
-
-        return list(set(languages_list))
+        from os.path import basename, splitext
+        return [
+        splitext(basename(str(path)))[0]
+        for path in Config.path.locale_dir.glob("*.yaml")
+    ]
 
     @staticmethod
     def load_modules(limit=-1, full_details=False):
@@ -83,8 +77,9 @@ class ArgParser(ArgumentParser):
         # Search for Modules
         module_names = {}
         for module_name in sorted(Config.path.modules_dir.glob("**/*.yaml")):
-            library = str(module_name).split("/")[-1].split(".")[0]
-            category = str(module_name).split("/")[-2]
+            import os
+            library = os.path.splitext(os.path.basename(str(module_name)))[0]
+            category = os.path.basename(os.path.dirname(str(module_name)))
             module = f"{library}_{category}"
             contents = yaml.safe_load(TemplateLoader(module).open().split("payload:")[0])
             module_names[module] = contents["info"] if full_details else None
@@ -145,7 +140,7 @@ class ArgParser(ArgumentParser):
         engine_options.add_argument(
             "-v",
             "--verbose",
-            action="store_true",
+            type=int,
             dest="verbose_mode",
             default=Config.settings.verbose_mode,
             help=_("verbose_mode"),
@@ -210,7 +205,7 @@ class ArgParser(ArgumentParser):
 
         # Exclude Module Name
         exclude_modules = sorted(self.modules.keys())[:10]
-        exclude_modules.remove("all")
+        exclude_modules = [m for m in exclude_modules if m != "all"]
 
         # Method Options
         method_options = self.add_argument_group(_("Method"), _("scan_method_options"))

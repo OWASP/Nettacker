@@ -32,7 +32,7 @@ class TemplateLoader:
         action = module_name_parts[-1]
         library = "_".join(module_name_parts[:-1])
 
-        with open(Config.path.modules_dir / action / f"{library}.yaml") as yaml_file:
+        with open(Config.path.modules_dir / action / f"{library}.yaml",encoding="utf-8") as yaml_file:
             return yaml_file.read()
 
     def format(self):
