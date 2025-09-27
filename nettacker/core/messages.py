@@ -2,11 +2,13 @@ import sys
 import os
 from io import StringIO
 
+import logging
+log = logging.getLogger(__name__)
+
 import yaml
 
 from nettacker.config import Config
 from nettacker.core.utils.common import find_args_value
-
 
 def application_language():
     if "-L" in sys.argv:
