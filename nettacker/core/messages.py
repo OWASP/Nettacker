@@ -53,10 +53,9 @@ class load_message:
 
 try:
     message_cache = load_message().messages
-except Exception as e:
-    print(f"[!] Failed to load messages: {e}")
+except (OSError, yaml.YAMLError) as exc:
+    log.exception("Failed to load messages during initialization")
     message_cache = {}
-
 
 def messages(msg_id):
     """
