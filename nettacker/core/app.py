@@ -41,7 +41,7 @@ class Nettacker(ArgParser):
     def __init__(self, api_arguments=None):
         if not api_arguments:
             self.print_logo()
-        #self.check_dependencies()
+            self.check_dependencies()
 
         log.info(_("scan_started"))
         super().__init__(api_arguments=api_arguments)
@@ -64,11 +64,13 @@ class Nettacker(ArgParser):
             )
         )
         log.reset_color()
-
-    #def check_dependencies(self):
-        #if sys.platform not in {"darwin", "freebsd13", "freebsd14", "freebsd15", "linux"}:
-            #die_failure(_("error_platform"))
-
+        
+    # Allow Windows and other platforms by removing hardcoded restrictions
+    def check_dependencies(self):
+        if sys.platform.startswith("win"):
+            log.info("Running on Windows — platform support enabled.")
+        else:
+            log.info(f"Running on {sys.platform} — platform support enabled.")
         try:
             Config.path.tmp_dir.mkdir(exist_ok=True, parents=True)
             Config.path.results_dir.mkdir(exist_ok=True, parents=True)
