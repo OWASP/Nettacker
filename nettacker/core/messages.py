@@ -34,21 +34,20 @@ def get_languages():
 class load_message:
     def __init__(self):
         self.language = application_language()
-        print(f"[DEBUG] Selected language: {self.language}")
-        print(f"[DEBUG] Available languages: {get_languages()}")
+        log.debug(f"Selected language: {self.language}")
+        log.debug(f"Available languages: {get_languages()}")
+
         # Build path safely
         language_file = os.path.join(Config.path.locale_dir, f"{self.language}.yaml")
         self.messages = load_yaml(language_file)
 
         if self.language != "en":
-         fallback_file = os.path.join(Config.path.locale_dir, "en.yaml")
-         self.messages_en = load_yaml(fallback_file)
+            fallback_file = os.path.join(Config.path.locale_dir, "en.yaml")
+            self.messages_en = load_yaml(fallback_file)
 
-         for message_id in self.messages_en:
-             if message_id not in self.messages:
-                 self.messages[message_id] = self.messages_en[message_id]
-        print(f"[DEBUG] Selected language: {self.language}")
-
+            for message_id in self.messages_en:
+                if message_id not in self.messages:
+                    self.messages[message_id] = self.messages_en[message_id]
 
 try:
     message_cache = load_message().messages
