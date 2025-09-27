@@ -118,15 +118,14 @@ def get_file(filename):
         content of the file or abort(404)
     """
     base = Config.path.web_static_dir.resolve()
-    try:
-        target = Path(filename).resolve(strict=True)
-    except FileNotFoundError:
-        abort(404)
+    target = (base / filename).resolve()
+
     if not target.is_relative_to(base):
         abort(404)
+
     try:
         return target.read_bytes()
-    except OSError:
+    except (FileNotFoundError, OSError):
         abort(404)
 
 
