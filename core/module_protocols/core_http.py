@@ -12,6 +12,7 @@ from core.utility import process_conditions
 from core.utility import get_dependent_results_from_database
 from core.utility import replace_dependent_values
 from core.utility import replace_dependent_response
+from core.dsl_matcher import DSLMatcher
 
 
 async def perform_request_action(action, request_options):
@@ -45,12 +46,59 @@ def response_conditions_matched(sub_step, response):
     condition_type = sub_step['response']['condition_type']
     conditions = sub_step['response']['conditions']
     condition_results = {}
+    dsl_matcher = DSLMatcher()
+    
     for condition in conditions:
         if condition in ['reason', 'status_code', 'content']:
             regex = re.findall(re.compile(conditions[condition]['regex']), response[condition])
             reverse = conditions[condition]['reverse']
             condition_results[condition] = reverse_and_regex_condition(regex, reverse)
-        if condition == 'headers':
+            
+        elif condition == 'version_dsl':
+            # DSL-based version matching
+            version_patterns = conditions[condition].get('patterns', [])
+            dsl_expressions = conditions[condition].get('expressions', [])
+            reverse = conditions[condition].get('reverse', False)
+            
+            # Extract version from response content
+            extracted_version = dsl_matcher.extract_version_from_response(
+                response.get('content', ''), 
+                version_patterns
+            )
+            
+            if extracted_version and dsl_expressions:
+                # Check if extracted version matches any DSL expression
+                matches = any(
+                    dsl_matcher.parse_dsl_expression(expr, extracted_version) 
+                    for expr in dsl_expressions
+                )
+                condition_results[condition] = [] if (matches and reverse) or (not matches and not reverse) else [extracted_version]
+            else:
+                condition_results[condition] = []
+                
+        elif condition == 'cve_version_match':
+            # CVE-specific version matching
+            version_patterns = conditions[condition].get('patterns', [])
+            affected_versions = conditions[condition].get('affected_versions', [])
+            reverse = conditions[condition].get('reverse', False)
+            
+            # Extract version from response content
+            extracted_version = dsl_matcher.extract_version_from_response(
+                response.get('content', ''), 
+                version_patterns
+            )
+            
+            if extracted_version and affected_versions:
+                # Check if version is in affected range
+                is_vulnerable = dsl_matcher.match_cve_version_range(
+                    extracted_version, 
+                    affected_versions
+                )
+                condition_results[condition] = [] if (is_vulnerable and reverse) or (not is_vulnerable and not reverse) else [extracted_version]
+            else:
+                condition_results[condition] = []
+                
+        elif condition == 'headers':
             # convert headers to case insensitive dict
             for key in response["headers"].copy():
                 response['headers'][key.lower()] = response['headers'][key]
@@ -65,7 +113,8 @@ def response_conditions_matched(sub_step, response):
                     condition_results['headers'][header] = reverse_and_regex_condition(regex, reverse)
                 except TypeError:
                     condition_results['headers'][header] = []
-        if condition == 'responsetime':
+                    
+        elif condition == 'responsetime':
             if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
                 "==",
                 "!=",
