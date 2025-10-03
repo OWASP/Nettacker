@@ -36,6 +36,21 @@ from nettacker.logger import TerminalCodes
 
 log = logger.get_logger()
 
+def is_running_with_privileges():
+        """
+        Check if running with elevated privileges (root/admin)
+        
+        Returns:
+            bool: True if running as root (Unix) or Administrator (Windows)
+        """
+        if sys.platform == "win32":
+            try:
+                import ctypes
+                return ctypes.windll.shell32.IsUserAnAdmin() != 0
+            except Exception:
+                return False
+        else:
+            return os.geteuid() == 0        
 
 class Nettacker(ArgParser):
     def __init__(self, api_arguments=None):
@@ -66,7 +81,7 @@ class Nettacker(ArgParser):
         log.reset_color()
 
     def check_dependencies(self):
-        if sys.platform not in {"darwin", "freebsd13", "freebsd14", "freebsd15", "linux"}:
+        if sys.platform not in {"darwin", "freebsd13", "freebsd14", "freebsd15", "linux", "win32"}:
             die_failure(_("error_platform"))
 
         try:
@@ -165,13 +180,13 @@ class Nettacker(ArgParser):
                             self.arguments.targets.append(sub_domain)
         # icmp_scan
         if self.arguments.ping_before_scan:
-            if os.geteuid() == 0:
+            if is_running_with_privileges(): 
                 selected_modules = self.arguments.selected_modules
                 self.arguments.selected_modules = ["icmp_scan"]
                 self.start_scan(scan_id)
                 self.arguments.selected_modules = selected_modules
                 if "icmp_scan" in self.arguments.selected_modules:
-                    self.arguments.selected_modules.remove("icmp_scan")
+                        self.arguments.selected_modules.remove("icmp_scan")
                 self.arguments.targets = self.filter_target_by_event(targets, scan_id, "icmp_scan")
             else:
                 log.warn(_("icmp_need_root_access"))
