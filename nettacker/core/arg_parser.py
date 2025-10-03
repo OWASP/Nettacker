@@ -1,5 +1,6 @@
 import json
 import sys
+from pathlib import Path
 from argparse import ArgumentParser
 
 import yaml
@@ -48,10 +49,9 @@ class ArgParser(ArgumentParser):
         Returns:
             an array of graph names
         """
-
         graph_names = []
         for graph_library in Config.path.graph_dir.glob("*/engine.py"):
-            graph_names.append(str(graph_library).split("/")[-2] + "_graph")
+            graph_names.append(graph_library.parent.name + "_graph")
         return list(set(graph_names))
 
     @staticmethod
@@ -62,13 +62,13 @@ class ArgParser(ArgumentParser):
         Returns:
             an array of languages
         """
+        from pathlib import Path  
         languages_list = []
 
         for language in Config.path.locale_dir.glob("*.yaml"):
-            languages_list.append(str(language).split("/")[-1].split(".")[0])
+            languages_list.append(Path(language).stem)  # .stem gets filename without extension
 
         return list(set(languages_list))
-
     @staticmethod
     def load_modules(limit=-1, full_details=False):
         """
@@ -80,11 +80,13 @@ class ArgParser(ArgumentParser):
         Returns:
             an array of all module names
         """
+        from pathlib import Path  
         # Search for Modules
         module_names = {}
         for module_name in sorted(Config.path.modules_dir.glob("**/*.yaml")):
-            library = str(module_name).split("/")[-1].split(".")[0]
-            category = str(module_name).split("/")[-2]
+            module_path = Path(module_name)
+            library = module_path.stem  # Gets filename without extension
+            category = module_path.parent.name  # Gets parent directory name
             module = f"{library}_{category}"
             contents = yaml.safe_load(TemplateLoader(module).open().split("payload:")[0])
             module_names[module] = contents["info"] if full_details else None
@@ -100,7 +102,6 @@ class ArgParser(ArgumentParser):
         module_names["all"] = {}
 
         return module_names
-
     @staticmethod
     def load_profiles(limit=-1):
         """
