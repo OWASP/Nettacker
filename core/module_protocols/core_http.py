@@ -60,9 +60,24 @@ def response_conditions_matched(sub_step, response):
             dsl_expressions = conditions[condition].get('expressions', [])
             reverse = conditions[condition].get('reverse', False)
             
+            # Handle both string and list for patterns/expressions (YAML parsing issue)
+            if isinstance(version_patterns, str):
+                version_patterns = [version_patterns]
+            if isinstance(dsl_expressions, str):
+                dsl_expressions = [dsl_expressions]
+            
+            # Build searchable content from all response parts
+            content = response.get('content', '')
+            if isinstance(content, bytes):
+                content = content.decode('utf-8', errors='ignore')
+            
+            # Also search in headers
+            headers_str = ' '.join([f"{k}: {v}" for k, v in response.get('headers', {}).items()])
+            searchable_content = f"{content} {headers_str}"
+            
             # Extract version from response content
             extracted_version = dsl_matcher.extract_version_from_response(
-                response.get('content', ''), 
+                searchable_content, 
                 version_patterns
             )
             
@@ -72,7 +87,7 @@ def response_conditions_matched(sub_step, response):
                     dsl_matcher.parse_dsl_expression(expr, extracted_version) 
                     for expr in dsl_expressions
                 )
-                condition_results[condition] = [] if (matches and reverse) or (not matches and not reverse) else [extracted_version]
+                condition_results[condition] = [extracted_version] if (matches and not reverse) or (not matches and reverse) else []
             else:
                 condition_results[condition] = []
                 
@@ -82,9 +97,24 @@ def response_conditions_matched(sub_step, response):
             affected_versions = conditions[condition].get('affected_versions', [])
             reverse = conditions[condition].get('reverse', False)
             
+            # Handle both string and list for patterns/versions (YAML parsing issue)
+            if isinstance(version_patterns, str):
+                version_patterns = [version_patterns]
+            if isinstance(affected_versions, str):
+                affected_versions = [affected_versions]
+            
+            # Build searchable content from all response parts
+            content = response.get('content', '')
+            if isinstance(content, bytes):
+                content = content.decode('utf-8', errors='ignore')
+            
+            # Also search in headers
+            headers_str = ' '.join([f"{k}: {v}" for k, v in response.get('headers', {}).items()])
+            searchable_content = f"{content} {headers_str}"
+            
             # Extract version from response content
             extracted_version = dsl_matcher.extract_version_from_response(
-                response.get('content', ''), 
+                searchable_content, 
                 version_patterns
             )
             
@@ -94,7 +124,8 @@ def response_conditions_matched(sub_step, response):
                     extracted_version, 
                     affected_versions
                 )
-                condition_results[condition] = [] if (is_vulnerable and reverse) or (not is_vulnerable and not reverse) else [extracted_version]
+                # Return extracted version if vulnerable (and not reverse), or empty if not vulnerable (or reverse and vulnerable)
+                condition_results[condition] = [extracted_version] if (is_vulnerable and not reverse) or (not is_vulnerable and reverse) else []
             else:
                 condition_results[condition] = []
                 

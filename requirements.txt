@@ -14,5 +14,5 @@ py3DNS==4.0.0 # library_name=DNS
 numpy==1.26.3
 terminable_thread==0.7.1
 PyYAML==6.0.1 # library_name=yaml
-packaging>=21.0 # For version parsing and comparison
-semver>=3.0.0 # For semantic version comparison
+packaging>=21.0 # library_name=packaging # For version parsing and comparison
+semver>=3.0.0 # library_name=semver # For semantic version comparison
