@@ -31,8 +31,7 @@ class TemplateLoader:
         module_name_parts = self.name.split("_")
         action = module_name_parts[-1]
         library = "_".join(module_name_parts[:-1])
-
-        # TEMP FIX FOR TESTING - Explicitly specify UTF-8 encoding for Windows
+        
         with open(Config.path.modules_dir / action / f"{library}.yaml", encoding='utf-8') as yaml_file:
             return yaml_file.read()
 
