@@ -18,42 +18,6 @@ info:
     - lfi
 
 payloads:
-  # First check if Apache version is vulnerable
-  - library: http
-    steps:
-      - method: get
-        timeout: 3
-        headers:
-          User-Agent: "{user_agent}"
-        ssl: false
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
-        response:
-          condition_type: and
-          conditions:
-            status_code:
-              regex: '200|301|302|403|404'
-              reverse: false
-            cve_version_match:
-              patterns:
-                - "Apache[/\\s]([0-9]+\\.[0-9]+\\.[0-9]+)"
-                - "Server:\\s*Apache[/\\s]([0-9]+\\.[0-9]+\\.[0-9]+)"
-              affected_versions:
-                - "==2.4.49"
-              reverse: false
-          log: "Apache version {cve_version_match} is vulnerable to CVE-2021-41773"
-  # Then test for actual path traversal vulnerability
   - library: http
     steps:
       - method: get
@@ -88,4 +52,3 @@ payloads:
             content:
               regex: "root:(\\S+):"
               reverse: false
-          log: "CVE-2021-41773 path traversal exploit successful - /etc/passwd accessed"
