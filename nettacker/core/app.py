@@ -186,7 +186,7 @@ class Nettacker(ArgParser):
                 self.start_scan(scan_id)
                 self.arguments.selected_modules = selected_modules
                 if "icmp_scan" in self.arguments.selected_modules:
-                        self.arguments.selected_modules.remove("icmp_scan")
+                    self.arguments.selected_modules.remove("icmp_scan")
                 self.arguments.targets = self.filter_target_by_event(targets, scan_id, "icmp_scan")
             else:
                 log.warn(_("icmp_need_root_access"))
