@@ -18,29 +18,6 @@ OWASP Nettacker
 
 OWASP Nettacker project is created to automate information gathering, vulnerability scanning and eventually generating a report for networks, including services, bugs, vulnerabilities, misconfigurations, and other information. This software **will** utilize TCP SYN, ACK, ICMP, and many other protocols in order to detect and bypass Firewall/IDS/IPS devices. By leveraging a unique method in OWASP Nettacker for discovering protected services and devices such as SCADA. It would make a competitive edge compared to other scanner making it one of the bests.
 
-## 🆕 DSL (Domain Specific Language) Matching
-
-Nettacker now includes advanced DSL matching capabilities for precise version comparison in CVE modules:
-
-- **Semantic Version Support**: Compare versions using operators like `>=`, `<`, `~`, `^`
-- **Range Expressions**: Define version ranges like `2.4.0 to 2.4.58` or `>=1.0.0,<2.0.0`
-- **CVE-Specific Matching**: Built-in support for vulnerability version ranges
-- **Pattern Extraction**: Automatically extract versions from HTTP responses
-- **Wildcard Support**: Use patterns like `1.2.*` or `1.?.3`
-
-**Example CVE Module with DSL:**
-```yaml
-conditions:
-  cve_version_match:
-    patterns:
-      - "Apache[/\\s]([0-9]+\\.[0-9]+\\.[0-9]+)"
-    affected_versions:
-      - "==2.4.49"
-      - ">=2.4.0,<2.4.58"
-```
-
-See [`docs/DSL_MATCHING.md`](docs/DSL_MATCHING.md) for detailed documentation.
-
 
 * OWASP Page: https://owasp.org/www-project-nettacker/
 * Wiki: https://github.com/OWASP/Nettacker/wiki
@@ -93,5 +70,4 @@ _____________
 ## Stargazers over time
 
 [![Stargazers over time](https://starchart.cc/OWASP/Nettacker.svg)](https://starchart.cc/OWASP/Nettacker)
-
 
