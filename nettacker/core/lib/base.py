@@ -9,6 +9,7 @@ import yaml
 
 from nettacker.config import Config
 from nettacker.core.messages import messages as _
+from nettacker.core.queue_manager import dependency_resolver
 from nettacker.core.utils.common import merge_logs_to_list, remove_sensitive_header_keys
 from nettacker.database.db import find_temp_events, submit_temp_logs_to_db, submit_logs_to_db
 from nettacker.logger import get_logger, TerminalCodes
@@ -47,14 +48,40 @@ class BaseEngine(ABC):
             return content
 
     def get_dependent_results_from_database(self, target, module_name, scan_id, event_names):
+        """
+        Efficiently get dependency results without busy-waiting.
+        Uses event-driven approach to avoid CPU consumption.
+        """
+        # Try to get results efficiently using the new dependency resolver
+        results = dependency_resolver.get_dependency_results_efficiently(
+            target, module_name, scan_id, event_names, {}, self, ()
+        )
+
+        if results is not None:
+            return results
+
+        # Fallback to original implementation for backward compatibility
+        # but with increased sleep time to reduce CPU usage
         events = []
         for event_name in event_names.split(","):
-            while True:
+            retry_count = 0
+            max_retries = 300  # 30 seconds with 0.1s sleep
+
+            while retry_count < max_retries:
                 event = find_temp_events(target, module_name, scan_id, event_name)
                 if event:
                     events.append(json.loads(event.event)["response"]["conditions_results"])
                     break
-                time.sleep(0.1)
+
+                retry_count += 1
+                # Exponential backoff to reduce CPU usage
+                sleep_time = min(0.1 * (1.5 ** (retry_count // 10)), 1.0)
+                time.sleep(sleep_time)
+            else:
+                # Timeout reached
+                log.warn(f"Timeout waiting for dependency: {event_name} for {target}")
+                events.append(None)
+
         return events
 
     def find_and_replace_dependent_values(self, sub_step, dependent_on_temp_event):
@@ -123,17 +150,25 @@ class BaseEngine(ABC):
         # Remove sensitive keys from headers before submitting to DB
         event = remove_sensitive_header_keys(event)
         if "save_to_temp_events_only" in event.get("response", ""):
+            event_name = event["response"]["save_to_temp_events_only"]
+
+            # Submit to database
             submit_temp_logs_to_db(
                 {
                     "date": datetime.now(),
                     "target": target,
                     "module_name": module_name,
                     "scan_id": scan_id,
-                    "event_name": event["response"]["save_to_temp_events_only"],
+                    "event_name": event_name,
                     "port": event.get("ports", ""),
                     "event": event,
                     "data": response,
                 }
+            )
+
+            # Notify dependency resolver that a dependency is now available
+            dependency_resolver.notify_dependency_available(
+                target, module_name, scan_id, event_name, response
             )
         if event["response"]["conditions_results"] and "save_to_temp_events_only" not in event.get(
             "response", ""
@@ -279,9 +314,37 @@ class BaseEngine(ABC):
                 sub_step[attr_name.rstrip("s")] = int(value) if attr_name == "ports" else value
 
         if "dependent_on_temp_event" in backup_response:
-            temp_event = self.get_dependent_results_from_database(
-                target, module_name, scan_id, backup_response["dependent_on_temp_event"]
+            # Try to get dependency results efficiently
+            temp_event = dependency_resolver.get_dependency_results_efficiently(
+                target,
+                module_name,
+                scan_id,
+                backup_response["dependent_on_temp_event"],
+                sub_step,
+                self,
+                (
+                    sub_step,
+                    module_name,
+                    target,
+                    scan_id,
+                    options,
+                    process_number,
+                    module_thread_number,
+                    total_module_thread_number,
+                    request_number_counter,
+                    total_number_of_requests,
+                ),
             )
+
+            # If dependencies are not available yet, the task is queued
+            # Return early to avoid blocking the thread
+            if temp_event is None:
+                log.verbose_event_info(
+                    f"Task queued waiting for dependencies: {target} -> {module_name}"
+                )
+                return False
+
+            # Dependencies are available, continue with execution
             sub_step = self.replace_dependent_values(sub_step, temp_event)
 
         action = getattr(self.library(), backup_method)

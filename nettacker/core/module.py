@@ -7,6 +7,7 @@ from threading import Thread
 
 from nettacker import logger
 from nettacker.config import Config
+from nettacker.core import queue_manager
 from nettacker.core.messages import messages as _
 from nettacker.core.template import TemplateLoader
 from nettacker.core.utils.common import expand_module_steps, wait_for_threads_to_finish
@@ -118,26 +119,44 @@ class Module:
         self.module_content["payloads"] = expand_module_steps(self.module_content["payloads"])
 
     def sort_loops(self):
-        steps = []
+        """
+        Sort loops to optimize dependency resolution:
+        1. Independent steps first
+        2. Steps that generate dependencies (save_to_temp_events_only)
+        3. Steps that consume dependencies (dependent_on_temp_event)
+        """
         for index in range(len(self.module_content["payloads"])):
-            for step in copy.deepcopy(self.module_content["payloads"][index]["steps"]):
-                if "dependent_on_temp_event" not in step[0]["response"]:
-                    steps.append(step)
+            independent_steps = []
+            dependency_generators = []
+            dependency_consumers = []
 
             for step in copy.deepcopy(self.module_content["payloads"][index]["steps"]):
-                if (
-                    "dependent_on_temp_event" in step[0]["response"]
-                    and "save_to_temp_events_only" in step[0]["response"]
-                ):
-                    steps.append(step)
+                step_response = step[0]["response"] if step and len(step) > 0 else {}
 
-            for step in copy.deepcopy(self.module_content["payloads"][index]["steps"]):
-                if (
-                    "dependent_on_temp_event" in step[0]["response"]
-                    and "save_to_temp_events_only" not in step[0]["response"]
-                ):
-                    steps.append(step)
-            self.module_content["payloads"][index]["steps"] = steps
+                has_dependency = "dependent_on_temp_event" in step_response
+                generates_dependency = "save_to_temp_events_only" in step_response
+
+                if not has_dependency and not generates_dependency:
+                    independent_steps.append(step)
+                elif generates_dependency and not has_dependency:
+                    dependency_generators.append(step)
+                elif generates_dependency and has_dependency:
+                    dependency_generators.append(step)  # Generator first
+                elif has_dependency and not generates_dependency:
+                    dependency_consumers.append(step)
+                else:
+                    independent_steps.append(step)  # Fallback
+
+            # Combine in optimal order
+            sorted_steps = independent_steps + dependency_generators + dependency_consumers
+            self.module_content["payloads"][index]["steps"] = sorted_steps
+
+            log.verbose_info(
+                f"Sorted {len(sorted_steps)} steps: "
+                f"{len(independent_steps)} independent, "
+                f"{len(dependency_generators)} generators, "
+                f"{len(dependency_consumers)} consumers"
+            )
 
     def start(self):
         active_threads = []
@@ -158,11 +177,16 @@ class Module:
                 importlib.import_module(f"nettacker.core.lib.{library.lower()}"),
                 f"{library.capitalize()}Engine",
             )()
+
             for step in payload["steps"]:
                 for sub_step in step:
-                    thread = Thread(
-                        target=engine.run,
-                        args=(
+                    # Try to use shared thread pool if available, otherwise use local threads
+                    if queue_manager.thread_pool and hasattr(
+                        queue_manager.thread_pool, "submit_task"
+                    ):
+                        # Submit to shared thread pool
+                        queue_manager.thread_pool.submit_task(
+                            engine.run,
                             sub_step,
                             self.module_name,
                             self.target,
@@ -173,9 +197,35 @@ class Module:
                             self.total_module_thread_number,
                             request_number_counter,
                             total_number_of_requests,
-                        ),
-                    )
-                    thread.name = f"{self.target} -> {self.module_name} -> {sub_step}"
+                        )
+                    else:
+                        # Use local thread (fallback to original behavior)
+                        thread = Thread(
+                            target=engine.run,
+                            args=(
+                                sub_step,
+                                self.module_name,
+                                self.target,
+                                self.scan_id,
+                                self.module_inputs,
+                                self.process_number,
+                                self.module_thread_number,
+                                self.total_module_thread_number,
+                                request_number_counter,
+                                total_number_of_requests,
+                            ),
+                        )
+                        thread.name = f"{self.target} -> {self.module_name} -> {sub_step}"
+                        thread.start()
+                        active_threads.append(thread)
+
+                        # Manage local thread pool size
+                        wait_for_threads_to_finish(
+                            active_threads,
+                            maximum=self.module_inputs["thread_per_host"],
+                            terminable=True,
+                        )
+
                     request_number_counter += 1
                     log.verbose_event_info(
                         _("sending_module_request").format(
@@ -188,13 +238,8 @@ class Module:
                             total_number_of_requests,
                         )
                     )
-                    thread.start()
                     time.sleep(self.module_inputs["time_sleep_between_requests"])
-                    active_threads.append(thread)
-                    wait_for_threads_to_finish(
-                        active_threads,
-                        maximum=self.module_inputs["thread_per_host"],
-                        terminable=True,
-                    )
 
-        wait_for_threads_to_finish(active_threads, maximum=None, terminable=True)
+        # Wait for any remaining local threads to finish
+        if active_threads:
+            wait_for_threads_to_finish(active_threads, maximum=None, terminable=True)
