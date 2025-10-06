@@ -160,6 +160,7 @@ class Module:
 
     def start(self):
         active_threads = []
+        used_shared_pool = False
 
         # counting total number of requests
         total_number_of_requests = 0
@@ -198,6 +199,7 @@ class Module:
                             request_number_counter,
                             total_number_of_requests,
                         )
+                        used_shared_pool = True
                     else:
                         # Use local thread (fallback to original behavior)
                         thread = Thread(
@@ -239,6 +241,17 @@ class Module:
                         )
                     )
                     time.sleep(self.module_inputs["time_sleep_between_requests"])
+
+        # Wait for completion based on execution path
+        if used_shared_pool:
+            # Wait for shared thread pool tasks to complete
+            if queue_manager.thread_pool and hasattr(
+                queue_manager.thread_pool, "wait_for_completion"
+            ):
+                # Wait with a reasonable timeout to prevent hanging
+                completed = queue_manager.thread_pool.wait_for_completion(timeout=300)  # 5 minutes
+                if not completed:
+                    log.warn(f"Module {self.module_name} tasks did not complete within timeout")
 
         # Wait for any remaining local threads to finish
         if active_threads:

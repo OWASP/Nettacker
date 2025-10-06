@@ -209,13 +209,16 @@ class CrossProcessThreadPool:
         self.task_queue = multiprocessing.Queue()
         self.workers = []
         self.is_running = multiprocessing.Value("i", 1)
+        # Task completion tracking
+        self.submitted_tasks = multiprocessing.Value("i", 0)
+        self.completed_tasks = multiprocessing.Value("i", 0)
 
     def start_workers(self, num_processes: int):
         """Start worker processes."""
         for i in range(num_processes):
             worker = multiprocessing.Process(
                 target=self._worker_process,
-                args=(i, self.task_queue, self.is_running),
+                args=(i, self.task_queue, self.is_running, self.completed_tasks),
             )
             worker.start()
             self.workers.append(worker)
@@ -224,12 +227,42 @@ class CrossProcessThreadPool:
         """Submit a task to the shared pool."""
         task = {"func": task_func, "args": args, "kwargs": kwargs, "timestamp": time.time()}
         self.task_queue.put(task)
+        with self.submitted_tasks.get_lock():
+            self.submitted_tasks.value += 1
+
+    def wait_for_completion(self, timeout: Optional[float] = None) -> bool:
+        """Wait for all submitted tasks to complete.
+
+        Args:
+            timeout: Maximum time to wait in seconds. None means wait indefinitely.
+
+        Returns:
+            True if all tasks completed, False if timeout occurred.
+        """
+        start_time = time.time()
+
+        while True:
+            with self.submitted_tasks.get_lock():
+                submitted = self.submitted_tasks.value
+            with self.completed_tasks.get_lock():
+                completed = self.completed_tasks.value
+
+            if completed >= submitted:
+                return True
+
+            if timeout is not None:
+                elapsed = time.time() - start_time
+                if elapsed >= timeout:
+                    return False
+
+            time.sleep(0.01)  # Small sleep to avoid busy waiting
 
     def _worker_process(
         self,
         worker_id: int,
         task_queue: multiprocessing.Queue,
         is_running: multiprocessing.Value,
+        completed_tasks: multiprocessing.Value,
     ):
         """Worker process that executes tasks from the shared queue."""
         local_threads = []
@@ -249,7 +282,7 @@ class CrossProcessThreadPool:
 
                         # Create thread to execute task
                         thread = threading.Thread(
-                            target=self._execute_task, args=(task, worker_id)
+                            target=self._execute_task, args=(task, worker_id, completed_tasks)
                         )
                         thread.start()
                         local_threads.append(thread)
@@ -269,7 +302,7 @@ class CrossProcessThreadPool:
 
         log.info(f"Worker process {worker_id} finished")
 
-    def _execute_task(self, task: Dict, worker_id: int):
+    def _execute_task(self, task: Dict, worker_id: int, completed_tasks: multiprocessing.Value):
         """Execute a single task."""
         try:
             func = task["func"]
@@ -279,10 +312,15 @@ class CrossProcessThreadPool:
             # Execute the task - engine.run() handles its own results/logging
             func(*args, **kwargs)
 
-            log.debug(f"Worker {worker_id} completed task successfully")
+            # Don't log successful task completion in normal operation
+            # log.info(f"Worker {worker_id} completed task successfully")
 
         except Exception as e:
-            log.exception(f"Worker {worker_id} task execution failed: {e}")
+            log.error(f"Worker {worker_id} task execution failed: {e}")
+        finally:
+            # Always increment completed count, even on failure
+            with completed_tasks.get_lock():
+                completed_tasks.value += 1
 
     def shutdown(self):
         """Shutdown the thread pool."""
