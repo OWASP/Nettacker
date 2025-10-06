@@ -113,21 +113,25 @@ class DBWriter:
             log.warn("DBWriter: failed to enqueue job")
             return False
 
+    def _acknowledge_message(self, message_id):
+        """Acknowledge a successfully processed message."""
+        if self._use_litequeue and message_id is not None:
+            try:
+                if hasattr(self._lq, "done"):
+                    self._lq.done(message_id)
+            except Exception:
+                pass
+
     def _pop_one(self):
         if self._use_litequeue:
             try:
-                # litequeue: use peek() to get next message then mark done()
-                # peek returns a Message object or None
+                # litequeue: use pop() to get and lock message, then mark done() AFTER processing
                 msg = None
-                if hasattr(self._lq, "peek"):
-                    msg = self._lq.peek()
+                if hasattr(self._lq, "pop"):
+                    msg = self._lq.pop()
                 elif hasattr(self._lq, "get"):
-                    # fallback: try to get next via get with id if available
-                    try:
-                        # attempt to fetch first ready message via SQL using qsize/read
-                        msg = None
-                    except Exception:
-                        msg = None
+                    # fallback: try to get next via get
+                    msg = self._lq.get()
 
                 if msg is None:
                     return None
@@ -142,19 +146,19 @@ class DBWriter:
                 if isinstance(payload, (bytes, bytearray)):
                     payload = payload.decode()
 
-                # mark message done to remove it from queue
-                try:
-                    if hasattr(self._lq, "done") and hasattr(msg, "message_id"):
-                        self._lq.done(msg.message_id)
-                except Exception:
-                    pass
-
-                return json.loads(payload)
+                # Return both the payload and message_id for deferred acknowledgment
+                job_data = json.loads(payload)
+                if hasattr(msg, "message_id"):
+                    return {"data": job_data, "message_id": msg.message_id}
+                else:
+                    return {"data": job_data, "message_id": None}
             except Exception:
                 return None
         else:
             try:
-                return self.queue.get_nowait()
+                job_data = self.queue.get_nowait()
+                return {"data": job_data, "message_id": None}
+
             except Exception:
                 return None
 
@@ -171,15 +175,25 @@ class DBWriter:
 
                 if pending:
                     success_count = 0
+                    successful_jobs = []
                     for job in pending:
                         try:
-                            self._apply_job(session, job)
+                            # Handle both litequeue format {"data": job, "message_id": id} and direct job
+                            job_data = (
+                                job["data"] if isinstance(job, dict) and "data" in job else job
+                            )
+                            self._apply_job(session, job_data)
                             success_count += 1
+                            successful_jobs.append(job)
                         except Exception:
                             session.rollback()
                     try:
                         session.commit()
                         self._processed_count += success_count
+                        # Only acknowledge litequeue messages after successful commit
+                        for job in successful_jobs:
+                            if isinstance(job, dict) and "message_id" in job:
+                                self._acknowledge_message(job["message_id"])
                     except Exception:
                         session.rollback()
                     pending = []
@@ -194,9 +208,12 @@ class DBWriter:
                 if job is None:
                     break
                 try:
-                    self._apply_job(session, job)
+                    self._apply_job(session, job["data"] if isinstance(job, dict) else job)
                     session.commit()
                     self._processed_count += 1
+                    # Only acknowledge message after successful commit
+                    if isinstance(job, dict) and "message_id" in job:
+                        self._acknowledge_message(job["message_id"])
                 except Exception:
                     session.rollback()
         except Exception:
@@ -214,20 +231,28 @@ class DBWriter:
         session = self.Session()
         iterations = 0
         processed = 0
+        successful_jobs = []
         try:
             while iterations < max_iterations:
                 job = self._pop_one()
                 if job is None:
                     break
                 try:
-                    self._apply_job(session, job)
+                    # Handle both litequeue format {"data": job, "message_id": id} and direct job
+                    job_data = job["data"] if isinstance(job, dict) and "data" in job else job
+                    self._apply_job(session, job_data)
                     processed += 1
+                    successful_jobs.append(job)
                 except Exception:
                     session.rollback()
                 iterations += 1
             try:
                 session.commit()
                 self._processed_count += processed
+                # Only acknowledge litequeue messages after successful commit
+                for job in successful_jobs:
+                    if isinstance(job, dict) and "message_id" in job:
+                        self._acknowledge_message(job["message_id"])
             except Exception:
                 session.rollback()
         finally:

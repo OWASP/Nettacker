@@ -8,6 +8,7 @@ from nettacker.database.writer import get_writer
 def _handle_sig(signum, frame):
     writer = get_writer()
     writer.stop()
+    raise SystemExit(0)
 
 
 def run():
@@ -37,11 +38,9 @@ def run():
             )
         return
 
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        writer.stop()
+    # Main loop - will be terminated by signal handlers
+    while True:
+        time.sleep(1)
 
 
 if __name__ == "__main__":
