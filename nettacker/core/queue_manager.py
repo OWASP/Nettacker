@@ -206,7 +206,8 @@ class CrossProcessThreadPool:
 
     def __init__(self, max_workers_per_process: Optional[int] = None):
         self.max_workers_per_process = max_workers_per_process or multiprocessing.cpu_count()
-        self.task_queue = multiprocessing.Queue()
+        # Inter-process communication
+        self.task_queue = multiprocessing.JoinableQueue()
         self.workers = []
         self.is_running = multiprocessing.Value("i", 1)
         # Task completion tracking
@@ -282,7 +283,8 @@ class CrossProcessThreadPool:
 
                         # Create thread to execute task
                         thread = threading.Thread(
-                            target=self._execute_task, args=(task, worker_id, completed_tasks)
+                            target=self._execute_task,
+                            args=(task, worker_id, completed_tasks, task_queue),
                         )
                         thread.start()
                         local_threads.append(thread)
@@ -302,7 +304,9 @@ class CrossProcessThreadPool:
 
         log.info(f"Worker process {worker_id} finished")
 
-    def _execute_task(self, task: Dict, worker_id: int, completed_tasks: multiprocessing.Value):
+    def _execute_task(
+        self, task: Dict, worker_id: int, completed_tasks: multiprocessing.Value, task_queue
+    ):
         """Execute a single task."""
         try:
             func = task["func"]
@@ -321,15 +325,30 @@ class CrossProcessThreadPool:
             # Always increment completed count, even on failure
             with completed_tasks.get_lock():
                 completed_tasks.value += 1
+            # Mark task as done for JoinableQueue
+            task_queue.task_done()
 
     def shutdown(self):
-        """Shutdown the thread pool."""
+        """Shutdown the thread pool gracefully, ensuring all queued tasks complete."""
+        log.info("Starting thread pool shutdown...")
+
+        # First, wait for all queued tasks to complete
+        try:
+            log.info("Waiting for queued tasks to complete...")
+            self.task_queue.join()  # Wait for all tasks to be marked as done
+            log.info("All queued tasks completed")
+        except Exception as e:
+            log.error(f"Error while waiting for tasks to complete: {e}")
+
+        # Now signal workers to stop
         self.is_running.value = 0
+        log.info("Signaled workers to stop")
 
         # Wait for workers to finish
-        for worker in self.workers:
+        for i, worker in enumerate(self.workers):
             worker.join(timeout=10.0)
             if worker.is_alive():
+                log.warn(f"Worker {i} did not terminate gracefully, forcing termination")
                 worker.terminate()
 
         log.info("Thread pool shutdown complete")
