@@ -163,7 +163,6 @@ class DBWriter:
                 return None
 
     def _run(self):
-        session = self.Session()
         pending = []
         while not self._stop.is_set():
             try:
@@ -174,52 +173,59 @@ class DBWriter:
                     pending.append(job)
 
                 if pending:
-                    success_count = 0
-                    successful_jobs = []
+                    # Process each job individually with immediate commit
                     for job in pending:
+                        job_session = self.Session()  # Fresh session per job
                         try:
                             # Handle both litequeue format {"data": job, "message_id": id} and direct job
                             job_data = (
                                 job["data"] if isinstance(job, dict) and "data" in job else job
                             )
-                            self._apply_job(session, job_data)
-                            success_count += 1
-                            successful_jobs.append(job)
-                        except Exception:
-                            session.rollback()
-                    try:
-                        session.commit()
-                        self._processed_count += success_count
-                        # Only acknowledge litequeue messages after successful commit
-                        for job in successful_jobs:
+                            self._apply_job(job_session, job_data)
+                            job_session.commit()  # Immediate commit per job
+                            self._processed_count += 1
+
+                            # Only acknowledge after successful commit
                             if isinstance(job, dict) and "message_id" in job:
                                 self._acknowledge_message(job["message_id"])
-                    except Exception:
-                        session.rollback()
+
+                        except Exception as e:
+                            job_session.rollback()
+                            log.error(f"Failed to process job: {e}")
+                            # Job is not acknowledged, so it can be retried
+                        finally:
+                            job_session.close()
+
                     pending = []
                 else:
                     time.sleep(self.interval)
             except Exception:
                 time.sleep(0.1)
 
+        # Final cleanup: process any remaining jobs individually
         try:
             while True:
                 job = self._pop_one()
                 if job is None:
                     break
+
+                # Process final job individually with immediate commit
+                cleanup_session = self.Session()
                 try:
-                    self._apply_job(session, job["data"] if isinstance(job, dict) else job)
-                    session.commit()
+                    job_data = job["data"] if isinstance(job, dict) and "data" in job else job
+                    self._apply_job(cleanup_session, job_data)
+                    cleanup_session.commit()
                     self._processed_count += 1
-                    # Only acknowledge message after successful commit
+
+                    # Only acknowledge after successful commit
                     if isinstance(job, dict) and "message_id" in job:
                         self._acknowledge_message(job["message_id"])
-                except Exception:
-                    session.rollback()
-        except Exception:
-            pass
-        try:
-            session.close()
+
+                except Exception as e:
+                    cleanup_session.rollback()
+                    log.error(f"Failed to process cleanup job: {e}")
+                finally:
+                    cleanup_session.close()
         except Exception:
             pass
 
@@ -228,38 +234,39 @@ class DBWriter:
 
         This method is intended for on-demand draining (not long-lived).
         """
-        session = self.Session()
         iterations = 0
         processed = 0
-        successful_jobs = []
+
         try:
             while iterations < max_iterations:
                 job = self._pop_one()
                 if job is None:
                     break
+
+                # Process each job individually with immediate commit for durability
+                job_session = self.Session()  # Fresh session per job
                 try:
                     # Handle both litequeue format {"data": job, "message_id": id} and direct job
                     job_data = job["data"] if isinstance(job, dict) and "data" in job else job
-                    self._apply_job(session, job_data)
+                    self._apply_job(job_session, job_data)
+                    job_session.commit()  # Immediate commit per job
                     processed += 1
-                    successful_jobs.append(job)
-                except Exception:
-                    session.rollback()
-                iterations += 1
-            try:
-                session.commit()
-                self._processed_count += processed
-                # Only acknowledge litequeue messages after successful commit
-                for job in successful_jobs:
+                    self._processed_count += 1
+
+                    # Only acknowledge after successful commit
                     if isinstance(job, dict) and "message_id" in job:
                         self._acknowledge_message(job["message_id"])
-            except Exception:
-                session.rollback()
-        finally:
-            try:
-                session.close()
-            except Exception:
-                pass
+
+                except Exception as e:
+                    job_session.rollback()
+                    log.error(f"Failed to process job during drain: {e}")
+                    # Job is not acknowledged, so it can be retried
+                finally:
+                    job_session.close()
+
+                iterations += 1
+        except Exception as e:
+            log.error(f"Error during drain operation: {e}")
 
         return processed
 
