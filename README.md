@@ -126,4 +126,4 @@ _____________
 
 [![Stargazers over time](https://starchart.cc/OWASP/Nettacker.svg)](https://starchart.cc/OWASP/Nettacker)
 
-
+<img alt="" referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=8e922d16-445a-4c63-b4cf-5152fbbaf7fd" />
