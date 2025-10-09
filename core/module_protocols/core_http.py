@@ -54,7 +54,7 @@ def response_conditions_matched(sub_step, response):
             reverse = conditions[condition]['reverse']
             condition_results[condition] = reverse_and_regex_condition(regex, reverse)
             
-        elif condition == 'version_dsl':
+        if condition == 'version_dsl':
             # DSL-based version matching
             version_patterns = conditions[condition].get('patterns', [])
             dsl_expressions = conditions[condition].get('expressions', [])
@@ -91,7 +91,7 @@ def response_conditions_matched(sub_step, response):
             else:
                 condition_results[condition] = []
                 
-        elif condition == 'cve_version_match':
+        if condition == 'cve_version_match':
             # CVE-specific version matching
             version_patterns = conditions[condition].get('patterns', [])
             affected_versions = conditions[condition].get('affected_versions', [])
@@ -129,7 +129,7 @@ def response_conditions_matched(sub_step, response):
             else:
                 condition_results[condition] = []
                 
-        elif condition == 'headers':
+        if condition == 'headers':
             # convert headers to case insensitive dict
             for key in response["headers"].copy():
                 response['headers'][key.lower()] = response['headers'][key]
@@ -145,7 +145,7 @@ def response_conditions_matched(sub_step, response):
                 except TypeError:
                     condition_results['headers'][header] = []
                     
-        elif condition == 'responsetime':
+        if condition == 'responsetime':
             if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
                 "==",
                 "!=",
