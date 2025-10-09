@@ -50,7 +50,7 @@ payloads:
               reverse: false
             version_dsl:
               patterns:
-                - '\?version=([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)'
+                - '\\?version=([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)'
               expressions:
                 - "< 8.18.5"
               reverse: false
