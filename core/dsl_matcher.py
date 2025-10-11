@@ -68,11 +68,12 @@ class DSLMatcher:
         cleaned = re.sub(r'^[vV]', '', cleaned)  # Remove v/V prefix
         
         # Extract version pattern - try more comprehensive patterns
+        # Now includes prerelease tags (e.g., "1.2.3-beta1", "2.0.0-rc.1")
         patterns = [
-            r'(\d+(?:\.\d+){1,})',  # Standard version pattern
-            r'[Vv]ersion\s+(\d+(?:\.\d+)*)',  # "Version 1.2.3"
-            r'(\d+(?:\.\d+)*)\s*\([^)]*\)',  # "1.2.3 (Build 123)"
-            r'(\d+(?:\.\d+)*)',  # Simple pattern as fallback
+            r'(\d+(?:\.\d+){1,}(?:-[\w\.\-]+)?)',  # Version with optional prerelease (e.g., "1.2.3-beta1")
+            r'[Vv]ersion\s+(\d+(?:\.\d+)*(?:-[\w\.\-]+)?)',  # "Version 1.2.3-beta"
+            r'(\d+(?:\.\d+)*(?:-[\w\.\-]+)?)\s*\([^)]*\)',  # "1.2.3-rc (Build 123)"
+            r'(\d+(?:\.\d+)*)',  # Simple pattern as fallback (no prerelease)
         ]
         
         for pattern in patterns:
@@ -94,33 +95,48 @@ class DSLMatcher:
             bool: True if expression matches
         """
         try:
+            normalized = dsl_expression.strip()
+            
+            # Handle logical connectors (OR and AND) before operator dispatch
+            # Check for OR operators first (|| or 'or')
+            for splitter, combiner in [('||', any), (' or ', any), ('&&', all), (' and ', all)]:
+                # Use case-insensitive search for word-based operators
+                if splitter in ['||', '&&']:
+                    check = splitter in normalized
+                else:
+                    check = re.search(rf'\s+{re.escape(splitter.strip())}\s+', normalized, re.IGNORECASE)
+                
+                if check:
+                    parts = [part.strip() for part in re.split(rf'\s*(?:{re.escape(splitter)})\s*', normalized, flags=re.IGNORECASE) if part.strip()]
+                    return combiner(self._evaluate_dsl(part, target_version) for part in parts)
+            
             # Handle different DSL expression formats
-            # Check for multiple conditions first (comma-separated)
-            if ',' in dsl_expression:
-                return self._evaluate_multiple(dsl_expression, target_version)
-            elif dsl_expression.startswith('>='):
-                return self._compare_version(target_version, dsl_expression[2:].strip(), '>=')
-            elif dsl_expression.startswith('<='):
-                return self._compare_version(target_version, dsl_expression[2:].strip(), '<=')
-            elif dsl_expression.startswith('>'):
-                return self._compare_version(target_version, dsl_expression[1:].strip(), '>')
-            elif dsl_expression.startswith('<'):
-                return self._compare_version(target_version, dsl_expression[1:].strip(), '<')
-            elif dsl_expression.startswith('=='):
-                return self._compare_version(target_version, dsl_expression[2:].strip(), '==')
-            elif dsl_expression.startswith('!='):
-                return self._compare_version(target_version, dsl_expression[2:].strip(), '!=')
-            elif dsl_expression.startswith('~'):
-                return self._compare_version(target_version, dsl_expression[1:].strip(), '~')
-            elif dsl_expression.startswith('^'):
-                return self._compare_version(target_version, dsl_expression[1:].strip(), '^')
-            elif 'to' in dsl_expression or '-' in dsl_expression:
-                return self._evaluate_range(dsl_expression, target_version)
-            elif '*' in dsl_expression or '?' in dsl_expression:
-                return self._evaluate_wildcard(dsl_expression, target_version)
+            # Check for multiple conditions (comma-separated)
+            if ',' in normalized:
+                return self._evaluate_multiple(normalized, target_version)
+            elif normalized.startswith('>='):
+                return self._compare_version(target_version, normalized[2:].strip(), '>=')
+            elif normalized.startswith('<='):
+                return self._compare_version(target_version, normalized[2:].strip(), '<=')
+            elif normalized.startswith('>'):
+                return self._compare_version(target_version, normalized[1:].strip(), '>')
+            elif normalized.startswith('<'):
+                return self._compare_version(target_version, normalized[1:].strip(), '<')
+            elif normalized.startswith('=='):
+                return self._compare_version(target_version, normalized[2:].strip(), '==')
+            elif normalized.startswith('!='):
+                return self._compare_version(target_version, normalized[2:].strip(), '!=')
+            elif normalized.startswith('~'):
+                return self._compare_version(target_version, normalized[1:].strip(), '~')
+            elif normalized.startswith('^'):
+                return self._compare_version(target_version, normalized[1:].strip(), '^')
+            elif ' to ' in normalized.lower() or ' - ' in normalized:
+                return self._evaluate_range(normalized, target_version)
+            elif '*' in normalized or '?' in normalized:
+                return self._evaluate_wildcard(normalized, target_version)
             else:
                 # Default to exact match
-                return self._compare_version(target_version, dsl_expression.strip(), '==')
+                return self._compare_version(target_version, normalized, '==')
                 
         except Exception as e:
             self.logger.debug(f"DSL evaluation error: {e}")
@@ -251,19 +267,30 @@ class DSLMatcher:
 
     def _evaluate_range(self, dsl_expression, target_version):
         """
-        Evaluate range expressions (e.g., "1.0 to 2.0", "1.0-2.0")
+        Evaluate range expressions (e.g., "1.0 to 2.0", "1.0 - 2.0")
+        Note: Requires spaces around hyphen to distinguish from prerelease versions
         """
         try:
-            if 'to' in dsl_expression:
-                parts = dsl_expression.split('to')
-            else:
-                parts = dsl_expression.split('-')
+            parts = None
+            
+            # Check for "to" separator (case-insensitive)
+            if ' to ' in dsl_expression.lower():
+                parts = re.split(r'\s+to\s+', dsl_expression, flags=re.IGNORECASE)
+            # Only treat hyphen as range separator if surrounded by spaces
+            # This avoids misinterpreting prerelease versions like "8.18.0-beta1"
+            elif ' - ' in dsl_expression:
+                parts = dsl_expression.split(' - ')
                 
-            if len(parts) != 2:
+            # If no valid range separator found, return False to let other handlers try
+            if parts is None or len(parts) != 2:
                 return False
                 
             start_version = parts[0].strip()
             end_version = parts[1].strip()
+            
+            # Validate that both parts look like versions (not empty)
+            if not start_version or not end_version:
+                return False
             
             return (self._compare_version(target_version, start_version, '>=') and
                     self._compare_version(target_version, end_version, '<='))
