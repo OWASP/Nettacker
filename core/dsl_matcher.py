@@ -15,25 +15,10 @@ import logging
 
 
 class DSLMatcher:
-    """
-    DSL (Domain Specific Language) matcher for version comparison and pattern matching
-    Supports various version matching operations useful for CVE module development
-    """
-
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
     def parse_dsl_expression(self, dsl_expression, target_version):
-        """
-        Parse and evaluate DSL expression against target version
-        
-        Args:
-            dsl_expression (str): DSL expression to evaluate
-            target_version (str): Version string to compare against
-            
-        Returns:
-            bool: True if expression matches, False otherwise
-        """
         try:
             if not dsl_expression or not target_version:
                 return False
@@ -207,8 +192,12 @@ class DSLMatcher:
         ~1.2.3 := >=1.2.3 <1.3.0
         """
         try:
-            v1_parts = [int(x) for x in version1.split('.')]
-            v2_parts = [int(x) for x in version2.split('.')]
+            # Strip prerelease/build metadata for comparison
+            v1_clean = re.sub(r'[-+].*$', '', version1)
+            v2_clean = re.sub(r'[-+].*$', '', version2)
+            
+            v1_parts = [int(x) for x in v1_clean.split('.')]
+            v2_parts = [int(x) for x in v2_clean.split('.')]
             
             # Pad to same length
             max_len = max(len(v1_parts), len(v2_parts))
@@ -239,8 +228,12 @@ class DSLMatcher:
         ^1.2.3 := >=1.2.3 <2.0.0
         """
         try:
-            v1_parts = [int(x) for x in version1.split('.')]
-            v2_parts = [int(x) for x in version2.split('.')]
+            # Strip prerelease/build metadata for comparison
+            v1_clean = re.sub(r'[-+].*$', '', version1)
+            v2_clean = re.sub(r'[-+].*$', '', version2)
+            
+            v1_parts = [int(x) for x in v1_clean.split('.')]
+            v2_parts = [int(x) for x in v2_clean.split('.')]
             
             # Pad to same length
             max_len = max(len(v1_parts), len(v2_parts))
@@ -438,16 +431,6 @@ class DSLMatcher:
         return False
 
     def extract_version_from_response(self, content, patterns):
-        """
-        Extract version information from response content
-        
-        Args:
-            content (str): Response content to parse
-            patterns (list): List of regex patterns to try
-            
-        Returns:
-            str: Extracted version or None
-        """
         if not content or not patterns:
             return None
             
@@ -464,17 +447,6 @@ class DSLMatcher:
         return None
 
     def _compare_version_parts(self, v1_parts, v2_parts, operator):
-        """
-        Compare two version part arrays using specified operator
-        
-        Args:
-            v1_parts (list): First version parts
-            v2_parts (list): Second version parts
-            operator (str): Comparison operator
-            
-        Returns:
-            bool: Comparison result
-        """
         try:
             max_len = max(len(v1_parts), len(v2_parts))
             v1_parts_padded = v1_parts + [0] * (max_len - len(v1_parts))
