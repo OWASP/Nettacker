@@ -25,6 +25,7 @@ from nettacker.core.ip import (
 )
 from nettacker.core.messages import messages as _
 from nettacker.core.module import Module
+from nettacker.core.queue_manager import initialize_thread_pool, shutdown_thread_pool
 from nettacker.core.socks_proxy import set_socks_proxy
 from nettacker.core.utils import common as common_utils
 from nettacker.core.utils.common import wait_for_threads_to_finish
@@ -245,6 +246,12 @@ class Nettacker(ArgParser):
             target_groups.remove([])
 
         log.info(_("start_multi_process").format(len(self.arguments.targets), len(target_groups)))
+
+        # Initialize the enhanced thread pool for cross-process sharing
+        num_processes = len(target_groups)
+        max_workers_per_process = getattr(self.arguments, "parallel_module_scan", None)
+        initialize_thread_pool(num_processes, max_workers_per_process)
+
         active_processes = []
         for t_id, target_groups in enumerate(target_groups):
             process = multiprocess.Process(
@@ -253,7 +260,12 @@ class Nettacker(ArgParser):
             process.start()
             active_processes.append(process)
 
-        return wait_for_threads_to_finish(active_processes, sub_process=True)
+        result = wait_for_threads_to_finish(active_processes, sub_process=True)
+
+        # Shutdown the thread pool after scanning is complete
+        shutdown_thread_pool()
+
+        return result
 
     def scan_target(
         self,
