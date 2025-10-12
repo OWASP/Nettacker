@@ -5,9 +5,9 @@ import os
 import random
 import string
 import time
+from pathlib import Path
 from threading import Thread
 from types import SimpleNamespace
-from pathlib import Path
 
 from flask import Flask, jsonify
 from flask import request as flask_request
@@ -384,12 +384,12 @@ def get_result_content():
     scan_id = get_value(flask_request, "id")
     if not scan_id:
         return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
-    
+
     try:
         filename, file_content = get_scan_result(scan_id)
     except Exception:
         return jsonify(structure(status="error", msg="database error!")), 500
-    
+
     return Response(
         file_content,
         mimetype=mime_types().get(os.path.splitext(filename)[1], "text/plain"),

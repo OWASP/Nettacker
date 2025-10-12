@@ -1,7 +1,7 @@
 import json
 import sys
-from pathlib import Path
 from argparse import ArgumentParser
+from pathlib import Path
 
 import yaml
 
@@ -61,13 +61,13 @@ class ArgParser(ArgumentParser):
 
         Returns:
             an array of languages
-        """ 
+        """
         languages_list = []
 
         for language in Config.path.locale_dir.glob("*.yaml"):
-            languages_list.append(Path(language).stem)  
+            languages_list.append(Path(language).stem)
         return list(set(languages_list))
-    
+
     @staticmethod
     def load_modules(limit=-1, full_details=False):
         """
@@ -78,13 +78,13 @@ class ArgParser(ArgumentParser):
 
         Returns:
             an array of all module names
-        """ 
+        """
         # Search for Modules
         module_names = {}
         for module_name in sorted(Config.path.modules_dir.glob("**/*.yaml")):
             module_path = Path(module_name)
-            library = module_path.stem  
-            category = module_path.parent.name  
+            library = module_path.stem
+            category = module_path.parent.name
             module = f"{library}_{category}"
             contents = yaml.safe_load(TemplateLoader(module).open().split("payload:")[0])
             module_names[module] = contents["info"] if full_details else None
@@ -100,7 +100,7 @@ class ArgParser(ArgumentParser):
         module_names["all"] = {}
 
         return module_names
-    
+
     @staticmethod
     def load_profiles(limit=-1):
         """
