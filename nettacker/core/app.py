@@ -36,21 +36,24 @@ from nettacker.logger import TerminalCodes
 
 log = logger.get_logger()
 
+
 def is_running_with_privileges():
-        """
-        Check if running with elevated privileges (root/admin)
-        
-        Returns:
-            bool: True if running as root (Unix) or Administrator (Windows)
-        """
-        if sys.platform == "win32":
-            try:
-                import ctypes
-                return ctypes.windll.shell32.IsUserAnAdmin() != 0
-            except Exception:
-                return False
-        else:
-            return os.geteuid() == 0        
+    """
+    Check if running with elevated privileges (root/admin)
+
+    Returns:
+        bool: True if running as root (Unix) or Administrator (Windows)
+    """
+    if sys.platform == "win32":
+        try:
+            import ctypes
+
+            return ctypes.windll.shell32.IsUserAnAdmin() != 0
+        except Exception:
+            return False
+    else:
+        return os.geteuid() == 0
+
 
 class Nettacker(ArgParser):
     def __init__(self, api_arguments=None):
@@ -180,7 +183,7 @@ class Nettacker(ArgParser):
                             self.arguments.targets.append(sub_domain)
         # icmp_scan
         if self.arguments.ping_before_scan:
-            if is_running_with_privileges(): 
+            if is_running_with_privileges():
                 selected_modules = self.arguments.selected_modules
                 self.arguments.selected_modules = ["icmp_scan"]
                 self.start_scan(scan_id)
