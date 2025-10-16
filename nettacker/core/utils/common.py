@@ -5,6 +5,7 @@ import hashlib
 import importlib
 import math
 import multiprocessing
+import os
 import random
 import re
 import string
@@ -450,3 +451,21 @@ def generate_compare_filepath(scan_id):
         date_time=now(format="%Y_%m_%d_%H_%M_%S"),
         scan_id=scan_id,
     )
+
+
+def is_running_with_privileges():
+    """
+    Check if running with elevated privileges (root/admin)
+
+    Returns:
+        bool: True if running as root (Unix) or Administrator (Windows)
+    """
+    if sys.platform == "win32":
+        try:
+            import ctypes
+
+            return ctypes.windll.shell32.IsUserAnAdmin() != 0
+        except Exception:
+            return False
+    else:
+        return os.geteuid() == 0

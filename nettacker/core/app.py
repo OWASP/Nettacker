@@ -27,7 +27,7 @@ from nettacker.core.messages import messages as _
 from nettacker.core.module import Module
 from nettacker.core.socks_proxy import set_socks_proxy
 from nettacker.core.utils import common as common_utils
-from nettacker.core.utils.common import wait_for_threads_to_finish
+from nettacker.core.utils.common import wait_for_threads_to_finish, is_running_with_privileges
 from nettacker.database.db import find_events, remove_old_logs
 from nettacker.database.mysql import mysql_create_database, mysql_create_tables
 from nettacker.database.postgresql import postgres_create_database
@@ -35,24 +35,6 @@ from nettacker.database.sqlite import sqlite_create_tables
 from nettacker.logger import TerminalCodes
 
 log = logger.get_logger()
-
-
-def is_running_with_privileges():
-    """
-    Check if running with elevated privileges (root/admin)
-
-    Returns:
-        bool: True if running as root (Unix) or Administrator (Windows)
-    """
-    if sys.platform == "win32":
-        try:
-            import ctypes
-
-            return ctypes.windll.shell32.IsUserAnAdmin() != 0
-        except Exception:
-            return False
-    else:
-        return os.geteuid() == 0
 
 
 class Nettacker(ArgParser):
