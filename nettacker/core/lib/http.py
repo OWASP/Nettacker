@@ -120,6 +120,39 @@ def response_conditions_matched(sub_step, response):
                     condition_results["version_match"] = []
             else:
                 condition_results["version_match"] = []
+        
+        # version_dsl condition (supports multiple expressions with OR logic)
+        if condition == "version_dsl":
+            version_config = conditions[condition]
+            # Extract version from response using patterns
+            version_patterns = version_config.get("patterns", [])
+            dsl_expressions = version_config.get("expressions", [])
+            reverse = version_config.get("reverse", False)
+            
+            # Get the content to search from (default to content)
+            search_content = response.get("content", "")
+            
+            # Extract version
+            detected_version = extract_version_from_content(search_content, version_patterns)
+            
+            # Match against DSL expressions (OR logic - matches if ANY expression matches)
+            match_result = False
+            if detected_version and dsl_expressions:
+                for dsl_expression in dsl_expressions:
+                    if version_matches_dsl(detected_version, dsl_expression):
+                        match_result = True
+                        break
+                
+                # Apply reverse logic
+                if reverse:
+                    match_result = not match_result
+                
+                if match_result:
+                    condition_results["version_dsl"] = [detected_version]
+                else:
+                    condition_results["version_dsl"] = []
+            else:
+                condition_results["version_dsl"] = []
     if condition_type.lower() == "or":
         # if one of the values are matched, it will be a string or float object in the array
         # we count False in the array and if it's not all []; then we know one of the conditions

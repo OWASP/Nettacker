@@ -1,7 +1,7 @@
 info:
   name: aria_operations_cve_2025_41244_vuln
   author: rxerium
-  severity: 9
+  severity: 7.8
   description: VMware Aria Operations and VMware Tools contain a local privilege escalation vulnerability. A malicious local actor with non-administrative privileges having access to a VM with VMware Tools installed and managed by Aria Operations with SDMP enabled may exploit this vulnerability to escalate privileges to root on the same VM.
   reference:
     - https://nvd.nist.gov/vuln/detail/CVE-2025-41244
