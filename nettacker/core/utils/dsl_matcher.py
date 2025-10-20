@@ -55,9 +55,9 @@ class DSLMatcher:
         # Extract version pattern - try more comprehensive patterns
         # Now includes prerelease tags (e.g., "1.2.3-beta1", "2.0.0-rc.1")
         patterns = [
-            r'(\d+(?:\.\d+){1,}(?:-[\w\.\-]+)?)',  # Version with optional prerelease (e.g., "1.2.3-beta1")
-            r'[Vv]ersion\s+(\d+(?:\.\d+)*(?:-[\w\.\-]+)?)',  # "Version 1.2.3-beta"
-            r'(\d+(?:\.\d+)*(?:-[\w\.\-]+)?)\s*\([^)]*\)',  # "1.2.3-rc (Build 123)"
+            r'(\d+(?:\.\d+){1,}(?:-[\w.-]+)?)',  # Version with optional prerelease (e.g., "1.2.3-beta1")
+            r'[Vv]ersion\s+(\d+(?:\.\d+)*(?:-[\w.-]+)?)',  # "Version 1.2.3-beta"
+            r'(\d+(?:\.\d+)*(?:-[\w.-]+)?)\s*\([^)]*\)',  # "1.2.3-rc (Build 123)"
             r'(\d+(?:\.\d+)*)',  # Simple pattern as fallback (no prerelease)
         ]
         
