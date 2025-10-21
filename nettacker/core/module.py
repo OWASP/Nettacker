@@ -118,26 +118,25 @@ class Module:
         self.module_content["payloads"] = expand_module_steps(self.module_content["payloads"])
 
     def sort_loops(self):
-        steps = []
         for index in range(len(self.module_content["payloads"])):
-            for step in copy.deepcopy(self.module_content["payloads"][index]["steps"]):
-                if "dependent_on_temp_event" not in step[0]["response"]:
-                    steps.append(step)
+            steps_without_dependencies = []
+            steps_with_temp_dependencies = []
+            steps_with_normal_dependencies = []
 
             for step in copy.deepcopy(self.module_content["payloads"][index]["steps"]):
-                if (
-                    "dependent_on_temp_event" in step[0]["response"]
-                    and "save_to_temp_events_only" in step[0]["response"]
-                ):
-                    steps.append(step)
+                resp = step[0]["response"]
+                if "dependent_on_temp_event" not in resp:
+                    steps_without_dependencies.append(step)
+                elif "save_to_temp_events_only" in resp:
+                    steps_with_temp_dependencies.append(step)
+                else:
+                    steps_with_normal_dependencies.append(step)
 
-            for step in copy.deepcopy(self.module_content["payloads"][index]["steps"]):
-                if (
-                    "dependent_on_temp_event" in step[0]["response"]
-                    and "save_to_temp_events_only" not in step[0]["response"]
-                ):
-                    steps.append(step)
-            self.module_content["payloads"][index]["steps"] = steps
+            self.module_content["payloads"][index]["steps"] = (
+                steps_without_dependencies
+                + steps_with_temp_dependencies
+                + steps_with_normal_dependencies
+            )
 
     def start(self):
         active_threads = []
