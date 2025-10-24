@@ -7,7 +7,7 @@ import sys
 from threading import Thread
 
 import multiprocess
-
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from nettacker import logger
 from nettacker.config import Config, version_info
 from nettacker.core.arg_parser import ArgParser
@@ -23,6 +23,7 @@ from nettacker.core.ip import (
     is_ipv6_range,
     is_ipv6_cidr,
 )
+from nettacker.core.hostcheck import resolve_quick, is_ip_literal, valid_hostname
 from nettacker.core.messages import messages as _
 from nettacker.core.module import Module
 from nettacker.core.socks_proxy import set_socks_proxy
@@ -142,7 +143,7 @@ class Nettacker(ArgParser):
             ):
                 targets += generate_ip_range(target)
             # domains probably
-            else:
+            else: 
                 targets.append(target)
         self.arguments.targets = targets
         self.arguments.url_base_path = base_path
@@ -206,6 +207,7 @@ class Nettacker(ArgParser):
         Returns:
             True when it ends
         """
+        log.info("Process started!!")
         scan_id = common_utils.generate_random_token(32)
         log.info("ScanID: {0}".format(scan_id))
         log.info(_("regrouping_targets"))
@@ -214,13 +216,14 @@ class Nettacker(ArgParser):
         self.arguments.targets = self.expand_targets(scan_id)
         if not self.arguments.targets:
             log.info(_("no_live_service_found"))
+            log.info("Process done!!")
             return True
         exit_code = self.start_scan(scan_id)
         create_report(self.arguments, scan_id)
         if self.arguments.scan_compare_id is not None:
             create_compare_report(self.arguments, scan_id)
         log.info("ScanID: {0} ".format(scan_id) + _("done"))
-
+        log.info("Process done!!")
         return exit_code
 
     def start_scan(self, scan_id):
@@ -289,7 +292,67 @@ class Nettacker(ArgParser):
 
         return os.EX_OK
 
+
+    def filter_valid_targets(self, targets, timeout_per_target=2.0, max_workers=None, dedupe=True):
+        """
+        Parallel validation of targets via resolve_quick(target, timeout_sec).
+        Returns a list of canonical targets (order preserved, invalids removed).
+        """
+        # Ensure it's a concrete list (len, indexing OK)
+        try:
+            targets = list(targets)
+        except TypeError:
+            raise TypeError(f"`targets` must be iterable, got {type(targets).__name__}")
+
+        if not targets:
+            return []
+
+        if max_workers is None:
+            max_workers = min(len(targets), 64)  # cap threads
+
+        # Preserve order
+        canon_by_index = [None] * len(targets)
+
+        def _task(idx, t):
+            ok, canon = resolve_quick(t, timeout_sec=timeout_per_target)
+            return idx, t, (canon if ok and canon else None)
+
+        with ThreadPoolExecutor(max_workers=max_workers) as ex:
+            futures = [ex.submit(_task, i, t) for i, t in enumerate(targets)]
+            for fut in as_completed(futures):
+                try:
+                    idx, orig_target, canon = fut.result()
+                except Exception as e:
+                    # Treat as invalid on error; log with the best context we have
+                    log.info(f"Invalid target (exception): {e!s}")
+                    continue
+
+                if canon:
+                    canon_by_index[idx] = canon
+                else:
+                    log.info(f"Invalid target -> dropping: {orig_target}")
+
+        # Keep order, drop Nones
+        filtered = [c for c in canon_by_index if c is not None]
+
+        if dedupe:
+            seen, unique = set(), []
+            for c in filtered:
+                if c not in seen:
+                    seen.add(c)
+                    unique.append(c)
+            return unique
+        return filtered
+
     def scan_target_group(self, targets, scan_id, process_number):
+
+        if(not self.arguments.socks_proxy):
+            targets = self.filter_valid_targets(
+            targets,
+            timeout_per_target=2.0,
+            max_workers=self.arguments.parallel_module_scan or None,
+            dedupe=True,
+        )
         active_threads = []
         log.verbose_event_info(_("single_process_started").format(process_number))
         total_number_of_modules = len(targets) * len(self.arguments.selected_modules)
