@@ -207,6 +207,7 @@ class Nettacker(ArgParser):
         Returns:
             True when it ends
         """
+        log.info("Process started!!")
         scan_id = common_utils.generate_random_token(32)
         log.info("ScanID: {0}".format(scan_id))
         log.info(_("regrouping_targets"))
@@ -215,12 +216,14 @@ class Nettacker(ArgParser):
         self.arguments.targets = self.expand_targets(scan_id)
         if not self.arguments.targets:
             log.info(_("no_live_service_found"))
+            log.info("Process done!!")
             return True
         exit_code = self.start_scan(scan_id)
         create_report(self.arguments, scan_id)
         if self.arguments.scan_compare_id is not None:
             create_compare_report(self.arguments, scan_id)
         log.info("ScanID: {0} ".format(scan_id) + _("done"))
+        log.info("Process done!!")
         return exit_code
 
     def start_scan(self, scan_id):
@@ -319,9 +322,8 @@ class Nettacker(ArgParser):
             for fut in as_completed(futures):
                 try:
                     idx, orig_target, canon = fut.result()
-                except Exception as e:
-                    # Treat as invalid on error; log with the best context we have
-                    log.info(f"Invalid target (exception): {e!s}")
+                except (OSError, socket.gaierror) as exc:
+                    log.debug(f"Invalid target (resolver error): {exc!s}")
                     continue
 
                 if canon:
