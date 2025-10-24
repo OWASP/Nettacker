@@ -27,6 +27,8 @@ def valid_hostname(host: str, allow_single_label: bool = False) -> bool:
         host = host[:-1]
     parts = host.split(".")
     if len(parts) < 2 and not allow_single_label:
+        # log.warn("Its a name like google")
+        print("itegb")
         return False
     return all(_LABEL.match(p) for p in parts)
 
@@ -56,10 +58,12 @@ def _gai_once(name: str, use_ai_addrconfig: bool, port):
         name, port, socket.AF_UNSPEC, socket.SOCK_STREAM, 0, flags
     )
 
-def resolve_quick(host: str,
-                  timeout_sec: float = 2.0,
-                  try_search_suffixes: bool = True,
-                  allow_single_label: bool = True) -> tuple[bool, str | None]:
+def resolve_quick(
+        host: str,
+        timeout_sec: float = 2.0,
+        try_search_suffixes: bool = True,
+        allow_single_label: bool = True
+) -> tuple[bool, str | None]:
 
     candidates: list[str] = []
     if "." in host:
@@ -70,6 +74,8 @@ def resolve_quick(host: str,
             candidates.extend([host, host + "."])
     else:
         # single label (e.g., "intranet")
+        if not allow_single_label:
+            return False, None
         if try_search_suffixes:
             for s in _system_search_suffixes():
                 candidates.extend([f"{host}.{s}", f"{host}.{s}."])
@@ -100,18 +106,16 @@ def resolve_quick(host: str,
                 )
                 for fut in done:
                     try:
-                        res = fut.result()  # success if no exception
-                        # Optional: assert non-empty result
+                        res = fut.result() 
                         if not res:
                             # treat as failure
                             raise RuntimeError("empty getaddrinfo result")
                         chosen = fut2cand[fut]
                         # cancel stragglers
                         for p in pending: p.cancel()
-                        return True,  (chosen[:-1] if chosen.endswith(".") else chosen)
+                        canon = chosen[:-1] if chosen.endswith(".") else chosen
+                        return True, canon.lower()
                     except Exception as e:
-                        # TEMPORARY DEBUG LOGS — remove later
-                        # print(f"[pass {pass_ix}] {fut2cand[fut]} -> {type(e).__name__}: {e!s}")
                         continue
             # cancel any survivors in this pass
             for f in fut2cand: f.cancel()
