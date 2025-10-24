@@ -27,8 +27,6 @@ def valid_hostname(host: str, allow_single_label: bool = False) -> bool:
         host = host[:-1]
     parts = host.split(".")
     if len(parts) < 2 and not allow_single_label:
-        # log.warn("Its a name like google")
-        print("itegb")
         return False
     return all(_LABEL.match(p) for p in parts)
 
