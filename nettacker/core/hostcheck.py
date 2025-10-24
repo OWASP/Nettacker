@@ -64,7 +64,18 @@ def resolve_quick(
         try_search_suffixes: bool = True,
         allow_single_label: bool = True
 ) -> tuple[bool, str | None]:
-
+    """
+    Perform fast DNS resolution with timeout and suffix search.
+    
+    Args:
+        host: Hostname or IP literal to resolve.
+        timeout_sec: Maximum time to wait for resolution.
+        try_search_suffixes: If True, append /etc/resolv.conf search suffixes for single-label hosts.
+        allow_single_label: If True, allow single-label hostnames (e.g., "intranet").
+    
+    Returns:
+        (True, canonical_hostname) on success, (False, None) on failure/timeout.
+    """
     candidates: list[str] = []
     if "." in host:
         # try both plain and absolute forms; whichever resolves first wins
