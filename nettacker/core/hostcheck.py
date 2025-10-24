@@ -11,16 +11,31 @@ import sys
 _LABEL = re.compile(r"^(?!-)[A-Za-z0-9-]{1,63}(?<!-)$")
 
 def is_ip_literal(name: str) -> bool:
+    """Return True if name is a valid IPv4 or IPv6 address literal."""
     try:
-        socket.inet_pton(socket.AF_INET, name); return True
+        socket.inet_pton(socket.AF_INET, name)
+        return True
     except OSError:
         pass
     try:
-        socket.inet_pton(socket.AF_INET6, name); return True
+        socket.inet_pton(socket.AF_INET6, name)
+        return True
     except OSError:
         return False
 
-def valid_hostname(host: str, allow_single_label: bool = False) -> bool:
+def valid_hostname(
+    host: str, 
+    allow_single_label: bool = False
+) -> bool:
+    """
+    Validate hostname syntax per RFC 1123.
+    Args:
+        host: Hostname to validate.
+        allow_single_label: If True, accept single-label names (e.g., "localhost").
+    
+    Returns:
+        True if the hostname is syntactically valid.
+    """
     if len(host) > 253:
         return False
     if host.endswith("."):
@@ -104,7 +119,9 @@ def resolve_quick(
 
     for pass_ix, (use_ai_addrconfig, port) in enumerate(((True, None), (False, None))):
         deadline = time.monotonic() + timeout_sec
-        with concurrent.futures.ThreadPoolExecutor(max_workers=len(candidates)) as ex:
+        maxw = min(len(candidates), 4)
+        ex = concurrent.futures.ThreadPoolExecutor(max_workers=maxw)
+        try:
             fut2cand = {ex.submit(_gai_once, c, use_ai_addrconfig, port): c for c in candidates}
             pending = set(fut2cand)
             while pending:
@@ -119,15 +136,26 @@ def resolve_quick(
                     try:
                         res = fut.result() 
                         if not res:
-                            # treat as failure
-                            raise RuntimeError("empty getaddrinfo result")
+                            continue
                         chosen = fut2cand[fut]
-                        # cancel stragglers
-                        for p in pending: p.cancel()
+                        for p in pending:
+                           p.cancel()
+                        # ensure we don't wait on the executor shutdown
+                        try:
+                            ex.shutdown(wait=False, cancel_futures=True)
+                        except TypeError:  # Py<3.9
+                            ex.shutdown(wait=False)
                         canon = chosen[:-1] if chosen.endswith(".") else chosen
                         return True, canon.lower()
-                    except Exception as e:
+                    except Exception:
                         continue
             # cancel any survivors in this pass
-            for f in fut2cand: f.cancel()
+            for f in fut2cand: 
+                f.cancel()
+        finally:
+            # best-effort non-blocking shutdown
+            try:
+                ex.shutdown(wait=False, cancel_futures=True)
+            except TypeError:
+                ex.shutdown(wait=False)
     return False, None
