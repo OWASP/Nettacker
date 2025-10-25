@@ -36,10 +36,10 @@ def valid_hostname(
     Returns:
         True if the hostname is syntactically valid.
     """
-    if len(host) > 253:
-        return False
     if host.endswith("."):
         host = host[:-1]
+    if len(host) > 253:
+        return False
     parts = host.split(".")
     if len(parts) < 2 and not allow_single_label:
         return False
