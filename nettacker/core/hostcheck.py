@@ -36,10 +36,10 @@ def valid_hostname(
     Returns:
         True if the hostname is syntactically valid.
     """
-    if host.endswith("."):
-        host = host[:-1]
     if len(host) > 253:
         return False
+    if host.endswith("."):
+        host = host[:-1]
     parts = host.split(".")
     if len(parts) < 2 and not allow_single_label:
         return False
@@ -113,7 +113,8 @@ def resolve_quick(
     seen, uniq = set(), []
     for c in candidates:
         if c not in seen:
-            seen.add(c); uniq.append(c)
+            seen.add(c)
+            uniq.append(c)
     candidates = uniq
     if not candidates:
         return False, None
