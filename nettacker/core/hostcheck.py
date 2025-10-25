@@ -6,7 +6,8 @@ import time
 import concurrent.futures
 import os
 import sys
-
+import logging
+logger = logging.getLogger(__name__)
 
 _LABEL = re.compile(r"^(?!-)[A-Za-z0-9-]{1,63}(?<!-)$")
 
@@ -36,10 +37,10 @@ def valid_hostname(
     Returns:
         True if the hostname is syntactically valid.
     """
-    if len(host) > 253:
-        return False
     if host.endswith("."):
         host = host[:-1]
+    if len(host) > 253:
+        return False
     parts = host.split(".")
     if len(parts) < 2 and not allow_single_label:
         return False
@@ -56,7 +57,8 @@ def _system_search_suffixes() -> list[str]:
                     continue
                 if line.startswith("search") or line.startswith("domain"):
                     sufs += [x for x in line.split()[1:] if x]
-    except Exception:
+    except Exception as e:
+        logger.debug(f"Could not read /etc/resolv.conf: {e}")
         pass
     seen = set() 
     out: list[str] = []
