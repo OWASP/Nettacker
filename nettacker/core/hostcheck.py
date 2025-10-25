@@ -52,15 +52,18 @@ def _system_search_suffixes() -> list[str]:
         with open("/etc/resolv.conf") as f:
             for line in f:
                 line = line.strip()
-                if not line or line.startswith("#"): continue
+                if not line or line.startswith("#"): 
+                    continue
                 if line.startswith("search") or line.startswith("domain"):
                     sufs += [x for x in line.split()[1:] if x]
     except Exception:
         pass
-    seen = set(); out: list[str] = []
+    seen = set() 
+    out: list[str] = []
     for s in sufs:
         if s not in seen:
-            seen.add(s); out.append(s)
+            seen.add(s)
+            out.append(s)
     return out
 
 # --- safer, more robust pieces to replace in hostcheck.py ---
@@ -115,7 +118,7 @@ def resolve_quick(
     if not candidates:
         return False, None
 
-    for pass_ix, (use_ai_addrconfig, port) in enumerate(((True, None), (False, None))):
+    for _pass_ix, (use_ai_addrconfig, port) in enumerate(((True, None), (False, None))):
         deadline = time.monotonic() + timeout_sec
         maxw = min(len(candidates), 4)
         ex = concurrent.futures.ThreadPoolExecutor(max_workers=maxw)
@@ -137,7 +140,7 @@ def resolve_quick(
                             continue
                         chosen = fut2cand[fut]
                         for p in pending:
-                           p.cancel()
+                            p.cancel()
                         # ensure we don't wait on the executor shutdown
                         try:
                             ex.shutdown(wait=False, cancel_futures=True)
@@ -145,7 +148,8 @@ def resolve_quick(
                             ex.shutdown(wait=False)
                         canon = chosen[:-1] if chosen.endswith(".") else chosen
                         return True, canon.lower()
-                    except Exception:
+                    except (OSError, socket.gaierror):
+                        # DNS resolution failed for this candidate, try next
                         continue
             # cancel any survivors in this pass
             for f in fut2cand: 
