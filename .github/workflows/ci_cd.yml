@@ -107,7 +107,7 @@ jobs:
           poetry build --no-interaction
 
       - name: Upload package artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dist
           path: dist
@@ -131,7 +131,7 @@ jobs:
           python-version: '3.11'
 
       - name: Get package artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: dist
           path: dist
@@ -319,7 +319,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Get package artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: dist
           path: dist
@@ -345,7 +345,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Get package artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: dist
           path: dist
