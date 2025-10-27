@@ -207,7 +207,6 @@ class Nettacker(ArgParser):
         Returns:
             True when it ends
         """
-        log.info("Process started!!")
         scan_id = common_utils.generate_random_token(32)
         log.info("ScanID: {0}".format(scan_id))
         log.info(_("regrouping_targets"))
@@ -216,14 +215,12 @@ class Nettacker(ArgParser):
         self.arguments.targets = self.expand_targets(scan_id)
         if not self.arguments.targets:
             log.info(_("no_live_service_found"))
-            log.info("Process done!!")
             return True
         exit_code = self.start_scan(scan_id)
         create_report(self.arguments, scan_id)
         if self.arguments.scan_compare_id is not None:
             create_compare_report(self.arguments, scan_id)
         log.info("ScanID: {0} ".format(scan_id) + _("done"))
-        log.info("Process done!!")
         return exit_code
 
     def start_scan(self, scan_id):
@@ -308,7 +305,7 @@ class Nettacker(ArgParser):
             return []
 
         if max_workers is None:
-            max_workers = min(len(targets), 64)  # cap threads
+            max_workers = min(len(targets), 10)  # cap threads
 
         # Preserve order
         canon_by_index = [None] * len(targets)
@@ -345,7 +342,7 @@ class Nettacker(ArgParser):
 
     def scan_target_group(self, targets, scan_id, process_number):
 
-        if(not self.arguments.socks_proxy):
+        if(not self.arguments.socks_proxy and self.arguments.validate_before_scan):
             targets = self.filter_valid_targets(
             targets,
             timeout_per_target=2.0,

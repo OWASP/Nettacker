@@ -25,6 +25,7 @@ read_passwords: ファイルからパスワードを読み込む
 port_separator: ポートリスト、 "、"
 time_to_sleep: 各リクエストの間にスリープする時間
 error_target: ターゲットを指定できません
+validate_before_scan: スキャン前にターゲット/接続性を事前検証します。到達不能なターゲットはスキップされます。
 error_target_file: ファイルを開くことができないターゲットを指定することはできません：{0}
 thread_number_warning: 100より低いスレッド番号を使用する方が良いです、私たちは継続しています...
 settimeout: タイムアウトを{0}秒に設定すると大きすぎますね。私たちが続けているところで...

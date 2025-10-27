@@ -23,6 +23,7 @@ username_from_file: 从文件中读取用户名
 password_separator: 密码列表，用“，”分开
 read_passwords: 从文件中读取密码
 port_separator: 端口列表，用“，”分开
+validate_before_scan: 在扫描前预先验证目标/连通性；无法访问的目标将被跳过。
 time_to_sleep: 每次请求的间隔时间
 error_target: 无法指定目标（s）
 error_target_file: 无法指定目标，无法打开文件：{0}
