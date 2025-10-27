@@ -76,7 +76,6 @@ def _clean_host(s: str) -> str:
 def resolve_quick(
         host: str,
         timeout_sec: float = 2.0,
-        try_search_suffixes: bool = True,
         allow_single_label: bool = True
 ) -> tuple[bool, str | None]:
     """
@@ -91,19 +90,19 @@ def resolve_quick(
         (True, host_name) on success, (False, None) on failure/timeout.
    """
     host = _clean_host(host)
-    if(is_single_ipv4(host) or is_single_ipv6(host)):
+    if is_single_ipv4(host) or is_single_ipv6(host):
         if(is_ip_literal(host)):
-            return True , host
-        return False ,None
+            return True, host
+        return False, None
     
     if host.endswith("."):
         host = host[:-1]
         
-    if(not valid_hostname(host)):
-        return False , None
+    if not valid_hostname(host):
+        return False, None
     
     if "." not in host and not allow_single_label:
-        return False ,None
+        return False, None
     
     deadline = time.monotonic() + timeout_sec
 
