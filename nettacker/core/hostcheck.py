@@ -4,8 +4,6 @@ import re
 import socket
 import time
 import concurrent.futures
-import os
-import sys
 from nettacker import logger
 from nettacker.core.ip import (
     get_ip_range,
@@ -87,7 +85,7 @@ def resolve_quick(
     
     Returns:
         (True, host_name) on success, (False, None) on failure/timeout.
-   """
+    """
     host = _clean_host(host)
     if is_single_ipv4(host) or is_single_ipv6(host):
         if is_ip_literal(host):
