@@ -7,7 +7,6 @@ import concurrent.futures
 import os
 import sys
 from nettacker import logger
-log = logger.get_logger()
 from nettacker.core.ip import (
     get_ip_range,
     generate_ip_range,
@@ -18,6 +17,7 @@ from nettacker.core.ip import (
     is_ipv6_range,
     is_ipv6_cidr,
 )
+log = logger.get_logger()
 
 _LABEL = re.compile(r"^(?!-)[A-Za-z0-9-]{1,63}(?<!-)$")
 
