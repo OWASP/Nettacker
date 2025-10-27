@@ -79,8 +79,7 @@ def resolve_quick(
         allow_single_label: bool = True
 ) -> tuple[bool, str | None]:
     """
-    Perform fast DNS resolution with timeout and suffix search.
-    
+    Perform fast DNS resolution with timeout.
     Args:
         host: Hostname or IP literal to resolve.
         timeout_sec: Maximum time to wait for resolution.
@@ -91,7 +90,7 @@ def resolve_quick(
    """
     host = _clean_host(host)
     if is_single_ipv4(host) or is_single_ipv6(host):
-        if(is_ip_literal(host)):
+        if is_ip_literal(host):
             return True, host
         return False, None
     
@@ -103,21 +102,17 @@ def resolve_quick(
     
     if "." not in host and not allow_single_label:
         return False, None
-    
-    deadline = time.monotonic() + timeout_sec
 
     def _call(use_ai_addrconfig: bool):
         return _gai_once(host, use_ai_addrconfig, None)
 
     for use_ai in (True, False):
-        remaining = deadline - time.monotonic()
-        if remaining <= 0:
-            return False, None
+        deadline = time.monotonic() + timeout_sec
         try:
             # Run getaddrinfo in a thread so we can enforce timeout
             with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
                 fut = ex.submit(_call, use_ai)
-                fut.result(timeout=remaining)  # raises on timeout or error
+                fut.result(timeout=timeout_sec)  # raises on timeout or error
             return True, host.lower()
         except concurrent.futures.TimeoutError:
             return False, None
