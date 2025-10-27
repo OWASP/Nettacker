@@ -24,6 +24,7 @@ password_separator: şifre listesi "," ile ayrı
 read_passwords: dosyadan şifre (ler) oku
 port_separator: port (lar) listesi, "," ile ayrı
 time_to_sleep: her istek arasında uyumak için zaman
+validate_before_scan: Taramadan önce hedefleri/bağlanılabilirliği önceden doğrula; erişilemeyen hedefler atlanır
 error_target: Hedef (ler) belirtilemiyor
 error_target_file: "Dosya açılamayan hedef (ler) belirtilemiyor: {0}"
 thread_number_warning:

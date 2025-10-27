@@ -15,6 +15,7 @@ target_input: Zieleingabeoptionen
 target_list: Ziel (e) Liste, getrennt mit ","
 read_target: Lese Ziel (e) aus Datei
 scan_method_options: Scan-Methodenoptionen
+validate_before_scan: "Ziele/Konnektivität vor dem Scan vorvalidieren; nicht erreichbare Ziele werden übersprungen."
 choose_scan_method: Suchmethode {0} auswählen
 exclude_scan_method: Suchmethode auswählen, um {0} auszuschließen
 username_list: Benutzername (s) Liste, getrennt mit ","

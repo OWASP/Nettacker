@@ -28,6 +28,7 @@ username_from_file: ler nome(s) de usuário(s) do arquivo
 password_separator: 'lista de senha(s), separe com ","'
 read_passwords: ler senhas(s) do arquivo
 port_separator: 'lsita de porta(s), separe com ","'
+validate_before_scan: Pré-validar alvos/conectividade antes da varredura; alvos inacessíveis serão ignorados
 time_to_sleep: tempo para esperar entre cada solicitação
 error_target: Não foi possível especificar o(s) alvo(s)
 error_target_file: 'Não foi possível especificar o(s) alvo(s), impossível abrir o arquivo: {0}'

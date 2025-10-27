@@ -22,6 +22,7 @@ username_list: (các) tên người dùng, riêng biệt với ","
 username_from_file: đọc (các) tên người dùng từ tệp
 password_separator: (các) mật khẩu, riêng biệt với ","
 read_passwords: đọc (các) mật khẩu từ tệp
+validate_before_scan: Tiền kiểm tra mục tiêu/kết nối trước khi quét; các mục tiêu không truy cập được sẽ bị bỏ qua
 port_separator: danh sách cổng, tách biệt với ","
 time_to_sleep: thời gian để ngủ giữa mỗi yêu cầu
 error_target: Không thể chỉ định (các) mục tiêu

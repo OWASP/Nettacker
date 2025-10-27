@@ -22,6 +22,7 @@ choose_scan_method: choisissez la méthode de scan {0}
 exclude_scan_method: choisissez la méthode de scan pour exclure {0}
 username_list: nom d'utilisateur (s), séparé par ","
 username_from_file: lire le (s) nom (s) d'utilisateur à partir du fichier
+validate_before_scan: Pré-valider les cibles/la connectivité avant l’analyse ; les cibles injoignables sont ignorées
 password_separator: mot de passe (s), séparé par ","
 read_passwords: lire le (s) mot de passe (s) du fichier
 port_separator: port (s) list, séparé par ","
