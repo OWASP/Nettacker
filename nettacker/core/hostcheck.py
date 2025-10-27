@@ -6,8 +6,18 @@ import time
 import concurrent.futures
 import os
 import sys
-import logging
-logger = logging.getLogger(__name__)
+from nettacker import logger
+log = logger.get_logger()
+from nettacker.core.ip import (
+    get_ip_range,
+    generate_ip_range,
+    is_single_ipv4,
+    is_ipv4_range,
+    is_ipv4_cidr,
+    is_single_ipv6,
+    is_ipv6_range,
+    is_ipv6_cidr,
+)
 
 _LABEL = re.compile(r"^(?!-)[A-Za-z0-9-]{1,63}(?<!-)$")
 
@@ -26,7 +36,7 @@ def is_ip_literal(name: str) -> bool:
 
 def valid_hostname(
     host: str, 
-    allow_single_label: bool = False
+    allow_single_label: bool = True
 ) -> bool:
     """
     Validate hostname syntax per RFC 1123.
@@ -46,35 +56,22 @@ def valid_hostname(
         return False
     return all(_LABEL.match(p) for p in parts)
 
-def _system_search_suffixes() -> list[str]:
-    # Only used when host has no dots; mirrors OS resolver search behavior (UNIX).
-    sufs: list[str] = []
-    try:
-        with open("/etc/resolv.conf") as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"): 
-                    continue
-                if line.startswith("search") or line.startswith("domain"):
-                    sufs += [x for x in line.split()[1:] if x]
-    except Exception as e:
-        logger.debug(f"Could not read /etc/resolv.conf: {e}")
-        pass
-    seen = set() 
-    out: list[str] = []
-    for s in sufs:
-        if s not in seen:
-            seen.add(s)
-            out.append(s)
-    return out
-
-# --- safer, more robust pieces to replace in hostcheck.py ---
 
 def _gai_once(name: str, use_ai_addrconfig: bool, port):
     flags = getattr(socket, "AI_ADDRCONFIG", 0) if use_ai_addrconfig else 0
     return socket.getaddrinfo(
         name, port, socket.AF_UNSPEC, socket.SOCK_STREAM, 0, flags
     )
+
+def _clean_host(s: str) -> str:
+    # remove surrounding quotes and whitespace, lone commas, repeated dots
+    s = s.strip().strip('"').strip("'")
+    s = s.strip()  # again, after quote strip
+    # drop trailing commas that often sneak in from CSV-like inputs
+    if s.endswith(","):
+        s = s[:-1].rstrip()
+    # collapse accidental spaces inside
+    return s
 
 def resolve_quick(
         host: str,
@@ -88,79 +85,46 @@ def resolve_quick(
     Args:
         host: Hostname or IP literal to resolve.
         timeout_sec: Maximum time to wait for resolution.
-        try_search_suffixes: If True, append /etc/resolv.conf search suffixes for single-label hosts.
         allow_single_label: If True, allow single-label hostnames (e.g., "intranet").
     
     Returns:
-        (True, canonical_hostname) on success, (False, None) on failure/timeout.
-    """
-    candidates: list[str] = []
-    if "." in host:
-        # try both plain and absolute forms; whichever resolves first wins
-        if host.endswith("."):
-            candidates.extend([host, host[:-1]])
-        else:
-            candidates.extend([host, host + "."])
-    else:
-        # single label (e.g., "intranet")
-        if not allow_single_label:
+        (True, host_name) on success, (False, None) on failure/timeout.
+   """
+    host = _clean_host(host)
+    if(is_single_ipv4(host) or is_single_ipv6(host)):
+        if(is_ip_literal(host)):
+            return True , host
+        return False ,None
+    
+    if host.endswith("."):
+        host = host[:-1]
+        
+    if(not valid_hostname(host)):
+        return False , None
+    
+    if "." not in host and not allow_single_label:
+        return False ,None
+    
+    deadline = time.monotonic() + timeout_sec
+
+    def _call(use_ai_addrconfig: bool):
+        return _gai_once(host, use_ai_addrconfig, None)
+
+    for use_ai in (True, False):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
             return False, None
-        if try_search_suffixes:
-            for s in _system_search_suffixes():
-                candidates.extend([f"{host}.{s}", f"{host}.{s}."])
-        if not host.endswith("."):
-            candidates.append(host + ".")  # bare absolute
-        candidates.append(host) 
-
-    seen, uniq = set(), []
-    for c in candidates:
-        if c not in seen:
-            seen.add(c)
-            uniq.append(c)
-    candidates = uniq
-    if not candidates:
-        return False, None
-
-    for _pass_ix, (use_ai_addrconfig, port) in enumerate(((True, None), (False, None))):
-        deadline = time.monotonic() + timeout_sec
-        maxw = min(len(candidates), 4)
-        ex = concurrent.futures.ThreadPoolExecutor(max_workers=maxw)
         try:
-            fut2cand = {ex.submit(_gai_once, c, use_ai_addrconfig, port): c for c in candidates}
-            pending = set(fut2cand)
-            while pending:
-                remaining = deadline - time.monotonic()
-                if remaining <= 0:
-                    break
-                done, pending = concurrent.futures.wait(
-                    pending, timeout=remaining,
-                    return_when=concurrent.futures.FIRST_COMPLETED
-                )
-                for fut in done:
-                    try:
-                        res = fut.result() 
-                        if not res:
-                            continue
-                        chosen = fut2cand[fut]
-                        for p in pending:
-                            p.cancel()
-                        # ensure we don't wait on the executor shutdown
-                        try:
-                            ex.shutdown(wait=False, cancel_futures=True)
-                        except TypeError:  # Py<3.9
-                            ex.shutdown(wait=False)
-                        canon = chosen[:-1] if chosen.endswith(".") else chosen
-                        return True, canon.lower()
-                    except (OSError, socket.gaierror):
-                        # DNS resolution failed for this candidate, try next
-                        continue
-            # cancel any survivors in this pass
-            for f in fut2cand: 
-                f.cancel()
-        finally:
-            # best-effort non-blocking shutdown
-            try:
-                ex.shutdown(wait=False, cancel_futures=True)
-            except TypeError:
-                ex.shutdown(wait=False)
+            # Run getaddrinfo in a thread so we can enforce timeout
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
+                fut = ex.submit(_call, use_ai)
+                fut.result(timeout=remaining)  # raises on timeout or error
+            return True, host.lower()
+        except concurrent.futures.TimeoutError:
+            return False, None
+        except (OSError, socket.gaierror):
+            # DNS resolution failed for this candidate, try next
+            continue
     return False, None
+            
+       
