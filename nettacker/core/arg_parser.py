@@ -356,11 +356,11 @@ class ArgParser(ArgumentParser):
             help=_("skip_service_discovery"),
         )
         method_options.add_argument(
-            "-C" ,
+            "-C",
             "--validate-before-scan",
             action="store_true",
             default=Config.settings.validate_before_scan,
-            dest= "validate_before_scan",
+            dest="validate_before_scan",
             help=_("validate_before_scan"),
             
         )
