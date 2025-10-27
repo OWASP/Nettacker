@@ -107,7 +107,6 @@ def resolve_quick(
         return _gai_once(host, use_ai_addrconfig, None)
 
     for use_ai in (True, False):
-        deadline = time.monotonic() + timeout_sec
         try:
             # Run getaddrinfo in a thread so we can enforce timeout
             with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
@@ -115,7 +114,7 @@ def resolve_quick(
                 fut.result(timeout=timeout_sec)  # raises on timeout or error
             return True, host.lower()
         except concurrent.futures.TimeoutError:
-            return False, None
+            continue
         except (OSError, socket.gaierror):
             # DNS resolution failed for this candidate, try next
             continue
