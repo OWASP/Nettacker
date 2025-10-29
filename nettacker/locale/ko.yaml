@@ -26,7 +26,6 @@ port_separator: 포트 목록, ","
 time_to_sleep: 각 요청 사이에 잠자기 시간
 error_target: 타겟을 지정할 수 없습니다.
 error_target_file: "파일을 열 수없는 대상을 지정할 수 없습니다 : {0}"
-validate_before_scan: 스캔 전에 대상/연결성을 사전 검증합니다. 도달 불가능한 대상은 건너뜁니다.
 thread_number_warning: 100보다 낮은 스레드 번호를 사용하는 것이 좋습니다. 계속 진행 중입니다 ...
 settimeout: 시간 초과를 {0} 초로 설정하면 너무 큽니다. 그렇지 않습니까? 그런데 우리가 계속 ...
 scan_module_not_found: 이 스캔 모듈 [{0}]을 찾을 수 없습니다!

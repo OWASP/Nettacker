@@ -19,18 +19,29 @@ log = logger.get_logger()
 
 _LABEL = re.compile(r"^(?!-)[A-Za-z0-9-]{1,63}(?<!-)$")
 
+_IPV4_VALID_RE = re.compile(
+    r'^(?:'
+    r'(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}'
+    r'(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)'
+    r'$'
+)
+
+def is_valid_ipv4(s: str) -> bool:
+    return bool(_IPV4_VALID_RE.match(s))
+
 def is_ip_literal(name: str) -> bool:
     """Return True if name is a valid IPv4 or IPv6 address literal."""
-    try:
-        socket.inet_pton(socket.AF_INET, name)
-        return True
-    except OSError:
-        pass
-    try:
-        socket.inet_pton(socket.AF_INET6, name)
-        return True
-    except OSError:
-        return False
+    if is_single_ipv4(name):
+        if is_valid_ipv4(name):
+            return True
+        else:
+            return False
+    else:
+        try:
+            socket.inet_pton(socket.AF_INET6, name)
+            return True
+        except OSError:   
+            return False
 
 def valid_hostname(
     host: str, 
@@ -45,7 +56,7 @@ def valid_hostname(
     Returns:
         True if the hostname is syntactically valid.
     """
-    if host.endswith("."):
+    if host.endswith("."):       # From RFC 1123 ,the number of characters can be 250 at max (without dots) and 253 with dots
         host = host[:-1]
     if len(host) > 253:
         return False
@@ -62,7 +73,7 @@ def _gai_once(name: str, use_ai_addrconfig: bool, port):
     )
 
 def _clean_host(s: str) -> str:
-    # remove surrounding quotes and whitespace, lone commas, repeated dots
+    # remove surrounding quotes and whitespaces 
     s = s.strip().strip('"').strip("'")
     s = s.strip()  # again, after quote strip
     # drop trailing commas that often sneak in from CSV-like inputs
@@ -95,10 +106,7 @@ def resolve_quick(
     if host.endswith("."):
         host = host[:-1]
         
-    if not valid_hostname(host):
-        return False, None
-    
-    if "." not in host and not allow_single_label:
+    if not valid_hostname(host, allow_single_label=allow_single_label):
         return False, None
 
     def _call(use_ai_addrconfig: bool):
