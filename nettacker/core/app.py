@@ -290,7 +290,7 @@ class Nettacker(ArgParser):
         return os.EX_OK
 
 
-    def filter_valid_targets(self, targets, timeout_per_target=2.0, max_workers=None, dedupe=True):
+    def filter_valid_targets(self, targets, timeout_per_target=2.0, max_threads=None, dedupe=True):
         """
         Parallel validation of targets via resolve_quick(target, timeout_sec).
         Returns a list of canonical targets (order preserved, invalids removed).
@@ -304,39 +304,39 @@ class Nettacker(ArgParser):
         if not targets:
             return []
 
-        if max_workers is None:
-            max_workers = min(len(targets), 10)  # cap threads
+        if max_threads is None:
+            max_threads = min(len(targets), 10)  # cap threads
 
         # Preserve order
-        canon_by_index = [None] * len(targets)
+        validated_target = [None] * len(targets) # Invalid targets will be replaced by "None"  
 
         def _task(idx, t):
             ok, canon = resolve_quick(t, timeout_sec=timeout_per_target)
             return idx, t, (canon if ok and canon else None)
 
-        with ThreadPoolExecutor(max_workers=max_workers) as ex:
+        with ThreadPoolExecutor(max_workers=max_threads) as ex:
             futures = [ex.submit(_task, i, t) for i, t in enumerate(targets)]
             for fut in as_completed(futures):
                 try:
                     idx, orig_target, canon = fut.result()
                 except (OSError, socket.gaierror) as exc:
-                    log.debug(f"Invalid target (resolver error): {exc!s}")
+                    log.error(f"Invalid target (resolver error): {exc!s}")
                     continue
 
                 if canon:
-                    canon_by_index[idx] = canon
+                    validated_target[idx] = canon
                 else:
                     log.info(f"Invalid target -> dropping: {orig_target}")
 
         # Keep order, drop Nones
-        filtered = [c for c in canon_by_index if c is not None]
+        filtered = [c for c in validated_target if c is not None]
 
         if dedupe:
             seen, unique = set(), []
-            for c in filtered:
-                if c not in seen:
-                    seen.add(c)
-                    unique.append(c)
+            for _c in filtered:
+                if _c not in seen:
+                    seen.add(_c)
+                    unique.append(_c)
             return unique
         return filtered
 
@@ -346,7 +346,7 @@ class Nettacker(ArgParser):
             targets = self.filter_valid_targets(
             targets,
             timeout_per_target=2.0,
-            max_workers=self.arguments.parallel_module_scan or None,
+            max_threads=self.arguments.parallel_module_scan or None,
             dedupe=True,
         )
         active_threads = []

@@ -19,7 +19,6 @@ scan_method_options: Opciones de método de escaneo
 choose_scan_method: elija el método de escaneo {0}
 exclude_scan_method: elija el método de escaneo para excluir {0}
 username_list: nombre de usuario (s) list, separe con ","
-validate_before_scan: Prevalidar objetivos/conectividad antes de escanear; los objetivos inaccesibles se omiten
 username_from_file: leer nombre (s) de usuario del archivo
 password_separator: lista de contraseña (s), separe con ","
 read_passwords: leer contraseña (s) del archivo

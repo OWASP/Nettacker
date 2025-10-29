@@ -25,7 +25,6 @@ read_passwords: lees wachtwoord (s) uit bestand
 port_separator: poort (en) lijst, gescheiden door ","
 time_to_sleep: tijd om te slapen tussen elk verzoek
 error_target: Kan het doel (de doelen) niet specificeren
-validate_before_scan: Targets/verbinding vooraf valideren vóór de scan; onbereikbare targets worden overgeslagen
 error_target_file: "Kan doel (en) niet specificeren, kan bestand niet openen: {0}"
 thread_number_warning:
   het is beter om een ​​draadnummer lager dan 100 te gebruiken,

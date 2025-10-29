@@ -24,7 +24,6 @@ password_separator: daftar kata sandi, terpisah dengan ","
 read_passwords: baca kata sandi (s) dari file
 port_separator: daftar port (s), terpisah dengan ","
 time_to_sleep: waktu untuk tidur di antara setiap permintaan
-validate_before_scan: Pra-validasi target/konektivitas sebelum pemindaian; target yang tidak dapat dijangkau akan dilewati
 error_target: Tidak dapat menentukan target (s)
 error_target_file: "Tidak dapat menentukan target (s), tidak dapat membuka file: {0}"
 thread_number_warning:
