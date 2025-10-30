@@ -362,7 +362,6 @@ class ArgParser(ArgumentParser):
             default=Config.settings.validate_before_scan,
             dest="validate_before_scan",
             help=_("validate_before_scan"),
-            
         )
         method_options.add_argument(
             "-t",

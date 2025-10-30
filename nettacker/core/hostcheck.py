@@ -1,62 +1,31 @@
 # nettacker/core/hostcheck.py
 from __future__ import annotations
+
+import concurrent.futures
 import re
 import socket
-import time
-import concurrent.futures
+
 from nettacker import logger
-from nettacker.core.ip import (
-    get_ip_range,
-    generate_ip_range,
-    is_single_ipv4,
-    is_ipv4_range,
-    is_ipv4_cidr,
-    is_single_ipv6,
-    is_ipv6_range,
-    is_ipv6_cidr,
-)
+from nettacker.core.ip import is_single_ipv4, is_single_ipv6
+
 log = logger.get_logger()
 
 _LABEL = re.compile(r"^(?!-)[A-Za-z0-9-]{1,63}(?<!-)$")
 
-_IPV4_VALID_RE = re.compile(
-    r'^(?:'
-    r'(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}'
-    r'(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)'
-    r'$'
-)
 
-def is_valid_ipv4(s: str) -> bool:
-    return bool(_IPV4_VALID_RE.match(s))
-
-def is_ip_literal(name: str) -> bool:
-    """Return True if name is a valid IPv4 or IPv6 address literal."""
-    if is_single_ipv4(name):
-        if is_valid_ipv4(name):
-            return True
-        else:
-            return False
-    else:
-        try:
-            socket.inet_pton(socket.AF_INET6, name)
-            return True
-        except OSError:   
-            return False
-
-def valid_hostname(
-    host: str, 
-    allow_single_label: bool = True
-) -> bool:
+def valid_hostname(host: str, allow_single_label: bool = True) -> bool:
     """
     Validate hostname syntax per RFC 1123.
     Args:
         host: Hostname to validate.
         allow_single_label: If True, accept single-label names (e.g., "localhost").
-    
+
     Returns:
         True if the hostname is syntactically valid.
     """
-    if host.endswith("."):       # From RFC 1123 ,the number of characters can be 250 at max (without dots) and 253 with dots
+    if host.endswith(
+        "."
+    ):  # From RFC 1123 ,the number of characters can be 250 at max (without dots) and 253 with dots
         host = host[:-1]
     if len(host) > 253:
         return False
@@ -68,12 +37,11 @@ def valid_hostname(
 
 def _gai_once(name: str, use_ai_addrconfig: bool, port):
     flags = getattr(socket, "AI_ADDRCONFIG", 0) if use_ai_addrconfig else 0
-    return socket.getaddrinfo(
-        name, port, socket.AF_UNSPEC, socket.SOCK_STREAM, 0, flags
-    )
+    return socket.getaddrinfo(name, port, socket.AF_UNSPEC, socket.SOCK_STREAM, 0, flags)
+
 
 def _clean_host(s: str) -> str:
-    # remove surrounding quotes and whitespaces 
+    # remove surrounding quotes and whitespaces
     s = s.strip().strip('"').strip("'")
     s = s.strip()  # again, after quote strip
     # drop trailing commas that often sneak in from CSV-like inputs
@@ -82,10 +50,9 @@ def _clean_host(s: str) -> str:
     # collapse accidental spaces inside
     return s
 
+
 def resolve_quick(
-        host: str,
-        timeout_sec: float = 2.0,
-        allow_single_label: bool = True
+    host: str, timeout_sec: float = 2.0, allow_single_label: bool = True
 ) -> tuple[bool, str | None]:
     """
     Perform fast DNS resolution with timeout.
@@ -93,19 +60,17 @@ def resolve_quick(
         host: Hostname or IP literal to resolve.
         timeout_sec: Maximum time to wait for resolution.
         allow_single_label: If True, allow single-label hostnames (e.g., "intranet").
-    
+
     Returns:
         (True, host_name) on success, (False, None) on failure/timeout.
     """
     host = _clean_host(host)
-    if is_single_ipv4(host) or is_single_ipv6(host):
-        if is_ip_literal(host):
-            return True, host
-        return False, None
-    
+    if is_single_ipv4(host) or is_single_ipv6(host):  # IP literal, no resolution needed
+        return True, host
+
     if host.endswith("."):
         host = host[:-1]
-        
+
     if not valid_hostname(host, allow_single_label=allow_single_label):
         return False, None
 
@@ -125,5 +90,3 @@ def resolve_quick(
             # DNS resolution failed for this candidate, try next
             continue
     return False, None
-            
-       
