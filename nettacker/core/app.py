@@ -4,15 +4,17 @@ import os
 import shutil
 import socket
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Thread
 
 import multiprocess
-from concurrent.futures import ThreadPoolExecutor, as_completed
+
 from nettacker import logger
 from nettacker.config import Config, version_info
 from nettacker.core.arg_parser import ArgParser
 from nettacker.core.die import die_failure
 from nettacker.core.graph import create_report, create_compare_report
+from nettacker.core.hostcheck import resolve_quick
 from nettacker.core.ip import (
     get_ip_range,
     generate_ip_range,
@@ -23,7 +25,6 @@ from nettacker.core.ip import (
     is_ipv6_range,
     is_ipv6_cidr,
 )
-from nettacker.core.hostcheck import resolve_quick, is_ip_literal, valid_hostname
 from nettacker.core.messages import messages as _
 from nettacker.core.module import Module
 from nettacker.core.socks_proxy import set_socks_proxy
@@ -143,7 +144,7 @@ class Nettacker(ArgParser):
             ):
                 targets += generate_ip_range(target)
             # domains probably
-            else: 
+            else:
                 targets.append(target)
         self.arguments.targets = targets
         self.arguments.url_base_path = base_path
@@ -289,7 +290,6 @@ class Nettacker(ArgParser):
 
         return os.EX_OK
 
-
     def filter_valid_targets(self, targets, timeout_per_target=2.0, max_threads=None, dedupe=True):
         """
         Parallel validation of targets via resolve_quick(target, timeout_sec).
@@ -308,7 +308,7 @@ class Nettacker(ArgParser):
             max_threads = min(len(targets), 10)  # cap threads
 
         # Preserve order
-        validated_target = [None] * len(targets) # Invalid targets will be replaced by "None"  
+        validated_target = [None] * len(targets)  # Invalid targets will be replaced by "None"
 
         def _task(idx, t):
             ok, canon = resolve_quick(t, timeout_sec=timeout_per_target)
@@ -341,14 +341,13 @@ class Nettacker(ArgParser):
         return filtered
 
     def scan_target_group(self, targets, scan_id, process_number):
-
-        if(not self.arguments.socks_proxy and self.arguments.validate_before_scan):
+        if not self.arguments.socks_proxy and self.arguments.validate_before_scan:
             targets = self.filter_valid_targets(
-            targets,
-            timeout_per_target=2.0,
-            max_threads=self.arguments.parallel_module_scan or None,
-            dedupe=True,
-        )
+                targets,
+                timeout_per_target=2.0,
+                max_threads=self.arguments.parallel_module_scan or None,
+                dedupe=True,
+            )
         active_threads = []
         log.verbose_event_info(_("single_process_started").format(process_number))
         total_number_of_modules = len(targets) * len(self.arguments.selected_modules)
