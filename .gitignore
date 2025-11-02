@@ -31,3 +31,6 @@ results.*
 coverage.xml
 
 venv
+Public_sign
+Public_sign.pub
+cks_proxy

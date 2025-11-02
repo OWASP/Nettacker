@@ -4,6 +4,7 @@ import os
 import shutil
 import socket
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Thread
 
 import multiprocess
@@ -13,6 +14,7 @@ from nettacker.config import Config, version_info
 from nettacker.core.arg_parser import ArgParser
 from nettacker.core.die import die_failure
 from nettacker.core.graph import create_report, create_compare_report
+from nettacker.core.hostcheck import resolve_quick
 from nettacker.core.ip import (
     get_ip_range,
     generate_ip_range,
@@ -220,7 +222,6 @@ class Nettacker(ArgParser):
         if self.arguments.scan_compare_id is not None:
             create_compare_report(self.arguments, scan_id)
         log.info("ScanID: {0} ".format(scan_id) + _("done"))
-
         return exit_code
 
     def start_scan(self, scan_id):
@@ -289,7 +290,64 @@ class Nettacker(ArgParser):
 
         return os.EX_OK
 
+    def filter_valid_targets(self, targets, timeout_per_target=2.0, max_threads=None, dedupe=True):
+        """
+        Parallel validation of targets via resolve_quick(target, timeout_sec).
+        Returns a list of canonical targets (order preserved, invalids removed).
+        """
+        # Ensure it's a concrete list (len, indexing OK)
+        try:
+            targets = list(targets)
+        except TypeError:
+            raise TypeError(f"`targets` must be iterable, got {type(targets).__name__}")
+
+        if not targets:
+            return []
+
+        if max_threads is None:
+            max_threads = min(len(targets), 10)  # cap threads
+
+        # Preserve order
+        validated_target = [None] * len(targets)  # Invalid targets will be replaced by "None"
+
+        def _task(idx, t):
+            ok, canon = resolve_quick(t, timeout_sec=timeout_per_target)
+            return idx, t, (canon if ok and canon else None)
+
+        with ThreadPoolExecutor(max_workers=max_threads) as ex:
+            futures = [ex.submit(_task, i, t) for i, t in enumerate(targets)]
+            for fut in as_completed(futures):
+                try:
+                    idx, orig_target, canon = fut.result()
+                except (OSError, socket.gaierror) as exc:
+                    log.error(f"Invalid target (resolver error): {exc!s}")
+                    continue
+
+                if canon:
+                    validated_target[idx] = canon
+                else:
+                    log.info(f"Invalid target -> dropping: {orig_target}")
+
+        # Keep order, drop Nones
+        filtered = [c for c in validated_target if c is not None]
+
+        if dedupe:
+            seen, unique = set(), []
+            for _c in filtered:
+                if _c not in seen:
+                    seen.add(_c)
+                    unique.append(_c)
+            return unique
+        return filtered
+
     def scan_target_group(self, targets, scan_id, process_number):
+        if not self.arguments.socks_proxy and self.arguments.validate_before_scan:
+            targets = self.filter_valid_targets(
+                targets,
+                timeout_per_target=2.0,
+                max_threads=self.arguments.parallel_module_scan or None,
+                dedupe=True,
+            )
         active_threads = []
         log.verbose_event_info(_("single_process_started").format(process_number))
         total_number_of_modules = len(targets) * len(self.arguments.selected_modules)
