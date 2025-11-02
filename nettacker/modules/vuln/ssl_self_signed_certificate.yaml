@@ -6,7 +6,7 @@ info:
   reference:
     - https://www.ssl.com/article/ssl-tls-self-signed-certificates/
   profiles:
-    - scan
+    - vuln
     - ssl
 
 payloads:
