@@ -25,14 +25,13 @@ database_connect_fail: ڈیٹابیس سیت رابطہ نئیں بن پایو!
 database_connection_failed: چُنی گیے ڈیٹابیس سیت رابطہ ناکام!
 define_white_list: "سفید فہرست ہوسٹس مقرر کرنہ، الگ کرنہ ',' سیت (مثال: 127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)"
 engine: انجن
-filtered_content: ... [مکمل مواد رپورٹ منز چھ]
+filtered_content: "... [مکمل مواد رپورٹ منز چھ]" 
 engine_input: انجن انپٹ اختیارات
 Invalid_whatcms_api_key: "{0}"
 searching_whatcms_database: whatcms.org پر CMS تلاش کرنہ...
 whatcms_monthly_quota_exceeded: تُہند ماہانہ WHATCMS درخواست حد پار گئ چھ
 finished_module: موڈیول {0} مکمل گیے ہدف {1} پر | موڈیول تھریڈ نمبر {2} از {3}!
-modules_extra_args_help: موڈیولس ہند واسطے اضافی دلائل چھپن (مثال: --modules-extra-args "x_api_key=123&xyz_passwd=abc")
-choose_scan_method: موڈیول چُنہ {0}، مکمل فہرست خاطر --show-all-modules استعمال کرنہ
+modules_extra_args_help: 'موڈیولس ہند واسطے اضافی دلائل چھپن (مثال: --modules-extra-args "x_api_key=123&xyz_passwd=abc")'choose_scan_method: موڈیول چُنہ {0}، مکمل فہرست خاطر --show-all-modules استعمال کرنہ
 cannot_run_api_server: API سرور خودس اندران چلائو نہ یتھ!
 error_target: ہدف طے کرنہ ممکن نہ چھ
 error_target_file: "ہدف طے کرنہ ممکن نہ چھ، فائِل کھولنہ ناکام: {0}"
@@ -65,7 +64,7 @@ module_profile_full_information: "{0}{1}{2}: {3}"
 nettacker_report: OWASP Nettacker رپورٹ
 nettacker_version_details: "سافٹ ویئر تفصیل: OWASP Nettacker ورژن {0} [{1}] منز {2}"
 not_found: نہ ملیو!
-outgoing_proxy: "باہر جارنہ کنکشن خاطر پراکسی (socks)۔ مثال socks5: 127.0.0.1:9050, socks://127.0.0.1:9050, socks5://127.0.0.1:9050 یا socks4: socks4://127.0.0.1:9050, توکن: socks://username:password@127.0.0.1"
+outgoing_proxy: "باہر جارنہ کنکشن خاطر پراکسی (socks)۔ مثال socks5: 127.0.0.1:9050, socks://127.0.0.1:9050, socks5://127.0.0.1:9050 یا socks4: socks4://127.0.0.1:9050, ٹوکن: socks://USERNAME:PASSWORD@127.0.0.1"  
 password_separator: پاسورڈ فہرست، "," سیت الگ کرنہ
 pentest_graphs: پینیٹریشن ٹیسٹنگ گرافس
 ping_before_scan: سکین سیت پہلے پنگ کرنہ
@@ -96,9 +95,7 @@ single_process_started: عمل-{0}| عمل شروع گئ!
 software_version: سافٹ ویئر ورژن دیکھاو
 start_api_server: API سروس شروع کرنہ
 start_multi_process: {0} اہداف {1} عملس منز شامل کرنہ.
-start_parallel_module_scan: 
-  عمل-{0}|{1}|{2}| موڈیول تھریڈ نمبر {3} شروع گئ 
-  از {4}
+start_parallel_module_scan: عمل-{0}|{1}|{2}| موڈیول تھریڈ نمبر {3} شروع گئ از {4}
 subdomains: سب ڈومینس پتہ لگان تہ سکین کرنہ
 target: ہدف
 target_input: ہدف انپٹ اختیارات
