@@ -31,8 +31,8 @@ Invalid_whatcms_api_key: "{0}"
 searching_whatcms_database: whatcms.org پر CMS تلاش کرنہ...
 whatcms_monthly_quota_exceeded: تُہند ماہانہ WHATCMS درخواست حد پار گئ چھ
 finished_module: موڈیول {0} مکمل گیے ہدف {1} پر | موڈیول تھریڈ نمبر {2} از {3}!
-modules_extra_args_help: 'موڈیولس ہند واسطے اضافی دلائل چھپن (مثال: --modules-extra-args "x_api_key=123&xyz_passwd=abc")'choose_scan_method: موڈیول چُنہ {0}، مکمل فہرست خاطر --show-all-modules استعمال کرنہ
-cannot_run_api_server: API سرور خودس اندران چلائو نہ یتھ!
+modules_extra_args_help: 'موڈیولس ہند واسطے اضافی دلائل چھپن (مثال: --modules-extra-args "x_api_key=123&xyz_passwd=abc")'  
+choose_scan_method: موڈیول چُنہ {0}، مکمل فہرست خاطر --show-all-modules استعمال کرنہ  
 error_target: ہدف طے کرنہ ممکن نہ چھ
 error_target_file: "ہدف طے کرنہ ممکن نہ چھ، فائِل کھولنہ ناکام: {0}"
 error_username: "یوزرنام طے کرنہ ممکن نہ چھ، فائِل کھولنہ ناکام: {0}"
