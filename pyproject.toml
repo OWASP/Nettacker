@@ -68,7 +68,7 @@ impacket = "^0.11.0"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.16.1"
-ruff = ">=0.2.1,<0.8.0"
+ruff = ">=0.2.1,<0.13.0"
 pytest-asyncio = "^1.1.0"
 
 [tool.poetry.group.test.dependencies]
@@ -92,6 +92,7 @@ profile = "black"
 
 [tool.pytest.ini_options]
 addopts = "--cov=nettacker --cov-config=pyproject.toml --cov-report term --cov-report xml --dist loadscope --no-cov-on-fail --numprocesses auto"
+asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
 
 [tool.ruff]

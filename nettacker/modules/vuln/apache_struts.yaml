@@ -6,7 +6,6 @@ info:
   reference:
   profiles:
     - vuln
-    - vulnerability
     - http
     - low_severity
     - apache_struts

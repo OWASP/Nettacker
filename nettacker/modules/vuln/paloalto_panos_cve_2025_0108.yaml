@@ -10,7 +10,6 @@ info:
     - https://thehackernews.com/2025/02/cisa-adds-palo-alto-networks-and.html
   profiles:
     - vuln
-    - vulnerability
     - http
     - high_severity
     - cve

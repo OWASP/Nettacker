@@ -6,7 +6,6 @@ info:
   reference:
   profiles:
     - vuln
-    - vulnerability
     - http
     - critical_severity
     - msexchange
