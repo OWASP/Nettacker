@@ -69,7 +69,7 @@ password_separator: پاسورڈ فہرست، "," سیت الگ کرنہ
 pentest_graphs: پینیٹریشن ٹیسٹنگ گرافس
 ping_before_scan: سکین سیت پہلے پنگ کرنہ
 port_separator: پورٹ فہرست، "," سیت الگ کرنہ
-ports_int: پورٹس لازمی عدد ہون! (مثال: 80 || 80,1080 || 80,1080-1300,9000,12000-15000)
+ports_int: پورٹس لازمی عدد ہون! (مثال: 80, 80,1080, 80,1080-1300,9000,12000-15000)
 profile_404: پروفائل "{0}" نہ ملیو!
 range: IP حدود سکین کرنہ
 read_passwords: پاسورڈس فائِل منز پڈھان
@@ -94,7 +94,7 @@ show_all_profiles: سبھی پروفائلز تہ اُنکی معلومات دی
 single_process_started: عمل-{0}| عمل شروع گئ!
 software_version: سافٹ ویئر ورژن دیکھاو
 start_api_server: API سروس شروع کرنہ
-start_multi_process: {0} اہداف {1} عملس منز شامل کرنہ.
+start_multi_process: "{0} اہداف {1} عملس منز شامل کرنہ."
 start_parallel_module_scan: عمل-{0}|{1}|{2}| موڈیول تھریڈ نمبر {3} شروع گئ از {4}
 subdomains: سب ڈومینس پتہ لگان تہ سکین کرنہ
 target: ہدف
