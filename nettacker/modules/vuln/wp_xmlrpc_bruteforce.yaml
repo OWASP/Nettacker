@@ -61,8 +61,7 @@ payloads:
                 reverse: false
 
             - content:
-                regex: |
-                  (Fatal error|Uncaught|Undefined constant|wp_options|DB_USER)
+                regex: "(Fatal error|Uncaught|Undefined constant|wp_options|DB_USER)" 
                 reverse: false
 
             - content:
