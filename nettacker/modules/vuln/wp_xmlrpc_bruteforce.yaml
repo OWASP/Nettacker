@@ -57,11 +57,13 @@ payloads:
                 reverse: false
 
             - status_code:
-                regex: "500"
+                regex: "^500$"
                 reverse: false
 
             - content:
-                regex: "(Fatal error|Uncaught|Undefined constant|wp_options|DB_USER)"
+                regex: >
+                  (Fatal error|Uncaught|Undefined constant|
+                  wp_options|DB_USER)
                 reverse: false
 
             - content:
