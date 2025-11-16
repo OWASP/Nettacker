@@ -1,9 +1,13 @@
+---
 info:
   name: wp_xmlrpc_bruteforce_vuln
-  author: OWASP Nettacker Team
+  author: "OWASP Nettacker Team (Improved by Rohan)"
   severity: 3
-  description:
-  reference:
+  description: >
+    Detects potential brute-force behavior on the WordPress XML-RPC interface
+    using the wp.getUsersBlogs method. Includes detection for misconfigured
+    WordPress instances, PHP fatal errors, HTTP 500 responses, and invalid XML.
+  reference: []
   profiles:
     - vuln
     - http
@@ -14,12 +18,13 @@ payloads:
   - library: http
     steps:
       - method: post
-        timeout: 3
+        timeout: 5
         headers:
           User-Agent: "{user_agent}"
           Content-Type: "text/xml"
         allow_redirects: false
         ssl: false
+
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/xmlrpc.php"
@@ -33,10 +38,32 @@ payloads:
               ports:
                 - 80
                 - 443
-        data: <methodCall><methodName>wp.getUsersBlogs</methodName><params><param><value><string>admin</string></value></param><param><value><string></string></value></param></params></methodCall>
+                - 8080
+
+        data: |
+          <methodCall>
+            <methodName>wp.getUsersBlogs</methodName>
+            <params>
+              <param><value><string>admin</string></value></param>
+              <param><value><string></string></value></param>
+            </params>
+          </methodCall>
+
         response:
           condition_type: or
           conditions:
-            content:
-              regex: <int>403</int>
-              reverse: false
+            - content:
+                regex: "<int>403</int>"
+                reverse: false
+
+            - status_code:
+                regex: "500"
+                reverse: false
+
+            - content:
+                regex: "(Fatal error|Uncaught|Undefined constant|wp_options|DB_USER)"
+                reverse: false
+
+            - content:
+                regex: "<!DOCTYPE html>"
+                reverse: false
