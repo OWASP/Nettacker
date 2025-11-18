@@ -162,6 +162,7 @@ class DefaultSettings(ConfigBase):
     show_all_profiles = False
     show_help_menu = False
     show_version = False
+    validate_before_scan = False
     skip_service_discovery = False
     socks_proxy = None
     targets = None
