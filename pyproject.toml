@@ -43,6 +43,7 @@ release_name = "QUIN"
 
 [tool.poetry.scripts]
 nettacker = "nettacker.main:run"
+nettacker-db-worker = "nettacker.cli.db_worker:run"
 
 [tool.poetry.dependencies]
 python = "^3.9, <3.13"
@@ -65,6 +66,7 @@ zipp = "^3.19.1"
 uvloop = "^0.21.0"
 pymysql = "^1.1.1"
 impacket = "^0.11.0"
+litequeue = "^0.9"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.16.1"
