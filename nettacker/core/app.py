@@ -27,7 +27,7 @@ from nettacker.core.messages import messages as _
 from nettacker.core.module import Module
 from nettacker.core.socks_proxy import set_socks_proxy
 from nettacker.core.utils import common as common_utils
-from nettacker.core.utils.common import wait_for_threads_to_finish
+from nettacker.core.utils.common import wait_for_threads_to_finish, is_running_with_privileges
 from nettacker.database.db import find_events, remove_old_logs
 from nettacker.database.mysql import mysql_create_database, mysql_create_tables
 from nettacker.database.postgresql import postgres_create_database
@@ -66,7 +66,7 @@ class Nettacker(ArgParser):
         log.reset_color()
 
     def check_dependencies(self):
-        if sys.platform not in {"darwin", "freebsd13", "freebsd14", "freebsd15", "linux"}:
+        if sys.platform not in {"darwin", "freebsd13", "freebsd14", "freebsd15", "linux", "win32"}:
             die_failure(_("error_platform"))
 
         try:
@@ -165,7 +165,7 @@ class Nettacker(ArgParser):
                             self.arguments.targets.append(sub_domain)
         # icmp_scan
         if self.arguments.ping_before_scan:
-            if os.geteuid() == 0:
+            if is_running_with_privileges():
                 selected_modules = self.arguments.selected_modules
                 self.arguments.selected_modules = ["icmp_scan"]
                 self.start_scan(scan_id)
