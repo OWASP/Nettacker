@@ -165,6 +165,7 @@ def find_args_value(args_name):
 
 
 def re_address_repeaters_key_name(key_name):
+    # Note: This uses "/" as a key delimiter, not a file path separator
     return "".join(["['" + _key + "']" for _key in key_name.split("/")[:-1]])
 
 
