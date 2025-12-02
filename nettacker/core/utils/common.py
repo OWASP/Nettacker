@@ -165,6 +165,16 @@ def find_args_value(args_name):
 
 
 def re_address_repeaters_key_name(key_name):
+    # Note: This uses "/" as a key delimiter, not a file path separator
+    """
+    Format a slash-delimited key path into a sequence of dictionary-access segments excluding the final key.
+    
+    Parameters:
+        key_name (str): A "/"-delimited key path ("/" is a key delimiter, not a filesystem separator).
+    
+    Returns:
+        str: Concatenated "['key']" segments for every component of `key_name` except the last; returns an empty string if there are no components before the final segment.
+    """
     return "".join(["['" + _key + "']" for _key in key_name.split("/")[:-1]])
 
 
