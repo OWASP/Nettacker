@@ -1,130 +1,127 @@
 API: API
-API_access_key: API access key
-API_access_log_file: API access log filename
-API_cert: API CERTIFICATE
-API_cert_key: API CERTIFICATE Key
-API_debug: API debug mode
-API_host: API host address
-API_invalid: invalid API key
-API_key: " * API is accessible from https://nettacker-api.z3r0d4y.com:{0}/ via API Key: {1}"
-API_options: API options
-API_port: API port number
-Method: Method
-skip_service_discovery: skip service discovery before scan and enforce all modules to scan anyway
-no_live_service_found: no any live service found to scan.
-icmp_need_root_access: to use icmp_scan module or --ping-before-scan you need to run the script as root!
-available_graph: "build a graph of all activities and information, you must use HTML output. available graphs: {0}"
-browser_session_killed: your browser session killed
-browser_session_valid: your browser session is valid
-build_graph: building graph ...
-connection_retries: Retries when the connection timeout (default 3)
-current_version: you are running OWASP Nettacker version {0}{1}{2}{6} with code name {3}{4}{5}
-database_connect_fail: could not connect to the database!
-database_connection_failed: Connection to the selected db failed
-define_white_list: "define white list hosts, separate with , (examples: 127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)"
-engine: Engine
-filtered_content: ... [see the full content in the report]
-engine_input: Engine input options
+API_access_key: API యాక్సెస్ కీ 
+API_access_log_file: API యాక్సెస్ లాగ్ ఫైల్ పేరు
+API_cert: API సర్టిఫికెట్ 
+API_cert_key: API సర్టిఫికెట్ కీ 
+API_debug: API డీబగ్ మోడ్ 
+API_host: API హోస్ట్ యొక్క చిరునామా
+API_invalid: చెల్లని API కీ 
+API_key: " * API కీ:{1} ద్వారా, https://nettacker-api.z3r0d4y.com:{0}/ నుండి API ను యాక్సెస్ చెయ్యవచ్చు"
+API_options: API ఎంపికలు
+API_port: API పోర్ట్ సంఖ్య 
+Method: విధానం 
+skip_service_discovery: స్కాన్ కు ముందు సర్వీస్ డిస్కవరీ దాటవేసి మరియు అన్ని మాడ్యూల్స్ ను స్కాన్ చెయ్యండి
+no_live_service_found: స్కాన్ చెయ్యడానికి ఏ లైవ్ సర్వీస్ కూడా కనుగొనబడలేదు
+icmp_need_root_access: icmp_scan మాడ్యూల్ లేదా –ping-before-scan ను ఉపయోగించడానికి మీరు స్క్రిప్ట్ ను root గా రన్ చెయ్యాలి!
+available_graph: "అన్ని యాక్టివిటీస్ మరియు సమాచారం యొక్క గ్రాఫ్ ను రూపొందించండి, మీరు HTML output ను ఉపయోగించాలి. అందుబాటులో ఉన్న గ్రాఫ్లు:{0}"
+browser_session_killed: మీ browser సెషన్ అంతమైంది
+browser_session_valid: మీ browser సెషన్ చెల్లుబాటులో ఉంది
+build_graph: గ్రాఫ్ ను నిర్మించబడుతుంది ...
+connection_retries: connection timeout వచ్చినప్పుడు మళ్లీ ప్రయత్నిస్తుంది (default 3)
+current_version: మీరు కోడ్ పేరు {3}{4}{5} తో OWASP Nettacker వెర్షన్ {0}{1}{2}{6} ను రన్ చేస్తున్నారు
+database_connect_fail: డేటాబేస్ కనెక్ట్ కాలేదు!
+database_connection_failed: ఎంచుకున్న db కి కనెక్షన్ విఫలమయింది
+define_white_list: "white list hosts లను నిర్వచించండి, కామా (,) తో వేరుచెయ్యండి (ఉదాహరణలు: 127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)"
+engine: ఇంజన్ 
+filtered_content: ... [రిపోర్ట్ లో పూర్తి విషయాలను చూడండి]
+engine_input: ఇంజన్ ఇన్పుట్ ఎంపికలు
 Invalid_whatcms_api_key: "{0}"
-searching_whatcms_database: Searching for CMS on whatcms.org...
-whatcms_monthly_quota_exceeded: You have exceeded your monthly WHATCMS request quota
-finished_module: finished module {0} towards the target {1} | module thread number {2} from {3}!
-modules_extra_args_help: add extra args to pass to modules (e.g. --modules-extra-args "x_api_key=123&xyz_passwd=abc"
-choose_scan_method: choose modules {0} to see full list use --show-all-modules
-cannot_run_api_server: You can't run API Server through itself!
-error_target: Cannot specify the target(s)
-error_target_file: "Cannot specify the target(s), unable to open file: {0}"
-error_username: "Cannot specify the username(s), unable to open file: {0}"
-error_passwords: "Cannot specify the password(s), unable to open file: {0}"
-error_wordlist: "Cannot specify the word(s), unable to open file {0}"
-exclude_scan_method: choose scan method to exclude {0}
-file_write_error: file "{0}" is not writable!
-library_not_supported: library [{0}] is not support!
-removing_old_db_records: Removing old database record for selected targets and modules.
-regrouping_targets: regrouping targets based on hardware resources!
-finish_build_graph: finish building graph!
-finished_parallel_module_scan: process-{0}|{1}|{2}| finished module thread number {3} from {4}
-graph_message: "This graph created by OWASP Nettacker. Graph contains all modules activities, network map and
-sensitive information, Please don't share this file with anyone if it's not reliable."
-graph_module_404: "this graph module not found: {0}"
-graph_module_unavailable: this graph module "{0}" is not available
-graph_output: to use graph feature your output filename must end with ".html" or ".htm"!
-help_menu: Show Nettacker Help Menu
-done: "done!"
-error_platform: "Unfortunately, this version of the software can run on Linux/darwin"
-file_saved: "report saved in {0} and database"
-inserting_report_db: inserting report to the database
-invalid_database: Please select from mysql or sqlite in the configuration file
-invalid_json_type_to_db: "Invalid type of JSON data for the database. Skipping the submission to database. Data:{0}"
-license: "Please read license and agreements https://github.com/OWASP/Nettacker"
-loaded_modules: "{0} modules loaded ..."
-loading_modules: loading all modules... it might get some time!
-loading_profiles: loading all profiles... it might get some time!
+searching_whatcms_database: whatcms.org లో CMS కోసం వెతుకుతోంది...
+whatcms_monthly_quota_exceeded: మీరు మీ నెలవారి WHATCMS రిక్వెస్ట్ కోటా ను మించిపోయారు
+finished_module: టార్గెట్ {1} వైపు మాడ్యూల్ {0} పూర్తయింది| మాడ్యూల్ థ్రెడ్ సంఖ్య {3} నుంచి {2}!
+modules_extra_args_help: మాడ్యూల్స్ కు అదనపు args ను జోడించండి(ఉదా. --modules-extra-args "x_api_key=123&xyz_passwd=abc"
+choose_scan_method: modules {0} ను ఎంపికచేసుకోండి, పూర్తి మాడ్యూల్స్ ను చూడటానికి --show-all-modules ను వాడండి
+cannot_run_api_server: మీరు API Server ను దాని ద్వారానే రన్ చెయ్యలేరు!
+error_target: target(s) ను పేర్కొనడం సాధ్యం కాలేదు
+error_target_file: "target(s) ను పేర్కొనడం సాధ్యం కాలేదు, ఫైల్ తెరవడం సాధ్యం కాలేదు: {0}"
+error_username: "username(s) ను పేర్కొనడం సాధ్యం కాలేదు, ఫైల్ తెరవడం సాధ్యం కాలేదు: {0}"
+error_passwords: "password(s)ను పేర్కొనడం సాధ్యం కాలేదు, ఫైల్ తెరవడం సాధ్యం కాలేదు: {0}"
+error_wordlist: "word(s)ను పేర్కొనడం సాధ్యం కాలేదు, ఫైల్ తెరవడం సాధ్యం కాలేదు: {0}"
+exclude_scan_method: exclude {0} చెయ్యడానికి స్కాన్ విధానాన్ని ఎంచుకోండి
+file_write_error: ఫైల్ "{0}" ను రాయడానికి వీలుకాదు!
+library_not_supported: లైబ్రరీ [{0}] కి సపోర్ట్ లేదు!
+removing_old_db_records: ఎంచుకున్న టార్గెట్స్ మరియు మాడ్యూల్స్ యొక్క పాత డేటాబేస్ రికార్డ్ లను తొలగిస్తోంది.
+regrouping_targets: హార్డ్వేర్ రెసౌర్సుల ఆధారంగా టార్గెట్స్ ను మళ్ళీ గ్రూప్ చేస్తోంది!
+finish_build_graph: గ్రాఫ్ నిర్మాణం పూర్తి అయింది!
+finished_parallel_module_scan: ప్రాసెస్-{0}|{1}|{2}| మాడ్యూల్ థ్రెడ్ సంఖ్య {3} నుంచి {4} ముగిసింది
+graph_message: "ఈ గ్రాఫ్ OWASP Nettacker ద్వారా సృష్టించబడింది. ఈ గ్రాఫ్ lo అన్ని మాడ్యూల్ యాక్టివిటీస్, నెట్వర్క్ మ్యాప్ మరియు సెన్సిటివ్ ఇన్ఫర్మేషన్ ఉన్నాయి, ఇది నమ్మదగినది కాకపోతే దయచేసి ఈ ఫైల్ ను ఎవరితోనూ పంచుకోవద్దు."
+graph_module_404: "ఈ గ్రాఫ్ మాడ్యూల్ కనుగొనబడలేదు: {0}"
+graph_module_unavailable: ఈ గ్రాఫ్ మాడ్యూల్ "{0}" అందుబాటులో లేదు
+graph_output: ఈ గ్రాఫ్ ఫీచర్ ఉపయోగించడానికి మీ ఔట్పుట్ ఫైల్ పేరు ".html" లేదా ".htm" తో ముగించాలి!
+help_menu: Nettacker హెల్ప్ మెనూ ను చూపించు
+done: "పూర్తయింది!"
+error_platform: "దురదృష్టవశాత్తు ఈ సాఫ్ట్వేర్ వెర్షన్ Linux/darwin లో రన్ అవుతుంది"
+file_saved: "రిపోర్టు {0} మరియు డేటాబేస్ లో సేవ్ చేయబడింది"
+inserting_report_db: రిపోర్ట్ ను డేటాబేస్ తో జోడిస్తుంది
+invalid_database: దయచేసి configuration ఫైల్ లో MySQL లేదా sqlite నుండి ఎంచుకోండి
+invalid_json_type_to_db: "డేటాబేస్ లో చెల్లుబాటు కాని JSON డేటా యొక్క రకము. డేటాబేస్ లో సబ్మిట్ చెయ్యడం దాటవేస్తుంది. డేటా:{0}"
+license: "దయచేసి license and agreements ను చదవండి https://github.com/OWASP/Nettacker"
+loaded_modules: "{0} మాడ్యూల్స్ లోడ్ అయినాయి..."
+loading_modules: అన్ని మాడ్యూల్స్ ను లోడ్ చేస్తోంది... దీనికి కొంచెము సమయం పట్టవచ్చు!
+loading_profiles: అన్ని ప్రొఫైల్స్ లోడ్ అవుతున్నాయి... దీనికి కొంచెము సమయం పట్టవచ్చు!
 module_profile_full_information: "{0}{1}{2}: {3}"
-nettacker_report: OWASP Nettacker Report
-nettacker_version_details: "Software Details: OWASP Nettacker version {0} [{1}] in {2}"
-not_found: Not Found!
-outgoing_proxy: "outgoing connections proxy (socks). example socks5: 127.0.0.1:9050,
+nettacker_report: OWASP Nettacker రిపోర్ట్ 
+nettacker_version_details: "సాఫ్టువేర్ వివరాలు: OWASP Nettacker వర్షన్ {0} [{1}] లో {2}"
+not_found: కనుగొనబడలేదు!
+outgoing_proxy: "బయటికి వెళ్ళే కనెక్షన్ల proxy (socks). ఉదాహరణ socks5: 127.0.0.1:9050,
   socks://127.0.0.1:9050 socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050,
   authentication: socks://username: password@127.0.0.1, socks4://username:password@127.0.0.1,
   socks5://username:password@127.0.0.1"
-password_separator: password(s) list, separate with ","
-pentest_graphs: Penetration Testing Graphs
-ping_before_scan: ping before scan the host
-port_separator: port(s) list, separate with ","
-ports_int: ports must be integers! (e.g. 80 || 80,1080 || 80,1080-1300,9000,12000-15000)
-profile_404: the profile "{0}" not found!
-range: scan all IPs in the range
-read_passwords: read password(s) from file
-read_target: read target(s) from file
-removing_logs_db: removing old logs from db
-save_logs: save all logs in file (results.txt, results.csv, results.html, results.json)
-scan_method_options: Scan method options
-scan_method_select: please choose your scan method!
-scan_module_not_found: this scan module [{0}] not found!
-scan_started: "Nettacker engine started ..."
-select_language: select a language {0}
-select_profile: select profile {0}
-select_user_agent: "Select a user agent to send with HTTP requests or enter \"random_user_agent\"
-  to randomize the User-Agent in the requests."
+password_separator: password(s) జాబితా "," తో వేరుచేయబడింది
+pentest_graphs: పెనిట్రేషన్ టెస్టింగ్ గ్రాఫ్లు
+ping_before_scan: హోస్ట్ ను స్కాన్ చేసే ముందు ping చెయ్యండి
+port_separator: port(s) జాబితా "," తో వేరుచేయబడింది
+ports_int: ports ఇంటీజర్ లు మాత్రమే ఉండాలి! (ఉదాహరణలు: 80 || 80,1080 || 80,1080-1300,9000,12000-15000)
+profile_404: ఈ ప్రొఫైల్ "{0}" కనుగొనబడలేదు!
+range: ఈ పరిధి లోని అన్ని IP లను స్కాన్ చేయు
+read_passwords: ఫైల్ నుండి పాస్వర్డ్(లు) చదవు
+read_target: ఫైల్ నుండి టార్గెట్(లు) చదవు
+removing_logs_db: db నుండి పాత లాగ్లను తొలగిస్తోంది 
+save_logs: అన్ని లాగ్లను ఈ ఫైల్స్ లో సేవ్ చెయ్యండి(results.txt, results.csv, results.html, results.json)
+scan_method_options: స్కాన్ విధానం ఎంపికలు
+scan_method_select: దయచేసి మీ స్కాన్ విధానాన్ని ఎంచుకోండి!
+scan_module_not_found: ఈ స్కాన్ మాడ్యూల్ [{0}] కనుగొనబడలేదు!
+scan_started: "Nettacker ఇంజన్ ప్రారంభం అయింది ..."
+select_language: భాషను ఎంచుకోండి {0}
+select_profile: ప్రొఫైల్ను ఎంచుకోండి {0}
+select_user_agent: "HTTP రిక్వెస్ట్ లతో పంపడానికి ఒక user agent ను ఎంచుకోండి లేదా రిక్వెస్ట్లలో User-Agent ను రాండమైజ్ చెయ్యడానికి \"random_user_agent\" ను ఎంటర్ చెయ్యండి."
 send_success_event_from_module: "process-{0}|{1}|{2}|module-thread {3}/{4}|request-thread {5}/{6}|{7}|\nsuccess_condition
 (s): \n{8}"
 send_unsuccess_event_from_module: "process-{0}|{1}|{2}|module-thread {3}/{4}|request-thread
-  {5}/{6}| all conditions failed"
-sending_module_request: "process-{0}|{1}|{2}|module-thread {3}/{4}| sending request
+  {5}/{6}| అన్ని కండీషన్లు ఫైల్ అయినాయి"
+sending_module_request: "process-{0}|{1}|{2}|module-thread {3}/{4}| రిక్వెస్ట్ పంపబడుతోంది 
   {5} from {6}"
-verbose_event: enable verbose event to see state of each thread
-no_events_for_report: there are no events exist to create a report! skipping this section.
-set_hardware_usage: Set hardware usage while scanning. (low, normal, high, maximum)
-show_all_modules: show all modules and their information
-show_all_profiles: show all profiles and their information
-single_process_started: process-{0}| process is started!
-software_version: show software version
-start_api_server: start the API service
-start_multi_process: imported {0} targets in {1} process(es).
+verbose_event: ప్రతి థ్రెడ్ యొక్క స్టేట్ చూడటానికి verbose event ను ఎనేబుల్ చెయ్యండి
+no_events_for_report: రిపోర్టును సృష్టించడానికి ఈవెంట్లు లేవు! ఈ విభాగాన్ని దాటవేస్తుంది.
+set_hardware_usage: స్కాన్ చేస్తున్నప్పుడు హార్డ్ వేర్ వాడకాన్ని సెట్ చెయ్యండి. (low, normal, high, maximum)
+show_all_modules: అన్ని మాడ్యూల్స్ ని మరియు వాటి సమాచారాలను చూపించండి
+show_all_profiles: అన్ని ప్రొఫైల్స్ ని మరియు వాటి సమాచారాలను చూపించండి
+single_process_started: process-{0}| process ప్రారంభమైంది!
+software_version: సాప్ట్ వేర్ వర్షన్ ను చూపించు 
+start_api_server: API సేవ ను ప్రారంభించు
+start_multi_process: {1} process(es) లో {0} targets ఇంపోర్ట్ అయినాయి.
 start_parallel_module_scan:
-  process-{0}|{1}|{2}| started module thread number {3}
-  from {4}
-subdomains: find and scan subdomains
+  process-{0}|{1}|{2}| మాడ్యూల్ థ్రెడ్ {4} నుంచి {3} ప్రారంభమయింది
+subdomains: subdomain లను కనుగొని స్కాన్ చెయ్యండి
 target: Target
-target_input: Target input options
-target_list: target(s) list, separate with ","
-thread_number_connections: thread numbers for connections to a host
-thread_number_modules: parallel module scan for hosts
-time_to_sleep: time to sleep between each request
-unauthorized_IP: your IP not authorized
-updating_database: updating the database...
-username_from_file: read username(s) from file
-username_list: username(s) list, separate with ","
+target_input: Target ఇన్పుట్ ఎంపికలు
+target_list: target(s) జాబితా, "," తో వేరు అవబడ్డాయి
+thread_number_connections: హోస్ట్ యొక్క కనెక్షన్ల థ్రెడ్ సంఖ్యలు
+thread_number_modules: హాస్ట్ ల కోసం parallel మాడ్యూల్ స్కాన్ 
+time_to_sleep: ప్రతి రిక్వెస్ట్ మధ్య sleep time
+unauthorized_IP: మీ IP కి అధికారం లేదు
+updating_database: డేటాబేస్ ను నవీకరిస్తుంది...
+username_from_file: ఫైల్ నుంచి username(s) చదువు
+username_list: username(s) జాబితా, "," తో వేరు అవబడ్డాయి
 verbose_mode: verbose mode level (0-5) (default 0)
-wrong_hardware_usage: "You must select one of these profiles for hardware usage. (low, normal, high, maximum)"
-invalid_scan_id: your scan id is not valid!
-compare_scans: compare current scan to old scans using the unique scan_id
-compare_report_path_filename: the file-path to store the compare_scan report
-no_scan_to_compare: the scan_id to be compared not found
-compare_report_saved: "compare results saved in {0}"
-build_compare_report: "building compare report"
-finish_build_report: "Finished building compare report"
-user_wordlist: "Allows users to enter their own wordlist"
-exclude_ports: "Ports to exclude (e.g. 80 || 80,443|| 1000-1300)"
-http_header: "Add custom HTTP headers to requests (format: 'key: value'). For multiple headers, use multiple -H flags"
+wrong_hardware_usage: "హార్డ్ వేర్ వాడకం కోసం ఈ ప్రొఫైలలో ఒక దాన్ని ఎంపిక చేసుకోండి. (low, normal, high, maximum)"
+invalid_scan_id: మీ స్కాన్ id చెల్లదు!
+compare_scans: ప్రత్యేకమైన scan_id ఉపయోగించి ప్రస్తుత స్కాన్ ను పాత స్కాన్లతో పోల్చండి
+compare_report_path_filename: compare_scan రిపోర్ట్ నిలువచెయడానికి file-path 
+no_scan_to_compare: పోల్చాల్సిన scan_id కనుగొనబడలేదు
+compare_report_saved: "పోలిక ఫలితాలు {0} లో సేవ్ చెయ్యబడ్డాయి"
+build_compare_report: "పోలిక రిపోర్ట్ నిర్మించబడుతోంది"
+finish_build_report: "పోలిక రిపోర్ట్ నిర్మించబడింది"
+user_wordlist: "వినియోగదారులు వారి సొంత worlist ను నమోదు చెయ్యడానికి అనుమతిస్తుంది"
+exclude_ports: "మినహాయించాల్సిన పోర్ట్లు (ఉదా. 80 || 80,443|| 1000-1300)"
+http_header: "రిక్వెస్ట్ లకు అనుకూల HTTP header లను జోడించండి (ఫార్మాట్: 'key: value'). బహుళ header ల కోసం, బహుళ -H flags ను వాడండి"
