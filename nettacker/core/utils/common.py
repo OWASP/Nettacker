@@ -165,10 +165,12 @@ def find_args_value(args_name):
 
 
 def re_address_repeaters_key_name(key_name):
-    # Note: This uses "/" as a key delimiter, not a file path separator
     """
     Format a slash-delimited key path into a sequence of dictionary-access segments
     excluding the final key.
+
+    Note:
+        This uses "/" as a key delimiter, not a file path separator.
 
     Parameters:
         key_name (str): A "/"-delimited key path ("/" is a key delimiter, not a
