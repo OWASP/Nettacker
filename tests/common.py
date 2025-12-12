@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from conftest import nettacker_dir, tests_dir
+from tests.conftest import nettacker_dir, tests_dir
 
 
 class TestCase(unittest.TestCase):

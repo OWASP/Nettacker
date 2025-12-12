@@ -1,9 +1,18 @@
-import sys
-from os.path import abspath, dirname, join
+import ssl
+from pathlib import Path
 
-project_root = dirname(dirname(__file__))
-nettacker_dir = abspath(join(project_root, "nettacker"))
-tests_dir = abspath(join(project_root, "tests"))
+# Define directory paths for tests/common.py
+nettacker_dir = str(Path(__file__).parent.parent)
+tests_dir = str(Path(__file__).parent)
 
-sys.path.insert(0, nettacker_dir)
-sys.path.insert(1, tests_dir)
+def pytest_configure():
+    """
+    Provide a compatibility shim for older tests that expect ssl.wrap_socket.
+    Python 3.12 removed ssl.wrap_socket; tests should ideally mock SSLContext.wrap_socket.
+    This shim only exists during test runs and does not affect production code.
+    """
+    if not hasattr(ssl, "wrap_socket"):
+        def _wrap_socket(sock, *args, **kwargs):
+            ctx = ssl.create_default_context()
+            return ctx.wrap_socket(sock, *args, **kwargs)
+        ssl.wrap_socket = _wrap_socket
