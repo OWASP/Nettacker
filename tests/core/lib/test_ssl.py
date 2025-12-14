@@ -192,7 +192,7 @@ class TestSslMethod:
         )
 
         mock_wrap.assert_called_with(socket_instance, server_hostname=connection_params["HOST"])
-    
+
     @patch("nettacker.core.lib.ssl.is_weak_cipher_suite")
     @patch("nettacker.core.lib.ssl.is_weak_ssl_version")
     @patch("nettacker.core.lib.ssl.create_tcp_socket")
@@ -205,7 +205,7 @@ class TestSslMethod:
         )
         mock_ssl_check.return_value = ("TLSv1.3", False)
         mock_cipher_check.return_value = (["HIGH"], False)
-            
+
         result = ssl_library.ssl_version_and_cipher_scan(
             connection_params["HOST"], connection_params["PORT"], connection_params["TIMEOUT"]
         )
