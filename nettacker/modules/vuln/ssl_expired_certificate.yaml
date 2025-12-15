@@ -6,7 +6,7 @@ info:
   reference:
     - https://www.beyondsecurity.com/resources/vulnerabilities/ssl-certificate-expiry
   profiles:
-    - scan
+    - vuln
     - ssl
 
 payloads:
