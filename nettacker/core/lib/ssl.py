@@ -185,9 +185,27 @@ class SslLibrary(BaseLibrary):
         if ssl_flag:
             try:
                 cert = ssl.get_server_certificate((host, port))
-            except ssl.SSLError:
-                cert = None
-            except socket.gaierror:
+            except ssl.SSLError as e:
+                log.debug(
+                    "SSL handshake failed while fetching certificate for %s:%s: %s",
+                    host,
+                    port,
+                    e,
+                )
+                return {
+                    "status": "error",
+                    "reason": "ssl_handshake_failed",
+                    "ssl_flag": True,
+                    "peer_name": peer_name,
+                    "service": socket.getservbyport(int(port)),
+                }
+            except socket.gaierror as e:
+                log.debug(
+                    "DNS resolution failed while fetching certificate for %s:%s: %s",
+                    host,
+                    port,
+                    e,
+                )
                 cert = None
             cert_info = get_cert_info(cert) if cert else None
             ssl_ver, weak_version = is_weak_ssl_version(host, port, timeout)
