@@ -160,16 +160,31 @@ class SslLibrary(BaseLibrary):
 
         socket_connection, ssl_flag = tcp_socket
         peer_name = socket_connection.getpeername()
+
+        try:
+            service = socket.getservbyport(int(port))
+        except OSError:
+            service = "unknown"
+
         scan_info = {
             "ssl_flag": ssl_flag,
             "peer_name": peer_name,
-            "service": socket.getservbyport(int(port)),
+            "service": service,
         }
 
         if ssl_flag:
-            cert = ssl.get_server_certificate((host, port))
-            cert_info = get_cert_info(cert)
-            scan_info = cert_info | scan_info
+            try:
+                cert = ssl.get_server_certificate((host, port))
+                cert_info = get_cert_info(cert)
+                scan_info = cert_info | scan_info
+            except (ssl.SSLError, socket.gaierror) as e:
+                log.info(
+                    "Failed to fetch SSL certificate for %s:%s: %s",
+                    host,
+                    port,
+                    e,
+                )
+                scan_info["ssl_flag"] = False
             return scan_info
 
         return scan_info
@@ -182,31 +197,25 @@ class SslLibrary(BaseLibrary):
         socket_connection, ssl_flag = tcp_socket
         peer_name = socket_connection.getpeername()
 
+        try:
+            service = socket.getservbyport(int(port))
+        except OSError:
+            service = "unknown"
+
         if ssl_flag:
             try:
                 cert = ssl.get_server_certificate((host, port))
-            except ssl.SSLError as e:
-                log.debug(
-                    "SSL handshake failed while fetching certificate for %s:%s: %s",
-                    host,
-                    port,
-                    e,
-                )
-                return {
-                    "status": "error",
-                    "reason": "ssl_handshake_failed",
-                    "ssl_flag": True,
-                    "peer_name": peer_name,
-                    "service": socket.getservbyport(int(port)),
-                }
-            except socket.gaierror as e:
-                log.debug(
-                    "DNS resolution failed while fetching certificate for %s:%s: %s",
+            except (ssl.SSLError, socket.gaierror) as e:
+                log.info(
+                    "Failed to fetch SSL certificate for %s:%s: %s",
                     host,
                     port,
                     e,
                 )
                 cert = None
+                ssl_flag = False
+
+
             cert_info = get_cert_info(cert) if cert else None
             ssl_ver, weak_version = is_weak_ssl_version(host, port, timeout)
             cipher_suite, weak_cipher_suite = is_weak_cipher_suite(host, port, timeout)
@@ -221,12 +230,12 @@ class SslLibrary(BaseLibrary):
                 "expiration_date": cert_info["expiration_date"] if cert_info else "NA",
                 "ssl_flag": ssl_flag,
                 "peer_name": peer_name,
-                "service": socket.getservbyport(int(port)),
+                "service": service,
             }
 
         return {
             "ssl_flag": ssl_flag,
-            "service": socket.getservbyport(int(port)),
+            "service": service,
             "peer_name": peer_name,
         }
 
