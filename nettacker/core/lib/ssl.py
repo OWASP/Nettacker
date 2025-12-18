@@ -179,10 +179,7 @@ class SslLibrary(BaseLibrary):
                 scan_info = cert_info | scan_info
             except (ssl.SSLError, socket.gaierror) as e:
                 log.info(
-                    "Failed to fetch SSL certificate for %s:%s: %s",
-                    host,
-                    port,
-                    e,
+                    f"Failed to fetch SSL certificate for {host}:{port} - {e!r}"
                 )
                 scan_info["ssl_flag"] = False
             return scan_info
@@ -207,10 +204,7 @@ class SslLibrary(BaseLibrary):
                 cert = ssl.get_server_certificate((host, port))
             except (ssl.SSLError, socket.gaierror) as e:
                 log.info(
-                    "Failed to fetch SSL certificate for %s:%s: %s",
-                    host,
-                    port,
-                    e,
+                    f"Failed to fetch SSL certificate for {host}:{port} - {e!r}"
                 )
                 cert = None
                 ssl_flag = False
