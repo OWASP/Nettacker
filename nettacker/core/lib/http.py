@@ -33,13 +33,20 @@ async def perform_request_action(action, request_options):
         }
 
 
-async def send_request(request_options, method):
-    async with aiohttp.ClientSession() as session:
+async def send_request(request_options, method, session=None):
+    if session:
         action = getattr(session, method, None)
         response = await asyncio.gather(
             *[asyncio.ensure_future(perform_request_action(action, request_options))]
         )
         return response[0]
+    else:
+        async with aiohttp.ClientSession() as session:
+            action = getattr(session, method, None)
+            response = await asyncio.gather(
+                *[asyncio.ensure_future(perform_request_action(action, request_options))]
+            )
+            return response[0]
 
 
 def response_conditions_matched(sub_step, response):
@@ -136,6 +143,133 @@ def response_conditions_matched(sub_step, response):
 
 
 class HttpEngine(BaseEngine):
+    async def process_single_step(
+        self,
+        sub_step,
+        module_name,
+        target,
+        scan_id,
+        options,
+        process_number,
+        module_thread_number,
+        total_module_thread_number,
+        request_number_counter,
+        total_number_of_requests,
+        session,
+    ):
+        if options["http_header"] is not None:
+            for header in options["http_header"]:
+                key = get_http_header_key(header).strip()
+                value = get_http_header_value(header)
+                if value is not None:
+                    sub_step["headers"][key] = value.strip()
+                else:
+                    sub_step["headers"][key] = ""
+        backup_method = copy.deepcopy(sub_step["method"])
+        backup_response = copy.deepcopy(sub_step["response"])
+        backup_iterative_response_match = copy.deepcopy(
+            sub_step["response"]["conditions"].get("iterative_response_match", None)
+        )
+        if options["user_agent"] == "random_user_agent":
+            sub_step["headers"]["User-Agent"] = random.choice(options["user_agents"])
+        del sub_step["method"]
+        if "dependent_on_temp_event" in backup_response:
+            temp_event = self.get_dependent_results_from_database(
+                target,
+                module_name,
+                scan_id,
+                backup_response["dependent_on_temp_event"],
+            )
+            sub_step = self.replace_dependent_values(sub_step, temp_event)
+        backup_response = copy.deepcopy(sub_step["response"])
+        del sub_step["response"]
+        for _i in range(options["retries"]):
+            try:
+                response = await send_request(sub_step, backup_method, session=session)
+                response["content"] = response["content"].decode(errors="ignore")
+                break
+            except Exception:
+                response = []
+        sub_step["method"] = backup_method
+        sub_step["response"] = backup_response
+
+        if backup_iterative_response_match is not None:
+            backup_iterative_response_match = copy.deepcopy(
+                sub_step["response"]["conditions"].get("iterative_response_match")
+            )
+            del sub_step["response"]["conditions"]["iterative_response_match"]
+
+        sub_step["response"]["conditions_results"] = response_conditions_matched(
+            sub_step, response
+        )
+
+        if backup_iterative_response_match is not None and (
+            sub_step["response"]["conditions_results"]
+            or sub_step["response"]["condition_type"] == "or"
+        ):
+            sub_step["response"]["conditions"][
+                "iterative_response_match"
+            ] = backup_iterative_response_match
+            for key in sub_step["response"]["conditions"]["iterative_response_match"]:
+                result = response_conditions_matched(
+                    sub_step["response"]["conditions"]["iterative_response_match"][key],
+                    response,
+                )
+                if result:
+                    sub_step["response"]["conditions_results"][key] = result
+
+        return self.process_conditions(
+            sub_step,
+            module_name,
+            target,
+            scan_id,
+            options,
+            response,
+            process_number,
+            module_thread_number,
+            total_module_thread_number,
+            request_number_counter,
+            total_number_of_requests,
+        )
+
+    def run_batch(self, steps_list, *args):
+        """
+        Run a batch of steps using a single aiohttp session.
+        args matches the signature of run(), but the first argument is a list of steps.
+        """
+        async def _run_batch():
+            connector = aiohttp.TCPConnector(limit=None, ttl_dns_cache=300)
+            async with aiohttp.ClientSession(connector=connector) as session:
+                tasks = []
+                # args structure: module_name, target, scan_id, options, ...
+                # We need to map the list of steps to individual process_single_step calls
+                # The 'request_number_counter' in args needs to be incremented for each step
+                
+                # Unpack common args
+                (module_name, target, scan_id, options, process_number, 
+                 module_thread_number, total_module_thread_number, 
+                 start_request_number, total_requests) = args
+
+                current_req_num = start_request_number
+                
+                for sub_step in steps_list:
+                    task = self.process_single_step(
+                        sub_step, module_name, target, scan_id, options,
+                        process_number, module_thread_number, total_module_thread_number,
+                        current_req_num, total_requests, session
+                    )
+                    tasks.append(task)
+                    current_req_num += 1
+                
+                await asyncio.gather(*tasks)
+
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            loop.run_until_complete(_run_batch())
+        finally:
+            loop.close()
+
     def run(
         self,
         sub_step,

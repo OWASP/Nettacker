@@ -157,43 +157,66 @@ class Module:
                 importlib.import_module(f"nettacker.core.lib.{library.lower()}"),
                 f"{library.capitalize()}Engine",
             )()
-            for step in payload["steps"]:
-                for sub_step in step:
-                    thread = Thread(
-                        target=engine.run,
-                        args=(
-                            sub_step,
-                            self.module_name,
-                            self.target,
-                            self.scan_id,
-                            self.module_inputs,
-                            self.process_number,
-                            self.module_thread_number,
-                            self.total_module_thread_number,
-                            request_number_counter,
-                            total_number_of_requests,
-                        ),
+
+            # Check if engine supports batch processing (AsyncIO optimization)
+            if hasattr(engine, "run_batch"):
+                all_sub_steps = []
+                for step in payload["steps"]:
+                    for sub_step in step:
+                        all_sub_steps.append(sub_step)
+
+                if all_sub_steps:
+                    engine.run_batch(
+                        all_sub_steps,
+                        self.module_name,
+                        self.target,
+                        self.scan_id,
+                        self.module_inputs,
+                        self.process_number,
+                        self.module_thread_number,
+                        self.total_module_thread_number,
+                        request_number_counter,
+                        total_number_of_requests
                     )
-                    thread.name = f"{self.target} -> {self.module_name} -> {sub_step}"
-                    request_number_counter += 1
-                    log.verbose_event_info(
-                        _("sending_module_request").format(
-                            self.process_number,
-                            self.module_name,
-                            self.target,
-                            self.module_thread_number,
-                            self.total_module_thread_number,
-                            request_number_counter,
-                            total_number_of_requests,
+                    request_number_counter += len(all_sub_steps)
+            else:
+                for step in payload["steps"]:
+                    for sub_step in step:
+                        thread = Thread(
+                            target=engine.run,
+                            args=(
+                                sub_step,
+                                self.module_name,
+                                self.target,
+                                self.scan_id,
+                                self.module_inputs,
+                                self.process_number,
+                                self.module_thread_number,
+                                self.total_module_thread_number,
+                                request_number_counter,
+                                total_number_of_requests,
+                            ),
                         )
-                    )
-                    thread.start()
-                    time.sleep(self.module_inputs["time_sleep_between_requests"])
-                    active_threads.append(thread)
-                    wait_for_threads_to_finish(
-                        active_threads,
-                        maximum=self.module_inputs["thread_per_host"],
-                        terminable=True,
-                    )
+                        thread.name = f"{self.target} -> {self.module_name} -> {sub_step}"
+                        request_number_counter += 1
+                        log.verbose_event_info(
+                            _("sending_module_request").format(
+                                self.process_number,
+                                self.module_name,
+                                self.target,
+                                self.module_thread_number,
+                                self.total_module_thread_number,
+                                request_number_counter,
+                                total_number_of_requests,
+                            )
+                        )
+                        thread.start()
+                        time.sleep(self.module_inputs["time_sleep_between_requests"])
+                        active_threads.append(thread)
+                        wait_for_threads_to_finish(
+                            active_threads,
+                            maximum=self.module_inputs["thread_per_host"],
+                            terminable=True,
+                        )
 
         wait_for_threads_to_finish(active_threads, maximum=None, terminable=True)
