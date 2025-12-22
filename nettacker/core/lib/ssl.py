@@ -178,9 +178,7 @@ class SslLibrary(BaseLibrary):
                 cert_info = get_cert_info(cert)
                 scan_info = cert_info | scan_info
             except (ssl.SSLError, socket.gaierror) as e:
-                log.info(
-                    f"Failed to fetch SSL certificate for {host}:{port} - {e!r}"
-                )
+                log.info(f"Failed to fetch SSL certificate for {host}:{port} - {e!r}")
                 scan_info["ssl_flag"] = False
             return scan_info
 
@@ -203,12 +201,9 @@ class SslLibrary(BaseLibrary):
             try:
                 cert = ssl.get_server_certificate((host, port))
             except (ssl.SSLError, socket.gaierror) as e:
-                log.info(
-                    f"Failed to fetch SSL certificate for {host}:{port} - {e!r}"
-                )
+                log.info(f"Failed to fetch SSL certificate for {host}:{port} - {e!r}")
                 cert = None
                 ssl_flag = False
-
 
             cert_info = get_cert_info(cert) if cert else None
             ssl_ver, weak_version = is_weak_ssl_version(host, port, timeout)
