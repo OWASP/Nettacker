@@ -97,7 +97,7 @@ class SocketLibrary(BaseLibrary):
         Note that ICMP messages can only be sent from processes running as root.
         Derived from ping.c distributed in Linux's netkit. That code is
         copyright (c) 1989 by The Regents of the University of California.
-        That code is in turn derived from code written by Mike Muuss of the
+        That code is in turn derived from code written by Mike Muess of the
         US Army Ballistic Research Laboratory in December, 1983 and
         placed in the public domain. They have my thanks.
         Bugs are naturally mine. I'd be glad to hear about them. There are
@@ -239,7 +239,6 @@ class SocketLibrary(BaseLibrary):
             if timeout <= 0:
                 break
         socket_connection.close()
-        
 
         # Return response with ICMP type validation
         if delay is not None:
@@ -320,6 +319,7 @@ class SocketEngine(BaseEngine):
             # Only count ICMP Echo Reply (type 0) as success
             if isinstance(response, dict) and response.get("status") == "alive":
                 return response
+            else:
                 return []
         return []
 
