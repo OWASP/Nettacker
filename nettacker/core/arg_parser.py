@@ -51,7 +51,8 @@ class ArgParser(ArgumentParser):
 
         graph_names = []
         for graph_library in Config.path.graph_dir.glob("*/engine.py"):
-            graph_names.append(str(graph_library).split("/")[-2] + "_graph")
+            # Use pathlib for cross-platform compatibility
+            graph_names.append(graph_library.parent.name + "_graph")
         return list(set(graph_names))
 
     @staticmethod
@@ -65,7 +66,8 @@ class ArgParser(ArgumentParser):
         languages_list = []
 
         for language in Config.path.locale_dir.glob("*.yaml"):
-            languages_list.append(str(language).split("/")[-1].split(".")[0])
+            # Use pathlib for cross-platform compatibility
+            languages_list.append(language.stem)
 
         return list(set(languages_list))
 
@@ -83,8 +85,9 @@ class ArgParser(ArgumentParser):
         # Search for Modules
         module_names = {}
         for module_name in sorted(Config.path.modules_dir.glob("**/*.yaml")):
-            library = str(module_name).split("/")[-1].split(".")[0]
-            category = str(module_name).split("/")[-2]
+            # Use pathlib for cross-platform compatibility
+            library = module_name.stem
+            category = module_name.parent.name
             module = f"{library}_{category}"
             contents = yaml.safe_load(TemplateLoader(module).open().split("payload:")[0])
             module_names[module] = contents["info"] if full_details else None

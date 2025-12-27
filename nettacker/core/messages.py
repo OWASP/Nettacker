@@ -20,7 +20,7 @@ def application_language():
 
 
 def load_yaml(filename):
-    return yaml.load(StringIO(open(filename, "r").read()), Loader=yaml.FullLoader)
+    return yaml.load(StringIO(open(filename, "r", encoding="utf-8").read()), Loader=yaml.FullLoader)
 
 
 def get_languages():
@@ -33,7 +33,8 @@ def get_languages():
     languages_list = []
 
     for language in Config.path.locale_dir.glob("*.yaml"):
-        languages_list.append(str(language).split("/")[-1].split(".")[0])
+        # Use pathlib for cross-platform compatibility
+        languages_list.append(language.stem)
     return list(set(languages_list))
 
 
