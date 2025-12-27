@@ -7,7 +7,6 @@ import re
 import time
 
 import aiohttp
-import uvloop
 
 from nettacker.core.lib.base import BaseEngine
 from nettacker.core.utils.common import (
@@ -17,7 +16,14 @@ from nettacker.core.utils.common import (
     get_http_header_value,
 )
 
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+# uvloop is not supported on Windows, so make it optional
+try:
+    import uvloop
+
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+except (ImportError, OSError):
+    # Use default asyncio event loop policy on Windows or if uvloop is not available
+    pass
 
 
 async def perform_request_action(action, request_options):
