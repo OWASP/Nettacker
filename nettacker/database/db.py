@@ -640,6 +640,8 @@ def last_host_logs(page):
             targets = cursor.fetchall()
 
             if not targets:
+                cursor.close()
+                connection.close()
                 return structure(status="finished", msg="No more search results")
 
             hosts = []
