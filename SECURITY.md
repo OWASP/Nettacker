@@ -77,7 +77,6 @@ If you are contributing to OWASP Nettacker, please follow these security best pr
 
 We would like to thank the following individuals and organizations for responsibly disclosing security vulnerabilities and helping us improve the security of OWASP Nettacker:
 
-- **[Your Name]** for reporting the **Path Traversal Vulnerability** in December 2025.
 
 ---
 
