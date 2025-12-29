@@ -73,13 +73,6 @@ If you are contributing to OWASP Nettacker, please follow these security best pr
 
 ---
 
-## **Acknowledgments**
-
-We would like to thank the following individuals and organizations for responsibly disclosing security vulnerabilities and helping us improve the security of OWASP Nettacker:
-
-
----
-
 ## **Policy Updates**
 
 This security policy may be updated from time to time. The latest version will always be available in this `SECURITY.md` file.
