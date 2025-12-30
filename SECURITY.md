@@ -35,8 +35,7 @@ If you discover a security vulnerability in OWASP Nettacker, we appreciate your 
   - Follow the prompts to submit a **private security advisory**.
 
 ### **3. Responsible Disclosure Process**
-- We will acknowledge your report within **48 hours** and provide an estimated timeline for a fix.
-- We will work with you to validate and address the vulnerability.
+- We will acknowledge your report and work with you to establish a timeline for addressing the vulnerability.
 - Once the issue is fixed, we will release a patch and publicly disclose the vulnerability, crediting you (unless you prefer to remain anonymous).
 
 ---
