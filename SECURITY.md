@@ -69,7 +69,7 @@ If you are contributing to OWASP Nettacker, please follow these security best pr
 - **Code Review**: All code changes should be reviewed for security issues before merging.
 - **Dependencies**: Keep dependencies up-to-date and review them for known vulnerabilities.
 - **Testing**: Write tests to ensure that security fixes are effective and do not introduce regressions.
-- **Documentation**: Document security-related changes and updates in the `CHANGELOG.md` and `SECURITY.md` files.
+- **Documentation**: Document security-related changes and updates in the `SECURITY.md` file.
 
 ---
 
