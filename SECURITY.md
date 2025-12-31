@@ -19,21 +19,13 @@ Older versions may not receive security updates. We strongly recommend that user
 
 If you discover a security vulnerability in OWASP Nettacker, we appreciate your help in disclosing it responsibly. Here’s how you can report it:
 
-### **1. Private Disclosure**
-- **Do not** open a public issue for security vulnerabilities.
-- Include the following details in your report:
-  - A **clear description** of the vulnerability.
-  - **Steps to reproduce** the issue (e.g., code snippets, proof of concept).
-  - The **affected version(s)** of OWASP Nettacker.
-  - Any **potential impact** of the vulnerability (e.g., data exposure, remote code execution).
-
-### **2. GitHub Security Advisory**
-- If you prefer, you can also report the vulnerability by creating a **GitHub Security Advisory**:
+### **1.GitHub Security Advisory**
+-  You can report the vulnerability by creating a **GitHub Security Advisory**:
   - Go to the [OWASP Nettacker repository](https://github.com/OWASP/Nettacker).
   - Click on **Security** > **Report a vulnerability**.
   - Follow the prompts to submit a **private security advisory**.
 
-### **3. Responsible Disclosure Process**
+### **2. Responsible Disclosure Process**
 - We will acknowledge your report and work with you to establish a timeline for addressing the vulnerability.
 - Once the issue is fixed, we will release a patch and publicly disclose the vulnerability, crediting you (unless you prefer to remain anonymous).
 
