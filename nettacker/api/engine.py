@@ -178,18 +178,19 @@ def access_log(response):
 def get_statics(path):
     """
     getting static files and return content mime types
-
-    Args:
-        path: path and filename
-
-    Returns:
-        file content and content type if file found otherwise abort(404)
     """
     static_types = mime_types()
+
+    base_dir = os.path.abspath(Config.path.web_static_dir)
+    requested_path = os.path.abspath(os.path.join(base_dir, path))
+
+    if not requested_path.startswith(base_dir):
+        abort(404)
+
     return Response(
-        get_file(os.path.join(Config.path.web_static_dir, path)),
+        get_file(requested_path),
         mimetype=static_types.get(os.path.splitext(path)[1], "text/html"),
-    )
+        )
 
 
 @app.route("/", methods=["GET", "POST"])
