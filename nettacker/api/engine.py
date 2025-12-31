@@ -184,7 +184,8 @@ def get_statics(path):
     base_dir = os.path.abspath(Config.path.web_static_dir)
     requested_path = os.path.abspath(os.path.join(base_dir, path))
 
-    if not requested_path.startswith(base_dir):
+    base_dir_sep = base_dir if base_dir.endswith(os.sep) else base_dir + os.sep
+    if not (requested_path.startswith(base_dir_sep) or requested_path == base_dir):
         abort(404)
 
     return Response(
