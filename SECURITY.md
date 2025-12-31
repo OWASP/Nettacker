@@ -19,8 +19,8 @@ Older versions may not receive security updates. We strongly recommend that user
 
 If you discover a security vulnerability in OWASP Nettacker, we appreciate your help in disclosing it responsibly. Here’s how you can report it:
 
-### **1.GitHub Security Advisory**
--  You can report the vulnerability by creating a **GitHub Security Advisory**:
+### **1. GitHub Security Advisory**
+- You can report the vulnerability by creating a **GitHub Security Advisory**:
   - Go to the [OWASP Nettacker repository](https://github.com/OWASP/Nettacker).
   - Click on **Security** > **Report a vulnerability**.
   - Follow the prompts to submit a **private security advisory**.
