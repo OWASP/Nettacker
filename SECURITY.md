@@ -21,7 +21,6 @@ If you discover a security vulnerability in OWASP Nettacker, we appreciate your 
 
 ### **1. Private Disclosure**
 - **Do not** open a public issue for security vulnerabilities.
-- Send an email to our security team at: **[security@owasp.org](mailto:security@owasp.org)**.
 - Include the following details in your report:
   - A **clear description** of the vulnerability.
   - **Steps to reproduce** the issue (e.g., code snippets, proof of concept).
