@@ -80,7 +80,7 @@ read_target: read target(s) from file
 removing_logs_db: removing old logs from db
 save_logs: save all logs in file (results.txt, results.csv, results.html, results.json)
 scan_method_options: Scan method options
-scan_method_select: please choose your scan method!
+scan_method_select: No scan module specified. Use --list-modules to view available modules and select one using the -m option.
 scan_module_not_found: this scan module [{0}] not found!
 scan_started: "Nettacker engine started ..."
 select_language: select a language {0}
