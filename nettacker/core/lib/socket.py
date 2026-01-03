@@ -368,6 +368,21 @@ class SocketEngine(BaseEngine):
                 return []
         if sub_step["method"] == "socket_icmp":
             return response
+        if sub_step["method"] == "ssl_probe_for_cve":
+            conditions = sub_step["response"]["conditions"]
+            condition_results = {}
+            condition_type = sub_step["response"]["condition_type"]
+            regex = re.findall(re.compile(conditions["regex"]), response["response"])
+            reverse = conditions["reverse"]
+            condition_results[condition] = reverse_and_regex_condition(regex, reverse)
+            if not condition_results[condition]:
+                return []
+            log_response = {
+                "cipher": response["cipher"],
+                "peer_name": response["peer_name"],
+                "response": response["response"]
+            }
+
         return []
 
     def apply_extra_data(self, sub_step, response):
