@@ -179,19 +179,27 @@ def get_statics(path):
     """
     getting static files and return content mime types
     """
+    from pathlib import Path
+    
     static_types = mime_types()
 
-    base_dir = os.path.abspath(Config.path.web_static_dir)
-    requested_path = os.path.abspath(os.path.join(base_dir, path))
+    # 1. Resolve the base directory to an absolute path
+    base_dir = Path(Config.path.web_static_dir).resolve()
 
-    base_dir_sep = base_dir if base_dir.endswith(os.sep) else base_dir + os.sep
-    if not (requested_path.startswith(base_dir_sep) or requested_path == base_dir):
+    # 2. Join and resolve the requested path
+    # Path / path handles the OS-specific separators automatically
+    requested_path = (base_dir / path).resolve()
+
+    # 3. OS-agnostic boundary check
+    # .is_relative_to() is the modern, safe way to check path traversal
+    if not requested_path.is_relative_to(base_dir):
         abort(404)
 
     return Response(
-        get_file(requested_path),
-        mimetype=static_types.get(os.path.splitext(path)[1], "text/html"),
-        )
+        get_file(str(requested_path)),
+        mimetype=static_types.get(requested_path.suffix, "text/html"),
+    )
+
 
 
 @app.route("/", methods=["GET", "POST"])
