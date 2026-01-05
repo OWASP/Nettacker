@@ -185,8 +185,7 @@ def get_statics(path):
     
     base_dir = Path(Config.path.web_static_dir).resolve()
     
-    requested_path = (base_dir / path).resolve(
-        
+    requested_path = (base_dir / path).resolve()
     if not requested_path.is_relative_to(base_dir):
         abort(404)
 
