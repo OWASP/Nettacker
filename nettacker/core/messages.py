@@ -69,4 +69,3 @@ def messages(msg_id):
         message found otherwise return message in English
     """
     return message_cache[str(msg_id)]
-

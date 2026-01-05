@@ -61,4 +61,3 @@ class TemplateLoader:
 
     def load(self):
         return self.parse(yaml.safe_load(self.format()), self.inputs)
-

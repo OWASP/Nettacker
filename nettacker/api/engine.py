@@ -613,4 +613,3 @@ def start_api_server(options):
             for process in multiprocessing.active_children():
                 process.terminate()
             break
-
