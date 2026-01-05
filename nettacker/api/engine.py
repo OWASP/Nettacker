@@ -5,6 +5,7 @@ import os
 import random
 import string
 import time
+from pathlib import Path
 from threading import Thread
 from types import SimpleNamespace
 
@@ -178,20 +179,14 @@ def access_log(response):
 def get_statics(path):
     """
     getting static files and return content mime types
-    """
-    from pathlib import Path
-    
+    """  
     static_types = mime_types()
 
-    # 1. Resolve the base directory to an absolute path
+    
     base_dir = Path(Config.path.web_static_dir).resolve()
-
-    # 2. Join and resolve the requested path
-    # Path / path handles the OS-specific separators automatically
-    requested_path = (base_dir / path).resolve()
-
-    # 3. OS-agnostic boundary check
-    # .is_relative_to() is the modern, safe way to check path traversal
+    
+    requested_path = (base_dir / path).resolve(
+        
     if not requested_path.is_relative_to(base_dir):
         abort(404)
 
