@@ -97,7 +97,7 @@ class SocketLibrary(BaseLibrary):
         Note that ICMP messages can only be sent from processes running as root.
         Derived from ping.c distributed in Linux's netkit. That code is
         copyright (c) 1989 by The Regents of the University of California.
-        That code is in turn derived from code written by Mike Muuss of the
+        That code is in turn derived from code written by Mike Muess of the
         US Army Ballistic Research Laboratory in December, 1983 and
         placed in the public domain. They have my thanks.
         Bugs are naturally mine. I'd be glad to hear about them. There are
@@ -205,6 +205,10 @@ class SocketLibrary(BaseLibrary):
             header + data, (socket.gethostbyname(host), 1)
         )  # Don't know about the 1
 
+        delay = None
+        icmp_response_type = None
+        icmp_response_code = None
+
         while True:
             started_select = time.time()
             what_ready = select.select([socket_connection], [], [], timeout)
@@ -221,17 +225,41 @@ class SocketLibrary(BaseLibrary):
                 packet_id,
                 packet_sequence,
             ) = struct.unpack("bbHHh", icmp_header)
+
             if packet_id == random_integer:
                 packet_bytes = struct.calcsize("d")
                 time_sent = struct.unpack("d", received_packet[28 : 28 + packet_bytes])[0]
                 delay = time_received - time_sent
+                # Store ICMP type and code for validation
+                icmp_response_type = packet_type
+                icmp_response_code = packet_code
                 break
 
             timeout = timeout - how_long_in_select
             if timeout <= 0:
                 break
         socket_connection.close()
-        return {"host": host, "response_time": delay, "ssl_flag": False}
+
+        # Return response with ICMP type validation
+        if delay is not None:
+            status = "alive" if icmp_response_type == 0 else "unreachable"
+            return {
+                "host": host,
+                "response_time": delay,
+                "ssl_flag": False,
+                "icmp_type": icmp_response_type,
+                "icmp_code": icmp_response_code,
+                "status": status,
+            }
+        else:
+            return {
+                "host": host,
+                "response_time": None,
+                "ssl_flag": False,
+                "icmp_type": None,
+                "icmp_code": None,
+                "status": "filtered",
+            }
 
 
 class SocketEngine(BaseEngine):
@@ -288,7 +316,11 @@ class SocketEngine(BaseEngine):
                     return condition_results if condition_results else []
                 return []
         if sub_step["method"] == "socket_icmp":
-            return response
+            # Only count ICMP Echo Reply (type 0) as success
+            if isinstance(response, dict) and response.get("status") == "alive":
+                return response
+            else:
+                return []
         return []
 
     def apply_extra_data(self, sub_step, response):

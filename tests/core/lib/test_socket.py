@@ -6,7 +6,46 @@ from nettacker.core.lib.socket import create_tcp_socket, SocketEngine
 
 
 class Responses:
-    tcp_connect_only = socket_icmp = {}
+    tcp_connect_only = {}
+
+    # ICMP responses with type/code validation
+    socket_icmp = {}
+    
+    socket_icmp_echo_reply = {
+        "host": "127.0.0.1",
+        "response_time": 0.001,
+        "ssl_flag": False,
+        "icmp_type": 0,       # Echo Reply - SUCCESS
+        "icmp_code": 0,
+        "status": "alive",
+    }
+    
+    socket_icmp_dest_unreachable = {
+        "host": "127.0.0.1",
+        "response_time": None,
+        "ssl_flag": False,
+        "icmp_type": 3,       # Destination Unreachable
+        "icmp_code": 3,       # Port Unreachable
+        "status": "unreachable",
+    }
+    
+    socket_icmp_network_unreachable = {
+        "host": "192.0.2.1",
+        "response_time": None,
+        "ssl_flag": False,
+        "icmp_type": 3,       # Destination Unreachable
+        "icmp_code": 0,       # Network Unreachable
+        "status": "unreachable",
+    }
+    
+    socket_icmp_no_response = {
+        "host": "10.255.255.1",
+        "response_time": None,
+        "ssl_flag": False,
+        "icmp_type": None,
+        "icmp_code": None,
+        "status": "filtered",
+    }
 
     tcp_connect_send_and_receive = {
         "response": 'HTTP/1.1 400 Bad Request\r\nServer: Apache/2.4.62 (Debian)\r\nContent-Length: 302\r\nConnection: close\r\nContent-Type: text/html; charset=iso-8859-1\r\n\r\n<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">\n<html><head>\n<title>400 Bad Request</title>\n</head><body>\n<h1>Bad Request</h1>\n<p>Your browser sent a request that this server could not understand.<br />\n</p>\n<hr>\n<address>Apache/2.4.62 (Debian)</address>\n</body></html>\n',
@@ -153,11 +192,31 @@ class TestSocketMethod:
         socket_instance.connect.assert_called_with((HOST, PORT))
         mock_wrap.assert_called_with(socket_instance)
 
-    def test_response_conditions_matched_socket_icmp(self, socket_engine, substeps, responses):
-        result = socket_engine.response_conditions_matched(
-            substeps.socket_icmp, responses.socket_icmp
-        )
-        assert result == responses.socket_icmp
+    def test_socket_icmp_echo_reply_should_match(self, socket_engine, substeps):
+        """ICMP Echo Reply (type 0) should be treated as successful detection"""
+        response = Responses.socket_icmp_echo_reply
+        result = socket_engine.response_conditions_matched(substeps.socket_icmp, response)
+        assert result == response  # Should return the response (match)
+        assert result.get("status") == "alive"
+        assert result.get("icmp_type") == 0
+
+    def test_socket_icmp_dest_unreachable_should_not_match(self, socket_engine, substeps):
+        """ICMP Destination Unreachable (type 3) should NOT be treated as success"""
+        response = Responses.socket_icmp_dest_unreachable
+        result = socket_engine.response_conditions_matched(substeps.socket_icmp, response)
+        assert result == []  # Should return empty list (no match)
+
+    def test_socket_icmp_network_unreachable_should_not_match(self, socket_engine, substeps):
+        """ICMP Network Unreachable should NOT be treated as success"""
+        response = Responses.socket_icmp_network_unreachable
+        result = socket_engine.response_conditions_matched(substeps.socket_icmp, response)
+        assert result == []  # Should return empty list (no match)
+
+    def test_socket_icmp_no_response_should_not_match(self, socket_engine, substeps):
+        """No ICMP response (filtered/timeout) should NOT be treated as success"""
+        response = Responses.socket_icmp_no_response
+        result = socket_engine.response_conditions_matched(substeps.socket_icmp, response)
+        assert result == []  # Should return empty list (no match)
 
     def test_response_conditions_matched_tcp_connect_send_and_receive(
         self, socket_engine, substeps, responses
