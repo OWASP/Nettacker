@@ -57,7 +57,7 @@ PASSWORD: 암호
 PORT: 포트
 TYPE: 유형
 DESCRIPTION: 기술
-verbose_mode: 상세 모드 레벨 (0-5) (기본값 0)
+verbose_mode: 상세 모드
 software_version: 소프트웨어 버전 표시
 check_updates: 업데이트를 확인
 outgoing_proxy:

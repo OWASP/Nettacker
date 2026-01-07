@@ -67,7 +67,7 @@ PASSWORD: پاس ورڈ
 PORT: پورٹ
 TYPE: TYPE
 DESCRIPTION: تفصیل
-verbose_mode: verbose موڈ کی سطح (0-5) (پہلے سے طے شدہ 0)
+verbose_mode: verbose موڈ
 software_version: شو سافٹ ویئر ورژن دکھائیں
 check_updates: اپ ڈیٹ کی جانچ پڑتال کریں
 outgoing_proxy:

@@ -72,7 +72,7 @@ PASSWORD: SENHA
 PORT: PORTA
 TYPE: TIPO
 DESCRIPTION: DESCRIÇÃO
-verbose_level: nível de modo de detalhe (0-5) (padrão 0)
+verbose_level: modo detalhado
 software_version: mostrar a versão do software
 check_updates: checar atualizações
 outgoing_proxy: >-

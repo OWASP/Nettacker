@@ -116,7 +116,7 @@ unauthorized_IP: your IP not authorized
 updating_database: updating the database...
 username_from_file: read username(s) from file
 username_list: username(s) list, separate with ","
-verbose_mode: verbose mode level (0-5) (default 0)
+verbose_mode: enable verbose output
 wrong_hardware_usage: "You must select one of these profiles for hardware usage. (low, normal, high, maximum)"
 invalid_scan_id: your scan id is not valid!
 compare_scans: compare current scan to old scans using the unique scan_id
