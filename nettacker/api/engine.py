@@ -179,13 +179,17 @@ def access_log(response):
 def get_statics(path):
     """
     getting static files and return content mime types
+
+    Args:
+        path: the static file path
+        
+    Returns:
+        the static file content
     """  
     static_types = mime_types()
-
-    
     base_dir = Path(Config.path.web_static_dir).resolve()
-    
     requested_path = (base_dir / path).resolve()
+    
     if not requested_path.is_relative_to(base_dir):
         abort(404)
 
