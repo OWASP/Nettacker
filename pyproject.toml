@@ -62,7 +62,7 @@ requests = "^2.32.3"
 sqlalchemy = "^2.0.22"
 texttable = "^1.7.0"
 zipp = "^3.19.1"
-uvloop = "^0.21.0"
+uvloop = {version = "^0.21.0", markers = "sys_platform != 'win32'"}
 pymysql = "^1.1.1"
 impacket = "^0.11.0"
 
