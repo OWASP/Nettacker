@@ -55,7 +55,7 @@ PASSWORD: パスワード
 PORT: ポート
 TYPE: タイプ
 DESCRIPTION: DESCRIPTION
-verbose_mode: 冗長モードレベル（0〜5）（デフォルトは0）
+verbose_mode: 冗長モード
 software_version: ショーソフトウェアバージョン
 check_updates: 更新を確認
 outgoing_proxy:

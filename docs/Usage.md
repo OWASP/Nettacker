@@ -700,5 +700,3 @@ return {
 After this configuration please comment out the following line in database/db.py   `connect_args={'check_same_thread': False}` 
 
 
-
-Let me know if you have any more questions.
