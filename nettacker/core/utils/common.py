@@ -13,6 +13,7 @@ import time
 from itertools import product
 
 from nettacker import logger
+from nettacker.core.utils.dsl_matcher import dsl_matcher
 
 log = logger.get_logger()
 
@@ -450,3 +451,43 @@ def generate_compare_filepath(scan_id):
         date_time=now(format="%Y_%m_%d_%H_%M_%S"),
         scan_id=scan_id,
     )
+
+
+def version_matches_dsl(detected_version, dsl_expression):
+    """
+    Check if a detected version matches a DSL expression.
+    
+    Supports various version comparison operators:
+    - Range operators: >=, <=, >, <, ==, !=
+    - Semantic operators: ~ (tilde), ^ (caret)
+    - Logical operators: ||, &&, or, and
+    - Range syntax: "1.0 to 2.0", "1.0 - 2.0"
+    - Wildcards: *, ?
+    
+    Args:
+        detected_version: Version string detected from target
+        dsl_expression: DSL expression to match against
+        
+    Returns:
+        bool: True if version matches the expression
+        
+    Examples:
+        version_matches_dsl("2.4.51", ">=2.4.0, <2.4.54")  # True
+        version_matches_dsl("1.2.3", "~1.2.0")  # True (patch-level match)
+        version_matches_dsl("8.18.0", ">=8.0 && <9.0")  # True
+    """
+    return dsl_matcher.parse_dsl_expression(dsl_expression, detected_version)
+
+
+def extract_version_from_content(content, patterns):
+    """
+    Extract version from content using regex patterns.
+    
+    Args:
+        content: String content to search
+        patterns: List of regex patterns to try
+        
+    Returns:
+        str: Extracted version or None
+    """
+    return dsl_matcher.extract_version_from_response(content, patterns)
