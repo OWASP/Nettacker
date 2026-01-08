@@ -154,6 +154,7 @@ def get_cert_info(cert):
 
 class SslLibrary(BaseLibrary):
     def ssl_certificate_scan(self, host, port, timeout):
+        """Safely retrieve and analyze the SSL certificate of a target service."""
         tcp_socket = create_tcp_socket(host, port, timeout)
         if tcp_socket is None:
             return None
@@ -183,13 +184,14 @@ class SslLibrary(BaseLibrary):
         return scan_info
 
     def ssl_version_and_cipher_scan(self, host, port, timeout):
+        """Detect supported SSL/TLS versions and cipher suites with safe error handling."""
         tcp_socket = create_tcp_socket(host, port, timeout)
         if tcp_socket is None:
             return None
 
         socket_connection, ssl_flag = tcp_socket
         peer_name = socket_connection.getpeername()
-        
+
         try:
             service = socket.getservbyport(int(port))
         except OSError:
@@ -225,8 +227,6 @@ class SslLibrary(BaseLibrary):
             "service": service,
             "peer_name": peer_name,
         }
-
-
 
 
 class SslEngine(BaseEngine):
