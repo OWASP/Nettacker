@@ -203,7 +203,6 @@ class SslLibrary(BaseLibrary):
             except (ssl.SSLError, socket.gaierror) as e:
                 log.info(f"Failed to fetch SSL certificate for {host}:{port} - {e!r}")
                 cert = None
-                ssl_flag = False
 
             cert_info = get_cert_info(cert) if cert else None
             ssl_ver, weak_version = is_weak_ssl_version(host, port, timeout)
