@@ -179,7 +179,6 @@ class SslLibrary(BaseLibrary):
                 scan_info = cert_info | scan_info
             except (ssl.SSLError, socket.gaierror) as e:
                 log.info(f"Failed to fetch SSL certificate for {host}:{port} - {e!r}")
-                scan_info["ssl_flag"] = False
 
         return scan_info
 
