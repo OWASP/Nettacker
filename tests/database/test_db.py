@@ -921,11 +921,9 @@ class TestDatabase:
 
         result = get_scan_result(1)
 
+        # Not using triple quotes here because that makes the test more fragile and dependent on indentation and whitespace
         mock_cursor.execute.assert_called_with(
-            """
-            SELECT report_path_filename from reports
-            WHERE id = ?
-            """,
+            "SELECT report_path_filename from reports WHERE id = ?",
             (1,),
         )
 
@@ -1002,11 +1000,7 @@ class TestDatabase:
         result = get_logs_by_scan_id("scan_123")
 
         mock_cursor.execute.assert_called_with(
-            """
-            SELECT scan_unique_id, target, module_name, date, port, event, json_event
-            from scan_events
-            WHERE scan_unique_id = ?
-            """,
+            "SELECT scan_unique_id, target, module_name, date, port, event, json_event from scan_events WHERE scan_unique_id = ?",
             ("scan_123",),
         )
 
@@ -1039,10 +1033,7 @@ class TestDatabase:
         result = get_options_by_scan_id("scan_123")
 
         mock_cursor.execute.assert_called_with(
-            """
-            SELECT options from reports
-            WHERE scan_unique_id = ?
-            """,
+            "SELECT options from reports WHERE scan_unique_id = ?",
             ("scan_123",),
         )
 
@@ -1073,10 +1064,7 @@ class TestDatabase:
         result = logs_to_report_json("192.168.1.1")
 
         mock_cursor.execute.assert_called_with(
-            """
-                SELECT scan_unique_id, target, port, event, json_event
-                FROM scan_events WHERE target = ?
-                """,
+            "SELECT scan_unique_id, target, port, event, json_event FROM scan_events WHERE target = ?",
             ("192.168.1.1",),
         )
 

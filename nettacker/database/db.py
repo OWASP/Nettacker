@@ -593,10 +593,7 @@ def get_scan_result(id):
         connection, cursor = session
         try:
             cursor.execute(
-                """
-                SELECT report_path_filename from reports
-                WHERE id = ?
-                """,
+                "SELECT report_path_filename from reports WHERE id = ?",
                 (id,),
             )
 
@@ -773,11 +770,7 @@ def get_logs_by_scan_id(scan_id):
         connection, cursor = session
         try:
             cursor.execute(
-                """
-                SELECT scan_unique_id, target, module_name, date, port, event, json_event
-                from scan_events
-                WHERE scan_unique_id = ?
-                """,
+                "SELECT scan_unique_id, target, module_name, date, port, event, json_event from scan_events WHERE scan_unique_id = ?",
                 (scan_id,),  # We have to put this as an indexed element
             )
             rows = cursor.fetchall()
@@ -828,10 +821,7 @@ def get_options_by_scan_id(scan_id):
 
         try:
             cursor.execute(
-                """
-                SELECT options from reports
-                WHERE scan_unique_id = ?
-                """,
+                "SELECT options from reports WHERE scan_unique_id = ?",
                 (scan_id,),
             )
             rows = cursor.fetchall()
@@ -868,10 +858,7 @@ def logs_to_report_json(target):
             return_logs = []
             try:
                 cursor.execute(
-                    """
-                    SELECT scan_unique_id, target, port, event, json_event
-                    FROM scan_events WHERE target = ?
-                    """,
+                    "SELECT scan_unique_id, target, port, event, json_event FROM scan_events WHERE target = ?",
                     (target,),
                 )
                 rows = cursor.fetchall()
