@@ -861,7 +861,7 @@ class TestDatabase:
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
-        mock_cursor.query.side_effect = Exception("DB Error")
+        mock_cursor.execute.side_effect = Exception("DB Error")
 
         result = select_reports(self.page)
         assert result == structure(status="error", msg="database error!")

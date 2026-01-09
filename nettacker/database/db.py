@@ -100,7 +100,7 @@ def send_submit_query(session):
     if isinstance(session, tuple):
         connection, cursor = session
         try:
-            for _ in range(Config.settings.max_submit_query_retry):
+            for _ in range(1, Config.settings.max_submit_query_retry):
                 try:
                     connection.execute("COMMIT")
                     return True
@@ -126,7 +126,6 @@ def send_submit_query(session):
         except Exception:
             logger.warn(messages("database_connect_fail"))
             return False
-        return False
 
 
 def submit_report_to_db(event):
@@ -827,6 +826,7 @@ def get_options_by_scan_id(scan_id):
             rows = cursor.fetchall()
             if rows:
                 return [{"options": row[0]} for row in rows]
+            return []
         finally:
             try:
                 cursor.close()
