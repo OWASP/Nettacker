@@ -128,3 +128,5 @@ no_scan_to_compare: तुलना करने के लिए scan_id नह
 compare_report_saved: "{0} में तुलना परिणाम सहेजे गए"
 build_compare_report: "तुलना रिपोर्ट बनाई जा रही है"
 finish_build_report: "तुलना रिपोर्ट तैयार हो गई"
+## ✅ Fixes OWASP #905 - Complete Hindi Translation
+#*Added native Hindi translations for all 5 scan comparison messages:**
