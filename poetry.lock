@@ -1130,6 +1130,18 @@ dnspython = "*"
 ldap3 = ">2.5.0,<2.5.2 || >2.5.2,<2.6 || >2.6"
 
 [[package]]
+name = "litequeue"
+version = "0.9"
+description = "Simple queue built on top of SQLite"
+optional = false
+python-versions = ">=3.6"
+groups = ["main"]
+files = [
+    {file = "litequeue-0.9-py3-none-any.whl", hash = "sha256:344312748f9d118253ecaa2fb82d432ab6f63dd3bd5c40922a63933bc47cd2e3"},
+    {file = "litequeue-0.9.tar.gz", hash = "sha256:368f56b9de5c76fc6f2adc66177e81a59f545f3b5b95a26cae8562b858914647"},
+]
+
+[[package]]
 name = "markupsafe"
 version = "2.1.5"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -2254,4 +2266,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9, <3.13"
-content-hash = "0e1731401cd6acfc4d45ede5e18668530aae6a6b2e359d7dc8d8d635635a1257"
+content-hash = "aa676fcd9a242a436052e31b320c0c3d99451dc4323d6ae99fbe8f4f49e0d747"

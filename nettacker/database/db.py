@@ -9,6 +9,7 @@ from nettacker.api.helpers import structure
 from nettacker.config import Config
 from nettacker.core.messages import messages
 from nettacker.database.models import HostsLog, Report, TempEvents
+from nettacker.database.writer import get_writer
 
 config = Config()
 log = logger.get_logger()
@@ -95,6 +96,22 @@ def submit_report_to_db(event):
         return True if submitted otherwise False
     """
     log.verbose_info(messages("inserting_report_db"))
+    writer = get_writer()
+    job = {
+        "action": "insert_report",
+        "payload": {
+            "date": event["date"],
+            "scan_id": event["scan_id"],
+            "report_path_filename": event["options"]["report_path_filename"],
+            "options": event["options"],
+        },
+    }
+    try:
+        if writer.enqueue(job):
+            return True
+    except Exception:
+        pass
+    # Fallback to direct write
     session = create_connection()
     session.add(
         Report(
@@ -140,6 +157,14 @@ def submit_logs_to_db(log):
         True if success otherwise False
     """
     if isinstance(log, dict):
+        writer = get_writer()
+        job = {"action": "insert_hostslog", "payload": log}
+        try:
+            if writer.enqueue(job):
+                return True
+        except Exception:
+            pass
+        # Fallback
         session = create_connection()
         session.add(
             HostsLog(
@@ -169,6 +194,14 @@ def submit_temp_logs_to_db(log):
         True if success otherwise False
     """
     if isinstance(log, dict):
+        writer = get_writer()
+        job = {"action": "insert_tempevent", "payload": log}
+        try:
+            if writer.enqueue(job):
+                return True
+        except Exception:
+            pass
+        # Fallback
         session = create_connection()
         session.add(
             TempEvents(
