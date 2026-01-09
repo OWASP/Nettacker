@@ -99,26 +99,28 @@ def send_submit_query(session):
     """
     if isinstance(session, tuple):
         connection, cursor = session
-        for _ in range(100):
-            try:
-                connection.execute("COMMIT")
-                return True
-            except Exception:
-                connection.execute("ROLLBACK")
-                time.sleep(0.1)
-            finally:
-                connection.close()
-        connection.close()
+        try:
+            for _ in range(Config.settings.max_submit_query_retry):
+                try:
+                    connection.execute("COMMIT")
+                    return True
+                except Exception:
+                    connection.execute("ROLLBACK")
+                    time.sleep(Config.settings.retry_delay)
+        finally:
+            connection.close()
+        # If not already returned then connection failed
         logger.warn(messages("database_connect_fail"))
         return False
     else:
         try:
-            for _ in range(1, 100):
+            for _ in range(1, Config.settings.max_submit_query_retry):
                 try:
                     session.commit()
                     return True
                 except Exception:
-                    time.sleep(0.1)
+                    session.rollback()
+                    time.sleep(Config.settings.retry_delay)
             logger.warn(messages("database_connect_fail"))
             return False
         except Exception:
@@ -431,15 +433,18 @@ def find_temp_events(target, module_name, scan_id, event_name):
             )
 
             row = cursor.fetchone()
-            cursor.close()
-            connection.close()
             if row:
                 return row[0]
             return []
         except Exception:
             logger.warn(messages("database_connect_fail"))
             return []
-        return []
+        finally:
+            try:
+                cursor.close()
+                connection.close()
+            except Exception:
+                pass
     else:
         result = (
             session.query(TempEvents)
@@ -481,14 +486,18 @@ def find_events(target, module_name, scan_id):
             )
 
             rows = cursor.fetchall()
-            cursor.close()
-            connection.close()
             if rows:
                 return [json.dumps((json.loads(row[0]))) for row in rows]
             return []
         except Exception:
             logger.warn("Database query failed...")
             return []
+        finally:
+            try:
+                cursor.close()
+                connection.close()
+            except Exception:
+                pass
     else:
         return [
             row.json_event
@@ -533,8 +542,6 @@ def select_reports(page):
 
             rows = cursor.fetchall()
 
-            cursor.close()
-            connection.close()
             for row in rows:
                 tmp = {
                     "id": row[0],
@@ -549,6 +556,9 @@ def select_reports(page):
         except Exception:
             logger.warn("Could not retrieve report...")
             return structure(status="error", msg="database error!")
+        finally:
+            cursor.close()
+            connection.close()
     else:
         try:
             search_data = (
@@ -581,26 +591,31 @@ def get_scan_result(id):
     session = create_connection()
     if isinstance(session, tuple):
         connection, cursor = session
-        cursor.execute(
-            """
-            SELECT report_path_filename from reports
-            WHERE id = ?
-            """,
-            (id,),
-        )
+        try:
+            cursor.execute(
+                """
+                SELECT report_path_filename from reports
+                WHERE id = ?
+                """,
+                (id,),
+            )
 
-        row = cursor.fetchone()
-        cursor.close()
-        connection.close()
-        if row:
-            filename = row[0]
+            row = cursor.fetchone()
+            if row:
+                filename = row[0]
+                try:
+                    return filename, open(str(filename), "rb").read()
+                except IOError as e:
+                    logger.error(f"Failed to read report file: {e}")
+                    return None
+            else:
+                return structure(status="error", msg="database error!")
+        finally:
             try:
-                return filename, open(str(filename), "rb").read()
-            except IOError as e:
-                logger.error(f"Failed to read report file: {e}")
-                return None
-        else:
-            return structure(status="error", msg="database error!")
+                cursor.close()
+                connection.close()
+            except Exception:
+                pass
     else:
         report = session.query(Report).filter_by(id=id).first()
         if not report:
@@ -690,14 +705,17 @@ def last_host_logs(page):
                         },
                     }
                 )
-            cursor.close()
-            connection.close()
             return hosts
 
         except Exception:
             logger.warn("Database query failed...")
             return structure(status="error", msg="Database error!")
-
+        finally:
+            try:
+                cursor.close()
+                connection.close()
+            except Exception:
+                pass
     else:
         hosts = [
             {
@@ -753,32 +771,34 @@ def get_logs_by_scan_id(scan_id):
 
     if isinstance(session, tuple):
         connection, cursor = session
-
-        cursor.execute(
-            """
-            SELECT scan_unique_id, target, module_name, date, port, event, json_event
-            from scan_events
-            WHERE scan_unique_id = ?
-            """,
-            (scan_id,),  # We have to put this as an indexed element
-        )
-        rows = cursor.fetchall()
-
-        cursor.close()
-        connection.close()
-        return [
-            {
-                "scan_id": row[0],
-                "target": row[1],
-                "module_name": row[2],
-                "date": str(row[3]),
-                "port": json.loads(row[4]),
-                "event": json.loads(row[5]),
-                "json_event": json.loads(row[6]) if row[6] else {},
-            }
-            for row in rows
-        ]
-
+        try:
+            cursor.execute(
+                """
+                SELECT scan_unique_id, target, module_name, date, port, event, json_event
+                from scan_events
+                WHERE scan_unique_id = ?
+                """,
+                (scan_id,),  # We have to put this as an indexed element
+            )
+            rows = cursor.fetchall()
+            return [
+                {
+                    "scan_id": row[0],
+                    "target": row[1],
+                    "module_name": row[2],
+                    "date": str(row[3]),
+                    "port": json.loads(row[4]),
+                    "event": json.loads(row[5]),
+                    "json_event": json.loads(row[6]) if row[6] else {},
+                }
+                for row in rows
+            ]
+        finally:
+            try:
+                cursor.close()
+                connection.close()
+            except Exception:
+                pass
     else:
         return [
             {
@@ -806,18 +826,23 @@ def get_options_by_scan_id(scan_id):
     if isinstance(session, tuple):
         connection, cursor = session
 
-        cursor.execute(
-            """
-            SELECT options from reports
-            WHERE scan_unique_id = ?
-            """,
-            (scan_id,),
-        )
-        rows = cursor.fetchall()
-        cursor.close()
-        connection.close()
-        if rows:
-            return [{"options": row[0]} for row in rows]
+        try:
+            cursor.execute(
+                """
+                SELECT options from reports
+                WHERE scan_unique_id = ?
+                """,
+                (scan_id,),
+            )
+            rows = cursor.fetchall()
+            if rows:
+                return [{"options": row[0]} for row in rows]
+        finally:
+            try:
+                cursor.close()
+                connection.close()
+            except Exception:
+                pass
 
     else:
         return [
@@ -841,29 +866,32 @@ def logs_to_report_json(target):
         if isinstance(session, tuple):
             connection, cursor = session
             return_logs = []
-
-            cursor.execute(
-                """
-                SELECT scan_unique_id, target, port, event, json_event
-                FROM scan_events WHERE target = ?
-                """,
-                (target,),
-            )
-            rows = cursor.fetchall()
-            cursor.close()
-            connection.close()
-            if rows:
-                for log in rows:
-                    data = {
-                        "scan_id": log[0],
-                        "target": log[1],
-                        "port": json.loads(log[2]),
-                        "event": json.loads(log[3]),
-                        "json_event": json.loads(log[4]),
-                    }
-                    return_logs.append(data)
-                return return_logs
-
+            try:
+                cursor.execute(
+                    """
+                    SELECT scan_unique_id, target, port, event, json_event
+                    FROM scan_events WHERE target = ?
+                    """,
+                    (target,),
+                )
+                rows = cursor.fetchall()
+                if rows:
+                    for log in rows:
+                        data = {
+                            "scan_id": log[0],
+                            "target": log[1],
+                            "port": json.loads(log[2]),
+                            "event": json.loads(log[3]),
+                            "json_event": json.loads(log[4]),
+                        }
+                        return_logs.append(data)
+                    return return_logs
+            finally:
+                try:
+                    cursor.close()
+                    connection.close()
+                except Exception:
+                    pass
         else:
             return_logs = []
             logs = session.query(HostsLog).filter(HostsLog.target == target)
@@ -898,30 +926,35 @@ def logs_to_report_html(target):
     session = create_connection()
     if isinstance(session, tuple):
         connection, cursor = session
-        cursor.execute(
-            """
-            SELECT date, target, module_name, scan_unique_id, port, event, json_event
-            FROM scan_events
-            WHERE target = ?
-            """,
-            (target,),
-        )
+        try:
+            cursor.execute(
+                """
+                SELECT date, target, module_name, scan_unique_id, port, event, json_event
+                FROM scan_events
+                WHERE target = ?
+                """,
+                (target,),
+            )
 
-        rows = cursor.fetchall()
-        cursor.close()
-        connection.close()
-        logs = [
-            {
-                "date": log[0],
-                "target": log[1],
-                "module_name": log[2],
-                "scan_id": log[3],
-                "port": log[4],
-                "event": log[5],
-                "json_event": log[6],
-            }
-            for log in rows
-        ]
+            rows = cursor.fetchall()
+            logs = [
+                {
+                    "date": log[0],
+                    "target": log[1],
+                    "module_name": log[2],
+                    "scan_id": log[3],
+                    "port": log[4],
+                    "event": log[5],
+                    "json_event": log[6],
+                }
+                for log in rows
+            ]
+        finally:
+            try:
+                cursor.close()
+                connection.close()
+            except Exception:
+                pass
 
         html_graph = build_graph("d3_tree_v2_graph", logs)
 
@@ -1071,17 +1104,15 @@ def search_logs(page, query):
                         tmp["info"]["json_event"].append(parsed_json_event)
 
                 selected.append(tmp)
-            cursor.close()
-            connection.close()
 
         except Exception:
+            return structure(status="error", msg="database error!")
+        finally:
             try:
                 cursor.close()
                 connection.close()
             except Exception:
                 pass
-            return structure(status="error", msg="database error!")
-
         if len(selected) == 0:
             return structure(status="finished", msg="No more search results")
         return selected

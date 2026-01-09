@@ -161,6 +161,7 @@ class DefaultSettings(ConfigBase):
     )
     retries = 1
     max_retries = 3
+    max_submit_query_retry = 100
     retry_delay = 0.1
     scan_ip_range = False
     scan_subdomains = False
