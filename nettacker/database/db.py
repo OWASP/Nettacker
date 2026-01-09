@@ -165,8 +165,11 @@ def submit_report_to_db(event):
             logger.warn("Could not insert report...")
             return False
         finally:
-            cursor.close()
-            connection.close()
+            try:
+                cursor.close()
+                connection.close()
+            except Exception:
+                pass
     else:
         session.add(
             Report(
