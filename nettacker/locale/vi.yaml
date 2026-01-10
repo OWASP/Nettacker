@@ -65,7 +65,7 @@ PASSWORD: MẬT KHẨU
 PORT: HẢI CẢNG
 TYPE: KIỂU
 DESCRIPTION: SỰ MIÊU TẢ
-verbose_mode: mức chế độ tiết (0-5) (mặc định 0)
+verbose_mode: bật chế độ verbose
 software_version: hiển thị phiên bản phần mềm
 check_updates: kiểm tra cập nhật
 outgoing_proxy:

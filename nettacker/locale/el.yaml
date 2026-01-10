@@ -72,7 +72,7 @@ PASSWORD: ΚΩΔΙΚΟΣ ΠΡΟΣΒΑΣΗΣ
 PORT: ΛΙΜΑΝΙ
 TYPE: ΤΥΠΟΣ
 DESCRIPTION: ΠΕΡΙΓΡΑΦΗ
-verbose_mode: "(0-5) (προεπιλογή 0)"
+verbose_mode: "λειτουργία verbose"
 software_version: εμφάνιση της έκδοσης λογισμικού
 check_updates: Έλεγχος για ενημερώσεις
 outgoing_proxy:

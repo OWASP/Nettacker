@@ -70,7 +70,7 @@ PASSWORD: WACHTWOORD
 PORT: HAVEN
 TYPE: TYPE
 DESCRIPTION: BESCHRIJVING
-verbose_mode: uitgebreid niveau (0-5) (standaard 0)
+verbose_mode: uitgebreide modus
 software_version: toon softwareversie
 check_updates: controleer op updates
 outgoing_proxy:

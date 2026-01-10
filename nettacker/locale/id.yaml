@@ -69,7 +69,7 @@ PASSWORD: KATA SANDI
 PORT: PELABUHAN
 TYPE: MENGETIK
 DESCRIPTION: DESKRIPSI
-verbose_mode: tingkat modus verbose (0-5) (default 0)
+verbose_mode: modus verbose
 software_version: tampilkan versi perangkat lunak
 check_updates: memeriksa pembaruan
 outgoing_proxy:

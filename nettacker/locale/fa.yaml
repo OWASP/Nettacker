@@ -71,7 +71,7 @@ PASSWORD: کلمه عبور
 PORT: درگاه
 TYPE: نوع
 DESCRIPTION: توضیحات
-verbose_mode: سطح حالت پرگویی (0-5) (پیشفرض 0)
+verbose_mode: حالت پرگویی
 software_version: نمایش ورژن نرم افزار
 check_updates: چک کردن جهت آپدیت
 outgoing_proxy:
