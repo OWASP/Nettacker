@@ -20,9 +20,7 @@ Older versions may not receive security updates. We strongly recommend that user
 If you discover a security vulnerability in OWASP Nettacker, we appreciate your help in disclosing it responsibly. Here’s how you can report it:
 
 ### **1. GitHub Security Advisory**
-- You can report the vulnerability by creating a **GitHub Security Advisory**:
-  - Go to the [OWASP Nettacker repository](https://github.com/OWASP/Nettacker).
-  - Click on **Security** > **Report a vulnerability**.
+- You can report the vulnerability by creating a - **Github Security Advisory**: [OWASP Nettacker Security Page](https://github.com/OWASP/Nettacker/security/advisories/new)
   - Follow the prompts to submit a **private security advisory**.
 
 ### **2. Responsible Disclosure Process**
@@ -33,10 +31,10 @@ If you discover a security vulnerability in OWASP Nettacker, we appreciate your 
 
 ## **Vulnerability Handling Process**
 
-1. **Triage**: Our security team will review the report and assess the severity of the vulnerability.
-2. **Fix Development**: We will develop and test a fix for the vulnerability.
-3. **Release**: We will release a patched version of OWASP Nettacker.
-4. **Disclosure**: We will publicly disclose the vulnerability, including credits to the reporter.
+1. **Triage**: The Project Leaders will review the report and assess the severity of the vulnerability.
+2. **Fix Development**:  A fix will be developed and tested for the vulnerability.
+3. **Release**: A patched version of OWASP Nettacker will be released.
+4. **Disclosure**: The vulnerability will be publicly disclosed, including credits to the reporter.
 
 ---
 
@@ -46,32 +44,6 @@ For general inquiries or non-security-related issues, you can contact the projec
 
 - **Project Page**: [OWASP Nettacker Project Page](https://owasp.org/nettacker)
 - **GitHub Issues**: [OWASP Nettacker Issues](https://github.com/OWASP/Nettacker/issues)
-- **Slack/Discord**: Join the OWASP Slack workspace and find us in the `#nettacker` channel.
+- **Slack/Discord**: Join the OWASP Slack workspace and find us in the `#project-nettacker` channel.
 
 For **security-related issues**, please use the private disclosure methods described above.
-
----
-
-## **Security Best Practices for Contributors**
-
-If you are contributing to OWASP Nettacker, please follow these security best practices:
-
-- **Code Review**: All code changes should be reviewed for security issues before merging.
-- **Dependencies**: Keep dependencies up-to-date and review them for known vulnerabilities.
-- **Testing**: Write tests to ensure that security fixes are effective and do not introduce regressions.
-- **Documentation**: Document security-related changes and updates in the `SECURITY.md` file.
-
----
-
-## **Policy Updates**
-
-This security policy may be updated from time to time. The latest version will always be available in this `SECURITY.md` file.
-
----
-
-## **Resources**
-
-- [OWASP Nettacker Documentation](https://github.com/OWASP/Nettacker/wiki)
-- [OWASP Project Page](https://owasp.org/nettacker)
-- [CVE Database](https://cve.mitre.org/)
-- [GitHub Security Lab](https://securitylab.github.com/)
