@@ -907,21 +907,16 @@ class TestDatabase:
     # -------------------------------------------------------
 
     @patch("nettacker.database.db.create_connection")
-    @patch("builtins.open", create=True)
+    @patch("builtins.open", new_callable=mock_open, read_data=b'{"result": "data"}')
     def test_get_scan_result_sqlite(self, mock_open, mock_create_conn):
-        """Test get_scan_result with SQLite"""
         mock_connection = Mock()
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
 
         mock_cursor.fetchone.return_value = ("/tmp/report.json",)
-        mock_file = Mock()
-        mock_file.read.return_value = b'{"result": "data"}'
-        mock_open.return_value = mock_file
 
         result = get_scan_result(1)
 
-        # Not using triple quotes here because that makes the test more fragile and dependent on indentation and whitespace
         mock_cursor.execute.assert_called_with(
             "SELECT report_path_filename from reports WHERE id = ?",
             (1,),

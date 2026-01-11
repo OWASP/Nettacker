@@ -163,12 +163,6 @@ def submit_report_to_db(event):
             cursor.execute("ROLLBACK")
             logger.warn("Could not insert report...")
             return False
-        finally:
-            try:
-                cursor.close()
-                connection.close()
-            except Exception:
-                pass
     else:
         session.add(
             Report(
@@ -601,7 +595,9 @@ def get_scan_result(id):
             if row:
                 filename = row[0]
                 try:
-                    return filename, open(str(filename), "rb").read()
+                    with open(str(filename), "rb") as fp:
+                        contents = fp.read()
+                    return filename, contents
                 except IOError as e:
                     logger.error(f"Failed to read report file: {e}")
                     return None
@@ -619,7 +615,9 @@ def get_scan_result(id):
             return None
 
         try:
-            return report.report_path_filename, open(str(report.report_path_filename), "rb").read()
+            with open(str(report.report_path_filename), "rb") as fp:
+                contents = fp.read()
+            return report.report_path_filename, contents
         except IOError as e:
             logger.error(f"Failed to read report file: {e}")
             return None
@@ -868,7 +866,7 @@ def logs_to_report_json(target):
                             "json_event": json.loads(log[4]),
                         }
                         return_logs.append(data)
-                    return return_logs
+                return return_logs
             finally:
                 try:
                     cursor.close()
