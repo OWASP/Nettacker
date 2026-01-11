@@ -34,7 +34,7 @@ def replace_dependent_response(log, response_dependent):
 def merge_logs_to_list(result, log_list=[]):
     if isinstance(result, dict):
         # Doesn't hurt normal operations
-        if "json_event" in list(result.keys()):
+        if "json_event" in result.keys():
             if not isinstance(result["json_event"], dict):
                 result["json_event"] = json.loads(result["json_event"])
         for i in result:

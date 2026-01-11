@@ -161,7 +161,7 @@ class TestDatabase:
 
         mock_connection.execute.assert_called_once_with("COMMIT")
         mock_connection.close.assert_called_once()
-        assert result is True
+        assert result
 
     def test_send_submit_query_sqlite_retry_then_success(self):
         """Test send_submit_query with SQLite connection - retry then success"""
@@ -178,7 +178,7 @@ class TestDatabase:
         assert mock_connection.execute.call_count == 3
         mock_connection.execute.assert_any_call("ROLLBACK")
         mock_connection.execute.assert_any_call("COMMIT")
-        assert result is True
+        assert result
 
     @patch("nettacker.database.db.messages", return_value="mocked fail message")
     @patch("nettacker.database.db.logger.warn")
@@ -198,7 +198,7 @@ class TestDatabase:
 
         result = send_submit_query(session)
 
-        assert result is False
+        assert not result
         mock_warn.assert_called_with("mocked fail message")
 
     def test_send_submit_query_sqlalchemy_success(self):
@@ -207,7 +207,7 @@ class TestDatabase:
         result = send_submit_query(mock_session)
 
         mock_session.commit.assert_called_once()
-        assert result is True
+        assert result
 
     @patch("nettacker.database.db.messages", return_value="mocked fail message")
     @patch("nettacker.database.db.logger.warn")
@@ -217,7 +217,7 @@ class TestDatabase:
 
         result = send_submit_query(mock_session)
 
-        assert result is False
+        assert not result
         assert mock_session.commit.call_count >= 99
         mock_warn.assert_called_with("mocked fail message")
 
@@ -249,7 +249,7 @@ class TestDatabase:
                 json.dumps(self.sample_event["options"]),
             ),
         )
-        assert result is True
+        assert result
 
     @patch("nettacker.database.db.create_connection")
     @patch("nettacker.database.db.send_submit_query")
@@ -266,7 +266,7 @@ class TestDatabase:
 
         mock_session.add.assert_called_once_with(mock_report_instance)
         mock_send_submit.assert_called_once_with(mock_session)
-        assert result is True
+        assert result
 
     # -------------------------------------------------------
     #             tests for remove_old_logs
@@ -301,7 +301,7 @@ class TestDatabase:
                 """,
             ("192.168.1.1", "port_scan", "current_scan", "compare_scan"),
         )
-        assert result is True
+        assert result
 
     @patch("nettacker.database.db.send_submit_query", return_value=True)
     @patch("nettacker.database.db.create_connection")
@@ -331,7 +331,7 @@ class TestDatabase:
         mock_send_submit.assert_called_once_with(mock_session)
 
         # Assert final result
-        assert result is True
+        assert result
 
     # -------------------------------------------------------
     #             tests for submit_logs_to_db
@@ -369,13 +369,13 @@ class TestDatabase:
                 json.dumps({"service": "http"}),
             ),
         )
-        assert result is True
+        assert result
 
     @patch("nettacker.database.db.messages", return_value="invalid log")
     @patch("nettacker.database.db.logger.warn")
     def test_log_not_dict(self, mock_warn, mock_messages):
         result = submit_logs_to_db("notadict")
-        assert result is False
+        assert not result
         mock_warn.assert_called_once_with("invalid log")
 
     @patch("nettacker.database.db.send_submit_query", return_value=True)
@@ -397,7 +397,7 @@ class TestDatabase:
         }
 
         result = submit_logs_to_db(log)
-        assert result is True
+        assert result
         mock_conn.execute.assert_any_call("BEGIN")
 
     @patch("nettacker.database.db.Config.settings.retry_delay", 0)
@@ -448,7 +448,7 @@ class TestDatabase:
         }
 
         result = submit_logs_to_db(log)
-        assert result is False
+        assert not result
 
     @patch("nettacker.database.db.create_connection")
     def test_sqlite_generic_exception(self, mock_create_conn):
@@ -469,7 +469,7 @@ class TestDatabase:
             "json_event": {"j": "data"},
         }
         result = submit_logs_to_db(log)
-        assert result is False
+        assert not result
 
     @patch("nettacker.database.db.send_submit_query", return_value=True)
     @patch("nettacker.database.db.create_connection")
@@ -487,7 +487,7 @@ class TestDatabase:
             "json_event": {"j": "data"},
         }
         result = submit_logs_to_db(log)
-        assert result is True
+        assert result
         mock_session.add.assert_called()
 
     @patch("nettacker.database.db.send_submit_query", return_value=False)
@@ -506,7 +506,7 @@ class TestDatabase:
             "json_event": {"j": "data"},
         }
         result = submit_logs_to_db(log)
-        assert result is False
+        assert not result
 
     # -------------------------------------------------------
     #           tests for submit_temp_logs_to_db
@@ -541,13 +541,13 @@ class TestDatabase:
             json.dumps({"info": "some data"}),
         )
 
-        assert result is True
+        assert result
 
     @patch("nettacker.database.db.messages", return_value="invalid log")
     @patch("nettacker.database.db.logger.warn")
     def test_temp_log_not_dict(self, mock_warn, mock_messages):
         result = submit_temp_logs_to_db("notadict")
-        assert result is False
+        assert not result
         mock_warn.assert_called_once_with("invalid log")
 
     @patch("nettacker.database.db.Config.settings.retry_delay", 0)
@@ -568,7 +568,7 @@ class TestDatabase:
                 call("All retries exhausted. Skipping this log."),
             ]
         )
-        assert result is True  # we're continuing operation hence it returns True
+        assert result  # we're continuing operation hence it returns True
 
     @patch("nettacker.database.db.create_connection")
     def test_temp_log_operational_error(self, mock_create_conn):
@@ -579,7 +579,7 @@ class TestDatabase:
         mock_create_conn.return_value = (mock_conn, mock_cursor)
 
         result = submit_temp_logs_to_db(self.sample_log_temp)
-        assert result is False
+        assert not result
 
     @patch("nettacker.database.db.create_connection")
     def test_temp_log_generic_exception(self, mock_create_conn):
@@ -590,7 +590,7 @@ class TestDatabase:
         mock_create_conn.return_value = (mock_conn, mock_cursor)
 
         result = submit_temp_logs_to_db(self.sample_log_temp)
-        assert result is False
+        assert not result
 
     @patch("nettacker.database.db.TempEvents")
     @patch("nettacker.database.db.send_submit_query", return_value=True)
@@ -603,7 +603,7 @@ class TestDatabase:
 
         mock_session.add.assert_called()
         mock_send.assert_called_with(mock_session)
-        assert result is True
+        assert result
 
     @patch("nettacker.database.db.create_connection")
     def test_submit_temp_logs_to_db_sqlite(self, mock_create_conn):
@@ -647,7 +647,7 @@ class TestDatabase:
                         json.dumps({"info": "test_data"}),
                     ),
                 )
-                assert result is True
+                assert result
 
     # -------------------------------------------------------
     #           tests for find_temp_events

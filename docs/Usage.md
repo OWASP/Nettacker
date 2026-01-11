@@ -649,9 +649,9 @@ python nettacker.py --start-api --api-access-log --api-port 8080 --api-debug-mod
 
 OWASP Nettacker, currently supports three databases:
 
-- SQLite
 - MySQL
 - PostgreSQL
+- SQLite
 
 The default database is SQLite. You can, however, configure the db to your liking.
 
@@ -659,7 +659,7 @@ The default database is SQLite. You can, however, configure the db to your likin
 
 The configurations below are for a SQLite wrapper called **APSW** (Another Python SQLite Wrapper). The configurations can be found inside `nettacker/config.py` file under the `DBConfig` class. 
 
-
+```python
     engine = "sqlite"
     name = str(CWD / ".nettacker/data/nettacker.db")
     host = ""
@@ -669,6 +669,7 @@ The configurations below are for a SQLite wrapper called **APSW** (Another Pytho
     ssl_mode = "disable"
     journal_mode = "WAL"
     synchronous_mode = "NORMAL"
+```
 
 These are the default and recommended settings. Feel free to play around and change them according to need. To use SQLite database, ensure that the `engine` value is set to `sqlite` and the `name` is the path to your database. The `journal_mode` and `synchronous_mode` are chosen to be optimal for multithreaded I/O operations.
 
@@ -678,7 +679,7 @@ These are the default and recommended settings. Feel free to play around and cha
 
 The MySQL database can be configured in `nettacker/config.py` file under the `DBConfig` class. Here is a sample configuration:
 
-```
+```python
     engine = "mysql"
     name = "nettacker"
     host = "localhost"
@@ -696,7 +697,7 @@ Only the relevant fields will be considered and you don't need to update/change/
 
 The Postgres database can be configured in `nettacker/config.py` file under the `DBConfig` class. Here is a sample configuration:
 
-```
+```python
     engine = "postgres"
     name = "nettacker"
     host = "localhost"

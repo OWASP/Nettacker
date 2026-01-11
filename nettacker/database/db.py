@@ -51,15 +51,15 @@ def create_connection():
     if Config.db.engine.startswith("sqlite") and Config.settings.use_apsw_for_sqlite:
         if apsw is None:
             raise ImportError("APSW is required for SQLite backend.")
-        # In case of sqlite, the name parameter is the database path
 
+        # In case of sqlite, the name parameter is the database path.
         try:
             DB_PATH = config.db.as_dict()["name"]
             connection = apsw.Connection(DB_PATH)
             connection.setbusytimeout(int(config.settings.timeout) * 100)
             cursor = connection.cursor()
 
-            # Performance enhancing configurations. Put WAL cause that helps with concurrency
+            # Performance enhancing configurations. Put WAL cause that helps with concurrency.
             cursor.execute(f"PRAGMA journal_mode={Config.db.journal_mode}")
             cursor.execute(f"PRAGMA synchronous={Config.db.synchronous_mode}")
 
@@ -80,9 +80,8 @@ def create_connection():
             pool_size=50,
             pool_pre_ping=True,
         )
-        Session = sessionmaker(bind=db_engine)
 
-        return Session()
+        return sessionmaker(bind=db_engine)()
 
 
 def send_submit_query(session):
@@ -98,7 +97,7 @@ def send_submit_query(session):
         True if submitted success otherwise False
     """
     if isinstance(session, tuple):
-        connection, cursor = session
+        connection, _ = session
         try:
             for _ in range(1, Config.settings.max_submit_query_retry):
                 try:
@@ -245,7 +244,6 @@ def submit_logs_to_db(log):
     Returns:
         True if success otherwise False
     """
-
     if isinstance(log, dict):
         session = create_connection()
         if isinstance(session, tuple):
