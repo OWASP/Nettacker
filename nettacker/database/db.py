@@ -730,11 +730,6 @@ def last_host_logs(page):
                     .order_by(HostsLog.id.desc())
                     .first()
                     .date,
-                    # "options": [  # unnecessary data?
-                    #     _.options for _ in session.query(HostsLog).filter(
-                    #         HostsLog.target == host.target
-                    #     ).all()
-                    # ],
                     "events": [
                         _.event
                         for _ in session.query(HostsLog)
@@ -749,7 +744,7 @@ def last_host_logs(page):
             .offset((page * 10) - 10)
             .limit(10)
         ]
-        if len(hosts) == 0:
+        if not hosts:
             return structure(status="finished", msg="No more search results")
         return hosts
 
@@ -1101,7 +1096,7 @@ def search_logs(page, query):
                 connection.close()
             except Exception:
                 pass
-        if len(selected) == 0:
+        if not selected:
             return structure(status="finished", msg="No more search results")
         return selected
     else:
