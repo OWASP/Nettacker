@@ -743,7 +743,7 @@ class ArgParser(ArgumentParser):
                 # Split with maxsplit=1 to handle values containing '='
                 parts = args.split("=", 1)
                 key = parts[0].strip()
-                value = parts[1]
+                value = parts[1].strip()
 
                 # Validate key is not empty
                 if not key:

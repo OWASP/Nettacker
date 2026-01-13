@@ -1,6 +1,7 @@
 import socket
 
 from nettacker.core.die import die_failure
+from nettacker.core.messages import messages as _
 
 
 def getaddrinfo(*args):
@@ -26,36 +27,23 @@ def set_socks_proxy(socks_proxy):
             # Validate format: username:password@host:port
             # Split credentials from host:port using rightmost @
             parts = socks_proxy.rsplit("@", 1)
-            if len(parts) != 2:
-                die_failure(
-                    "Invalid SOCKS proxy format. "
-                    "Expected format with credentials: username:password@host:port or "
-                    "socks5://username:password@host:port"
-                )
-            
             credentials_part = parts[0]
             host_port_part = parts[1]
-            
+
             # Validate credentials contain a colon separator
             if ":" not in credentials_part:
-                die_failure(
-                    "Invalid SOCKS proxy format. "
-                    "Expected format with credentials: username:password@host:port or "
-                    "socks5://username:password@host:port"
-                )
-            
+                die_failure(_("error_socks_proxy_missing_colon"))
+
             # Parse credentials using split with maxsplit=1 to handle passwords with colons
             credentials_split = credentials_part.split(":", 1)
             socks_username = credentials_split[0]
             socks_password = credentials_split[1]
-            
+
             # Parse host and port from the host:port part
             host_port_split = host_port_part.rsplit(":", 1)
             if len(host_port_split) != 2:
-                die_failure(
-                    "Invalid SOCKS proxy format. Missing port in host:port section"
-                )
-            
+                die_failure(_("error_socks_proxy_missing_port"))
+
             socks.set_default_proxy(
                 socks_version,
                 str(host_port_split[0]),  # hostname
