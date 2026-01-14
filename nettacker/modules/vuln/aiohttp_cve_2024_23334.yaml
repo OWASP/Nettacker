@@ -47,6 +47,9 @@ payloads:
         response:
           condition_type: and
           conditions:
+            status_code:
+              regex: "200"
+              reverse: false
             content:
               regex: "root:.*:0:0:"
               reverse: false
