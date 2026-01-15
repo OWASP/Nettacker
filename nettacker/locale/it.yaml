@@ -59,7 +59,7 @@ PASSWORD: "PAROLA D'ORDINE"
 PORT: "PORTA"
 TYPE: "GENERE"
 DESCRIPTION: "DESCRIZIONE"
-verbose_level: "livello di modalità verbose (0-5) (predefinito 0)"
+verbose_mode: "modalità verbose"
 software_version: "mostra la versione del software"
 check_updates: "ricerca aggiornamenti"
 outgoing_proxy: "proxy delle connessioni in uscita (calze). esempio socks5: 127.0.0.1:9050,  

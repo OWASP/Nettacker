@@ -61,7 +61,7 @@ PASSWORD: סיסמה
 PORT: נמל
 TYPE: סוּג
 DESCRIPTION: תיאור
-verbose_mode: מצב מצב verbose (0-5) (ברירת מחדל 0)
+verbose_mode: מצב verbose
 software_version: הצג גרסת תוכנה
 check_updates: בדוק עדכונים
 outgoing_proxy:
