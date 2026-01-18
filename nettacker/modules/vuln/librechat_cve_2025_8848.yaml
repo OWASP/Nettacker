@@ -1,0 +1,54 @@
+info:
+  name: librechat_cve_2025_8848_html_injection
+  author: OWASP Nettacker Team
+  severity: 5.4
+  description: |
+    Check for HTML injection in LibreChat <= 0.7.9 via the Accept-Language header
+    (CVE-2025-8848), allowing logged-in users to inject arbitrary HTML into the html lang attribute.
+  references:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-8848
+    - https://huntr.com/bounties/a05ebc1f-882a-4adc-b178-d3cefa4b730e
+  profiles:
+    - vuln
+    - http
+    - cve
+    - cve2025
+    - librechat
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        ssl: true
+        headers:
+          User-Agent: "{user_agent}"
+          Accept-Language: "<h3>nettacker_test</h3>"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              paths:
+                - "/"
+                - "/chat"
+                - "/login"
+                - "/auth/login"
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "<html lang=\"<h3>nettacker_test</h3>\">|LibreChat"
+              reverse: false

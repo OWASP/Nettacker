@@ -144,6 +144,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**heartbleed_vuln**' - check SSL for Heartbleed vulnerability (CVE-2014-0160)
 - '**msexchange_cve_2021_26855**' - check the target for MS Exchange SSRF CVE-2021-26855 (proxylogon/hafnium)
 - '**http_cors_vuln**' - check the web server for overly-permissive CORS (header 'Access-Control-Allow-Origin'=\*)
+- '**librechat_cve_2025_8848**' - Check for HTML injection in LibreChat <= 0.7.9 via the Accept-Language header
 - '**options_method_enabled_vuln**' - check if OPTIONS method is enabled on the web server
 - '**paloalto_panos_cve_2025_0108_vuln**' - check the target for PaloAlto PAN-OS CVE-2025-0108 vulnerability
 - '**paloalto_globalprotect_cve_2025_0133_vuln**' - check the target for PaloAlto GlobalProtect CVE-2025-0133 XSS vulnerability
@@ -169,6 +170,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**xdebug_rce_vuln**' - checks if web server is running XDebug version 2.5.5 vulnerable to RCE
 - '**XSS_protection_vuln**' - check if header 'X-XSS-Protection' header is set to '1; mode=block'
 - '**vbulletin_cve_2019_16759_vuln**' - check the target for vBulletin RCE CVE-2019-16759 vulnerability
+
 
 ## Brute Modules
 
