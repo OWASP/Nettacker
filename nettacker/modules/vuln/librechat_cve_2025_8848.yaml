@@ -52,6 +52,4 @@ payloads:
             content:
               regex: "<html lang=\"<h3>nettacker_test</h3>\">"
               reverse: false
-            content:
-              regex: "LibreChat"
-              reverse: false
+            
