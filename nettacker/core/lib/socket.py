@@ -15,6 +15,7 @@ from nettacker.core.utils.common import reverse_and_regex_condition, replace_dep
 
 log = logging.getLogger(__name__)
 
+
 def create_tcp_socket(host, port, timeout):
     try:
         socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -90,7 +91,6 @@ class SocketLibrary(BaseLibrary):
             "ssl_flag": ssl_flag,
         }
 
-  
     def socket_icmp(self, host, timeout):
         """
         A pure python ping implementation using raw socket.
