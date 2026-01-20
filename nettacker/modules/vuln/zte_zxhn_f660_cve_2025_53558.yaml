@@ -9,7 +9,7 @@ info:
   profiles:
     - vuln
     - http
-    - critical_severity
+    - high_severity
     - cve2025
     - default_login
     - zte
@@ -23,7 +23,7 @@ payloads:
         ssl: false
         headers:
           User-Agent: "{user_agent}"
-          Content-Type: application/x-www-form-urlencoded"
+          Content-Type: "application/x-www-form-urlencoded"
 
         body: |
           frashnum=&action=login&Frm_Logintoken=0&Username=admin&Password=admin
