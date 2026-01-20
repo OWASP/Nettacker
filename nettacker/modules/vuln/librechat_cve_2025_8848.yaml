@@ -1,5 +1,5 @@
 info:
-  name: librechat_cve_2025_8848_html_injection
+  name: librechat_cve_2025_8848_vuln
   author: OWASP Nettacker Team
   severity: 5.4
   description: |

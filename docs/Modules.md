@@ -144,7 +144,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**heartbleed_vuln**' - check SSL for Heartbleed vulnerability (CVE-2014-0160)
 - '**msexchange_cve_2021_26855**' - check the target for MS Exchange SSRF CVE-2021-26855 (proxylogon/hafnium)
 - '**http_cors_vuln**' - check the web server for overly-permissive CORS (header 'Access-Control-Allow-Origin'=\*)
-- '**librechat_cve_2025_8848**' - Check for HTML injection in LibreChat <= 0.7.9 via the Accept-Language header
+- '**librechat_cve_2025_8848_vuln**' - Check for HTML injection in LibreChat <= 0.7.9 via the Accept-Language header
 - '**options_method_enabled_vuln**' - check if OPTIONS method is enabled on the web server
 - '**paloalto_panos_cve_2025_0108_vuln**' - check the target for PaloAlto PAN-OS CVE-2025-0108 vulnerability
 - '**paloalto_globalprotect_cve_2025_0133_vuln**' - check the target for PaloAlto GlobalProtect CVE-2025-0133 XSS vulnerability
