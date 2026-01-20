@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from OpenSSL import crypto
 
 from nettacker.core.lib.base import BaseEngine, BaseLibrary
+from nettacker.core.messages import messages as _
 
 log = logging.getLogger(__name__)
 
@@ -177,8 +178,8 @@ class SslLibrary(BaseLibrary):
                 cert = ssl.get_server_certificate((host, port))
                 cert_info = get_cert_info(cert)
                 scan_info = cert_info | scan_info
-            except (ssl.SSLError, socket.gaierror) as e:
-                log.info(f"Failed to fetch SSL certificate for {host}:{port} - {e!r}")
+            except (ssl.SSLError, socket.gaierror):
+                log.warning(_("ssl_certificate_fetch_failed").format(host, port))
 
         return scan_info
 
@@ -199,8 +200,8 @@ class SslLibrary(BaseLibrary):
         if ssl_flag:
             try:
                 cert = ssl.get_server_certificate((host, port))
-            except (ssl.SSLError, socket.gaierror) as e:
-                log.info(f"Failed to fetch SSL certificate for {host}:{port} - {e!r}")
+            except (ssl.SSLError, socket.gaierror):
+                log.warning(_("ssl_certificate_fetch_failed").format(host, port))
                 cert = None
 
             cert_info = get_cert_info(cert) if cert else None
