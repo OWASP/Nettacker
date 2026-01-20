@@ -1093,3 +1093,7 @@ payloads:
               amqp:
                 regex: "AMQP"
                 reverse: false
+                
+              smb:
+                regex: "SMB\\d+|Microsoft Windows Network|Server\\sMessage\\sBlock\\sProtocol|\\d{{1,3}}\\.\\d{{1,3}}\\.\\d{{1,3}}\\.\\d{{1,3}}.*?SMB.*?|Session\\sError|Not\\simplemented|Protocol\\sViolation|\\d+\\sbytes\\sreceived|SMB\\sConnection\\sterminated|Session\\sestablished\\susing\\sSMB\\d+|NTLMv2|Negotiate Protocol|SMB2\\sProtocol\\sNegotiation|Session\\sSetup\\sSMB|Tree\\sConnect"
+                reverse: false
