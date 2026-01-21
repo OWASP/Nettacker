@@ -87,6 +87,22 @@ pentest_graphs: Penetration Testing Graphs
 ping_before_scan: ping before scan the host
 port_separator: port(s) list, separate with ","
 ports_int: ports must be integers! (e.g. 80 || 80,1080 || 80,1080-1300,9000,12000-15000)
+error_empty_port_value: |
+  Empty port value detected in port list.
+  Check for double commas or trailing commas in your port specification.
+error_invalid_port_format: |
+  Invalid port format: '{0}'
+  Expected format: single port (80) or range (80-90)
+  Examples: --ports 22,80-90,443 or --excluded-ports 135-139,445
+  Common mistakes:
+    - Multiple dashes (80-90-100) → use commas (80-90,100)
+    - Leading dash (-80) → should be (80)
+    - Trailing dash (80-) → should be (80)
+error_invalid_port_range_order: |
+  Invalid port range '{0}': start port {1} is greater than end port {2}
+  Port ranges must be in ascending order (e.g., 80-90, not 90-80)
+error_port_out_of_range: |
+  Invalid port '{0}': port numbers must be between 1 and 65535
 profile_404: the profile "{0}" not found!
 range: scan all IPs in the range
 read_passwords: read password(s) from file
