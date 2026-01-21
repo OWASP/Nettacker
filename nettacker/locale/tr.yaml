@@ -64,7 +64,7 @@ PASSWORD: PAROLA
 PORT: LİMAN
 TYPE: TİP
 DESCRIPTION: AÇIKLAMA
-verbose_mode: ayrıntılı mod düzeyi (0-5) (varsayılan 0)
+verbose_mode: ayrıntılı mod
 software_version: yazılım sürümünü göster
 check_updates: güncellemeleri kontrol ediniz
 outgoing_proxy:

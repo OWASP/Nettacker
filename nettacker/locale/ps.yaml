@@ -65,7 +65,7 @@ PASSWORD: رمز
 PORT: PORT
 TYPE: TYPE
 DESCRIPTION: DESCRIPTION
-verbose_mode: د فعالو موډ کچه (0-5) (اصلي 0)
+verbose_mode: فعال موډ
 software_version: د ساوتري نسخه ښودل
 check_updates: اوسمهال وګوره
 outgoing_proxy:
