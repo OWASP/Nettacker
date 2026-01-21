@@ -187,3 +187,94 @@ class TestSetSocksProxy:
             
             # Should use SOCKS5
             assert mock_socks.set_default_proxy.call_args[0][0] == 2
+    def test_proxy_with_invalid_port_non_numeric(self):
+        """Test that non-numeric port raises error"""
+        from nettacker.core.die import die_failure
+        
+        mock_socks = MagicMock()
+        mock_socks.SOCKS4 = 1
+        mock_socks.SOCKS5 = 2
+        
+        with patch.dict('sys.modules', {'socks': mock_socks}):
+            with patch('nettacker.core.socks_proxy.die_failure', side_effect=die_failure) as mock_die:
+                with pytest.raises(SystemExit):
+                    set_socks_proxy("proxy.example.com:abc")
+                
+                # Should call die_failure with invalid port error
+                assert mock_die.called
+                error_msg = str(mock_die.call_args[0][0])
+                assert "Invalid SOCKS proxy port" in error_msg
+                assert "abc" in error_msg
+
+    def test_proxy_with_invalid_port_out_of_range_low(self):
+        """Test that port < 1 raises error"""
+        from nettacker.core.die import die_failure
+        
+        mock_socks = MagicMock()
+        mock_socks.SOCKS4 = 1
+        mock_socks.SOCKS5 = 2
+        
+        with patch.dict('sys.modules', {'socks': mock_socks}):
+            with patch('nettacker.core.socks_proxy.die_failure', side_effect=die_failure) as mock_die:
+                with pytest.raises(SystemExit):
+                    set_socks_proxy("proxy.example.com:0")
+                
+                # Should call die_failure with invalid port error
+                assert mock_die.called
+                error_msg = str(mock_die.call_args[0][0])
+                assert "Invalid SOCKS proxy port" in error_msg
+
+    def test_proxy_with_invalid_port_out_of_range_high(self):
+        """Test that port > 65535 raises error"""
+        from nettacker.core.die import die_failure
+        
+        mock_socks = MagicMock()
+        mock_socks.SOCKS4 = 1
+        mock_socks.SOCKS5 = 2
+        
+        with patch.dict('sys.modules', {'socks': mock_socks}):
+            with patch('nettacker.core.socks_proxy.die_failure', side_effect=die_failure) as mock_die:
+                with pytest.raises(SystemExit):
+                    set_socks_proxy("proxy.example.com:65536")
+                
+                # Should call die_failure with invalid port error
+                assert mock_die.called
+                error_msg = str(mock_die.call_args[0][0])
+                assert "Invalid SOCKS proxy port" in error_msg
+
+    def test_authenticated_proxy_with_invalid_port_non_numeric(self):
+        """Test that non-numeric port in authenticated proxy raises error"""
+        from nettacker.core.die import die_failure
+        
+        mock_socks = MagicMock()
+        mock_socks.SOCKS4 = 1
+        mock_socks.SOCKS5 = 2
+        
+        with patch.dict('sys.modules', {'socks': mock_socks}):
+            with patch('nettacker.core.socks_proxy.die_failure', side_effect=die_failure) as mock_die:
+                with pytest.raises(SystemExit):
+                    set_socks_proxy("user:pass@proxy.example.com:xyz")
+                
+                # Should call die_failure with invalid port error
+                assert mock_die.called
+                error_msg = str(mock_die.call_args[0][0])
+                assert "Invalid SOCKS proxy port" in error_msg
+                assert "xyz" in error_msg
+
+    def test_authenticated_proxy_with_invalid_port_out_of_range(self):
+        """Test that out-of-range port in authenticated proxy raises error"""
+        from nettacker.core.die import die_failure
+        
+        mock_socks = MagicMock()
+        mock_socks.SOCKS4 = 1
+        mock_socks.SOCKS5 = 2
+        
+        with patch.dict('sys.modules', {'socks': mock_socks}):
+            with patch('nettacker.core.socks_proxy.die_failure', side_effect=die_failure) as mock_die:
+                with pytest.raises(SystemExit):
+                    set_socks_proxy("user:pass@proxy.example.com:99999")
+                
+                # Should call die_failure with invalid port error
+                assert mock_die.called
+                error_msg = str(mock_die.call_args[0][0])
+                assert "Invalid SOCKS proxy port" in error_msg
