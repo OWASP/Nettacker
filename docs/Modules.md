@@ -139,6 +139,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**clickjacking_vuln**' - check the web server for missing 'X-Frame-Options' header (clickjacking protection)
 - '**content_security_policy_vuln**' - check the web server for missing 'Content-Security-Policy' header
 - '**content_type_options_vuln**' - check the web server for missing 'X-Content-Type-Options'=nosniff header
+- '**copyparty_xss_cve_2025_54589_vuln**' - check Copyparty instances for reflected XSS through the filter parameter in the /?ru endpoint
 - '**crushftp_cve_2025_31161_vuln**' - check the target for CrushFTP CVE-2025-31161 vulnerability
 - '**f5_cve_2020_5902_vuln**' - check the target for F5 RCE CVE-2020-5902 vulnerability
 - '**heartbleed_vuln**' - check SSL for Heartbleed vulnerability (CVE-2014-0160)
