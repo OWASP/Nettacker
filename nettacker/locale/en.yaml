@@ -95,9 +95,9 @@ error_invalid_port_format: |
   Expected format: single port (80) or range (80-90)
   Examples: --ports 22,80-90,443 or --excluded-ports 135-139,445
   Common mistakes:
-    - Multiple dashes (80-90-100) → use commas (80-90,100)
-    - Leading dash (-80) → should be (80)
-    - Trailing dash (80-) → should be (80)
+    - Multiple dashes (80-90-100) -> use commas (80-90,100)
+    - Leading dash (-80) -> should be (80)
+    - Trailing dash (80-) -> should be (80)
 error_invalid_port_range_order: |
   Invalid port range '{0}': start port {1} is greater than end port {2}
   Port ranges must be in ascending order (e.g., 80-90, not 90-80)
