@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 from argparse import ArgumentParser
 
@@ -662,32 +663,71 @@ class ArgParser(ArgumentParser):
         # Check port(s)
         if options.ports:
             tmp_ports = set()
+            # Regex to validate port format: single port (123) or range (80-90)
+            port_pattern = re.compile(r'^\d+(-\d+)?$')
+            
             for port in options.ports.split(","):
+                port = port.strip()
+                
+                if not port:
+                    die_failure(_("error_empty_port_value"))
+                
+                if not port_pattern.match(port):
+                    die_failure(_("error_invalid_port_format").format(port))
+                
                 try:
                     if "-" in port:
-                        for port_number in range(
-                            int(port.split("-")[0]), int(port.split("-")[1]) + 1
-                        ):
+                        start, end = port.split("-")
+                        start, end = int(start), int(end)
+                        
+                        if start > end:
+                            die_failure(_("error_invalid_port_range_order").format(port, start, end))
+                        if start < 1 or end > 65535:
+                            die_failure(_("error_port_out_of_range").format(port))
+                        
+                        for port_number in range(start, end + 1):
                             tmp_ports.add(port_number)
                     else:
-                        tmp_ports.add(int(port))
-                except Exception:
+                        port_number = int(port)
+                        if port_number < 1 or port_number > 65535:
+                            die_failure(_("error_port_out_of_range").format(port))
+                        tmp_ports.add(port_number)
+                except ValueError:
                     die_failure(_("ports_int"))
             options.ports = list(tmp_ports)
         # Check for excluded ports
         if options.excluded_ports:
             tmp_excluded_ports = set()
+            # Regex to validate port format: single port (123) or range (80-90)
+            port_pattern = re.compile(r'^\d+(-\d+)?$')
 
             for excluded_port in options.excluded_ports.split(","):
+                excluded_port = excluded_port.strip()
+                
+                if not excluded_port:
+                    die_failure(_("error_empty_port_value"))
+                
+                if not port_pattern.match(excluded_port):
+                    die_failure(_("error_invalid_port_format").format(excluded_port))
+                
                 try:
                     if "-" in excluded_port:
-                        for excluded_port_number in range(
-                            int(excluded_port.split("-")[0]), int(excluded_port.split("-")[1]) + 1
-                        ):
+                        start, end = excluded_port.split("-")
+                        start, end = int(start), int(end)
+                        
+                        if start > end:
+                            die_failure(_("error_invalid_port_range_order").format(excluded_port, start, end))
+                        if start < 1 or end > 65535:
+                            die_failure(_("error_port_out_of_range").format(excluded_port))
+                        
+                        for excluded_port_number in range(start, end + 1):
                             tmp_excluded_ports.add(excluded_port_number)
                     else:
-                        tmp_excluded_ports.add(int(excluded_port))
-                except Exception:
+                        excluded_port_number = int(excluded_port)
+                        if excluded_port_number < 1 or excluded_port_number > 65535:
+                            die_failure(_("error_port_out_of_range").format(excluded_port))
+                        tmp_excluded_ports.add(excluded_port_number)
+                except ValueError:
                     die_failure(_("ports_int"))
             options.excluded_ports = list(tmp_excluded_ports)
 
