@@ -25,7 +25,7 @@ payloads:
           User-Agent: "{user_agent}"
           Content-Type: "application/x-www-form-urlencoded"
 
-        body: |
+        data: |
           frashnum=&action=login&Frm_Logintoken=0&Username=admin&Password=admin
 
         url:
