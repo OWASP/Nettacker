@@ -125,6 +125,24 @@ class TestSetSocksProxy:
         
         assert result == (socket.socket, socket.getaddrinfo)
 
+    def test_proxy_without_port_raises_error(self):
+        """Test that proxy without port raises error"""
+        from nettacker.core.die import die_failure
+        
+        mock_socks = MagicMock()
+        mock_socks.SOCKS4 = 1
+        mock_socks.SOCKS5 = 2
+        
+        with patch.dict('sys.modules', {'socks': mock_socks}):
+            with patch('nettacker.core.socks_proxy.die_failure', side_effect=die_failure) as mock_die:
+                with pytest.raises(SystemExit):
+                    set_socks_proxy("proxy.example.com")
+                
+                # Should call die_failure with missing port error
+                assert mock_die.called
+                error_msg = str(mock_die.call_args[0][0])
+                assert "Missing port" in error_msg or "missing port" in error_msg
+
     def test_proxy_with_special_chars_in_password(self):
         """Test proxy with special characters in password"""
         mock_socks = MagicMock()
