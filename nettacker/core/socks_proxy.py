@@ -60,8 +60,12 @@ def set_socks_proxy(socks_proxy):
                 password=socks_password,
             )
         else:
-            # Validate port is numeric
-            port_str = socks_proxy.rsplit(":")[1]
+            # Validate host:port format
+            host_port_split = socks_proxy.rsplit(":", 1)
+            if len(host_port_split) != 2:
+                die_failure(_("error_socks_proxy_missing_port"))
+            
+            port_str = host_port_split[1]
             try:
                 port = int(port_str)
                 if port < 1 or port > 65535:
@@ -71,7 +75,7 @@ def set_socks_proxy(socks_proxy):
 
             socks.set_default_proxy(
                 socks_version,
-                str(socks_proxy.rsplit(":")[0]),  # hostname
+                str(host_port_split[0]),  # hostname
                 port,
             )
         return socks.socksocket, getaddrinfo
