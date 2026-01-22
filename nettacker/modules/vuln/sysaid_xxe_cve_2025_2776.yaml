@@ -52,7 +52,7 @@ payloads:
         response:
           condition_type: and
           conditions:
-            status:
+            status_code:
               regex: "200"
               reverse: false
             content:
