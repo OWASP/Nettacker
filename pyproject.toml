@@ -13,9 +13,8 @@ documentation = "https://nettacker.readthedocs.io"
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.11"
 ]
 keywords = [
     "automation",
@@ -45,7 +44,7 @@ release_name = "QUIN"
 nettacker = "nettacker.main:run"
 
 [tool.poetry.dependencies]
-python = "^3.9, <3.13"
+python = "^3.10, <3.13"
 aiohttp = "^3.9.5"
 argparse = "^1.4.0"
 asyncio = "^3.4.3"
