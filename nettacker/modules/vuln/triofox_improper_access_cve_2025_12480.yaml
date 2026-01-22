@@ -54,5 +54,5 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: "(?s)(?=.*Triofox Enterprise)(?=.*Manage Database)(?=.*Configure Database)"
+              regex: "(?s)(Triofox Enterprise).*?(Manage Database).*?(Configure Database)"
               reverse: false
