@@ -127,7 +127,12 @@ class Nettacker(ArgParser):
 
                         #remove url proto, uri, port
                         target = parts[0].split(":")[0]
-                        targets.append(target)
+                        if not target:
+                             raise ValueError(
+                                "Invalid target format. Host cannot be empty. "
+                                "Please verify the provided URL."
+                             ) 
+                        targets.append(targe)
 
                    except IndexError as e:
                         raise ValueError(
