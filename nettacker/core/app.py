@@ -132,7 +132,7 @@ class Nettacker(ArgParser):
                                 "Invalid target format. Host cannot be empty. "
                                 "Please verify the provided URL."
                              ) 
-                        targets.append(targe)
+                        targets.append(target)
 
                    except IndexError as e:
                         raise ValueError(
