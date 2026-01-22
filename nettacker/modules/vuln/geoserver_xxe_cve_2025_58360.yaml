@@ -62,6 +62,6 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: "(?s)(?=.*ServiceException)(?=.*java.io.FileNotFoundException)"
+              regex: "(?s)(ServiceException).*?(java.io.FileNotFoundException)"
               reverse: false
             
