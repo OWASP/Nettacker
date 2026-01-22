@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from OpenSSL import crypto
 
 from nettacker.core.lib.base import BaseEngine, BaseLibrary
+from nettacker.core.messages import messages as _
 
 log = logging.getLogger(__name__)
 
@@ -154,41 +155,55 @@ def get_cert_info(cert):
 
 class SslLibrary(BaseLibrary):
     def ssl_certificate_scan(self, host, port, timeout):
+        """Safely retrieve and analyze the SSL certificate of a target service."""
         tcp_socket = create_tcp_socket(host, port, timeout)
         if tcp_socket is None:
             return None
 
         socket_connection, ssl_flag = tcp_socket
         peer_name = socket_connection.getpeername()
+        try:
+            service = socket.getservbyport(int(port))
+        except OSError:
+            service = "unknown"
+
         scan_info = {
             "ssl_flag": ssl_flag,
             "peer_name": peer_name,
-            "service": socket.getservbyport(int(port)),
+            "service": service,
         }
-
-        if ssl_flag:
-            cert = ssl.get_server_certificate((host, port))
-            cert_info = get_cert_info(cert)
-            scan_info = cert_info | scan_info
-            return scan_info
-
-        return scan_info
-
-    def ssl_version_and_cipher_scan(self, host, port, timeout):
-        tcp_socket = create_tcp_socket(host, port, timeout)
-        if tcp_socket is None:
-            return None
-
-        socket_connection, ssl_flag = tcp_socket
-        peer_name = socket_connection.getpeername()
 
         if ssl_flag:
             try:
                 cert = ssl.get_server_certificate((host, port))
-            except ssl.SSLError:
+                cert_info = get_cert_info(cert)
+                scan_info = cert_info | scan_info
+            except (ssl.SSLError, socket.gaierror):
+                log.warning(_("ssl_certificate_fetch_failed").format(host, port))
+
+        return scan_info
+
+    def ssl_version_and_cipher_scan(self, host, port, timeout):
+        """Detect supported SSL/TLS versions and cipher suites with safe error handling."""
+        tcp_socket = create_tcp_socket(host, port, timeout)
+        if tcp_socket is None:
+            return None
+
+        socket_connection, ssl_flag = tcp_socket
+        peer_name = socket_connection.getpeername()
+
+        try:
+            service = socket.getservbyport(int(port))
+        except OSError:
+            service = "unknown"
+
+        if ssl_flag:
+            try:
+                cert = ssl.get_server_certificate((host, port))
+            except (ssl.SSLError, socket.gaierror):
+                log.warning(_("ssl_certificate_fetch_failed").format(host, port))
                 cert = None
-            except socket.gaierror:
-                cert = None
+
             cert_info = get_cert_info(cert) if cert else None
             ssl_ver, weak_version = is_weak_ssl_version(host, port, timeout)
             cipher_suite, weak_cipher_suite = is_weak_cipher_suite(host, port, timeout)
@@ -203,12 +218,12 @@ class SslLibrary(BaseLibrary):
                 "expiration_date": cert_info["expiration_date"] if cert_info else "NA",
                 "ssl_flag": ssl_flag,
                 "peer_name": peer_name,
-                "service": socket.getservbyport(int(port)),
+                "service": service,
             }
 
         return {
             "ssl_flag": ssl_flag,
-            "service": socket.getservbyport(int(port)),
+            "service": service,
             "peer_name": peer_name,
         }
 
