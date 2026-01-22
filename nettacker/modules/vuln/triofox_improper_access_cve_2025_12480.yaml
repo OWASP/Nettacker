@@ -1,7 +1,7 @@
 info:
   name: triofox_improper_access_control_cve_2025_12480_vuln
   author: OWASP Nettacker Team
-  severity: 9.8
+  severity: 9.1
   description: |
     Gladinet Triofox before version 12.91.1126.65588 and CentreStack before
     version 12.10.595.65696 allow unauthenticated access to the
