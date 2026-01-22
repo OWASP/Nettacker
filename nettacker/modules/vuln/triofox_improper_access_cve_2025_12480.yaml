@@ -1,0 +1,58 @@
+info:
+  name: triofox_improper_access_control_cve_2025_12480_vuln
+  author: OWASP Nettacker Team
+  severity: 9.8
+  description: |
+    Gladinet Triofox before version 12.91.1126.65588 and CentreStack before
+    version 12.10.595.65696 allow unauthenticated access to the
+    /management/admindatabase.aspx endpoint. An unauthenticated attacker
+    can access sensitive database management functionality, leading to
+    potential data disclosure or system compromise.
+  reference:
+    - https://cloud.google.com/blog/topics/threat-intelligence/triofox-vulnerability-cve-2025-12480
+    - https://attackerkb.com/topics/5C4wRy6hY7/cve-2025-12480/rapid7-analysis
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-12480
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2025
+    - unauth
+    - exposure
+    - triofox
+    - kev
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors: []
+            data:
+              schema:
+                - http
+                - https
+              ports:
+                - 80
+                - 443
+              paths:
+                - "/management/admindatabase.aspx"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "(?s)(?=.*Triofox Enterprise)(?=.*Manage Database)(?=.*Configure Database)"
+              reverse: false
