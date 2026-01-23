@@ -72,7 +72,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}"
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
             prefix: ""
             suffix: ""
             interceptors:
@@ -92,6 +92,6 @@ payloads:
               regex: "200"
               reverse: false
             content:
-                regex: "(?s)(\"results\":).*?(\"can_clone\":)"
-                reverse: false
+              regex: "(?s)(\"results\":).*?(\"can_clone\":)"
+              reverse: false
             
