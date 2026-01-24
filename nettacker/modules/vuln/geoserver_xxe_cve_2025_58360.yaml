@@ -54,7 +54,6 @@ payloads:
                 - 443
               paths:
                 - "/geoserver/wfs?service=WMS&request=GetMap"
-                - "/wfs?service=WMS&request=GetMap"
         response:
           condition_type: and
           conditions:
@@ -62,6 +61,6 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: "(?s)(ServiceException).*?(java.io.FileNotFoundException)"
+              regex: "(?s)ServiceExceptionReport.*(Entity|entity|DOCTYPE)"
               reverse: false
             
