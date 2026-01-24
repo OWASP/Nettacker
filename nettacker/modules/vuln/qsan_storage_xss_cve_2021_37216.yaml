@@ -40,7 +40,7 @@ payloads:
         response:
           condition_type: and
           conditions:
-            header:
+            headers:
               Content-Type:
                 regex: text/html
                 reverse: false  
