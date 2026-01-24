@@ -52,8 +52,10 @@ payloads:
               ports:
                 - 80
                 - 443
+                - 8080 
+                - 8443
               paths:
-                - "/geoserver/wfs?service=WMS&request=GetMap"
+                - "/geoserver/wms?service=WMS&request=GetMap"
         response:
           condition_type: and
           conditions:
