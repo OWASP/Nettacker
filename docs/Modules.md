@@ -141,6 +141,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**content_type_options_vuln**' - check the web server for missing 'X-Content-Type-Options'=nosniff header
 - '**crushftp_cve_2025_31161_vuln**' - check the target for CrushFTP CVE-2025-31161 vulnerability
 - '**f5_cve_2020_5902_vuln**' - check the target for F5 RCE CVE-2020-5902 vulnerability
+- '**geoserver_xxe_cve_2025_58360_vuln**' - Checks for an unauthenticated XXE vulnerability in GeoServer enabling arbitrary file read
 - '**heartbleed_vuln**' - check SSL for Heartbleed vulnerability (CVE-2014-0160)
 - '**msexchange_cve_2021_26855**' - check the target for MS Exchange SSRF CVE-2021-26855 (proxylogon/hafnium)
 - '**http_cors_vuln**' - check the web server for overly-permissive CORS (header 'Access-Control-Allow-Origin'=\*)
