@@ -33,7 +33,7 @@ class Module:
 
         self.module_inputs = options.__dict__
         self.module_inputs["target"] = target
-
+        self.module_inputs["scan_id"] = scan_id
         if options.modules_extra_args:
             for module_extra_args in self.module_inputs["modules_extra_args"]:
                 self.module_inputs[module_extra_args] = self.module_inputs["modules_extra_args"][

