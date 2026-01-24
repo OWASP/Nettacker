@@ -55,9 +55,6 @@ payloads:
         response:
           condition_type: and
           conditions:
-            status_code:
-              regex: "307"
-              reverse: false
             headers:
               x-action-redirect:
                 regex: "/login\\?a=11111"
@@ -86,9 +83,6 @@ payloads:
         response:
           condition_type: and
           conditions:
-            status_code:
-              regex: "307"
-              reverse: false
             headers:
               x-action-redirect:
                 regex: "/login\\?a=11111"
