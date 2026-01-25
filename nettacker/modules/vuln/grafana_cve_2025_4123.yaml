@@ -11,14 +11,16 @@ info:
     - http
     - grafana
     - cve2025
-    - openredirect
-    - SSRF
+    - cve
+    - open_redirect
+    - medium_severity
+    - ssrf
 
 payloads:
   - library: http
     steps:
       - method: get
-        timeout: 5
+        timeout: 3
         headers:
           User-Agent: "{user_agent}"
         allow_redirects: false
