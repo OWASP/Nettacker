@@ -13,7 +13,7 @@ info:
     server.
     NOTE: When scanning local development servers ('next dev'), use '--timeout 20' 
     to account for initial compilation latency. Production servers do not require this.
-  resources:
+  reference:
     - https://nvd.nist.gov/vuln/detail/CVE-2025-55182
     - https://react.dev/blog/2025/12/03/critical-security-vulnerability-in-react-server-components
     - https://www.wiz.io/blog/nextjs-cve-2025-55182-react2shell-deep-dive
