@@ -6,7 +6,6 @@ info:
   reference:
     - https://nvd.nist.gov/vuln/detail/CVE-2025-4123
     - https://grafana.com/security/security-advisories/cve-2025-4123/
-    - 
   profiles:
     - vuln
     - http
