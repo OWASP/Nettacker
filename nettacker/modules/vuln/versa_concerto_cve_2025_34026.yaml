@@ -5,9 +5,9 @@ info:
   description: >
     CVE_2025_34026 allows authentication bypass allowing access to Spring Boot
     actuator endpoints in Versa Concerto. It is caused due to improper handling
-    of the X-Real-Ip header by Traefik(reverse proxy server and load balencer
+    of the X-Real-Ip header by Traefik(reverse proxy server and load balancer
     for versa concerto).
-  references:
+  reference:
     - https://projectdiscovery.io/blog/versa-concerto-authentication-bypass-rce
     - https://nvd.nist.gov/vuln/detail/CVE-2025-34026
   profiles:

@@ -6,10 +6,10 @@ info:
     CVE_2025_34027 allows authentication bypass in the Versa Concerto
     due to the inconsistent URL decoding. URLs are processed without
     decoding to the controllers that allowed unauthorized access to
-    ceratin endpoints. The Spack upload endpoint can be leveraged for
+    certain endpoints. The Spack upload endpoint can be leveraged for
     a Time-of-Check to Time-of-Use (TOCTOU) write in combination with
     a race condition to achieve Remote Code Execution(RCE).
-  references:
+  reference:
     - https://projectdiscovery.io/blog/versa-concerto-authentication-bypass-rce
     - https://nvd.nist.gov/vuln/detail/CVE-2025-34027
   profiles:
