@@ -1,7 +1,7 @@
 info:
   name: n8n_cve_2026_21858_vuln
   author: Swarnim Bandekar
-  severity: 10.0
+  severity: 10
   description: n8n Webhooks - Remote Code Execution (CVE-2026-21858)
   reference:
     - https://thehackernews.com/2026/01/critical-n8n-vulnerability-cvss-100.html
@@ -22,6 +22,7 @@ payloads:
         timeout: 3
         headers:
           User-Agent: "{user_agent}"
+        allow_redirects: false
         ssl: false
         url:
           nettacker_fuzzer:
