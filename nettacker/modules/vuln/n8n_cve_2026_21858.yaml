@@ -1,0 +1,50 @@
+info:
+  name: n8n_cve_2026_21858_vuln
+  author: Swarnim Bandekar
+  severity: 10
+  description: n8n Webhooks - Remote Code Execution (CVE-2026-21858)
+  reference:
+    - https://thehackernews.com/2026/01/critical-n8n-vulnerability-cvss-100.html
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-21858
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve2026
+    - cve
+    - n8n
+    - rce
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/rest/settings"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 5678
+        response:
+          condition_type: and
+          conditions:
+            content:
+              regex: 1\.(?:6[5-9]|[7-9][0-9]|1[01][0-9]|120)\.[0-9]+
+              reverse: false
+            status_code:
+              regex: "200"
+              reverse: false
+          log: "Vulnerable n8n detected. Version: response_dependent['content']"
