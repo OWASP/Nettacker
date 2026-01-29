@@ -501,7 +501,9 @@ class ArgParser(ArgumentParser):
         )
 
         # External Services Options
-        external_services_options = self.add_argument_group(_("external_services"), _("external_services_options"))
+        external_services_options = self.add_argument_group(
+            _("external_services"), _("external_services_options")
+        )
         external_services_options.add_argument(
             "--netlas-api-key",
             action="store",

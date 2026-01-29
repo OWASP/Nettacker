@@ -4,17 +4,12 @@ import asyncio
 import copy
 import random
 import re
-import time
 
-import aiohttp
 import uvloop
 
 from nettacker.core.lib.base import BaseEngine
 from nettacker.core.lib.http import send_request, response_conditions_matched
-from nettacker.core.utils.common import (
-    get_http_header_key,
-    get_http_header_value,
-)
+from nettacker.core.utils.common import get_http_header_key, get_http_header_value
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
@@ -41,7 +36,7 @@ class Http_clientEngine(BaseEngine):
                     sub_step["headers"][key] = value.strip()
                 else:
                     sub_step["headers"][key] = ""
-        
+
         # --- Start of Modification for HttpClientEngine ---
         # Safe Header Dropping: Remove headers that are empty or contain only a prefix (like "Bearer ")
         if "headers" in sub_step:
@@ -53,12 +48,15 @@ class Http_clientEngine(BaseEngine):
                     continue
 
                 # check for incomplete Authorization headers (e.g., "Bearer ", "Token ", "Basic ")
-                if header_name.lower() == "authorization" or header_name.lower() == "proxy-authorization":
+                if (
+                    header_name.lower() == "authorization"
+                    or header_name.lower() == "proxy-authorization"
+                ):
                     # Regex matches a word followed by optional whitespace and end of string
                     # e.g., "Bearer" or "Bearer " matches. "Bearer 123" does not match.
                     if re.match(r"^\w+\s*$", header_value):
                         headers_to_delete.append(header_name)
-            
+
             for header_name in headers_to_delete:
                 del sub_step["headers"][header_name]
         # --- End of Modification ---
