@@ -13,12 +13,15 @@ class DummyHttpClientEngine(http_client.Http_clientEngine):
     """
 
     def __init__(self):
+        """Initialize the dummy engine."""
         pass
 
     def get_dependent_results_from_database(self, *args, **kwargs):
+        """Mock getting dependent results from database."""
         return {}
 
     def replace_dependent_values(self, sub_step, temp_event):
+        """Mock replacing dependent values."""
         return sub_step
 
     def process_conditions(
@@ -35,6 +38,12 @@ class DummyHttpClientEngine(http_client.Http_clientEngine):
         request_number_counter,
         total_number_of_requests,
     ):
+        """
+        Mock processing conditions to verify sub_step modification.
+
+        Returns:
+            dict: A dictionary containing the sub_step for inspection.
+        """
         # Return the modified sub_step for inspection
         return {
             "processed": True,

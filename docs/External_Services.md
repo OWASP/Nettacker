@@ -22,14 +22,14 @@ To run a subdomain scan using your Netlas and URLScan API keys:
 
 For a single service API key
 ```bash
-python nettacker.py -m subdomain_scan -t example.com --netlas-api-key "YOUR_NETLAS_KEY"
+python nettacker.py -i example.com -m subdomain_scan --netlas-api-key "YOUR_NETLAS_KEY"
 ```
 
 For multiple service API keys
 ```bash
-python nettacker.py -m subdomain_scan -t example.com --netlas-api-key "YOUR_NETLAS_KEY" --urlscan-api-key "YOUR_URLSCAN_KEY"
+python nettacker.py -i example.com -m subdomain_scan --netlas-api-key "YOUR_NETLAS_KEY" --urlscan-api-key "YOUR_URLSCAN_KEY"
 ```
 
 ### Notes
 *   **Optional Keys**: If you do not provide a key, Nettacker will automatically attempt to use the free/anonymous tier of the service.
-*   **Rate Limits**: Providing an API key significantly increases the number of requests you can make per day.
+*   **Rate Limits**: Providing an API key typically increases request allowances, but exact limits and time windows vary by provider and plan.

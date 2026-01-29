@@ -51,6 +51,8 @@ class Http_clientEngine(BaseEngine):
             dict: The processing result.
         """
         if options["http_header"] is not None:
+            if sub_step.get("headers") is None or not isinstance(sub_step["headers"], dict):
+                sub_step["headers"] = {}
             for header in options["http_header"]:
                 key = get_http_header_key(header).strip()
                 value = get_http_header_value(header)
@@ -93,6 +95,8 @@ class Http_clientEngine(BaseEngine):
             sub_step["response"]["conditions"].get("iterative_response_match", None)
         )
         if options["user_agent"] == "random_user_agent":
+            if sub_step.get("headers") is None or not isinstance(sub_step["headers"], dict):
+                sub_step["headers"] = {}
             sub_step["headers"]["User-Agent"] = random.choice(options["user_agents"])
         del sub_step["method"]
         if "dependent_on_temp_event" in backup_response:
