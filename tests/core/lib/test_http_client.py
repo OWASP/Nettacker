@@ -1,3 +1,6 @@
+"""
+Unit tests for the HttpClientEngine.
+"""
 import copy
 
 from nettacker.core.lib import http_client
@@ -16,27 +19,27 @@ class DummyHttpClientEngine(http_client.Http_clientEngine):
         """Initialize the dummy engine."""
         pass
 
-    def get_dependent_results_from_database(self, *args, **kwargs):
+    def get_dependent_results_from_database(self, *_args, **_kwargs):
         """Mock getting dependent results from database."""
         return {}
 
-    def replace_dependent_values(self, sub_step, temp_event):
+    def replace_dependent_values(self, sub_step, _temp_event):
         """Mock replacing dependent values."""
         return sub_step
 
     def process_conditions(
         self,
         sub_step,
-        module_name,
-        target,
-        scan_id,
-        options,
+        _module_name,
+        _target,
+        _scan_id,
+        _options,
         response,
-        process_number,
-        module_thread_number,
-        total_module_thread_number,
-        request_number_counter,
-        total_number_of_requests,
+        _process_number,
+        _module_thread_number,
+        _total_module_thread_number,
+        _request_number_counter,
+        _total_number_of_requests,
     ):
         """
         Mock processing conditions to verify sub_step modification.
@@ -62,7 +65,8 @@ def test_drop_empty_headers(monkeypatch):
     engine = DummyHttpClientEngine()
 
     # Mocks
-    async def fake_send_request(sub_step, method):
+    async def fake_send_request(_sub_step, _method):
+        """Mock send_request."""
         return {"content": b"OK", "status_code": "200"}
 
     monkeypatch.setattr(http_client, "send_request", fake_send_request)
@@ -106,7 +110,8 @@ def test_drop_malformed_authorization(monkeypatch):
     engine = DummyHttpClientEngine()
 
     # Mocks
-    async def fake_send_request(sub_step, method):
+    async def fake_send_request(_sub_step, _method):
+        """Mock send_request."""
         return {"content": b"OK", "status_code": "200"}
 
     monkeypatch.setattr(http_client, "send_request", fake_send_request)
@@ -173,7 +178,8 @@ def test_keep_valid_authorization(monkeypatch):
     engine = DummyHttpClientEngine()
 
     # Mocks
-    async def fake_send_request(sub_step, method):
+    async def fake_send_request(_sub_step, _method):
+        """Mock send_request."""
         return {"content": b"OK", "status_code": "200"}
 
     monkeypatch.setattr(http_client, "send_request", fake_send_request)
@@ -209,7 +215,8 @@ def test_drop_whitespace_headers(monkeypatch):
     engine = DummyHttpClientEngine()
 
     # Mocks
-    async def fake_send_request(sub_step, method):
+    async def fake_send_request(_sub_step, _method):
+        """Mock send_request."""
         return {"content": b"OK", "status_code": "200"}
 
     monkeypatch.setattr(http_client, "send_request", fake_send_request)

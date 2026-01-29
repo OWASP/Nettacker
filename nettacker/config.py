@@ -47,6 +47,7 @@ sensitive_headers = {
     "proxy-authorization",
     "cookie",
     "set-cookie",
+    "api-key",
     "x-api-key",
     "x-amz-security-token",
     "x-amz-credential",

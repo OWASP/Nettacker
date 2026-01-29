@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+This module contains the HttpClientEngine class, which extends BaseEngine to provide
+specialized HTTP client capabilities, including safe header dropping for API keys.
+"""
 import asyncio
 import copy
 import random

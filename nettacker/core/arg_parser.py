@@ -132,6 +132,9 @@ class ArgParser(ArgumentParser):
         return profiles
 
     def add_arguments(self):
+        """
+        Add all available arguments to the parser
+        """
         # Engine Options
         engine_options = self.add_argument_group(_("engine"), _("engine_input"))
         engine_options.add_argument(
