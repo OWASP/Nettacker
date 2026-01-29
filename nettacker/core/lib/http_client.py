@@ -15,6 +15,10 @@ asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 class Http_clientEngine(BaseEngine):
+    """
+    Http_client Engine class to handle HTTP requests with specialized features like safe header dropping.
+    """
+
     def run(
         self,
         sub_step,
@@ -28,6 +32,24 @@ class Http_clientEngine(BaseEngine):
         request_number_counter,
         total_number_of_requests,
     ):
+        """
+        Run the HTTP client engine for a specific sub-step.
+
+        Args:
+            sub_step: The current step configuration from the module YAML.
+            module_name: Name of the module.
+            target: The target host/URL.
+            scan_id: The unique scan identifier.
+            options: Scan options.
+            process_number: Process ID.
+            module_thread_number: Thread number within the module.
+            total_module_thread_number: Total threads for the module.
+            request_number_counter: Counter for requests.
+            total_number_of_requests: Total requests.
+
+        Returns:
+            dict: The processing result.
+        """
         if options["http_header"] is not None:
             for header in options["http_header"]:
                 key = get_http_header_key(header).strip()
@@ -42,8 +64,12 @@ class Http_clientEngine(BaseEngine):
         if "headers" in sub_step:
             headers_to_delete = []
             for header_name, header_value in sub_step["headers"].items():
-                # check if header_value is None or Empty String
+                # check if header_value is None or Empty String (after stripping)
                 if not header_value:
+                    headers_to_delete.append(header_name)
+                    continue
+
+                if isinstance(header_value, str) and not header_value.strip():
                     headers_to_delete.append(header_name)
                     continue
 

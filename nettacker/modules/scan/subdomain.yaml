@@ -28,7 +28,7 @@ payloads:
               regex: "\"([a-zA-Z0-9\\-\\_.\\s]+)\""
               reverse: false
 
-      - method: post
+      - method: get
         timeout: 3
         headers:
           User-Agent: "{user_agent}"
@@ -169,6 +169,23 @@ payloads:
         timeout: 3
         headers:
           User-Agent: "{user_agent}"
+          X-API-Key: "{dnsdumpster_api_key}"
+        ssl: false
+        url: "https://api.dnsdumpster.com/domain/{target}"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^[2-3][0-9][0-9]"
+              reverse: false
+            content:
+              regex: "[a-zA-Z0-9\\-\\_.]+\\.{target}"
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
         ssl: false
         url: "https://dnsdumpster.com/"
         response:
@@ -192,7 +209,6 @@ payloads:
           User-Agent: "{user_agent}"
           Referer: "https://dnsdumpster.com/"
           Cookie: "dependent_on_temp_event[0]['headers']['Set-Cookie'][1]"
-          X-API-Key: "{dnsdumpster_api_key}"
         ssl: false
         url: "https://dnsdumpster.com/"
         data:
@@ -261,3 +277,9 @@ payloads:
             content:
               regex: "[a-zA-Z0-9\\-\\_.]+\\.{target}"
               reverse: false
+
+
+# todo: later
+#      "subdomain_scan_use_netcraft": [ "True" ],
+#      "subdomain_scan_use_ptrarchive": [ "True" ],
+#      "subdomain_scan_use_censys": [ "True" ],

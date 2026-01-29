@@ -20,12 +20,12 @@ You can provide API keys directly via command-line arguments.
 
 To run a subdomain scan using your Netlas and URLScan API keys:
 
-For a single service apikey
+For a single service API key
 ```bash
 python nettacker.py -m subdomain_scan -t example.com --netlas-api-key "YOUR_NETLAS_KEY"
 ```
 
-For multiple service apikeys
+For multiple service API keys
 ```bash
 python nettacker.py -m subdomain_scan -t example.com --netlas-api-key "YOUR_NETLAS_KEY" --urlscan-api-key "YOUR_URLSCAN_KEY"
 ```
