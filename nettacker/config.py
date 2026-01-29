@@ -166,6 +166,12 @@ class DefaultSettings(ConfigBase):
     socks_proxy = None
     targets = None
     targets_list = None
+    # External API Keys (Default to empty)
+    netlas_api_key = ""
+    hackertarget_api_key = ""
+    certspotter_api_key = ""
+    urlscan_api_key = ""
+    dnsdumpster_api_key = ""
     thread_per_host = 100
     time_sleep_between_requests = 0.0
     timeout = 3.0

@@ -500,6 +500,44 @@ class ArgParser(ArgumentParser):
             help=_("API_cert_key"),
         )
 
+        # External Services Options
+        external_services_options = self.add_argument_group(_("external_services"), _("external_services_options"))
+        external_services_options.add_argument(
+            "--netlas-api-key",
+            action="store",
+            dest="netlas_api_key",
+            default=Config.settings.netlas_api_key,
+            help=_("netlas_api_key_help"),
+        )
+        external_services_options.add_argument(
+            "--hackertarget-api-key",
+            action="store",
+            dest="hackertarget_api_key",
+            default=Config.settings.hackertarget_api_key,
+            help=_("hackertarget_api_key_help"),
+        )
+        external_services_options.add_argument(
+            "--certspotter-api-key",
+            action="store",
+            dest="certspotter_api_key",
+            default=Config.settings.certspotter_api_key,
+            help=_("certspotter_api_key_help"),
+        )
+        external_services_options.add_argument(
+            "--urlscan-api-key",
+            action="store",
+            dest="urlscan_api_key",
+            default=Config.settings.urlscan_api_key,
+            help=_("urlscan_api_key_help"),
+        )
+        external_services_options.add_argument(
+            "--dnsdumpster-api-key",
+            action="store",
+            dest="dnsdumpster_api_key",
+            default=Config.settings.dnsdumpster_api_key,
+            help=_("dnsdumpster_api_key_help"),
+        )
+
     def parse_arguments(self):
         """
         check all rules and requirements for ARGS
