@@ -10,7 +10,7 @@ info:
     - low_severity
 
 payloads:
-  - library: http
+  - library: http_client
     steps:
       - method: get
         timeout: 3
@@ -27,10 +27,12 @@ payloads:
             content:
               regex: "\"([a-zA-Z0-9\\-\\_.\\s]+)\""
               reverse: false
-      - method: post
+
+      - method: get
         timeout: 3
         headers:
           User-Agent: "{user_agent}"
+          Authorization: "Bearer {certspotter_api_key}"
         ssl: false
         url: "https://api.certspotter.com/v1/issuances?domain={target}&expand=dns_names&expand=issuer"
         response:
@@ -42,6 +44,7 @@ payloads:
             content:
               regex: "\"([a-zA-Z0-9\\-\\_.\\s]+.{target})\""
               reverse: false
+
       - method: get
         timeout: 3
         headers:
@@ -62,6 +65,7 @@ payloads:
         timeout: 3
         headers:
           User-Agent: "{user_agent}"
+          API-Key: "{urlscan_api_key}"
         ssl: false
         url: "https://urlscan.io/api/v1/search/?q=domain:{target}"
         response:
@@ -78,6 +82,7 @@ payloads:
         timeout: 3
         headers:
           User-Agent: "{user_agent}"
+          Authorization: "Bearer {netlas_api_key}"
         ssl: false
         url: "https://app.netlas.io/api/domains/?q=*.{target}"
         response:
@@ -137,10 +142,12 @@ payloads:
             content:
               regex: "[a-zA-Z0-9\\-\\_\\s]+[\\.]+[a-zA-Z0-9\\-\\_\\s]+\\.{target}"
               reverse: false
+
       - method: post
         timeout: 3
         headers:
           User-Agent: "{user_agent}"
+          X-API-Key: "{hackertarget_api_key}"
         ssl: false
         url: "https://hackertarget.com/find-dns-host-records/"
         data:
@@ -148,6 +155,23 @@ payloads:
           thetest: "hostsearch"
           name_of_nonce_field: "b4b6cc419d"
           "_wp_http_referer": "/find-dns-host-records/"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^[2-3][0-9][0-9]"
+              reverse: false
+            content:
+              regex: "[a-zA-Z0-9\\-\\_.]+\\.{target}"
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          X-API-Key: "{dnsdumpster_api_key}"
+        ssl: false
+        url: "https://api.dnsdumpster.com/domain/{target}"
         response:
           condition_type: and
           conditions:
@@ -255,9 +279,7 @@ payloads:
               reverse: false
 
 
-
 # todo: later
 #      "subdomain_scan_use_netcraft": [ "True" ],
 #      "subdomain_scan_use_ptrarchive": [ "True" ],
 #      "subdomain_scan_use_censys": [ "True" ],
-
