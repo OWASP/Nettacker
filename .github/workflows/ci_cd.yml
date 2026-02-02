@@ -79,9 +79,29 @@ jobs:
           python -m pip install --upgrade poetry
           poetry install --with test
 
-      - name: Run tests
+      - name: Run tests with coverage
         run: |
           poetry run pytest
+          poetry run coverage html
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-nettacker
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload coverage to artifacts
+        uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: coverage-report
+          path: |
+            coverage.xml
+            htmlcov/
+          retention-days: 30
 
   build-package:
     name: Build package
