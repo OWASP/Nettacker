@@ -1,5 +1,7 @@
 import json
+import pytest
 from unittest.mock import patch
+from nettacker.core.app import Application
 
 from nettacker.core.ip import (
     generate_ip_range,
@@ -108,3 +110,27 @@ def test_is_ipv6_cidr():
     assert is_ipv6_cidr("2001:db8:abcd:0012::/64")
     assert not is_ipv6_cidr("2001:db8::/129")
     assert not is_ipv6_cidr("2001:dg8:abcd:0012::/64")
+
+def run_targets(targets):
+    app = Application()
+    app.arguments.targets = targets
+    app.arguments.scan_ip_range = False
+    return app
+
+
+def test_empty_host_url_fails():
+    app = run_targets(["http://"])
+    with pytest.raises(ValueError):
+        app.parse_targets()
+
+
+def test_empty_host_with_port_fails():
+    app = run_targets(["http://:80"])
+    with pytest.raises(ValueError):
+        app.parse_targets()
+
+
+def test_valid_url_target_passes():
+    app = run_targets(["http://example.com"])
+    targets, _ = app.parse_targets()
+    assert "example.com" in targets
