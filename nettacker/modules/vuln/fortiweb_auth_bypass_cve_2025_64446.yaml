@@ -40,7 +40,7 @@ payloads:
             {{
               "data": {{
                   "q_type": 1,
-                  "name": "nettacker_{scan_id}",
+                  "name": "nettacker{scan_id}",
                   "access-profile": "prof_admin",
                   "access-profile_val": "0",
                   "last-name": "",
