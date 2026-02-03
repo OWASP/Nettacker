@@ -170,6 +170,8 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**xdebug_rce_vuln**' - checks if web server is running XDebug version 2.5.5 vulnerable to RCE
 - '**XSS_protection_vuln**' - check if header 'X-XSS-Protection' header is set to '1; mode=block'
 - '**vbulletin_cve_2019_16759_vuln**' - check the target for vBulletin RCE CVE-2019-16759 vulnerability
+- '**zoho_cve_2021_40539_vuln**' - check Zoho ManageEngine ADSelfService Plus for authentication bypass vulnerability
+- '**zte_zxhn_f660_cve_2025_53558_vuln**' - check if ZTE ZXHN-F660T/F660A devices accept default credentials 
 
 ## Brute Modules
 
