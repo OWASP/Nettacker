@@ -1,4 +1,5 @@
 
+
 import copy
 import json
 import os
@@ -6,6 +7,7 @@ import shutil
 import socket
 import sys
 from threading import Thread
+from urllib.parse import urlsplit
 
 import multiprocess
 
@@ -108,8 +110,7 @@ class Nettacker(ArgParser):
         Args:
             options: all options
             scan_id: unique scan identifier
-
-        Returns:
+      Returns:
             a generator
         """
         targets = []
@@ -118,30 +119,27 @@ class Nettacker(ArgParser):
         for target in self.arguments.targets:
             if "://" in target:
                 try:
-                   parts = target.split("://", 1)[1].split("/")
+                    parsed = urlsplit(target)
+                    hostname = parsed.hostname
 
-                   # base path handling
-                   if len(parts) <= 1:
-                         base_path = ""
-                   else:
-                         base_path = "/".join(parts[1:])
-                   if not base_path.endswith("/"):
+                    if not hostname:
+                         raise ValueError(
+                               "Invalid scan configuration: target host cannot be empty"
+                         )
+
+                    target = hostname
+
+                    base_path = parsed.path.lstrip("/")
+                    if base_path and not base_path.endswith("/"):
                          base_path += "/"
 
-            # remove url proto, uri, port
-                   target = parts[0].split(":", 1)[0]
+                    targets.append(target)
 
-                   if not target:
+                except Exception as e:
                          raise ValueError(
-                             "Invalid scan configuration: target host cannot be empty"
-                          )
+                               "Invalid scan configuration: malformed target URL"
+                         ) from e
 
-                   targets.append(target)
-
-                except IndexError as e:
-                   raise ValueError(
-                         "Invalid scan configuration: malformed target URL"
-                   ) from e
             # single IPs
             elif is_single_ipv4(target) or is_single_ipv6(target):
                 if self.arguments.scan_ip_range:
