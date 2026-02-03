@@ -149,7 +149,7 @@ class DefaultSettings(ConfigBase):
     passwords = None
     passwords_list = None
     # Setting to toggle between APSW and SQLAlchemy for sqlite databases.
-    use_apsw_for_sqlite = False
+    use_apsw_for_sqlite = True
 
     ping_before_scan = False
     ports = None
