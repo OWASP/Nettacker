@@ -12,16 +12,16 @@ from nettacker import logger
 from nettacker.config import Config, version_info
 from nettacker.core.arg_parser import ArgParser
 from nettacker.core.die import die_failure
-from nettacker.core.graph import create_report, create_compare_report
+from nettacker.core.graph import create_compare_report, create_report
 from nettacker.core.ip import (
-    get_ip_range,
     generate_ip_range,
-    is_single_ipv4,
-    is_ipv4_range,
+    get_ip_range,
     is_ipv4_cidr,
-    is_single_ipv6,
-    is_ipv6_range,
+    is_ipv4_range,
     is_ipv6_cidr,
+    is_ipv6_range,
+    is_single_ipv4,
+    is_single_ipv6,
 )
 from nettacker.core.messages import messages as _
 from nettacker.core.module import Module

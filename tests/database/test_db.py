@@ -1,28 +1,28 @@
 import json
 from datetime import datetime
-from unittest.mock import Mock, patch, MagicMock, call, mock_open
+from unittest.mock import MagicMock, Mock, call, mock_open, patch
 
 import apsw
 
 from nettacker.api.helpers import structure
 from nettacker.database.db import (
-    db_inputs,
     create_connection,
-    send_submit_query,
-    submit_report_to_db,
-    remove_old_logs,
-    submit_logs_to_db,
-    submit_temp_logs_to_db,
-    find_temp_events,
+    db_inputs,
     find_events,
-    select_reports,
-    get_scan_result,
-    last_host_logs,
+    find_temp_events,
     get_logs_by_scan_id,
     get_options_by_scan_id,
-    logs_to_report_json,
+    get_scan_result,
+    last_host_logs,
     logs_to_report_html,
+    logs_to_report_json,
+    remove_old_logs,
     search_logs,
+    select_reports,
+    send_submit_query,
+    submit_logs_to_db,
+    submit_report_to_db,
+    submit_temp_logs_to_db,
 )
 
 

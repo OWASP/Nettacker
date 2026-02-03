@@ -3,7 +3,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from nettacker import version
-from nettacker.core.utils.common import now, generate_random_token
+from nettacker.core.utils.common import generate_random_token, now
 
 CWD = Path.cwd()
 PACKAGE_PATH = Path(__file__).parent

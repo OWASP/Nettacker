@@ -9,17 +9,17 @@ from pathlib import Path
 
 import texttable
 
-from nettacker import logger, all_module_severity_and_desc
+from nettacker import all_module_severity_and_desc, logger
 from nettacker.config import Config, version_info
 from nettacker.core.die import die_failure
 from nettacker.core.messages import messages as _
 from nettacker.core.utils.common import (
+    generate_compare_filepath,
     merge_logs_to_list,
     now,
     sanitize_path,
-    generate_compare_filepath,
 )
-from nettacker.database.db import get_logs_by_scan_id, submit_report_to_db, get_options_by_scan_id
+from nettacker.database.db import get_logs_by_scan_id, get_options_by_scan_id, submit_report_to_db
 
 log = logger.get_logger()
 nettacker_path_config = Config.path
