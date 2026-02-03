@@ -65,7 +65,7 @@ PASSWORD: ПАРОЛЬ
 PORT: ПОРТ
 TYPE: ТИП
 DESCRIPTION: ОПИСАНИЕ
-verbose_mode: уровень подробного режима (0-5) (по умолчанию 0)
+verbose_mode: подробный режим
 software_version: показать версию программного обеспечения
 check_updates: Проверить обновления
 outgoing_proxy:

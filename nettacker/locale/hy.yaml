@@ -67,7 +67,7 @@ PASSWORD: PASSWORD
 PORT: ՊՈՐՏ
 TYPE: ՏԻՊ
 DESCRIPTION: DESCRIPTION
-verbose_mode: մանրամասն ռեժիմի մակարդակը (0-5) (նախնական 0)
+verbose_mode: մանրամասն ռեժիմ
 software_version: ցույց տալ ծրագրային տարբերակը
 check_updates: ստուգեք թարմացման համար
 outgoing_proxy:

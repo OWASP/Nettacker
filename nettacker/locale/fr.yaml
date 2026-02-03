@@ -72,7 +72,7 @@ PASSWORD: MOT DE PASSE
 PORT: PORT
 TYPE: TYPE
 DESCRIPTION: LA DESCRIPTION
-verbose_mode: niveau de mode verbeux (0-5) (par défaut 0)
+verbose_mode: mode verbeux
 software_version: afficher la version du logiciel
 check_updates: vérifier la mise à jour
 outgoing_proxy:

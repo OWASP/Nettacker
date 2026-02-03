@@ -55,7 +55,7 @@ PASSWORD: 密码
 PORT: 港口
 TYPE: 类型
 DESCRIPTION: 描述
-verbose_mode: 详细模式级别（0-5）（默认0）
+verbose_mode: 详细模式
 software_version: 显示软件版本
 check_updates: 检查更新
 outgoing_proxy:

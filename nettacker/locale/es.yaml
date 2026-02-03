@@ -71,7 +71,7 @@ PASSWORD: CONTRASEÑA
 PORT: PUERTO
 TYPE: TIPO
 DESCRIPTION: DESCRIPCIÓN
-verbose_mode: nivel de modo detallado (0-5) (valor predeterminado 0)
+verbose_mode: modo detallado
 software_version: mostrar la versión del software
 check_updates: Buscar actualizaciones
 outgoing_proxy:

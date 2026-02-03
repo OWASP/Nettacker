@@ -51,7 +51,7 @@ Engine:
   -L LANGUAGE, --language LANGUAGE
                         select a language ['iw', 'nl', 'es', 'ru', 'de', 'ur', 'pt-br', 'fr', 'el', 'hy', 'ko', 'en',
                         'ja', 'bn', 'it', 'tr', 'ar', 'zh-cn', 'hi', 'vi', 'id', 'fa', 'ps']
-  -v, --verbose         verbose mode level (0-5) (default 0)
+  -v, --verbose         enable verbose output
   --verbose-event       enable verbose event to see state of each thread
   -V, --version         show software version
   -o REPORT_PATH_FILENAME, --output REPORT_PATH_FILENAME
@@ -199,7 +199,8 @@ usage: Nettacker [-L LANGUAGE] [-v] [--verbose-event] [-V] [-o REPORT_PATH_FILEN
   -L LANGUAGE, --language LANGUAGE
                         یک زبان انتخاب کنید ['bn', 'de', 'nl', 'iw', 'es', 'pt-br', 'ar', 'tr', 'el', 'ko', 'ru', 'hi',
                         'it', 'en', 'fr', 'id', 'ps', 'ur', 'zh-cn', 'hy', 'fa', 'ja', 'vi']
-  -v, --verbose         سطح حالت پرگویی (0-5) (پیشفرض 0)
+  -v, --verbose         فعال‌سازی حالت پرگویی
+
   --verbose-event       enable verbose event to see state of each thread
   -V, --version         نمایش ورژن نرم افزار
   -o REPORT_PATH_FILENAME, --output REPORT_PATH_FILENAME
@@ -699,5 +700,3 @@ return {
 After this configuration please comment out the following line in database/db.py   `connect_args={'check_same_thread': False}` 
 
 
-
-Let me know if you have any more questions.
