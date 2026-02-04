@@ -30,7 +30,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{port}}/{{path}}"
+            input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
             prefix: ""
             suffix: ""
             interceptors:
@@ -38,7 +38,7 @@ payloads:
               schema:
                 - "http"
                 - "https"
-              port:
+              ports:
                 - 80
                 - 443
               path:
