@@ -169,6 +169,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**x_powered_by_vuln**' - check if the web server is leaking server configuration in 'X-Powered-By' response header
 - '**xdebug_rce_vuln**' - checks if web server is running XDebug version 2.5.5 vulnerable to RCE
 - '**XSS_protection_vuln**' - check if header 'X-XSS-Protection' header is set to '1; mode=block'
+- '**vite_cve_2025_31125_vuln**' - check the target for CVE-2025-31125
 - '**vbulletin_cve_2019_16759_vuln**' - check the target for vBulletin RCE CVE-2019-16759 vulnerability
 
 ## Brute Modules
