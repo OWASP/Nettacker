@@ -424,7 +424,7 @@ class TestDatabase:
         submit_logs_to_db(log)
         mock_warn.assert_has_calls(
             [
-                call("[Retry 1/1] Database is locked. Retrying..."),
+                call("Retry 1.0, Database is locked. Retrying submission to database"),
                 call("All retries exhausted. Skipping this log."),
             ]
         )
@@ -564,7 +564,7 @@ class TestDatabase:
         result = submit_temp_logs_to_db(self.sample_log_temp)
         mock_warn.assert_has_calls(
             [
-                call("[Retry 1/1] Database is locked. Retrying..."),
+                call("Retry 1.0, Database is locked. Retrying submission to database"),
                 call("All retries exhausted. Skipping this log."),
             ]
         )
@@ -795,7 +795,7 @@ class TestDatabase:
         result = find_events("192.168.1.1", "http", "scan_123")
 
         assert result == []
-        mock_warn.assert_called_once_with("Database query failed...")
+        mock_warn.assert_called_once_with("could not connect to the database!")
 
     @patch("nettacker.database.db.create_connection")
     def test_find_events_sqlalchemy(self, mock_create_conn):
@@ -865,7 +865,7 @@ class TestDatabase:
 
         result = select_reports(self.page)
         assert result == structure(status="error", msg="database error!")
-        mock_warn.assert_called_once_with("Could not retrieve report...")
+        mock_warn.assert_called_once_with("Could not retrieve the report")
 
     @patch("nettacker.database.db.create_connection")
     def test_select_reports_sqlalchemy(self, mock_create_conn):
