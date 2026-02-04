@@ -286,8 +286,8 @@ def submit_logs_to_db(log):
                         except Exception:
                             pass
                         return False
-                # All retires exhausted but we want to continue operation
-                logger.warn(messages("database_retires_exhausted"))
+                # All retries exhausted but we want to continue operation
+                logger.warn(messages("database_retries_exhausted"))
                 return True
             finally:
                 cursor.close()
@@ -378,8 +378,8 @@ def submit_temp_logs_to_db(log):
                         except Exception:
                             pass
                         return False
-                # All retires exhausted but we want to continue operation
-                logger.warn(messages("database_retires_exhausted"))
+                # All retries exhausted but we want to continue operation
+                logger.warn(messages("database_retries_exhausted"))
                 return True
             finally:
                 cursor.close()
