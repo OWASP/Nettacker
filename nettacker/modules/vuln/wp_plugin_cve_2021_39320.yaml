@@ -44,7 +44,7 @@ payloads:
             status_code:
               regex: '200'
               reverse: false
-            header:
+            headers:
               Content-type: 
                 regex: text/html
                 reverse: false
