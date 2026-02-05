@@ -268,7 +268,7 @@ def submit_logs_to_db(log):
                         if "database is locked" in str(e).lower():
                             logger.warn(
                                 messages("database_lock_issue").format(
-                                    (_ + 1) / (Config.settings.max_retries)
+                                    f"{_ + 1}/{Config.settings.max_retries}"
                                 )
                             )
                             if connection.in_transaction:
@@ -354,7 +354,7 @@ def submit_temp_logs_to_db(log):
                         if "database is locked" in str(e).lower():
                             logger.warn(
                                 messages("database_lock_issue").format(
-                                    (_ + 1) / (Config.settings.max_retries)
+                                    f"{_ + 1}/{Config.settings.max_retries}"
                                 )
                             )
                             try:
@@ -553,7 +553,7 @@ def select_reports(page):
 
         except Exception:
             logger.warn(messages("report_retrieval_fail"))
-            return structure(status="error", msg="database error!")
+            return structure(status="error", msg=messages("database_error"))
         finally:
             cursor.close()
             connection.close()
