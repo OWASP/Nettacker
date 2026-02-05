@@ -424,7 +424,7 @@ class TestDatabase:
         submit_logs_to_db(log)
         mock_warn.assert_has_calls(
             [
-                call("Retry 1.0, Database is locked. Retrying submission to database"),
+                call("Retry 1/1, Database is locked. Retrying submission to database"),
                 call("All retries exhausted. Skipping this log."),
             ]
         )
@@ -564,7 +564,7 @@ class TestDatabase:
         result = submit_temp_logs_to_db(self.sample_log_temp)
         mock_warn.assert_has_calls(
             [
-                call("Retry 1.0, Database is locked. Retrying submission to database"),
+                call("Retry 1/1, Database is locked. Retrying submission to database"),
                 call("All retries exhausted. Skipping this log."),
             ]
         )
