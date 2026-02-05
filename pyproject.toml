@@ -46,24 +46,25 @@ nettacker = "nettacker.main:run"
 [tool.poetry.dependencies]
 python = "^3.10, <3.13"
 aiohttp = "^3.9.5"
+apsw = "^3.50.0.0"
 argparse = "^1.4.0"
 asyncio = "^3.4.3"
 flask = "^3.0.1"
+impacket = "^0.11.0"
 ipaddr = "^2.2.0"
 multiprocess = "^0.70.15"
 netaddr = "^0.9.0"
 paramiko = "^3.4.0"
 py3dns = "^4.0.0"
+pymysql = "^1.1.1"
 pyopenssl = "^23.2.0"
 pysocks = "^1.7.1"
 pyyaml = "^6.0.1"
 requests = "^2.32.3"
 sqlalchemy = "^2.0.22"
 texttable = "^1.7.0"
-zipp = "^3.19.1"
 uvloop = "^0.21.0"
-pymysql = "^1.1.1"
-impacket = "^0.11.0"
+zipp = "^3.19.1"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.16.1"
@@ -93,6 +94,9 @@ profile = "black"
 addopts = "--cov=nettacker --cov-config=pyproject.toml --cov-report term --cov-report xml --dist loadscope --no-cov-on-fail --numprocesses auto"
 asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
+markers = [
+    "asyncio: mark test as async"
+]
 
 [tool.ruff]
 line-length = 99
