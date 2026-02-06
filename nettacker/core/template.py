@@ -11,6 +11,24 @@ class TemplateLoader:
         self.inputs = inputs or {}
 
     @staticmethod
+    def _deep_merge(base, override):
+        """
+        Deep-merge two YAML-loaded structures.
+
+        - dicts are merged recursively
+        - all other types (including lists) are overridden
+        """
+        if isinstance(base, dict) and isinstance(override, dict):
+            merged = copy.deepcopy(base)
+            for key, value in override.items():
+                if key in merged:
+                    merged[key] = TemplateLoader._deep_merge(merged[key], value)
+                else:
+                    merged[key] = copy.deepcopy(value)
+            return merged
+        return copy.deepcopy(override)
+
+    @staticmethod
     def parse(module_content, module_inputs):
         if isinstance(module_content, dict):
             for key in copy.deepcopy(module_content):
@@ -38,5 +56,22 @@ class TemplateLoader:
     def format(self):
         return self.open().format(**self.inputs)
 
-    def load(self):
-        return self.parse(yaml.safe_load(self.format()), self.inputs)
+    def load(self, _visited=None):
+        """
+        Load and parse a module YAML template.
+
+        Supports lightweight module aliases via a root-level `include` key:
+        - `include: other_module_name` will load/merge the included module, then apply overrides.
+        """
+        visited = _visited or set()
+        if self.name in visited:
+            raise ValueError(f"circular module include detected: {self.name}")
+        visited.add(self.name)
+
+        content = yaml.safe_load(self.format()) or {}
+        include = content.pop("include", None)
+        if include:
+            included = TemplateLoader(include, self.inputs).load(_visited=visited)
+            content = TemplateLoader._deep_merge(included, content)
+
+        return self.parse(content, self.inputs)

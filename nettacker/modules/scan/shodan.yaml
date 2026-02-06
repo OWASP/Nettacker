@@ -1,0 +1,30 @@
+info:
+  name: shodan_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: Query Shodan for target intelligence (requires Shodan API key)
+  reference:
+  profiles:
+    - scan
+    - osint
+    - shodan
+    - low_severity
+
+payloads:
+  - library: shodan
+    steps:
+      - method: resolve
+        hostnames: "{target}"
+        response:
+          save_to_temp_events_only: shodan_resolve
+          condition_type: or
+          conditions:
+
+      - method: host
+        ip: dependent_on_temp_event[0]['ip'][0]
+        minify: true
+        response:
+          dependent_on_temp_event: shodan_resolve
+          condition_type: or
+          conditions:
+

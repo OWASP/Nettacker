@@ -1,0 +1,16 @@
+include: waf_scan
+
+info:
+  name: wafw00f_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: wafw00f-style WAF detection (alias of waf_scan)
+  reference:
+  profiles:
+    - scan
+    - http
+    - backup
+    - low_severity
+    - waf
+    - wafw00f
+
