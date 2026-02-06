@@ -30,7 +30,7 @@ payloads:
           Accept: "application/json"
         allow_redirects: false
         ssl: false
-        body: '{"hubUrl":"http://127.0.0.1:1"}'
+        data: '{"hubUrl":"http://127.0.0.1:1"}'
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/api/v1/settings/system-admin/hub/connect"
@@ -52,5 +52,5 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: "(hubUrl|connection|success|error.*hub|SmarteMail|invalid.*url)"
+              regex: "(hubUrl|connection|success|error.*hub|SmarterMail|invalid.*url)"
               reverse: false
