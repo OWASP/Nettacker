@@ -1,0 +1,16 @@
+include: web_technologies_scan
+
+info:
+  name: wappalyzer_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: Wappalyzer-style technology detection (alias of web_technologies_scan)
+  reference:
+  profiles:
+    - scan
+    - http
+    - backup
+    - low_severity
+    - web
+    - wappalyzer
+

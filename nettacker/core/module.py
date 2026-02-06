@@ -101,9 +101,10 @@ class Module:
                     for step in copy.deepcopy(
                         self.module_content["payloads"][index_payload]["steps"]
                     ):
-                        step = TemplateLoader.parse(
-                            step, {"port": self.discovered_services[payload["library"]]}
-                        )
+                        if payload["library"] in self.discovered_services:
+                            step = TemplateLoader.parse(
+                                step, {"port": self.discovered_services[payload["library"]]}
+                            )
                         self.module_content["payloads"][index_payload]["steps"][index_step] = step
                         index_step += 1
                 index_payload += 1
