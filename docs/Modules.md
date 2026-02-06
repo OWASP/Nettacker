@@ -13,7 +13,6 @@ OWASP Nettacker Modules can be of type **Scan** (scan for something), **Vuln** (
 - '**admin_scan**' - Scan the target for various Admin folders such as /admin /phpmyadmin /cmsadmin /wp-admin etc
 - '**citrix_lastpatcheddate_scan**' - Scan the target and try to detect Citrix Netscaler Gateway and it's last patched date
 - '**config_file_scan**' - Scan the target for various exposed configuration files
-- '**cms_detection_scan**' - Scan the target and try to detect the CMS (Wordpress, Drupal or Joomla) using response fingerprinting
 - '**confluence_version_scan**' - Scan the target and identify the Confluence version
 - '**crushftp_lastpatcheddate_scan**' - Scan the target and try to detect CrushFTP and its last patched date
 - '**cups_version_scan**' - Scan the target and identify the CUPS version (on port 631)
@@ -37,15 +36,13 @@ OWASP Nettacker Modules can be of type **Scan** (scan for something), **Vuln** (
 - '**port_scan**' - Scan the target for open ports identifying the popular services using signatures (.e.g SSH on port 2222)
 - '**ssl_expiring_certificate_scan**' - Scan the target for SSL/TLS certificates nearing expiration
 - '**subdomain_scan**' - Scan the target for subdomains (target must be a domain e.g. owasp.org)
-- '**viewdns_reverse_ip_lookup_scan**' - Identify which sites/domains are hosted on the target host using ViewDNS.info
+- '**viewdns_reverse_iplookup_scan**' - Identify which sites/domains are hosted on the target host using ViewDNS.info
 - '**waf_scan**' - Scan the target to detect the presence of a Web Application Firewall
 - '**web_technologies_scan**' - Scan the target to identify web technologies and frameworks
 - '**wordpress_version_scan**' - Scan the target and identify the WordPress version
 - '**wp_plugin_scan**' - Scan the target for popular WordPress Plugins
 - '**wp_theme_scan**' - Scan the target for popular WordPress themes
-- '**wp_timthumbs_scan**' - Scan the target for WordPress TimThumb.php script in various possible locations
-- '**wp_user_enum_scan**' - Scan the target WordPress site and Enumerate Users
-
+- '**wp_timethumbs_scan**' - Scan the target for WordPress TimThumb.php script in various possible locations
 
 ## Ports Scanned by Nettacker
 
