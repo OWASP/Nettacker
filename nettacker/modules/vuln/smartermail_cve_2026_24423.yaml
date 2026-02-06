@@ -1,0 +1,56 @@
+info:
+  name: smartermail_cve_2026_24423_vuln
+  author: OWASP Nettacker Team
+  severity: 9.3
+  description: CVE-2026-24423 is a critical missing authentication vulnerability in SmarterTools SmarterMail before build 9511. The ConnectToHub API method in SystemAdminSettingsController allows unauthenticated attackers to point the server to a malicious HTTP server and execute arbitrary OS commands. CVSS 9.3, actively exploited in ransomware campaigns.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-24423
+    - https://www.smartertools.com/smartermail/release-notes/current
+    - https://www.cve.org/CVERecord?id=CVE-2026-24423
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2026
+    - smartermail
+    - smartertools
+    - cisa_kev
+
+
+payloads:
+  - library: http
+    steps:
+      # Step 1: Check if ConnectToHub endpoint accepts anonymous requests
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
+          Accept: "application/json"
+        allow_redirects: false
+        ssl: false
+        body: '{"hubUrl":"http://127.0.0.1:1"}'
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/settings/system-admin/hub/connect"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 9998
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "(hubUrl|connection|success|error.*hub|SmarteMail|invalid.*url)"
+              reverse: false
