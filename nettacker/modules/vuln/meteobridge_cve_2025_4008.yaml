@@ -1,7 +1,7 @@
 info:
   name: meteobridge_cve_2025_4008_vuln
   author: OWASP Nettacker Team
-  severity: 7.5
+  severity: 8.7
   description: |
     MeteoBridge <= 6.1 is vulnerable to unauthenticated command injection via
     the templatefile parameter in template.cgi, allowing remote code execution
