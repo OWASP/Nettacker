@@ -244,3 +244,5 @@ no_response: не удается получить ответ от цели
 category_framework: "категория: {0}, рамки: {1} найдено!"
 nothing_found: ничего не найдено на {0} в {1}!
 no_auth: "{0}: {1}"
+
+ssl_certificate_fetch_failed: ""

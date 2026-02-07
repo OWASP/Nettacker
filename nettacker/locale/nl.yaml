@@ -252,3 +252,5 @@ no_response: kan geen reactie krijgen van het doelwit
 category_framework: "categorie: {0}, frameworks: {1} gevonden!"
 nothing_found: niets gevonden op {0} in {1}!
 no_auth: "Geen authenticatie gevonden op {0}: {1}"
+
+ssl_certificate_fetch_failed: ""

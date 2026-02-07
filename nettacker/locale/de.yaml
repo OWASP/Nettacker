@@ -267,3 +267,5 @@ no_response: kann keine Antwort vom Ziel erhalten
 category_framework: "Kategorie: {0}, Frameworks: {1} gefunden!"
 nothing_found: Nichts gefunden auf {0} in {1}!
 no_auth: "Keine Authentifizierung in {0} gefunden: {1}"
+
+ssl_certificate_fetch_failed: ""

@@ -279,3 +279,5 @@ no_event_found: nenhum evento encontrado nesse escaneio
 invalid_json_type_to_db: >-
   Tipo inválido de dados JSON para o banco de dados. Pulando a submissão para
   obanco de dados. Dado:{0}
+
+ssl_certificate_fetch_failed: ""

@@ -240,3 +240,5 @@ no_response: د هدف څخه ځواب نشي ترلاسه کولی
 category_framework: "وېشنيزه: {0}، چوکاټونه: {1} وموندل شو!"
 nothing_found: په {1} کې {1} کې هیڅ شی ندی موندلی!
 no_auth: "په {0}: {1} کې هیڅ لیک نه موندل شوی"
+
+ssl_certificate_fetch_failed: ""
