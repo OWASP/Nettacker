@@ -195,6 +195,20 @@ class SslLibrary(BaseLibrary):
                     _("ssl_certificate_fetch_failed").format(host, port)
                     + f" | error={e.__class__.__name__}: {e}"
                 )
+                scan_info.update(
+                    {
+                        "expired": False,
+                        "self_signed": False,
+                        "issuer": "NA",
+                        "subject": "NA",
+                        "signing_algo": "NA",
+                        "weak_signing_algo": False,
+                        "activation_date": "NA",
+                        "not_activated": False,
+                        "expiration_date": "NA",
+                        "expiring_soon": False,
+                    }
+                )
         return scan_info
 
     def ssl_version_and_cipher_scan(self, host, port, timeout):
