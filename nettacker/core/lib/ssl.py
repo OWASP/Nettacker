@@ -11,6 +11,14 @@ from nettacker.core.messages import messages as _
 log = logging.getLogger(__name__)
 
 
+def get_service_name(port):
+    """Return service name for a port or 'unknown' if not resolvable."""
+    try:
+        return socket.getservbyport(int(port))
+    except OSError:
+        return "unknown"
+
+
 def is_weak_hash_algo(algo):
     algo = algo.lower()
     for unsafe_algo in ("md2", "md4", "md5", "sha1"):
@@ -162,10 +170,7 @@ class SslLibrary(BaseLibrary):
 
         socket_connection, ssl_flag = tcp_socket
         peer_name = socket_connection.getpeername()
-        try:
-            service = socket.getservbyport(int(port))
-        except OSError:
-            service = "unknown"
+        service = get_service_name(port)
 
         scan_info = {
             "ssl_flag": ssl_flag,
@@ -178,9 +183,18 @@ class SslLibrary(BaseLibrary):
                 cert = ssl.get_server_certificate((host, port))
                 cert_info = get_cert_info(cert)
                 scan_info = cert_info | scan_info
-            except (ssl.SSLError, socket.gaierror):
-                log.warning(_("ssl_certificate_fetch_failed").format(host, port))
-
+            except (
+                ssl.SSLError,
+                socket.gaierror,
+                socket.timeout,
+                ConnectionRefusedError,
+                ConnectionResetError,
+                OSError,
+            ) as e:
+                log.warning(
+                    _("ssl_certificate_fetch_failed").format(host, port)
+                    + f" | error={e.__class__.__name__}: {e}"
+                )
         return scan_info
 
     def ssl_version_and_cipher_scan(self, host, port, timeout):
@@ -191,17 +205,23 @@ class SslLibrary(BaseLibrary):
 
         socket_connection, ssl_flag = tcp_socket
         peer_name = socket_connection.getpeername()
-
-        try:
-            service = socket.getservbyport(int(port))
-        except OSError:
-            service = "unknown"
+        service = get_service_name(port)
 
         if ssl_flag:
             try:
                 cert = ssl.get_server_certificate((host, port))
-            except (ssl.SSLError, socket.gaierror):
-                log.warning(_("ssl_certificate_fetch_failed").format(host, port))
+            except (
+                ssl.SSLError,
+                socket.gaierror,
+                socket.timeout,
+                ConnectionRefusedError,
+                ConnectionResetError,
+                OSError,
+            ) as e:
+                log.warning(
+                    _("ssl_certificate_fetch_failed").format(host, port)
+                    + f" | error={e.__class__.__name__}: {e}"
+                )
                 cert = None
 
             cert_info = get_cert_info(cert) if cert else None
