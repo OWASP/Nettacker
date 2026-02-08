@@ -70,6 +70,7 @@ zipp = "^3.19.1"
 ipython = "^8.16.1"
 ruff = ">=0.2.1,<0.13.0"
 pytest-asyncio = "^1.1.0"
+pre-commit = "^4.5.1"
 
 [tool.poetry.group.test.dependencies]
 coverage = "^7.3.2"
