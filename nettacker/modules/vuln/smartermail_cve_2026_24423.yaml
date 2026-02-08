@@ -61,8 +61,8 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              # Look for SmarterMail version info - build numbers below 9511 are vulnerable
-              regex: "(SmarterMail|smartermail|version|build)"
+              # Look for SmarterMail-specific version info in the licensing/about response
+              regex: "(SmarterMail|smartermail|SmarterTools)"
               reverse: false
 
       # Step 2: Test ConnectToHub endpoint with VulnCheck approach
@@ -99,7 +99,6 @@ payloads:
               regex: "(200|400)"
               reverse: false
             content:
-              # Vulnerable versions will show connection attempt messages, hub-related errors, or processing indicators
-              # Patched versions (9511+) respond with different error or reject the request entirely
-              regex: "(Connecting to hub|Failed to mount|connection|hubAddress|setup-initial-connection|nodeName|ClusterId|success.*false|message|machineName)"
+              # Vulnerable versions return hub-specific fields or connection attempt messages
+              regex: "(Connecting to hub|Failed to mount|hubAddress|setup-initial-connection|ClusterId|nodeName)"
               reverse: false
