@@ -21,8 +21,21 @@ def set_socks_proxy(socks_proxy):
         socks_version = socks.SOCKS5 if socks_proxy.startswith("socks5://") else socks.SOCKS4
         socks_proxy = socks_proxy.split("://")[1] if "://" in socks_proxy else socks_proxy
         if "@" in socks_proxy:
-            socks_username = socks_proxy.split(":")[0]
-            socks_password = socks_proxy.split(":")[1].split("@")[0]
+            # Extract credentials part (before @)
+            creds_part = socks_proxy.split("@")[0]
+            
+            # Validate format: must have colon separator for username:password
+            if ":" not in creds_part:
+                from nettacker.core.die import die_failure
+                die_failure(
+                    "Invalid SOCKS proxy format. "
+                    "Expected: username:password@host:port or socks5://username:password@host:port"
+                )
+            
+            # Use maxsplit=1 to handle passwords containing colons
+            parts = creds_part.split(":", 1)
+            socks_username = parts[0]
+            socks_password = parts[1]
             socks.set_default_proxy(
                 socks_version,
                 str(socks_proxy.rsplit("@")[1].rsplit(":")[0]),  # hostname
