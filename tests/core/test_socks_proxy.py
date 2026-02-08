@@ -28,7 +28,7 @@ class TestSetSocksProxyWithoutProxy:
 class TestSetSocksProxyMalformedInput:
     """Test set_socks_proxy with malformed input - Issue #1214."""
 
-    @patch("nettacker.core.socks_proxy.die_failure")
+    @patch("nettacker.core.die.die_failure")
     def test_malformed_at_without_colon_calls_die_failure(self, mock_die):
         """Test that 'user@hostname' (no colon) calls die_failure."""
         # Mock die_failure to prevent actual exit
@@ -42,9 +42,9 @@ class TestSetSocksProxyMalformedInput:
         mock_die.assert_called_once()
         # Verify error message mentions expected format
         call_args = str(mock_die.call_args)
-        assert "username:password@host:port" in call_args or mock_die.called
+        assert "username:password@host:port" in call_args
 
-    @patch("nettacker.core.socks_proxy.die_failure")
+    @patch("nettacker.core.die.die_failure")
     def test_socks5_malformed_at_without_colon(self, mock_die):
         """Test that 'socks5://admin@server:8080' calls die_failure."""
         mock_die.side_effect = SystemExit(1)
@@ -56,7 +56,7 @@ class TestSetSocksProxyMalformedInput:
         
         mock_die.assert_called_once()
 
-    @patch("nettacker.core.socks_proxy.die_failure") 
+    @patch("nettacker.core.die.die_failure")
     def test_socks4_malformed_at_without_colon(self, mock_die):
         """Test that 'socks4://user@host:1080' calls die_failure."""
         mock_die.side_effect = SystemExit(1)
@@ -99,3 +99,18 @@ class TestSetSocksProxyValidInput:
         call_args = mock_set_proxy.call_args
         assert call_args[1]["username"] == "myuser"
         assert call_args[1]["password"] == "pass:word"  # Full password preserved
+
+    @patch("socks.set_default_proxy")
+    @patch("socks.socksocket")
+    def test_password_with_at_symbol(self, mock_socksocket, mock_set_proxy):
+        """Test that passwords containing @ are handled correctly."""
+        from nettacker.core.socks_proxy import set_socks_proxy
+        
+        # Password "p@ssword" contains an @ symbol
+        result = set_socks_proxy("socks5://myuser:p@ssword@proxy.example.com:1080")
+        
+        assert mock_set_proxy.called
+        call_args = mock_set_proxy.call_args
+        assert call_args[1]["username"] == "myuser"
+        assert call_args[1]["password"] == "p@ssword"  # Full password with @ preserved
+
