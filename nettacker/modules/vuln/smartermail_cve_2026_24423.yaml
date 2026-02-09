@@ -63,6 +63,7 @@ payloads:
                 - 80
                 - 443
                 - 9998
+                - 17017
         response:
           condition_type: and
           conditions:
@@ -102,15 +103,17 @@ payloads:
                 - 80
                 - 443
                 - 9998
+                - 17017
         response:
           condition_type: and
           conditions:
             status_code:
-              # Vulnerable versions return 200 or 400 with connection-related error messages
-              regex: "(200|400)"
+              # Vulnerable versions consistently return 400 with "Encountered an exception" 
+              # when provided with a non-routable or malformed hubAddress, whereas patched versions
+              # handle the request differently or deny it.
+              regex: "400"
               reverse: false
             content:
-              # Vulnerable versions return hub-specific fields or connection attempt messages
-              # These are SmarterMail-specific indicators from the ConnectToHub response
-              regex: "(Connecting to hub|Failed to mount|hubAddress|setup-initial-connection|ClusterId|nodeName)"
+              # Matches the specific JSON error returned by the vulnerable endpoint
+              regex: "Encountered an exception"
               reverse: false
