@@ -4,20 +4,29 @@ info:
   severity: 9.3
   description: |
     CVE-2026-24423 is a critical unauthenticated remote code execution vulnerability in SmarterTools 
-    SmarterMail before build 9511. The ConnectToHub API endpoint (/api/v1/settings/sysadmin/connect-to-hub) 
-    in SystemAdminSettingsController allows unauthenticated attackers to point the server to a malicious 
-    HTTP server. The server then fetches configuration from the attacker-controlled endpoint 
-    (/web/api/node-management/setup-initial-connection) which can include the CommandMount parameter, 
-    allowing arbitrary OS command execution. CVSS 9.3, actively exploited in ransomware campaigns.
+    SmarterMail before build 9511 (version 100.0.9511). The ConnectToHub API endpoint 
+    (/api/v1/settings/sysadmin/connect-to-hub) in MailService.dll allows anonymous users via 
+    [AuthenticatedService(AllowAnonymous = true)].
     
-    Detection approach: This module sends a POST request to the vulnerable endpoint with a non-routable 
-    hubAddress. Vulnerable versions will attempt to connect and return specific error messages, while 
-    patched versions respond differently.
+    The attack flow:
+    1. Attacker sends POST to /api/v1/settings/sysadmin/connect-to-hub with hubAddress parameter
+    2. Server connects to attacker's hubAddress at /web/api/node-management/setup-initial-connection
+    3. Attacker responds with JSON containing SystemMount.CommandMount parameter
+    4. Server executes CommandMount via MountConfiguration.RunCommand -> CommandLine.RunCommand
+    5. Commands execute via cmd.exe (Windows) or /bin/bash (Linux)
+    
+    Detection: This module sends a POST request to the vulnerable endpoint. Vulnerable versions 
+    attempt to connect to the hubAddress and return specific error messages. Patched versions (9511+) 
+    respond differently.
+    
+    Discovered independently by: Sina Kheirkhah & Piotr Bazydlo (watchTowr), Markus Wulftange 
+    (CODE WHITE GmbH), and Cale Black (VulnCheck). CVSS 9.3, actively exploited in ransomware campaigns.
   reference:
     - https://www.vulncheck.com/blog/smartermail-connecttohub-rce-cve-2026-24423
     - https://nvd.nist.gov/vuln/detail/CVE-2026-24423
     - https://www.smartertools.com/smartermail/release-notes/current
     - https://www.cve.org/CVERecord?id=CVE-2026-24423
+    - https://code-white.com/public-vulnerability-list/
   profiles:
     - vuln
     - http
@@ -32,7 +41,7 @@ info:
 payloads:
   - library: http
     steps:
-      # Step 1: Check version via licensing/about endpoint (unauthenticated)
+      # Step 1: Check if target is SmarterMail via licensing/about endpoint (unauthenticated)
       - method: get
         timeout: 5
         headers:
@@ -61,13 +70,14 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              # Look for SmarterMail-specific version info in the licensing/about response
+              # Look for SmarterMail-specific identifiers in the licensing/about response
               regex: "(SmarterMail|smartermail|SmarterTools)"
               reverse: false
 
-      # Step 2: Test ConnectToHub endpoint with VulnCheck approach
-      # Send POST to /api/v1/settings/sysadmin/connect-to-hub with hubAddress pointing to non-routable IP
-      # Vulnerable versions will accept the request and try to connect, returning specific responses
+      # Step 2: Test ConnectToHub endpoint (VulnCheck approach)
+      # POST to /api/v1/settings/sysadmin/connect-to-hub with hubAddress pointing to non-routable IP
+      # Vulnerable versions will attempt to connect and return specific error responses
+      # Patched versions (9511+) respond with different status or no hub-related errors
       - method: post
         timeout: 5
         headers:
@@ -76,6 +86,7 @@ payloads:
           Accept: "application/json"
         allow_redirects: false
         ssl: false
+        # Payload format from VulnCheck: {"hubAddress":"...", "oneTimePassword":"...", "nodeName":"..."}
         data: '{"hubAddress":"http://127.0.0.1:1", "oneTimePassword":"nettacker-test", "nodeName": "nettacker-probe"}'
         url:
           nettacker_fuzzer:
@@ -95,10 +106,11 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              # Vulnerable versions return 200 or 400 with error message about connection
+              # Vulnerable versions return 200 or 400 with connection-related error messages
               regex: "(200|400)"
               reverse: false
             content:
               # Vulnerable versions return hub-specific fields or connection attempt messages
+              # These are SmarterMail-specific indicators from the ConnectToHub response
               regex: "(Connecting to hub|Failed to mount|hubAddress|setup-initial-connection|ClusterId|nodeName)"
               reverse: false

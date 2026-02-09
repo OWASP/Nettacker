@@ -96,10 +96,12 @@ class TestSmarterMailCVE202624423:
 
     def test_fuzzer_has_smartermail_paths(self, module_content):
         """Test that fuzzer includes SmarterMail-specific endpoint."""
-        step = module_content["payloads"][0]["steps"][0]
+        # Step 1 is the connect-to-hub endpoint (Step 0 is licensing/about for version detection)
+        step = module_content["payloads"][0]["steps"][1]
         url_config = step.get("url", {})
         fuzzer = url_config.get("nettacker_fuzzer", {})
         input_format = fuzzer.get("input_format", "")
         # Check that the endpoint contains the vulnerable API path
         assert "hub" in input_format.lower(), "Should include hub endpoint path"
         assert "connect" in input_format.lower(), "Should include connect in endpoint"
+
