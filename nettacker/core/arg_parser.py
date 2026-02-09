@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 from argparse import ArgumentParser
 
@@ -663,14 +664,21 @@ class ArgParser(ArgumentParser):
         if options.ports:
             tmp_ports = set()
             for port in options.ports.split(","):
+                port = port.strip()
+                if not re.match(r"^\d+(-\d+)?$", port):
+                    die_failure(_("ports_int"))
                 try:
                     if "-" in port:
-                        for port_number in range(
-                            int(port.split("-")[0]), int(port.split("-")[1]) + 1
-                        ):
+                        start, end = map(int, port.split("-"))
+                        if start > end or start < 1 or end > 65535:
+                            die_failure(_("ports_int"))
+                        for port_number in range(start, end + 1):
                             tmp_ports.add(port_number)
                     else:
-                        tmp_ports.add(int(port))
+                        port_number = int(port)
+                        if port_number < 1 or port_number > 65535:
+                            die_failure(_("ports_int"))
+                        tmp_ports.add(port_number)
                 except Exception:
                     die_failure(_("ports_int"))
             options.ports = list(tmp_ports)
@@ -679,14 +687,21 @@ class ArgParser(ArgumentParser):
             tmp_excluded_ports = set()
 
             for excluded_port in options.excluded_ports.split(","):
+                excluded_port = excluded_port.strip()
+                if not re.match(r"^\d+(-\d+)?$", excluded_port):
+                    die_failure(_("ports_int"))
                 try:
                     if "-" in excluded_port:
-                        for excluded_port_number in range(
-                            int(excluded_port.split("-")[0]), int(excluded_port.split("-")[1]) + 1
-                        ):
+                        start, end = map(int, excluded_port.split("-"))
+                        if start > end or start < 1 or end > 65535:
+                            die_failure(_("ports_int"))
+                        for excluded_port_number in range(start, end + 1):
                             tmp_excluded_ports.add(excluded_port_number)
                     else:
-                        tmp_excluded_ports.add(int(excluded_port))
+                        port_number = int(excluded_port)
+                        if port_number < 1 or port_number > 65535:
+                            die_failure(_("ports_int"))
+                        tmp_excluded_ports.add(port_number)
                 except Exception:
                     die_failure(_("ports_int"))
             options.excluded_ports = list(tmp_excluded_ports)
