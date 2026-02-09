@@ -87,8 +87,10 @@ payloads:
           Accept: "application/json"
         allow_redirects: false
         ssl: false
-        # Payload format from VulnCheck: {"hubAddress":"...", "oneTimePassword":"...", "nodeName":"..."}
-        data: '{{"hubAddress":"http://127.0.0.1:1", "oneTimePassword":"nettacker-test", "nodeName": "nettacker-probe"}}'
+        json:
+          hubAddress: "http://127.0.0.1:1"
+          oneTimePassword: "nettacker-test"
+          nodeName: "nettacker-probe"
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/api/v1/settings/sysadmin/connect-to-hub"
