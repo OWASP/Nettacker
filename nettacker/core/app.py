@@ -292,7 +292,7 @@ class Nettacker(ArgParser):
     def scan_target_group(self, targets, scan_id, process_number):
         log.verbose_event_info(_("single_process_started").format(process_number))
         total_number_of_modules = len(targets) * len(self.arguments.selected_modules)
-        
+
         # Build task queue of (target, module) pairs
         tasks = []
         task_counter = 1
@@ -300,13 +300,13 @@ class Nettacker(ArgParser):
             for module_name in self.arguments.selected_modules:
                 tasks.append((target, module_name, task_counter, total_number_of_modules))
                 task_counter += 1
-        
+
         # Use ThreadPoolExecutor with bounded thread pool
         max_workers = self.arguments.parallel_module_scan
         completed_tasks = 0
-        # Log every 10% or minimum every 100 tasks
-        progress_log_interval = max(100, total_number_of_modules // 10)
-        
+        # Log approximately every 10% of tasks, with at least one-task interval
+        progress_log_interval = max(1, total_number_of_modules // 10)
+
         try:
             with ThreadPoolExecutor(max_workers=max_workers) as executor:
                 # Submit all tasks to the executor
@@ -322,24 +322,15 @@ class Nettacker(ArgParser):
                     ): (target, module_name, task_num)
                     for target, module_name, task_num, total_number_of_modules in tasks
                 }
-                
+
                 # Process completed tasks as they finish
                 for future in as_completed(future_to_task):
                     target, module_name, task_num = future_to_task[future]
                     completed_tasks += 1
-                    
+
                     try:
                         future.result()
-                        log.verbose_event_info(
-                            _("start_parallel_module_scan").format(
-                                process_number,
-                                module_name,
-                                target,
-                                task_num,
-                                total_number_of_modules,
-                            )
-                        )
-                        
+
                         # Log progress periodically
                         is_milestone = completed_tasks % progress_log_interval == 0
                         is_final = completed_tasks == total_number_of_modules
@@ -355,9 +346,9 @@ class Nettacker(ArgParser):
                         return False
                     except Exception as e:
                         log.error(f"Task {target} -> {module_name} failed: {e}")
-                        
+
         except KeyboardInterrupt:
             log.info("Scan interrupted by user.")
             return False
-            
+
         return True
