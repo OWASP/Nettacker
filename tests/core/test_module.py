@@ -1,11 +1,9 @@
 """
 Tests for nettacker/core/module.py - Module orchestration and execution
 """
-import copy
-import json
-from unittest.mock import Mock, MagicMock, patch, call
 
-import pytest
+import json
+from unittest.mock import Mock, patch
 
 from nettacker.core.module import Module
 
@@ -75,9 +73,7 @@ class TestModuleLoad:
     def test_load_without_service_discovery(self, mock_find_events, mock_template_loader):
         """Test loading module without service discovery"""
         mock_template_loader.return_value.load.return_value = {
-            "payloads": [
-                {"library": "http", "steps": [{"request": {}, "response": {}}]}
-            ]
+            "payloads": [{"library": "http", "steps": [{"request": {}, "response": {}}]}]
         }
 
         options = Mock()
@@ -107,45 +103,31 @@ class TestModuleLoad:
     ):
         """Test loading module with service discovery"""
         mock_listdir.return_value = ["http.py", "ssh.py", "__init__.py"]
-        
+
         # Mock template loader for initialization
         init_template_mock = Mock()
         init_template_mock.load.return_value = {
             "payloads": [
-                {
-                    "steps": [
-                        {
-                            "response": {
-                                "conditions": {
-                                    "service": {"http": {}, "ssh": {}}
-                                }
-                            }
-                        }
-                    ]
-                }
+                {"steps": [{"response": {"conditions": {"service": {"http": {}, "ssh": {}}}}}]}
             ]
         }
-        
+
         # Mock template loader for actual module load
         load_template_mock = Mock()
         load_template_mock.load.return_value = {
             "payloads": [
-                {
-                    "library": "http",
-                    "steps": [{"port": [], "request": {}, "response": {}}]
-                }
+                {"library": "http", "steps": [{"port": [], "request": {}, "response": {}}]}
             ]
         }
-        
+
         # Setup template loader to return different mocks
         mock_template_loader.side_effect = [init_template_mock, load_template_mock]
 
         # Mock service discovery
         mock_event = Mock()
-        mock_event.json_event = json.dumps({
-            "port": 80,
-            "response": {"conditions_results": {"http": {}}}
-        })
+        mock_event.json_event = json.dumps(
+            {"port": 80, "response": {"conditions_results": {"http": {}}}}
+        )
         mock_find_events.return_value = [mock_event]
 
         options = Mock()
@@ -179,9 +161,7 @@ class TestGenerateLoops:
         mock_template_loader.return_value.load.return_value = {
             "payloads": [{"steps": [{"response": {"conditions": {}}}]}]
         }
-        mock_expand.return_value = [
-            {"library": "http", "steps": [{"request": {}}]}
-        ]
+        mock_expand.return_value = [{"library": "http", "steps": [{"request": {}}]}]
 
         options = Mock()
         options.__dict__ = {
@@ -199,9 +179,7 @@ class TestGenerateLoops:
             thread_number=1,
             total_number_threads=10,
         )
-        module.module_content = {
-            "payloads": [{"library": "http", "steps": [{"request": {}}]}]
-        }
+        module.module_content = {"payloads": [{"library": "http", "steps": [{"request": {}}]}]}
 
         module.generate_loops()
 
@@ -214,9 +192,7 @@ class TestGenerateLoops:
         mock_template_loader.return_value.load.return_value = {
             "payloads": [{"steps": [{"response": {"conditions": {}}}]}]
         }
-        mock_expand.return_value = [
-            {"library": "http", "steps": [{"ports": [80, 443, 8080]}]}
-        ]
+        mock_expand.return_value = [{"library": "http", "steps": [{"ports": [80, 443, 8080]}]}]
 
         options = Mock()
         options.__dict__ = {
@@ -319,7 +295,14 @@ class TestSortLoops:
                     "steps": [
                         [{"response": {"dependent_on_temp_event": True}}],  # Normal dependency
                         [{"response": {}}],  # No dependency
-                        [{"response": {"dependent_on_temp_event": True, "save_to_temp_events_only": True}}],  # Temp dependency
+                        [
+                            {
+                                "response": {
+                                    "dependent_on_temp_event": True,
+                                    "save_to_temp_events_only": True,
+                                }
+                            }
+                        ],  # Temp dependency
                     ]
                 }
             ]
@@ -341,9 +324,7 @@ class TestModuleStart:
     @patch("nettacker.core.module.importlib.import_module")
     @patch("nettacker.core.module.Thread")
     @patch("nettacker.core.module.wait_for_threads_to_finish")
-    def test_start_single_payload(
-        self, mock_wait, mock_thread, mock_import, mock_template_loader
-    ):
+    def test_start_single_payload(self, mock_wait, mock_thread, mock_import, mock_template_loader):
         """Test starting module with single payload"""
         mock_template_loader.return_value.load.return_value = {
             "payloads": [{"steps": [{"response": {"conditions": {}}}]}]
@@ -377,12 +358,7 @@ class TestModuleStart:
         )
 
         module.module_content = {
-            "payloads": [
-                {
-                    "library": "http",
-                    "steps": [[{"request": {}, "response": {}}]]
-                }
-            ]
+            "payloads": [{"library": "http", "steps": [[{"request": {}, "response": {}}]]}]
         }
         module.libraries = ["http", "ssh", "ftp"]
 
@@ -438,7 +414,7 @@ class TestModuleStart:
                     "steps": [
                         [{"request": {}, "response": {}}],
                         [{"request": {}, "response": {}}],
-                    ]
+                    ],
                 }
             ]
         }
@@ -475,10 +451,7 @@ class TestModuleStart:
 
         module.module_content = {
             "payloads": [
-                {
-                    "library": "unsupported_lib",
-                    "steps": [[{"request": {}, "response": {}}]]
-                }
+                {"library": "unsupported_lib", "steps": [[{"request": {}, "response": {}}]]}
             ]
         }
         module.libraries = ["http", "ssh", "ftp"]
@@ -502,17 +475,11 @@ class TestModuleIntegration:
         """Test complete module workflow: load -> generate -> sort -> start"""
         mock_template_loader.return_value.load.return_value = {
             "payloads": [
-                {
-                    "library": "http",
-                    "steps": [{"ports": [80], "request": {}, "response": {}}]
-                }
+                {"library": "http", "steps": [{"ports": [80], "request": {}, "response": {}}]}
             ]
         }
         mock_expand.return_value = [
-            {
-                "library": "http",
-                "steps": [[{"ports": [80], "request": {}, "response": {}}]]
-            }
+            {"library": "http", "steps": [[{"ports": [80], "request": {}, "response": {}}]]}
         ]
 
         mock_engine = Mock()

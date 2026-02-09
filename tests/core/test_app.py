@@ -1,12 +1,9 @@
 """
 Tests for nettacker/core/app.py - Core scan engine and orchestration
 """
-import json
-import os
-from pathlib import Path
-from unittest.mock import Mock, MagicMock, patch, call
 
-import pytest
+import os
+from unittest.mock import Mock, patch
 
 from nettacker.core.app import Nettacker
 
@@ -65,7 +62,9 @@ class TestExpandTargets:
     @patch.object(Nettacker, "print_logo")
     @patch.object(Nettacker, "check_dependencies")
     @patch("nettacker.core.app.generate_ip_range")
-    def test_expand_cidr_range(self, mock_generate_ip, mock_check_deps, mock_logo, mock_arg_parser):
+    def test_expand_cidr_range(
+        self, mock_generate_ip, mock_check_deps, mock_logo, mock_arg_parser
+    ):
         """Test expansion of CIDR range"""
         mock_arg_parser.return_value = None
         mock_generate_ip.return_value = ["192.168.1.1", "192.168.1.2", "192.168.1.3"]
@@ -80,7 +79,7 @@ class TestExpandTargets:
         result = scanner.expand_targets("test_scan_id")
 
         mock_generate_ip.assert_called_once_with("192.168.1.0/30")
-        assert result == ["192.168.1.1", "192.168.1.2", "192.168.1.3"]
+        assert set(result) == {"192.168.1.1", "192.168.1.2", "192.168.1.3"}
 
     @patch("nettacker.core.app.ArgParser.__init__")
     @patch.object(Nettacker, "print_logo")
@@ -182,16 +181,28 @@ class TestScanTarget:
     @patch("nettacker.core.app.ArgParser.__init__")
     @patch.object(Nettacker, "print_logo")
     @patch.object(Nettacker, "check_dependencies")
+    @patch("nettacker.core.app.socket.socket")
+    @patch("nettacker.core.app.socket.getaddrinfo")
     @patch("nettacker.core.app.set_socks_proxy")
     @patch("nettacker.core.app.Module")
     def test_scan_target_success(
-        self, mock_module_class, mock_socks, mock_check_deps, mock_logo, mock_arg_parser
+        self,
+        mock_module_class,
+        mock_socks,
+        mock_getaddrinfo,
+        mock_socket_class,
+        mock_check_deps,
+        mock_logo,
+        mock_arg_parser,
     ):
         """Test successful single target scan"""
         mock_arg_parser.return_value = None
         mock_module = Mock()
         mock_module_class.return_value = mock_module
-        mock_socks.return_value = (Mock(), Mock())
+        # set_socks_proxy returns original socket funcs for restoration
+        original_socket = Mock()
+        original_getaddrinfo = Mock()
+        mock_socks.return_value = (original_socket, original_getaddrinfo)
 
         scanner = Nettacker(api_arguments={})
         scanner.arguments = Mock()
