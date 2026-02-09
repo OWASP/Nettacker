@@ -108,6 +108,7 @@ payloads:
                 - 17017
         response:
           condition_type: and
+          log: "CVE-2026-24423: SmarterMail ConnectToHub Unauthenticated RCE - Vulnerable endpoint responded (version < 9511)"
           conditions:
             status_code:
               # Vulnerable versions consistently return 400 with "Encountered an exception" 
