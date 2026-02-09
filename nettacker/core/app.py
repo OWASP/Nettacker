@@ -325,7 +325,7 @@ class Nettacker(ArgParser):
 
                 # Process completed tasks as they finish
                 for future in as_completed(future_to_task):
-                    target, module_name, task_num = future_to_task[future]
+                    target, module_name, _task_num = future_to_task[future]
                     completed_tasks += 1
 
                     try:
