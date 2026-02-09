@@ -117,10 +117,7 @@ def create_tcp_socket(host, port, timeout):
         return None
 
     try:
-        context = ssl.create_default_context()
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
-        socket_connection = context.wrap_socket(socket_connection)
+        socket_connection = ssl.wrap_socket(socket_connection)
         ssl_flag = True
     except Exception:
         socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
