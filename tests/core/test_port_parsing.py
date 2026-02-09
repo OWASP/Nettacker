@@ -7,7 +7,6 @@ from unittest.mock import patch, MagicMock
 
 from nettacker.core.arg_parser import ArgParser
 
-
 class TestPortParsing:
     """Test suite for port range parsing (--ports and --excluded-ports)"""
 

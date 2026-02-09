@@ -717,6 +717,31 @@ class ArgParser(ArgumentParser):
         # Check for excluded ports
         if options.excluded_ports:
             options.excluded_ports = list(validate_and_parse_ports(options.excluded_ports))
+            options.ports = list(tmp_ports)
+        # Check for excluded ports
+        if options.excluded_ports:
+            tmp_excluded_ports = set()
+
+            for excluded_port in options.excluded_ports.split(","):
+                excluded_port = excluded_port.strip()
+                if not re.match(r"^\d+(-\d+)?$", excluded_port):
+                    die_failure(_("ports_int"))
+                try:
+                    if "-" in excluded_port:
+                        start, end = map(int, excluded_port.split("-"))
+                        if start > end or start < 1 or end > 65535:
+                            die_failure(_("ports_int"))
+                        for excluded_port_number in range(start, end + 1):
+                            tmp_excluded_ports.add(excluded_port_number)
+                    else:
+                        port_number = int(excluded_port)
+                        if port_number < 1 or port_number > 65535:
+                            die_failure(_("ports_int"))
+                        tmp_excluded_ports.add(port_number)
+                except Exception:
+                    die_failure(_("ports_int"))
+            options.excluded_ports = list(tmp_excluded_ports)
+>>>>>>> 77fed252 (Fix port range parsing validation)
 
         if options.user_agent == "random_user_agent":
             options.user_agents = open(Config.path.user_agents_file).read().split("\n")
