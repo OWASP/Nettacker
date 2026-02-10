@@ -7,9 +7,9 @@ from nettacker.core.lib.ssl import (
     SslEngine,
     SslLibrary,
     create_tcp_socket,
+    is_weak_cipher_suite,
     is_weak_hash_algo,
     is_weak_ssl_version,
-    is_weak_cipher_suite,
 )
 
 
