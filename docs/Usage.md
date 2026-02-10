@@ -646,58 +646,71 @@ python nettacker.py --start-api --api-access-log --api-port 8080 --api-debug-mod
 ![](https://github.com/aman566/DiceGameJS/blob/master/Screencast-from-Tuesday-09-June-2020-02-32-32-IST-_online-video-cutter.com_.gif)
 
 # Database
-OWASP Nettacker, currently supports two databases:
-- SQLite
+
+OWASP Nettacker, currently supports three databases:
+
 - MySQL
+- PostgreSQL
+- SQLite
+
 The default database is SQLite. You can, however, configure the db to your liking.
+
 ## SQLite configuration
-The SQLite database can be configured in `core/config.py` file under the `_database_config()` function. Here is a sample configuration:
+
+The configurations below are for a SQLite wrapper called **APSW** (Another Python SQLite Wrapper). The configurations can be found inside `nettacker/config.py` file under the `DBConfig` class. 
+
+```python
+    engine = "sqlite"
+    name = str(CWD / ".nettacker/data/nettacker.db")
+    host = ""
+    port = ""
+    username = ""
+    password = ""
+    ssl_mode = "disable"
+    journal_mode = "WAL"
+    synchronous_mode = "NORMAL"
 ```
-return {
-        "DB": "sqlite",
-        "DATABASE":  _paths()["home_path"] + "/nettacker.db", # This is the location of your db
-        "USERNAME": "",
-        "PASSWORD": "",
-        "HOST": "",
-        "PORT": ""
-    }
-```
+
+These are the default and recommended settings. Feel free to play around and change them according to need. To use SQLite database, ensure that the `engine` value is set to `sqlite` and the `name` is the path to your database. The `journal_mode` and `synchronous_mode` are chosen to be optimal for multithreaded I/O operations.
+
+> Note: You can choose to use a lite wrapper for Sqlite called APSW by setting the `use_apsw_for_sqlite` parameter inside config to True for performance enhancements.
+
 ## MySQL configuration:
-The MySQL database can be configured in `core/config.py` file under the `_database_config()` function. Here is a sample configuration:
+
+The MySQL database can be configured in `nettacker/config.py` file under the `DBConfig` class. Here is a sample configuration:
+
+```python
+    engine = "mysql"
+    name = "nettacker"
+    host = "localhost"
+    port = 3306
+    username = "root"
+    password = "some-password"
+    ssl_mode = "disable"
+    journal_mode = "WAL"
+    synchronous_mode = "NORMAL"
 ```
-return {
-        "DB": "mysql",
-        "DATABASE": "nettacker", # This is the name of your db
-        "USERNAME": "username",
-        "PASSWORD": "password",
-        "HOST": "localhost or some other host",
-        "PORT": "3306 or some other custom port"
-    }
-```
-After this configuration:
-1. Open the configuration file of mysql(`/etc/mysql/my.cnf` in case of linux) as a sudo user
-2. Add this to the end of the file :
-``` 
-[mysqld]  
-sql_mode = "STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
-```
-3.  Restart MySQL
+
+Only the relevant fields will be considered and you don't need to update/change/remove the irrelevant ones (`ssl_mode`, `journal_mode` and `synchronous_mode` aren't relevant in this case).
 
 ## Postgres Configuration
 
-The Postgres database can be configured in core/config.py file under the _database_config() function. Here is a sample configuration:
-`
-return {
-        "DB": "postgreas",
-        "DATABASE": "nettacker" # Name of db
-        "USERNAME": "username",
-        "PASSWORD": "password",
-        "HOST": "localhost or some other host",
-        "PORT": "5432 or some other custom port"
-    }
-`
-After this configuration please comment out the following line in database/db.py   `connect_args={'check_same_thread': False}` 
+The Postgres database can be configured in `nettacker/config.py` file under the `DBConfig` class. Here is a sample configuration:
 
+```python
+    engine = "postgres"
+    name = "nettacker"
+    host = "localhost"
+    port = 5432
+    username = "root"
+    password = "some-password"
+    ssl_mode = "disable"
+    journal_mode = "WAL"
+    synchronous_mode = "NORMAL"
+```
 
+In this case the irrelevant fields are `journal_mode` and `synchronous_mode`. You don't have to update/change/remove them.
+
+**Note**: If you want encryption, then set `ssl_mode` to `require`.
 
 Let me know if you have any more questions.

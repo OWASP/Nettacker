@@ -78,7 +78,7 @@ class Module:
         if not self.skip_service_discovery and self.module_name not in self.ignored_core_modules:
             services = {}
             for service in find_events(self.target, "port_scan", self.scan_id):
-                service_event = json.loads(service.json_event)
+                service_event = json.loads(service)
                 port = service_event["port"]
                 protocols = service_event["response"]["conditions_results"].keys()
                 for protocol in protocols:
