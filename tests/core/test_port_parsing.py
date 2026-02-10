@@ -7,6 +7,7 @@ import pytest
 
 from nettacker.core.arg_parser import validate_and_parse_ports
 
+
 class TestPortParsing:
     """Test suite for port range parsing (--ports and --excluded-ports)."""
 
