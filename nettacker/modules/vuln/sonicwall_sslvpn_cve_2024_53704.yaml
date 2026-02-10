@@ -48,7 +48,7 @@ payloads:
             status_code:
               regex: "200"
               reverse: false
-            header:
+            headers:
               Server:
                 regex: 'SonicWALL SSLVPN Web Server'
                 reverse: false
