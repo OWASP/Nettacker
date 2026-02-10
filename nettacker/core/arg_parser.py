@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 from argparse import ArgumentParser
 
@@ -22,6 +23,57 @@ from nettacker.core.utils import common as common_utils
 from nettacker.logger import TerminalCodes, get_logger
 
 log = get_logger()
+
+# Regex pattern for port validation: single port (123) or range (80-90)
+PORT_PATTERN = re.compile(r"^\d+(-\d+)?$")
+
+
+def validate_and_parse_ports(port_string, error_prefix=""):
+    """
+    Validate and parse port specification string.
+
+    Args:
+        port_string: Comma-separated ports/ranges (e.g., "22,80-90,443")
+        error_prefix: Prefix for error context (e.g., "ports" or "excluded_ports")
+
+    Returns:
+        set: Set of valid port numbers
+
+    Raises:
+        SystemExit: If validation fails (via die_failure)
+    """
+    ports = set()
+
+    for port in port_string.split(","):
+        port = port.strip()
+
+        if not port:
+            die_failure(_("error_empty_port_value"))
+
+        if not PORT_PATTERN.match(port):
+            die_failure(_("error_invalid_port_format").format(port))
+
+        try:
+            if "-" in port:
+                start, end = port.split("-")
+                start, end = int(start), int(end)
+
+                if start > end:
+                    die_failure(_("error_invalid_port_range_order").format(port, start, end))
+                if start < 1 or end > 65535:
+                    die_failure(_("error_port_out_of_range").format(port))
+
+                for port_number in range(start, end + 1):
+                    ports.add(port_number)
+            else:
+                port_number = int(port)
+                if port_number < 1 or port_number > 65535:
+                    die_failure(_("error_port_out_of_range").format(port))
+                ports.add(port_number)
+        except ValueError:
+            die_failure(_("ports_int"))
+
+    return ports
 
 
 class ArgParser(ArgumentParser):
@@ -661,35 +713,10 @@ class ArgParser(ArgumentParser):
                     options.selected_modules.remove(excluded_module)
         # Check port(s)
         if options.ports:
-            tmp_ports = set()
-            for port in options.ports.split(","):
-                try:
-                    if "-" in port:
-                        for port_number in range(
-                            int(port.split("-")[0]), int(port.split("-")[1]) + 1
-                        ):
-                            tmp_ports.add(port_number)
-                    else:
-                        tmp_ports.add(int(port))
-                except Exception:
-                    die_failure(_("ports_int"))
-            options.ports = list(tmp_ports)
+            options.ports = list(validate_and_parse_ports(options.ports))
         # Check for excluded ports
         if options.excluded_ports:
-            tmp_excluded_ports = set()
-
-            for excluded_port in options.excluded_ports.split(","):
-                try:
-                    if "-" in excluded_port:
-                        for excluded_port_number in range(
-                            int(excluded_port.split("-")[0]), int(excluded_port.split("-")[1]) + 1
-                        ):
-                            tmp_excluded_ports.add(excluded_port_number)
-                    else:
-                        tmp_excluded_ports.add(int(excluded_port))
-                except Exception:
-                    die_failure(_("ports_int"))
-            options.excluded_ports = list(tmp_excluded_ports)
+            options.excluded_ports = list(validate_and_parse_ports(options.excluded_ports))
 
         if options.user_agent == "random_user_agent":
             options.user_agents = open(Config.path.user_agents_file).read().split("\n")
@@ -736,7 +763,20 @@ class ArgParser(ArgumentParser):
         if options.modules_extra_args:
             all_args = {}
             for args in options.modules_extra_args.split("&"):
-                value = args.split("=")[1]
+                # Validate format
+                if "=" not in args:
+                    die_failure(_("error_modules_extra_args_format").format(args))
+
+                # Split with maxsplit=1 to handle values containing '='
+                parts = args.split("=", 1)
+                key = parts[0].strip()
+                value = parts[1].strip()
+
+                # Validate key is not empty
+                if not key:
+                    die_failure(_("error_modules_extra_args_empty_key"))
+
+                # Type conversion logic
                 if value.lower() == "true":
                     value = True
                 elif value.lower() == "false":
@@ -756,7 +796,8 @@ class ArgParser(ArgumentParser):
                         value = int(value)
                     except Exception:
                         pass
-                all_args[args.split("=")[0]] = value
+
+                all_args[key] = value
             options.modules_extra_args = all_args
 
         options.timeout = float(options.timeout)
