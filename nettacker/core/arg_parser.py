@@ -25,44 +25,44 @@ from nettacker.logger import TerminalCodes, get_logger
 log = get_logger()
 
 # Regex pattern for port validation: single port (123) or range (80-90)
-PORT_PATTERN = re.compile(r'^\d+(-\d+)?$')
+PORT_PATTERN = re.compile(r"^\d+(-\d+)?$")
 
 
 def validate_and_parse_ports(port_string, error_prefix=""):
     """
     Validate and parse port specification string.
-    
+
     Args:
         port_string: Comma-separated ports/ranges (e.g., "22,80-90,443")
         error_prefix: Prefix for error context (e.g., "ports" or "excluded_ports")
-    
+
     Returns:
         set: Set of valid port numbers
-    
+
     Raises:
         SystemExit: If validation fails (via die_failure)
     """
     ports = set()
-    
+
     for port in port_string.split(","):
         port = port.strip()
-        
+
         if not port:
             die_failure(_("error_empty_port_value"))
-        
+
         if not PORT_PATTERN.match(port):
             die_failure(_("error_invalid_port_format").format(port))
-        
+
         try:
             if "-" in port:
                 start, end = port.split("-")
                 start, end = int(start), int(end)
-                
+
                 if start > end:
                     die_failure(_("error_invalid_port_range_order").format(port, start, end))
                 if start < 1 or end > 65535:
                     die_failure(_("error_port_out_of_range").format(port))
-                
+
                 for port_number in range(start, end + 1):
                     ports.add(port_number)
             else:
@@ -72,7 +72,7 @@ def validate_and_parse_ports(port_string, error_prefix=""):
                 ports.add(port_number)
         except ValueError:
             die_failure(_("ports_int"))
-    
+
     return ports
 
 
@@ -717,31 +717,6 @@ class ArgParser(ArgumentParser):
         # Check for excluded ports
         if options.excluded_ports:
             options.excluded_ports = list(validate_and_parse_ports(options.excluded_ports))
-            options.ports = list(tmp_ports)
-        # Check for excluded ports
-        if options.excluded_ports:
-            tmp_excluded_ports = set()
-
-            for excluded_port in options.excluded_ports.split(","):
-                excluded_port = excluded_port.strip()
-                if not re.match(r"^\d+(-\d+)?$", excluded_port):
-                    die_failure(_("ports_int"))
-                try:
-                    if "-" in excluded_port:
-                        start, end = map(int, excluded_port.split("-"))
-                        if start > end or start < 1 or end > 65535:
-                            die_failure(_("ports_int"))
-                        for excluded_port_number in range(start, end + 1):
-                            tmp_excluded_ports.add(excluded_port_number)
-                    else:
-                        port_number = int(excluded_port)
-                        if port_number < 1 or port_number > 65535:
-                            die_failure(_("ports_int"))
-                        tmp_excluded_ports.add(port_number)
-                except Exception:
-                    die_failure(_("ports_int"))
-            options.excluded_ports = list(tmp_excluded_ports)
->>>>>>> 77fed252 (Fix port range parsing validation)
 
         if options.user_agent == "random_user_agent":
             options.user_agents = open(Config.path.user_agents_file).read().split("\n")
