@@ -1,4 +1,3 @@
-import json
 import re
 import sys
 from argparse import ArgumentParser
@@ -28,13 +27,12 @@ log = get_logger()
 PORT_PATTERN = re.compile(r"^\d+(-\d+)?$")
 
 
-def validate_and_parse_ports(port_string, error_prefix=""):
+def validate_and_parse_ports(port_string):
     """
     Validate and parse port specification string.
 
     Args:
         port_string: Comma-separated ports/ranges (e.g., "22,80-90,443")
-        error_prefix: Prefix for error context (e.g., "ports" or "excluded_ports")
 
     Returns:
         set: Set of valid port numbers
@@ -763,20 +761,7 @@ class ArgParser(ArgumentParser):
         if options.modules_extra_args:
             all_args = {}
             for args in options.modules_extra_args.split("&"):
-                # Validate format
-                if "=" not in args:
-                    die_failure(_("error_modules_extra_args_format").format(args))
-
-                # Split with maxsplit=1 to handle values containing '='
-                parts = args.split("=", 1)
-                key = parts[0].strip()
-                value = parts[1].strip()
-
-                # Validate key is not empty
-                if not key:
-                    die_failure(_("error_modules_extra_args_empty_key"))
-
-                # Type conversion logic
+                value = args.split("=")[1]
                 if value.lower() == "true":
                     value = True
                 elif value.lower() == "false":
@@ -785,19 +770,16 @@ class ArgParser(ArgumentParser):
                     try:
                         value = float(value)
                     except Exception:
-                        pass
-                elif "{" in value or "[" in value:
-                    try:
-                        value = json.loads(value)
-                    except Exception:
-                        pass
+                        try:
+                            value = int(value)
+                        except Exception:
+                            pass
                 else:
                     try:
                         value = int(value)
                     except Exception:
                         pass
-
-                all_args[key] = value
+                all_args[args.split("=")[0]] = value
             options.modules_extra_args = all_args
 
         options.timeout = float(options.timeout)
