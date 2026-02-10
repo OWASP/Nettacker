@@ -11,8 +11,8 @@ OWASP Nettacker Modules can be of type **Scan** (scan for something), **Vuln** (
 
 - '**adobe_aem_lastpatcheddate_scan**' - Scan the target for Adobe Experience Manager (AEM) and return its last patched date
 - '**admin_scan**' - Scan the target for various Admin folders such as /admin /phpmyadmin /cmsadmin /wp-admin etc
-- '**citrix_lastpatcheddate_scan**' Scan the target and try to detect Citrix Netscaler Gateway and it's last patched date
-- '**cms_detection_scan**' - Scan the target and try to detect the CMS (Wordpress, Drupal or Joomla) using response fingerprinting
+- '**citrix_lastpatcheddate_scan**' - Scan the target and try to detect Citrix Netscaler Gateway and it's last patched date
+- '**config_file_scan**' - Scan the target for various exposed configuration files
 - '**confluence_version_scan**' - Scan the target and identify the Confluence version
 - '**crushftp_lastpatcheddate_scan**' - Scan the target and try to detect CrushFTP and its last patched date
 - '**cups_version_scan**' - Scan the target and identify the CUPS version (on port 631)
@@ -20,10 +20,13 @@ OWASP Nettacker Modules can be of type **Scan** (scan for something), **Vuln** (
 - '**drupal_modules_scan**' - Scan the target for popular Drupal modules
 - '**drupal_theme_scan**' - Scan the target for popular Drupal themes
 - '**drupal_version_scan**' - Scan the target and identify the Drupal version
-- '**icmp_scan**' - Ping the target and log the response time if it responds.
+- '**http_html_title_scan**' - Scan the target and extracts HTML title for service identification
 - '**http_redirect_scan**' - Scan the target and test if it returns an HTTP redirect 3xx response code and print the destination
 - '**http_status_scan**' - Scan the target and return the HTTP status code
+- '**icmp_scan**' - Ping the target and log the response time if it responds.
 - '**ivanti_csa_lastpatcheddate_scan**' - Scan the target for Ivanti CSA appliance and return its last patched date
+- '**ivanti_epmm_lastpatcheddate_scan**' - Scan the target for Ivanti EPMM last patched date via headers
+- '**ivanti_ics_lastpatcheddate_scan**' - Scan the target for Ivanti ICS last patched date via headers
 - '**ivanti_vtm_version_scan**' - Scan the target for Ivanti vTM appliance and return its version number
 - '**joomla_template_scan**' - Scan the target for Joomla templates (identify Joomla sites)
 - '**joomla_user_enum_scan**' - Scan the target and enumerate Joomla users
@@ -31,16 +34,15 @@ OWASP Nettacker Modules can be of type **Scan** (scan for something), **Vuln** (
 - '**moveit_version_scan**' - Scan the target and identify the Progress MOVEit version
 - '**pma_scan**' - Scan the target for PHP MyAdmin presence
 - '**port_scan**' - Scan the target for open ports identifying the popular services using signatures (.e.g SSH on port 2222)
-- '**sender_policy_scan**' - Scan the target domains/subdomains for SPF policy settings
-- '**shodan_scan**' - Scan the target domains/subdomains/IP in Shodan. Put your Shodan API key i "shodan_api_key" method arg, "shodan_query_override" to run any Shodan query overriding the Nettacker target
+- '**ssl_expiring_certificate_scan**' - Scan the target for SSL/TLS certificates nearing expiration
 - '**subdomain_scan**' - Scan the target for subdomains (target must be a domain e.g. owasp.org)
-- '**viewdns_reverse_ip_lookup_scan**' - Identify which sites/domains are hosted on the target host using ViewDNS.info
-- '**wappalyzer_scan**' - Scan the target and try to identify the technologies and libraries used using Wappalyzer
+- '**viewdns_reverse_iplookup_scan**' - Identify which sites/domains are hosted on the target host using ViewDNS.info
+- '**waf_scan**' - Scan the target to detect the presence of a Web Application Firewall
+- '**web_technologies_scan**' - Scan the target to identify web technologies and frameworks
 - '**wordpress_version_scan**' - Scan the target and identify the WordPress version
 - '**wp_plugin_scan**' - Scan the target for popular WordPress Plugins
 - '**wp_theme_scan**' - Scan the target for popular WordPress themes
-- '**wp_timthumbs_scan**' - Scan the target for WordPress TimThumb.php script in various possible locations
-- '**wp_user_enum_scan**' - Scan the target WordPress site and Enumerate Users
+- '**wp_timethumbs_scan**' - Scan the target for WordPress TimThumb.php script in various possible locations
 
 ## Ports Scanned by Nettacker
 
@@ -126,50 +128,82 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 
 ## Vuln Modules
 
-- '**aiohttp_cve_2024_23334_vuln**' - check the target for CVE-2024-23334
-- '**apache_ofbiz_cve_2024_38856**' - check the target for Apache OFBiz CVE-2024-38856
-- '**apache_struts_vuln**' - check Apache Struts for CVE-2017-5638
-- '**Bftpd_double_free_vuln**' - check bftpd for CVE-2007-2010
-- '**Bftpd_memory_leak_vuln**' - check bftpd for CVE-2017-16892
-- '**Bftpd_parsecmd_overflow_vuln**'- check bftpd for CVE-2007-2051
-- '**Bftpd_remote_dos_vuln**' - check bftpd for CVE-2009-4593
-- '**CCS_injection_vuln**' - check SSL for Change Cipher Spec (CCS Injection) CVE-2014-0224
-- '**citrix_cve_2019_19781_vuln**' - check the target for Citrix CVE-2019-19781 vulnerability
-- '**citrix_cve_2023_24488_vuln**' - check the target for Citrix CVE-2023-24488 XSS vulnerability
-- '**clickjacking_vuln**' - check the web server for missing 'X-Frame-Options' header (clickjacking protection)
-- '**content_security_policy_vuln**' - check the web server for missing 'Content-Security-Policy' header
-- '**content_type_options_vuln**' - check the web server for missing 'X-Content-Type-Options'=nosniff header
-- '**crushftp_cve_2025_31161_vuln**' - check the target for CrushFTP CVE-2025-31161 vulnerability
-- '**f5_cve_2020_5902_vuln**' - check the target for F5 RCE CVE-2020-5902 vulnerability
-- '**heartbleed_vuln**' - check SSL for Heartbleed vulnerability (CVE-2014-0160)
-- '**msexchange_cve_2021_26855**' - check the target for MS Exchange SSRF CVE-2021-26855 (proxylogon/hafnium)
-- '**http_cors_vuln**' - check the web server for overly-permissive CORS (header 'Access-Control-Allow-Origin'=\*)
-- '**joomla_cve_2023_23752_vuln**' - check the target for Joomla CVE-2023-23752 information disclosure vulnerability
-- '**options_method_enabled_vuln**' - check if OPTIONS method is enabled on the web server
-- '**paloalto_panos_cve_2025_0108_vuln**' - check the target for PaloAlto PAN-OS CVE-2025-0108 vulnerability
-- '**paloalto_globalprotect_cve_2025_0133_vuln**' - check the target for PaloAlto GlobalProtect CVE-2025-0133 XSS vulnerability
-- '**ProFTPd_bypass_sqli_protection_vuln**' - check ProFTPd for CVE-2009-0543
-- '**ProFTPd_cpu_consumption_vuln**' - check ProFTPd for CVE-2008-7265
-- '**ProFTPd_directory_traversal_vuln**' - check ProFTPd for CVE-2010-3867
-- '**ProFTPd_exec_arbitary_vuln**' - check ProFTPd for CVE-2011-4130
-- '**ProFTPd_heap_overflow_vuln**' - check ProFTPd for CVE-2010-4652
-- '**ProFTPd_integer_overflow_vuln**' - check ProFTPd for CVE-2011-1137
-- '**ProFTPd_memory_leak_vuln**' - check ProFTPd for CVE-2001-0136
-- '**ProFTPd_restriction_bypass_vuln**' - check ProFTPd for CVE-2009-3639
-- '**server_version_vuln**' - check if the web server is leaking server banner in 'Server' response header
-- '**sonicwall_sslvpn_cve_2024_53704_vuln**' - check the target for SonicWALL SSLVPN CVE-2024-53704 vulnerability
-- '**ssl_signed_certificate_vuln**' - check for self-signed & other signing issues(weak signing algorithm) in SSL certificate
-- '**ssl_expired_certificate_vuln**' - check if SSL certificate has expired or is close to expiring
-- '**ssl_version_vuln**' - check if the server's SSL configuration supports old and insecure SSL versions
-- '**ssl_weak_cipher_vuln**' - check if server's SSL configuration supports weak cipher suites
-- '**wordpress_dos_cve_2018_6389_vuln**' - check if Wordpress is vulnerable to CVE-2018-6389 Denial Of Service (DOS)
-- '**wp_plugin_cve_2023_47668_vuln**' - check the target for CVE-2023-47668
-- '**wp_xmlrpc_bruteforce_vuln**' - check if Wordpress is vulnerable to credential Brute Force via XMLRPC wp.getUsersBlogs
-- '**wp_xmlrpc_pingback_vuln**' - check if Wordpress is vulnerable to XMLRPC pingback
-- '**x_powered_by_vuln**' - check if the web server is leaking server configuration in 'X-Powered-By' response header
-- '**xdebug_rce_vuln**' - checks if web server is running XDebug version 2.5.5 vulnerable to RCE
-- '**XSS_protection_vuln**' - check if header 'X-XSS-Protection' header is set to '1; mode=block'
-- '**vbulletin_cve_2019_16759_vuln**' - check the target for vBulletin RCE CVE-2019-16759 vulnerability
+- '**accela_cve_2021_34370_vuln**' – check for authentication bypass vulnerability in Accela Civic Platform
+- '**adobe_coldfusion_cve_2023_26360_vuln**' – check for remote code execution vulnerability in Adobe ColdFusion
+- '**aiohttp_cve_2024_23334_vuln**' – check the target for CVE-2024-23334
+- '**apache_cve_2021_41773_vuln**' – check for path traversal vulnerability in Apache HTTP Server
+- '**apache_cve_2021_42013_vuln**' – check for remote code execution vulnerability in Apache HTTP Server
+- '**apache_ofbiz_cve_2024_38856_vuln**' – check the target for CVE-2024-38856 in Apache OFBiz
+- '**apache_struts_vuln**' – check Apache Struts for CVE-2017-5638
+- '**aviatrix_cve_2021_40870_vuln**' – check the target for Aviatrix CVE-2021-40870 vulnerability
+- '**cisco_hyperflex_cve_2021_1497_vuln**' – check the target for Cisco HyperFlex CVE-2021-1497
+- '**citrix_cve_2019_19781_vuln**' – check the target for Citrix CVE-2019-19781 vulnerability
+- '**citrix_cve_2023_24488_vuln**' – check the target for Citrix CVE-2023-24488 XSS vulnerability
+- '**citrix_cve_2023_4966_vuln**' – check the target for Citrix CVE-2023-4966 vulnerability
+- '**clickjacking_vuln**' – check the web server for missing 'X-Frame-Options' header (clickjacking protection)
+- '**cloudron_cve_2021_40868_vuln**' – check the target for Cloudron CVE-2021-40868 vulnerability
+- '**confluence_cve_2023_22515_vuln**' – check the target for Confluence CVE-2023-22515 vulnerability
+- '**confluence_cve_2023_22527_vuln**' – check the target for Confluence CVE-2023-22527 vulnerability
+- '**content_security_policy_vuln**' – check the web server for missing 'Content-Security-Policy' header
+- '**content_type_options_vuln**' – check the web server for missing 'X-Content-Type-Options'=nosniff header
+- '**crushftp_cve_2025_31161_vuln**' – check the target for CrushFTP CVE-2025-31161 vulnerability
+- '**cyberoam_netgenie_cve_2021_38702_vuln**' – check the target for Cyberoam NetGenie CVE-2021-38702
+- '**exponent_cms_cve_2021_38751_vuln**' – check the target for Exponent CMS CVE-2021-38751
+- '**f5_cve_2020_5902_vuln**' – check the target for F5 RCE CVE-2020-5902 vulnerability
+- '**forgerock_am_cve_2021_35464_vuln**' – check the target for ForgeRock AM CVE-2021-35464
+- '**galera_webtemp_cve_2021_40960_vuln**' – check the target for Galera WebTemplate CVE-2021-40960
+- '**grafana_cve_2021_43798_vuln**' – check the target for Grafana CVE-2021-43798 vulnerability
+- '**graphql_vuln**' – check the target for exposed GraphQL introspection endpoint
+- '**gurock_testrail_cve_2021_40875_vuln**' – check the target for TestRail CVE-2021-40875 vulnerability
+- '**hoteldruid_cve_2021_37833_vuln**' – check the target for HotelDruid CVE-2021-37833 XSS vulnerability
+- '**http_cookie_vuln**' – check the web server for insecure HTTP cookie attributes
+- '**http_cors_vuln**' – check the web server for overly-permissive CORS configuration
+- '**http_options_enabled_vuln**' – check if OPTIONS method is enabled on the web server
+- '**ivanti_epmm_cve_2023_35082_vuln**' – check the target for Ivanti EPMM CVE-2023-35082 vulnerability
+- '**ivanti_ics_cve_2023_46805_vuln**' – check the target for Ivanti ICS CVE-2023-46805 vulnerability
+- '**joomla_cve_2023_23752_vuln**' – check the target for Joomla CVE-2023-23752 information disclosure
+- '**justwriting_cve_2021_41878_vuln**' – check the target for JustWriting CVE-2021-41878
+- '**log4j_cve_2021_44228_vuln**' – check the target for Log4Shell CVE-2021-44228 vulnerability
+- '**maxsite_cms_cve_2021_35265_vuln**' – check the target for MaxSite CMS CVE-2021-35265
+- '**msexchange_cve_2021_26855_vuln**' – check the target for MS Exchange SSRF CVE-2021-26855
+- '**msexchange_cve_2021_34473_vuln**' – check the target for MS Exchange CVE-2021-34473 vulnerability
+- '**novnc_cve_2021_3654_vuln**' – check the target for noVNC CVE-2021-3654 vulnerability
+- '**omigod_cve_2021_38647_vuln**' – check the target for OMIGOD CVE-2021-38647 vulnerability
+- '**paloalto_globalprotect_cve_2025_0133_vuln**' – check the target for PaloAlto GlobalProtect CVE-2025-0133 XSS vulnerability
+- '**paloalto_panos_cve_2025_0108_vuln**' – check the target for PaloAlto PAN-OS CVE-2025-0108 vulnerability
+- '**payara_cve_2021_41381_vuln**' – check the target for Payara CVE-2021-41381 vulnerability
+- '**phpinfo_cve_2021_37704_vuln**' – check the target for phpinfo CVE-2021-37704 information disclosure
+- '**placeos_cve_2021_41826_vuln**' – check the target for PlaceOS CVE-2021-41826 vulnerability
+- '**prestashop_cve_2021_37538_vuln**' – check the target for PrestaShop CVE-2021-37538 vulnerability
+- '**puneethreddyhc_sqli_cve_2021_41648_vuln**' – check the target for SQL injection CVE-2021-41648
+- '**puneethreddyhc_sqli_cve_2021_41649_vuln**' – check the target for SQL injection CVE-2021-41649
+- '**qsan_storage_xss_cve_2021_37216_vuln**' – check the target for QSAN CVE-2021-37216 XSS vulnerability
+- '**server_version_vuln**' – check if the web server is leaking server banner in 'Server' response header
+- '**sonicwall_sslvpn_cve_2024_53704_vuln**' – check the target for SonicWall SSLVPN CVE-2024-53704 vulnerability
+- '**ssl_certificate_weak_signature_vuln**' – check SSL certificate for weak signing algorithms
+- '**ssl_expired_certificate_vuln**' – check if SSL certificate has expired or is close to expiring
+- '**ssl_self_signed_certificate_vuln**' – check for self-signed SSL certificates
+- '**ssl_weak_cipher_vuln**' – check if server's SSL configuration supports weak cipher suites
+- '**ssl_weak_version_vuln**' – check if the server's SSL configuration supports weak protocol versions
+- '**strict_transport_security_vuln**' – check for missing Strict-Transport-Security header
+- '**subdomain_takeover_vuln**' – check the target for potential subdomain takeover
+- '**teamcity_cve_2024_27198_vuln**' – check the target for TeamCity CVE-2024-27198 vulnerability
+- '**tieline_cve_2021_35336_vuln**' – check the target for Tieline CVE-2021-35336 vulnerability
+- '**tjws_cve_2021_37573_vuln**' – check the target for TJWS CVE-2021-37573 vulnerability
+- '**vbulletin_cve_2019_16759_vuln**' – check the target for vBulletin CVE-2019-16759 vulnerability
+- '**wp_plugin_cve_2021_38314_vuln**' – check the target for WordPress plugin CVE-2021-38314
+- '**wp_plugin_cve_2021_39316_vuln**' – check the target for WordPress plugin CVE-2021-39316
+- '**wp_plugin_cve_2021_39320_vuln**' – check the target for WordPress plugin CVE-2021-39320
+- '**wp_plugin_cve_2023_47668_vuln**' – check the target for WordPress plugin CVE-2023-47668
+- '**wp_plugin_cve_2023_6875_vuln**' – check the target for WordPress plugin CVE-2023-6875
+- '**wp_xmlrpc_bruteforce_vuln**' – check if WordPress XML-RPC brute force is possible
+- '**wp_xmlrpc_dos_vuln**' – check if WordPress XML-RPC denial of service is possible
+- '**wp_xmlrpc_pingback_vuln**' – check if WordPress XML-RPC pingback is enabled
+- '**xdebug_rce_vuln**' – check if Xdebug is vulnerable to remote code execution
+- '**x_powered_by_vuln**' – check if the web server is leaking server configuration in 'X-Powered-By' response header
+- '**x_xss_protection_vuln**' – check if header 'X-XSS-Protection' is missing or misconfigured
+- '**zoho_cve_2021_40539_vuln**' – check the target for Zoho CVE-2021-40539 vulnerability
+
 
 ## Brute Modules
 
