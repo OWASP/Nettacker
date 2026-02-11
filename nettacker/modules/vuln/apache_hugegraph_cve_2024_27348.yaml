@@ -28,7 +28,6 @@ payloads:
             input_format: "{{schema}}://{target}:{{ports}}/gremlin"
             prefix: ""
             suffix: ""
-            interceptors:
             data:
               schema:
                 - "http"
@@ -37,6 +36,7 @@ payloads:
                 - 80
                 - 443
                 - 8080
+                - 8443
         body:
           type: json
           data:
@@ -45,11 +45,11 @@ payloads:
             language: "gremlin-groovy"
             aliases: {}
         response:
-          condition_type: or
+          condition_type: and
           conditions:
             status_code:
               regex: "200"
               reverse: false
             content:
-              regex: '"code"\s*:\s*200'
+              regex: '"code"\s*:\s*200.*"data"\s*:\s*\[.*\d+\.\d+.*\]'
               reverse: false
