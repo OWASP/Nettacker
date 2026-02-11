@@ -28,6 +28,7 @@ payloads:
             input_format: "{{schema}}://{target}:{{ports}}/gremlin"
             prefix: ""
             suffix: ""
+            interceptors:
             data:
               schema:
                 - "http"
@@ -41,9 +42,9 @@ payloads:
           type: json
           data:
             gremlin: 'System.getProperty("java.version")'
-            bindings: {}
+            bindings: "{{}}"
             language: "gremlin-groovy"
-            aliases: {}
+            aliases: "{{}}"
         response:
           condition_type: and
           conditions:
