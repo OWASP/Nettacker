@@ -38,9 +38,9 @@ payloads:
                 - 443
                 - 8080
                 - 8443
-        body:
+        data:
           type: json
-          data:
+          content:
             gremlin: 'System.getProperty("java.version")'
             bindings: "{{}}"
             language: "gremlin-groovy"
