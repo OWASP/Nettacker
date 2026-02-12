@@ -47,5 +47,3 @@ payloads:
             content:
               regex: "vCenter Server|VMware|vsphere|vpxd|vSphere Client"
               reverse: false
-```
-
