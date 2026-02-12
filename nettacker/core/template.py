@@ -34,9 +34,17 @@ class TemplateLoader:
         Handle runtime placeholders like:
         - {rand_str(10)}
         """
+
+        def _rand_str_replacer(match):
+            length = min(
+                int(match.group(1)),
+                256,  # maximum length allowed in rand_str
+            )
+            return common_utils.generate_random_token(length)
+
         content = re.sub(
             r"\{rand_str\((\d+)\)\}",
-            lambda m: common_utils.generate_random_token(int(m.group(1))),
+            _rand_str_replacer,
             content,
         )
         return content
