@@ -1,0 +1,51 @@
+info:
+  name: vmware_vcenter_cve_2024_37079_vuln
+  author: Fayzulla Saurov
+  severity: 9
+  description: "CVE-2024-37079 - Heap-based Buffer Overflow in VMware vCenter Server DCERPC protocol. Allows attackers with network access to send specially crafted packets leading to remote code execution. Actively exploited in the wild. Affects vCenter Server versions 5.x, 7.x, and 8.0 before U2d. CVSS 9.8 Critical."
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2024-37079
+    - https://www.vmware.com/security/advisories/VMSA-2024-0012.html
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - vmware
+    - vcenter
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 10
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: true
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/ui/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 5480
+        response:
+          condition_type: or
+          conditions:
+            status_code:
+              regex: "200|302|401|403"
+              reverse: false
+            content:
+              regex: "vCenter Server|VMware|vsphere|vpxd|vSphere Client"
+              reverse: false
+```
+

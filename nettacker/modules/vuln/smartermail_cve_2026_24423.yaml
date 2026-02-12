@@ -1,0 +1,56 @@
+info:
+  name: smartermail_cve_2026_24423_vuln
+  author: Fayzulla Saurov
+  severity: 9
+  description: "CVE-2026-24423 - Unauthenticated RCE in SmarterMail ConnectToHub API. Allows attackers to execute arbitrary OS commands by pointing SmarterMail to a malicious Hub server. Affects SmarterMail versions prior to Build 9511."
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-24423
+    - https://www.vulncheck.com/blog/smartermail-connecttohub-rce-cve-2026-24423
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - smartermail
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 10
+        headers:
+          Content-Type: "application/json"
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/settings/sysadmin/connect-to-hub"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 9998
+                - 9999
+        data:
+          type: json
+          content:
+            hubAddress: "http://127.0.0.1:1"
+            oneTimePassword: "test"
+            nodeName: "nettacker-scan"
+        response:
+          condition_type: or
+          conditions:
+            status_code:
+              regex: "200|401|403"
+              reverse: false
+            content:
+              regex: "hubAddress|ConnectToHub|SmarterMail|oneTimePassword"
+              reverse: false
