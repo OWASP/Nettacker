@@ -143,16 +143,6 @@ payloads:
                         regex: -anubis-auth=
                         reverse: false
                   log: Anubis (Techaro) Found
-              ASP.NET Generic (Microsoft):
-                response:
-                  condition_type: or
-                  conditions:
-                    content:
-                      regex: iis (\d+.)+?detailed error|potentially dangerous request querystring|application
-                        error from being viewed remotely (for security reasons)?|An application
-                        error occurred on the server
-                      reverse: false
-                  log: ASP.NET Generic (Microsoft) Found
               Baffin Bay (Mastercard):
                 response:
                   condition_type: or
@@ -1228,15 +1218,6 @@ payloads:
                         regex: ^naxsi(.+)?
                         reverse: false
                   log: NAXSI (NBS Systems) Found
-              NSFocus (NSFocus Global Inc.):
-                response:
-                  condition_type: or
-                  conditions:
-                    headers:
-                      Server:
-                        regex: NSFocus
-                        reverse: false
-                  log: NSFocus (NSFocus Global Inc.) Found
               Nemesida (PentestIt):
                 response:
                   condition_type: or
@@ -2361,16 +2342,6 @@ payloads:
                         regex: -anubis-auth=
                         reverse: false
                   log: Anubis (Techaro) Found
-              ASP.NET Generic (Microsoft):
-                response:
-                  condition_type: or
-                  conditions:
-                    content:
-                      regex: iis (\d+.)+?detailed error|potentially dangerous request querystring|application
-                        error from being viewed remotely (for security reasons)?|An application
-                        error occurred on the server
-                      reverse: false
-                  log: ASP.NET Generic (Microsoft) Found
               Baffin Bay (Mastercard):
                 response:
                   condition_type: or
@@ -3446,15 +3417,6 @@ payloads:
                         regex: ^naxsi(.+)?
                         reverse: false
                   log: NAXSI (NBS Systems) Found
-              NSFocus (NSFocus Global Inc.):
-                response:
-                  condition_type: or
-                  conditions:
-                    headers:
-                      Server:
-                        regex: NSFocus
-                        reverse: false
-                  log: NSFocus (NSFocus Global Inc.) Found
               Nemesida (PentestIt):
                 response:
                   condition_type: or
@@ -4532,16 +4494,6 @@ payloads:
                         regex: -anubis-auth=
                         reverse: false
                   log: Anubis (Techaro) Found
-              ASP.NET Generic (Microsoft):
-                response:
-                  condition_type: or
-                  conditions:
-                    content:
-                      regex: iis (\d+.)+?detailed error|potentially dangerous request querystring|application
-                        error from being viewed remotely (for security reasons)?|An application
-                        error occurred on the server
-                      reverse: false
-                  log: ASP.NET Generic (Microsoft) Found
               Baffin Bay (Mastercard):
                 response:
                   condition_type: or
@@ -5617,15 +5569,6 @@ payloads:
                         regex: ^naxsi(.+)?
                         reverse: false
                   log: NAXSI (NBS Systems) Found
-              NSFocus (NSFocus Global Inc.):
-                response:
-                  condition_type: or
-                  conditions:
-                    headers:
-                      Server:
-                        regex: NSFocus
-                        reverse: false
-                  log: NSFocus (NSFocus Global Inc.) Found
               Nemesida (PentestIt):
                 response:
                   condition_type: or
