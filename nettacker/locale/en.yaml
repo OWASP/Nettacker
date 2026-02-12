@@ -128,3 +128,10 @@ finish_build_report: "Finished building compare report"
 user_wordlist: "Allows users to enter their own wordlist"
 exclude_ports: "Ports to exclude (e.g. 80 || 80,443|| 1000-1300)"
 http_header: "Add custom HTTP headers to requests (format: 'key: value'). For multiple headers, use multiple -H flags"
+external_services: External Services
+external_services_options: External Services Options
+netlas_api_key_help: Netlas.io API Key
+hackertarget_api_key_help: HackerTarget.com API Key
+certspotter_api_key_help: CertSpotter API Key
+urlscan_api_key_help: URLScan.io API Key
+dnsdumpster_api_key_help: DNSDumpster API Key
