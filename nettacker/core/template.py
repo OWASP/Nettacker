@@ -33,7 +33,6 @@ class TemplateLoader:
         """
         Handle runtime placeholders like:
         - {rand_str(10)}
-        - {rand_int(6)}
         """
         content = re.sub(
             r"\{rand_str\((\d+)\)\}",
