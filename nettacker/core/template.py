@@ -1,8 +1,10 @@
 import copy
 import re
+
 import yaml
-from nettacker.core.utils import common as common_utils
+
 from nettacker.config import Config
+from nettacker.core.utils import common as common_utils
 
 
 class TemplateLoader:
@@ -26,7 +28,7 @@ class TemplateLoader:
                 array_index += 1
 
         return module_content
-    
+
     def _apply_dynamic_placeholders(self, content: str) -> str:
         """
         Handle runtime placeholders like:
@@ -39,7 +41,7 @@ class TemplateLoader:
             content,
         )
         return content
-    
+
     def open(self):
         module_name_parts = self.name.split("_")
         action = module_name_parts[-1]
