@@ -138,4 +138,4 @@ database_query_fail: Could not query the database
 report_retrieval_fail: Could not retrieve the report
 read_report_fail: Failed to read report file {0}
 search_results_end: No more search results
-database_error: database error!
+database_error: Database error!

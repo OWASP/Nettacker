@@ -795,7 +795,7 @@ class TestDatabase:
         result = find_events("192.168.1.1", "http", "scan_123")
 
         assert result == []
-        mock_warn.assert_called_once_with("could not connect to the database!")
+        mock_warn.assert_called_once_with("Could not query the database")
 
     @patch("nettacker.database.db.create_connection")
     def test_find_events_sqlalchemy(self, mock_create_conn):

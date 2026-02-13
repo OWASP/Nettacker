@@ -488,7 +488,7 @@ def find_events(target, module_name, scan_id):
                 return [json.dumps((json.loads(row[0]))) for row in rows]
             return []
         except Exception:
-            logger.warn(messages("database_connect_fail"))
+            logger.warn(messages("database_query_fail"))
             return []
         finally:
             try:
