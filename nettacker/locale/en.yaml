@@ -128,3 +128,14 @@ finish_build_report: "Finished building compare report"
 user_wordlist: "Allows users to enter their own wordlist"
 exclude_ports: "Ports to exclude (e.g. 80 || 80,443|| 1000-1300)"
 http_header: "Add custom HTTP headers to requests (format: 'key: value'). For multiple headers, use multiple -H flags"
+apsw_ill_configuration: "APSW has been set in the configurations but not installed in the environment"
+apsw_connection_error: Failed to create the APSW connection {0}
+report_insertion_fail: Could not insert the report to the reports table
+remove_logs_fail: Could not remove old logs
+database_lock_issue: Retry {0}, Database is locked. Retrying submission to database
+database_retries_exhausted: All retries exhausted. Skipping this log.
+database_query_fail: Could not query the database
+report_retrieval_fail: Could not retrieve the report
+read_report_fail: Failed to read report file {0}
+search_results_end: No more search results
+database_error: Database error!
