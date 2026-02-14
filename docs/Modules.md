@@ -128,6 +128,51 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 
 ## Vuln Modules
 
+- '**aiohttp_cve_2024_23334_vuln**' - check the target for CVE-2024-23334
+- '**apache_ofbiz_cve_2024_38856**' - check the target for Apache OFBiz CVE-2024-38856
+- '**apache_struts_vuln**' - check Apache Struts for CVE-2017-5638
+- '**Bftpd_double_free_vuln**' - check bftpd for CVE-2007-2010
+- '**Bftpd_memory_leak_vuln**' - check bftpd for CVE-2017-16892
+- '**Bftpd_parsecmd_overflow_vuln**'- check bftpd for CVE-2007-2051
+- '**Bftpd_remote_dos_vuln**' - check bftpd for CVE-2009-4593
+- '**CCS_injection_vuln**' - check SSL for Change Cipher Spec (CCS Injection) CVE-2014-0224
+- '**citrix_cve_2019_19781_vuln**' - check the target for Citrix CVE-2019-19781 vulnerability
+- '**citrix_cve_2023_24488_vuln**' - check the target for Citrix CVE-2023-24488 XSS vulnerability
+- '**clickjacking_vuln**' - check the web server for missing 'X-Frame-Options' header (clickjacking protection)
+- '**content_security_policy_vuln**' - check the web server for missing 'Content-Security-Policy' header
+- '**content_type_options_vuln**' - check the web server for missing 'X-Content-Type-Options'=nosniff header
+- '**crushftp_cve_2025_31161_vuln**' - check the target for CrushFTP CVE-2025-31161 vulnerability
+- '**f5_cve_2020_5902_vuln**' - check the target for F5 RCE CVE-2020-5902 vulnerability
+- '**heartbleed_vuln**' - check SSL for Heartbleed vulnerability (CVE-2014-0160)
+- '**msexchange_cve_2021_26855**' - check the target for MS Exchange SSRF CVE-2021-26855 (proxylogon/hafnium)
+- '**http_cors_vuln**' - check the web server for overly-permissive CORS (header 'Access-Control-Allow-Origin'=\*)
+- '**joomla_cve_2023_23752_vuln**' - check the target for Joomla CVE-2023-23752 information disclosure vulnerability
+- '**options_method_enabled_vuln**' - check if OPTIONS method is enabled on the web server
+- '**paloalto_panos_cve_2025_0108_vuln**' - check the target for PaloAlto PAN-OS CVE-2025-0108 vulnerability
+- '**paloalto_globalprotect_cve_2025_0133_vuln**' - check the target for PaloAlto GlobalProtect CVE-2025-0133 XSS vulnerability
+- '**ProFTPd_bypass_sqli_protection_vuln**' - check ProFTPd for CVE-2009-0543
+- '**ProFTPd_cpu_consumption_vuln**' - check ProFTPd for CVE-2008-7265
+- '**ProFTPd_directory_traversal_vuln**' - check ProFTPd for CVE-2010-3867
+- '**ProFTPd_exec_arbitary_vuln**' - check ProFTPd for CVE-2011-4130
+- '**ProFTPd_heap_overflow_vuln**' - check ProFTPd for CVE-2010-4652
+- '**ProFTPd_integer_overflow_vuln**' - check ProFTPd for CVE-2011-1137
+- '**ProFTPd_memory_leak_vuln**' - check ProFTPd for CVE-2001-0136
+- '**ProFTPd_restriction_bypass_vuln**' - check ProFTPd for CVE-2009-3639
+- '**server_version_vuln**' - check if the web server is leaking server banner in 'Server' response header
+- '**sonicwall_sslvpn_cve_2024_53704_vuln**' - check the target for SonicWALL SSLVPN CVE-2024-53704 vulnerability
+- '**ssl_signed_certificate_vuln**' - check for self-signed & other signing issues(weak signing algorithm) in SSL certificate
+- '**ssl_expired_certificate_vuln**' - check if SSL certificate has expired or is close to expiring
+- '**ssl_version_vuln**' - check if the server's SSL configuration supports old and insecure SSL versions
+- '**ssl_weak_cipher_vuln**' - check if server's SSL configuration supports weak cipher suites
+- '**wordpress_dos_cve_2018_6389_vuln**' - check if Wordpress is vulnerable to CVE-2018-6389 Denial Of Service (DOS)
+- '**wp_plugin_cve_2023_47668_vuln**' - check the target for CVE-2023-47668
+- '**wp_xmlrpc_bruteforce_vuln**' - check if Wordpress is vulnerable to credential Brute Force via XMLRPC wp.getUsersBlogs
+- '**wp_xmlrpc_pingback_vuln**' - check if Wordpress is vulnerable to XMLRPC pingback
+- '**x_powered_by_vuln**' - check if the web server is leaking server configuration in 'X-Powered-By' response header
+- '**xdebug_rce_vuln**' - checks if web server is running XDebug version 2.5.5 vulnerable to RCE
+- '**XSS_protection_vuln**' - check if header 'X-XSS-Protection' header is set to '1; mode=block'
+- '**vite_cve_2025_31125_vuln**' - check the target for CVE-2025-31125
+- '**vbulletin_cve_2019_16759_vuln**' - check the target for vBulletin RCE CVE-2019-16759 vulnerability
 - '**accela_cve_2021_34370_vuln**' – check for authentication bypass vulnerability in Accela Civic Platform
 - '**adobe_coldfusion_cve_2023_26360_vuln**' – check for remote code execution vulnerability in Adobe ColdFusion
 - '**aiohttp_cve_2024_23334_vuln**' – check the target for CVE-2024-23334
