@@ -248,4 +248,4 @@ category_framework: "دسته: {0}، چارچوب : {1} پیدا شد!"
 nothing_found: "{0} هیچ چیزی در {1} پیدا نشد!!"
 no_auth: احراز هویت در {0}:{1} پیدا نشد
 
-ssl_certificate_fetch_failed: ""
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"

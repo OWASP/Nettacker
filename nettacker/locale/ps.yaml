@@ -241,4 +241,4 @@ category_framework: "وېشنيزه: {0}، چوکاټونه: {1} وموندل ش
 nothing_found: په {1} کې {1} کې هیڅ شی ندی موندلی!
 no_auth: "په {0}: {1} کې هیڅ لیک نه موندل شوی"
 
-ssl_certificate_fetch_failed: ""
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"

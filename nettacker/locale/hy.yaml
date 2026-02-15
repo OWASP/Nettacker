@@ -254,4 +254,4 @@ category_framework: "կատեգորիա `{0}, շրջանակներ` {1} գտավ
 nothing_found: "{1} -ում {0} -ում հայտնաբերված ոչինչ չկա:"
 no_auth: "{0} - {1} - ում հայտնաբերված ոչ մի վավերագիր"
 
-ssl_certificate_fetch_failed: ""
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"

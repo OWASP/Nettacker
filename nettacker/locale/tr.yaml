@@ -255,4 +255,4 @@ category_framework: "kategori: {0}, çerçeveler: {1} bulundu!"
 nothing_found: "{1} 'de {0} tarihinde hiçbir şey bulunamadı!"
 no_auth: "{0} tarihinde hiçbir kimlik bulunamadı: {1}"
 
-ssl_certificate_fetch_failed: ""
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"

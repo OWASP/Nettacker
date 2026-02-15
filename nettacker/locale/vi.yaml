@@ -253,4 +253,4 @@ category_framework: "danh mục: {0}, khung: {1} được tìm thấy!"
 nothing_found: không tìm thấy gì trên {0} trong {1}!
 no_auth: "Không tìm thấy auth trên {0}: {1}"
 
-ssl_certificate_fetch_failed: ""
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"

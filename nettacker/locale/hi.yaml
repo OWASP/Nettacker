@@ -123,4 +123,4 @@ no_scan_to_compare: तुलना करने के लिए scan_id नह
 compare_report_saved: "{0} में तुलना परिणाम सहेजे गए"
 build_compare_report: "तुलना रिपोर्ट बनाई जा रही है"
 finish_build_report: "तुलना रिपोर्ट तैयार हो गई"
-ssl_certificate_fetch_failed: ""
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"

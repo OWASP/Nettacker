@@ -228,4 +228,4 @@ category_framework: "קטגוריה: {0}, מסגרות: {1} נמצאו!"
 nothing_found: דבר לא נמצא ב- {0} ב- {1}!
 no_auth: "לא נמצאה כתובת אימות ב- {0}: {1}"
 
-ssl_certificate_fetch_failed: ""
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"

@@ -213,4 +213,4 @@ compare_report_saved: "비교 결과가 {0}에 저장되었습니다"
 build_compare_report: "비교 보고서 생성 중"
 finish_build_report: "비교 보고서 생성 완료"
 
-ssl_certificate_fetch_failed: ""
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"
