@@ -210,6 +210,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**justwriting_cve_2021_41878_vuln**' – check the target for JustWriting CVE-2021-41878
 - '**log4j_cve_2021_44228_vuln**' – check the target for Log4Shell CVE-2021-44228 vulnerability
 - '**maxsite_cms_cve_2021_35265_vuln**' – check the target for MaxSite CMS CVE-2021-35265
+- '**meteobridge_cve_2025_4008_vuln**' - check for MeteoBridge unauthenticated command injection CVE-2025-4008
 - '**msexchange_cve_2021_26855_vuln**' – check the target for MS Exchange SSRF CVE-2021-26855
 - '**msexchange_cve_2021_34473_vuln**' – check the target for MS Exchange CVE-2021-34473 vulnerability
 - '**novnc_cve_2021_3654_vuln**' – check the target for noVNC CVE-2021-3654 vulnerability
