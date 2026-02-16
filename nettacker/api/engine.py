@@ -8,22 +8,21 @@ import time
 from threading import Thread
 from types import SimpleNamespace
 
-from flask import Flask, jsonify
+from flask import Flask, Response, abort, jsonify, make_response, render_template
 from flask import request as flask_request
-from flask import render_template, abort, Response, make_response
 from werkzeug.serving import WSGIRequestHandler
 from werkzeug.utils import secure_filename
 
 from nettacker import logger
 from nettacker.api.core import (
-    get_value,
+    api_key_is_valid,
     get_file,
-    mime_types,
-    scan_methods,
-    profiles,
+    get_value,
     graphs,
     languages_to_country,
-    api_key_is_valid,
+    mime_types,
+    profiles,
+    scan_methods,
 )
 from nettacker.api.helpers import structure
 from nettacker.config import Config
@@ -31,16 +30,16 @@ from nettacker.core.app import Nettacker
 from nettacker.core.die import die_failure
 from nettacker.core.graph import create_compare_report
 from nettacker.core.messages import messages as _
-from nettacker.core.utils.common import now, generate_compare_filepath
+from nettacker.core.utils.common import generate_compare_filepath, now
 from nettacker.database.db import (
     create_connection,
     get_logs_by_scan_id,
-    select_reports,
     get_scan_result,
     last_host_logs,
+    logs_to_report_html,
     logs_to_report_json,
     search_logs,
-    logs_to_report_html,
+    select_reports,
 )
 from nettacker.database.models import Report
 
