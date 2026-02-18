@@ -46,7 +46,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: 200
+              regex: "200"
               reverse: false
             headers:
               Content-Length:
