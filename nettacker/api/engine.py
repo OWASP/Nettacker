@@ -373,10 +373,12 @@ def get_results():
 @app.route("/results/get", methods=["GET"])
 def get_result_content():
     """
-    get a result HTML/TEXT/JSON content
-
+    Retrieve the raw scan result content for a given report id and return it as an HTTP response.
+    
+    Validates the API key on the incoming request. If the "id" parameter is missing, responds with HTTP 400; if the report cannot be retrieved, responds with HTTP 500.
+    
     Returns:
-        content of the scan result
+        Response: HTTP response whose body is the scan file content, with the MIME type determined from the file extension and a `Content-Disposition` attachment filename header.
     """
     api_key_is_valid(app, flask_request)
     scan_id = get_value(flask_request, "id")
@@ -391,7 +393,7 @@ def get_result_content():
     return Response(
         file_content,
         mimetype=mime_types().get(os.path.splitext(filename)[1], "text/plain"),
-        headers={"Content-Disposition": "attachment;filename=" + filename.split("/")[-1]},
+        headers={"Content-Disposition": "attachment;filename=" + os.path.basename(filename)},
     )
 
 
