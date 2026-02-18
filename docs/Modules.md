@@ -225,6 +225,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**puneethreddyhc_sqli_cve_2021_41649_vuln**' – check the target for SQL injection CVE-2021-41649
 - '**qsan_storage_xss_cve_2021_37216_vuln**' – check the target for QSAN CVE-2021-37216 XSS vulnerability
 - '**server_version_vuln**' – check if the web server is leaking server banner in 'Server' response header
+- '**smartermail_cve_2026_24423_vuln**' – check the target for SmarterMail CVE-2026-24423 unauthenticated RCE vulnerability
 - '**sonicwall_sslvpn_cve_2024_53704_vuln**' – check the target for SonicWall SSLVPN CVE-2024-53704 vulnerability
 - '**ssl_certificate_weak_signature_vuln**' – check SSL certificate for weak signing algorithms
 - '**ssl_expired_certificate_vuln**' – check if SSL certificate has expired or is close to expiring

@@ -1,0 +1,60 @@
+info:
+  name: smartermail_cve_2026_24423_vuln
+  author: OWASP Nettacker Team
+  severity: 9.3
+  description: >
+    CVE-2026-24423 is a critical unauthenticated remote code execution vulnerability in SmarterTools
+    SmarterMail before build 9511. The ConnectToHub API endpoint allows anonymous users to trigger
+    arbitrary command execution via attacker-controlled hubAddress parameter. This module detects
+    vulnerable versions (< 100.0.9511) via the unauthenticated licensing/about API endpoint.
+  reference:
+    - https://www.vulncheck.com/blog/smartermail-connecttohub-rce-cve-2026-24423
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-24423
+    - https://www.smartertools.com/smartermail/release-notes/current
+    - https://www.cve.org/CVERecord?id=CVE-2026-24423
+    - https://code-white.com/public-vulnerability-list/
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2026
+    - smartermail
+    - smartertools
+    - cisa_kev
+
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Accept: "application/json"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/licensing/about"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 9998
+                - 17017
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "100\\.0\\.(\\d{1,3}|[0-8][0-9]{3}|9[0-4][0-9]{2}|950[0-9]|9510)(?!\\d)"
+              reverse: false
