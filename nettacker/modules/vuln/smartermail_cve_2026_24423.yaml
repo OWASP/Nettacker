@@ -2,25 +2,11 @@ info:
   name: smartermail_cve_2026_24423_vuln
   author: OWASP Nettacker Team
   severity: 9.3
-  description: |
-    CVE-2026-24423 is a critical unauthenticated remote code execution vulnerability in SmarterTools 
-    SmarterMail before build 9511 (version 100.0.9511). The ConnectToHub API endpoint 
-    (/api/v1/settings/sysadmin/connect-to-hub) in MailService.dll allows anonymous users via 
-    [AuthenticatedService(AllowAnonymous = true)].
-    
-    The attack flow:
-    1. Attacker sends POST to /api/v1/settings/sysadmin/connect-to-hub with hubAddress parameter
-    2. Server connects to attacker's hubAddress at /web/api/node-management/setup-initial-connection
-    3. Attacker responds with JSON containing SystemMount.CommandMount parameter
-    4. Server executes CommandMount via MountConfiguration.RunCommand -> CommandLine.RunCommand
-    5. Commands execute via cmd.exe (Windows) or /bin/bash (Linux)
-    
-    Detection: This module sends a POST request to the vulnerable endpoint. Vulnerable versions 
-    attempt to connect to the hubAddress and return specific error messages. Patched versions (9511+) 
-    respond differently.
-    
-    Discovered independently by: Sina Kheirkhah & Piotr Bazydlo (watchTowr), Markus Wulftange 
-    (CODE WHITE GmbH), and Cale Black (VulnCheck). CVSS 9.3, actively exploited in ransomware campaigns.
+  description: >
+    CVE-2026-24423 is a critical unauthenticated remote code execution vulnerability in SmarterTools
+    SmarterMail before build 9511. The ConnectToHub API endpoint allows anonymous users to trigger
+    arbitrary command execution via attacker-controlled hubAddress parameter. This module detects
+    vulnerable versions (< 100.0.9511) via the unauthenticated licensing/about API endpoint.
   reference:
     - https://www.vulncheck.com/blog/smartermail-connecttohub-rce-cve-2026-24423
     - https://nvd.nist.gov/vuln/detail/CVE-2026-24423
@@ -41,9 +27,8 @@ info:
 payloads:
   - library: http
     steps:
-      # Step 1: Check if target is SmarterMail via licensing/about endpoint (unauthenticated)
       - method: get
-        timeout: 5
+        timeout: 3
         headers:
           User-Agent: "{user_agent}"
           Accept: "application/json"
@@ -71,52 +56,5 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              # Look for SmarterMail-specific identifiers in the licensing/about response
-              regex: "(SmarterMail|smartermail|SmarterTools)"
-              reverse: false
-
-      # Step 2: Test ConnectToHub endpoint (VulnCheck approach)
-      # POST to /api/v1/settings/sysadmin/connect-to-hub with hubAddress pointing to non-routable IP
-      # Vulnerable versions will attempt to connect and return specific error responses
-      # Patched versions (9511+) respond with different status or no hub-related errors
-      - method: post
-        timeout: 5
-        headers:
-          User-Agent: "{user_agent}"
-          Content-Type: "application/json"
-          Accept: "application/json"
-        allow_redirects: false
-        ssl: false
-        json:
-          hubAddress: "http://127.0.0.1:1"
-          oneTimePassword: "nettacker-test"
-          nodeName: "nettacker-probe"
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/api/v1/settings/sysadmin/connect-to-hub"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
-                - 9998
-                - 17017
-        response:
-          condition_type: and
-          log: "CVE-2026-24423: SmarterMail ConnectToHub Unauthenticated RCE - Vulnerable endpoint responded (version < 9511)"
-          conditions:
-            status_code:
-              # Vulnerable versions consistently return 400 with "Encountered an exception" 
-              # when provided with a non-routable or malformed hubAddress, whereas patched versions
-              # handle the request differently or deny it.
-              regex: "400"
-              reverse: false
-            content:
-              # Matches the specific JSON error returned by the vulnerable endpoint
-              regex: "Encountered an exception"
+              regex: "100\\.0\\.(\\d{1,3}|[0-8][0-9]{3}|9[0-4][0-9]{2}|950[0-9]|9510)(?!\\d)"
               reverse: false
