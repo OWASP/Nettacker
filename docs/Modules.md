@@ -128,8 +128,8 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 
 - '**aiohttp_cve_2024_23334_vuln**' - check the target for CVE-2024-23334
 - '**apache_ofbiz_cve_2024_38856**' - check the target for Apache OFBiz CVE-2024-38856
-- '**beyondtrust_rs_pra_cve_2026_1731_vuln**' - check the target for BeyondTrust Remote Support/Privileged Remote Access CVE-2026-1731 command injection vulnerability
 - '**apache_struts_vuln**' - check Apache Struts for CVE-2017-5638
+- '**beyondtrust_rs_pra_cve_2026_1731_vuln**' - check the target for BeyondTrust Remote Support/Privileged Remote Access CVE-2026-1731 command injection vulnerability
 - '**Bftpd_double_free_vuln**' - check bftpd for CVE-2007-2010
 - '**Bftpd_memory_leak_vuln**' - check bftpd for CVE-2017-16892
 - '**Bftpd_parsecmd_overflow_vuln**'- check bftpd for CVE-2007-2051
