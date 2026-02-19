@@ -16,6 +16,8 @@ info:
     - https://www.beyondtrust.com/trust-center/security-advisories/bt26-02
     - https://www.rapid7.com/blog/post/etr-cve-2026-1731-critical-unauthenticated-remote-code-execution-rce-beyondtrust-remote-support-rs-privileged-remote-access-pra/
     - https://attackerkb.com/topics/CVE-2026-1731
+    - https://attackerkb.com/topics/jNMBccstay/cve-2026-1731/rapid7-analysis
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2026-1731
   profiles:
     - vuln
     - http
@@ -24,6 +26,7 @@ info:
     - cve2026
     - beyondtrust
     - rce
+    - cisa_kev
 
 payloads:
   - library: http
@@ -59,5 +62,5 @@ payloads:
               # Note: RS is affected up to 25.3.1, PRA only up to 24.3.4.
               # Version-only detection cannot differentiate products, so this
               # regex covers the full RS range. PRA 25.x may produce false positives.
-              regex: "\\b(21\\.3\\.[1-9]\\d*|21\\.[4-9]\\.\\d+|22\\.[0-2]\\.\\d+|22\\.3\\.[0-4]|23\\.2\\.[1-9]\\d*|23\\.[3-9]\\.\\d+|24\\.\\d+\\.\\d+|25\\.0\\.\\d+|25\\.1\\.[0-5]|25\\.2\\.[1-9]\\d*|25\\.3\\.[01])(?!\\d)"
+              regex: "\\b(21\\.3\\.\\d+|21\\.[4-9]\\.\\d+|22\\.[0-2]\\.\\d+|22\\.3\\.[0-4]|23\\.2\\.\\d+|23\\.[3-9]\\.\\d+|24\\.\\d+\\.\\d+|25\\.0\\.\\d+|25\\.1\\.[0-5]|25\\.2\\.\\d+|25\\.3\\.[01])(?!\\d)"
               reverse: false
