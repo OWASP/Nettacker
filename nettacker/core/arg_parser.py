@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 
 import yaml
 
+from nettacker.core.utils.ports import parse_port_expression
 from nettacker import all_module_severity_and_desc
 from nettacker.config import version_info, Config
 from nettacker.core.die import die_failure, die_success
@@ -661,35 +662,10 @@ class ArgParser(ArgumentParser):
                     options.selected_modules.remove(excluded_module)
         # Check port(s)
         if options.ports:
-            tmp_ports = set()
-            for port in options.ports.split(","):
-                try:
-                    if "-" in port:
-                        for port_number in range(
-                            int(port.split("-")[0]), int(port.split("-")[1]) + 1
-                        ):
-                            tmp_ports.add(port_number)
-                    else:
-                        tmp_ports.add(int(port))
-                except Exception:
-                    die_failure(_("ports_int"))
-            options.ports = list(tmp_ports)
+            options.ports = parse_port_expression(options.ports)
         # Check for excluded ports
         if options.excluded_ports:
-            tmp_excluded_ports = set()
-
-            for excluded_port in options.excluded_ports.split(","):
-                try:
-                    if "-" in excluded_port:
-                        for excluded_port_number in range(
-                            int(excluded_port.split("-")[0]), int(excluded_port.split("-")[1]) + 1
-                        ):
-                            tmp_excluded_ports.add(excluded_port_number)
-                    else:
-                        tmp_excluded_ports.add(int(excluded_port))
-                except Exception:
-                    die_failure(_("ports_int"))
-            options.excluded_ports = list(tmp_excluded_ports)
+            options.excluded_ports = parse_port_expression(tmp_excluded_ports)
 
         if options.user_agent == "random_user_agent":
             options.user_agents = open(Config.path.user_agents_file).read().split("\n")
