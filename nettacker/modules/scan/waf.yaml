@@ -76,12 +76,12 @@ payloads:
                 # -------------------------
                 # XSS
                 # -------------------------
-                - "<script>alert(\\\"NETTACKER\\\");</script>"              # xss
-                - "<script>alert(1);</script>"                          # xss
-                - "<script>alert(\\\"test\\\");</script>"                   # xss
+                - '<script>alert(\"NETTACKER\");</script>'              # xss
+                - '<script>alert(1);</script>'                          # xss
+                - '<script>alert(\"test\");</script>'                   # xss
                 - "<script>alert('test');</script>"                     # xss
                 - "<img src=x onerror=alert(1)>"                         # xss (event-based)
-                - "\\\"><script>alert(\\\"XSS\\\");</script>"                 # xss (breakout)
+                - '\"><script>alert(\"XSS\");</script>'                 # xss (breakout)
 
                 # -------------------------
                 # SQL Injection – boolean based
@@ -120,8 +120,8 @@ payloads:
                 # -------------------------
                 # XXE
                 # -------------------------
-                - "<!ENTITY xxe SYSTEM \\\"file:///etc/passwd\\\">"          # xxe
-                - "<!ENTITY xxe SYSTEM \\\"file:///etc/shadow\\\">"          # xxe
+                - '<!ENTITY xxe SYSTEM \"file:///etc/passwd\">'          # xxe
+                - '<!ENTITY xxe SYSTEM \"file:///etc/shadow\">'          # xxe
         response:
           dependent_on_temp_event: valid_request_status
           condition_type: or
@@ -334,7 +334,7 @@ payloads:
                   condition_type: or
                   conditions:
                     content:
-                      regex: blocked by website protection from armor|please create an armor support ticket|please create an armor support ticket
+                      regex: blocked by website protection from armor|please create an armor support ticket
                       reverse: false
                   log: Armor Defense (Armor) Found
               ArvanCloud (ArvanCloud):
@@ -790,42 +790,6 @@ payloads:
                         regex: EisooWAF(\-AZURE)?/?
                         reverse: false
                   log: Eisoo Cloud Firewall (Eisoo) Found
-              Envoy (EnvoyProxy):
-                response:
-                  condition_type: or
-                  conditions:
-                    headers:
-                      Server:
-                        regex: envoy
-                        reverse: false
-                      x-envoy-upstream-service-time:
-                        regex: .+?
-                        reverse: false
-                      x-envoy-downstream-service-cluster:
-                        regex: .+?
-                        reverse: false
-                      x-envoy-downstream-service-node:
-                        regex: .+?
-                        reverse: false
-                      x-envoy-external-address:
-                        regex: .+?
-                        reverse: false
-                      x-envoy-force-trace:
-                        regex: .+?
-                        reverse: false
-                      x-envoy-internal:
-                        regex: .+?
-                        reverse: false
-                      x-envoy-original-dst-host:
-                        regex: .+?
-                        reverse: false
-                      x-envoy-original-path:
-                        regex: .+?
-                        reverse: false
-                      x-envoy-local-overloaded:
-                        regex: .+?
-                        reverse: false
-                  log: Envoy (EnvoyProxy) Found
               Expression Engine (EllisLab):
                 response:
                   condition_type: or
@@ -923,15 +887,6 @@ payloads:
                       regex: GoDaddy (security|website firewall)
                       reverse: false
                   log: GoDaddy Website Protection (GoDaddy) Found
-              Google Cloud App Armor (Google Cloud):
-                response:
-                  condition_type: or
-                  conditions:
-                    headers:
-                      Via:
-                        regex: 1\.1 google
-                        reverse: false
-                  log: Google Cloud App Armor (Google Cloud) Found
               Greywizard (Grey Wizard):
                 response:
                   condition_type: or
@@ -1508,7 +1463,7 @@ payloads:
                   condition_type: and
                   conditions:
                     content:
-                      regex: <img class="logo loader" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAbgAAABHCAIAAAD6G8WcAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw|content="Request is denied"|<title>Forbidden</title>
+                      regex: <img class="logo loader" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAbgAAABHCAIAAAD6G8WcAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw|content="Request is denied"
                       reverse: false
                     status_code:
                       regex: '403'
@@ -1664,7 +1619,7 @@ payloads:
                     content:
                       regex: (?s)(?=.*Please solve CAPTCHA)(?=.*shieldon_captcha)(?=.*Unusual behavior detected)(?=.*status-user-info)
                       reverse: false
-                log: Shieldon Firewall (Shieldon.io) Found
+                  log: Shieldon Firewall (Shieldon.io) Found
               Shieldon Firewall (Shieldon.io) condition2:
                 response:
                   condition_type: or 
@@ -1672,7 +1627,7 @@ payloads:
                     content:
                       regex: (?s)(?=.*Access denied)(?=.*The IP address you are using has been blocked.)(?=.*status-user-info)
                       reverse: false
-                log: Shieldon Firewall (Shieldon.io) Found
+                  log: Shieldon Firewall (Shieldon.io) Found
               Shieldon Firewall (Shieldon.io) condition3:
                 response:
                   condition_type: or
@@ -1680,7 +1635,7 @@ payloads:
                     content:
                       regex: (?s)(?=.*Please line up)(?=.*This page is limiting the number of people online. Please wait a moment.)
                       reverse: false
-                log: Shieldon Firewall (Shieldon.io) Found
+                  log: Shieldon Firewall (Shieldon.io) Found
               Shieldon Firewall (Shieldon.io) condition4:
                 response:
                   condition_type: or
@@ -1689,7 +1644,7 @@ payloads:
                       X-Protected-By:
                         regex: (?i)shieldon\.io
                         reverse: false
-                log: Shieldon Firewall (Shieldon.io) Found
+                  log: Shieldon Firewall (Shieldon.io) Found
               SiteGround (SiteGround):
                 response:
                   condition_type: or
