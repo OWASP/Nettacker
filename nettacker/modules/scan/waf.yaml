@@ -416,7 +416,7 @@ payloads:
                   log: BIG-IP AP Manager (F5 Networks) Found
               BIG-IP AppSec Manager (F5 Networks):
                 response:
-                  condition_type: and
+                  condition_type: or 
                   conditions:
                     content:
                       regex: (?s)^(?=.*the requested url was rejected)(?=.*please consult with your
