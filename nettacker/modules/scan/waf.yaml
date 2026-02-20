@@ -367,18 +367,6 @@ payloads:
                         regex: Azion([-_]CDN)?
                         reverse: false
                   log: AzionCDN (AzionCDN) Found
-              Azion Edge Firewall (Azion):
-                response:
-                  condition_type: or
-                  conditions:
-                    headers:
-                      x-azion-edge-pop:
-                        regex: .+?
-                        reverse: false
-                      x-azion-request-id:
-                        regex: .+?
-                        reverse: false
-                  log: Azion Edge Firewall (Azion) Found
               Azure Application Gateway (Microsoft):
                 response:
                   condition_type: and
@@ -1762,10 +1750,6 @@ payloads:
                 response:
                   condition_type: and
                   conditions:
-                    headers:
-                      X-Request-ID:
-                        regex: .*
-                        reverse: false
                     status_code:
                       regex: '403'
                       reverse: false
@@ -1879,7 +1863,7 @@ payloads:
                   condition_type: and
                   conditions:
                     content:
-                      regex: <title>Vercel Security Checkpoint</title>|/vercel/security/
+                      regex: <title>Vercel Security Checkpoint</title>
                       reverse: false
                   log: Vercel WAF (Vercel) Found
               Viettel (Cloudrity):
