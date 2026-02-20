@@ -844,7 +844,7 @@ payloads:
                   condition_type: and
                   conditions:
                     content:
-                      regex: FortiGuard Intrusion Prevention|//globalurl.fortinet.net
+                      regex: FortiGuard Intrusion Prevention|//globalurl\.fortinet\.net
                       reverse: false
                   log: FortiGuard (Fortinet) Found
               FortiWeb (Fortinet) condition1:
