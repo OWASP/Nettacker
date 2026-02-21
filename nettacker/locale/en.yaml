@@ -112,6 +112,7 @@ target_list: target(s) list, separate with ","
 thread_number_connections: thread numbers for connections to a host
 thread_number_modules: parallel module scan for hosts
 time_to_sleep: time to sleep between each request
+timeout: request timeout in seconds
 unauthorized_IP: your IP not authorized
 updating_database: updating the database...
 username_from_file: read username(s) from file
