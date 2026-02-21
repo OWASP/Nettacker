@@ -1,20 +1,23 @@
 info:
-  name: next_cve_2025_55182_vuln
+  name: nextjs_cve_2025_55182_vuln
   author: Sankalp Bansal
   severity: 10.0
   description: >
-    CVE-2025-55182 is a critical vulnerability in react and frameworks/tools
-    that support React Server Components (RSC).
+    CVE-2025-55182/CVE-2025-66478(popularly known as react2Shell) is a critical
+    vulnerability in react and frameworks/tools that support React Server Components.
     Affected versions: 
-      - react: v19.0, 19.1.0, 19.1.1 and 19.2.0
-      - next.js: v15.x, 16.x, 14.3.0-canary.77 and later canary releases
+      - reactjs: v19.0, 19.1.0, 19.1.1 and 19.2.0
+      - nextjs: v15.x, 16.x, 14.3.0-canary.77 and later canary releases
     This vulnerability exploits the react flight protocol which is used by RSC
     to deserialize the input from client. It leads to unauthenticated RCE on the 
     server.
     NOTE: When scanning local development servers ('next dev'), use '--timeout 20' 
     to account for initial compilation latency. Production servers do not require this.
+    NOTE: CVE-2025-66478 was identified as a duplicate of CVE-2025-55182, and hence was
+    rejected later.
   reference:
     - https://nvd.nist.gov/vuln/detail/CVE-2025-55182
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-66478
     - https://react.dev/blog/2025/12/03/critical-security-vulnerability-in-react-server-components
     - https://www.wiz.io/blog/nextjs-cve-2025-55182-react2shell-deep-dive
   profiles:
@@ -23,10 +26,11 @@ info:
     - critical_severity
     - cve
     - cve2025
-    - react
+    - reactjs
     - react2shell
     - nextjs
     - rce
+    - cisa_kev
 
 payloads:
   - library: http
