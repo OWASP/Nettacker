@@ -763,7 +763,9 @@ function filter_large_content(content, filter_rate){
 
 
   function show_crawler(res) {
-    res = JSON.parse(res);
+    if (typeof res === "string") {
+      res = JSON.parse(res);
+    }
     // var HTMLData = "";
     // var host;
     // var category;
@@ -971,14 +973,19 @@ function filter_large_content(content, filter_rate){
       dataType: "text",
     })
     .done(function (res) {
-      const totalPages = Math.ceil(res.length / 10);
+      const data = typeof res === "string" ? JSON.parse(res) : res;
+      const itemCount = Array.isArray(data) ? data.length : 0;
+      const totalPages =
+        itemCount < 10
+          ? crawler_page
+          : Math.max(crawler_page, crawler_page + 1);
       $("#login_first").addClass("hidden");
       $("#crawl_results").removeClass("hidden");
       $("#crw_refresh_btn").removeClass("hidden");
       $("#crw_nxt_prv_btn").removeClass("hidden");
       $("#current_page_number").text(crawler_page);
       $("#total_pages").text(totalPages);
-      show_crawler(res);
+      show_crawler(data);
       updatePaginationControls(totalPages, crawler_page);
   
       if (crawler_page === 1) {
