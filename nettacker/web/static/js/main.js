@@ -974,18 +974,20 @@ function filter_large_content(content, filter_rate){
     })
     .done(function (res) {
       const data = typeof res === "string" ? JSON.parse(res) : res;
-      const itemCount = Array.isArray(data) ? data.length : 0;
-      const totalPages =
-        itemCount < 10
-          ? crawler_page
-          : Math.max(crawler_page, crawler_page + 1);
+      let displayData = data;
+      let totalPages = crawler_page;
+      if (Array.isArray(data)) {
+        const hasNextPage = data.length > 10;
+        displayData = hasNextPage ? data.slice(0, 10) : data;
+        totalPages = hasNextPage ? crawler_page + 1 : crawler_page;
+      }
       $("#login_first").addClass("hidden");
       $("#crawl_results").removeClass("hidden");
       $("#crw_refresh_btn").removeClass("hidden");
       $("#crw_nxt_prv_btn").removeClass("hidden");
       $("#current_page_number").text(crawler_page);
       $("#total_pages").text(totalPages);
-      show_crawler(data);
+      show_crawler(displayData);
       updatePaginationControls(totalPages, crawler_page);
   
       if (crawler_page === 1) {
