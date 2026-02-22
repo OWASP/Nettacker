@@ -973,9 +973,20 @@ function filter_large_content(content, filter_rate){
       dataType: "text",
     })
     .done(function (res) {
-      const data = typeof res === "string" ? JSON.parse(res) : res;
+      let data;
+      if (typeof res === "string") {
+        try {
+          data = JSON.parse(res);
+        } catch (e) {
+          document.getElementById("crawl_results").innerHTML =
+            '<p class="mb-1">Error: invalid server response.</p>';
+          return;
+        }
+      } else {
+        data = res;
+      }
       let displayData = data;
-      let totalPages = crawler_page;
+      totalPages = crawler_page;
       if (Array.isArray(data)) {
         const hasNextPage = data.length > 10;
         displayData = hasNextPage ? data.slice(0, 10) : data;
