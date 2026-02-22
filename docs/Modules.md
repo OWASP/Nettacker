@@ -160,6 +160,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**ProFTPd_memory_leak_vuln**' - check ProFTPd for CVE-2001-0136
 - '**ProFTPd_restriction_bypass_vuln**' - check ProFTPd for CVE-2009-3639
 - '**server_version_vuln**' - check if the web server is leaking server banner in 'Server' response header
+- '**smartermail_cve_2026_24423_vuln**' - check the target for SmarterMail CVE-2026-24423 vulnerability
 - '**sonicwall_sslvpn_cve_2024_53704_vuln**' - check the target for SonicWALL SSLVPN CVE-2024-53704 vulnerability
 - '**ssl_signed_certificate_vuln**' - check for self-signed & other signing issues(weak signing algorithm) in SSL certificate
 - '**ssl_expired_certificate_vuln**' - check if SSL certificate has expired or is close to expiring
