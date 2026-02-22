@@ -63,5 +63,5 @@ payloads:
               regex: "200|400|500"
               reverse: false
             content:
-              regex: "machineName|ConnectToHub|setup-initial-connection|node-management"
+              regex: "machineName|ConnectToHub|setup-initial-connection|node-management|Encountered an exception"
               reverse: false
