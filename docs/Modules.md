@@ -145,6 +145,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**f5_cve_2020_5902_vuln**' - check the target for F5 RCE CVE-2020-5902 vulnerability
 - '**heartbleed_vuln**' - check SSL for Heartbleed vulnerability (CVE-2014-0160)
 - '**msexchange_cve_2021_26855**' - check the target for MS Exchange SSRF CVE-2021-26855 (proxylogon/hafnium)
+- '**nextjs_cve_2025_55182_vuln**' - check the target for CVE-2025-55182(React2Shell)
 - '**http_cors_vuln**' - check the web server for overly-permissive CORS (header 'Access-Control-Allow-Origin'=\*)
 - '**joomla_cve_2023_23752_vuln**' - check the target for Joomla CVE-2023-23752 information disclosure vulnerability
 - '**options_method_enabled_vuln**' - check if OPTIONS method is enabled on the web server
@@ -159,6 +160,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**ProFTPd_memory_leak_vuln**' - check ProFTPd for CVE-2001-0136
 - '**ProFTPd_restriction_bypass_vuln**' - check ProFTPd for CVE-2009-3639
 - '**server_version_vuln**' - check if the web server is leaking server banner in 'Server' response header
+- '**smartermail_cve_2026_24423_vuln**' - check the target for SmarterMail CVE-2026-24423 vulnerability
 - '**sonicwall_sslvpn_cve_2024_53704_vuln**' - check the target for SonicWALL SSLVPN CVE-2024-53704 vulnerability
 - '**ssl_signed_certificate_vuln**' - check for self-signed & other signing issues(weak signing algorithm) in SSL certificate
 - '**ssl_expired_certificate_vuln**' - check if SSL certificate has expired or is close to expiring
@@ -249,7 +251,6 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**x_powered_by_vuln**' – check if the web server is leaking server configuration in 'X-Powered-By' response header
 - '**x_xss_protection_vuln**' – check if header 'X-XSS-Protection' is missing or misconfigured
 - '**zoho_cve_2021_40539_vuln**' – check the target for Zoho CVE-2021-40539 vulnerability
-
 
 ## Brute Modules
 
