@@ -20,9 +20,20 @@ ________
 These are the guidelines you need to keep in mind while contributing:
 
 * Start by familiarising yourself with the Nettacker Codebase: [Codebase Overview](CodebaseOverview.md)
+* Before opening a Pull Request (PR) please check all other open PRs to avoid duplicates and understand the current Work-In-Progress
+* Please ensure that **all commits are signed** before submitting the PR
 * Use the automated checks: run `make pre-commit` and `make test`
 * Thoroughly test your code locally.
+* When submitting new modules test them in your own lab VM.
 * Be sure to add/update related documentation.
+
+## AI Policy
+
+* Code and comments must not be direct, unreviewed outputs of AI agents
+* All AI-assisted contributions require human oversight and validation
+* Ensure code logic reflects genuine understanding, not copied AI output
+* The submitter must understand and be able to explain all the code being submitted
+* The **submitter is the Sole Responsible Author for every line of code, comment, and design decision**
 
 In case of any doubts regarding the guidelines please contact the project leaders.
 

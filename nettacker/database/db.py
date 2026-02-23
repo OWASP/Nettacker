@@ -50,7 +50,7 @@ def create_connection():
     """
     if Config.db.engine.startswith("sqlite") and Config.settings.use_apsw_for_sqlite:
         if apsw is None:
-            raise ImportError("APSW is required for SQLite backend.")
+            raise ImportError(messages("apsw_ill_configuration"))
 
         # In case of sqlite, the name parameter is the database path.
         try:
@@ -65,7 +65,7 @@ def create_connection():
 
             return connection, cursor
         except Exception as e:
-            logger.error(f"Failed to create APSW connection: {e}")
+            logger.error(messages("apsw_connection_error").format(e))
             raise
 
     else:
@@ -161,7 +161,7 @@ def submit_report_to_db(event):
             return send_submit_query(session)
         except Exception:
             cursor.execute("ROLLBACK")
-            logger.warn("Could not insert report...")
+            logger.warn(messages("report_insertion_fail"))
             return False
     else:
         session.add(
@@ -210,7 +210,7 @@ def remove_old_logs(options):
             return send_submit_query(session)
         except Exception:
             cursor.execute("ROLLBACK")
-            logger.warn("Could not remove old logs...")
+            logger.warn(messages("remove_logs_fail"))
             return False
         finally:
             cursor.close()
@@ -267,7 +267,9 @@ def submit_logs_to_db(log):
                     except apsw.BusyError as e:
                         if "database is locked" in str(e).lower():
                             logger.warn(
-                                f"[Retry {_ + 1}/{Config.settings.max_retries}] Database is locked. Retrying..."
+                                messages("database_lock_issue").format(
+                                    f"{_ + 1}/{Config.settings.max_retries}"
+                                )
                             )
                             if connection.in_transaction:
                                 connection.execute("ROLLBACK")
@@ -284,8 +286,8 @@ def submit_logs_to_db(log):
                         except Exception:
                             pass
                         return False
-                # All retires exhausted but we want to continue operation
-                logger.warn("All retries exhausted. Skipping this log.")
+                # All retries exhausted but we want to continue operation
+                logger.warn(messages("database_retries_exhausted"))
                 return True
             finally:
                 cursor.close()
@@ -351,7 +353,9 @@ def submit_temp_logs_to_db(log):
                     except apsw.BusyError as e:
                         if "database is locked" in str(e).lower():
                             logger.warn(
-                                f"[Retry {_ + 1}/{Config.settings.max_retries}] Database is locked. Retrying..."
+                                messages("database_lock_issue").format(
+                                    f"{_ + 1}/{Config.settings.max_retries}"
+                                )
                             )
                             try:
                                 if connection.in_transaction:
@@ -374,8 +378,8 @@ def submit_temp_logs_to_db(log):
                         except Exception:
                             pass
                         return False
-                # All retires exhausted but we want to continue operation
-                logger.warn("All retries exhausted. Skipping this log.")
+                # All retries exhausted but we want to continue operation
+                logger.warn(messages("database_retries_exhausted"))
                 return True
             finally:
                 cursor.close()
@@ -484,7 +488,7 @@ def find_events(target, module_name, scan_id):
                 return [json.dumps((json.loads(row[0]))) for row in rows]
             return []
         except Exception:
-            logger.warn("Database query failed...")
+            logger.warn(messages("database_query_fail"))
             return []
         finally:
             try:
@@ -548,8 +552,8 @@ def select_reports(page):
             return selected
 
         except Exception:
-            logger.warn("Could not retrieve report...")
-            return structure(status="error", msg="database error!")
+            logger.warn(messages("report_retrieval_fail"))
+            return structure(status="error", msg=messages("database_error"))
         finally:
             cursor.close()
             connection.close()
@@ -568,7 +572,7 @@ def select_reports(page):
                 }
                 selected.append(tmp)
         except Exception:
-            return structure(status="error", msg="database error!")
+            return structure(status="error", msg=messages("database_error"))
         return selected
 
 
@@ -599,10 +603,10 @@ def get_scan_result(id):
                         contents = fp.read()
                     return filename, contents
                 except IOError as e:
-                    logger.error(f"Failed to read report file: {e}")
+                    logger.error(messages("read_report_fail").format(e))
                     return None
             else:
-                return structure(status="error", msg="database error!")
+                return structure(status="error", msg=messages("database_error"))
         finally:
             try:
                 cursor.close()
@@ -619,7 +623,7 @@ def get_scan_result(id):
                 contents = fp.read()
             return report.report_path_filename, contents
         except IOError as e:
-            logger.error(f"Failed to read report file: {e}")
+            logger.error(messages("read_report_fail").format(e))
             return None
 
 
@@ -652,7 +656,7 @@ def last_host_logs(page):
             if not targets:
                 cursor.close()
                 connection.close()
-                return structure(status="finished", msg="No more search results")
+                return structure(status="finished", msg=messages("search_results_end"))
 
             hosts = []
 
@@ -703,8 +707,8 @@ def last_host_logs(page):
             return hosts
 
         except Exception:
-            logger.warn("Database query failed...")
-            return structure(status="error", msg="Database error!")
+            logger.warn(messages("database_query_fail"))
+            return structure(status="error", msg=messages("database_error"))
         finally:
             try:
                 cursor.close()
@@ -743,7 +747,7 @@ def last_host_logs(page):
             .limit(10)
         ]
         if not hosts:
-            return structure(status="finished", msg="No more search results")
+            return structure(status="finished", msg=messages("search_results_end"))
         return hosts
 
 
@@ -1087,7 +1091,7 @@ def search_logs(page, query):
                 selected.append(tmp)
 
         except Exception:
-            return structure(status="error", msg="database error!")
+            return structure(status="error", msg=messages("database_error"))
         finally:
             try:
                 cursor.close()
@@ -1095,7 +1099,7 @@ def search_logs(page, query):
             except Exception:
                 pass
         if not selected:
-            return structure(status="finished", msg="No more search results")
+            return structure(status="finished", msg=messages("search_results_end"))
         return selected
     else:
         try:
@@ -1163,7 +1167,7 @@ def search_logs(page, query):
                                 json.loads(data.json_event)
                             )
         except Exception:
-            return structure(status="error", msg="database error!")
+            return structure(status="error", msg=messages("database_error"))
         if len(selected) == 0:
-            return structure(status="finished", msg="No more search results")
+            return structure(status="finished", msg=messages("search_results_end"))
         return selected
