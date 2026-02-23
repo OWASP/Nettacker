@@ -1,0 +1,25 @@
+info:
+  name: roundcube_cve_2025_49113_vuln
+  author: Adithya (ALCHEMISTDEV-007)
+  severity: 9.8
+  description: Detect vulnerable Roundcube 1.5.5 instance (rcversion 10505) for CVE-2025-49113.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-49113
+  profiles:
+    - vuln
+    - http
+    - http-alt
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 10
+        allow_redirects: true
+        url:
+          - "/?_task=login"
+        response:
+          condition_type: and
+          conditions:
+            - content:
+                regex: '"rcversion":10505'
