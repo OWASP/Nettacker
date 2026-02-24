@@ -52,17 +52,19 @@ am4n@am4n-HP-ProBook-450-G4:~/Documents/OWASP-Nettacker$ python nettacker.py --s
 
 At the first, you must send an API key through the request each time you send a request in `GET`, `POST`, or `Cookies` in the value named `key` or you will get `401` error in the restricted area.
 
+Note the examples below call `disable_warnings(InsecureRequestWarning)` and use `verify=False`, which disables TLS certificate validation. This is only for the local Nettacker API with a self-signed cert and must not be used against external/production hosts.
+
 ```python
 >>> import requests
 >>> from requests.packages.urllib3.exceptions import InsecureRequestWarning
 >>> requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
->>> r = requests.get('https://127.0.0.1:5000/?key=8370bd0a0b9a98ac25b341833fb0fb07', verify=False)
+>>> r = requests.get('https://127.0.0.1:5000/?key=<your_api_key>', verify=False)
 >>> r.status_code
 200
->>> r = requests.post('https://127.0.0.1:5000/', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07"}, verify=False)
+>>> r = requests.post('https://127.0.0.1:5000/', data={"key": "<your_api_key>"}, verify=False)
 >>> r.status_code
 200
->>> r = requests.get('https://127.0.0.1:5000/', cookies={"key": "8370bd0a0b9a98ac25b341833fb0fb07"}, verify=False)
+>>> r = requests.get('https://127.0.0.1:5000/', cookies={"key": "<your_api_key>"}, verify=False)
 >>> r.status_code
 200
 >>> r = requests.get('https://127.0.0.1:5000/new/scan', cookies={"key": "wrong_key"}, verify=False)
@@ -75,11 +77,11 @@ At the first, you must send an API key through the request each time you send a 
 To submit a new scan follow this step.
 
 ```python
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07", "targets": "127.0.0.1,owasp.org", "selected_modules": "port_scan", "report_path_filename": "/home/test.html"}, verify=False)
+>>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "<your_api_key>", "targets": "127.0.0.1,owasp.org", "selected_modules": "port_scan", "report_path_filename": "/home/test.html"}, verify=False)
 >>> r.status_code
 200
 >>> import json
->>> print(json.dumps(json.loads(r.content.decode('utf-8')), sort_keys=True, indent=4))
+>>> print(json.dumps(r.json(), sort_keys=True, indent=4))
 {
     "backup_ports": null, 
     "check_ranges": false, 
@@ -123,16 +125,16 @@ To submit a new scan follow this step.
 Please note, `targets` and `selected_modules` are **necessary** to submit a new scan unless you modify the config file before! The `selected_modules` could be empty if you define the `profile`.
 
 ```python
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07"}, verify=False)
->>> r.content.decode('utf-8')
+>>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "<your_api_key>"}, verify=False)
+>>> r.text
 '{"msg":"Cannot specify the target(s)","status":"error"}\n'
 
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "09877e92c75f6afdca6ae61ad3f53727", "targets": "127.0.0.1"}, verify=False)
->>> r.content.decode('utf-8')
+>>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "<your_api_key>", "targets": "127.0.0.1"}, verify=False)
+>>> r.text
 '{"msg":"please choose your scan method!","status":"error"}\n'
 
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "09877e92c75f6afdca6ae61ad3f53727", "targets": "127.0.0.1", "selected_modules": "dir_scan,port_scan", "report_path_filename": "/home/test.html"}, verify=False)
->>> print(json.dumps(json.loads(r.content.decode('utf-8')), sort_keys=True, indent=4))
+>>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "<your_api_key>", "targets": "127.0.0.1", "selected_modules": "dir_scan,port_scan", "report_path_filename": "/home/test.html"}, verify=False)
+>>> print(json.dumps(r.json(), sort_keys=True, indent=4))
 {
     "backup_ports": null, 
     "check_ranges": false, 
@@ -172,8 +174,8 @@ Please note, `targets` and `selected_modules` are **necessary** to submit a new 
     "users": null, 
     "verbose_level": 0
 }
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "09877e92c75f6afdca6ae61ad3f53727", "targets": "127.0.0.1", "profile": "information_gathering"}, verify=False)
->>> print(json.dumps(json.loads(r.content.decode('utf-8')), sort_keys=True, indent=4))
+>>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "<your_api_key>", "targets": "127.0.0.1", "profile": "information_gathering"}, verify=False)
+>>> print(json.dumps(r.json(), sort_keys=True, indent=4))
 {
     "backup_ports": null, 
     "check_ranges": false, 
@@ -227,16 +229,17 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 
 ```python
 >>> s = requests.session()
->>> r = s.get("https://localhost:5000/session/set?key=09877e92c75f6afdca6ae61ad3f53727", verify=False)
->>> print(json.dumps(json.loads(r.content.decode('utf-8')), sort_keys=True, indent=4))
+>>> s.verify = False
+>>> r = s.get("https://localhost:5000/session/set?key=<your_api_key>")
+>>> print(json.dumps(r.json(), sort_keys=True, indent=4))
 {
     "msg": "your browser session is valid", 
     "status": "ok"
 }
 >>> print(r.cookies)
-<RequestsCookieJar[<Cookie key=09877e92c75f6afdca6ae61ad3f53727 for localhost.local/>]>
->>> r = s.get("https://localhost:5000/new/scan", verify=False)
->>> print(r.content.decode('utf-8'))
+<RequestsCookieJar[<Cookie key=<your_api_key> for localhost.local/>]>
+>>> r = s.get("https://localhost:5000/new/scan")
+>>> print(r.text)
 {
   "msg": "Cannot specify the target(s)",
   "status": "error"
@@ -247,8 +250,8 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 ### Check Cookie
 
 ```python
->>> r = s.get("https://localhost:5000/session/check", verify=False)
->>> print(r.content.decode('utf-8'))
+>>> r = s.get("https://localhost:5000/session/check")
+>>> print(r.text)
 {
   "msg": "your browser session is valid",
   "status": "ok"
@@ -257,8 +260,8 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 ### UnSet Cookie
 
 ```python
->>> r = s.get("https://localhost:5000/session/kill", verify=False)
->>> print(r.content.decode('utf-8'))
+>>> r = s.get("https://localhost:5000/session/kill")
+>>> print(r.text)
 {
   "msg": "your browser session killed",
   "status": "ok"
@@ -272,8 +275,8 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 ## Results List
 
 ```python
->>> r = s.get("https://localhost:5000/results/get_list?page=1", verify=False)
->>> print(json.dumps(json.loads(r.content.decode('utf-8')), sort_keys=True, indent=4))
+>>> r = s.get("https://localhost:5000/results/get_list?page=1")
+>>> print(json.dumps(r.json(), sort_keys=True, indent=4))
 [
     {
         "api_flag": 0, 
@@ -417,8 +420,8 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 ### Get a Scan Result
 
 ```python
->>> r = s.get("https://localhost:5000/results/get?id=8", verify=False)
->>> print(r.content.decode('utf-8')[:500])
+>>> r = s.get("https://localhost:5000/results/get?id=8")
+>>> print(r.text[:500])
 <!DOCTYPE html>
 <!-- THIS PAGE COPIED AND MODIFIED FROM http://bl.ocks.org/robschmuecker/7880033-->
 <title>OWASP Nettacker Report</title>
@@ -450,8 +453,8 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 
 ## Hosts List
 ```python
->>> r = s.get("https://localhost:5000/logs/search?q=&page=1", verify=False)
->>> print(json.dumps(json.loads(r.content.decode('utf-8')), sort_keys=True, indent=4))
+>>> r = s.get("https://localhost:5000/logs/search?q=&page=1")
+>>> print(json.dumps(r.json(), sort_keys=True, indent=4))
 [
     {
         "host": "owasp.org", 
@@ -479,8 +482,8 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 ### Search in the Hosts
 
 ```python
->>> r = s.get("https://localhost:5000/logs/search?q=port_scan&page=3", verify=False)
->>> print(r.content.decode('utf-8'))
+>>> r = s.get("https://localhost:5000/logs/search?q=port_scan&page=3")
+>>> print(r.text)
 [
   {
     "host": "owasp4.owasp.org",
@@ -665,8 +668,8 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 ```
 ## Generate a HTML Scan Result for a Host
 ```python
->>> r = s.get("https://localhost:5000/logs/get_html?target=127.0.0.1&key=<your_api_key>", verify=False)
->>> print(r.content.decode('utf-8')[:1000])
+>>> r = s.get("https://localhost:5000/logs/get_html?target=127.0.0.1&key=<your_api_key>")
+>>> print(r.text[:1000])
 <!DOCTYPE html>
 <!-- THIS PAGE COPIED AND MODIFIED FROM http://bl.ocks.org/robschmuecker/7880033-->
 <title>OWASP Nettacker Report</title>
@@ -706,8 +709,8 @@ To enable session-based requests, like (e.g. Python `requests.session()` or brow
 
 ### Get the Scan Result in JSON Type
 ```python
->>> r = s.get("https://localhost:5000/logs/get_json?target=owasp.org&key=<your_api_key>", verify=False)
->>> print(json.dumps(json.loads(r.content.decode('utf-8')), sort_keys=True, indent=4))
+>>> r = s.get("https://localhost:5000/logs/get_json?target=owasp.org&key=<your_api_key>")
+>>> print(json.dumps(r.json(), sort_keys=True, indent=4))
 [
     {
         "DESCRIPTION": "443/http/TCP_CONNECT", 
