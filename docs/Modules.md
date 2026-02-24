@@ -35,6 +35,7 @@ OWASP Nettacker Modules can be of type **Scan** (scan for something), **Vuln** (
 - '**pma_scan**' - Scan the target for PHP MyAdmin presence
 - '**port_scan**' - Scan the target for open ports identifying the popular services using signatures (.e.g SSH on port 2222)
 - '**ssl_expiring_certificate_scan**' - Scan the target for SSL/TLS certificates nearing expiration
+- '**smartermail_version_scan**' - Scan the target and identify the SmarterMail version
 - '**subdomain_scan**' - Scan the target for subdomains (target must be a domain e.g. owasp.org)
 - '**viewdns_reverse_iplookup_scan**' - Identify which sites/domains are hosted on the target host using ViewDNS.info
 - '**waf_scan**' - Scan the target to detect the presence of a Web Application Firewall
