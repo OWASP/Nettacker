@@ -128,6 +128,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 
 ## Vuln Modules
 
+- '**adminer_cve_2026_25892_vuln**' - check Adminer origin validation DoS vulnerability CVE-2026-25892
 - '**aiohttp_cve_2024_23334_vuln**' - check the target for CVE-2024-23334
 - '**apache_ofbiz_cve_2024_38856**' - check the target for Apache OFBiz CVE-2024-38856
 - '**apache_struts_vuln**' - check Apache Struts for CVE-2017-5638
