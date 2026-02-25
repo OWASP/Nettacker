@@ -199,7 +199,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**f5_cve_2020_5902_vuln**' – check the target for F5 RCE CVE-2020-5902 vulnerability
 - '**forgerock_am_cve_2021_35464_vuln**' – check the target for ForgeRock AM CVE-2021-35464
 - '**galera_webtemp_cve_2021_40960_vuln**' – check the target for Galera WebTemplate CVE-2021-40960
-- '**geoserver_xxe_cve_2025_58360_vuln**' - Checks for an unauthenticated XXE vulnerability in GeoServer enabling arbitrary file read
+- '**geoserver_xxe_cve_2025_58360_vuln**' – check for an unauthenticated XXE vulnerability in GeoServer enabling arbitrary file read
 - '**grafana_cve_2021_43798_vuln**' – check the target for Grafana CVE-2021-43798 vulnerability
 - '**graphql_vuln**' – check the target for exposed GraphQL introspection endpoint
 - '**gurock_testrail_cve_2021_40875_vuln**' – check the target for TestRail CVE-2021-40875 vulnerability
