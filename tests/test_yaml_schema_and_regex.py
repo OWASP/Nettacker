@@ -7,10 +7,6 @@ from schema import Schema, Optional, And, Or
 
 BASE_DIRS = ["nettacker/modules/vuln", "nettacker/modules/scan"]
 
-DUMMY_TEST_STRING = (
-    "This is a random string for testing regex " "220-You are user number HTTP/1.1 200 OK"
-)
-
 # ----------------------------
 # Utility
 # ----------------------------
@@ -30,10 +26,9 @@ def load_yaml(file_path):
 
 def is_valid_regex(regex: str) -> bool:
     try:
-        pattern = re.compile(regex)
-        re.findall(pattern, DUMMY_TEST_STRING)
+        re.compile(regex)
         return True
-    except Exception:
+    except re.error:
         return False
 
 
@@ -113,7 +108,7 @@ SOCKET_PAYLOAD_SCHEMA = Schema(
 
 def validate_http_conditions(conditions: dict):
     HTTP_CONDITION_SCHEMA.validate(conditions)
-
+    regexes = []
     # Validate nested iterative_response_match structure
     if "iterative_response_match" in conditions:
         for vendor_name, vendor_block in conditions["iterative_response_match"].items():
@@ -127,6 +122,13 @@ def validate_http_conditions(conditions: dict):
 
             if "conditions" in nested_response:
                 HTTP_CONDITION_SCHEMA.validate(nested_response["conditions"])
+                if (
+                    "content" in nested_response["conditions"]
+                    and "regex" in nested_response["conditions"]["content"]
+                ):
+                    regexes.append(nested_response["conditions"]["content"]["regex"])
+
+    return regexes
 
 
 def extract_http_regexes(payloads):
@@ -143,8 +145,7 @@ def extract_http_regexes(payloads):
             conditions = response.get("conditions", {})
 
             if conditions:
-                validate_http_conditions(conditions)
-
+                regexes.extend(validate_http_conditions(conditions))
                 if "content" in conditions and "regex" in conditions["content"]:
                     regexes.append(conditions["content"]["regex"])
 
@@ -180,20 +181,17 @@ def test_yaml_schema_and_regex_valid(yaml_file):
     data = load_yaml(yaml_file)
     payloads = data.get("payloads", [])
 
-    if not payloads:
-        pytest.skip(f"No payloads found in {yaml_file}")
+    http_payloads = [p for p in payloads if p.get("library") == "http"]
+    socket_payloads = [p for p in payloads if p.get("library") == "socket"]
 
-    first_library = payloads[0].get("library")
+    if not http_payloads and not socket_payloads:
+        pytest.skip(f"No http/socket payloads found in {yaml_file}")
 
-    if first_library == "http":
-        regexes = extract_http_regexes(payloads)
-
-    elif first_library == "socket":
-        regexes = extract_socket_regexes(payloads)
-
-    else:
-        pytest.skip(f"Unknown library type in {yaml_file}")
-        return
+    regexes = []
+    if http_payloads:
+        regexes.extend(extract_http_regexes(http_payloads))
+    if socket_payloads:
+        regexes.extend(extract_socket_regexes(socket_payloads))
 
     for regex in regexes:
         assert is_valid_regex(regex), f"Invalid regex in {yaml_file}: `{regex}`"
