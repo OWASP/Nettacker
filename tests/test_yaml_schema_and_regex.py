@@ -1,5 +1,6 @@
 import os
 import re
+
 import pytest
 import yaml
 from schema import Schema, Optional, And, Or
@@ -7,13 +8,13 @@ from schema import Schema, Optional, And, Or
 BASE_DIRS = ["nettacker/modules/vuln", "nettacker/modules/scan"]
 
 DUMMY_TEST_STRING = (
-    "This is a random string for testing regex "
-    "220-You are user number HTTP/1.1 200 OK"
+    "This is a random string for testing regex " "220-You are user number HTTP/1.1 200 OK"
 )
 
 # ----------------------------
 # Utility
 # ----------------------------
+
 
 def get_yaml_files():
     for base in BASE_DIRS:
@@ -50,7 +51,7 @@ HTTP_CONDITION_SCHEMA = Schema(
         Optional("responsetime"): Or(str, dict),
         Optional("iterative_response_match"): dict,
     },
-    ignore_extra_keys=False, # reject any other condition field 
+    ignore_extra_keys=False,  # reject any other condition field
 )
 
 HTTP_RESPONSE_SCHEMA = Schema(
@@ -60,7 +61,7 @@ HTTP_RESPONSE_SCHEMA = Schema(
         Optional("log"): str,
         Optional("dependent_on_temp_event"): str,
         Optional("save_to_temp_events_only"): str,
-        #Optional("success_conditions"): object,
+        Optional("success_conditions"): object,
     },
     ignore_extra_keys=False,
 )
@@ -68,19 +69,19 @@ HTTP_RESPONSE_SCHEMA = Schema(
 HTTP_STEP_SCHEMA = Schema(
     {
         "method": str,
-        Optional("headers"): Or(dict,[dict]),
+        "url": object,
+        Optional("headers"): Or(dict, [dict]),
         Optional("timeout"): int,
         Optional("allow_redirects"): bool,
         Optional("ssl"): bool,
         Optional("data"): object,
         Optional("json"): object,
-        Optional("url"): object,
         Optional("ports"): object,
         Optional("usernames"): object,
         Optional("passwords"): object,
         Optional("response"): dict,
     },
-    ignore_extra_keys=True,
+    ignore_extra_keys=False,
 )
 
 HTTP_PAYLOAD_SCHEMA = Schema(
@@ -109,14 +110,16 @@ SOCKET_PAYLOAD_SCHEMA = Schema(
 # Validation Logic
 # ----------------------------
 
+
 def validate_http_conditions(conditions: dict):
     HTTP_CONDITION_SCHEMA.validate(conditions)
 
     # Validate nested iterative_response_match structure
     if "iterative_response_match" in conditions:
         for vendor_name, vendor_block in conditions["iterative_response_match"].items():
-            assert "response" in vendor_block, \
-                f"Missing 'response' inside iterative_response_match -> {vendor_name}"
+            assert (
+                "response" in vendor_block
+            ), f"Missing 'response' inside iterative_response_match -> {vendor_name}"
 
             nested_response = vendor_block["response"]
 
@@ -134,7 +137,6 @@ def extract_http_regexes(payloads):
 
         for step in payload.get("steps", []):
             response = step.get("response", {})
-
             if response:
                 HTTP_RESPONSE_SCHEMA.validate(response)
 
@@ -159,25 +161,19 @@ def extract_socket_regexes(payloads):
             response = step.get("response", {})
             conditions = response.get("conditions", {})
 
-            for key, value in conditions.items():
+            if "service" in conditions:  # for port.yaml
+                services = conditions["service"]
+                for service_block in services.values():
+                    if isinstance(service_block, dict) and "regex" in service_block:
+                        regexes.append(service_block["regex"])
 
-                # Case 1: direct condition
-                if isinstance(value, dict) and "regex" in value:
-                    regexes.append(value["regex"])
-
-                # Case 2: nested service block
-                if key == "service" and isinstance(value, dict):
-                    for inner in value.values():
-                        if isinstance(inner, dict) and "regex" in inner:
-                            regexes.append(inner["regex"])
+            elif "time_response" in conditions:  # for icmp.yaml
+                tr = conditions["time_response"]
+                if isinstance(tr, dict) and "regex" in tr:
+                    regexes.append(tr["regex"])
 
     return regexes
 
-
-
-# ----------------------------
-# Main Test
-# ----------------------------
 
 @pytest.mark.parametrize("yaml_file", list(get_yaml_files()))
 def test_yaml_schema_and_regex_valid(yaml_file):
@@ -200,5 +196,4 @@ def test_yaml_schema_and_regex_valid(yaml_file):
         return
 
     for regex in regexes:
-        assert is_valid_regex(regex), \
-            f"Invalid regex in {yaml_file}: `{regex}`"
+        assert is_valid_regex(regex), f"Invalid regex in {yaml_file}: `{regex}`"
