@@ -2,7 +2,6 @@ import csv
 import html
 import importlib
 import json
-import os
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -371,31 +370,34 @@ def create_compare_report(options, scan_id):
             else generate_compare_filepath(scan_id)
         )
 
-    base_path = str(nettacker_path_config.results_dir)
+    base_path = nettacker_path_config.results_dir
     compare_report_path_filename = sanitize_path(compare_report_path_filename)
-    fullpath = os.path.normpath(os.path.join(base_path, compare_report_path_filename))
+    fullpath = (base_path / compare_report_path_filename).resolve()
 
-    if not fullpath.startswith(base_path):
+    if not fullpath.is_relative_to(base_path.resolve()):
         raise PermissionError
 
-    if (len(fullpath) >= 5 and fullpath[-5:] == ".html") or (
-        len(fullpath) >= 4 and fullpath[-4:] == ".htm"
-    ):
+    suffix = fullpath.suffix.lower()
+    suffixes = [s.lower() for s in fullpath.suffixes]
+    if suffix in (".html", ".htm"):
         html_report = build_compare_report(compare_results)
-        with Path(fullpath).open("w", encoding="utf-8") as compare_report:
+        with fullpath.open("w", encoding="utf-8") as compare_report:
             compare_report.write(html_report + "\n")
-    elif len(fullpath) >= 5 and fullpath[-5:] == ".json":
-        with Path(fullpath).open("w", encoding="utf-8") as compare_report:
-            compare_report.write(str(json.dumps(compare_results)) + "\n")
-    elif len(fullpath) >= 5 and fullpath[-4:] == ".csv":
+    elif suffixes[-2:] == [".dd", ".json"]:
+        with fullpath.open("w", encoding="utf-8") as compare_report:
+            compare_report.write(json.dumps(compare_results) + "\n")
+    elif suffix == ".json":
+        with fullpath.open("w", encoding="utf-8") as compare_report:
+            compare_report.write(json.dumps(compare_results) + "\n")
+    elif suffix == ".csv":
         keys = compare_results.keys()
-        with Path(fullpath).open("a") as csvfile:
+        with fullpath.open("a") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=keys)
             if csvfile.tell() == 0:
                 writer.writeheader()
             writer.writerow(compare_results)
     else:
-        with Path(fullpath).open("w", encoding="utf-8") as compare_report:
+        with fullpath.open("w", encoding="utf-8") as compare_report:
             compare_report.write(create_compare_text_table(compare_results))
 
     log.write(create_compare_text_table(compare_results))
