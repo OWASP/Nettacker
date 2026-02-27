@@ -51,18 +51,17 @@ class Nettacker(ArgParser):
         """
         OWASP Nettacker Logo
         """
-        log.write_to_api_console(
-            open(Config.path.logo_file)
-            .read()
-            .format(
-                cyan=TerminalCodes.CYAN.value,
-                red=TerminalCodes.RED.value,
-                rst=TerminalCodes.RESET.value,
-                v1=version_info()[0],
-                v2=version_info()[1],
-                yellow=TerminalCodes.YELLOW.value,
+        with open(Config.path.logo_file) as logo_file:
+            log.write_to_api_console(
+                logo_file.read().format(
+                    cyan=TerminalCodes.CYAN.value,
+                    red=TerminalCodes.RED.value,
+                    rst=TerminalCodes.RESET.value,
+                    v1=version_info()[0],
+                    v2=version_info()[1],
+                    yellow=TerminalCodes.YELLOW.value,
+                )
             )
-        )
         log.reset_color()
 
     def check_dependencies(self):
