@@ -210,6 +210,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**ivanti_ics_cve_2023_46805_vuln**' – check the target for Ivanti ICS CVE-2023-46805 vulnerability
 - '**joomla_cve_2023_23752_vuln**' – check the target for Joomla CVE-2023-23752 information disclosure
 - '**justwriting_cve_2021_41878_vuln**' – check the target for JustWriting CVE-2021-41878
+- '**librechat_cve_2025_8848_vuln**' - Check for HTML injection in LibreChat <= 0.7.9 via the Accept-Language header
 - '**log4j_cve_2021_44228_vuln**' – check the target for Log4Shell CVE-2021-44228 vulnerability
 - '**maxsite_cms_cve_2021_35265_vuln**' – check the target for MaxSite CMS CVE-2021-35265
 - '**meteobridge_cve_2025_4008_vuln**' - check for MeteoBridge unauthenticated command injection CVE-2025-4008
@@ -251,6 +252,8 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**x_powered_by_vuln**' – check if the web server is leaking server configuration in 'X-Powered-By' response header
 - '**x_xss_protection_vuln**' – check if header 'X-XSS-Protection' is missing or misconfigured
 - '**zoho_cve_2021_40539_vuln**' – check the target for Zoho CVE-2021-40539 vulnerability
+
+
 
 ## Brute Modules
 
