@@ -47,12 +47,12 @@ def start(events):
                 children_array = [{"name": module_name, "children": [{"name": description}]}]
                 d3_structure["children"].append({"name": target, "children": children_array})
 
-    data = (
-        open(Config.path.web_static_dir / "report/d3_tree_v1.html")
-        .read()
-        .replace("__data_will_locate_here__", escape_for_html_js(json.dumps(d3_structure)))
-        .replace("__title_to_replace__", messages("pentest_graphs"))
-        .replace("__description_to_replace__", messages("graph_message"))
-        .replace("__html_title_to_replace__", messages("nettacker_report"))
-    )
+    with open(Config.path.web_static_dir / "report/d3_tree_v1.html") as report_file:
+        data = (
+            report_file.read()
+            .replace("__data_will_locate_here__", escape_for_html_js(json.dumps(d3_structure)))
+            .replace("__title_to_replace__", messages("pentest_graphs"))
+            .replace("__description_to_replace__", messages("graph_message"))
+            .replace("__html_title_to_replace__", messages("nettacker_report"))
+        )
     return data

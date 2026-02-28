@@ -605,9 +605,8 @@ class ArgParser(ArgumentParser):
             options.targets = list(set(options.targets.split(",")))
         if options.targets_list:
             try:
-                options.targets = list(
-                    set(open(options.targets_list, "rb").read().decode().split())
-                )
+                with open(options.targets_list, "rb") as targets_file:
+                    options.targets = list(set(targets_file.read().decode().split()))
             except Exception:
                 die_failure(_("error_target_file").format(options.targets_list))
 
@@ -692,14 +691,16 @@ class ArgParser(ArgumentParser):
             options.excluded_ports = list(tmp_excluded_ports)
 
         if options.user_agent == "random_user_agent":
-            options.user_agents = open(Config.path.user_agents_file).read().split("\n")
+            with open(Config.path.user_agents_file) as user_agents_file:
+                options.user_agents = user_agents_file.read().split("\n")
 
         # Check user list
         if options.usernames:
             options.usernames = list(set(options.usernames.split(",")))
         elif options.usernames_list:
             try:
-                options.usernames = list(set(open(options.usernames_list).read().split("\n")))
+                with open(options.usernames_list) as usernames_file:
+                    options.usernames = list(set(usernames_file.read().split("\n")))
             except Exception:
                 die_failure(_("error_username").format(options.usernames_list))
         # Check password list
@@ -707,19 +708,21 @@ class ArgParser(ArgumentParser):
             options.passwords = list(set(options.passwords.split(",")))
         elif options.passwords_list:
             try:
-                options.passwords = list(set(open(options.passwords_list).read().split("\n")))
+                with open(options.passwords_list) as passwords_file:
+                    options.passwords = list(set(passwords_file.read().split("\n")))
             except Exception:
                 die_failure(_("error_passwords").format(options.passwords_list))
         # Check custom wordlist
         if options.read_from_file:
             try:
-                open(options.read_from_file).read().split("\n")
+                with open(options.read_from_file) as wordlist_file:
+                    wordlist_file.read().split("\n")
             except Exception:
                 die_failure(_("error_wordlist").format(options.read_from_file))
         # Check output file
         try:
-            temp_file = open(options.report_path_filename, "w")
-            temp_file.close()
+            with open(options.report_path_filename, "w"):
+                pass
         except Exception:
             die_failure(_("file_write_error").format(options.report_path_filename))
         # Check Graph

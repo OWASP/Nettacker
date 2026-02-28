@@ -2,4 +2,5 @@ from nettacker.config import Config
 
 
 def read_from_file(file_path):
-    return open(Config.path.payloads_dir / file_path).read().split("\n")
+    with open(Config.path.payloads_dir / file_path) as payload_file:
+        return payload_file.read().split("\n")
