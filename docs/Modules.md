@@ -234,7 +234,8 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**ssl_weak_cipher_vuln**' – check if server's SSL configuration supports weak cipher suites
 - '**ssl_weak_version_vuln**' – check if the server's SSL configuration supports weak protocol versions
 - '**strict_transport_security_vuln**' – check for missing Strict-Transport-Security header
-- '**subdomain_takeover_vuln**' – check the target for potential subdomain takeover
+- '**subdomain_takeover_vuln**' – check the target for potential subdomain take
+- '**sysaid_xxe_cve_2025_2776_vuln**' - Checks for an unauthenticated XML External Entity (XXE) vulnerability in SysAid On-Prem versions ≤ 23.3.40
 - '**teamcity_cve_2024_27198_vuln**' – check the target for TeamCity CVE-2024-27198 vulnerability
 - '**tieline_cve_2021_35336_vuln**' – check the target for Tieline CVE-2021-35336 vulnerability
 - '**tjws_cve_2021_37573_vuln**' – check the target for TJWS CVE-2021-37573 vulnerability
