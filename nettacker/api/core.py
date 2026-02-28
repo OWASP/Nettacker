@@ -117,10 +117,12 @@ def get_file(filename):
     Returns:
         content of the file or abort(404)
     """
-    if not os.path.normpath(filename).startswith(str(Config.path.web_static_dir)):
+    base_path = str(Config.path.web_static_dir)
+    fullpath = os.path.normpath(os.path.join(base_path, filename))
+    if not fullpath.startswith(base_path):
         abort(404)
     try:
-        return open(filename, "rb").read()
+        return open(fullpath, "rb").read()
     except ValueError:
         abort(404)
     except IOError:
