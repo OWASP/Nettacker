@@ -183,6 +183,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**apache_ofbiz_cve_2024_38856_vuln**' – check the target for CVE-2024-38856 in Apache OFBiz
 - '**apache_struts_vuln**' – check Apache Struts for CVE-2017-5638
 - '**aviatrix_cve_2021_40870_vuln**' – check the target for Aviatrix CVE-2021-40870 vulnerability
+- '**cacti_cve_2022_46169_vuln**' – check the target for Cacti CVE-2022-46169 vulnerability
 - '**cisco_hyperflex_cve_2021_1497_vuln**' – check the target for Cisco HyperFlex CVE-2021-1497
 - '**citrix_cve_2019_19781_vuln**' – check the target for Citrix CVE-2019-19781 vulnerability
 - '**citrix_cve_2023_24488_vuln**' – check the target for Citrix CVE-2023-24488 XSS vulnerability
