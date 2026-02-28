@@ -98,6 +98,40 @@ $ docker-compose up
 * More details and install without docker https://nettacker.readthedocs.io/en/latest/Installation
 _____________
 Thanks to our awesome contributors!
+
+ WINDOWS NOTES (WSL2)
+ ====================
+Running OWASP Nettacker on Windows may require additional setup.
+The following notes are based on real installation and usage experience on Windows systems.
+
+ Recommended Setup for Windows Users
+ ------------------------------------
+- Install WSL2 (Ubuntu)
+- Clone the repository inside WSL
+- Use a Python virtual environment to avoid dependency issues
+  
+ Example Setup Command
+ ----------------------------
+ ```bash
+ git clone https://github.com/OWASP/Nettacker.git
+ cd Nettacker
+ python3 -m venv venv
+ source venv/bin/activate
+ pip install .
+ python nettacker.py -h
+```
+
+ Common Issues and Fixes
+ --------------------------
+- Module execution error
+(`No module named nettacker .__main__`)
+- Run ` python nettacker.py` instead of ` python -m nettacker`
+- Externally managed environment
+- Install dependances inside a virtual environment (`venv`)
+- Dependencies or build issues
+- Ensure `pip`, `setuptools`,and `wheel` are up to date .
+
+
 ============
 
 OWASP Nettacker is an open-source project, built on the principles of collaboration and shared knowledge. The vibrant OWASP community contributes to its development, ensuring that the tool remains up-to-date, adaptable, and aligned with the latest security practices. Thanks to all our awesome contributors! 🚀
