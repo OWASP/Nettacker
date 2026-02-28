@@ -223,6 +223,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**phpinfo_cve_2021_37704_vuln**' – check the target for phpinfo CVE-2021-37704 information disclosure
 - '**placeos_cve_2021_41826_vuln**' – check the target for PlaceOS CVE-2021-41826 vulnerability
 - '**prestashop_cve_2021_37538_vuln**' – check the target for PrestaShop CVE-2021-37538 vulnerability
+- '**pterodactyl_cve_2025_49132_vuln**' - check the target for CVE-2025-49132 vulnerability
 - '**puneethreddyhc_sqli_cve_2021_41648_vuln**' – check the target for SQL injection CVE-2021-41648
 - '**puneethreddyhc_sqli_cve_2021_41649_vuln**' – check the target for SQL injection CVE-2021-41649
 - '**qsan_storage_xss_cve_2021_37216_vuln**' – check the target for QSAN CVE-2021-37216 XSS vulnerability
