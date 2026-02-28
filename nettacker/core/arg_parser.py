@@ -43,48 +43,52 @@ class ArgParser(ArgumentParser):
     @staticmethod
     def load_graphs():
         """
-        load all available graphs
-
+        Discover available graph engine names.
+        
         Returns:
-            an array of graph names
+            graph_names (list[str]): Unique graph identifiers found under the graph directory, formatted as "<directory>_graph".
         """
 
         graph_names = []
         for graph_library in Config.path.graph_dir.glob("*/engine.py"):
-            graph_names.append(str(graph_library).split("/")[-2] + "_graph")
+            graph_names.append(graph_library.parent.name + "_graph")
         return list(set(graph_names))
 
     @staticmethod
     def load_languages():
         """
-        Get available languages
-
+        Discover available language identifiers by scanning the locale directory for YAML files.
+        
         Returns:
-            an array of languages
+            list[str]: Unique language names derived from locale file stems (order not guaranteed).
         """
         languages_list = []
 
         for language in Config.path.locale_dir.glob("*.yaml"):
-            languages_list.append(str(language).split("/")[-1].split(".")[0])
+            languages_list.append(language.stem)
 
         return list(set(languages_list))
 
     @staticmethod
     def load_modules(limit=-1, full_details=False):
         """
-        load all available modules
-
-        limit: return limited number of modules
-        full: with full details
-
+        Load available scanning modules from the configured modules directory.
+        
+        Parameters:
+        	limit (int): Maximum number of modules to return; -1 means no limit. If the limit is reached a "..." placeholder will be inserted.
+        	full_details (bool): If True, include each module's parsed `info` mapping as the value; otherwise the value will be None.
+        
         Returns:
-            an array of all module names
+        	dict: Mapping of module keys ("<library>_<category>") to either their `info` dict (when full_details is True) or None. Always includes an "all" entry and may include a "..." placeholder when truncated.
+        
+        Notes:
+        	This function also updates the module severity and description cache (all_module_severity_and_desc) for each discovered module.
         """
         # Search for Modules
         module_names = {}
         for module_name in sorted(Config.path.modules_dir.glob("**/*.yaml")):
-            library = str(module_name).split("/")[-1].split(".")[0]
-            category = str(module_name).split("/")[-2]
+            library = module_name.stem
+            category = module_name.parent.name
             module = f"{library}_{category}"
             contents = yaml.safe_load(TemplateLoader(module).open().split("payload:")[0])
             module_names[module] = contents["info"] if full_details else None
