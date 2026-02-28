@@ -543,10 +543,10 @@ def go_for_search_logs():
     api_key_is_valid(app, flask_request)
     try:
         page = int(get_value(flask_request, "page"))
-        if page > 0:
-            page -= 1
-    except Exception:
-        page = 0
+    except (TypeError, ValueError):
+        page = 1
+    if page < 1:
+        page = 1
     try:
         query = get_value(flask_request, "q")
     except Exception:
