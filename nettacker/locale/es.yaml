@@ -266,3 +266,5 @@ no_scan_to_compare: "el ID de escaneo a comparar no se encontró"
 compare_report_saved: "resultados de la comparación guardados en {0}"
 build_compare_report: "generando informe de comparación"
 finish_build_report: "Finalizada la generación del informe de comparación"
+
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"
