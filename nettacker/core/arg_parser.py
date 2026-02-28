@@ -736,7 +736,20 @@ class ArgParser(ArgumentParser):
         if options.modules_extra_args:
             all_args = {}
             for args in options.modules_extra_args.split("&"):
-                value = args.split("=")[1]
+                # Validate format
+                if "=" not in args:
+                    die_failure(_("error_modules_extra_args_format").format(args))
+
+                # Split with maxsplit=1 to handle values containing '='
+                parts = args.split("=", 1)
+                key = parts[0].strip()
+                value = parts[1]
+
+                # Validate key is not empty
+                if not key:
+                    die_failure(_("error_modules_extra_args_empty_key"))
+
+                # Type conversion logic
                 if value.lower() == "true":
                     value = True
                 elif value.lower() == "false":
@@ -756,7 +769,8 @@ class ArgParser(ArgumentParser):
                         value = int(value)
                     except Exception:
                         pass
-                all_args[args.split("=")[0]] = value
+
+                all_args[key] = value
             options.modules_extra_args = all_args
 
         options.timeout = float(options.timeout)
