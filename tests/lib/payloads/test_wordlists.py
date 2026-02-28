@@ -24,6 +24,6 @@ def test_wordlist(key):
         paths = [line.strip() for line in f.readlines()]
 
     assert len(paths) == expected_length, f"There are {expected_length} paths in {key}"
-    assert len(set(paths)) == len(
-        paths
-    ), f"The paths aren't unique in {key}: {Counter(paths).most_common(1)[0][0]}"
+    assert len(set(paths)) == len(paths), (
+        f"The paths aren't unique in {key}: {Counter(paths).most_common(1)[0][0]}"
+    )
