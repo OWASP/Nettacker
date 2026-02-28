@@ -193,6 +193,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**confluence_cve_2023_22527_vuln**' – check the target for Confluence CVE-2023-22527 vulnerability
 - '**content_security_policy_vuln**' – check the web server for missing 'Content-Security-Policy' header
 - '**content_type_options_vuln**' – check the web server for missing 'X-Content-Type-Options'=nosniff header
+- '**copyparty_xss_cve_2025_54589_vuln**' - check Copyparty instances for reflected XSS through the filter parameter in the /?ru endpoint
 - '**crushftp_cve_2025_31161_vuln**' – check the target for CrushFTP CVE-2025-31161 vulnerability
 - '**cyberoam_netgenie_cve_2021_38702_vuln**' – check the target for Cyberoam NetGenie CVE-2021-38702
 - '**exponent_cms_cve_2021_38751_vuln**' – check the target for Exponent CMS CVE-2021-38751
