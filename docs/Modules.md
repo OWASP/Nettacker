@@ -251,6 +251,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**x_powered_by_vuln**' – check if the web server is leaking server configuration in 'X-Powered-By' response header
 - '**x_xss_protection_vuln**' – check if header 'X-XSS-Protection' is missing or misconfigured
 - '**zoho_cve_2021_40539_vuln**' – check the target for Zoho CVE-2021-40539 vulnerability
+- '**zte_zxhn_f660_cve_2025_53558_vuln**' - check if ZTE ZXHN-F660T/F660A devices accept default credentials 
 
 ## Brute Modules
 
