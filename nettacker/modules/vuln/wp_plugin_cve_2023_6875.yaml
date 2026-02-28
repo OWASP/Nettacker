@@ -39,7 +39,6 @@ payloads:
                 - 80
                 - 443
         response:
-          success_conditions: content
           condition_type: and
           conditions:
             content:
