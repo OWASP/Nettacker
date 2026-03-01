@@ -91,7 +91,7 @@ def response_conditions_matched(sub_step, response):
             if len(operator_value) == 2 and operator_value[0] in OPERATORS:
                 try:
                     value = float(operator_value[1])
-                    if OPERATORS[operator_value[0]](response["responsetime"], value):  # If true, then add response time
+                    if OPERATORS[operator_value[0]](response["responsetime"], value):
                         condition_results["responsetime"] = response["responsetime"]
                     else:
                         condition_results["responsetime"] = []
