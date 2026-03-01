@@ -82,6 +82,11 @@ def response_conditions_matched(sub_step, response):
                 except TypeError:
                     condition_results["headers"][header] = []
         if condition == "responsetime":
+            value_str = conditions[condition]
+            if not isinstance(value_str, str):
+                condition_results["responsetime"] = []
+                continue
+
             operator_value = conditions[condition].split()
             if len(operator_value) == 2 and operator_value[0] in OPERATORS:
                 try:
