@@ -15,6 +15,11 @@ target: цель
 target_input: Параметры ввода цели
 target_list: список целей, разделенных ","
 read_target: читать цель(и) из файла
+compare_report_path_filename: "путь к файлу для хранения отчёта сравнения"
+no_scan_to_compare: "scan_id для сравнения не найден"
+compare_report_saved: "результаты сравнения сохранены в {0}"
+build_compare_report: "формирование отчёта сравнения"
+finish_build_report: "Формирование отчёта сравнения завершено"
 scan_method_options: Параметры метода сканирования
 choose_scan_method: выбрать метод сканирования {0}
 exclude_scan_method: выберите метод сканирования для исключения {0}
