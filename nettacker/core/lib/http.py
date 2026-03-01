@@ -19,6 +19,14 @@ from nettacker.core.utils.common import (
 )
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+OPERATORS = {
+    "==": operator.eq,
+    "!=": operator.ne,
+    ">=": operator.ge,
+    "<=": operator.le,
+    ">": operator.gt,
+    "<": operator.lt,
+}
 
 
 async def perform_request_action(action, request_options):
@@ -74,33 +82,15 @@ def response_conditions_matched(sub_step, response):
                 except TypeError:
                     condition_results["headers"][header] = []
         if condition == "responsetime":
-            if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
-                "==",
-                "!=",
-                ">=",
-                "<=",
-                ">",
-                "<",
-            ]:
-                operator_value=conditions[condition].split()
-                operators = {
-                    "==": operator.eq,
-                    "!=": operator.ne,
-                    ">=": operator.ge,
-                    "<=": operator.le,
-                    ">": operator.gt,
-                    "<": operator.lt,
-                }
-                if len(operator_value)==2 and operator_value[0] in operators:
-                    try:
-                        value=float(operator_value[1])
-                        if operators[operator_value[0]](response["responsetime"], value):#If true then add respnse time
-                            condition_results["responsetime"] = response["responsetime"]
-                        else:
-                            condition_results["responsetime"] = []
-                    except ValueError:
+            operator_value = conditions[condition].split()
+            if len(operator_value) == 2 and operator_value[0] in OPERATORS:
+                try:
+                    value = float(operator_value[1])
+                    if OPERATORS[operator_value[0]](response["responsetime"], value):  # If true, then add response time
+                        condition_results["responsetime"] = response["responsetime"]
+                    else:
                         condition_results["responsetime"] = []
-                else:
+                except ValueError:
                     condition_results["responsetime"] = []
             else:
                 condition_results["responsetime"] = []
