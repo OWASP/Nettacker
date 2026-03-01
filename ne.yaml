@@ -40,7 +40,7 @@ exclude_scan_method: बहिष्कार गर्न स्क्यान
 file_write_error: फाइल "{0}" लेख्न योग्य छैन!
 library_not_supported: पुस्तकालय [{0}] समर्थन छैन!
 removing_old_db_records: चयनित लक्ष्य र मोड्युलहरूको लागि पुरानो डाटाबेस रेकर्ड हटाउँदै।
-regrouping_targets: हार्डवेयर स्रोतहरूमा आधारित लक्ष्यहरू पुन: समूहबद्ध गर्दै!
+regrouping_targets: "हार्डवेयर स्रोतहरूमा आधारित लक्ष्यहरू पुन: समूहबद्ध गर्दै!"
 finish_build_graph: निर्माण ग्राफ समाप्त!
 finished_parallel_module_scan: मोड्युल थ्रेड नम्बर {3} बाट {4}प्रक्रिया-{0}|{1}|{2}| समाप्त 
 graph_message: "यो ग्राफ OWASP Nettacker द्वारा बनाईएको। ग्राफले सबै मोड्युल गतिविधिहरू, नेटवर्क नक्सा र समावेश गर्दछ
@@ -64,7 +64,7 @@ nettacker_version_details: "सफ्टवेयर विवरण: OWASP Nett
 not_found: फेला परेन!
 outgoing_proxy: "आउटगोइङ जडान प्रोक्सी (मोजा) उदाहरण socks5: 127.0.0.1:9050,
   मोजाहरू:/127.0.0.1:9050 मोजा5://127.0.0.1:9050 वा मोजा4: मोजा4: 127.0.0.1:9050,
-  प्रमाणीकरण: socks://username: password@127.0.0.1, socks4://username:password@127.0.0.1,
+  प्रमाणीकरण: socks://username: password@127.0.0.1, socks4://username:password@127.0.0.1"
 password_separator: पासवर्ड(हरू) सूची, "," सँग अलग
 pentest_graphs: प्रवेश परीक्षण ग्राफहरू
 ping_before_scan: होस्ट स्क्यान गर्नु अघि पिंग
@@ -129,10 +129,10 @@ apsw_ill_configuration: "एपीएसडब्ल्यू कन्फिग
 apsw_connection_error: APSW जडान सिर्जना गर्न असफल भयो {0}
 report_insertion_fail: रिपोर्ट तालिकामा रिपोर्ट सम्मिलित गर्न सकिएन
 remove_logs_fail: पुराना लगहरू हटाउन सकिएन
-database_lock_issue: पुन: प्रयास गर्नुहोस् {0}, डाटाबेस बन्द छ। डेटाबेसमा पेस गर्ने पुन: प्रयास गर्दै
-database_retries_exhausted: सबै पुन: प्रयासहरू समाप्त। यो लग छोड्दै।
+database_lock_issue: "पुन: प्रयास गर्नुहोस् {0}, डाटाबेस बन्द छ। डेटाबेसमा पेस गर्ने पुन: प्रयास गर्दै"
+database_retries_exhausted: "सबै पुन: प्रयासहरू समाप्त। यो लग छोड्दै।"
 database_query_fail: डाटाबेस क्वेरी गर्न सकिएन
-report_retrieval_fail: रिपोर्ट पुन: प्राप्त गर्न सकिएन
+report_retrieval_fail: "रिपोर्ट पुन: प्राप्त गर्न सकिएन"
 read_report_fail: रिपोर्ट फाइल पढ्न असफल भयो {0}
 search_results_end: थप खोज परिणामहरू छैनन्
 database_error: डाटाबेस त्रुटि!
