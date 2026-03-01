@@ -5,6 +5,7 @@ import copy
 import random
 import re
 import time
+import operator
 
 import aiohttp
 import uvloop
@@ -81,13 +82,26 @@ def response_conditions_matched(sub_step, response):
                 ">",
                 "<",
             ]:
-                exec(
-                    "condition_results['responsetime'] = response['responsetime'] if ("
-                    + "response['responsetime'] {0} float(conditions['responsetime'].split()[-1])".format(
-                        conditions["responsetime"].split()[0]
-                    )
-                    + ") else []"
-                )
+                operator_value=conditions[condition].split()
+                operators = {
+                    "==": operator.eq,
+                    "!=": operator.ne,
+                    ">=": operator.ge,
+                    "<=": operator.le,
+                    ">": operator.gt,
+                    "<": operator.lt,
+                }
+                if len(operator_value)==2 and operator_value[0] in operators:
+                    try:
+                        value=float(operator_value[1])
+                        if operators[operator_value[0]](response["responsetime"], value):#If true then add respnse time
+                            condition_results["responsetime"] = response["responsetime"]
+                        else:
+                            condition_results["responsetime"] = []
+                    except ValueError:
+                        condition_results["responsetime"] = []
+                else:
+                    condition_results["responsetime"] = []
             else:
                 condition_results["responsetime"] = []
     if condition_type.lower() == "or":
