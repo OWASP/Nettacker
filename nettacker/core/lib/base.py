@@ -49,12 +49,16 @@ class BaseEngine(ABC):
     def get_dependent_results_from_database(self, target, module_name, scan_id, event_names):
         events = []
         for event_name in event_names.split(","):
-            while True:
+            start_time = time.time()
+            max_wait = 30
+            while time.time() - start_time < max_wait:
                 event = find_temp_events(target, module_name, scan_id, event_name)
                 if event:
                     events.append(json.loads(event)["response"]["conditions_results"])
                     break
                 time.sleep(0.1)
+            else:
+                log.warn(f"Timeout waiting for dependent event: {event_name}")
         return events
 
     def find_and_replace_dependent_values(self, sub_step, dependent_on_temp_event):
