@@ -24,7 +24,6 @@
       if (!container) {
         continue;
       }
-
       const value = container.innerText;
       rawEvents.push(value);
 
