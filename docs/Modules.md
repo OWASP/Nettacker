@@ -240,6 +240,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**tieline_cve_2021_35336_vuln**' – check the target for Tieline CVE-2021-35336 vulnerability
 - '**tjws_cve_2021_37573_vuln**' – check the target for TJWS CVE-2021-37573 vulnerability
 - '**vbulletin_cve_2019_16759_vuln**' – check the target for vBulletin CVE-2019-16759 vulnerability
+- '**versa_concerto_cve_2025_34026_vuln**' - check the target for Versa Concerto CVE-2025-34026 vulnerability
 - '**wp_plugin_cve_2021_38314_vuln**' – check the target for WordPress plugin CVE-2021-38314
 - '**wp_plugin_cve_2021_39316_vuln**' – check the target for WordPress plugin CVE-2021-39316
 - '**wp_plugin_cve_2021_39320_vuln**' – check the target for WordPress plugin CVE-2021-39320
