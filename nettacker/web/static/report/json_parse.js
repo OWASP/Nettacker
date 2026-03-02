@@ -21,7 +21,7 @@
     for (let i = 1; i <= length; i++) {
       const container = document.getElementById("json_event_" + i);
       const button = document.getElementById("json_clipboard_" + i);
-      if (!container || !button) {
+      if (!container) {
         continue;
       }
 
@@ -38,11 +38,13 @@
 
       container.innerText = "";
 
-      button.addEventListener("click", function () {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(value);
-        }
-      });
+      if (button) {
+        button.addEventListener("click", function () {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(value);
+          }
+        });
+      }
 
       if (typeof renderjson !== "undefined") {
         container.appendChild(renderjson(parsed));
