@@ -112,7 +112,17 @@
       if (!data.length) {
         return "";
       }
-      const headers = Object.keys(data[0]);
+
+      const headerSet = new Set();
+      data.forEach(function (row) {
+        if (row && typeof row === "object") {
+          Object.keys(row).forEach(function (key) {
+            headerSet.add(key);
+          });
+        }
+      });
+
+      const headers = Array.from(headerSet);
       const escapeCell = function (cell) {
         const str =
           cell === null || cell === undefined
@@ -160,6 +170,14 @@
         if (ev.event) {
           parts.push("- " + ev.event);
         }
+
+        const hadStructuredFields = parts.length > 0;
+        if (ev.raw) {
+          parts.push(ev.raw);
+        } else if (!hadStructuredFields) {
+          parts.push(String(ev));
+        }
+
         lines.push((index + 1) + ". " + parts.join(" "));
       });
       return lines.join("\n");
