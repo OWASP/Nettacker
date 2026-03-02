@@ -320,7 +320,7 @@ class ArgParser(ArgumentParser):
             dest="timeout",
             default=Config.settings.timeout,
             type=float,
-            help=_("read_passwords"),
+            help=_("timeout"),
         )
         method_options.add_argument(
             "-w",
