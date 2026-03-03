@@ -306,6 +306,13 @@ class ArgParser(ArgumentParser):
             default=Config.settings.ports,
             help=_("port_separator"),
         )
+        method_options.add_argument(,
+            "--schema",
+            action="store",
+            dest="schema",
+            default=Config.settings.schema,
+            help=_("schema_selector"),
+        )
         method_options.add_argument(
             "--user-agent",
             action="store",
@@ -674,6 +681,13 @@ class ArgParser(ArgumentParser):
                 except Exception:
                     die_failure(_("ports_int"))
             options.ports = list(tmp_ports)
+        # Check schema(s)
+        if options.schema:
+            tmp_schema = set()
+            for schema in options.schema.split(","):
+                tmp_schema.add(schema.strip().lower())
+                
+            options.schema = list(tmp_schema)
         # Check for excluded ports
         if options.excluded_ports:
             tmp_excluded_ports = set()
