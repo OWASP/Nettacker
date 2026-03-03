@@ -107,7 +107,7 @@ jobs:
           poetry build --no-interaction
 
       - name: Upload package artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist
