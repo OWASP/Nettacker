@@ -83,6 +83,7 @@ scan_method_options: Scan method options
 scan_method_select: please choose your scan method!
 scan_module_not_found: this scan module [{0}] not found!
 scan_started: "Nettacker engine started ..."
+schema_selector: schema(s) list, separate with ","
 select_language: select a language {0}
 select_profile: select profile {0}
 select_user_agent: "Select a user agent to send with HTTP requests or enter \"random_user_agent\"
