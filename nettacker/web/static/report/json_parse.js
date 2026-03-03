@@ -15,7 +15,6 @@
       });
     }
 
-    const rawEvents = [];
     const events = [];
 
     for (let i = 1; i <= length; i++) {
@@ -25,7 +24,6 @@
         continue;
       }
       const value = container.innerText;
-      rawEvents.push(value);
 
       let parsed;
       try {
@@ -90,6 +88,7 @@
       }
     } catch (e) {
       // Non-fatal, summary is optional
+      console.warn("Summary population failed", e);
     }
 
     function downloadBlob(content, fileName, mime) {
@@ -137,10 +136,11 @@
       const rows = [];
       rows.push(headers.map(escapeCell).join(","));
       data.forEach(function (row) {
+        const safeRow = row && typeof row === "object" ? row : {};
         rows.push(
           headers
             .map(function (key) {
-              return escapeCell(row[key]);
+              return escapeCell(safeRow[key]);
             })
             .join(","),
         );
