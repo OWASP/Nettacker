@@ -306,7 +306,7 @@ class ArgParser(ArgumentParser):
             default=Config.settings.ports,
             help=_("port_separator"),
         )
-        method_options.add_argument(,
+        method_options.add_argument(
             "--schema",
             action="store",
             dest="schema",
@@ -686,7 +686,7 @@ class ArgParser(ArgumentParser):
             tmp_schema = set()
             for schema in options.schema.split(","):
                 tmp_schema.add(schema.strip().lower())
-                
+
             options.schema = list(tmp_schema)
         # Check for excluded ports
         if options.excluded_ports:
