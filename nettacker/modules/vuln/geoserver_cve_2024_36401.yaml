@@ -47,7 +47,7 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: typeName=([a-zA-Z0-9_-]+%3A[a-zA-Z0-9_-]+)
+              regex: typeName=([A-Za-z_][A-Za-z0-9._-]*%3A[A-Za-z_][A-Za-z0-9._-]*)
               reverse: false
 
       - method: get
@@ -103,7 +103,7 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: typeName=([a-zA-Z0-9_-]+%3A[a-zA-Z0-9_-]+)
+              regex: typeName=([A-Za-z_][A-Za-z0-9._-]*%3A[A-Za-z_][A-Za-z0-9._-]*)
               reverse: false
 
       - method: get
