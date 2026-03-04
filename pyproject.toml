@@ -14,7 +14,9 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11"
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13"
 ]
 keywords = [
     "automation",
@@ -44,7 +46,7 @@ release_name = "QUIN"
 nettacker = "nettacker.main:run"
 
 [tool.poetry.dependencies]
-python = "^3.10, <3.13"
+python = "^3.10, <3.14"
 aiohttp = "^3.9.5"
 apsw = "^3.50.0.0"
 argparse = "^1.4.0"
