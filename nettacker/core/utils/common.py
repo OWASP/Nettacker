@@ -231,7 +231,7 @@ def class_to_value(arrays):
 
 
 def generate_and_replace_md5(content):
-    # todo: make it betetr and document it
+    # todo: make it better and document it
     md5_content = content.split("NETTACKER_MD5_GENERATOR_START")[1].split(
         "NETTACKER_MD5_GENERATOR_STOP"
     )[0]
@@ -433,7 +433,7 @@ def sort_dictionary(dictionary):
 
 def sanitize_path(path):
     """
-    Sanitize the file path to preven unathorized access
+    Sanitize the file path to prevent unauthorized access
     Args:
         path: filepath(user input)
 

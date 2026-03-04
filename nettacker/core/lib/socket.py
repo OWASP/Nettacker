@@ -72,11 +72,11 @@ class SocketLibrary(BaseLibrary):
             socket_connection.close()
         # except ConnectionRefusedError:
         #     return None
-        except Exception:
+        except (OSError, ConnectionError):
             try:
                 socket_connection.close()
                 response = b""
-            except Exception:
+            except (OSError, ConnectionError):
                 response = b""
 
         try:
