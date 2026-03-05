@@ -19,7 +19,7 @@ See https://agents.md for more info
 - Docker (web UI): `docker-compose up`.
 
 ## Coding Style & Naming Conventions
-- Python 3.9–3.12 supported. Use 4-space indents.
+- Python 3.10–3.12 supported. Use 4-space indents.
 - Line length: 99 chars (`ruff`, `ruff-format`, `isort` profile=black).
 - Names: modules/files `lower_snake_case`; functions/vars `lower_snake_case`; classes `PascalCase`; constants `UPPER_SNAKE_CASE`.
 - Keep functions small, typed where practical, and add docstrings for public APIs.
@@ -32,6 +32,8 @@ See https://agents.md for more info
 
 ## Commit & Pull Request Guidelines
 - Commit messages: imperative tense, concise subject; reference issues (`Fixes #123`).
+- Commit signing: all commits must be signed.
+- Formatting: use Ruff for Python linting and formatting.
 - Before pushing: `pre-commit run --all-files` and `make test` must pass.
 - PRs: include a clear description, rationale, linked issue(s), test evidence (logs or screenshots for web UI), and update docs if behavior changes.
 
