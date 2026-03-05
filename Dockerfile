@@ -3,7 +3,7 @@
 ARG PYTHON_IMAGE=python:3.11.14-slim
       
 ### Build stage
-FROM ${PYTHON_IMAGE} AS builder
+FROM --platform=$BUILDPLATFORM ${PYTHON_IMAGE} AS builder
 ### Install OS dependencies and poetry package manager
 RUN apt-get update && \
     apt-get install -y gcc libssl-dev && \
