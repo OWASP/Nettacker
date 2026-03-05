@@ -583,6 +583,7 @@ def start_api_subprocess(options):
                 host=options.api_hostname,
                 port=options.api_port,
                 debug=options.api_debug_mode,
+                use_reloader=False,
                 ssl_context=(options.api_cert, options.api_cert_key),
                 threaded=True,
             )
@@ -591,6 +592,7 @@ def start_api_subprocess(options):
                 host=options.api_hostname,
                 port=options.api_port,
                 debug=options.api_debug_mode,
+                use_reloader=False,
                 ssl_context="adhoc",
                 threaded=True,
             )
