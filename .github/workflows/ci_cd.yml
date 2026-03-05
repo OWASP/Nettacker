@@ -261,6 +261,8 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -269,6 +271,7 @@ jobs:
           file: Dockerfile
           push: true
           tags: owasp/nettacker:dev
+          platforms: linux/amd64,linux/arm64
 
   publish-nettacker-latest-to-docker-registry:
     name: Publish nettacker:latest Docker image
@@ -295,6 +298,8 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -303,6 +308,7 @@ jobs:
           file: Dockerfile
           push: true
           tags: owasp/nettacker:latest
+          platforms: linux/amd64,linux/arm64
 
   publish-to-test-pypi:
     name: Publish Test PyPI package
