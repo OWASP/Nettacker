@@ -25,7 +25,6 @@ results.*
 *.dd.json
 *.DS_Store
 *.swp
-00_locale_missing_keys_report.txt
 
 #codacy
 .coverage
