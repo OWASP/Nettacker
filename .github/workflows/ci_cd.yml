@@ -24,11 +24,17 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Install Poetry
+        run: pipx install poetry
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
-          cache: 'poetry'
+          cache: poetry
+          cache-dependency-path: poetry.lock
           python-version: '3.11'
+
       - name: Run pre-commit
         uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd
   code-ql:
@@ -66,15 +72,19 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      
+      - name: Install Poetry
+        run: pipx install poetry
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
-          cache: 'poetry'
+          cache: poetry
+          cache-dependency-path: poetry.lock
           python-version: '3.11'
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade poetry
           poetry install --with test
 
       - name: Run tests
@@ -89,10 +99,15 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Install Poetry
+        run: pipx install poetry
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
-          cache: 'poetry'
+          cache: poetry
+          cache-dependency-path: poetry.lock
           python-version: '3.11'
 
       - name: Install dependencies
@@ -122,10 +137,15 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      
+      - name: Install Poetry
+        run: pipx install poetry
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
-          cache: 'poetry'
+          cache: poetry
+          cache-dependency-path: poetry.lock
           python-version: '3.11'
 
       - name: Get package artifacts
