@@ -2,8 +2,10 @@ import csv
 import json
 import multiprocessing
 import os
+import ssl
 import random
 import string
+import sys
 import time
 from threading import Thread
 from types import SimpleNamespace
@@ -590,6 +592,10 @@ def start_api_subprocess(options):
                 ssl_context="adhoc",
                 threaded=True,
             )
+    except (ssl.SSLError, ValueError) as se:
+        die_failure(_("load_ssl_fail"))
+    except FileNotFoundError as fe:
+        die_failure(_("file_not_found"))
     except Exception as e:
         die_failure(str(e))
 
@@ -614,3 +620,7 @@ def start_api_server(options):
             for process in multiprocessing.active_children():
                 process.terminate()
             break
+
+    if p.exitcode != 0:
+            # The child stopped. Exit the parent so it doesn't print "Cannot specify targets"
+            sys.exit(1)
