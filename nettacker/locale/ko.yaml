@@ -212,3 +212,62 @@ no_scan_to_compare: "비교할 scan_id를 찾을 수 없습니다"
 compare_report_saved: "비교 결과가 {0}에 저장되었습니다"
 build_compare_report: "비교 보고서 생성 중"
 finish_build_report: "비교 보고서 생성 완료"
+
+
+
+API_cert: API 인증서
+API_cert_key: API 인증서 키
+Invalid_whatcms_api_key: 잘못된 WHATCMS API 키
+apsw_connection_error: APSW 연결 생성 실패 {0}
+apsw_ill_configuration: APSW가 설정에 있지만 환경에 설치되지 않았습니다
+cannot_run_api_server: API 서버를 자체적으로 실행할 수 없습니다
+compare_scans: 현재 스캔을 이전 스캔과 비교
+database_connection_failed: 선택한 데이터베이스 연결 실패
+database_error: 데이터베이스 오류
+database_lock_issue: 데이터베이스 잠금 발생. 재시도 {0}
+database_query_fail: 데이터베이스 쿼리 실패
+database_retries_exhausted: 모든 재시도 실패. 로그 건너뜀
+error_passwords: 비밀번호 파일을 지정할 수 없습니다
+error_wordlist: 워드리스트 파일을 지정할 수 없습니다
+exclude_ports: 제외할 포트
+file_saved: 보고서가 {0} 에 저장되었습니다
+filtered_content: 보고서에서 전체 내용을 확인하십시오
+finished_module: 모듈 {0} 대상 {1} 완료
+finished_parallel_module_scan: 병렬 모듈 스캔 완료
+http_header: 사용자 정의 HTTP 헤더 추가
+icmp_need_root_access: ICMP 스캔을 사용하려면 root 권한이 필요합니다
+invalid_database: mysql 또는 sqlite를 선택해야 합니다
+invalid_json_type_to_db: 잘못된 JSON 타입 {0}
+invalid_scan_id: 잘못된 scan id
+library_not_supported: 지원되지 않는 라이브러리 {0}
+loading_modules: 모듈 로딩 중...
+loading_profiles: 프로파일 로딩 중...
+module_profile_full_information: {0}{1}{2}: {3}
+modules_extra_args_help: 모듈에 추가 인자 전달
+no_events_for_report: 보고서를 생성할 이벤트 없음
+no_live_service_found: 실행 중인 서비스가 발견되지 않았습니다
+read_report_fail: 보고서 파일 읽기 실패 {0}
+regrouping_targets: 하드웨어 리소스 기반 타겟 재구성
+remove_logs_fail: 이전 로그 삭제 실패
+removing_old_db_records: 이전 DB 기록 삭제 중
+report_insertion_fail: 보고서 DB 삽입 실패
+report_retrieval_fail: 보고서 조회 실패
+search_results_end: 더 이상 검색 결과 없음
+searching_whatcms_database: WhatCMS 데이터베이스 검색 중
+select_user_agent: HTTP 요청에 사용할 User-Agent 선택
+send_success_event_from_module: 모듈 성공 이벤트 전송
+send_unsuccess_event_from_module: 모듈 실패 이벤트 전송
+sending_module_request: 모듈 요청 전송 중
+set_hardware_usage: 하드웨어 사용 설정
+show_all_modules: 모든 모듈 표시
+show_all_profiles: 모든 프로파일 표시
+single_process_started: 단일 프로세스 시작
+skip_service_discovery: 서비스 발견 단계 건너뜀
+start_multi_process: 멀티 프로세스 시작
+start_parallel_module_scan: 병렬 모듈 스캔 시작
+thread_number_modules: 모듈 스레드 수
+timeout: 요청 타임아웃
+user_wordlist: 사용자 정의 워드리스트
+verbose_event: 상세 이벤트 활성화
+whatcms_monthly_quota_exceeded: WHATCMS 월간 요청 한도 초과
+wrong_hardware_usage: 잘못된 하드웨어 사용 설정
