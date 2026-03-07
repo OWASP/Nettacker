@@ -5,7 +5,7 @@ import pytest
 
 wordlists = {
     "admin_file": ("nettacker/lib/payloads/wordlists/admin_wordlist.txt", 533),
-    "dir_file": ("nettacker/lib/payloads/wordlists/dir_wordlist.txt", 1966),
+    "dir_file": ("nettacker/lib/payloads/wordlists/dir_wordlist.txt", 1996),
     "pma_file": ("nettacker/lib/payloads/wordlists/pma_wordlist.txt", 174),
     "wp_plugin_small_file": ("nettacker/lib/payloads/wordlists/wp_plugin_small.txt", 291),
     "wp_theme_small_file": ("nettacker/lib/payloads/wordlists/wp_theme_small.txt", 41),
