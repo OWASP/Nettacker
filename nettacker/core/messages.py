@@ -1,5 +1,4 @@
 import sys
-from io import StringIO
 
 import yaml
 
@@ -20,7 +19,8 @@ def application_language():
 
 
 def load_yaml(filename):
-    return yaml.load(StringIO(open(filename, "r").read()), Loader=yaml.FullLoader)
+    with open(filename, "r") as f:
+        return yaml.safe_load(f)
 
 
 def get_languages():
