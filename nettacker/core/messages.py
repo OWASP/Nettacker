@@ -25,15 +25,17 @@ def load_yaml(filename):
 
 def get_languages():
     """
-    Get available languages
-
+    Return a deduplicated list of available locale identifiers.
+    
+    Scans Config.path.locale_dir for files with a .yaml extension and collects each file's stem (filename without extension) as a language identifier.
+    
     Returns:
-        an array of languages
+        languages (list[str]): List of unique language codes derived from locale YAML filenames.
     """
     languages_list = []
 
     for language in Config.path.locale_dir.glob("*.yaml"):
-        languages_list.append(str(language).split("/")[-1].split(".")[0])
+        languages_list.append(language.stem)
     return list(set(languages_list))
 
 
