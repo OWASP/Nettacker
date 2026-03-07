@@ -167,7 +167,7 @@ def access_log(response):
                         flask_request.full_path,
                         flask_request.user_agent,
                         response.status_code,
-                        json.dumps(flask_request.form),
+                        json.dumps(list(flask_request.form.keys())),
                     ).encode()
                 )
         except Exception as e:
