@@ -122,4 +122,21 @@ compare_report_path_filename: तुलना रिपोर्ट सहेज
 no_scan_to_compare: तुलना करने के लिए scan_id नहीं मिला
 compare_report_saved: "{0} में तुलना परिणाम सहेजे गए"
 build_compare_report: "तुलना रिपोर्ट बनाई जा रही है"
-finish_build_report: "तुलना रिपोर्ट तैयार हो गई"
+user_wordlist: उपयोगकर्ताओं को अपना स्वयं का वर्डलिस्ट दर्ज करने की अनुमति देता है
+exclude_ports: "पोर्ट को बाहर करने के लिए (जैसे 80 || 80,443|| 1000-1300)"
+http_header: "अनुरोधों में कस्टम HTTP हेडर जोड़ें (प्रारूप: 'key: value')। एकाधिक हेडर के लिए, एकाधिक -H फ्लैग का उपयोग करें"
+apsw_ill_configuration: APSW को कॉन्फ़िगरेशन में सेट किया गया है लेकिन वातावरण में इंस्टॉल नहीं है
+apsw_connection_error: APSW कनेक्शन {0} बनाने में विफल
+report_insertion_fail: रिपोर्ट को रिपोर्ट्स तालिका में सम्मिलित नहीं किया जा सका
+remove_logs_fail: पुराने लॉग हटाने में असमर्थ
+database_lock_issue: पुनः प्रयास {0}, डेटाबेस लॉक है। डेटाबेस में सबमिशन पुनः प्रयास कर रहा है
+database_retries_exhausted: सभी पुनः प्रयास समाप्त हो गए। इस लॉग को छोड़ दिया जा रहा है।
+database_query_fail: डेटाबेस में क्वेरी नहीं कर सका
+report_retrieval_fail: रिपोर्ट पुनर्प्राप्त नहीं कर सका
+read_report_fail: रिपोर्ट फ़ाइल {0} पढ़ने में विफल
+search_results_end: कोई और खोज परिणाम नहीं
+database_error: डेटाबेस त्रुटि!
+error_exclude_all: "सभी मॉड्यूल को बाहर नहीं किया जा सकता। कृपया -x का उपयोग करके व्यक्तिगत मॉड्यूल नाम निर्दिष्ट करें।"
+timeout: अनुरोध टाइमआउट सेकंड में
+error_passwords: पासवर्ड फ़ाइल नहीं खोल सका
+error_wordlist: वर्डलिस्ट फ़ाइल नहीं खोल सका
