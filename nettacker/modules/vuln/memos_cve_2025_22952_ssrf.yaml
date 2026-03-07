@@ -26,6 +26,7 @@ payloads:
         headers:
           User-Agent: "{user_agent}"
         ssl: false
+        allow_redirects: false
         url:
           nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/api/v1/markdown/link:metadata?link=http://localhost:13042"
