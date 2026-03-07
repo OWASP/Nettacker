@@ -139,8 +139,8 @@ O
 OasDefault
 Office
 P
-PHP
 PDF
+PHP
 Pages
 People
 Press
@@ -200,6 +200,7 @@ _vti_log
 _vti_pvt
 _vti_rpc
 a
+a0proj
 aa
 aaa
 abc
@@ -476,11 +477,13 @@ classes
 classic
 classified
 classifieds
+claude
 clear
 clearpixel
 click
 client
 clients
+cline
 cluster
 cm
 cmd
@@ -489,6 +492,7 @@ cn
 cnt
 code
 codepages
+codex
 coffee
 coke
 collapse
@@ -550,6 +554,7 @@ content
 contents
 contest
 contests
+continue
 contrib
 contribute
 control
@@ -588,6 +593,7 @@ css
 ct
 culture
 current
+cursor
 custom
 customer
 customers
@@ -757,6 +763,7 @@ external
 extra
 extranet
 f
+fabric
 facts
 faculty
 fail
@@ -919,8 +926,8 @@ hitcount
 hits
 holiday
 holidays
-home/000~ROOT~000
 home
+home/000~ROOT~000
 homepage
 homes
 homework
@@ -1051,6 +1058,7 @@ kernel
 key
 keygen
 kids
+kiro
 ko
 ko_KR
 kontakt
@@ -1218,6 +1226,7 @@ myaccount
 myspace
 mysql
 n
+n8n
 names
 national
 nav
@@ -1263,6 +1272,7 @@ online
 open
 openapp
 openbsd
+opencode
 openfile
 opensource
 operator
@@ -1329,9 +1339,9 @@ photos
 php
 phpBB2
 phpMyAdmin
+phpinfo
 phpmyadmin
 phppgadmin
-phpinfo
 phps
 pic
 pics
@@ -1341,6 +1351,7 @@ pipermail
 pix
 pixel
 pl
+plandex
 play
 player
 pls
@@ -1508,13 +1519,15 @@ rfid
 right
 roadmap
 robot
+robotics
 robots
 robots.txt
-robotics
 roles
+roo
 root
 route
 router
+rovodev
 rpc
 rsa
 rss
@@ -1915,6 +1928,7 @@ wiki
 will
 win
 windows
+windsurf
 wink
 wireless
 word
@@ -1957,6 +1971,7 @@ y
 yahoo
 z
 zap
+zed
 zh
 zh_CN
 zh_TW
