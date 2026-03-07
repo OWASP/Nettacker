@@ -140,3 +140,4 @@ report_retrieval_fail: Could not retrieve the report
 read_report_fail: Failed to read report file {0}
 search_results_end: No more search results
 database_error: Database error!
+error_exclude_all: "Cannot exclude all modules. Please specify individual module names to exclude using -x."
