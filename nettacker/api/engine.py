@@ -59,67 +59,65 @@ del nettacker_application_config["api_access_key"]
 
 @app.errorhandler(400)
 def error_400(error):
-    """
-    handle the 400 HTTP error
+    """Handle 400 Bad Request HTTP errors.
 
     Args:
-        error: the flask error
+        error (werkzeug.exceptions.BadRequest): The Flask error object.
 
     Returns:
-        400 JSON error
+        tuple[Response, int]: JSON error response with 400 status code.
     """
     return jsonify(structure(status="error", msg=error.description)), 400
 
 
 @app.errorhandler(401)
 def error_401(error):
-    """
-    handle the 401 HTTP error
+    """Handle 401 Unauthorized HTTP errors.
 
     Args:
-        error: the flask error
+        error (werkzeug.exceptions.Unauthorized): The Flask error object.
 
     Returns:
-        401 JSON error
+        tuple[Response, int]: JSON error response with 401 status code.
     """
     return jsonify(structure(status="error", msg=error.description)), 401
 
 
 @app.errorhandler(403)
 def error_403(error):
-    """
-    handle the 403 HTTP error
+    """Handle 403 Forbidden HTTP errors.
 
     Args:
-        error: the flask error
+        error (werkzeug.exceptions.Forbidden): The Flask error object.
 
     Returns:
-        403 JSON error
+        tuple[Response, int]: JSON error response with 403 status code.
     """
     return jsonify(structure(status="error", msg=error.description)), 403
 
 
 @app.errorhandler(404)
 def error_404(error):
-    """
-    handle the 404 HTTP error
+    """Handle 404 Not Found HTTP errors.
 
     Args:
-        error: the flask error
+        error (werkzeug.exceptions.NotFound): The Flask error object.
 
     Returns:
-        404 JSON error
+        tuple[Response, int]: JSON error response with 404 status code.
     """
     return jsonify(structure(status="error", msg=_("not_found"))), 404
 
 
 @app.before_request
 def limit_remote_addr():
-    """
-    check if IP filtering applied and API address is in whitelist
+    """Check if client IP is in the whitelist before processing request.
 
     Returns:
-        None if it's in whitelist otherwise abort(403)
+        None: If IP is whitelisted or no whitelist configured.
+
+    Raises:
+        werkzeug.exceptions.Forbidden: If client IP is not in whitelist.
     """
     # IP Limitation
     if app.config["OWASP_NETTACKER_CONFIG"]["api_client_whitelisted_ips"]:
@@ -133,8 +131,13 @@ def limit_remote_addr():
 
 @app.after_request
 def set_security_headers(response):
-    """
-    Add common security headers to every response.
+    """Add security headers to every HTTP response.
+
+    Args:
+        response (Response): The Flask response object.
+
+    Returns:
+        Response: The response with security headers added.
     """
     response.headers.setdefault("Content-Security-Policy", "upgrade-insecure-requests")
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
@@ -146,14 +149,13 @@ def set_security_headers(response):
 
 @app.after_request
 def access_log(response):
-    """
-    Write to the access log file if enabled.
+    """Write request details to access log file if logging is enabled.
 
     Args:
-        response: the flask response
+        response (Response): The Flask response object.
 
     Returns:
-        the flask response
+        Response: The unmodified Flask response.
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"]:
         try:
@@ -181,14 +183,16 @@ def access_log(response):
 
 @app.route("/<path:path>")
 def get_statics(path):
-    """
-    getting static files and return content mime types
+    """Serve static files with appropriate MIME types.
 
     Args:
-        path: path and filename
+        path (str): Relative path to the static file.
 
     Returns:
-        file content and content type if file found otherwise abort(404)
+        Response: File content with correct MIME type.
+
+    Raises:
+        werkzeug.exceptions.NotFound: If file does not exist.
     """
     static_types = mime_types()
     return Response(
@@ -199,11 +203,10 @@ def get_statics(path):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    """
-    index page for WebUI
+    """Render the main WebUI index page.
 
     Returns:
-        rendered HTML page
+        str: Rendered HTML template with scan configuration options.
     """
     return render_template(
         "index.html",
@@ -216,14 +219,13 @@ def index():
 
 
 def sanitize_report_path_filename(report_path_filename):
-    """
-    sanitize the report_path_filename
+    """Sanitize and validate the report output filename.
 
     Args:
-        report_path_filename: the report path filename
+        report_path_filename (str): User-provided report filename.
 
     Returns:
-        the sanitized report path filename
+        pathlib.Path | bool: Safe path within results directory, or False if invalid.
     """
     filename = secure_filename(os.path.basename(report_path_filename))
     if not filename:
@@ -244,11 +246,14 @@ def sanitize_report_path_filename(report_path_filename):
 
 @app.route("/new/scan", methods=["GET", "POST"])
 def new_scan():
-    """
-    new scan through the API
+    """Start a new scan via the API.
 
     Returns:
-        a JSON message with scan details if success otherwise a JSON error
+        tuple[Response, int]: JSON with scan arguments on success (200),
+            or error message on failure (400).
+
+    Raises:
+        werkzeug.exceptions.Unauthorized: If API key is invalid.
     """
     api_key_is_valid(app, flask_request)
     form_values = dict(flask_request.form)
@@ -279,10 +284,14 @@ def new_scan():
 
 @app.route("/compare/scans", methods=["POST"])
 def compare_scans():
-    """
-    compare two scans through the API
+    """Compare two scan results and generate a comparison report.
+
     Returns:
-        Success if the comparision is successfull and report is saved and error if not.
+        tuple[Response, int]: JSON success message (200), not found (404),
+            or error message (400).
+
+    Raises:
+        werkzeug.exceptions.Unauthorized: If API key is invalid.
     """
     api_key_is_valid(app, flask_request)
 
@@ -316,11 +325,13 @@ def compare_scans():
 
 @app.route("/session/check", methods=["GET"])
 def session_check():
-    """
-    check the session if it's valid
+    """Validate the current API session.
 
     Returns:
-        a JSON message if it's valid otherwise abort(401)
+        tuple[Response, int]: JSON success message with 200 status.
+
+    Raises:
+        werkzeug.exceptions.Unauthorized: If API key is invalid.
     """
     api_key_is_valid(app, flask_request)
     return jsonify(structure(status="ok", msg=_("browser_session_valid"))), 200
@@ -328,12 +339,13 @@ def session_check():
 
 @app.route("/session/set", methods=["GET", "POST"])
 def session_set():
-    """
-    set session on the browser
+    """Set a session cookie in the browser for API authentication.
 
     Returns:
-        200 HTTP response if session is valid and a set-cookie in the
-        response if success otherwise abort(403)
+        Response: JSON success with Set-Cookie header.
+
+    Raises:
+        werkzeug.exceptions.Unauthorized: If API key is invalid.
     """
     api_key_is_valid(app, flask_request)
     res = make_response(jsonify(structure(status="ok", msg=_("browser_session_valid"))))
@@ -349,12 +361,10 @@ def session_set():
 
 @app.route("/session/kill", methods=["GET"])
 def session_kill():
-    """
-    unset session on the browser
+    """Clear the session cookie from the browser.
 
     Returns:
-        a 200 HTTP response with set-cookie to "expired"
-        to unset the cookie on the browser
+        Response: JSON success with expired Set-Cookie header.
     """
     res = make_response(jsonify(structure(status="ok", msg=_("browser_session_killed"))))
     res.set_cookie("key", "", expires=0)
@@ -363,11 +373,13 @@ def session_kill():
 
 @app.route("/results/get_list", methods=["GET"])
 def get_results():
-    """
-    get list of scan's results through the API
+    """Get paginated list of scan results.
 
     Returns:
-        an array of JSON scan's results if success otherwise abort(403)
+        tuple[Response, int]: JSON array of scan results with 200 status.
+
+    Raises:
+        werkzeug.exceptions.Unauthorized: If API key is invalid.
     """
     api_key_is_valid(app, flask_request)
     page = get_value(flask_request, "page")
@@ -378,11 +390,13 @@ def get_results():
 
 @app.route("/results/get", methods=["GET"])
 def get_result_content():
-    """
-    get a result HTML/TEXT/JSON content
+    """Download a scan result file by ID.
 
     Returns:
-        content of the scan result
+        Response: File content as attachment with appropriate MIME type.
+
+    Raises:
+        werkzeug.exceptions.Unauthorized: If API key is invalid.
     """
     api_key_is_valid(app, flask_request)
     scan_id = get_value(flask_request, "id")
@@ -403,11 +417,13 @@ def get_result_content():
 
 @app.route("/results/get_json", methods=["GET"])
 def get_results_json():
-    """
-    get host's logs through the API in JSON type
+    """Export scan result logs as JSON file.
 
     Returns:
-        an array with JSON events
+        Response: JSON file as downloadable attachment.
+
+    Raises:
+        werkzeug.exceptions.Unauthorized: If API key is invalid.
     """
     api_key_is_valid(app, flask_request)
     session = create_connection()
@@ -426,11 +442,13 @@ def get_results_json():
 
 @app.route("/results/get_csv", methods=["GET"])
 def get_results_csv():  # todo: need to fix time format
-    """
-    get host's logs through the API in JSON type
+    """Export scan result logs as CSV file.
 
     Returns:
-        an array with JSON events
+        Response: CSV file as downloadable attachment.
+
+    Raises:
+        werkzeug.exceptions.Unauthorized: If API key is invalid.
     """
     api_key_is_valid(app, flask_request)
     session = create_connection()
@@ -457,11 +475,13 @@ def get_results_csv():  # todo: need to fix time format
 
 @app.route("/logs/get_list", methods=["GET"])
 def get_last_host_logs():  # need to check
-    """
-    get list of logs through the API
+    """Get paginated list of recent host logs.
 
     Returns:
-        an array of JSON logs if success otherwise abort(403)
+        tuple[Response, int]: JSON array of logs with 200 status.
+
+    Raises:
+        werkzeug.exceptions.Unauthorized: If API key is invalid.
     """
     api_key_is_valid(app, flask_request)
     page = get_value(flask_request, "page")
@@ -472,11 +492,13 @@ def get_last_host_logs():  # need to check
 
 @app.route("/logs/get_html", methods=["GET"])
 def get_logs_html():  # todo: check until here - ali
-    """
-    get host's logs through the API in HTML type
+    """Get host logs formatted as HTML report.
 
     Returns:
-        HTML report
+        Response: HTML formatted log report.
+
+    Raises:
+        werkzeug.exceptions.Unauthorized: If API key is invalid.
     """
     api_key_is_valid(app, flask_request)
     target = get_value(flask_request, "target")
@@ -485,11 +507,13 @@ def get_logs_html():  # todo: check until here - ali
 
 @app.route("/logs/get_json", methods=["GET"])
 def get_logs():
-    """
-    get host's logs through the API in JSON type
+    """Export host logs as downloadable JSON file.
 
     Returns:
-        an array with JSON events
+        Response: JSON file as downloadable attachment.
+
+    Raises:
+        werkzeug.exceptions.Unauthorized: If API key is invalid.
     """
     api_key_is_valid(app, flask_request)
     target = get_value(flask_request, "target")
@@ -509,11 +533,13 @@ def get_logs():
 
 @app.route("/logs/get_csv", methods=["GET"])
 def get_logs_csv():
-    """
-    get target's logs through the API in JSON type
+    """Export host logs as downloadable CSV file.
 
     Returns:
-        an array with JSON events
+        Response: CSV file as downloadable attachment.
+
+    Raises:
+        werkzeug.exceptions.Unauthorized: If API key is invalid.
     """
     api_key_is_valid(app, flask_request)
     target = get_value(flask_request, "target")
@@ -540,11 +566,13 @@ def get_logs_csv():
 
 @app.route("/logs/search", methods=["GET"])
 def go_for_search_logs():
-    """
-    search in all events
+    """Search through all logged events.
 
     Returns:
-        an array with JSON events
+        tuple[Response, int]: JSON array of matching events with 200 status.
+
+    Raises:
+        werkzeug.exceptions.Unauthorized: If API key is invalid.
     """
     api_key_is_valid(app, flask_request)
     try:
@@ -561,12 +589,14 @@ def go_for_search_logs():
 
 
 def start_api_subprocess(options):
-    """
-    a function to run flask in a subprocess to make kill signal in a better
-    way!
+    """Run Flask API server in a subprocess for clean signal handling.
 
     Args:
-        options: all options
+        options (SimpleNamespace): API configuration options including
+            hostname, port, SSL certificates, and debug settings.
+
+    Raises:
+        SystemExit: If server fails to start.
     """
     app.config["OWASP_NETTACKER_CONFIG"] = {
         "api_access_key": options.api_access_key,
@@ -601,11 +631,13 @@ def start_api_subprocess(options):
 
 
 def start_api_server(options):
-    """
-    entry point to run the API through the flask
+    """Entry point to start the API server.
 
     Args:
-        options: all options
+        options (SimpleNamespace): API configuration options.
+
+    Note:
+        Blocks until KeyboardInterrupt is received.
     """
     # Starting the API
     log.write_to_api_console(_("API_key").format(options.api_port, options.api_access_key))
