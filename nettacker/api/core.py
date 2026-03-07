@@ -120,10 +120,9 @@ def get_file(filename):
     if not os.path.normpath(filename).startswith(str(Config.path.web_static_dir)):
         abort(404)
     try:
-        return open(filename, "rb").read()
-    except ValueError:
-        abort(404)
-    except IOError:
+        with open(filename, "rb") as f:
+            return f.read()
+    except (ValueError, IOError):
         abort(404)
 
 
