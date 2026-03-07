@@ -80,6 +80,7 @@ payloads:
                 # - ../../../../etc/passwd #lfi
         response:
           dependent_on_temp_event: valid_request_status
+          stop_at_first_success: waf_detect 
           condition_type: or
           log: WAF detected, Got differenet response from original request status code dependent_on_temp_event[0]['status_code'][0]
           conditions:
