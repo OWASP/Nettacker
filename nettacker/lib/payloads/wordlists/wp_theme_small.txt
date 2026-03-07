@@ -37,5 +37,5 @@ reganto-theme
 rockstar-theme
 saico
 striking_r
-twentysixteen
 switchblade
+twentysixteen

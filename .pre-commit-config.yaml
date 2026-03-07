@@ -5,6 +5,10 @@ repos:
       - id: check-ast
       - id: check-builtin-literals
       - id: check-yaml
+      - id: file-contents-sorter
+        args:
+          - --unique
+        files: nettacker/lib/payloads/wordlists/.*\.txt$
       - id: fix-encoding-pragma
         args:
           - --remove
