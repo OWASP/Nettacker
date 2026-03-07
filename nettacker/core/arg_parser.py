@@ -715,8 +715,8 @@ class ArgParser(ArgumentParser):
         # Check custom wordlist
         if options.read_from_file:
             try:
-                with open(options.read_from_file) as wordlist_file:
-                    wordlist_file.read().split("\n")
+                with open(options.read_from_file):
+                    pass
             except Exception:
                 die_failure(_("error_wordlist").format(options.read_from_file))
         # Check output file
