@@ -5,7 +5,7 @@ import pytest
 import yaml
 from schema import Schema, Optional, And, Or
 
-BASE_DIRS = ["nettacker/modules/vuln", "nettacker/modules/scan"]
+BASE_DIRS = ["nettacker/modules/vuln", "nettacker/modules/scan", "nettacker/modules/brute"]
 
 # ----------------------------
 # Utility
@@ -100,10 +100,91 @@ SOCKET_PAYLOAD_SCHEMA = Schema(
     ignore_extra_keys=True,
 )
 
+# ----------------------------
+# BRUTE Schema
+# ----------------------------
+
+BRUTE_LIBRARIES = {
+    "ftp",
+    "ftps",
+    "pop3",
+    "pop3s",
+    "smtp",
+    "smtps",
+    "ssh",
+    "telnet",
+    "smb",
+}
+
+PASSWORD_FUZZER_SCHEMA = Schema(
+    {
+        "nettacker_fuzzer": {
+            "input_format": str,
+            "prefix": Or(str, None),
+            "suffix": Or(str, None),
+            "interceptors": Or(list, None),
+            "data": {"passwords": {"read_from_file": str}},
+        }
+    },
+    ignore_extra_keys=False,
+)
+
+BRUTE_RESPONSE_SCHEMA = Schema(
+    {
+        Optional("condition_type"): And(str, lambda s: s.lower() in ["and", "or"]),
+        "conditions": {
+            "successful_login": {
+                "regex": str,
+                "reverse": bool,
+            }
+        },
+    },
+    ignore_extra_keys=False,
+)
+
+BRUTE_STEP_SCHEMA = Schema(
+    {
+        "method": "brute_force",
+        Optional("timeout"): int,
+        "host": str,
+        "ports": [int],
+        Optional("usernames"): list,
+        "passwords": PASSWORD_FUZZER_SCHEMA,
+        "response": BRUTE_RESPONSE_SCHEMA,
+    },
+    ignore_extra_keys=False,
+)
+
+BRUTE_PAYLOAD_SCHEMA = Schema(
+    {
+        "library": And(str, lambda s: s in BRUTE_LIBRARIES),
+        "steps": [BRUTE_STEP_SCHEMA],
+    },
+    ignore_extra_keys=False,
+)
+
 
 # ----------------------------
 # Validation Logic
 # ----------------------------
+
+
+def extract_brute_regexes(payloads):
+    regexes = []
+
+    for payload in payloads:
+        BRUTE_PAYLOAD_SCHEMA.validate(payload)
+
+        for step in payload.get("steps", []):
+            response = step.get("response", {})
+            conditions = response.get("conditions", {})
+
+            if "successful_login" in conditions:
+                regex = conditions["successful_login"].get("regex")
+                if regex is not None:
+                    regexes.append(regex)
+
+    return regexes
 
 
 def validate_http_conditions(conditions: dict):
@@ -183,15 +264,20 @@ def test_yaml_schema_and_regex_valid(yaml_file):
 
     http_payloads = [p for p in payloads if p.get("library") == "http"]
     socket_payloads = [p for p in payloads if p.get("library") == "socket"]
+    brute_payloads = [p for p in payloads if p.get("library") in BRUTE_LIBRARIES]
 
-    if not http_payloads and not socket_payloads:
-        pytest.skip(f"No http/socket payloads found in {yaml_file}")
+    if not http_payloads and not socket_payloads and not brute_payloads:
+        pytest.skip(
+            f"{yaml_file}: no supported payload libraries found (expected http, socket, or brute protocols)"
+        )
 
     regexes = []
     if http_payloads:
         regexes.extend(extract_http_regexes(http_payloads))
     if socket_payloads:
         regexes.extend(extract_socket_regexes(socket_payloads))
+    if brute_payloads:
+        regexes.extend(extract_brute_regexes(brute_payloads))
 
     for regex in regexes:
         assert is_valid_regex(regex), f"Invalid regex in {yaml_file}: `{regex}`"
