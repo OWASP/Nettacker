@@ -683,11 +683,13 @@ class ArgParser(ArgumentParser):
             options.ports = list(tmp_ports)
         # Check schema(s)
         if options.schema:
-            tmp_schema = set()
-            for schema in options.schema.split(","):
-                tmp_schema.add(schema.strip().lower())
-
-            options.schema = list(tmp_schema)
+            tmp_schema = {schema.strip().lower() for schema in options.schema.split(",")}
+            allowed_schema = {"http", "https"}
+            
+            if tmp_schema-allowed_schema:
+                die_failure(_("invalid_schema"))
+            else:
+                options.schema = list(tmp_schema)
         # Check for excluded ports
         if options.excluded_ports:
             tmp_excluded_ports = set()
