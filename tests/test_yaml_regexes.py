@@ -34,26 +34,20 @@ def extract_http_regexes(payloads):
 
 
 def extract_regex_values(response):
-    regexes = []
-    conditions = response.get("conditions", {})
-
-    if not isinstance(conditions, dict):
+    def _collect(node):
+        regexes = []
+        if isinstance(node, dict):
+            for key, value in node.items():
+                if key == "regex" and isinstance(value, str):
+                    regexes.append(value)
+                else:
+                    regexes.extend(_collect(value))
+        elif isinstance(node, list):
+            for item in node:
+                regexes.extend(_collect(item))
         return regexes
 
-    # Mirror runtime behavior in response_conditions_matched: evaluate top-level
-    # condition keys and nested header regexes only.
-    for condition, condition_value in conditions.items():
-        if condition in ["reason", "status_code", "content", "url"]:
-            if isinstance(condition_value, dict) and isinstance(condition_value.get("regex"), str):
-                regexes.append(condition_value["regex"])
-        if condition == "headers" and isinstance(condition_value, dict):
-            for _, header_condition in condition_value.items():
-                if isinstance(header_condition, dict) and isinstance(
-                    header_condition.get("regex"), str
-                ):
-                    regexes.append(header_condition["regex"])
-
-    return regexes
+    return _collect(response.get("conditions", {}))
 
 
 def extract_socket_regexes(file_name, payloads):
