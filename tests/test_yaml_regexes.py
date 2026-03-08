@@ -18,7 +18,7 @@ def get_yaml_files():
 
 
 def load_yaml(file_path):
-    with open(file_path, "r") as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
@@ -28,9 +28,31 @@ def extract_http_regexes(payloads):
         if payload.get("library") != "http":
             continue
         for step in payload.get("steps", []):
-            conditions = step.get("response", {}).get("conditions", {})
-            if "content" in conditions and "regex" in conditions["content"]:
-                regexes.append(conditions["content"]["regex"])
+            response = step.get("response", {})
+            regexes.extend(extract_regex_values(response))
+    return regexes
+
+
+def extract_regex_values(response):
+    regexes = []
+    conditions = response.get("conditions", {})
+
+    if not isinstance(conditions, dict):
+        return regexes
+
+    # Mirror runtime behavior in response_conditions_matched: evaluate top-level
+    # condition keys and nested header regexes only.
+    for condition, condition_value in conditions.items():
+        if condition in ["reason", "status_code", "content", "url"]:
+            if isinstance(condition_value, dict) and isinstance(condition_value.get("regex"), str):
+                regexes.append(condition_value["regex"])
+        if condition == "headers" and isinstance(condition_value, dict):
+            for _, header_condition in condition_value.items():
+                if isinstance(header_condition, dict) and isinstance(
+                    header_condition.get("regex"), str
+                ):
+                    regexes.append(header_condition["regex"])
+
     return regexes
 
 
@@ -85,3 +107,21 @@ def test_yaml_regexes_valid(yaml_file):
 
     for regex in regexes:
         assert is_valid_regex(regex), f"Invalid regex in {yaml_file}: `{regex}`"
+
+
+def test_http_cors_reflected_origin_regex_matches_expected_origin():
+    data = load_yaml("nettacker/modules/vuln/http_cors.yaml")
+    payloads = data.get("payloads", [])
+
+    origins = ("http://evil.com", "https://evil.com")
+    matching_regexes = []
+
+    for regex in extract_http_regexes(payloads):
+        compiled_regex = re.compile(regex)
+        if all(compiled_regex.fullmatch(origin) for origin in origins):
+            matching_regexes.append(regex)
+
+    assert matching_regexes, (
+        "Expected at least one http_cors regex to fully match both reflected origins: "
+        "`http://evil.com` and `https://evil.com`"
+    )
