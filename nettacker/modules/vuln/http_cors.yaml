@@ -334,5 +334,5 @@ payloads:
           conditions:
             headers:
               Access-Control-Allow-Origin:
-                regex: "(http|https):\\/\\/evil.com"
+                regex: "^(http|https):\\/\\/evil\\.com$"
                 reverse: false
