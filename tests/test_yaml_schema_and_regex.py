@@ -203,11 +203,15 @@ def validate_http_conditions(conditions: dict):
 
             if "conditions" in nested_response:
                 HTTP_CONDITION_SCHEMA.validate(nested_response["conditions"])
-                if (
-                    "content" in nested_response["conditions"]
-                    and "regex" in nested_response["conditions"]["content"]
-                ):
-                    regexes.append(nested_response["conditions"]["content"]["regex"])
+                nested_conditions = nested_response["conditions"]
+                for field, value in nested_conditions.items():
+                    if isinstance(value, dict) and "regex" in value:
+                        regexes.append(value["regex"])
+                    # Headers special structure
+                    if field == "headers" and isinstance(value, dict):
+                        for header_name, header_block in value.items():
+                            if isinstance(header_block, dict) and "regex" in header_block:
+                                regexes.append(header_block["regex"])
 
     return regexes
 
@@ -220,15 +224,24 @@ def extract_http_regexes(payloads):
 
         for step in payload.get("steps", []):
             response = step.get("response", {})
+
             if response:
                 HTTP_RESPONSE_SCHEMA.validate(response)
 
             conditions = response.get("conditions", {})
+            if not conditions:
+                continue
 
-            if conditions:
-                regexes.extend(validate_http_conditions(conditions))
-                if "content" in conditions and "regex" in conditions["content"]:
-                    regexes.append(conditions["content"]["regex"])
+            regexes.extend(validate_http_conditions(conditions))
+            for field, value in conditions.items():
+                # simple regex fields (status_code, reason, url, content, responsetime)
+                if isinstance(value, dict) and "regex" in value:
+                    regexes.append(value["regex"])
+                # headers case
+                if field == "headers":
+                    for header_name, header_block in value.items():
+                        if isinstance(header_block, dict) and "regex" in header_block:
+                            regexes.append(header_block["regex"])
 
     return regexes
 
