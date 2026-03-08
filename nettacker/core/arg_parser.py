@@ -685,7 +685,7 @@ class ArgParser(ArgumentParser):
         if options.schema:
             tmp_schema = {schema.strip().lower() for schema in options.schema.split(",")}
             allowed_schema = {"http", "https"}
-            
+
             if tmp_schema - allowed_schema:
                 die_failure(_("invalid_schema"))
             else:
