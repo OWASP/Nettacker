@@ -1,0 +1,98 @@
+info:
+  name: apache_tomcat_cve_2025_24813_vuln
+  author: PhucQuan
+  severity: 9.8
+  description: >
+    CVE-2025-24813 is a critical path equivalence vulnerability in Apache Tomcat's
+    partial PUT feature. When the DefaultServlet has write permissions enabled
+    (readonly=false) and partial PUT is supported (enabled by default), an attacker
+    can upload a malicious serialized Java object to a crafted filename containing
+    an internal dot (e.g. /uploads/nettacker.session). Tomcat internally converts
+    path separators to dots, storing the file where Tomcat's file-based session
+    persistence will later deserialize it. The attacker then sends a GET request
+    with Cookie: JSESSIONID=.nettacker to trigger deserialization and achieve RCE.
+    Affected versions:
+      - Apache Tomcat 9.x: 9.0.0.M1 to 9.0.98
+      - Apache Tomcat 10.x: 10.1.0-M1 to 10.1.34
+      - Apache Tomcat 11.x: 11.0.0-M1 to 11.0.2
+    This module performs a safe, non-destructive detection by sending a partial PUT
+    request with a benign payload and checking if the server accepts it (HTTP 201/204),
+    which indicates the DefaultServlet has write permissions enabled — a required
+    prerequisite for exploitation. No actual deserialization is triggered.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-24813
+    - https://tomcat.apache.org/security-9.html
+    - https://tomcat.apache.org/security-10.html
+    - https://tomcat.apache.org/security-11.html
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+  profiles:
+    - vuln
+    - http
+    - apache
+    - critical_severity
+    - rce
+    - cve
+    - cve2025
+    - cisa_kev
+
+payloads:
+  - library: http
+    steps:
+      - method: put
+        timeout: 10
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Range: "bytes 0-3/10"
+          Content-Type: "application/octet-stream"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/nettacker.session"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+                - 8888
+        data: "TEST"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^(201|204)$"
+              reverse: false
+      - method: get
+        timeout: 10
+        headers:
+          User-Agent: "{user_agent}"
+          Cookie: "JSESSIONID=.nettacker"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+                - 8888
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^500$"
+              reverse: false
