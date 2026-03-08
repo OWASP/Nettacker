@@ -3,22 +3,34 @@ info:
   author: PhucQuan
   severity: 9.8
   description: >
-    CVE-2025-24813 is a critical path equivalence vulnerability in Apache Tomcat's
-    partial PUT feature. When the DefaultServlet has write permissions enabled
-    (readonly=false) and partial PUT is supported (enabled by default), an attacker
-    can upload a malicious serialized Java object to a crafted filename containing
-    an internal dot (e.g. /uploads/nettacker.session). Tomcat internally converts
-    path separators to dots, storing the file where Tomcat's file-based session
-    persistence will later deserialize it. The attacker then sends a GET request
-    with Cookie: JSESSIONID=.nettacker to trigger deserialization and achieve RCE.
+    CVE-2025-24813 is a critical path equivalence vulnerability (CVSS 9.8) in
+    Apache Tomcat's partial PUT feature, actively exploited in the wild since
+    March 12, 2025. When the DefaultServlet has write permissions enabled
+    (readonly=false) and Tomcat uses file-based session persistence, an attacker
+    can upload a serialized Java payload as a session file via a partial PUT
+    request using path traversal (e.g. /uploads/../sessions/<id>.session), then
+    trigger deserialization by sending a GET request with a JSESSIONID cookie
+    referencing the uploaded session ID, achieving unauthenticated RCE.
     Affected versions:
       - Apache Tomcat 9.x: 9.0.0.M1 to 9.0.98
       - Apache Tomcat 10.x: 10.1.0-M1 to 10.1.34
       - Apache Tomcat 11.x: 11.0.0-M1 to 11.0.2
-    This module performs a safe, non-destructive detection by sending a partial PUT
-    request with a benign payload and checking if the server accepts it (HTTP 201/204),
-    which indicates the DefaultServlet has write permissions enabled — a required
-    prerequisite for exploitation. No actual deserialization is triggered.
+    Detection method (safe, non-destructive):
+      Step 1 — PUT a benign Java serialized object (java.lang.Integer, value=1)
+      to /uploads/../sessions/nettacker24813.session via partial PUT.
+      Tomcat accepts partial uploads and returns HTTP 409 (Conflict) when the file
+      is written but the upload is incomplete — this confirms DefaultServlet has
+      readonly=false and the sessions directory is writable.
+      Step 2 — Send GET / with Cookie: JSESSIONID=nettacker24813.
+      If Tomcat returns HTTP 500 with a Java deserialization error in the body,
+      it confirms file-based session persistence (PersistentManager) is active
+      and the server attempted to deserialize the uploaded file.
+      Both conditions together confirm the target is vulnerable to CVE-2025-24813.
+    Remediation: Upgrade to Tomcat 9.0.99+, 10.1.35+, or 11.0.3+.
+    If immediate patching is not possible:
+      - Set readonly=true in conf/web.xml DefaultServlet init-param
+      - Block HTTP PUT method at the WAF/reverse proxy level
+      - Disable PersistentManager file-based session storage
   reference:
     - https://nvd.nist.gov/vuln/detail/CVE-2025-24813
     - https://tomcat.apache.org/security-9.html
@@ -38,16 +50,22 @@ info:
 payloads:
   - library: http
     steps:
+      # Step 1: Upload a benign Java serialized object (java.lang.Integer, value=1)
+      # via partial PUT using path traversal to write directly into Tomcat's
+      # session storage directory (/uploads/../sessions/).
+      # Tomcat returns HTTP 409 (Conflict) when a partial PUT is accepted but
+      # the upload is incomplete — this is the expected success indicator.
+      # This confirms: (1) DefaultServlet readonly=false, (2) sessions dir writable.
       - method: put
         timeout: 10
         headers:
           User-Agent: "{user_agent}"
-          Content-Range: "bytes 0-3/10"
           Content-Type: "application/octet-stream"
+          Content-Range: "bytes 0-54/100"
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/nettacker.session"
+            input_format: "{{schema}}://{target}:{{ports}}/uploads/../sessions/nettacker24813.session"
             prefix: ""
             suffix: ""
             interceptors:
@@ -61,18 +79,23 @@ payloads:
                 - 8080
                 - 8443
                 - 8888
-        data: "TEST"
+        data: "\xac\xed\x00\x05\x73\x72\x00\x11\x6a\x61\x76\x61\x2e\x6c\x61\x6e\x67\x2e\x49\x6e\x74\x65\x67\x65\x72\x12\xe2\xa0\xa4\xf7\x81\x87\x38\x02\x00\x01\x49\x00\x05\x76\x61\x6c\x75\x65\x78\x71\x00\x7e\x00\x00\x00\x00\x00\x01"
         response:
           condition_type: and
           conditions:
             status_code:
-              regex: "^(201|204)$"
+              regex: "^409$"
               reverse: false
+      # Step 2: Trigger deserialization by sending a GET request with JSESSIONID
+      # set to the session ID of the uploaded file (without .session extension).
+      # Tomcat's PersistentManager will look up and deserialize the file.
+      # HTTP 500 + Java deserialization error in body = PersistentManager active
+      # = target is confirmed vulnerable to CVE-2025-24813.
       - method: get
         timeout: 10
         headers:
           User-Agent: "{user_agent}"
-          Cookie: "JSESSIONID=.nettacker"
+          Cookie: "JSESSIONID=nettacker24813"
         ssl: false
         url:
           nettacker_fuzzer:
@@ -95,4 +118,7 @@ payloads:
           conditions:
             status_code:
               regex: "^500$"
+              reverse: false
+            body:
+              regex: "ClassNotFoundException|InvalidClassException|StreamCorruptedException|deserializ|java\\.io"
               reverse: false
