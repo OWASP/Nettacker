@@ -11,6 +11,7 @@ DUMMY_TEST_STRING = (
 
 
 def get_yaml_files():
+    """Yield all YAML file paths found in specific directories."""
     for base in BASE_DIRS:
         for file in os.listdir(base):
             if file.endswith(".yaml"):
@@ -18,6 +19,7 @@ def get_yaml_files():
 
 
 def load_yaml(file_path):
+    """Load and parse a YAML file from the given file path."""
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
 
@@ -38,6 +40,7 @@ def resolve_input_format(value):
 
 
 def extract_http_regexes(payloads):
+    """Extract regex patterns and their expected header values from HTTP library payloads."""
     regexes = []
     # Map request header names to response header names for known reflection patterns
     REFLECTED_HEADERS = {"origin": "access-control-allow-origin"}
@@ -73,6 +76,7 @@ def extract_http_regexes(payloads):
 
 
 def extract_socket_regexes(file_name, payloads):
+    """Extract regex patterns from socket library payloads."""
     regexes = []
 
     for payload in payloads:
@@ -96,6 +100,7 @@ def extract_socket_regexes(file_name, payloads):
 
 
 def is_valid_regex(regex: str, header_value: str = None) -> bool:
+    """Validate a regex pattern's syntax or verify it matches a specific header value."""
     try:
         pattern = re.compile(regex)
         if header_value is not None:
@@ -109,6 +114,7 @@ def is_valid_regex(regex: str, header_value: str = None) -> bool:
 
 @pytest.mark.parametrize("yaml_file", list(get_yaml_files()))
 def test_yaml_regexes_valid(yaml_file):
+    """Test to validate all YAML module regexes against syntax and header values."""
     data = load_yaml(yaml_file)
     payloads = data.get("payloads", [])
 
