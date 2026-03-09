@@ -37,6 +37,7 @@ payloads:
                 - "sleep"
               schema:
                 - "http"
+                - "https"
               ports:
                 - 80
                 - 443
