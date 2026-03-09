@@ -17,7 +17,7 @@
  | ---- | ---- | ----------- | ------- |
  | <!-- ![Acme Logo](path/to/logo.png) --> | **Example Acme Corp** | Uses Nettacker for automated penetration testing. | https://acme.example.com |
  | <!-- ![SecurityCo Logo](path/to/securityco-logo.png) --> | **Example SecurityCo** | Integrates Nettacker into their CI/CD pipeline for continuous security assessment. | https://securityco.example.org |
- | HISC (Information Security Club - HCMUTE) | Using Nettacker for automated reconnaissance, vulnerability research, and security training in CTF environments. | https://phucquan.github.io/ |
+| ![HCMUTE Logo](https://hcmute.edu.vn/Resources/Images/Logo/Logo%20HCMUTE-Corel-white%20background.jpg) | **HISC (Information Security Club - HCMUTE)** | Using Nettacker for automated reconnaissance, vulnerability research, and security training in CTF environments. | https://phucquan.github.io/ |
 
  ## Community Projects
 
