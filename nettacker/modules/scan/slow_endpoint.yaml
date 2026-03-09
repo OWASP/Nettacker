@@ -11,12 +11,12 @@ info:
 
 payloads:
   - library: http
-    timeout: 10
     verify: false
     proxies: ""
 
     steps:
       - method: get
+        timeout: 10
         headers:
           User-Agent: "{user_agent}"
         allow_redirects: false
