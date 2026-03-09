@@ -24,7 +24,7 @@ payloads:
 
         url:
           nettacker_fuzzer:
-            input_format: "{schema}://{target}:{ports}/{urls}"
+            input_format: "{{schema}}://{target}:{{ports}}/{{urls}}"
             prefix: ""
             suffix: ""
             interceptors: ""
