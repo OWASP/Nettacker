@@ -1,7 +1,20 @@
+"""Pre-load static HTML, CSS, and JS assets used to render HTML log reports."""
+
 from nettacker.config import Config
 
 
 def _read_file(path):
+    """Read and return the entire contents of a file.
+
+    Args:
+        path: Path to the file to read.
+
+    Returns:
+        The file contents as a string.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+    """
     with open(path) as f:
         return f.read()
 

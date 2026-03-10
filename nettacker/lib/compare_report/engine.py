@@ -1,3 +1,5 @@
+"""Engine for generating HTML comparison reports between scan results."""
+
 import json
 
 from nettacker.config import Config
