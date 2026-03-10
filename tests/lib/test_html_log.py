@@ -17,7 +17,6 @@ class TestReadFile:
     def test_file_handle_closed_after_read(self, tmp_path):
         """Verify the file handle is properly closed after reading."""
         p = tmp_path / "sample.txt"
-        p.write_text("data")
         m = mock_open(read_data="data")
         with patch("nettacker.lib.html_log.log_data.open", m):
             _read_file(p)
