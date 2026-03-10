@@ -1,8 +1,7 @@
 import socket
-import socks
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import pytest
+import socks
 
 from nettacker.core.socks_proxy import getaddrinfo, set_socks_proxy
 
