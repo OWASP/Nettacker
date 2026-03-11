@@ -43,6 +43,8 @@ def test_mime_types():
     mtypes = mime_types()
     assert ".html" in mtypes
     assert mtypes[".html"] == "text/html"
+    assert ".htm" in mtypes
+    assert mtypes[".htm"] == "text/html"
 
 
 @patch("builtins.open", new_callable=mock_open, read_data="test_data")
