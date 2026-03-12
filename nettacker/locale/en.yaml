@@ -50,6 +50,7 @@ graph_module_404: "this graph module not found: {0}"
 graph_module_unavailable: this graph module "{0}" is not available
 graph_output: to use graph feature your output filename must end with ".html" or ".htm"!
 help_menu: Show Nettacker Help Menu
+invalid_schema: "Only 'http' and 'https' are allowed"
 done: "done!"
 error_platform: "Unfortunately, this version of the software can run on Linux/darwin"
 file_saved: "report saved in {0} and database"
@@ -83,6 +84,7 @@ scan_method_options: Scan method options
 scan_method_select: please choose your scan method!
 scan_module_not_found: this scan module [{0}] not found!
 scan_started: "Nettacker engine started ..."
+schema_selector: schema(s) list, separate with ","
 select_language: select a language {0}
 select_profile: select profile {0}
 select_user_agent: "Select a user agent to send with HTTP requests or enter \"random_user_agent\"
