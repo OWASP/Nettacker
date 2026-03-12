@@ -9,7 +9,6 @@ three categories:
 
 > Only scan systems you own or have explicit permission to test!
 
-
 ## On this page
 
 - [Find and select modules](#find-and-select-modules)
@@ -58,13 +57,12 @@ checks to compatible discovered services. Use `-d` or `--skip-service-discovery`
 intentionally want to run selected modules without that filtering.
 
 The `port_scan` module's default ports are maintained in
-[`nettacker/modules/scan/port.yaml`](../nettacker/modules/scan/port.yaml). 
+[`nettacker/modules/scan/port.yaml`](../nettacker/modules/scan/port.yaml).
 
 Use `-g` or `--ports` to replace the default selection. Use `-X` or `--exclude-ports` to remove ports
 from the effective selection. Both options accept a single port, comma-separated ports, inclusive
 ranges, or a mixture of those forms. Exclusions are applied after the default or `--ports`
 selection:
-
 
 ```console
 python nettacker.py -i scanme.example -m port_scan -g 22,80,443,8000-8100
@@ -158,7 +156,6 @@ python nettacker.py -i scanme.example -m dir_scan \
 Values are shared by the selected modules, so use names expected by their YAML templates. Boolean,
 numeric, JSON-array, and JSON-object values are converted when possible; other values remain text.
 
-
 ## Available modules
 
 The following catalog mirrors the YAML templates in [`nettacker/modules/`](../nettacker/modules/).
@@ -166,44 +163,44 @@ Use `--show-all-modules` for live metadata and check-specific details.
 
 ### Scan modules
 
-| Module | Description |
-| --- | --- |
-| `admin_scan` | Searches common web paths for exposed administration interfaces. |
-| `adobe_aem_lastpatcheddate_scan` | Detects Adobe Experience Manager (AEM) and estimates its last patched date from exposed client-side assets. |
-| `citrix_lastpatcheddate_scan` | Detects Citrix NetScaler Gateway and estimates its last patched date. |
-| `config_file_scan` | Searches common web paths for accidentally exposed configuration files. |
-| `confluence_version_scan` | Identifies an Atlassian Confluence installation and reports its version. |
-| `crushftp_lastpatcheddate_scan` | Detects CrushFTP and estimates its last patched date from a published web asset. |
-| `cups_version_scan` | Queries the CUPS web interface, normally on port 631, and reports the detected version. |
-| `dir_scan` | Searches for common or interesting web directories. |
-| `drupal_modules_scan` | Enumerates popular modules installed on a Drupal site. |
-| `drupal_theme_scan` | Identifies themes installed on a Drupal site. |
-| `drupal_version_scan` | Identifies a Drupal installation and reports its version. |
-| `http_html_title_scan` | Extracts the HTML `<title>` element to help identify the application served by a web endpoint. |
-| `http_redirect_scan` | Reports HTTP 3xx redirects and their destination locations. |
-| `http_status_scan` | Requests a web endpoint and reports its HTTP response status. |
-| `icmp_scan` | Uses ICMP echo requests to check whether a target responds and records the response time. |
-| `ivanti_csa_lastpatcheddate_scan` | Detects an Ivanti Cloud Services Appliance (CSA) and estimates its last patched date. |
-| `ivanti_epmm_lastpatcheddate_scan` | Detects Ivanti Endpoint Manager Mobile (EPMM) and estimates its last patched date from response headers. |
-| `ivanti_ics_lastpatcheddate_scan` | Detects Ivanti Connect Secure (ICS) and estimates its last patched date from published assets. |
-| `ivanti_vtm_version_scan` | Detects an Ivanti Virtual Traffic Manager (vTM) appliance and reports its version. |
-| `jenkins_version_scan` | Detects a Jenkins automation server and reports its version. |
-| `joomla_template_scan` | Identifies templates installed on a Joomla site. |
-| `joomla_user_enum_scan` | Attempts to enumerate Joomla users through publicly available responses. |
-| `joomla_version_scan` | Identifies a Joomla installation and reports its version. |
-| `moveit_version_scan` | Detects Progress MOVEit Transfer and reports its version. |
-| `pma_scan` | Searches common paths for a phpMyAdmin installation. |
-| `port_scan` | Performs TCP connection checks against the selected ports and fingerprints supported services. |
-| `smartermail_version_scan` | Detects SmarterMail and extracts version information from its licensing API. |
-| `ssl_expiring_certificate_scan` | Reports TLS certificates that have expired or are approaching expiration. |
-| `subdomain_scan` | Discovers subdomains using DNS and internet-based data sources; some queries are sent to third-party services. |
-| `viewdns_reverse_iplookup_scan` | Uses ViewDNS.info to find domains associated with the target IP address. |
-| `waf_scan` | Looks for response characteristics associated with web application firewalls (WAFs). |
-| `web_technologies_scan` | Identifies web servers, frameworks, content-management systems, and other web technologies. |
-| `wordpress_version_scan` | Detects WordPress and extracts its version from publicly accessible pages. |
-| `wp_plugin_scan` | Enumerates popular plugins installed on a WordPress site. |
-| `wp_theme_scan` | Identifies themes installed on a WordPress site. |
-| `wp_timethumbs_scan` | Searches common WordPress paths for the TimThumb PHP script. |
+| Module                             | Description                                                                                                    |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `admin_scan`                       | Searches common web paths for exposed administration interfaces.                                               |
+| `adobe_aem_lastpatcheddate_scan`   | Detects Adobe Experience Manager (AEM) and estimates its last patched date from exposed client-side assets.    |
+| `citrix_lastpatcheddate_scan`      | Detects Citrix NetScaler Gateway and estimates its last patched date.                                          |
+| `config_file_scan`                 | Searches common web paths for accidentally exposed configuration files.                                        |
+| `confluence_version_scan`          | Identifies an Atlassian Confluence installation and reports its version.                                       |
+| `crushftp_lastpatcheddate_scan`    | Detects CrushFTP and estimates its last patched date from a published web asset.                               |
+| `cups_version_scan`                | Queries the CUPS web interface, normally on port 631, and reports the detected version.                        |
+| `dir_scan`                         | Searches for common or interesting web directories.                                                            |
+| `drupal_modules_scan`              | Enumerates popular modules installed on a Drupal site.                                                         |
+| `drupal_theme_scan`                | Identifies themes installed on a Drupal site.                                                                  |
+| `drupal_version_scan`              | Identifies a Drupal installation and reports its version.                                                      |
+| `http_html_title_scan`             | Extracts the HTML `<title>` element to help identify the application served by a web endpoint.                 |
+| `http_redirect_scan`               | Reports HTTP 3xx redirects and their destination locations.                                                    |
+| `http_status_scan`                 | Requests a web endpoint and reports its HTTP response status.                                                  |
+| `icmp_scan`                        | Uses ICMP echo requests to check whether a target responds and records the response time.                      |
+| `ivanti_csa_lastpatcheddate_scan`  | Detects an Ivanti Cloud Services Appliance (CSA) and estimates its last patched date.                          |
+| `ivanti_epmm_lastpatcheddate_scan` | Detects Ivanti Endpoint Manager Mobile (EPMM) and estimates its last patched date from response headers.       |
+| `ivanti_ics_lastpatcheddate_scan`  | Detects Ivanti Connect Secure (ICS) and estimates its last patched date from published assets.                 |
+| `ivanti_vtm_version_scan`          | Detects an Ivanti Virtual Traffic Manager (vTM) appliance and reports its version.                             |
+| `jenkins_version_scan`             | Detects a Jenkins automation server and reports its version.                                                   |
+| `joomla_template_scan`             | Identifies templates installed on a Joomla site.                                                               |
+| `joomla_user_enum_scan`            | Attempts to enumerate Joomla users through publicly available responses.                                       |
+| `joomla_version_scan`              | Identifies a Joomla installation and reports its version.                                                      |
+| `moveit_version_scan`              | Detects Progress MOVEit Transfer and reports its version.                                                      |
+| `pma_scan`                         | Searches common paths for a phpMyAdmin installation.                                                           |
+| `port_scan`                        | Performs TCP connection checks against the selected ports and fingerprints supported services.                 |
+| `smartermail_version_scan`         | Detects SmarterMail and extracts version information from its licensing API.                                   |
+| `ssl_expiring_certificate_scan`    | Reports TLS certificates that have expired or are approaching expiration.                                      |
+| `subdomain_scan`                   | Discovers subdomains using DNS and internet-based data sources; some queries are sent to third-party services. |
+| `viewdns_reverse_iplookup_scan`    | Uses ViewDNS.info to find domains associated with the target IP address.                                       |
+| `waf_scan`                         | Looks for response characteristics associated with web application firewalls (WAFs).                           |
+| `web_technologies_scan`            | Identifies web servers, frameworks, content-management systems, and other web technologies.                    |
+| `wordpress_version_scan`           | Detects WordPress and extracts its version from publicly accessible pages.                                     |
+| `wp_plugin_scan`                   | Enumerates popular plugins installed on a WordPress site.                                                      |
+| `wp_theme_scan`                    | Identifies themes installed on a WordPress site.                                                               |
+| `wp_timethumbs_scan`               | Searches common WordPress paths for the TimThumb PHP script.                                                   |
 
 ### Vulnerability modules
 
@@ -213,98 +210,98 @@ Several modules send exploit-like payloads, execute fixed marker commands, read 
 or use an external callback service. Review a module's YAML template before running it in a sensitive
 environment.
 
-| Module | Description |
-| --- | --- |
-| `accela_cve_2021_34370_vuln` | Probes the Accela Civic Platform logout endpoint for the CVE-2021-34370 open redirect to an external URL. |
-| `adobe_coldfusion_cve_2023_26360_vuln` | Probes Adobe ColdFusion for CVE-2023-26360 arbitrary file read by requesting the internal `password.properties` file. |
-| `adobe_coldfusion_cve_2026_48282_vuln` | Probes Adobe ColdFusion RDS for CVE-2026-48282 path traversal by attempting to read a standard operating-system file. |
-| `aiohttp_cve_2024_23334_vuln` | Checks aiohttp static-file handling for CVE-2024-23334 directory traversal and arbitrary file read. |
-| `apache_cve_2021_41773_vuln` | Checks Apache HTTP Server 2.4.49 for CVE-2021-41773 path traversal and file disclosure. |
-| `apache_cve_2021_42013_vuln` | Probes Apache HTTP Server 2.4.50 for CVE-2021-42013 path traversal by attempting to read `/etc/passwd`. |
-| `apache_ofbiz_cve_2024_38856_vuln` | Probes Apache OFBiz for CVE-2024-38856 by executing `id` through the exposed Groovy program endpoint. |
-| `apache_struts_vuln` | Probes Apache Struts for CVE-2017-5638 OGNL injection using a non-destructive response-header marker. |
-| `aviatrix_cve_2021_40870_vuln` | Tests Aviatrix Controller for CVE-2021-40870 by writing a PHP `phpinfo()` probe to `random_string1.php` and requesting it; the probe file may remain on a vulnerable target. |
-| `cisco_hyperflex_cve_2021_1497_vuln` | Probes the Cisco HyperFlex management interface for CVE-2021-1497 command injection using a `nettacker` response marker. |
-| `citrix_cve_2019_19781_vuln` | Probes Citrix ADC and Gateway products for CVE-2019-19781 path traversal by attempting to read `smb.conf`. |
-| `citrix_cve_2023_24488_vuln` | Checks Citrix ADC and Gateway products for CVE-2023-24488 cross-site scripting. |
-| `citrix_cve_2023_4966_vuln` | Checks NetScaler ADC and Gateway for CVE-2023-4966 information disclosure, commonly known as Citrix Bleed. |
-| `clickjacking_vuln` | Reports responses where present `X-Frame-Options` and Content Security Policy headers lack recognized frame restrictions and no recognized HTML policy metadata is found; absent headers are not currently flagged. |
-| `cloudron_cve_2021_40868_vuln` | Checks Cloudron login redirects for CVE-2021-40868 reflected cross-site scripting. |
-| `confluence_cve_2023_22515_vuln` | Identifies Confluence 8.x build versions in the ranges affected by CVE-2023-22515; it does not attempt to create an administrator. |
-| `confluence_cve_2023_22527_vuln` | Probes Confluence for CVE-2023-22527 template injection by executing `id` and returning its output in a response header. |
-| `content_security_policy_vuln` | Evaluates the Content Security Policy header and page content for empty or `unsafe-*` policy patterns. |
-| `content_type_options_vuln` | Reports a present `X-Content-Type-Options` header whose value does not contain `nosniff`; an absent header is not currently flagged. |
-| `crushftp_cve_2025_31161_vuln` | Probes CrushFTP for CVE-2025-31161 by attempting unauthenticated access to the user-list endpoint. |
-| `cyberoam_netgenie_cve_2021_38702_vuln` | Checks Cyberoam NetGenie devices for CVE-2021-38702 reflected cross-site scripting. |
-| `exponent_cms_cve_2021_38751_vuln` | Checks ExponentCMS for CVE-2021-38751 host-header injection that can produce attacker-controlled links. |
-| `f5_cve_2020_5902_vuln` | Checks F5 BIG-IP TMUI for CVE-2020-5902 path traversal and arbitrary file read. |
-| `forgerock_am_cve_2021_35464_vuln` | Probes the unauthenticated ForgeRock AM `ccversion` endpoint associated with CVE-2021-35464; it does not send a deserialization payload. |
-| `galera_webtemp_cve_2021_40960_vuln` | Checks Galera WebTemplate for CVE-2021-40960 directory traversal and sensitive file disclosure. |
-| `geoserver_cve_2024_36401_vuln` | Uses a non-command XPath expression and the resulting exception to identify GeoServer CVE-2024-36401 behavior. |
-| `grafana_cve_2021_43798_vuln` | Checks Grafana for CVE-2021-43798 plugin-path traversal and arbitrary file read. |
-| `graphql_vuln` | Checks whether a known GraphQL endpoint exposes schema introspection without authentication. |
-| `gurock_testrail_cve_2021_40875_vuln` | Checks Gurock TestRail for CVE-2021-40875 sensitive file-list disclosure. |
-| `hoteldruid_cve_2021-37833_vuln` | Checks HotelDruid for CVE-2021-37833 reflected cross-site scripting. |
-| `http_cookie_vuln` | Examines `Set-Cookie` headers for missing `Secure`, `HttpOnly`, `SameSite`, or `Max-Age` attributes. |
-| `http_cors_vuln` | Tests whether the server reflects untrusted origins in `Access-Control-Allow-Origin`, indicating a permissive CORS policy. |
-| `http_options_enabled_vuln` | Reports web servers that respond to `OPTIONS` and disclose enabled HTTP methods in the `Allow` header. |
-| `ivanti_epmm_cve_2023_35082_vuln` | Checks Ivanti EPMM and MobileIron Core for CVE-2023-35082 authentication bypass. |
-| `ivanti_ics_cve_2023_46805_vuln` | Checks Ivanti Connect Secure for CVE-2023-46805 authentication-bypass exposure and mitigation status. |
-| `joomla_cve_2023_23752_vuln` | Checks Joomla 4.0.0 through 4.2.7 for CVE-2023-23752 unauthenticated configuration disclosure. |
-| `justwirting_cve_2021_41878_vuln` | Checks i-Panel Administration System for CVE-2021-41878 reflected cross-site scripting. |
-| `langflow_cve_2025_3248_vuln` | Probes Langflow before 1.3.0 for CVE-2025-3248 by executing code that raises a fixed `Nettacker` exception through the validation endpoint. |
-| `log4j_cve_2021_44228_vuln` | Sends Log4Shell JNDI callbacks through multiple HTTP methods and headers, then confirms them through the third-party `log4shell.huntress.com` service. |
-| `majordomo_rce_cve_2026_27174_vuln` | Probes MajorDoMo for CVE-2026-27174 by using the unauthenticated PHP console to read `/etc/passwd`. |
-| `maxsite_cms_cve_2021_35265_vuln` | Checks MaxSite CMS for CVE-2021-35265 reflected cross-site scripting. |
-| `memos_cve_2025_22952_ssrf_vuln` | Checks Memos through version 0.24.0 for CVE-2025-22952 server-side request forgery in link metadata handling. |
-| `metabase_cve_2026_72898_vuln` | Uses six-second PostgreSQL and MySQL/MariaDB delay payloads to test Metabase password-reset handling for CVE-2026-72898 SQL injection. |
-| `meteobridge_cve_2025_4008_vuln` | Probes MeteoBridge for CVE-2025-4008 command injection by executing `id` through the `templatefile` parameter. |
-| `msexchange_cve_2021_26855_vuln` | Checks Microsoft Exchange Server for CVE-2021-26855 ProxyLogon server-side request forgery. |
-| `msexchange_cve_2021_34473_vuln` | Probes crafted Exchange Autodiscover paths for response signatures associated with CVE-2021-34473 ProxyShell. |
-| `nextjs_cve_2025_55182_vuln` | Probes CVE-2025-55182 React2Shell by executing a fixed arithmetic expression through a Unix shell or PowerShell and checking the redirect marker. |
-| `nexus_cve_2024_4956_vuln` | Checks Sonatype Nexus Repository Manager for CVE-2024-4956 unauthenticated path traversal and arbitrary file read. |
-| `nginx_ui_cve_2026_33032_vuln` | Checks Nginx UI before 2.3.4 for CVE-2026-33032 unauthenticated access to the MCP message endpoint. |
-| `novnc_cve_2021_3654_vuln` | Checks noVNC for CVE-2021-3654 user-controlled open redirects. |
-| `omigod_cve_2021_38647_vuln` | Probes Open Management Infrastructure for CVE-2021-38647 by executing the `id` command through WS-Management. |
-| `paloalto_globalprotect_cve_2025_0133_vuln` | Checks PAN-OS GlobalProtect gateways and portals for CVE-2025-0133 reflected cross-site scripting. |
-| `paloalto_panos_cve_2025_0108_vuln` | Checks PAN-OS management interfaces for CVE-2025-0108 authentication bypass. |
-| `payara_cve_2021_41381_vuln` | Checks Payara Micro Community for CVE-2021-41381 directory traversal. |
-| `phpinfo_cve_2021_37704_vuln` | Checks phpFastCache vendor paths for CVE-2021-37704 unauthenticated `phpinfo()` disclosure. |
-| `placeos_cve_2021_41826_vuln` | Checks PlaceOS Authentication Service for CVE-2021-41826 open redirects. |
-| `prestashop_cve_2021_37538_vuln` | Checks the PrestaShop SmartBlog module for CVE-2021-37538 SQL injection. |
-| `puneethreddyhc_sqli_cve_2021_41648_vuln` | Checks PuneethReddyHC Online Shopping System for CVE-2021-41648 unauthenticated SQL injection in the `prId` parameter. |
-| `puneethreddyhc_sqli_cve_2021_41649_vuln` | Checks PuneethReddyHC Online Shopping System for CVE-2021-41649 unauthenticated SQL injection in the `cat_id` parameter. |
-| `qsan_storage_xss_cve_2021_37216_vuln` | Checks QSAN Storage Manager for CVE-2021-37216 unauthenticated reflected cross-site scripting. |
-| `server_version_vuln` | Reports version details disclosed by the HTTP `Server` response header. |
-| `siyuan_cve_2026_34605_vuln` | Checks SiYuan Note through version 3.6.1 for CVE-2026-34605 reflected SVG cross-site scripting. |
-| `smartermail_cve_2026_24423_vuln` | Checks SmarterMail before build 9511 for CVE-2026-24423 unauthenticated command-execution exposure using a non-routable probe. |
-| `sonicwall_sslvpn_cve_2024_53704_vuln` | Sends a crafted `swap` cookie to the SonicWall SSL VPN client endpoint and checks for the launcher response associated with CVE-2024-53704. |
-| `splunk_cve_2026_20253_vuln` | Checks Splunk Enterprise's PostgreSQL sidecar service for CVE-2026-20253 unauthenticated auth-bypass via an invalid Basic Authorization header. |
-| `ssl_certificate_weak_signature_vuln` | Reports TLS certificates signed with weak or deprecated signature algorithms. |
-| `ssl_expired_certificate_vuln` | Reports TLS certificates that have expired or are not yet valid. |
-| `ssl_self_signed_certificate_vuln` | Reports TLS certificates whose issuer and subject indicate that they are self-signed. |
-| `ssl_weak_cipher_vuln` | Reports TLS endpoints that negotiate weak cipher suites. |
-| `ssl_weak_version_vuln` | Reports TLS endpoints that support deprecated SSL or TLS protocol versions. |
-| `strict_transport_security_vuln` | Reports a present `Strict-Transport-Security` header that omits `max-age` or `includeSubDomains`; the implementation does not flag a completely absent header. |
-| `subdomain_takeover_vuln` | Looks for web-response fingerprints associated with unclaimed third-party resources; it does not independently verify DNS records or claimability. |
-| `teamcity_cve_2024_27198_vuln` | Checks JetBrains TeamCity before 2023.11.4 for CVE-2024-27198 authentication bypass. |
-| `tieline_cve_2021_35336_vuln` | Checks Tieline administration interfaces for CVE-2021-35336 exposure involving default credentials. |
-| `tjws_cve_2021_37573_vuln` | Checks Tiny Java Web Server for CVE-2021-37573 reflected cross-site scripting on error pages. |
-| `vbulletin_cve_2019_16759_vuln` | Probes vBulletin 5.x for CVE-2019-16759 by executing `id` through a widget template. |
-| `vite_cve_2025_31125_vuln` | Checks network-exposed Vite development servers for CVE-2025-31125 arbitrary file disclosure. |
-| `wordpress_core_cve_2026_63030_vuln` | Sends a crafted WordPress batch request and checks its multi-status response for CVE-2026-63030 REST API route confusion. |
-| `wp_plugin_cve_2021_38314_vuln` | Probes WordPress `admin-ajax.php` for the predictable MD5 response exposed by Redux Framework CVE-2021-38314. |
-| `wp_plugin_cve_2021_39316_vuln` | Checks the WordPress ZoomSounds plugin for CVE-2021-39316 directory traversal and arbitrary file download. |
-| `wp_plugin_cve_2021_39320_vuln` | Checks the WordPress underConstruction plugin for CVE-2021-39320 reflected cross-site scripting. |
-| `wp_plugin_cve_2023_47668_vuln` | Checks the WordPress Restrict Content plugin for CVE-2023-47668 sensitive information exposure through a legacy log file. |
-| `wp_plugin_cve_2023_6875_vuln` | Checks whether the WordPress POST SMTP Mailer `connect-app` endpoint returns `fcm_token` without authentication, indicating CVE-2023-6875 exposure; it does not inject JavaScript. |
-| `wp_xmlrpc_bruteforce_vuln` | Detects WordPress XML-RPC `wp.getUsersBlogs` behavior that can be used for credential attacks. |
-| `wp_xmlrpc_dos_vuln` | Detects exposed WordPress XML-RPC multicall functionality that can amplify requests and contribute to denial of service. |
-| `wp_xmlrpc_pingback_vuln` | Detects enabled WordPress XML-RPC pingbacks that can be abused for server-side requests or reflected denial of service. |
-| `x_powered_by_vuln` | Reports technology details disclosed by the HTTP `X-Powered-By` response header. |
-| `x_xss_protection_vuln` | Reports a present legacy `X-XSS-Protection` header whose value is not `1; mode=block`; an absent header is not currently flagged. |
-| `xdebug_rce_vuln` | Detects the Xdebug 2.5.5 response header associated with a remotely exploitable Xdebug release. |
-| `zoho_cve_2021_40539_vuln` | Probes the unauthenticated ADSelfService Plus `LogonCustomization` preview action associated with CVE-2021-40539; it does not upload or execute code. |
+| Module                                      | Description                                                                                                                                                                                                         |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `accela_cve_2021_34370_vuln`                | Probes the Accela Civic Platform logout endpoint for the CVE-2021-34370 open redirect to an external URL.                                                                                                           |
+| `adobe_coldfusion_cve_2023_26360_vuln`      | Probes Adobe ColdFusion for CVE-2023-26360 arbitrary file read by requesting the internal `password.properties` file.                                                                                               |
+| `adobe_coldfusion_cve_2026_48282_vuln`      | Probes Adobe ColdFusion RDS for CVE-2026-48282 path traversal by attempting to read a standard operating-system file.                                                                                               |
+| `aiohttp_cve_2024_23334_vuln`               | Checks aiohttp static-file handling for CVE-2024-23334 directory traversal and arbitrary file read.                                                                                                                 |
+| `apache_cve_2021_41773_vuln`                | Checks Apache HTTP Server 2.4.49 for CVE-2021-41773 path traversal and file disclosure.                                                                                                                             |
+| `apache_cve_2021_42013_vuln`                | Probes Apache HTTP Server 2.4.50 for CVE-2021-42013 path traversal by attempting to read `/etc/passwd`.                                                                                                             |
+| `apache_ofbiz_cve_2024_38856_vuln`          | Probes Apache OFBiz for CVE-2024-38856 by executing `id` through the exposed Groovy program endpoint.                                                                                                               |
+| `apache_struts_vuln`                        | Probes Apache Struts for CVE-2017-5638 OGNL injection using a non-destructive response-header marker.                                                                                                               |
+| `aviatrix_cve_2021_40870_vuln`              | Tests Aviatrix Controller for CVE-2021-40870 by writing a PHP `phpinfo()` probe to `random_string1.php` and requesting it; the probe file may remain on a vulnerable target.                                        |
+| `cisco_hyperflex_cve_2021_1497_vuln`        | Probes the Cisco HyperFlex management interface for CVE-2021-1497 command injection using a `nettacker` response marker.                                                                                            |
+| `citrix_cve_2019_19781_vuln`                | Probes Citrix ADC and Gateway products for CVE-2019-19781 path traversal by attempting to read `smb.conf`.                                                                                                          |
+| `citrix_cve_2023_24488_vuln`                | Checks Citrix ADC and Gateway products for CVE-2023-24488 cross-site scripting.                                                                                                                                     |
+| `citrix_cve_2023_4966_vuln`                 | Checks NetScaler ADC and Gateway for CVE-2023-4966 information disclosure, commonly known as Citrix Bleed.                                                                                                          |
+| `clickjacking_vuln`                         | Reports responses where present `X-Frame-Options` and Content Security Policy headers lack recognized frame restrictions and no recognized HTML policy metadata is found; absent headers are not currently flagged. |
+| `cloudron_cve_2021_40868_vuln`              | Checks Cloudron login redirects for CVE-2021-40868 reflected cross-site scripting.                                                                                                                                  |
+| `confluence_cve_2023_22515_vuln`            | Identifies Confluence 8.x build versions in the ranges affected by CVE-2023-22515; it does not attempt to create an administrator.                                                                                  |
+| `confluence_cve_2023_22527_vuln`            | Probes Confluence for CVE-2023-22527 template injection by executing `id` and returning its output in a response header.                                                                                            |
+| `content_security_policy_vuln`              | Evaluates the Content Security Policy header and page content for empty or `unsafe-*` policy patterns.                                                                                                              |
+| `content_type_options_vuln`                 | Reports a present `X-Content-Type-Options` header whose value does not contain `nosniff`; an absent header is not currently flagged.                                                                                |
+| `crushftp_cve_2025_31161_vuln`              | Probes CrushFTP for CVE-2025-31161 by attempting unauthenticated access to the user-list endpoint.                                                                                                                  |
+| `cyberoam_netgenie_cve_2021_38702_vuln`     | Checks Cyberoam NetGenie devices for CVE-2021-38702 reflected cross-site scripting.                                                                                                                                 |
+| `exponent_cms_cve_2021_38751_vuln`          | Checks ExponentCMS for CVE-2021-38751 host-header injection that can produce attacker-controlled links.                                                                                                             |
+| `f5_cve_2020_5902_vuln`                     | Checks F5 BIG-IP TMUI for CVE-2020-5902 path traversal and arbitrary file read.                                                                                                                                     |
+| `forgerock_am_cve_2021_35464_vuln`          | Probes the unauthenticated ForgeRock AM `ccversion` endpoint associated with CVE-2021-35464; it does not send a deserialization payload.                                                                            |
+| `galera_webtemp_cve_2021_40960_vuln`        | Checks Galera WebTemplate for CVE-2021-40960 directory traversal and sensitive file disclosure.                                                                                                                     |
+| `geoserver_cve_2024_36401_vuln`             | Uses a non-command XPath expression and the resulting exception to identify GeoServer CVE-2024-36401 behavior.                                                                                                      |
+| `grafana_cve_2021_43798_vuln`               | Checks Grafana for CVE-2021-43798 plugin-path traversal and arbitrary file read.                                                                                                                                    |
+| `graphql_vuln`                              | Checks whether a known GraphQL endpoint exposes schema introspection without authentication.                                                                                                                        |
+| `gurock_testrail_cve_2021_40875_vuln`       | Checks Gurock TestRail for CVE-2021-40875 sensitive file-list disclosure.                                                                                                                                           |
+| `hoteldruid_cve_2021-37833_vuln`            | Checks HotelDruid for CVE-2021-37833 reflected cross-site scripting.                                                                                                                                                |
+| `http_cookie_vuln`                          | Examines `Set-Cookie` headers for missing `Secure`, `HttpOnly`, `SameSite`, or `Max-Age` attributes.                                                                                                                |
+| `http_cors_vuln`                            | Tests whether the server reflects untrusted origins in `Access-Control-Allow-Origin`, indicating a permissive CORS policy.                                                                                          |
+| `http_options_enabled_vuln`                 | Reports web servers that respond to `OPTIONS` and disclose enabled HTTP methods in the `Allow` header.                                                                                                              |
+| `ivanti_epmm_cve_2023_35082_vuln`           | Checks Ivanti EPMM and MobileIron Core for CVE-2023-35082 authentication bypass.                                                                                                                                    |
+| `ivanti_ics_cve_2023_46805_vuln`            | Checks Ivanti Connect Secure for CVE-2023-46805 authentication-bypass exposure and mitigation status.                                                                                                               |
+| `joomla_cve_2023_23752_vuln`                | Checks Joomla 4.0.0 through 4.2.7 for CVE-2023-23752 unauthenticated configuration disclosure.                                                                                                                      |
+| `justwirting_cve_2021_41878_vuln`           | Checks i-Panel Administration System for CVE-2021-41878 reflected cross-site scripting.                                                                                                                             |
+| `langflow_cve_2025_3248_vuln`               | Probes Langflow before 1.3.0 for CVE-2025-3248 by executing code that raises a fixed `Nettacker` exception through the validation endpoint.                                                                         |
+| `log4j_cve_2021_44228_vuln`                 | Sends Log4Shell JNDI callbacks through multiple HTTP methods and headers, then confirms them through the third-party `log4shell.huntress.com` service.                                                              |
+| `majordomo_rce_cve_2026_27174_vuln`         | Probes MajorDoMo for CVE-2026-27174 by using the unauthenticated PHP console to read `/etc/passwd`.                                                                                                                 |
+| `maxsite_cms_cve_2021_35265_vuln`           | Checks MaxSite CMS for CVE-2021-35265 reflected cross-site scripting.                                                                                                                                               |
+| `memos_cve_2025_22952_ssrf_vuln`            | Checks Memos through version 0.24.0 for CVE-2025-22952 server-side request forgery in link metadata handling.                                                                                                       |
+| `metabase_cve_2026_72898_vuln`              | Uses six-second PostgreSQL and MySQL/MariaDB delay payloads to test Metabase password-reset handling for CVE-2026-72898 SQL injection.                                                                              |
+| `meteobridge_cve_2025_4008_vuln`            | Probes MeteoBridge for CVE-2025-4008 command injection by executing `id` through the `templatefile` parameter.                                                                                                      |
+| `msexchange_cve_2021_26855_vuln`            | Checks Microsoft Exchange Server for CVE-2021-26855 ProxyLogon server-side request forgery.                                                                                                                         |
+| `msexchange_cve_2021_34473_vuln`            | Probes crafted Exchange Autodiscover paths for response signatures associated with CVE-2021-34473 ProxyShell.                                                                                                       |
+| `nextjs_cve_2025_55182_vuln`                | Probes CVE-2025-55182 React2Shell by executing a fixed arithmetic expression through a Unix shell or PowerShell and checking the redirect marker.                                                                   |
+| `nexus_cve_2024_4956_vuln`                  | Checks Sonatype Nexus Repository Manager for CVE-2024-4956 unauthenticated path traversal and arbitrary file read.                                                                                                  |
+| `nginx_ui_cve_2026_33032_vuln`              | Checks Nginx UI before 2.3.4 for CVE-2026-33032 unauthenticated access to the MCP message endpoint.                                                                                                                 |
+| `novnc_cve_2021_3654_vuln`                  | Checks noVNC for CVE-2021-3654 user-controlled open redirects.                                                                                                                                                      |
+| `omigod_cve_2021_38647_vuln`                | Probes Open Management Infrastructure for CVE-2021-38647 by executing the `id` command through WS-Management.                                                                                                       |
+| `paloalto_globalprotect_cve_2025_0133_vuln` | Checks PAN-OS GlobalProtect gateways and portals for CVE-2025-0133 reflected cross-site scripting.                                                                                                                  |
+| `paloalto_panos_cve_2025_0108_vuln`         | Checks PAN-OS management interfaces for CVE-2025-0108 authentication bypass.                                                                                                                                        |
+| `payara_cve_2021_41381_vuln`                | Checks Payara Micro Community for CVE-2021-41381 directory traversal.                                                                                                                                               |
+| `phpinfo_cve_2021_37704_vuln`               | Checks phpFastCache vendor paths for CVE-2021-37704 unauthenticated `phpinfo()` disclosure.                                                                                                                         |
+| `placeos_cve_2021_41826_vuln`               | Checks PlaceOS Authentication Service for CVE-2021-41826 open redirects.                                                                                                                                            |
+| `prestashop_cve_2021_37538_vuln`            | Checks the PrestaShop SmartBlog module for CVE-2021-37538 SQL injection.                                                                                                                                            |
+| `puneethreddyhc_sqli_cve_2021_41648_vuln`   | Checks PuneethReddyHC Online Shopping System for CVE-2021-41648 unauthenticated SQL injection in the `prId` parameter.                                                                                              |
+| `puneethreddyhc_sqli_cve_2021_41649_vuln`   | Checks PuneethReddyHC Online Shopping System for CVE-2021-41649 unauthenticated SQL injection in the `cat_id` parameter.                                                                                            |
+| `qsan_storage_xss_cve_2021_37216_vuln`      | Checks QSAN Storage Manager for CVE-2021-37216 unauthenticated reflected cross-site scripting.                                                                                                                      |
+| `server_version_vuln`                       | Reports version details disclosed by the HTTP `Server` response header.                                                                                                                                             |
+| `siyuan_cve_2026_34605_vuln`                | Checks SiYuan Note through version 3.6.1 for CVE-2026-34605 reflected SVG cross-site scripting.                                                                                                                     |
+| `smartermail_cve_2026_24423_vuln`           | Checks SmarterMail before build 9511 for CVE-2026-24423 unauthenticated command-execution exposure using a non-routable probe.                                                                                      |
+| `sonicwall_sslvpn_cve_2024_53704_vuln`      | Sends a crafted `swap` cookie to the SonicWall SSL VPN client endpoint and checks for the launcher response associated with CVE-2024-53704.                                                                         |
+| `splunk_cve_2026_20253_vuln`                | Checks Splunk Enterprise's PostgreSQL sidecar service for CVE-2026-20253 unauthenticated auth-bypass via an invalid Basic Authorization header.                                                                     |
+| `ssl_certificate_weak_signature_vuln`       | Reports TLS certificates signed with weak or deprecated signature algorithms.                                                                                                                                       |
+| `ssl_expired_certificate_vuln`              | Reports TLS certificates that have expired or are not yet valid.                                                                                                                                                    |
+| `ssl_self_signed_certificate_vuln`          | Reports TLS certificates whose issuer and subject indicate that they are self-signed.                                                                                                                               |
+| `ssl_weak_cipher_vuln`                      | Reports TLS endpoints that negotiate weak cipher suites.                                                                                                                                                            |
+| `ssl_weak_version_vuln`                     | Reports TLS endpoints that support deprecated SSL or TLS protocol versions.                                                                                                                                         |
+| `strict_transport_security_vuln`            | Reports a present `Strict-Transport-Security` header that omits `max-age` or `includeSubDomains`; the implementation does not flag a completely absent header.                                                      |
+| `subdomain_takeover_vuln`                   | Looks for web-response fingerprints associated with unclaimed third-party resources; it does not independently verify DNS records or claimability.                                                                  |
+| `teamcity_cve_2024_27198_vuln`              | Checks JetBrains TeamCity before 2023.11.4 for CVE-2024-27198 authentication bypass.                                                                                                                                |
+| `tieline_cve_2021_35336_vuln`               | Checks Tieline administration interfaces for CVE-2021-35336 exposure involving default credentials.                                                                                                                 |
+| `tjws_cve_2021_37573_vuln`                  | Checks Tiny Java Web Server for CVE-2021-37573 reflected cross-site scripting on error pages.                                                                                                                       |
+| `vbulletin_cve_2019_16759_vuln`             | Probes vBulletin 5.x for CVE-2019-16759 by executing `id` through a widget template.                                                                                                                                |
+| `vite_cve_2025_31125_vuln`                  | Checks network-exposed Vite development servers for CVE-2025-31125 arbitrary file disclosure.                                                                                                                       |
+| `wordpress_core_cve_2026_63030_vuln`        | Sends a crafted WordPress batch request and checks its multi-status response for CVE-2026-63030 REST API route confusion.                                                                                           |
+| `wp_plugin_cve_2021_38314_vuln`             | Probes WordPress `admin-ajax.php` for the predictable MD5 response exposed by Redux Framework CVE-2021-38314.                                                                                                       |
+| `wp_plugin_cve_2021_39316_vuln`             | Checks the WordPress ZoomSounds plugin for CVE-2021-39316 directory traversal and arbitrary file download.                                                                                                          |
+| `wp_plugin_cve_2021_39320_vuln`             | Checks the WordPress underConstruction plugin for CVE-2021-39320 reflected cross-site scripting.                                                                                                                    |
+| `wp_plugin_cve_2023_47668_vuln`             | Checks the WordPress Restrict Content plugin for CVE-2023-47668 sensitive information exposure through a legacy log file.                                                                                           |
+| `wp_plugin_cve_2023_6875_vuln`              | Checks whether the WordPress POST SMTP Mailer `connect-app` endpoint returns `fcm_token` without authentication, indicating CVE-2023-6875 exposure; it does not inject JavaScript.                                  |
+| `wp_xmlrpc_bruteforce_vuln`                 | Detects WordPress XML-RPC `wp.getUsersBlogs` behavior that can be used for credential attacks.                                                                                                                      |
+| `wp_xmlrpc_dos_vuln`                        | Detects exposed WordPress XML-RPC multicall functionality that can amplify requests and contribute to denial of service.                                                                                            |
+| `wp_xmlrpc_pingback_vuln`                   | Detects enabled WordPress XML-RPC pingbacks that can be abused for server-side requests or reflected denial of service.                                                                                             |
+| `x_powered_by_vuln`                         | Reports technology details disclosed by the HTTP `X-Powered-By` response header.                                                                                                                                    |
+| `x_xss_protection_vuln`                     | Reports a present legacy `X-XSS-Protection` header whose value is not `1; mode=block`; an absent header is not currently flagged.                                                                                   |
+| `xdebug_rce_vuln`                           | Detects the Xdebug 2.5.5 response header associated with a remotely exploitable Xdebug release.                                                                                                                     |
+| `zoho_cve_2021_40539_vuln`                  | Probes the unauthenticated ADSelfService Plus `LogonCustomization` preview action associated with CVE-2021-40539; it does not upload or execute code.                                                               |
 
 Some identifiers retain historical filename spellings, such as
 `hoteldruid_cve_2021-37833_vuln` and `justwirting_cve_2021_41878_vuln`. Copy identifiers exactly;
@@ -312,29 +309,28 @@ renaming them here would make the examples invalid.
 
 ### Brute-force modules
 
-| Module | Default port(s) | Description |
-| --- | --- | --- |
-| `ftp_brute` | 21 | Attempts authenticated logins to an FTP service. |
-| `ftps_brute` | 990 | Attempts authenticated logins to an implicit FTPS service. |
-| `pop3_brute` | 110 | Attempts authenticated logins to a POP3 mail service. |
-| `pop3s_brute` | 995 | Attempts authenticated logins to a POP3 service over TLS. |
-| `smb_brute` | 445 | Attempts authenticated logins to an SMB service. |
-| `smtp_brute` | 25, 2525 | Attempts authenticated logins to an SMTP service. |
-| `smtps_brute` | 25, 2525, 465, 587 | Attempts authenticated logins to SMTP services with TLS support. |
-| `ssh_brute` | 22, 2222 | Attempts authenticated logins to an SSH service. |
-| `telnet_brute` | 23 | Attempts authenticated logins to a Telnet service that uses conventional login prompts. |
-
+| Module         | Default port(s)    | Description                                                                             |
+| -------------- | ------------------ | --------------------------------------------------------------------------------------- |
+| `ftp_brute`    | 21                 | Attempts authenticated logins to an FTP service.                                        |
+| `ftps_brute`   | 990                | Attempts authenticated logins to an implicit FTPS service.                              |
+| `pop3_brute`   | 110                | Attempts authenticated logins to a POP3 mail service.                                   |
+| `pop3s_brute`  | 995                | Attempts authenticated logins to a POP3 service over TLS.                               |
+| `smb_brute`    | 445                | Attempts authenticated logins to an SMB service.                                        |
+| `smtp_brute`   | 25, 2525           | Attempts authenticated logins to an SMTP service.                                       |
+| `smtps_brute`  | 25, 2525, 465, 587 | Attempts authenticated logins to SMTP services with TLS support.                        |
+| `ssh_brute`    | 22, 2222           | Attempts authenticated logins to an SSH service.                                        |
+| `telnet_brute` | 23                 | Attempts authenticated logins to a Telnet service that uses conventional login prompts. |
 
 ## Brute-force credentials
 
 Unless credentials are supplied, each brute-force module combines every default username in its
 YAML template with every entry in the bundled password wordlist:
 
-| Modules | Default usernames |
-| --- | --- |
-| `ftp_brute`, `ftps_brute` | `root`, `admin`, `user`, `test`, `anonymous` |
-| `smb_brute` | `administrator`, `admin`, `root`, `user`, `test`, `guest` |
-| `pop3_brute`, `pop3s_brute`, `smtp_brute`, `smtps_brute`, `ssh_brute`, `telnet_brute` | `root`, `admin`, `user`, `test` |
+| Modules                                                                               | Default usernames                                         |
+| ------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| `ftp_brute`, `ftps_brute`                                                             | `root`, `admin`, `user`, `test`, `anonymous`              |
+| `smb_brute`                                                                           | `administrator`, `admin`, `root`, `user`, `test`, `guest` |
+| `pop3_brute`, `pop3s_brute`, `smtp_brute`, `smtps_brute`, `ssh_brute`, `telnet_brute` | `root`, `admin`, `user`, `test`                           |
 
 The default password candidates are the 1,000 non-empty values in
 [`top_1000_common_passwords.txt`](../nettacker/lib/payloads/passwords/top_1000_common_passwords.txt),
