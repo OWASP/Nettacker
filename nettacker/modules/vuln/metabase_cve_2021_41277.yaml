@@ -23,7 +23,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/api/geojson?url={{lfi_paths}}"
+            input_format: "{schema}://{target}:{ports}/api/geojson?url={lfi_paths}"
             prefix: ""
             suffix: ""
             interceptors:
@@ -40,10 +40,10 @@ payloads:
                 - "file:///etc/passwd"
                 - "file:///c:/windows/win.ini"
         response:
-          condition_type: or
+          condition_type: and
           conditions:
             status_code:
-              regex: '200'
+              regex: '^200$'
               reverse: false
             content:
               regex: "root:(\\S+):|\\[extensions\\]"
