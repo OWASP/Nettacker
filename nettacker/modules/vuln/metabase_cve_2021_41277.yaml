@@ -23,10 +23,10 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{schema}://{target}:{ports}/api/geojson?url={lfi_paths}"
+            input_format: "{{schema}}://{target}:{{ports}}/api/geojson?url={{lfi_paths}}"
             prefix: ""
             suffix: ""
-            interceptors:
+            interceptors: []
             data:
               schema:
                 - "http"
@@ -43,7 +43,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: '^200$'
+              regex: "^200$"
               reverse: false
             content:
               regex: "root:(\\S+):|\\[extensions\\]"
