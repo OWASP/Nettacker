@@ -72,6 +72,41 @@ def test_sort_dictionary():
     assert sorted_dict_keys == expected_dict_keys
 
 
+def test_merge_logs_to_list_basic():
+    event = {"log": "found something", "other": "value"}
+    result = common_utils.merge_logs_to_list(event)
+    assert result == ["found something"]
+
+
+def test_merge_logs_to_list_nested():
+    event = {"outer": {"log": "nested log"}}
+    result = common_utils.merge_logs_to_list(event)
+    assert result == ["nested log"]
+
+
+def test_merge_logs_to_list_no_log_key():
+    event = {"status": "ok", "port": 80}
+    result = common_utils.merge_logs_to_list(event)
+    assert result == []
+
+
+def test_merge_logs_to_list_non_dict():
+    result = common_utils.merge_logs_to_list("plain string")
+    assert result == []
+
+
+def test_merge_logs_to_list_no_accumulation_across_calls():
+    # Verify that successive calls with no explicit log_list argument
+    # do not share state. The mutable default bug would cause the second
+    # call to include entries from the first call.
+    event_a = {"log": "entry_a"}
+    event_b = {"log": "entry_b"}
+    result_a = common_utils.merge_logs_to_list(event_a)
+    result_b = common_utils.merge_logs_to_list(event_b)
+    assert result_a == ["entry_a"]
+    assert result_b == ["entry_b"]
+
+
 @patch("multiprocessing.cpu_count")
 def test_select_maximum_cpu_core(cpu_count_mock):
     cores_mapping = {
