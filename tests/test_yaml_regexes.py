@@ -31,6 +31,10 @@ def extract_http_regexes(payloads):
             conditions = step.get("response", {}).get("conditions", {})
             if "content" in conditions and "regex" in conditions["content"]:
                 regexes.append(conditions["content"]["regex"])
+            if "headers" in conditions:
+                for header_name, header_cond in conditions["headers"].items():
+                    if isinstance(header_cond, dict) and "regex" in header_cond:
+                        regexes.append(header_cond["regex"])
     return regexes
 
 
