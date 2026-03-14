@@ -72,7 +72,7 @@ PASSWORD: PASSWORT
 PORT: HAFEN
 TYPE: ART
 DESCRIPTION: BESCHREIBUNG
-verbose_mode: Ausführlicher Modus (0-5) (Standard 0)
+verbose_mode: ausführliche Ausgabe aktivieren (standardmäßig deaktiviert)
 software_version: Softwareversion anzeigen
 check_updates: auf Update überprüfen
 outgoing_proxy:
