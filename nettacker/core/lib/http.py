@@ -180,7 +180,7 @@ class HttpEngine(BaseEngine):
                 response = asyncio.run(send_request(sub_step, backup_method))
                 response["content"] = response["content"].decode(errors="ignore")
                 break
-            except Exception:
+            except (aiohttp.ClientError, asyncio.TimeoutError, OSError):
                 response = []
         sub_step["method"] = backup_method
         sub_step["response"] = backup_response
