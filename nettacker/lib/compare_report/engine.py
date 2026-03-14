@@ -14,8 +14,8 @@ def build_report(compare_result):
         Compare report in HTML
     """
     data = (
-        open(Config.path.web_static_dir / "report/compare_report.html")
-        .read()
+        (Config.path.web_static_dir / "report/compare_report.html")
+        .read_text(encoding="utf-8")
         .replace("__data_will_locate_here__", json.dumps(compare_result))
     )
     return data
