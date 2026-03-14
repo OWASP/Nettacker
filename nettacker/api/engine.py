@@ -4,6 +4,7 @@ import multiprocessing
 import os
 import random
 import string
+import sys
 import time
 from threading import Thread
 from types import SimpleNamespace
@@ -614,3 +615,11 @@ def start_api_server(options):
             for process in multiprocessing.active_children():
                 process.terminate()
             break
+    p.join()
+    if p.exitcode is not None and p.exitcode > 0:
+        die_failure(
+            "API server failed to start. "
+            "If using custom certificates, verify that --api-cert and "
+            "--api-cert-key point to valid PEM files."
+        )
+    sys.exit(0)
