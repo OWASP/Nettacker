@@ -295,7 +295,8 @@ def create_report(options, scan_id):
         keys = all_scan_logs[0].keys()
         with Path(report_path_filename).open("a") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=keys)
-            writer.writeheader()
+            if csvfile.tell() == 0:
+                writer.writeheader()
             for log_list in all_scan_logs:
                 dict_data = {key: value for key, value in log_list.items() if key in keys}
                 writer.writerow(dict_data)

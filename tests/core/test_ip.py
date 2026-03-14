@@ -81,15 +81,15 @@ def test_is_single_ipv4():
 
 
 def test_is_ipv4_range():
-    assert is_ipv4_range("192.168.1.0/24")
+    assert is_ipv4_range("192.168.1.1-192.168.1.100")
     assert not is_ipv4_range("127.0.0.1")
-    assert not is_ipv4_range("192.168.1.0/100")
+    assert not is_ipv4_range("192.168.1.0/24")
 
 
 def test_is_ipv4_cidr():
-    assert is_ipv4_cidr("192.168.1.1-192.168.1.100")
-    assert not is_ipv4_cidr("192.168.1.1/24")
-    assert not is_ipv4_cidr("192.168.1.1-192.168.1.256")
+    assert is_ipv4_cidr("192.168.1.0/24")
+    assert not is_ipv4_cidr("192.168.1.1-192.168.1.100")
+    assert not is_ipv4_cidr("192.168.1.0/100")
 
 
 def test_is_single_ipv6():

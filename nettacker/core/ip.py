@@ -64,10 +64,10 @@ def is_single_ipv4(ip):
 def is_ipv4_range(ip_range):
     try:
         return (
-            "/" in ip_range
+            "/" not in ip_range
             and "." in ip_range
-            and "-" not in ip_range
-            and bool(netaddr.IPNetwork(ip_range))
+            and "-" in ip_range
+            and bool(netaddr.iprange_to_cidrs(*ip_range.split("-")))
         )
     except Exception:
         return False
@@ -76,10 +76,10 @@ def is_ipv4_range(ip_range):
 def is_ipv4_cidr(ip_range):
     try:
         return (
-            "/" not in ip_range
+            "/" in ip_range
             and "." in ip_range
-            and "-" in ip_range
-            and bool(netaddr.iprange_to_cidrs(*ip_range.split("-")))
+            and "-" not in ip_range
+            and bool(netaddr.IPNetwork(ip_range))
         )
     except Exception:
         return False
