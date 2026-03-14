@@ -205,6 +205,7 @@ class SocketLibrary(BaseLibrary):
             header + data, (socket.gethostbyname(host), 1)
         )  # Don't know about the 1
 
+        delay = None
         while True:
             started_select = time.time()
             what_ready = select.select([socket_connection], [], [], timeout)
@@ -231,6 +232,8 @@ class SocketLibrary(BaseLibrary):
             if timeout <= 0:
                 break
         socket_connection.close()
+        if delay is None:
+            return None
         return {"host": host, "response_time": delay, "ssl_flag": False}
 
 
