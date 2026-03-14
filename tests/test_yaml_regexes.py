@@ -66,6 +66,38 @@ def is_valid_regex(regex: str) -> bool:
         return False
 
 
+VALID_RESPONSE_KEYS = {
+    "condition_type",
+    "conditions",
+    "log",
+    "save_to_temp_events_only",
+    "dependent_on_temp_event",
+}
+
+
+@pytest.mark.parametrize("yaml_file", list(get_yaml_files()))
+def test_yaml_response_no_unknown_keys(yaml_file):
+    """Ensure response blocks only contain keys the engine actually processes."""
+    data = load_yaml(yaml_file)
+    payloads = data.get("payloads", [])
+    if not payloads:
+        pytest.skip(f"No payloads found in {yaml_file}")
+    for payload in payloads:
+        for step in payload.get("steps", []):
+            sub_steps = step if isinstance(step, list) else [step]
+            for sub_step in sub_steps:
+                if not isinstance(sub_step, dict):
+                    continue
+                response = sub_step.get("response", {})
+                if not isinstance(response, dict):
+                    continue
+                unknown_keys = set(response) - VALID_RESPONSE_KEYS
+                assert not unknown_keys, (
+                    f"Unknown key(s) {unknown_keys} in response block of {yaml_file}. "
+                    f"The engine does not process these fields."
+                )
+
+
 @pytest.mark.parametrize("yaml_file", list(get_yaml_files()))
 def test_yaml_regexes_valid(yaml_file):
     data = load_yaml(yaml_file)
