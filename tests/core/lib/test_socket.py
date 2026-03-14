@@ -1,8 +1,11 @@
-from unittest.mock import patch
+import select
+import socket
+import struct
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from nettacker.core.lib.socket import SocketEngine, create_tcp_socket
+from nettacker.core.lib.socket import SocketEngine, SocketLibrary, create_tcp_socket
 
 
 class Responses:
@@ -193,3 +196,51 @@ class TestSocketMethod:
             substeps.tcp_connect_send_and_receive, responses.none
         )
         assert result == []
+
+
+class TestSocketIcmpTimeout:
+    @patch("nettacker.core.lib.socket.select.select")
+    @patch("nettacker.core.lib.socket.socket.socket")
+    @patch("nettacker.core.lib.socket.socket.getprotobyname", return_value=1)
+    @patch("nettacker.core.lib.socket.socket.gethostbyname", return_value="127.0.0.1")
+    def test_socket_icmp_returns_none_on_timeout(
+        self, mock_gethostbyname, mock_getprotobyname, mock_socket_cls, mock_select
+    ):
+        mock_sock = MagicMock()
+        mock_socket_cls.return_value = mock_sock
+        # select returns empty list, simulating a timeout with no packets
+        mock_select.return_value = ([], [], [])
+
+        result = SocketLibrary().socket_icmp(host="127.0.0.1", timeout=1)
+
+        assert result is None
+
+    @patch("nettacker.core.lib.socket.select.select")
+    @patch("nettacker.core.lib.socket.socket.socket")
+    @patch("nettacker.core.lib.socket.socket.getprotobyname", return_value=1)
+    @patch("nettacker.core.lib.socket.socket.gethostbyname", return_value="127.0.0.1")
+    def test_socket_icmp_returns_dict_on_reply(
+        self, mock_gethostbyname, mock_getprotobyname, mock_socket_cls, mock_select
+    ):
+        import os
+        import time
+
+        mock_sock = MagicMock()
+        mock_socket_cls.return_value = mock_sock
+
+        pid = os.getpid() & 0xFFFF
+        sent_time = time.time() - 0.01
+        # Build a fake ICMP reply header matching our pid
+        icmp_header = struct.pack("bbHHh", 0, 0, 0, pid, 1)
+        icmp_data = struct.pack("d", sent_time) + b"\x00" * 100
+        fake_packet = b"\x00" * 20 + icmp_header + icmp_data
+
+        mock_select.return_value = ([mock_sock], [], [])
+        mock_sock.recvfrom.return_value = (fake_packet, ("127.0.0.1", 0))
+
+        result = SocketLibrary().socket_icmp(host="127.0.0.1", timeout=1)
+
+        assert result is not None
+        assert result["host"] == "127.0.0.1"
+        assert result["ssl_flag"] is False
+        assert result["response_time"] >= 0
