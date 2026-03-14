@@ -122,6 +122,7 @@ compare_report_path_filename: तुलना रिपोर्ट सहेज
 no_scan_to_compare: तुलना करने के लिए scan_id नहीं मिला
 compare_report_saved: "{0} में तुलना परिणाम सहेजे गए"
 build_compare_report: "तुलना रिपोर्ट बनाई जा रही है"
+finish_build_report: "तुलना रिपोर्ट तैयार हो गई"
 user_wordlist: उपयोगकर्ताओं को अपना स्वयं का वर्डलिस्ट दर्ज करने की अनुमति देता है
 exclude_ports: "पोर्ट को बाहर करने के लिए (जैसे 80 || 80,443|| 1000-1300)"
 http_header: "अनुरोधों में कस्टम HTTP हेडर जोड़ें (प्रारूप: 'key: value')। एकाधिक हेडर के लिए, एकाधिक -H फ्लैग का उपयोग करें"
