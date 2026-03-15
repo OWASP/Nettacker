@@ -1,0 +1,64 @@
+info:
+  name: freepbx_cve_2025_64328_command_injection
+  author: luck9823
+  severity: 8.6
+  description: |
+    FreePBX filestore module versions 17.0.2.36 and above before 17.0.3 
+    contain an OS command injection vulnerability. The vulnerability exists 
+    in the testconnection -> check_ssh_connect() function within the 
+    Administrative interface. An authenticated user with high privileges 
+    can exploit this to obtain remote access to the system as an asterisk user.
+    
+    This is a post-authentication vulnerability (CVSS PR:H) that allows 
+    command injection through the filestore module's SSH connection test 
+    functionality.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-64328
+    - https://www.cve.org/CVERecord?id=CVE-2025-64328
+    - https://github.com/FreePBX/security-reporting/security/advisories/GHSA-vm9p-46mv-5xvw
+    - https://github.com/FreePBX/filestore/blob/f0e3983059271efd80b483ec823310ef19a59013/drivers/SSH/testconnection.php#L2
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - high
+    - cve
+    - cve2025
+    - freepbx
+    - sangoma
+    - command_injection
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/admin/config.php?display=modules&module=filestore"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - http
+                - https
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "filestore.*17\\.0\\.2\\.(3[6-9]|[4-9][0-9])|filestore.*17\\.0\\.2\\.([3-9][6-9])"
+              reverse: false
