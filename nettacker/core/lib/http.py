@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-
 import asyncio
 import copy
+import operator
 import random
 import re
 import time
@@ -18,6 +17,17 @@ from nettacker.core.utils.common import (
 )
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
+# Explicit operator dispatch replacing the exec() call.
+# Keys are the operator strings accepted in YAML responsetime conditions.
+_RESPONSETIME_OPS = {
+    "==": operator.eq,
+    "!=": operator.ne,
+    ">=": operator.ge,
+    "<=": operator.le,
+    ">":  operator.gt,
+    "<":  operator.lt,
+}
 
 
 async def perform_request_action(action, request_options):
@@ -40,6 +50,33 @@ async def send_request(request_options, method):
             *[asyncio.ensure_future(perform_request_action(action, request_options))]
         )
         return response[0]
+
+
+def _match_responsetime(condition_value, actual_time):
+    """
+    Evaluate a responsetime condition of the form '<op> <threshold>'
+    against actual_time (float, seconds).
+
+    Returns actual_time if the condition is satisfied, [] otherwise.
+    Returns [] for any malformed condition value.
+
+    Examples of valid condition_value strings:
+        ">= 2.5"
+        "< 1"
+        "== 0.5"
+    """
+    parts = condition_value.split()
+    if len(parts) != 2:
+        return []
+    op_str, threshold_str = parts
+    op_func = _RESPONSETIME_OPS.get(op_str)
+    if op_func is None:
+        return []
+    try:
+        threshold = float(threshold_str)
+    except ValueError:
+        return []
+    return actual_time if op_func(actual_time, threshold) else []
 
 
 def response_conditions_matched(sub_step, response):
@@ -73,23 +110,9 @@ def response_conditions_matched(sub_step, response):
                 except TypeError:
                     condition_results["headers"][header] = []
         if condition == "responsetime":
-            if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
-                "==",
-                "!=",
-                ">=",
-                "<=",
-                ">",
-                "<",
-            ]:
-                exec(
-                    "condition_results['responsetime'] = response['responsetime'] if ("
-                    + "response['responsetime'] {0} float(conditions['responsetime'].split()[-1])".format(
-                        conditions["responsetime"].split()[0]
-                    )
-                    + ") else []"
-                )
-            else:
-                condition_results["responsetime"] = []
+            condition_results["responsetime"] = _match_responsetime(
+                conditions[condition], response["responsetime"]
+            )
     if condition_type.lower() == "or":
         # if one of the values are matched, it will be a string or float object in the array
         # we count False in the array and if it's not all []; then we know one of the conditions
