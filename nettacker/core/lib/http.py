@@ -27,8 +27,8 @@ _RESPONSETIME_OPS = {
     "!=": operator.ne,
     ">=": operator.ge,
     "<=": operator.le,
-    ">":  operator.gt,
-    "<":  operator.lt,
+    ">": operator.gt,
+    "<": operator.lt,
 }
 
 
