@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import asyncio
 import copy
 import operator
@@ -25,8 +27,8 @@ _RESPONSETIME_OPS = {
     "!=": operator.ne,
     ">=": operator.ge,
     "<=": operator.le,
-    ">": operator.gt,
-    "<": operator.lt,
+    ">":  operator.gt,
+    "<":  operator.lt,
 }
 
 
@@ -65,6 +67,8 @@ def _match_responsetime(condition_value, actual_time):
         "< 1"
         "== 0.5"
     """
+    if not isinstance(condition_value, str):
+        return []
     parts = condition_value.split()
     if len(parts) != 2:
         return []
