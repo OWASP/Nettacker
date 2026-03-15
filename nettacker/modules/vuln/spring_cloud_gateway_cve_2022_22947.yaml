@@ -1,0 +1,58 @@
+info:
+  name: spring_cloud_gateway_cve_2022_22947_vuln
+  author: Prajwal G N (@Prajwal5755)
+  severity: 9.8
+  description: Detects exposed Spring Cloud Gateway actuator endpoint which may allow remote code execution via CVE-2022-22947.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2022-22947
+    - https://spring.io/security/cve-2022-22947
+    - https://tanzu.vmware.com/security/cve-2022-22947
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - spring
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{urls}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              urls:
+                - "actuator/gateway/routes"
+                - "actuator/gateway/globalfilters"
+                - "actuator/gateway/routefilters"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+
+        response:
+          condition_type: and
+          log: "Spring Cloud Gateway actuator endpoint exposed at: response_dependent['url']"
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            url:
+              regex: ".*"
+              reverse: false
+            content:
+              regex: "route_id|filters|uri|GatewayFilterFactory"
+              reverse: false
