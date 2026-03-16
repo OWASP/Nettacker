@@ -60,5 +60,5 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: "filestore.*17\\.0\\.2\\.(3[6-9]|[4-9][0-9])|filestore.*17\\.0\\.2\\.([3-9][6-9])"
+              regex: "filestore.*17\\.0\\.2\\.(3[6-9]|[4-9][0-9])"
               reverse: false
