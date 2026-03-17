@@ -85,6 +85,7 @@ payloads:
                 - 8443
 
         response:
+          dependent_on_temp_event: route_created
           save_to_temp_events_only: route_refreshed
           condition_type: or
           conditions:
@@ -116,6 +117,7 @@ payloads:
                 - 8443
 
         response:
+          dependent_on_temp_event: route_refreshed
           condition_type: and
           log: "Confirmed CVE-2022-22947 vulnerability at :response_dependent['url']"
           conditions:
