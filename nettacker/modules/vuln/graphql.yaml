@@ -36,6 +36,10 @@ payloads:
                 - 443
               endpoint:
                 - 1239b01720/graphql
+                - graphql
+                - api/graphql
+                - v1/graphql
+                - query
         json:
           query: "{{__schema{{types{{name}}}}}}"
           variables: "{{}}"
