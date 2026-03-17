@@ -35,15 +35,7 @@ payloads:
               endpoint:
                 - 1239b01720/graphql
         json:
-          query: "
-          {{
-              __schema {{
-                  types {{
-                  name
-                  }}
-              }}
-              }}
-          "
+          query: "{{__schema{{types{{name}}}}}}"
           variables: "{{}}"
         response:
           condition_type: and
