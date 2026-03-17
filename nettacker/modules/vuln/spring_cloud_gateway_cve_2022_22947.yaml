@@ -43,12 +43,12 @@ payloads:
 
         data: |
           {{
-            "id": "test",
+            "id": "nettacker-test",
             "filters": [{{
               "name": "AddResponseHeader",
               "args": {{
                 "name": "X-Test",
-                "value": "test"
+                "value": "nettacker-test"
               }}
             }}],
             "uri": "http://example.com"
@@ -128,5 +128,5 @@ payloads:
               regex: ".*"
               reverse: false
             content:
-              regex: "test"
+              regex: "nettacker-test"
               reverse: false
