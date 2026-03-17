@@ -1,0 +1,130 @@
+info:
+  name: spring_cloud_gateway_cve_2022_22947_vuln
+  author: Prajwal G N (@Prajwal5755)
+  severity: 9.8
+  description: Detects Spring Cloud Gateway actuator route injection vulnerability (CVE-2022-22947).
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2022-22947
+    - https://spring.io/security/cve-2022-22947
+    - https://tanzu.vmware.com/security/cve-2022-22947
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - spring
+
+payloads:
+  - library: http
+    steps:
+
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
+        ssl: false
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/actuator/gateway/routes/test"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+
+        data: |
+          {{
+            "id": "test",
+            "filters": [{{
+              "name": "AddResponseHeader",
+              "args": {{
+                "name": "X-Test",
+                "value": "test"
+              }}
+            }}],
+            "uri": "http://example.com"
+          }}
+
+        response:
+          save_to_temp_events_only: route_created
+          condition_type: or
+          conditions:
+            status_code:
+              regex: "200|201"
+              reverse: false
+
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/actuator/gateway/refresh"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+
+        response:
+          save_to_temp_events_only: route_refreshed
+          condition_type: or
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+      
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/actuator/gateway/routes/test"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+
+        response:
+          condition_type: and
+          log: "Confirmed CVE-2022-22947 vulnerability at :response_dependent['url']"
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            url:
+              regex: ".*"
+              reverse: false
+            content:
+              regex: "test"
+              reverse: false
