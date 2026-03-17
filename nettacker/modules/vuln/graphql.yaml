@@ -2,7 +2,9 @@ info:
   name: graphql_vuln
   author: OWASP Nettacker Team
   severity: 3
-  description:
+  description: Detects exposed GraphQL introspection endpoints which can
+    reveal the full API schema structure to unauthenticated attackers,
+    potentially exposing sensitive types, queries, and mutations.
   reference:
   profiles:
     - vuln
