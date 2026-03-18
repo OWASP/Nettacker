@@ -4,7 +4,7 @@ import os
 import shutil
 import socket
 import sys
-from threading import Thread
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import multiprocess
 
@@ -288,40 +288,65 @@ class Nettacker(ArgParser):
         return os.EX_OK
 
     def scan_target_group(self, targets, scan_id, process_number):
-        active_threads = []
         log.verbose_event_info(_("single_process_started").format(process_number))
         total_number_of_modules = len(targets) * len(self.arguments.selected_modules)
-        total_number_of_modules_counter = 1
 
+        # Build task queue of (target, module) pairs
+        tasks = []
+        task_counter = 1
         for target in targets:
             for module_name in self.arguments.selected_modules:
-                thread = Thread(
-                    target=self.scan_target,
-                    args=(
+                tasks.append((target, module_name, task_counter, total_number_of_modules))
+                task_counter += 1
+
+        # Use ThreadPoolExecutor with bounded thread pool
+        max_workers = self.arguments.parallel_module_scan
+        completed_tasks = 0
+        # Log approximately every 10% of tasks, with at least one-task interval
+        progress_log_interval = max(1, total_number_of_modules // 10)
+
+        try:
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                # Submit all tasks to the executor
+                future_to_task = {
+                    executor.submit(
+                        self.scan_target,
                         target,
                         module_name,
                         scan_id,
                         process_number,
-                        total_number_of_modules_counter,
+                        task_num,
                         total_number_of_modules,
-                    ),
-                )
-                thread.name = f"{target} -> {module_name}"
-                thread.start()
-                log.verbose_event_info(
-                    _("start_parallel_module_scan").format(
-                        process_number,
-                        module_name,
-                        target,
-                        total_number_of_modules_counter,
-                        total_number_of_modules,
-                    )
-                )
-                total_number_of_modules_counter += 1
-                active_threads.append(thread)
-                if not wait_for_threads_to_finish(
-                    active_threads, self.arguments.parallel_module_scan, True
-                ):
-                    return False
-        wait_for_threads_to_finish(active_threads, maximum=None, terminable=True)
+                    ): (target, module_name, task_num)
+                    for target, module_name, task_num, total_number_of_modules in tasks
+                }
+
+                # Process completed tasks as they finish
+                for future in as_completed(future_to_task):
+                    target, module_name, _task_num = future_to_task[future]
+                    completed_tasks += 1
+
+                    try:
+                        future.result()
+
+                        # Log progress periodically
+                        is_milestone = completed_tasks % progress_log_interval == 0
+                        is_final = completed_tasks == total_number_of_modules
+                        if is_milestone or is_final:
+                            percent = completed_tasks * 100 // total_number_of_modules
+                            log.info(
+                                f"Progress: {completed_tasks}/{total_number_of_modules} "
+                                f"tasks completed ({percent}%)"
+                            )
+                    except KeyboardInterrupt:
+                        log.info("Scan interrupted by user. Cancelling remaining tasks...")
+                        executor.shutdown(wait=False, cancel_futures=True)
+                        return False
+                    except Exception as e:
+                        log.error(f"Task {target} -> {module_name} failed: {e}")
+
+        except KeyboardInterrupt:
+            log.info("Scan interrupted by user.")
+            return False
+
         return True
