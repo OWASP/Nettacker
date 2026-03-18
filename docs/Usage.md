@@ -330,9 +330,9 @@ python nettacker.py -i 192.168.1.1/24 -m all -t 10 -M 35 -g 20-100 -o result.jso
 python nettacker.py -i 192.168.1.1/24 -m all -x ssh_brute -t 10 -M 35 -g 20-100 -o file.txt -U users.txt -P passwords.txt -T 3 -w 2
 ```
 
-* Using Whatcms Scan: API key can be found [here](https://whatcms.org/APIKey)
+* Using web technologies scan:
 ```
-python nettacker.py -i eng.uber.com -m whatcms_scan --method-args whatcms_api_key=XXXX
+python nettacker.py -i eng.uber.com -m web_technologies_scan
 ```
 * Finding CVE 2020-5902:
 ```
@@ -438,7 +438,7 @@ python nettacker.py --show-all-modules
 [2021-08-31 17:42:06][+] ftps_brute: name: ftps_brute, author: OWASP Nettacker Team, severity: 3, description: FTPS Bruteforcer, reference: None, profiles: ['brute', 'ftp']
 [2021-08-31 17:42:06][+] smtps_brute: name: smtps_brute, author: OWASP Nettacker Team, severity: 3, description: SMTPS Bruteforcer, reference: None, profiles: ['brute', 'smtp']
 [2021-08-31 17:42:06][+] ftp_brute: name: ftp_brute, author: OWASP Nettacker Team, severity: 3, description: FTP Bruteforcer, reference: None, profiles: ['brute', 'ftp']
-[2021-08-31 17:42:06][+] whatcms_scan: name: dir_scan, author: OWASP Nettacker Team, severity: 3, description: Directory, Backup finder, reference: https://www.zaproxy.org/docs/alerts/10095/, profiles: ['scan', 'http', 'backup', 'low_severity']
+[2021-08-31 17:42:06][+] web_technologies_scan: name: web_technologies_scan, author: OWASP Nettacker Team, severity: 3, description: Detect Web technologies, reference: None, profiles: ['scan', 'http', 'backup', 'low_severity', 'web', 'whatweb', 'wappalyzer']
 [2021-08-31 17:42:06][+] icmp_scan: name: icmp_scan, author: OWASP Nettacker Team, severity: 0, description: check if host is alive through ICMP, reference: None, profiles: ['scan', 'info', 'low_severity']
 [2021-08-31 17:42:06][+] subdomain_scan: name: subdomain_scan, author: OWASP Nettacker Team, severity: 0, description: Find subdomains using different sources on internet, reference: None, profiles: ['scan', 'info', 'low_severity']
 [2021-08-31 17:42:06][+] port_scan: id: port_scan, author: OWASP Nettacker Team, severity: 0, description: Find open ports and services, reference: None, profiles: ['scan', 'http', 'info', 'low_severity']
