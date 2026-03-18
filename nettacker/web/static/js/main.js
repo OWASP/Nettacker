@@ -45,15 +45,17 @@ $(document).ready(function () {
       .done(function (res) {
         $("#set_session").hide();
         $("#success_key").removeClass("hidden");
-        setTimeout('$("#success_key").addClass("animated fadeOut");', 5000);
-        setTimeout('$("#success_key").addClass("hidden");', 5000);
+        // FIX #7: setTimeout with functions instead of strings
+        // FIX #6: removeClass("animated fadeOut") moved inside the later timeout so fade works
+        setTimeout(function () { $("#success_key").addClass("animated fadeOut"); }, 5000);
+        setTimeout(function () { $("#success_key").addClass("hidden").removeClass("animated fadeOut"); }, 6000);
         $("#logout_btn").removeClass("hidden");
         $("#logout_btn").show();
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
         $("#set_session").hide();
         $("#failed_key").removeClass("hidden");
-        setTimeout('$("#failed_key").addClass("hidden");', 5000);
+        setTimeout(function () { $("#failed_key").addClass("hidden"); }, 5000); // FIX #7
         $("#set_session").show();
       });
   });
@@ -72,8 +74,8 @@ $(document).ready(function () {
         $("#set_session").removeClass("hidden");
         $("#set_session").show();
         $("#logout_success").removeClass("hidden");
-        setTimeout('$("#logout_success").addClass("animated fadeOut");', 1000);
-        setTimeout('$("#logout_success").addClass("hidden");', 1500);
+        setTimeout(function () { $("#logout_success").addClass("animated fadeOut"); }, 1000); // FIX #7
+        setTimeout(function () { $("#logout_success").addClass("hidden").removeClass("animated fadeOut"); }, 1500); // FIX #7
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
         // codes
@@ -132,17 +134,9 @@ $(document).ready(function () {
     $("#crawler_area").removeClass("hidden");
   });
 
-  // Compare scans
-  $("#compare_btn").click(function() {
-    $("#home").addClass("hidden");
-    $("#new_scan").addClass("hidden");
-    $("#get_results").addClass("hidden");
-    $("#crawler_area").addClass("hidden");
-    $("#compare_area").removeClass("hidden");
-  });
-
-  // Show the scan compare area
-  $("#compare_btn").click(function() {
+  // FIX #1: Removed the first duplicate #compare_btn handler that lacked session check.
+  // The single handler below performs the session check and handles both success/fail correctly.
+  $("#compare_btn").click(function () {
     $.ajax({
       type: "GET",
       url: "/session/check",
@@ -167,7 +161,7 @@ $(document).ready(function () {
   });
 
   // Create the compare report
-  $("#create_compare_report").click(function() {
+  $("#create_compare_report").click(function () {
     var tmp_data = {
       scan_id_first: $("#scan_id_first").val(),
       scan_id_second: $("#scan_id_second").val(),
@@ -192,23 +186,23 @@ $(document).ready(function () {
       .done(function (response, textStatus, jqXHR) {
         if (response.status === "success") {
           $("#success_report").removeClass("hidden");
-          setTimeout('$("#success_report").addClass("animated fadeOut");', 5000);
-          setTimeout('$("#success_report").addClass("hidden");', 6000);
-          $("#success_report").removeClass("animated fadeOut");
-        }
-        else {
+          // FIX #6 & #7: use function callbacks; removeClass deferred so fade actually plays
+          setTimeout(function () { $("#success_report").addClass("animated fadeOut"); }, 5000);
+          setTimeout(function () { $("#success_report").addClass("hidden").removeClass("animated fadeOut"); }, 6000);
+        } else {
           document.getElementById("report_error_msg").innerHTML = response.message;
           $("#failed_report").removeClass("hidden");
-          setTimeout('$("#failed_report").addClass("hidden");', 5000);
-        }})
+          setTimeout(function () { $("#failed_report").addClass("hidden"); }, 5000); // FIX #7
+        }
+      })
       .fail(function (jqXHR, textStatus, errorThrown) {
         var errorMessage = "An error occurred while comparing scans.";
-        if(jqXHR.responseJSON && jqXHR.responseJSON.msg){
+        if (jqXHR.responseJSON && jqXHR.responseJSON.msg) {
           errorMessage = jqXHR.responseJSON.msg;
         }
         document.getElementById("report_error_msg").innerHTML = errorMessage;
         $("#failed_report").removeClass("hidden");
-        setTimeout('$("#failed_report").addClass("hidden");', 5000);
+        setTimeout(function () { $("#failed_report").addClass("hidden"); }, 5000); // FIX #7
       });
   });
 
@@ -324,29 +318,14 @@ $(document).ready(function () {
   $("#submit_new_scan").click(function () {
     // set variables
     // check ranges
-    if (document.getElementById("scan_ip_range").checked) {
-      var p_1 = true;
-    } else {
-      var p_1 = false;
-    }
+    var p_1 = document.getElementById("scan_ip_range").checked ? true : false;
     // ping before scan
-    if (document.getElementById("ping_before_scan").checked) {
-      var p_2 = true;
-    } else {
-      var p_2 = false;
-    }
+    var p_2 = document.getElementById("ping_before_scan").checked ? true : false;
     // subdomains
-    if (document.getElementById("scan_subdomains").checked) {
-      var p_3 = true;
-    } else {
-      var p_3 = false;
-    }
+    var p_3 = document.getElementById("scan_subdomains").checked ? true : false;
 
-    if (document.getElementById("skip_service_discovery").checked) {
-      var skip_service_discovery = true;
-    } else {
-      var skip_service_discovery = false;
-    }
+    var skip_service_discovery = document.getElementById("skip_service_discovery").checked ? true : false;
+
     // profiles
     var p = [];
     var n = 0;
@@ -360,12 +339,13 @@ $(document).ready(function () {
 
     // scan_methods
     n = 0;
-    sm = [];
+    var sm = [];
     $("#selected_modules input:checked").each(function () {
       sm[n] = this.id;
       n += 1;
     });
     var selected_modules = sm.join(",");
+
     // language
     var language = "";
     $("#languages option:selected").each(function () {
@@ -400,8 +380,8 @@ $(document).ready(function () {
       usernames: $("#usernames").val(),
       passwords: $("#passwords").val(),
       skip_service_discovery: skip_service_discovery,
-      excluded_ports: $('#exclude_ports').val(),
-      http_header: $('#http_headers').val()
+      excluded_ports: $("#exclude_ports").val(),
+      http_header: $("#http_headers").val(),
     };
 
     // replace "" with null
@@ -427,38 +407,24 @@ $(document).ready(function () {
         results = results.replaceAll(",", ",<br>");
         document.getElementById("success_msg").innerHTML = results;
         $("#success_request").removeClass("hidden");
-        setTimeout('$("#success_request").addClass("animated fadeOut");', 5000);
-        setTimeout('$("#success_request").addClass("hidden");', 6000);
-        $("#success_request").removeClass("animated fadeOut");
+        // FIX #6 & #7: use function callbacks; removeClass deferred so fade actually plays
+        setTimeout(function () { $("#success_request").addClass("animated fadeOut"); }, 5000);
+        setTimeout(function () { $("#success_request").addClass("hidden").removeClass("animated fadeOut"); }, 6000);
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
         document.getElementById("error_msg").innerHTML = jqXHR.responseText;
         if (errorThrown == "BAD REQUEST") {
           $("#failed_request").removeClass("hidden");
-          setTimeout('$("#failed_request").addClass("hidden");', 5000);
+          setTimeout(function () { $("#failed_request").addClass("hidden"); }, 5000); // FIX #7
         }
         if (errorThrown == "UNAUTHORIZED") {
           $("#failed_request").removeClass("hidden");
-          setTimeout('$("#failed_request").addClass("hidden");', 5000);
+          setTimeout(function () { $("#failed_request").addClass("hidden"); }, 5000); // FIX #7
         }
       });
   });
 
-  var getUrlParameter = function getUrlParameter(sParam) {
-    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-      sURLVariables = sPageURL.split("&"),
-      sParameterName,
-      i;
-
-    for (i = 0; i < sURLVariables.length; i++) {
-      sParameterName = sURLVariables[i].split("=");
-
-      if (sParameterName[0] === sParam) {
-        return sParameterName[1] === undefined ? true : sParameterName[1];
-      }
-    }
-  };
-
+  // FIX #2: Removed duplicate getUrlParameter definition — keeping only one copy.
   var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
       sURLVariables = sPageURL.split("&"),
@@ -482,58 +448,11 @@ $(document).ready(function () {
     var id;
     var date;
     var scan_id;
-    // var report_filename;
-    // var events_num;
-    // var verbose;
-    // var start_api_server;
-    // var report_type;
-    // var graph_name;
-    // var category;
-    // var profile;
-    // var selected_modules;
-    // var language;
-    // var scan_cmd;
-    // var ports;
-    // var flags = {
-    //   el: "gr",
-    //   fr: "fr",
-    //   en: "us",
-    //   nl: "nl",
-    //   ps: "ps",
-    //   tr: "tr",
-    //   de: "de",
-    //   ko: "kr",
-    //   it: "it",
-    //   ja: "jp",
-    //   fa: "ir",
-    //   hy: "am",
-    //   ar: "sa",
-    //   "zh-cn": "cn",
-    //   vi: "vi",
-    //   ru: "ru",
-    //   hi: "in",
-    //   ur: "pk",
-    //   id: "id",
-    //   es: "es",
-    // };
 
     for (i = 0; i < res.length; i++) {
       id = res[i]["id"];
       date = res[i]["date"];
       scan_id = res[i]["scan_id"];
-      // report_filename = res[i]["report_filename"];
-      // events_num = res[i]["events_num"];
-      // verbose = res[i]["verbose"];
-      // start_api_server = res[i]["start_api_server"];
-      // report_type = res[i]["report_type"];
-      // graph_name = res[i]["graph_name"];
-      // category = res[i]["category"];
-      // profile = res[i]["profile"];
-      // selected_modules = res[i]["selected_modules"];
-      // language = res[i]["language"];
-      // // scan_cmd = res[i]["scan_cmd"];
-      // ports = res[i]["ports"];
-      // host = scan_cmd.split(" ")[2];
       HTMLData +=
         "<a target='_blank' href=\"/results/get?id=" +
         id +
@@ -550,51 +469,11 @@ $(document).ready(function () {
         "<hr class='card-hr'>" +
         "<p class='mb-1  bold label label-default'>scan_id:" +
         scan_id +
-        "</p><br>"
-        // "<p class='mb-1  bold label label-info'>report_filename:" +
-        // report_filename +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-success'>events_num:" +
-        // events_num +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-danger'>ports:" +
-        // ports +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-info'>category:" +
-        // category +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-success'>profile:" +
-        // profile +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-warning'>selected_modules:" +
-        // selected_modules +
-        // "</p><br>" +
-        // "<p class='mb-1 bold  label label-primary'>start_api_server:" +
-        // start_api_server +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-warning'>verbose:" +
-        // verbose +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-info'>report_type:" +
-        // report_type +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-primary'>graph_name:" +
-        // graph_name +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-success'>language:" +
-        // language +
-        // "</p>" +
-        // "<span class='card-flag flag-icon flag-icon-" +
-        // flags[language] +
-        // "'></span><br>" +
-        // "<p class='mb-1 bold label label-default'>scan_cmd:" +
-        // scan_cmd +
-        // "</p>" +
-        // '</p>\n </a>' +
-        '<button class="mb-1 bold label card-date""><a href="/results/get_json?id=' +
+        "</p><br>" +
+        '<button class="mb-1 bold label card-date"><a href="/results/get_json?id=' +
         id +
         '">Get JSON</a></button>' +
-        '<button class="mb-1 bold label card-date""><a href="/results/get_csv?id=' +
+        '<button class="mb-1 bold label card-date"><a href="/results/get_csv?id=' +
         id +
         '">Get CSV </a></button>';
     }
@@ -732,188 +611,92 @@ $(document).ready(function () {
     $("#advance_options").addClass("hidden");
     $("#basic_options").removeClass("hidden");
   });
-function obsKeysToString(o, k, sep) {
- return k.map(key => o[key]).filter(v => v).join(sep);
-}
 
-function filter_large_content(content, filter_rate){
-    if (content == undefined){
-    return content
-    }
-    if (content.length <= filter_rate){
-        return content
-    }
-    else{
+  function obsKeysToString(o, k, sep) {
+    return k.map(function (key) { return o[key]; }).filter(function (v) { return v; }).join(sep);
+  }
 
-        filter_rate -= 1
-        filter_index = filter_rate
-        for (var i = 0; i < content.substring(filter_rate,).length; i++) {
-            if (content.substring(i, i+1) == ' '){
-                return content.substring(0, filter_index) + "... [see the full content in the report]"
-            }
-            else {
-                filter_index += 1
-            }
+  function filter_large_content(content, filter_rate) {
+    if (content == undefined) {
+      return content;
+    }
+    if (content.length <= filter_rate) {
+      return content;
+    } else {
+      filter_rate -= 1;
+      var filter_index = filter_rate;
+      for (var i = 0; i < content.substring(filter_rate).length; i++) {
+        if (content.substring(i, i + 1) == " ") {
+          return content.substring(0, filter_index) + "... [see the full content in the report]";
+        } else {
+          filter_index += 1;
         }
-        return content
+      }
+      return content;
     }
-}
-
-
-
+  }
 
   function show_crawler(res) {
     res = JSON.parse(res);
-    // var HTMLData = "";
-    // var host;
-    // var category;
-    // var html_categories;
-    // var description;
-    // var html_description;
-    // var open_ports;
-    // var html_open_ports;
-    // var scan_methods;
-    // var html_scan_methods;
-    var j;
-    var k;
-
     var HTMLData = "";
-    var target;
-    var module_name;
-    var target_event;
-    var options;
-    var date;
-    var html_options;
-    var html_target_event;
-    var html_module_name;
-    var html_date;
 
+    for (var i = 0; i < res.length; i++) {
+      var target      = res[i]["target"];
+      var module_name = res[i]["info"]["module_name"];
+      var events      = res[i]["info"]["event"];
+      var ports       = res[i]["info"]["port"];
+      var dates       = res[i]["info"]["date"];
 
+      var html_meta   = "";
+      var html_events = "";
 
-    for (i = 0; i < res.length; i++) {
-      console.log(res[i])
-      target = res[i]["target"];
-      //target_event = res[i]["info"]["event"];
-      options = res[i]["info"]["options"];
-      //date = res[i]["info"]["date"];
-      module_name = res[i]["info"]["module_name"]
-      events = res[i]["info"]["event"]
+      // Date
+      if (dates && dates.length > 0) {
+        html_meta += "<p class='mb-1 bold label label-default'>date: " + dates[0] + "</p> ";
+      }
 
-      // open_ports = res[i]["info"]["open_ports"];
-      // scan_methods = res[i]["info"]["scan_methods"];
-      // category = res[i]["info"]["category"];
+      // Modules
+      for (var j = 0; j < module_name.length; j++) {
+        html_meta += "<p class='mb-1 bold label label-info'>module: " + module_name[j] + "</p> ";
+      }
 
-      // html_categories = "";
-      // html_scan_methods = "";
-      // html_open_ports = "";
-      // html_description = "";
-      html_target_event = "";
-      html_options = "";
-      html_date = "";
-      html_module_name = "";
+      // Ports
+      if (ports && ports.length > 0) {
+        html_meta += "<p class='mb-1 bold label label-primary'>ports: " + ports.join(", ") + "</p> ";
+      }
 
-      // for (j = 0; j < open_ports.length; j++) {
-      //   html_open_ports +=
-      //     "<p class='mb-1 bold label label-warning'>open_port:" +
-      //     open_ports[j] +
-      //     "</p> ";
-      //   if (j == 10) {
-      //     html_open_ports +=
-      //       "<p class='mb-1 bold label label-warning'>open_port: click to see more.</p> ";
-      //     break;
-      //   }
-      // }
-      // for (j = 0; j < category.length; j++) {
-      //   html_categories +=
-      //     "<p class='mb-1 bold label label-info'>category:" +
-      //     category[j] +
-      //     "</p> ";
-      //   if (j == 10) {
-      //     html_categories +=
-      //       "<p class='mb-1 bold label label-info'>category: click to see more.</p> ";
-      //     break;
-      //   }
-      // }
-      for (j = 0; j < module_name.length; j++) {
-          html_module_name +=
-            "<p class='mb-1 bold label label-info'>selected_modules:" +
-            module_name[j] +
-            "</p> ";
+      html_meta += "<br>";
+
+      // Events — split on 'conditions: ' safely, avoids undefined when key is absent
+      for (var k = 0; k < events.length; k++) {
+        var parts      = events[k].split("conditions: ");
+        var event_text = filter_large_content(parts[0], 100);
+        var cond_text  = parts.length > 1 ? filter_large_content(parts[1], 100) : "";
+
+        html_events += "<p class='mb-1 bold label label-success'>event: " + event_text + "</p> ";
+        if (cond_text) {
+          html_events += "<p class='mb-1 bold label label-warning'>conditions: " + cond_text + "</p> ";
         }
-        html_module_name += "<br><br>"
-       for (j = 0; j < events.length; j++) {
-          event = events[j].split('conditions: ')[0]
-          results = events[j].split('conditions: ')[1]
-          html_module_name +=   "<p class='mb-1 bold label label-success'>event: " + filter_large_content(event, 100) + "</p> ";
-          html_module_name += "<p class='mb-1 bold label label-warning'>condition_results: " + filter_large_content(results, 100) + "</p> <br><br>";
-        }
-
-
-      // html_scan_methods = "";
-      // for (j = 0; j < scan_methods.length; j++) {
-      //   html_scan_methods +=
-      //     "<p class='mb-1 bold label label-primary'>selected_modules:" +
-      //     scan_methods[j] +
-      //     "</p> ";
-      //   if (j == 10) {
-      //     html_scan_methods +=
-      //       "<p class='mb-1 bold label label-primary'>selected_modules: click to see more.</p> ";
-      //     break;
-      //   }
-      // }
-      //console.log(options)
-//   crawl_results
-      // for (j = 0; j < target_event.length; j++) {
-      //   html_target_event +=
-      //     "<p class='mb-1 bold label label-primary'>event:" +
-      //     target_event[j] +
-      //     "</p> ";
-      //   if (j == 10) {
-      //     html_target_event +=
-      //       "<p class='mb-1 bold label label-primary'>event list</p> ";
-      //     break;
-      //   }
-      // }
-
-      // for (j = 0; j < description.length; j++) {
-      //   html_description +=
-      //     "<p class='mb-1 bold label label-success'>description:" +
-      //     description[j] +
-      //     "</p> ";
-      //   if (j == 10) {
-      //     html_description +=
-      //       "<p class='mb-1 bold label label-success'>description: click to see more.</p> ";
-      //     break;
-      //   }
-      // }
+        html_events += "<br>";
+      }
 
       HTMLData +=
-        '<div class="row myBox" ><div class="d-flex w-100 text-justify justify-content-between">\n' +
-        '<button class="btn btn-primary" style="margin-right: 1rem"> <a target=\'_blank\' style="color: white" href="/logs/get_html?target=' +
-        target +
-        '">' +
-        target +
-        '</a></button></span><button class="btn btn-btn-secondary" style="margin-right: 1rem"><a href="/logs/get_json?target=' +
-        target +
-        '">Get JSON</a></button>' +
-        '<button class="btn btn-btn-secondary"><a href="/logs/get_csv?target=' +
-        target +
-        '">Get CSV </a></button></h3>\n' +
+        '<div class="row myBox"><div class="d-flex w-100 text-justify justify-content-between">\n' +
+        '<button class="btn btn-primary" style="margin-right: 1rem">' +
+        '<a target="_blank" style="color: white" href="/logs/get_html?target=' + target + '">' + target + "</a>" +
+        "</button>" +
+        '<button class="btn btn-secondary" style="margin-right: 1rem">' +
+        '<a href="/logs/get_json?target=' + target + '">Get JSON</a>' +
+        "</button>" +
+        '<button class="btn btn-secondary">' +
+        '<a href="/logs/get_csv?target=' + target + '">Get CSV</a>' +
+        "</button>" +
         "</div>\n" +
-        '<p class="mb-1"> ' +
-        html_options +
-        html_target_event +
-        html_module_name +
-        html_date +
-        // html_categories +
-        // html_scan_methods +
-        // html_open_ports +
-        // html_description +
-        "</p></div>";
+        '<p class="mb-1">' + html_meta + html_events + "</p></div>";
     }
 
     if (res["msg"] == "No more search results") {
-      HTMLData = '<p class="mb-1"> No more results to show!!</p>';
+      HTMLData = '<p class="mb-1">No more results to show.</p>';
     }
 
     document.getElementById("crawl_results").innerHTML = HTMLData;
@@ -923,32 +706,36 @@ function filter_large_content(content, filter_rate){
     $(".page_number_btn").remove();
   }
 
+  // FIX #5: Removed duplicate .toggle() calls — each button toggled only once.
   function updatePaginationControls(totalPages, currentPage) {
     clearPaginationButtons();
 
-    let startPage = Math.max(currentPage - 2, 1);
-    let endPage = Math.min(startPage + 4, totalPages);
+    var startPage = Math.max(currentPage - 2, 1);
+    var endPage = Math.min(startPage + 4, totalPages);
 
-    for (let i = startPage; i <= endPage; i++) {
-      const pageBtn = $("<button>").addClass("page_number_btn").text(i);
-      if (i === currentPage) {
-        pageBtn.addClass("active");
-      }
-      pageBtn.insertBefore("#crw_next_btn");
-      pageBtn.click(function () {
-        crawler_page = i;
-        get_crawler_list(i);
-      });
+    for (var i = startPage; i <= endPage; i++) {
+      (function (pageNum) {
+        var pageBtn = $("<button>").addClass("page_number_btn").text(pageNum);
+        if (pageNum === currentPage) {
+          pageBtn.addClass("active");
+        }
+        pageBtn.insertBefore("#crw_next_btn");
+        pageBtn.click(function () {
+          crawler_page = pageNum;
+          get_crawler_list(pageNum);
+        });
+      })(i);
     }
+
     $("#crw_first_btn").toggle(currentPage > 1);
     $("#crw_previous_btn").toggle(currentPage > 1);
-
     $("#crw_next_btn").toggle(currentPage < totalPages);
     $("#crw_last_btn").toggle(currentPage < totalPages);
-
-    $("#crw_previous_btn").toggle(currentPage > 1);
-    $("#crw_next_btn").toggle(currentPage < totalPages);
   }
+
+  // FIX #4: totalPages hoisted to outer scope so crw_last_btn handler can access it.
+  var crawlerTotalPages = 1;
+
   $("#crw_first_btn").click(function () {
     if (crawler_page > 1) {
       crawler_page = 1;
@@ -957,8 +744,8 @@ function filter_large_content(content, filter_rate){
   });
 
   $("#crw_last_btn").click(function () {
-    if (crawler_page < totalPages) {
-      crawler_page = totalPages;
+    if (crawler_page < crawlerTotalPages) { // FIX #4: use hoisted variable
+      crawler_page = crawlerTotalPages;
       get_crawler_list(crawler_page);
     }
   });
@@ -966,33 +753,24 @@ function filter_large_content(content, filter_rate){
   function get_crawler_list(crawler_page) {
     $.ajax({
       type: "GET",
-      url:
-        "/logs/search?q=" + $("#search_data").val() + "&page=" + crawler_page,
+      url: "/logs/search?q=" + $("#search_data").val() + "&page=" + crawler_page,
       dataType: "text",
     })
-    .done(function (res) {
-      const totalPages = Math.ceil(res.length / 10);
-      $("#login_first").addClass("hidden");
-      $("#crawl_results").removeClass("hidden");
-      $("#crw_refresh_btn").removeClass("hidden");
-      $("#crw_nxt_prv_btn").removeClass("hidden");
-      $("#current_page_number").text(crawler_page);
-      $("#total_pages").text(totalPages);
-      show_crawler(res);
-      updatePaginationControls(totalPages, crawler_page);
-  
-      if (crawler_page === 1) {
-        $("#crw_previous_btn").hide();
-      } else {
-        $("#crw_previous_btn").show();
-      }
-  
-      if (crawler_page === totalPages) {
-        $("#crw_next_btn").hide();
-      } else {
-        $("#crw_next_btn").show();
-      }
-    })
+      .done(function (res) {
+        // FIX #3: parse JSON first, then use array length — not raw string length
+        var parsed = JSON.parse(res);
+        crawlerTotalPages = Math.ceil(parsed.length / 10); // FIX #3 & #4
+        $("#login_first").addClass("hidden");
+        $("#crawl_results").removeClass("hidden");
+        $("#crw_refresh_btn").removeClass("hidden");
+        $("#crw_nxt_prv_btn").removeClass("hidden");
+        $("#current_page_number").text(crawler_page);
+        $("#total_pages").text(crawlerTotalPages);
+        // Pass the already-parsed data; show_crawler re-parses so pass as string
+        show_crawler(res);
+        // FIX #5: updatePaginationControls handles show/hide — removed redundant manual toggling below
+        updatePaginationControls(crawlerTotalPages, crawler_page);
+      })
       .fail(function (jqXHR, textStatus, errorThrown) {
         if (errorThrown == "UNAUTHORIZED") {
           $("#login_first").removeClass("hidden");
