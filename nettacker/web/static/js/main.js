@@ -187,7 +187,7 @@ $(document).ready(function () {
         } else {
           document.getElementById("report_error_msg").innerHTML = response.message;
           $("#failed_report").removeClass("hidden");
-          setTimeout(function () { $("#failed_report").addClass("hidden"); }, 5000); // FIX #3
+          setTimeout(function () { $("#failed_report").addClass("hidden"); }, 5000); 
         }
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
@@ -403,7 +403,7 @@ $(document).ready(function () {
         document.getElementById("error_msg").innerHTML = jqXHR.responseText;
         if (errorThrown === "BAD REQUEST" || errorThrown === "UNAUTHORIZED") {
           $("#failed_request").removeClass("hidden");
-          setTimeout(function () { $("#failed_request").addClass("hidden"); }, 5000); // FIX #3
+          setTimeout(function () { $("#failed_request").addClass("hidden"); }, 5000); 
         }
       });
   });
@@ -433,20 +433,20 @@ $(document).ready(function () {
       scan_id = res[i]["scan_id"];
 
       HTMLData +=
-        "<a target='_blank' href=\"/results/get?id=" + id + "\"" +
+        "<a target='_blank' href=\"/results/get?id=" + encodeURIComponent(id) + "\"" +
         " class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
         "<div class=\"row\"><div class=\"d-flex w-100\">\n" +
         "<h3 class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span class=\"bold label label-primary\">" +
-        id + "</span>" +
+        escapeHtml(id) + "</span>" +
         "<small class=\"label label-info card-date\">" + escapeHtml(date) + "</small>" +
         "</h3></div></div>" +
         "<hr class='card-hr'>" +
         "<p class='mb-1 bold label label-default'>scan_id:" + escapeHtml(scan_id) + "</p><br>" +
-        "</a>\n" + 
-        "<button class=\"mb-1 bold label card-date\">" + 
-        "<a href=\"/results/get_json?id=" + id + "\">Get JSON</a></button>" +
-        "<button class=\"mb-1 bold label card-date\">" +                     
-        "<a href=\"/results/get_csv?id=" + id + "\">Get CSV</a></button>";
+        "</a>\n" +
+        "<button class=\"mb-1 bold label card-date\">" +
+        "<a href=\"/results/get_json?id=" + encodeURIComponent(id) + "\">Get JSON</a></button>" +
+        "<button class=\"mb-1 bold label card-date\">" +
+        "<a href=\"/results/get_csv?id=" + encodeURIComponent(id) + "\">Get CSV</a></button>";
     }
 
     if (res["msg"] === "No more search results") {
@@ -594,14 +594,10 @@ $(document).ready(function () {
       return content;
     }
     filter_rate -= 1;
-    var filter_index = filter_rate; 
     for (var i = 0; i < content.substring(filter_rate).length; i++) {
-      if (content.substring(filter_rate + i, filter_rate + i + 1) === " ") { // FIX #7a
+      if (content.substring(filter_rate + i, filter_rate + i + 1) === " ") {
         return content.substring(0, filter_rate + i) + "... [see the full content in the report]";
-      } else {
-        filter_index += 1;
       }
-      
     }
     return content;
   }
@@ -811,7 +807,7 @@ $(document).ready(function () {
   function _query_search() {
     $.ajax({
       type: "GET",
-      url: "/logs/search?q=" + $("#search_data").val(),
+      url: "/logs/search?q=" + encodeURIComponent($("#search_data").val()),
       dataType: "text",
     })
       .done(function (res) {
