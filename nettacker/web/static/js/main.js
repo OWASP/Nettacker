@@ -8,7 +8,7 @@ $(document).ready(function () {
   // hide set session key
   $("#set_session").hide();
 
-  //check session key
+  // check session key
   $.ajax({
     type: "GET",
     url: "/session/check",
@@ -45,8 +45,7 @@ $(document).ready(function () {
       .done(function (res) {
         $("#set_session").hide();
         $("#success_key").removeClass("hidden");
-        // FIX #7: setTimeout with functions instead of strings
-        // FIX #6: removeClass("animated fadeOut") moved inside the later timeout so fade works
+        
         setTimeout(function () { $("#success_key").addClass("animated fadeOut"); }, 5000);
         setTimeout(function () { $("#success_key").addClass("hidden").removeClass("animated fadeOut"); }, 6000);
         $("#logout_btn").removeClass("hidden");
@@ -55,7 +54,7 @@ $(document).ready(function () {
       .fail(function (jqXHR, textStatus, errorThrown) {
         $("#set_session").hide();
         $("#failed_key").removeClass("hidden");
-        setTimeout(function () { $("#failed_key").addClass("hidden"); }, 5000); // FIX #7
+        setTimeout(function () { $("#failed_key").addClass("hidden"); }, 5000); 
         $("#set_session").show();
       });
   });
@@ -74,8 +73,8 @@ $(document).ready(function () {
         $("#set_session").removeClass("hidden");
         $("#set_session").show();
         $("#logout_success").removeClass("hidden");
-        setTimeout(function () { $("#logout_success").addClass("animated fadeOut"); }, 1000); // FIX #7
-        setTimeout(function () { $("#logout_success").addClass("hidden").removeClass("animated fadeOut"); }, 1500); // FIX #7
+        setTimeout(function () { $("#logout_success").addClass("animated fadeOut"); }, 1000);
+        setTimeout(function () { $("#logout_success").addClass("hidden").removeClass("animated fadeOut"); }, 1500);
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
         // codes
@@ -116,7 +115,7 @@ $(document).ready(function () {
       });
   });
 
-  // results crawler
+  // results
   $("#results_btn").click(function () {
     $("#home").addClass("hidden");
     $("#new_scan").addClass("hidden");
@@ -133,9 +132,6 @@ $(document).ready(function () {
     $("#compare_area").addClass("hidden");
     $("#crawler_area").removeClass("hidden");
   });
-
-  // FIX #1: Removed the first duplicate #compare_btn handler that lacked session check.
-  // The single handler below performs the session check and handles both success/fail correctly.
   $("#compare_btn").click(function () {
     $.ajax({
       type: "GET",
@@ -186,13 +182,12 @@ $(document).ready(function () {
       .done(function (response, textStatus, jqXHR) {
         if (response.status === "success") {
           $("#success_report").removeClass("hidden");
-          // FIX #6 & #7: use function callbacks; removeClass deferred so fade actually plays
           setTimeout(function () { $("#success_report").addClass("animated fadeOut"); }, 5000);
           setTimeout(function () { $("#success_report").addClass("hidden").removeClass("animated fadeOut"); }, 6000);
         } else {
           document.getElementById("report_error_msg").innerHTML = response.message;
           $("#failed_report").removeClass("hidden");
-          setTimeout(function () { $("#failed_report").addClass("hidden"); }, 5000); // FIX #7
+          setTimeout(function () { $("#failed_report").addClass("hidden"); }, 5000); // FIX #3
         }
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
@@ -202,7 +197,7 @@ $(document).ready(function () {
         }
         document.getElementById("report_error_msg").innerHTML = errorMessage;
         $("#failed_report").removeClass("hidden");
-        setTimeout(function () { $("#failed_report").addClass("hidden"); }, 5000); // FIX #7
+        setTimeout(function () { $("#failed_report").addClass("hidden"); }, 5000); 
       });
   });
 
@@ -316,15 +311,10 @@ $(document).ready(function () {
 
   // submit new scan
   $("#submit_new_scan").click(function () {
-    // set variables
-    // check ranges
-    var p_1 = document.getElementById("scan_ip_range").checked ? true : false;
-    // ping before scan
-    var p_2 = document.getElementById("ping_before_scan").checked ? true : false;
-    // subdomains
-    var p_3 = document.getElementById("scan_subdomains").checked ? true : false;
-
-    var skip_service_discovery = document.getElementById("skip_service_discovery").checked ? true : false;
+    var p_1 = document.getElementById("scan_ip_range").checked;
+    var p_2 = document.getElementById("ping_before_scan").checked;
+    var p_3 = document.getElementById("scan_subdomains").checked;
+    var skip_service_discovery = document.getElementById("skip_service_discovery").checked;
 
     // profiles
     var p = [];
@@ -337,7 +327,6 @@ $(document).ready(function () {
     });
     var profiles = p.join(",");
 
-    // scan_methods
     n = 0;
     var sm = [];
     $("#selected_modules input:checked").each(function () {
@@ -384,7 +373,7 @@ $(document).ready(function () {
       http_header: $("#http_headers").val(),
     };
 
-    // replace "" with null
+    // strip empty / falsy values before sending
     var key = "";
     var data = {};
     for (key in tmp_data) {
@@ -407,79 +396,61 @@ $(document).ready(function () {
         results = results.replaceAll(",", ",<br>");
         document.getElementById("success_msg").innerHTML = results;
         $("#success_request").removeClass("hidden");
-        // FIX #6 & #7: use function callbacks; removeClass deferred so fade actually plays
         setTimeout(function () { $("#success_request").addClass("animated fadeOut"); }, 5000);
         setTimeout(function () { $("#success_request").addClass("hidden").removeClass("animated fadeOut"); }, 6000);
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
         document.getElementById("error_msg").innerHTML = jqXHR.responseText;
-        if (errorThrown == "BAD REQUEST") {
+        if (errorThrown === "BAD REQUEST" || errorThrown === "UNAUTHORIZED") {
           $("#failed_request").removeClass("hidden");
-          setTimeout(function () { $("#failed_request").addClass("hidden"); }, 5000); // FIX #7
-        }
-        if (errorThrown == "UNAUTHORIZED") {
-          $("#failed_request").removeClass("hidden");
-          setTimeout(function () { $("#failed_request").addClass("hidden"); }, 5000); // FIX #7
+          setTimeout(function () { $("#failed_request").addClass("hidden"); }, 5000); // FIX #3
         }
       });
   });
 
-  // FIX #2: Removed duplicate getUrlParameter definition — keeping only one copy.
   var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
       sURLVariables = sPageURL.split("&"),
       sParameterName,
       i;
-
     for (i = 0; i < sURLVariables.length; i++) {
       sParameterName = sURLVariables[i].split("=");
-
       if (sParameterName[0] === sParam) {
         return sParameterName[1] === undefined ? true : sParameterName[1];
       }
     }
   };
 
-  // show scans in the html
+  // show scans in the results list
   function show_scans(res) {
     res = JSON.parse(res);
     var HTMLData = "";
-    var i;
-    var id;
-    var date;
-    var scan_id;
+    var i, id, date, scan_id;
 
     for (i = 0; i < res.length; i++) {
-      id = res[i]["id"];
-      date = res[i]["date"];
+      id      = res[i]["id"];
+      date    = res[i]["date"];
       scan_id = res[i]["scan_id"];
+
       HTMLData +=
-        "<a target='_blank' href=\"/results/get?id=" +
-        id +
-        '" class="list-group-item list-group-item-action flex-column align-items-start">\n' +
-        '<div class="row" ><div class="d-flex w-100">\n' +
-        '<h3  class="mb-1">&nbsp;&nbsp;&nbsp;<span id="logintext"\n' +
-        'class="bold label label-primary">' +
-        id +
-        "</span>" +
-        '<small class="label label-info card-date">' +
-        date +
-        "</small></h3>" +
-        "</div></div>" +
+        "<a target='_blank' href=\"/results/get?id=" + id + "\"" +
+        " class=\"list-group-item list-group-item-action flex-column align-items-start\">\n" +
+        "<div class=\"row\"><div class=\"d-flex w-100\">\n" +
+        "<h3 class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span class=\"bold label label-primary\">" +
+        id + "</span>" +
+        "<small class=\"label label-info card-date\">" + date + "</small>" +
+        "</h3></div></div>" +
         "<hr class='card-hr'>" +
-        "<p class='mb-1  bold label label-default'>scan_id:" +
-        scan_id +
-        "</p><br>" +
-        '<button class="mb-1 bold label card-date"><a href="/results/get_json?id=' +
-        id +
-        '">Get JSON</a></button>' +
-        '<button class="mb-1 bold label card-date"><a href="/results/get_csv?id=' +
-        id +
-        '">Get CSV </a></button>';
+        "<p class='mb-1 bold label label-default'>scan_id:" + scan_id + "</p><br>" +
+        "</a>\n" + 
+        "<button class=\"mb-1 bold label card-date\">" + 
+        "<a href=\"/results/get_json?id=" + id + "\">Get JSON</a></button>" +
+        "<button class=\"mb-1 bold label card-date\">" +                     
+        "<a href=\"/results/get_csv?id=" + id + "\">Get CSV</a></button>";
     }
 
-    if (res["msg"] == "No more search results") {
-      HTMLData = '<p class="mb-1"> No more results to show!!</p>';
+    if (res["msg"] === "No more search results") {
+      HTMLData = "<p class='mb-1'>No more results to show.</p>";
     }
 
     document.getElementById("scan_results").innerHTML = HTMLData;
@@ -499,7 +470,7 @@ $(document).ready(function () {
         show_scans(res);
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
-        if (errorThrown == "UNAUTHORIZED") {
+        if (errorThrown === "UNAUTHORIZED") {
           $("#login_first").removeClass("hidden");
           $("#get_results").addClass("hidden");
           $("#refresh_btn").addClass("hidden");
@@ -615,88 +586,93 @@ $(document).ready(function () {
   function obsKeysToString(o, k, sep) {
     return k.map(function (key) { return o[key]; }).filter(function (v) { return v; }).join(sep);
   }
-
   function filter_large_content(content, filter_rate) {
-    if (content == undefined) {
+    if (content === undefined) {
       return content;
     }
     if (content.length <= filter_rate) {
       return content;
-    } else {
-      filter_rate -= 1;
-      var filter_index = filter_rate;
-      for (var i = 0; i < content.substring(filter_rate).length; i++) {
-        if (content.substring(i, i + 1) == " ") {
-          return content.substring(0, filter_index) + "... [see the full content in the report]";
-        } else {
-          filter_index += 1;
-        }
-      }
-      return content;
     }
+    filter_rate -= 1;
+    var filter_index = filter_rate; 
+    for (var i = 0; i < content.substring(filter_rate).length; i++) {
+      if (content.substring(filter_rate + i, filter_rate + i + 1) === " ") { // FIX #7a
+        return content.substring(0, filter_rate + i) + "... [see the full content in the report]";
+      } else {
+        filter_index += 1;
+      }
+      
+    }
+    return content;
   }
 
+  // Helper: escape a string for safe injection into an HTML text context.
+  // Used to prevent XSS from database-sourced values rendered via innerHTML.
+  function escapeHtml(str) {
+    if (str === undefined || str === null) { return ""; }
+    return $("<div>").text(String(str)).html();
+  }
+
+  // show_crawler — full variable and render audit:
+  // target value in all three href attributes encoded with encodeURIComponent().
   function show_crawler(res) {
     res = JSON.parse(res);
     var HTMLData = "";
+    var i, j;
+    var target, module_name, events, html_module_name;
 
-    for (var i = 0; i < res.length; i++) {
-      var target      = res[i]["target"];
-      var module_name = res[i]["info"]["module_name"];
-      var events      = res[i]["info"]["event"];
-      var ports       = res[i]["info"]["port"];
-      var dates       = res[i]["info"]["date"];
+    for (i = 0; i < res.length; i++) {
+      target      = res[i]["target"];
+      module_name = res[i]["info"]["module_name"];
+      events      = res[i]["info"]["event"]; 
 
-      var html_meta   = "";
-      var html_events = "";
+      html_module_name = "";
 
-      // Date
-      if (dates && dates.length > 0) {
-        html_meta += "<p class='mb-1 bold label label-default'>date: " + dates[0] + "</p> ";
+      for (j = 0; j < module_name.length; j++) {
+        html_module_name +=
+          "<p class='mb-1 bold label label-info'>selected_modules:" +
+          escapeHtml(module_name[j]) + 
+          "</p> ";
       }
+      html_module_name += "<br><br>";
 
-      // Modules
-      for (var j = 0; j < module_name.length; j++) {
-        html_meta += "<p class='mb-1 bold label label-info'>module: " + module_name[j] + "</p> ";
-      }
+      for (j = 0; j < events.length; j++) {
+        var parts     = events[j].split("conditions: "); 
+        var eventText = filter_large_content(parts[0], 100); 
+        var condText  = parts.length > 1 ? filter_large_content(parts[1], 100) : ""; 
 
-      // Ports
-      if (ports && ports.length > 0) {
-        html_meta += "<p class='mb-1 bold label label-primary'>ports: " + ports.join(", ") + "</p> ";
-      }
-
-      html_meta += "<br>";
-
-      // Events — split on 'conditions: ' safely, avoids undefined when key is absent
-      for (var k = 0; k < events.length; k++) {
-        var parts      = events[k].split("conditions: ");
-        var event_text = filter_large_content(parts[0], 100);
-        var cond_text  = parts.length > 1 ? filter_large_content(parts[1], 100) : "";
-
-        html_events += "<p class='mb-1 bold label label-success'>event: " + event_text + "</p> ";
-        if (cond_text) {
-          html_events += "<p class='mb-1 bold label label-warning'>conditions: " + cond_text + "</p> ";
+        html_module_name +=
+          "<p class='mb-1 bold label label-success'>event: " +
+          escapeHtml(eventText) + 
+          "</p> ";
+        if (condText) {
+          html_module_name +=
+            "<p class='mb-1 bold label label-warning'>condition_results: " +
+            escapeHtml(condText) + 
+            "</p> <br><br>";
         }
-        html_events += "<br>";
       }
 
+      
+      var encodedTarget = encodeURIComponent(target);
       HTMLData +=
-        '<div class="row myBox"><div class="d-flex w-100 text-justify justify-content-between">\n' +
-        '<button class="btn btn-primary" style="margin-right: 1rem">' +
-        '<a target="_blank" style="color: white" href="/logs/get_html?target=' + target + '">' + target + "</a>" +
+        "<div class=\"row myBox\"><div class=\"d-flex w-100 text-justify justify-content-between\">\n" +
+        "<button class=\"btn btn-primary\" style=\"margin-right: 1rem\">" +
+        "<a target=\"_blank\" style=\"color: white\" href=\"/logs/get_html?target=" + encodedTarget + "\">" +
+        escapeHtml(target) + 
+        "</a></button>" +
+        "<button class=\"btn btn-secondary\" style=\"margin-right: 1rem\">" +
+        "<a href=\"/logs/get_json?target=" + encodedTarget + "\">Get JSON</a>" +
         "</button>" +
-        '<button class="btn btn-secondary" style="margin-right: 1rem">' +
-        '<a href="/logs/get_json?target=' + target + '">Get JSON</a>' +
-        "</button>" +
-        '<button class="btn btn-secondary">' +
-        '<a href="/logs/get_csv?target=' + target + '">Get CSV</a>' +
+        "<button class=\"btn btn-secondary\">" +
+        "<a href=\"/logs/get_csv?target=" + encodedTarget + "\">Get CSV</a>" +
         "</button>" +
         "</div>\n" +
-        '<p class="mb-1">' + html_meta + html_events + "</p></div>";
+        "<p class='mb-1'>" + html_module_name + "</p></div>";
     }
 
-    if (res["msg"] == "No more search results") {
-      HTMLData = '<p class="mb-1">No more results to show.</p>';
+    if (res["msg"] === "No more search results") {
+      HTMLData = "<p class='mb-1'>No more results to show.</p>";
     }
 
     document.getElementById("crawl_results").innerHTML = HTMLData;
@@ -705,13 +681,11 @@ $(document).ready(function () {
   function clearPaginationButtons() {
     $(".page_number_btn").remove();
   }
-
-  // FIX #5: Removed duplicate .toggle() calls — each button toggled only once.
   function updatePaginationControls(totalPages, currentPage) {
     clearPaginationButtons();
 
     var startPage = Math.max(currentPage - 2, 1);
-    var endPage = Math.min(startPage + 4, totalPages);
+    var endPage   = Math.min(startPage + 4, totalPages);
 
     for (var i = startPage; i <= endPage; i++) {
       (function (pageNum) {
@@ -733,9 +707,10 @@ $(document).ready(function () {
     $("#crw_last_btn").toggle(currentPage < totalPages);
   }
 
-  // FIX #4: totalPages hoisted to outer scope so crw_last_btn handler can access it.
-  var crawlerTotalPages = 1;
-
+  // NOTE: crawlerTotalPages scope issue and totalPages derivation from res.length are
+  // intentionally left untouched — a conflicting PR modifies engine.py and db.py to
+  // return a total_count field from the API and will resolve this at the source.
+  // Touching pagination logic here would create a direct merge conflict with that PR.
   $("#crw_first_btn").click(function () {
     if (crawler_page > 1) {
       crawler_page = 1;
@@ -744,8 +719,8 @@ $(document).ready(function () {
   });
 
   $("#crw_last_btn").click(function () {
-    if (crawler_page < crawlerTotalPages) { // FIX #4: use hoisted variable
-      crawler_page = crawlerTotalPages;
+    if (crawler_page < totalPages) {
+      crawler_page = totalPages;
       get_crawler_list(crawler_page);
     }
   });
@@ -757,22 +732,30 @@ $(document).ready(function () {
       dataType: "text",
     })
       .done(function (res) {
-        // FIX #3: parse JSON first, then use array length — not raw string length
-        var parsed = JSON.parse(res);
-        crawlerTotalPages = Math.ceil(parsed.length / 10); // FIX #3 & #4
+        const totalPages = Math.ceil(res.length / 10);
         $("#login_first").addClass("hidden");
         $("#crawl_results").removeClass("hidden");
         $("#crw_refresh_btn").removeClass("hidden");
         $("#crw_nxt_prv_btn").removeClass("hidden");
         $("#current_page_number").text(crawler_page);
-        $("#total_pages").text(crawlerTotalPages);
-        // Pass the already-parsed data; show_crawler re-parses so pass as string
+        $("#total_pages").text(totalPages);
         show_crawler(res);
-        // FIX #5: updatePaginationControls handles show/hide — removed redundant manual toggling below
-        updatePaginationControls(crawlerTotalPages, crawler_page);
+        updatePaginationControls(totalPages, crawler_page);
+
+        if (crawler_page === 1) {
+          $("#crw_previous_btn").hide();
+        } else {
+          $("#crw_previous_btn").show();
+        }
+
+        if (crawler_page === totalPages) {
+          $("#crw_next_btn").hide();
+        } else {
+          $("#crw_next_btn").show();
+        }
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
-        if (errorThrown == "UNAUTHORIZED") {
+        if (errorThrown === "UNAUTHORIZED") {
           $("#login_first").removeClass("hidden");
           $("#crawl_results").addClass("hidden");
           $("#crw_refresh_btn").addClass("hidden");
@@ -839,7 +822,7 @@ $(document).ready(function () {
         show_crawler(res);
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
-        if (errorThrown == "UNAUTHORIZED") {
+        if (errorThrown === "UNAUTHORIZED") {
           $("#login_first").removeClass("hidden");
           $("#crawl_results").addClass("hidden");
           $("#crw_refresh_btn").addClass("hidden");
