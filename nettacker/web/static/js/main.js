@@ -438,10 +438,10 @@ $(document).ready(function () {
         "<div class=\"row\"><div class=\"d-flex w-100\">\n" +
         "<h3 class=\"mb-1\">&nbsp;&nbsp;&nbsp;<span class=\"bold label label-primary\">" +
         id + "</span>" +
-        "<small class=\"label label-info card-date\">" + date + "</small>" +
+        "<small class=\"label label-info card-date\">" + escapeHtml(date) + "</small>" +
         "</h3></div></div>" +
         "<hr class='card-hr'>" +
-        "<p class='mb-1 bold label label-default'>scan_id:" + scan_id + "</p><br>" +
+        "<p class='mb-1 bold label label-default'>scan_id:" + escapeHtml(scan_id) + "</p><br>" +
         "</a>\n" + 
         "<button class=\"mb-1 bold label card-date\">" + 
         "<a href=\"/results/get_json?id=" + id + "\">Get JSON</a></button>" +
@@ -728,7 +728,7 @@ $(document).ready(function () {
   function get_crawler_list(crawler_page) {
     $.ajax({
       type: "GET",
-      url: "/logs/search?q=" + $("#search_data").val() + "&page=" + crawler_page,
+      url: "/logs/search?q=" + encodeURIComponent($("#search_data").val()) + "&page=" + crawler_page,
       dataType: "text",
     })
       .done(function (res) {
