@@ -973,23 +973,19 @@ $(document).ready(function () {
     })
       .done(function (res) {
         const parsedRes = JSON.parse(res);
-        const totalPages = parsedRes.length > 0 ? Math.ceil(parsedRes.length / 10) : 0;
         $("#login_first").addClass("hidden");
         $("#crawl_results").removeClass("hidden");
         $("#crw_refresh_btn").removeClass("hidden");
-        $("#current_page_number").text(crawler_page);
-        $("#total_pages").text(totalPages);
         show_crawler(res);
-        if (parsedRes.length === 0) {
+        if (parsedRes.length === 0 || parsedRes["msg"] === "No more search results") {
           $("#crw_nxt_prv_btn").hide();
           $("#crw_next_btn").hide();
           $("#crw_previous_btn").hide();
           clearPaginationButtons();
         } else {
           $("#crw_nxt_prv_btn").removeClass("hidden");
-          updatePaginationControls(totalPages, crawler_page);
+          $("#crw_next_btn").show();
         }
-
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
         if (errorThrown == "UNAUTHORIZED") {
