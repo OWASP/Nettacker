@@ -3,8 +3,6 @@
 from io import StringIO
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from nettacker.environment import check_python_version
 
 
