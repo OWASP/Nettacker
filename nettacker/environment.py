@@ -1,5 +1,6 @@
 """Environment and system requirements validation for Nettacker."""
 
+import os
 import sys
 
 
@@ -22,9 +23,6 @@ def check_python_version():
 
     Nettacker requires Python 3.10-3.12 (inclusive).
     Exits with a clean error message if the version is unsupported.
-
-    This function is called at module import time to fail-fast before
-    any complex initialization occurs.
     """
     if not is_python_version_supported():
         from nettacker.core.die import die_failure
@@ -35,7 +33,24 @@ def check_python_version():
         die_failure(_("error_python_version").format(current_version))
 
 
-# Run the version check immediately when this module is imported.
-# Skip during testing to allow test suite to run and verify the check logic.
-if "pytest" not in sys.modules:
+def should_skip_python_version_check() -> bool:
+    """
+    Determine whether the Python version check should be skipped.
+
+    This is intended primarily for testing or controlled environments.
+    Set the environment variable ``NETTACKER_SKIP_PYTHON_VERSION_CHECK=1``
+    to bypass the version check.
+    """
+    return os.getenv("NETTACKER_SKIP_PYTHON_VERSION_CHECK") == "1"
+
+
+def ensure_supported_python():
+    """
+    Perform the Python version check unless explicitly skipped.
+
+    This function should be called from the application entrypoint
+    (for example, nettacker.main:run) rather than at import time.
+    """
+    if should_skip_python_version_check():
+        return
     check_python_version()
