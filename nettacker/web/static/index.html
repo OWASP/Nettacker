@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>OWASP Nettacker</title>
     <meta charset="utf-8">
-    <link rel="shortcut icon" href="/favicon.ico"/>
+    <link rel="shortcut icon" href="/favicon.ico" />
     <meta name="description"
-          content="OWASP Nettacker project is created to automate information gathering, vulnerability scanning and eventually generating a report for networks, including services, bugs, vulnerabilities, misconfigurations, and other information.">
+        content="OWASP Nettacker project is created to automate information gathering, vulnerability scanning and eventually generating a report for networks, including services, bugs, vulnerabilities, misconfigurations, and other information.">
     <meta name="author" content="Ali Razmjoo - OWASP">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/style.css">
@@ -32,15 +33,15 @@
     <script>
         length = document.getElementById("json_length").innerText;
         document.getElementById("json_length").innerText = "";
-        renderjson.set_icons('▶','▼')
-        renderjson.set_collapse_msg(function (asd) {return "...";});
+        renderjson.set_icons('▶', '▼')
+        renderjson.set_collapse_msg(function (asd) { return "..."; });
         arr = [];
-        for (let i=1; i<=length; i++) {
-            value = document.getElementById("json_event_"+i).innerText;
+        for (let i = 1; i <= length; i++) {
+            value = document.getElementById("json_event_" + i).innerText;
             arr.push(value);
-            document.getElementById("json_event_"+i).innerText = "";
-            document.getElementById("json_clipboard_"+i).addEventListener("click", function() { navigator.clipboard.writeText(arr[i-1]); });
-            document.getElementById("json_event_"+i).appendChild(renderjson(JSON.parse(value)));
+            document.getElementById("json_event_" + i).innerText = "";
+            document.getElementById("json_clipboard_" + i).addEventListener("click", function () { navigator.clipboard.writeText(arr[i - 1]); });
+            document.getElementById("json_event_" + i).appendChild(renderjson(JSON.parse(value)));
         }
     </script>
 </head>
@@ -61,7 +62,7 @@
                 <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse"
-                            data-target=".navbar-ex1-collapse">
+                        data-target=".navbar-ex1-collapse">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -78,14 +79,13 @@
                         <form id="api_key_form" class="navbar-form navbar-left" action="javascript:check_api_session()">
                             <div class="form-group">
                                 <input autocomplete="off" id="session_value" action="javascript:check_api_session()"
-                                       type="text"
-                                       class="form-control" placeholder="API Key" value="">
+                                    type="text" class="form-control" placeholder="API Key" value="">
                             </div>
                             <button type="submit" id="send_session" action="javascript:check_api_session()"
-                                    class="btn btn-danger navbar-btn" am-latosans="bold">Set Session</button>
+                                class="btn btn-danger navbar-btn" am-latosans="bold">Set Session</button>
                         </form>
                     </ul>
-                    <ul id = "some_name" class="nav navbar-nav navbar-right">
+                    <ul id="some_name" class="nav navbar-nav navbar-right">
                         <li id="tutorial_btn">
                             <button id="tutorial_btn" class="btn btn-danger navbar-btn">
                                 Tutorial
@@ -98,11 +98,11 @@
                         </li>
                         <li id="results_btn">
                             <button action="javascript:results()" class="btn btn-success navbar-btn"
-                               am-latosans="bold">Results
+                                am-latosans="bold">Results
                             </button>
                         </li>
                         <li id="new_scan_ul">
-                        <button id="new_scan_btn" class="btn btn-warning navbar-btn">New Scan</button>
+                            <button id="new_scan_btn" class="btn btn-warning navbar-btn">New Scan</button>
                         </li>
                         <li id="compare_btn_ul">
                             <button id="compare_btn" class="btn btn-info navbar-btn">
@@ -110,10 +110,9 @@
                             </button>
                         </li>
                         <li id="logout_btn" class="hidden">
-                                <button type="submit" action="javascript:do_logout()"
-                                   class="btn btn-info navbar-btn"
-                                   am-latosans="bold">Logout
-                                </button>
+                            <button type="submit" action="javascript:do_logout()" class="btn btn-info navbar-btn"
+                                am-latosans="bold">Logout
+                            </button>
                         </li>
                     </ul>
                 </div><!-- /.navbar-collapse -->
@@ -129,316 +128,320 @@
     <div id="logout_success" class="hidden alert alert-success nav navbar-nav navbar-right">
         <strong>Logged out!</strong> cleared browser your session!
     </div>
+
     <body>
-    <br><br>
-    <div id="home" class="">
-        <h1>OWASP Nettacker</h1>
-        <p class="text-justify"><strong>OWASP Nettacker</strong> project is created to automate information gathering,
-            vulnerability scanning, and eventually generating a report for networks, including services, bugs,
-            vulnerabilities, misconfigurations, and other information. This software will utilize <code>TCP</code>,
-            <code>SYN</code>,
-            <code>ACK</code>, <code>ICMP</code>, and many other protocols in order to detect and bypass
-            <code>Firewall</code>/<code>IDS</code>/<code>IPS</code>
-            devices. By leveraging a unique method in OWASP Nettacker for discovering protected services and devices
-            such as
-            SCADA. It would make a competitive edge compared to other scanners making it one of the bests.</p>
-        <h2>Links</h2>
-        <ul>
-            <li>GitHub <a href="https://github.com/OWASP/Nettacker" class="glyphicon glyphicon-link" target="_blank"></a></li>
-            <li>OWASP <a href="https://www.owasp.org/index.php/OWASP_Nettacker" class="glyphicon glyphicon-link" target="_blank"></a>
-            </li>
-        </ul>
-    </div>
-    <div id="new_scan" class="hidden">
-        <h2>Submit a new scan</h2>
-        <ul class="nav nav-tabs">
-            <li id="basic" class="active"><a data-toggle="tab">Basic</a></li>
-            <li><a id="advance" data-toggle="tab">Advanced</a></li>
-        </ul>
-        <form>
-            <div id="basic_options">
-                <h3>Targets</h3>
-                <div class="input-group col-xs-4" id="targets-entry">
-                    <span class="input-group-addon"><i class="fa fa-space-shuttle"></i></span>
-                    <input id="targets" type="text" class="form-control" data-role="tagsinput" placeholder="Add new target" >
-                </div>
-                <div class="form-group" style="margin-top: 10px;">
-                    <label>
-                        <input id="skip_service_discovery" type="checkbox">
-                        <a class="label label-warning">Skip service discovery</a>
-                    </label>
-                </div>
-                <div id="scan_options_combined">
-                <h3>Profiles</h3>
-                <div class="form-group">
-                    <div id="profiles" class="checkbox text-justify">
-            <label><input id="all_profiles" type="checkbox" class="check check-all-profiles"><a
-                class="label label-info">Select all profiles</a></label>&nbsp;&nbsp;&nbsp;&nbsp;
-            {% autoescape off %}{{profile}}{% endautoescape %}
-                    </div>
-                </div>
-                <h3>Scan Methods</h3>
-                <div class="form-group">
-                    <div id="selected_modules" class="checkbox text-justify">
-                        <label><input id="all" type="checkbox" class="checkbox check-all-scans" ><a
-                                class="label label-info">Select all</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        {% autoescape off %}{{selected_modules}}{% endautoescape %}
-                    </div>
-                </div>
-                </div>
-                <h3>Graph</h3>
-                <div class="form-group">
-                    <div id="graph_name" class="radio text-justify">
-                        {% autoescape off %}{{graphs}}{% endautoescape %}
-                    </div>
-                </div>
-                <h3>Reporting Language</h3>
-                <div class="form-group" id="languages-entry">
-                    <label for="sel2">Select Language:</label>
-                    <select id="languages" class="selectpicker" data-width="fit">
-                        {% autoescape off %}{{languages}}{% endautoescape %}
-                    </select>
-                </div>
-
-
-                <h3>Output</h3>
-                <div class="input-group col-xs-5">
-                    <span class="input-group-addon">filename</span>
-                    <input id="output_file" type="text" class="form-control" placeholder="Additional Info"
-                           value="{% autoescape off %}{{filename}}{% endautoescape %}">
-                </div>
-            </div>
-            <div id="advance_options" class="hidden">
-                <h3>Flags</h3>
-                <div id="scan_options" class="form-group">
-                    <div class="checkbox text-justify">
-                        <label><input id="scan_ip_range" type="checkbox"><a
-                                class="label label-success">scan_ip_range</a></label>
-                        <label><input id="scan_subdomains" type="checkbox"><a
-                                class="label label-success">scan_subdomains</a></label>
-                        <label><input id="ping_before_scan" type="checkbox"><a
-                                class="label label-success">ping_before_scan</a></label>
-                    </div>
-                </div>
-                <h3>Engine Options</h3>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-addon">Thread numbers</span>
-                            <input id="thread_per_host" type="text" class="form-control" placeholder="100"
-                                   value="100">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-addon">Host thread number</span>
-                            <input id="thread_per_host" type="text" class="form-control" placeholder="30"
-                                   value="30">
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-addon">Retries</span>
-                            <input id="retries" type="text" class="form-control" placeholder="3"
-                                   value="3">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-addon">Time sleep</span>
-                            <input id="time_sleep_between_requests" type="text" class="form-control" placeholder="0"
-                                   value="0">
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-addon">Time sleep</span>
-                            <input id="timeout" type="text" class="form-control" placeholder="3"
-                                   value="3">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-addon">Verbose level</span>
-                            <input id="verbose_mode" type="text" class="form-control" placeholder="0"
-                                   value="0">
-                        </div>
-                    </div>
-                </div>
-                <br>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <h3>Ports</h3>
-                        <div class="input-group col-xs-12">
-                            <span class="input-group-addon">Ports</span>
-                            <input id="ports" type="text" class="form-control"
-                                   placeholder="1-1000 - leave it empty to use default ports">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <h3>Socks Proxy</h3>
-                        <div class="input-group col-xs-12">
-                            <span class="input-group-addon">Socks</span>
-                            <input id="socks_proxy" type="text" class="form-control"
-                                   placeholder="socks5://127.0.0.1:9050">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <h3>Exclude Ports</h3>
-                        <div class="input-group col-xs-12">
-                            <span class="input-group-addon">Exclude</span>
-                            <input id="exclude_ports" type="text" class="form-control"
-                                   placeholder="e.g., 80,443,8080">
-                        </div>
-                    </div>  
-
-                    <!-- HTTP Headers -->
-                    <div class="col-md-6">
-                        <h3>HTTP Headers</h3>
-                        <div class="input-group col-xs-12">
-                            <span class="input-group-addon">Headers</span>
-                            <textarea class="form-control" rows="3" id="http_headers"
-                                      placeholder="Header: Value&#10;Another-Header: Value"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <br>
-
-                <div class="form-group col-md-6">
-                    <h3>Usernames</h3>
-                    <textarea class="input-mini form-control" rows="8" cols="50" id="usernames"
-                              data-role="tagsinput" placeholder="separate with commas or new line">
-                    </textarea>
-                </div>
-                <div class="form-group col-md-6">
-                    <h3>Passwords</h3>
-                    <textarea class="form-control" rows="8" cols="50" id="passwords"
-                               placeholder="separate with commas or new line"></textarea>
-                </div>
-                <br>
-            </div>
-            <br>
-            <ul id="submit_new_scan" class="btn btn-primary" action="javascript:submit_new_scan()">
-                Submit
+        <br><br>
+        <div id="home" class="">
+            <h1>OWASP Nettacker</h1>
+            <p class="text-justify"><strong>OWASP Nettacker</strong> project is created to automate information
+                gathering,
+                vulnerability scanning, and eventually generating a report for networks, including services, bugs,
+                vulnerabilities, misconfigurations, and other information. This software will utilize <code>TCP</code>,
+                <code>SYN</code>,
+                <code>ACK</code>, <code>ICMP</code>, and many other protocols in order to detect and bypass
+                <code>Firewall</code>/<code>IDS</code>/<code>IPS</code>
+                devices. By leveraging a unique method in OWASP Nettacker for discovering protected services and devices
+                such as
+                SCADA. It would make a competitive edge compared to other scanners making it one of the bests.
+            </p>
+            <h2>Links</h2>
+            <ul>
+                <li>GitHub <a href="https://github.com/OWASP/Nettacker" class="glyphicon glyphicon-link"
+                        target="_blank"></a></li>
+                <li>OWASP <a href="https://www.owasp.org/index.php/OWASP_Nettacker" class="glyphicon glyphicon-link"
+                        target="_blank"></a>
+                </li>
             </ul>
-        </form>
-        <br><br>
-        <div id="success_request" class="alert alert-success hidden text-justify">
-            <strong>Success!</strong> Request submitted!<br>
-            <code><p class="text-justify" id="success_msg"></p></code>
         </div>
-        <div id="failed_request" class="alert alert-danger hidden shake animated text-justify">
-            <strong>Failed!</strong><br>
-            <code><p class="text-justify" id="error_msg"></p></code>
-        </div>
-        <br><br>
-    </div>
-    <script>
-        var result_page = 1;
-    </script>
-    <div id="login_first" class="hidden">
-        <img id="rtlogo" class="img-responsive" alt="Logo" src="/img/owasp-nettacker.png"/>
-        <h1><span id="logintext"
-                  class="text-justify center-block bold label label-danger">Please login first!</span>
-        </h1>
-    </div>
-    <div id="get_results" class="hidden">
-        <div id="refresh_btn" class="hidden">
-            <a id="refresh_btn_update" class="btn btn-info"><span
-                class="glyphicon glyphicon-refresh"></span> last updates</a>
-            <a id="refresh_btn_page" class="btn btn-success"><span class="glyphicon glyphicon-refresh"></span>
-                reload current page</a>
-        </div>
-        <div id="scan_results" class="list-group hidden">
-        </div>
-        <ul id="nxt_prv_btn" class="pager hidden">
-            <li id="previous_btn" class="previous"><a href="javascript:previous_page()">Previous</a></li>
-            <li id="next_btn" class="next"><a href="javascript:next_page()">Next</a></li>
-        </ul>
-        <br><br><br>
-    </div>
-    <script>
-        var crawler_page = 1;
-    </script>
-    <div id="crawler_area" class="hidden">
-        <div id="crw_refresh_btn" class="hidden">
-            <div class="row">
-                <div class="col-sm-4">
-                    <a id="crw_refresh_btn_update" class="btn btn-info"><span
-                            class="glyphicon glyphicon-refresh"></span> last updates</a>
-                    <a id="crw_refresh_btn_page" class="btn btn-success"><span
-                            class="glyphicon glyphicon-refresh"></span>
-                        reload current page</a>
+        <div id="new_scan" class="hidden">
+            <h2>Submit a new scan</h2>
+            <ul class="nav nav-tabs">
+                <li id="basic" class="active"><a data-toggle="tab">Basic</a></li>
+                <li><a id="advance" data-toggle="tab">Advanced</a></li>
+            </ul>
+            <form>
+                <div id="basic_options">
+                    <h3>Targets</h3>
+                    <div class="input-group col-xs-4" id="targets-entry">
+                        <span class="input-group-addon"><i class="fa fa-space-shuttle"></i></span>
+                        <input id="targets" type="text" class="form-control" data-role="tagsinput"
+                            placeholder="Add new target">
+                    </div>
+                    <div class="form-group" style="margin-top: 10px;">
+                        <label>
+                            <input id="skip_service_discovery" type="checkbox">
+                            <a class="label label-warning">Skip service discovery</a>
+                        </label>
+                    </div>
+                    <div id="scan_options_combined">
+                        <h3>Profiles</h3>
+                        <div class="form-group">
+                            <div id="profiles" class="checkbox text-justify">
+                                <label><input id="all_profiles" type="checkbox" class="check check-all-profiles"><a
+                                        class="label label-info">Select all profiles</a></label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                {% autoescape off %}{{profile}}{% endautoescape %}
+                            </div>
+                        </div>
+                        <h3>Scan Methods</h3>
+                        <div class="form-group">
+                            <div id="selected_modules" class="checkbox text-justify">
+                                <label><input id="all" type="checkbox" class="checkbox check-all-scans"><a
+                                        class="label label-info">Select all</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {% autoescape off %}{{selected_modules}}{% endautoescape %}
+                            </div>
+                        </div>
+                    </div>
+                    <h3>Graph</h3>
+                    <div class="form-group">
+                        <div id="graph_name" class="radio text-justify">
+                            {% autoescape off %}{{graphs}}{% endautoescape %}
+                        </div>
+                    </div>
+                    <h3>Reporting Language</h3>
+                    <div class="form-group" id="languages-entry">
+                        <label for="sel2">Select Language:</label>
+                        <select id="languages" class="selectpicker" data-width="fit">
+                            {% autoescape off %}{{languages}}{% endautoescape %}
+                        </select>
+                    </div>
+
+
+                    <h3>Output</h3>
+                    <div class="input-group col-xs-5">
+                        <span class="input-group-addon">filename</span>
+                        <input id="output_file" type="text" class="form-control" placeholder="Additional Info"
+                            value="{% autoescape off %}{{filename}}{% endautoescape %}">
+                    </div>
                 </div>
-                <form action="javascript:p_search();" class="col-sm-3" id="crawler-form">
-                    <input id="search_data" class="form-control form-inline" id="search_frm" placeholder="filter by host">
-                </form>
-                <button id="search_btn" type="submit" class="col-sm-1 btn btn-primary">Search</button>
+                <div id="advance_options" class="hidden">
+                    <h3>Flags</h3>
+                    <div id="scan_options" class="form-group">
+                        <div class="checkbox text-justify">
+                            <label><input id="scan_ip_range" type="checkbox"><a
+                                    class="label label-success">scan_ip_range</a></label>
+                            <label><input id="scan_subdomains" type="checkbox"><a
+                                    class="label label-success">scan_subdomains</a></label>
+                            <label><input id="ping_before_scan" type="checkbox"><a
+                                    class="label label-success">ping_before_scan</a></label>
+                        </div>
+                    </div>
+                    <h3>Engine Options</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-addon">Thread numbers</span>
+                                <input id="thread_per_host" type="text" class="form-control" placeholder="100"
+                                    value="100">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-addon">Host thread number</span>
+                                <input id="thread_per_host" type="text" class="form-control" placeholder="30"
+                                    value="30">
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-addon">Retries</span>
+                                <input id="retries" type="text" class="form-control" placeholder="3" value="3">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-addon">Time sleep</span>
+                                <input id="time_sleep_between_requests" type="text" class="form-control" placeholder="0"
+                                    value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-addon">Time sleep</span>
+                                <input id="timeout" type="text" class="form-control" placeholder="3" value="3">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-addon">Verbose level</span>
+                                <input id="verbose_mode" type="text" class="form-control" placeholder="0" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3>Ports</h3>
+                            <div class="input-group col-xs-12">
+                                <span class="input-group-addon">Ports</span>
+                                <input id="ports" type="text" class="form-control"
+                                    placeholder="1-1000 - leave it empty to use default ports">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h3>Socks Proxy</h3>
+                            <div class="input-group col-xs-12">
+                                <span class="input-group-addon">Socks</span>
+                                <input id="socks_proxy" type="text" class="form-control"
+                                    placeholder="socks5://127.0.0.1:9050">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3>Exclude Ports</h3>
+                            <div class="input-group col-xs-12">
+                                <span class="input-group-addon">Exclude</span>
+                                <input id="exclude_ports" type="text" class="form-control"
+                                    placeholder="e.g., 80,443,8080">
+                            </div>
+                        </div>
+
+                        <!-- HTTP Headers -->
+                        <div class="col-md-6">
+                            <h3>HTTP Headers</h3>
+                            <div class="input-group col-xs-12">
+                                <span class="input-group-addon">Headers</span>
+                                <textarea class="form-control" rows="3" id="http_headers"
+                                    placeholder="Header: Value&#10;Another-Header: Value"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="form-group col-md-6">
+                        <h3>Usernames</h3>
+                        <textarea class="input-mini form-control" rows="8" cols="50" id="usernames"
+                            data-role="tagsinput" placeholder="separate with commas or new line">
+                    </textarea>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <h3>Passwords</h3>
+                        <textarea class="form-control" rows="8" cols="50" id="passwords"
+                            placeholder="separate with commas or new line"></textarea>
+                    </div>
+                    <br>
+                </div>
                 <br>
+                <ul id="submit_new_scan" class="btn btn-primary" action="javascript:submit_new_scan()">
+                    Submit
+                </ul>
+            </form>
+            <br><br>
+            <div id="success_request" class="alert alert-success hidden text-justify">
+                <strong>Success!</strong> Request submitted!<br>
+                <code><p class="text-justify" id="success_msg"></p></code>
+            </div>
+            <div id="failed_request" class="alert alert-danger hidden shake animated text-justify">
+                <strong>Failed!</strong><br>
+                <code><p class="text-justify" id="error_msg"></p></code>
             </div>
             <br><br>
         </div>
-        <div id="crawl_results" class="list-group hidden">
+        <script>
+            var result_page = 1;
+        </script>
+        <div id="login_first" class="hidden">
+            <img id="rtlogo" class="img-responsive" alt="Logo" src="/img/owasp-nettacker.png" />
+            <h1><span id="logintext" class="text-justify center-block bold label label-danger">Please login
+                    first!</span>
+            </h1>
         </div>
-        <ul id="crw_nxt_prv_btn" class="pager hidden">
-          <li id="crw_previous_btn" class="previous" style="display: none">
-            <a href="javascript:previous_page()">Previous</a>
-          </li>
-          <div id="pagination_controls">
-          </div>
-
-          <li id="crw_next_btn" class="next">
-            <a href="javascript:next_page()">Next</a>
-          </li>
-        </ul>
-        <br><br><br>
-    </div>
-    <script>
-        var compare_page = 1;
-    </script>
-    <div id="compare_area" class="hidden">
-        <h2>Compare Scan Results</h2>
-        <ul class="nav nav-tabs">
-        </ul><br>
-        <form id="compare_form">
-            <div class="input-group col-xs-5">
-                <span class="input-group-addon">scan ID</span>
-                <input id="scan_id_first" type="text" class="form-control" placeholder="Enter first scan ID">
+        <div id="get_results" class="hidden">
+            <div id="refresh_btn" class="hidden">
+                <a id="refresh_btn_update" class="btn btn-info"><span class="glyphicon glyphicon-refresh"></span> last
+                    updates</a>
+                <a id="refresh_btn_page" class="btn btn-success"><span class="glyphicon glyphicon-refresh"></span>
+                    reload current page</a>
             </div>
-            <br>
-            <div class="input-group col-xs-5">
-                <span class="input-group-addon">scan ID</span>
-                <input id="scan_id_second" type="text" class="form-control" placeholder="Enter second scan ID">
+            <div id="scan_results" class="list-group hidden">
             </div>
-            <h3>Output(HTML/JSON/CSV/TXT)</h3>
-            <div class="input-group col-xs-5">
-                <span class="input-group-addon">filename</span>
-                <input id="compare_report_path" type="text" class="form-control" placeholder="Additional Info">
-            </div>
-            <br>
-            <ul id="create_compare_report" class="btn btn-primary" action="javascript:create_compare_report()">
-                Submit
+            <ul id="nxt_prv_btn" class="pager hidden">
+                <li id="previous_btn" class="previous"><a href="javascript:previous_page()">Previous</a></li>
+                <li id="next_btn" class="next"><a href="javascript:next_page()">Next</a></li>
             </ul>
-        </form>
-        <br><br>
-        <div id="success_report" class="alert alert-success hidden text-justify">
-            <strong>Success!</strong> Compare report saved at the filepath<br>
+            <br><br><br>
         </div>
-        <div id="failed_report" class="alert alert-danger hidden shake animated text-justify">
-            <strong>Failed!</strong><br>
-            <p id="report_error_msg"></p>
+        <script>
+            var crawler_page = 1;
+        </script>
+        <div id="crawler_area" class="hidden">
+            <div id="crw_refresh_btn" class="hidden">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <a id="crw_refresh_btn_update" class="btn btn-info"><span
+                                class="glyphicon glyphicon-refresh"></span> last updates</a>
+                        <a id="crw_refresh_btn_page" class="btn btn-success"><span
+                                class="glyphicon glyphicon-refresh"></span>
+                            reload current page</a>
+                    </div>
+                    <form action="javascript:p_search();" class="col-sm-3" id="crawler-form">
+                        <input id="search_data" class="form-control form-inline" id="search_frm"
+                            placeholder="filter by host">
+                    </form>
+                    <button id="search_btn" type="submit" class="col-sm-1 btn btn-primary">Search</button>
+                    <br>
+                </div>
+                <br><br>
+            </div>
+            <div id="crawl_results" class="list-group hidden">
+            </div>
+            <ul id="crw_nxt_prv_btn" class="pager hidden">
+                <li id="crw_previous_btn" class="previous" style="display: none">
+                    <a href="javascript:previous_page()">Previous</a>
+                </li>
+                <div id="pagination_controls">
+                </div>
+
+                <li id="crw_next_btn" class="next" style="display: none">
+                    <a href="javascript:next_page()">Next</a>
+                </li>
+            </ul>
+            <br><br><br>
         </div>
-        <br><br>
-    </div>
+        <script>
+            var compare_page = 1;
+        </script>
+        <div id="compare_area" class="hidden">
+            <h2>Compare Scan Results</h2>
+            <ul class="nav nav-tabs">
+            </ul><br>
+            <form id="compare_form">
+                <div class="input-group col-xs-5">
+                    <span class="input-group-addon">scan ID</span>
+                    <input id="scan_id_first" type="text" class="form-control" placeholder="Enter first scan ID">
+                </div>
+                <br>
+                <div class="input-group col-xs-5">
+                    <span class="input-group-addon">scan ID</span>
+                    <input id="scan_id_second" type="text" class="form-control" placeholder="Enter second scan ID">
+                </div>
+                <h3>Output(HTML/JSON/CSV/TXT)</h3>
+                <div class="input-group col-xs-5">
+                    <span class="input-group-addon">filename</span>
+                    <input id="compare_report_path" type="text" class="form-control" placeholder="Additional Info">
+                </div>
+                <br>
+                <ul id="create_compare_report" class="btn btn-primary" action="javascript:create_compare_report()">
+                    Submit
+                </ul>
+            </form>
+            <br><br>
+            <div id="success_report" class="alert alert-success hidden text-justify">
+                <strong>Success!</strong> Compare report saved at the filepath<br>
+            </div>
+            <div id="failed_report" class="alert alert-danger hidden shake animated text-justify">
+                <strong>Failed!</strong><br>
+                <p id="report_error_msg"></p>
+            </div>
+            <br><br>
+        </div>
     </body>
     <br><br>
 </div>

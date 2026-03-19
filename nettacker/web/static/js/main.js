@@ -133,7 +133,7 @@ $(document).ready(function () {
   });
 
   // Compare scans
-  $("#compare_btn").click(function() {
+  $("#compare_btn").click(function () {
     $("#home").addClass("hidden");
     $("#new_scan").addClass("hidden");
     $("#get_results").addClass("hidden");
@@ -142,7 +142,7 @@ $(document).ready(function () {
   });
 
   // Show the scan compare area
-  $("#compare_btn").click(function() {
+  $("#compare_btn").click(function () {
     $.ajax({
       type: "GET",
       url: "/session/check",
@@ -167,7 +167,7 @@ $(document).ready(function () {
   });
 
   // Create the compare report
-  $("#create_compare_report").click(function() {
+  $("#create_compare_report").click(function () {
     var tmp_data = {
       scan_id_first: $("#scan_id_first").val(),
       scan_id_second: $("#scan_id_second").val(),
@@ -200,10 +200,11 @@ $(document).ready(function () {
           document.getElementById("report_error_msg").innerHTML = response.message;
           $("#failed_report").removeClass("hidden");
           setTimeout('$("#failed_report").addClass("hidden");', 5000);
-        }})
+        }
+      })
       .fail(function (jqXHR, textStatus, errorThrown) {
         var errorMessage = "An error occurred while comparing scans.";
-        if(jqXHR.responseJSON && jqXHR.responseJSON.msg){
+        if (jqXHR.responseJSON && jqXHR.responseJSON.msg) {
           errorMessage = jqXHR.responseJSON.msg;
         }
         document.getElementById("report_error_msg").innerHTML = errorMessage;
@@ -551,47 +552,47 @@ $(document).ready(function () {
         "<p class='mb-1  bold label label-default'>scan_id:" +
         scan_id +
         "</p><br>"
-        // "<p class='mb-1  bold label label-info'>report_filename:" +
-        // report_filename +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-success'>events_num:" +
-        // events_num +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-danger'>ports:" +
-        // ports +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-info'>category:" +
-        // category +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-success'>profile:" +
-        // profile +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-warning'>selected_modules:" +
-        // selected_modules +
-        // "</p><br>" +
-        // "<p class='mb-1 bold  label label-primary'>start_api_server:" +
-        // start_api_server +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-warning'>verbose:" +
-        // verbose +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-info'>report_type:" +
-        // report_type +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-primary'>graph_name:" +
-        // graph_name +
-        // "</p><br>" +
-        // "<p class='mb-1 bold label label-success'>language:" +
-        // language +
-        // "</p>" +
-        // "<span class='card-flag flag-icon flag-icon-" +
-        // flags[language] +
-        // "'></span><br>" +
-        // "<p class='mb-1 bold label label-default'>scan_cmd:" +
-        // scan_cmd +
-        // "</p>" +
-        // '</p>\n </a>' +
-        '<button class="mb-1 bold label card-date""><a href="/results/get_json?id=' +
+      // "<p class='mb-1  bold label label-info'>report_filename:" +
+      // report_filename +
+      // "</p><br>" +
+      // "<p class='mb-1 bold label label-success'>events_num:" +
+      // events_num +
+      // "</p><br>" +
+      // "<p class='mb-1 bold label label-danger'>ports:" +
+      // ports +
+      // "</p><br>" +
+      // "<p class='mb-1 bold label label-info'>category:" +
+      // category +
+      // "</p><br>" +
+      // "<p class='mb-1 bold label label-success'>profile:" +
+      // profile +
+      // "</p><br>" +
+      // "<p class='mb-1 bold label label-warning'>selected_modules:" +
+      // selected_modules +
+      // "</p><br>" +
+      // "<p class='mb-1 bold  label label-primary'>start_api_server:" +
+      // start_api_server +
+      // "</p><br>" +
+      // "<p class='mb-1 bold label label-warning'>verbose:" +
+      // verbose +
+      // "</p><br>" +
+      // "<p class='mb-1 bold label label-info'>report_type:" +
+      // report_type +
+      // "</p><br>" +
+      // "<p class='mb-1 bold label label-primary'>graph_name:" +
+      // graph_name +
+      // "</p><br>" +
+      // "<p class='mb-1 bold label label-success'>language:" +
+      // language +
+      // "</p>" +
+      // "<span class='card-flag flag-icon flag-icon-" +
+      // flags[language] +
+      // "'></span><br>" +
+      // "<p class='mb-1 bold label label-default'>scan_cmd:" +
+      // scan_cmd +
+      // "</p>" +
+      // '</p>\n </a>' +
+      '<button class="mb-1 bold label card-date""><a href="/results/get_json?id=' +
         id +
         '">Get JSON</a></button>' +
         '<button class="mb-1 bold label card-date""><a href="/results/get_csv?id=' +
@@ -732,32 +733,32 @@ $(document).ready(function () {
     $("#advance_options").addClass("hidden");
     $("#basic_options").removeClass("hidden");
   });
-function obsKeysToString(o, k, sep) {
- return k.map(key => o[key]).filter(v => v).join(sep);
-}
+  function obsKeysToString(o, k, sep) {
+    return k.map(key => o[key]).filter(v => v).join(sep);
+  }
 
-function filter_large_content(content, filter_rate){
-    if (content == undefined){
-    return content
+  function filter_large_content(content, filter_rate) {
+    if (content == undefined) {
+      return content
     }
-    if (content.length <= filter_rate){
-        return content
+    if (content.length <= filter_rate) {
+      return content
     }
-    else{
+    else {
 
-        filter_rate -= 1
-        filter_index = filter_rate
-        for (var i = 0; i < content.substring(filter_rate,).length; i++) {
-            if (content.substring(i, i+1) == ' '){
-                return content.substring(0, filter_index) + "... [see the full content in the report]"
-            }
-            else {
-                filter_index += 1
-            }
+      filter_rate -= 1
+      filter_index = filter_rate
+      for (var i = 0; i < content.substring(filter_rate,).length; i++) {
+        if (content.substring(i, i + 1) == ' ') {
+          return content.substring(0, filter_index) + "... [see the full content in the report]"
         }
-        return content
+        else {
+          filter_index += 1
+        }
+      }
+      return content
     }
-}
+  }
 
 
 
@@ -835,18 +836,18 @@ function filter_large_content(content, filter_rate){
       //   }
       // }
       for (j = 0; j < module_name.length; j++) {
-          html_module_name +=
-            "<p class='mb-1 bold label label-info'>selected_modules:" +
-            module_name[j] +
-            "</p> ";
-        }
-        html_module_name += "<br><br>"
-       for (j = 0; j < events.length; j++) {
-          event = events[j].split('conditions: ')[0]
-          results = events[j].split('conditions: ')[1]
-          html_module_name +=   "<p class='mb-1 bold label label-success'>event: " + filter_large_content(event, 100) + "</p> ";
-          html_module_name += "<p class='mb-1 bold label label-warning'>condition_results: " + filter_large_content(results, 100) + "</p> <br><br>";
-        }
+        html_module_name +=
+          "<p class='mb-1 bold label label-info'>selected_modules:" +
+          module_name[j] +
+          "</p> ";
+      }
+      html_module_name += "<br><br>"
+      for (j = 0; j < events.length; j++) {
+        event = events[j].split('conditions: ')[0]
+        results = events[j].split('conditions: ')[1]
+        html_module_name += "<p class='mb-1 bold label label-success'>event: " + filter_large_content(event, 100) + "</p> ";
+        html_module_name += "<p class='mb-1 bold label label-warning'>condition_results: " + filter_large_content(results, 100) + "</p> <br><br>";
+      }
 
 
       // html_scan_methods = "";
@@ -862,7 +863,7 @@ function filter_large_content(content, filter_rate){
       //   }
       // }
       //console.log(options)
-//   crawl_results
+      //   crawl_results
       // for (j = 0; j < target_event.length; j++) {
       //   html_target_event +=
       //     "<p class='mb-1 bold label label-primary'>event:" +
@@ -970,29 +971,26 @@ function filter_large_content(content, filter_rate){
         "/logs/search?q=" + $("#search_data").val() + "&page=" + crawler_page,
       dataType: "text",
     })
-    .done(function (res) {
-      const totalPages = Math.ceil(res.length / 10);
-      $("#login_first").addClass("hidden");
-      $("#crawl_results").removeClass("hidden");
-      $("#crw_refresh_btn").removeClass("hidden");
-      $("#crw_nxt_prv_btn").removeClass("hidden");
-      $("#current_page_number").text(crawler_page);
-      $("#total_pages").text(totalPages);
-      show_crawler(res);
-      updatePaginationControls(totalPages, crawler_page);
-  
-      if (crawler_page === 1) {
-        $("#crw_previous_btn").hide();
-      } else {
-        $("#crw_previous_btn").show();
-      }
-  
-      if (crawler_page === totalPages) {
-        $("#crw_next_btn").hide();
-      } else {
-        $("#crw_next_btn").show();
-      }
-    })
+      .done(function (res) {
+        const parsedRes = JSON.parse(res);
+        const totalPages = parsedRes.length > 0 ? Math.ceil(parsedRes.length / 10) : 0;
+        $("#login_first").addClass("hidden");
+        $("#crawl_results").removeClass("hidden");
+        $("#crw_refresh_btn").removeClass("hidden");
+        $("#current_page_number").text(crawler_page);
+        $("#total_pages").text(totalPages);
+        show_crawler(res);
+        if (parsedRes.length === 0) {
+          $("#crw_nxt_prv_btn").hide();
+          $("#crw_next_btn").hide();
+          $("#crw_previous_btn").hide();
+          clearPaginationButtons();
+        } else {
+          $("#crw_nxt_prv_btn").removeClass("hidden");
+          updatePaginationControls(totalPages, crawler_page);
+        }
+
+      })
       .fail(function (jqXHR, textStatus, errorThrown) {
         if (errorThrown == "UNAUTHORIZED") {
           $("#login_first").removeClass("hidden");
