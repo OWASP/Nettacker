@@ -983,7 +983,7 @@ $(document).ready(function () {
           $("#crw_previous_btn").hide();
           clearPaginationButtons();
         } else {
-          $("#crw_nxt_prv_btn").removeClass("hidden");
+          $("#crw_nxt_prv_btn").removeClass("hidden").show();
           $("#crw_next_btn").show();
         }
       })
