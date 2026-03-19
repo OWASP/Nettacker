@@ -53,6 +53,7 @@ help_menu: Show Nettacker Help Menu
 invalid_schema: "Invalid schema: Only 'http' and 'https' are allowed"
 done: "done!"
 error_platform: "Unfortunately, this version of the software can run on Linux/darwin"
+error_python_version: "Python {0} is not supported. Nettacker requires Python 3.10-3.12. \n\nSolutions:\n  1. Use a supported Python version (3.10, 3.11, or 3.12)\n  2. Run via Docker: docker run owasp/nettacker -i <target> -m <module>\n  3. Use pyenv to manage multiple Python versions"
 file_saved: "report saved in {0} and database"
 inserting_report_db: inserting report to the database
 invalid_database: Please select from mysql or sqlite in the configuration file
