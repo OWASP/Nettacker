@@ -173,21 +173,26 @@ def re_address_repeaters_key_name(key_name):
 
 
 def generate_new_sub_steps(sub_steps, data_matrix, arrays):
+    print(f"inside generate new substeps with sub_step: {sub_steps}, data_matrix: {data_matrix}, arrays: {arrays}")
     original_sub_steps = copy.deepcopy(sub_steps)
     steps_array = []
     for array in data_matrix:
         array_name_position = 0
         for array_name in arrays:
             for sub_step in sub_steps:
+                print("&&&&&&&&&&&&&&&&&&&&&&&&& CALLING EXEC NOW!! &&&&&&&&&&&&&&&&&&&&&&&&&")
+                key_name = re_address_repeaters_key_name(array_name)
+                matrix_value = (
+                    '"' + str(array[array_name_position]) + '"'
+                    if isinstance(array[array_name_position], int)
+                    or isinstance(array[array_name_position], str)
+                    else array[array_name_position]
+                )
+                print(f"The following is what we're trying to EXECUTE: original_sub_steps{key_name}={matrix_value}")
                 exec(
                     "original_sub_steps{key_name} = {matrix_value}".format(
-                        key_name=re_address_repeaters_key_name(array_name),
-                        matrix_value=(
-                            '"' + str(array[array_name_position]) + '"'
-                            if isinstance(array[array_name_position], int)
-                            or isinstance(array[array_name_position], str)
-                            else array[array_name_position]
-                        ),
+                        key_name=key_name,
+                        matrix_value=matrix_value,
                     )
                 )
             array_name_position += 1
@@ -196,6 +201,8 @@ def generate_new_sub_steps(sub_steps, data_matrix, arrays):
 
 
 def find_repeaters(sub_content, root, arrays):
+    print(f"Inside find repeaters with sub_content: {sub_content}, root: {root}, arrays: {arrays}")
+    print("This is a recursive function so we expect the above line to be called a lot")
     if isinstance(sub_content, dict) and "nettacker_fuzzer" not in sub_content:
         temporary_content = copy.deepcopy(sub_content)
         original_root = root
@@ -209,6 +216,8 @@ def find_repeaters(sub_content, root, arrays):
         isinstance(sub_content, list) or "nettacker_fuzzer" in sub_content
     ):
         arrays[root] = sub_content
+
+    print(f"We're returning {(sub_content, root, arrays) if root != '' else arrays}")
     return (sub_content, root, arrays) if root != "" else arrays
 
 
@@ -265,7 +274,10 @@ def arrays_to_matrix(arrays):
     """
     Generate a Cartesian product of input arrays as a list of lists.
     """
-    return [list(item) for item in product(*[arrays[array_name] for array_name in arrays])]
+    print(f"We're inside arrays to matrix for the following arrays: {arrays}")
+    data = [list(item) for item in product(*[arrays[array_name] for array_name in arrays])]
+    print(f"and we're gonna return this: {data}")
+    return data
 
 
 def string_to_bytes(string):
@@ -286,6 +298,7 @@ def fuzzer_function_read_file_as_array(filename):
 
 
 def apply_data_functions(data):
+    print("We're gonna apply data functions now! INSIDE THE FUNC BABY")
     def apply_data_functions_new():
         if item not in AVAILABLE_DATA_FUNCTIONS:
             return
@@ -297,33 +310,46 @@ def apply_data_functions(data):
                     original_data[item] = fn(data[item][fn_name])
 
     def apply_data_functions_old():
+        print("inside the old application of data functions")
         function_results = {}
         globals().update(locals())
+        print("Globals has been updated with localsssss()")
+        print("************************* CALLING EXEC NOW!! *************************")
+        print(f"This is what we are tring to EXECUTE: fuzzer_function = {data[item]}, {globals(), {function_results}}")
         exec(
             "fuzzer_function = {fuzzer_function}".format(fuzzer_function=data[item]),
             globals(),
             function_results,
         )
+        print(f"This is what is going to become of original_data[item]: {function_results['fuzzer_function']}")
         original_data[item] = function_results["fuzzer_function"]
 
     original_data = copy.deepcopy(data)
     for item in data:
         if isinstance((data[item]), str) and data[item].startswith("fuzzer_function"):
+            print("data[item]: {} starts with fuzzer_function".format(data[item]))
             apply_data_functions_old()
         else:
+            print("data[item]: {} doesn't start with fuzzer_function".format(data[item]))
             apply_data_functions_new()
 
     return original_data
 
 
 def fuzzer_repeater_perform(arrays):
+    print(f"Inside fuzzer repeater perform for the following arrays: {arrays}")
     original_arrays = copy.deepcopy(arrays)
     for array_name in arrays:
+        print(f"Inside the for loop in fuzzer_repeater_perform with the following array_name: {array_name}")
         if "nettacker_fuzzer" not in arrays[array_name]:
+            print(f"we're fucking off cause inside arrays with key {array_name} was {arrays[array_name]}")
             continue
 
         data = arrays[array_name]["nettacker_fuzzer"]["data"]
+        print(f"We have the following data: {data}")
+        print("We're gonna apply data fuynctions to the above data")
         data_matrix = arrays_to_matrix(apply_data_functions(data))
+        print(f"we have a data matrix now!: {data_matrix}")
         prefix = arrays[array_name]["nettacker_fuzzer"]["prefix"]
         input_format = arrays[array_name]["nettacker_fuzzer"]["input_format"]
         interceptors = copy.deepcopy(arrays[array_name]["nettacker_fuzzer"]["interceptors"])
@@ -333,6 +359,7 @@ def fuzzer_repeater_perform(arrays):
         processed_array = []
 
         for sub_data in data_matrix:
+            print(f"Iterating over the data matrix, this is the sub_data: {sub_data}")
             formatted_data = {}
             index_input = 0
             for value in sub_data:
@@ -341,7 +368,9 @@ def fuzzer_repeater_perform(arrays):
             interceptors_function = ""
             interceptors_function_processed = ""
 
+            print(f"What are interceptors? Tis is our interceptor: {interceptors}")
             if interceptors:
+                print("yeah inside the if babes, so we're gonna run EXEC SOON biches!!!!")
                 interceptors_function += "interceptors_function_processed = "
                 for interceptor in interceptors[::-1]:
                     interceptors_function += "{interceptor}(".format(interceptor=interceptor)
@@ -350,11 +379,16 @@ def fuzzer_repeater_perform(arrays):
                 )
                 expected_variables = {}
                 globals().update(locals())
+                print("Again globalssss has been updated with locallsss")
+                print("############### RUNNING EXEC NOWWWWWW ####################")
+                print(f"Running the following inside exec: {(interceptors_function, globals(), expected_variables)}")
                 exec(interceptors_function, globals(), expected_variables)
                 interceptors_function_processed = expected_variables[
                     "interceptors_function_processed"
                 ]
+                print(f"This is the processed interceptor functions: {interceptors_function_processed}")
             else:
+                print("BC ELSE ME AA GAYE! NO EXEC FOR US")
                 interceptors_function_processed = input_format.format(**formatted_data)
 
             processed_sub_data = interceptors_function_processed
@@ -365,22 +399,34 @@ def fuzzer_repeater_perform(arrays):
             processed_array.append(copy.deepcopy(processed_sub_data))
         original_arrays[array_name] = processed_array
 
+    print(f"Bhai ye return hora hai: {original_arrays}")
+    print("And that ends the fuzzer_repeater_perform function")
     return original_arrays
 
 
 def expand_module_steps(content):
+    print("inside expand module steps")
     return [expand_protocol(x) for x in copy.deepcopy(content)]
 
 
 def expand_protocol(protocol):
+    print(f"inside expand protocol for the following protocol: {protocol}")
     protocol["steps"] = [expand_step(x) for x in protocol["steps"]]
     return protocol
 
 
 def expand_step(step):
+    print(f"inside expand step for the step: {step}")
+    print("Now calling fuzzer_repeater_perform on find_repeaters for the above step with '' and {}")
     arrays = fuzzer_repeater_perform(find_repeaters(step, "", {}))
     if arrays:
-        return generate_new_sub_steps(step, class_to_value(arrays_to_matrix(arrays)), arrays)
+        print(f"we got some arrays, now calling generate_new_sub_steps on the following step: {step}")
+        atm = arrays_to_matrix(arrays)
+        print(f"This is the arrays to matrix generation: {atm}")
+        catm = class_to_value(atm)
+        print(f"This is the class to value: {catm}")
+        print("Now calling generate new sub steps")
+        return generate_new_sub_steps(step, catm, arrays)
     else:
         # Minimum 1 step in array
         return [step]
