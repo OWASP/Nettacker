@@ -168,34 +168,22 @@ def find_args_value(args_name):
         return None
 
 
-def re_address_repeaters_key_name(key_name):
-    return "".join(["['" + _key + "']" for _key in key_name.split("/")[:-1]])
+def set_nested_value(d, key_path, value):
+    keys = [k for k in key_path.split("/") if k]
+    for key in keys[:-1]:
+        d = d[key]
+    d[keys[-1]] = value
 
 
 def generate_new_sub_steps(sub_steps, data_matrix, arrays):
     print(f"inside generate new substeps with sub_step: {sub_steps}, data_matrix: {data_matrix}, arrays: {arrays}")
     original_sub_steps = copy.deepcopy(sub_steps)
     steps_array = []
+    array_names = list(arrays.keys())
     for array in data_matrix:
-        array_name_position = 0
-        for array_name in arrays:
-            for sub_step in sub_steps:
-                print("&&&&&&&&&&&&&&&&&&&&&&&&& CALLING EXEC NOW!! &&&&&&&&&&&&&&&&&&&&&&&&&")
-                key_name = re_address_repeaters_key_name(array_name)
-                matrix_value = (
-                    '"' + str(array[array_name_position]) + '"'
-                    if isinstance(array[array_name_position], int)
-                    or isinstance(array[array_name_position], str)
-                    else array[array_name_position]
-                )
-                print(f"The following is what we're trying to EXECUTE: original_sub_steps{key_name}={matrix_value}")
-                exec(
-                    "original_sub_steps{key_name} = {matrix_value}".format(
-                        key_name=key_name,
-                        matrix_value=matrix_value,
-                    )
-                )
-            array_name_position += 1
+        for i, array_name in enumerate(array_names):
+            print(f"Setting {array_name} = {array[i]}")
+            set_nested_value(original_sub_steps, array_name, array[i])
         steps_array.append(copy.deepcopy(original_sub_steps))
     return steps_array
 
