@@ -19,6 +19,21 @@ OWASP Nettacker
 ![2018-01-19_0-45-07](https://user-images.githubusercontent.com/7676267/35123376-283d5a3e-fcb7-11e7-9b1c-92b78ed4fecc.gif)
 
 OWASP Nettacker is an open-source, Python-based automated penetration testing and information-gathering framework designed to help cyber security professionals and ethical hackers perform reconnaissance, vulnerability assessments, and network security audits efficiently. Nettacker automates tasks like port scanning, service detection, subdomain enumeration, network mapping, vulnerability scanning, credential brute-force testing making it a powerful tool for identifying weaknesses in networks, web applications, IoT devices and APIs.
+ ### ⚠️ Windows Support
+
+OWASP Nettacker does not support native Windows execution.
+
+### Recommended Solutions:
+
+**1. Windows Subsystem for Linux (WSL)**
+- Install WSL
+- Install Ubuntu
+- Run Nettacker inside Linux environment
+
+**2. Kali Linux / Virtual Machine**
+- Use Kali Linux or any Linux VM
+
+This ensures compatibility and avoids runtime errors.
 
 ### Key Features
 
