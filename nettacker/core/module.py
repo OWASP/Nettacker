@@ -74,8 +74,6 @@ class Module:
         ]
 
     def load(self):
-        print("Adding the following to module_extra_args: __import__('builtins').print('EXEC_REACHED')")
-        self.module_inputs["module_extra_args"] = "__import__('builtins').print('EXEC_REACHED')"
         self.module_content = TemplateLoader(self.module_name, self.module_inputs).load()
         if not self.skip_service_discovery and self.module_name not in self.ignored_core_modules:
             services = {}
@@ -117,7 +115,7 @@ class Module:
                 all_ports = self.module_content["payloads"][0]["steps"][0]["ports"]
                 all_ports[:] = [port for port in all_ports if port not in excluded_port_set]
 
-        print("about to call expand module steps")
+        
         self.module_content["payloads"] = expand_module_steps(self.module_content["payloads"])
 
     def sort_loops(self):

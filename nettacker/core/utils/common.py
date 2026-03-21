@@ -176,21 +176,21 @@ def set_nested_value(d, key_path, value):
 
 
 def generate_new_sub_steps(sub_steps, data_matrix, arrays):
-    print(f"inside generate new substeps with sub_step: {sub_steps}, data_matrix: {data_matrix}, arrays: {arrays}")
+    
     original_sub_steps = copy.deepcopy(sub_steps)
     steps_array = []
     array_names = list(arrays.keys())
     for array in data_matrix:
         for i, array_name in enumerate(array_names):
-            print(f"Setting {array_name} = {array[i]}")
+            
             set_nested_value(original_sub_steps, array_name, array[i])
         steps_array.append(copy.deepcopy(original_sub_steps))
     return steps_array
 
 
 def find_repeaters(sub_content, root, arrays):
-    print(f"Inside find repeaters with sub_content: {sub_content}, root: {root}, arrays: {arrays}")
-    print("This is a recursive function so we expect the above line to be called a lot")
+    
+    
     if isinstance(sub_content, dict) and "nettacker_fuzzer" not in sub_content:
         temporary_content = copy.deepcopy(sub_content)
         original_root = root
@@ -205,7 +205,7 @@ def find_repeaters(sub_content, root, arrays):
     ):
         arrays[root] = sub_content
 
-    print(f"We're returning {(sub_content, root, arrays) if root != '' else arrays}")
+    
     return (sub_content, root, arrays) if root != "" else arrays
 
 
@@ -262,9 +262,9 @@ def arrays_to_matrix(arrays):
     """
     Generate a Cartesian product of input arrays as a list of lists.
     """
-    print(f"We're inside arrays to matrix for the following arrays: {arrays}")
+    
     data = [list(item) for item in product(*[arrays[array_name] for array_name in arrays])]
-    print(f"and we're gonna return this: {data}")
+    
     return data
 
 
@@ -286,11 +286,11 @@ def fuzzer_function_read_file_as_array(filename):
 
 
 def apply_data_functions(data):
-    print("We're gonna apply data functions now! INSIDE THE FUNC BABY")
+    
     original_data = copy.deepcopy(data)
     for item in data:
         if item not in AVAILABLE_DATA_FUNCTIONS:
-            print(f"data[item]: {data[item]} has no available data functions, skipping")
+            
             continue
 
         for fn_name in data[item]:
@@ -308,18 +308,18 @@ ALLOWED_INTERCEPTORS = {
 
 
 def fuzzer_repeater_perform(arrays):
-    print(f"Inside fuzzer repeater perform for the following arrays: {arrays}")
+    
     original_arrays = copy.deepcopy(arrays)
     for array_name in arrays:
-        print(f"Inside the for loop in fuzzer_repeater_perform with the following array_name: {array_name}")
+        
         if "nettacker_fuzzer" not in arrays[array_name]:
-            print(f"No nettacker_fuzzer in {array_name}, skipping")
+            
             continue
 
         data = arrays[array_name]["nettacker_fuzzer"]["data"]
-        print(f"We have the following data: {data}")
+        
         data_matrix = arrays_to_matrix(apply_data_functions(data))
-        print(f"we have a data matrix now!: {data_matrix}")
+        
         prefix = arrays[array_name]["nettacker_fuzzer"]["prefix"]
         input_format = arrays[array_name]["nettacker_fuzzer"]["input_format"]
         interceptors = copy.deepcopy(arrays[array_name]["nettacker_fuzzer"]["interceptors"])
@@ -329,7 +329,7 @@ def fuzzer_repeater_perform(arrays):
         processed_array = []
 
         for sub_data in data_matrix:
-            print(f"Iterating over the data matrix, this is the sub_data: {sub_data}")
+            
             formatted_data = {}
             index_input = 0
             for value in sub_data:
@@ -341,9 +341,9 @@ def fuzzer_repeater_perform(arrays):
             if interceptors:
                 for interceptor in interceptors:
                     if interceptor not in ALLOWED_INTERCEPTORS:
-                        print(f"Blocked disallowed interceptor: {interceptor}")
+                        
                         raise ValueError(f"Interceptor '{interceptor}' is not allowed")
-                    print(f"Applying allowed interceptor: {interceptor}")
+                    
                     interceptors_function_processed = ALLOWED_INTERCEPTORS[interceptor](
                         interceptors_function_processed
                     )
@@ -356,33 +356,33 @@ def fuzzer_repeater_perform(arrays):
             processed_array.append(copy.deepcopy(processed_sub_data))
         original_arrays[array_name] = processed_array
 
-    print(f"Bhai ye return hora hai: {original_arrays}")
-    print("And that ends the fuzzer_repeater_perform function")
+    
+    
     return original_arrays
 
 
 def expand_module_steps(content):
-    print("inside expand module steps")
+    
     return [expand_protocol(x) for x in copy.deepcopy(content)]
 
 
 def expand_protocol(protocol):
-    print(f"inside expand protocol for the following protocol: {protocol}")
+    
     protocol["steps"] = [expand_step(x) for x in protocol["steps"]]
     return protocol
 
 
 def expand_step(step):
-    print(f"inside expand step for the step: {step}")
-    print("Now calling fuzzer_repeater_perform on find_repeaters for the above step with '' and {}")
+    
+    
     arrays = fuzzer_repeater_perform(find_repeaters(step, "", {}))
     if arrays:
-        print(f"we got some arrays, now calling generate_new_sub_steps on the following step: {step}")
+        
         atm = arrays_to_matrix(arrays)
-        print(f"This is the arrays to matrix generation: {atm}")
+        
         catm = class_to_value(atm)
-        print(f"This is the class to value: {catm}")
-        print("Now calling generate new sub steps")
+        
+        
         return generate_new_sub_steps(step, catm, arrays)
     else:
         # Minimum 1 step in array
