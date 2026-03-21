@@ -287,39 +287,17 @@ def fuzzer_function_read_file_as_array(filename):
 
 def apply_data_functions(data):
     print("We're gonna apply data functions now! INSIDE THE FUNC BABY")
-    def apply_data_functions_new():
+    original_data = copy.deepcopy(data)
+    for item in data:
         if item not in AVAILABLE_DATA_FUNCTIONS:
-            return
+            print(f"data[item]: {data[item]} has no available data functions, skipping")
+            continue
 
         for fn_name in data[item]:
             if fn_name in AVAILABLE_DATA_FUNCTIONS[item]:
                 fn = getattr(importlib.import_module("nettacker.core.fuzzer"), fn_name)
                 if fn is not None:
                     original_data[item] = fn(data[item][fn_name])
-
-    def apply_data_functions_old():
-        print("inside the old application of data functions")
-        function_results = {}
-        globals().update(locals())
-        print("Globals has been updated with localsssss()")
-        print("************************* CALLING EXEC NOW!! *************************")
-        print(f"This is what we are tring to EXECUTE: fuzzer_function = {data[item]}, {globals(), {function_results}}")
-        exec(
-            "fuzzer_function = {fuzzer_function}".format(fuzzer_function=data[item]),
-            globals(),
-            function_results,
-        )
-        print(f"This is what is going to become of original_data[item]: {function_results['fuzzer_function']}")
-        original_data[item] = function_results["fuzzer_function"]
-
-    original_data = copy.deepcopy(data)
-    for item in data:
-        if isinstance((data[item]), str) and data[item].startswith("fuzzer_function"):
-            print("data[item]: {} starts with fuzzer_function".format(data[item]))
-            apply_data_functions_old()
-        else:
-            print("data[item]: {} doesn't start with fuzzer_function".format(data[item]))
-            apply_data_functions_new()
 
     return original_data
 
