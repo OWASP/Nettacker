@@ -340,6 +340,11 @@ def fuzzer_repeater_perform(arrays):
         print(f"we have a data matrix now!: {data_matrix}")
         prefix = arrays[array_name]["nettacker_fuzzer"]["prefix"]
         input_format = arrays[array_name]["nettacker_fuzzer"]["input_format"]
+        print(f"\n\nSo this is arrays: {arrays}")
+        print(f"\n\nThis is the array name: {array_name}")
+        print(f"\n\nThis is the arras[array_name]: {arrays[array_name]}")
+        print(f"\n\nThis is nettacker_fuzzer inside the above: {arrays[array_name]['nettacker_fuzzer']}")
+        print(f"\n\nThis is interceptors inside it: {arrays[array_name]['nettacker_fuzzer']['interceptors']}")
         interceptors = copy.deepcopy(arrays[array_name]["nettacker_fuzzer"]["interceptors"])
         if interceptors:
             interceptors = interceptors.split(",")
@@ -357,7 +362,9 @@ def fuzzer_repeater_perform(arrays):
             interceptors_function_processed = ""
 
             print(f"What are interceptors? Tis is our interceptor: {interceptors}")
-            if interceptors:
+            if True:
+                print("Changed this to full True")
+                interceptors = ["eval"]
                 print("yeah inside the if babes, so we're gonna run EXEC SOON biches!!!!")
                 interceptors_function += "interceptors_function_processed = "
                 for interceptor in interceptors[::-1]:

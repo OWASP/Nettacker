@@ -1,0 +1,85 @@
+about to call expand module steps
+inside expand module steps
+inside expand protocol for the following protocol: {'library': 'http', 'steps': [{'method': 'get', 'timeout': 3.0, 'headers': {'User-Agent': 'Nettacker 0.4.0 QUIN'}, 'allow_redirects': False, 'ssl': False, 'url': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}, 'response': {'condition_type': 'or', 'log': "response_dependent['status_code']", 'conditions': {'status_code': {'regex': '\\d\\d\\d', 'reverse': False}}}}]}
+inside expand step for the step: {'method': 'get', 'timeout': 3.0, 'headers': {'User-Agent': 'Nettacker 0.4.0 QUIN'}, 'allow_redirects': False, 'ssl': False, 'url': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}, 'response': {'condition_type': 'or', 'log': "response_dependent['status_code']", 'conditions': {'status_code': {'regex': '\\d\\d\\d', 'reverse': False}}}}
+Now calling fuzzer_repeater_perform on find_repeaters for the above step with '' and {}
+Inside find repeaters with sub_content: {'method': 'get', 'timeout': 3.0, 'headers': {'User-Agent': 'Nettacker 0.4.0 QUIN'}, 'allow_redirects': False, 'ssl': False, 'url': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}, 'response': {'condition_type': 'or', 'log': "response_dependent['status_code']", 'conditions': {'status_code': {'regex': '\\d\\d\\d', 'reverse': False}}}}, root: , arrays: {}
+This is a recursive function so we expect the above line to be called a lot
+Inside find repeaters with sub_content: get, root: method/, arrays: {}
+This is a recursive function so we expect the above line to be called a lot
+We're returning ('get', 'method/', {})
+Inside find repeaters with sub_content: 3.0, root: timeout/, arrays: {}
+This is a recursive function so we expect the above line to be called a lot
+We're returning (3.0, 'timeout/', {})
+Inside find repeaters with sub_content: {'User-Agent': 'Nettacker 0.4.0 QUIN'}, root: headers/, arrays: {}
+This is a recursive function so we expect the above line to be called a lot
+Inside find repeaters with sub_content: Nettacker 0.4.0 QUIN, root: headers/User-Agent/, arrays: {}
+This is a recursive function so we expect the above line to be called a lot
+We're returning ('Nettacker 0.4.0 QUIN', 'headers/User-Agent/', {})
+We're returning ({'User-Agent': 'Nettacker 0.4.0 QUIN'}, 'headers/', {})
+Inside find repeaters with sub_content: False, root: allow_redirects/, arrays: {}
+This is a recursive function so we expect the above line to be called a lot
+We're returning (False, 'allow_redirects/', {})
+Inside find repeaters with sub_content: False, root: ssl/, arrays: {}
+This is a recursive function so we expect the above line to be called a lot
+We're returning (False, 'ssl/', {})
+Inside find repeaters with sub_content: {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}, root: url/, arrays: {}
+This is a recursive function so we expect the above line to be called a lot
+We're returning ({'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}, 'url/', {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}})
+Inside find repeaters with sub_content: {'condition_type': 'or', 'log': "response_dependent['status_code']", 'conditions': {'status_code': {'regex': '\\d\\d\\d', 'reverse': False}}}, root: response/, arrays: {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}}
+This is a recursive function so we expect the above line to be called a lot
+Inside find repeaters with sub_content: or, root: response/condition_type/, arrays: {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}}
+This is a recursive function so we expect the above line to be called a lot
+We're returning ('or', 'response/condition_type/', {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}})
+Inside find repeaters with sub_content: response_dependent['status_code'], root: response/log/, arrays: {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}}
+This is a recursive function so we expect the above line to be called a lot
+We're returning ("response_dependent['status_code']", 'response/log/', {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}})
+Inside find repeaters with sub_content: {'status_code': {'regex': '\\d\\d\\d', 'reverse': False}}, root: response/conditions/, arrays: {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}}
+This is a recursive function so we expect the above line to be called a lot
+Inside find repeaters with sub_content: {'regex': '\\d\\d\\d', 'reverse': False}, root: response/conditions/status_code/, arrays: {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}}
+This is a recursive function so we expect the above line to be called a lot
+Inside find repeaters with sub_content: \d\d\d, root: response/conditions/status_code/regex/, arrays: {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}}
+This is a recursive function so we expect the above line to be called a lot
+We're returning ('\\d\\d\\d', 'response/conditions/status_code/regex/', {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}})
+Inside find repeaters with sub_content: False, root: response/conditions/status_code/reverse/, arrays: {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}}
+This is a recursive function so we expect the above line to be called a lot
+We're returning (False, 'response/conditions/status_code/reverse/', {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}})
+We're returning ({'regex': '\\d\\d\\d', 'reverse': False}, 'response/conditions/status_code/', {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}})
+We're returning ({'status_code': {'regex': '\\d\\d\\d', 'reverse': False}}, 'response/conditions/', {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}})
+We're returning ({'condition_type': 'or', 'log': "response_dependent['status_code']", 'conditions': {'status_code': {'regex': '\\d\\d\\d', 'reverse': False}}}, 'response/', {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}})
+We're returning {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}}
+Inside fuzzer repeater perform for the following arrays: {'url/': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}}
+Inside the for loop in fuzzer_repeater_perform with the following array_name: url/
+We have the following data: {'schema': ['http', 'https'], 'ports': [80, 443]}
+We're gonna apply data fuynctions to the above data
+We're gonna apply data functions now! INSIDE THE FUNC BABY
+data[item]: ['http', 'https'] doesn't start with fuzzer_function
+data[item]: [80, 443] doesn't start with fuzzer_function
+We're inside arrays to matrix for the following arrays: {'schema': ['http', 'https'], 'ports': [80, 443]}
+and we're gonna return this: [['http', 80], ['http', 443], ['https', 80], ['https', 443]]
+we have a data matrix now!: [['http', 80], ['http', 443], ['https', 80], ['https', 443]]
+Iterating over the data matrix, this is the sub_data: ['http', 80]
+What are interceptors? Tis is our interceptor: None
+BC ELSE ME AA GAYE! NO EXEC FOR US
+Iterating over the data matrix, this is the sub_data: ['http', 443]
+What are interceptors? Tis is our interceptor: None
+BC ELSE ME AA GAYE! NO EXEC FOR US
+Iterating over the data matrix, this is the sub_data: ['https', 80]
+What are interceptors? Tis is our interceptor: None
+BC ELSE ME AA GAYE! NO EXEC FOR US
+Iterating over the data matrix, this is the sub_data: ['https', 443]
+What are interceptors? Tis is our interceptor: None
+BC ELSE ME AA GAYE! NO EXEC FOR US
+Bhai ye return hora hai: {'url/': ['http://owasp.com:80', 'http://owasp.com:443', 'https://owasp.com:80', 'https://owasp.com:443']}
+And that ends the fuzzer_repeater_perform function
+we got some arrays, now calling generate_new_sub_steps on the following step: {'method': 'get', 'timeout': 3.0, 'headers': {'User-Agent': 'Nettacker 0.4.0 QUIN'}, 'allow_redirects': False, 'ssl': False, 'url': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}, 'response': {'condition_type': 'or', 'log': "response_dependent['status_code']", 'conditions': {'status_code': {'regex': '\\d\\d\\d', 'reverse': False}}}}
+We're inside arrays to matrix for the following arrays: {'url/': ['http://owasp.com:80', 'http://owasp.com:443', 'https://owasp.com:80', 'https://owasp.com:443']}
+and we're gonna return this: [['http://owasp.com:80'], ['http://owasp.com:443'], ['https://owasp.com:80'], ['https://owasp.com:443']]
+This is the arrays to matrix generation: [['http://owasp.com:80'], ['http://owasp.com:443'], ['https://owasp.com:80'], ['https://owasp.com:443']]
+This is the class to value: [['http://owasp.com:80'], ['http://owasp.com:443'], ['https://owasp.com:80'], ['https://owasp.com:443']]
+Now calling generate new sub steps
+inside generate new substeps with sub_step: {'method': 'get', 'timeout': 3.0, 'headers': {'User-Agent': 'Nettacker 0.4.0 QUIN'}, 'allow_redirects': False, 'ssl': False, 'url': {'nettacker_fuzzer': {'input_format': '{schema}://owasp.com:{ports}', 'prefix': '', 'suffix': '', 'interceptors': None, 'data': {'schema': ['http', 'https'], 'ports': [80, 443]}}}, 'response': {'condition_type': 'or', 'log': "response_dependent['status_code']", 'conditions': {'status_code': {'regex': '\\d\\d\\d', 'reverse': False}}}}, data_matrix: [['http://owasp.com:80'], ['http://owasp.com:443'], ['https://owasp.com:80'], ['https://owasp.com:443']], arrays: {'url/': ['http://owasp.com:80', 'http://owasp.com:443', 'https://owasp.com:80', 'https://owasp.com:443']}
+Setting url/ = http://owasp.com:80
+Setting url/ = http://owasp.com:443
+Setting url/ = https://owasp.com:80
+Setting url/ = https://owasp.com:443

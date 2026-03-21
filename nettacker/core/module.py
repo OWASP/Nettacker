@@ -74,6 +74,8 @@ class Module:
         ]
 
     def load(self):
+        print("Adding the following to module_extra_args: __import__('builtins').print('EXEC_REACHED')")
+        self.module_inputs["module_extra_args"] = "__import__('builtins').print('EXEC_REACHED')"
         self.module_content = TemplateLoader(self.module_name, self.module_inputs).load()
         if not self.skip_service_discovery and self.module_name not in self.ignored_core_modules:
             services = {}
