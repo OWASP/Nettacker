@@ -335,7 +335,7 @@ python nettacker.py -i 192.168.1.1/24 -m all -x ssh_brute -t 10 -M 35 -g 20-100 
 
 - Using web technologies scan to detect CMS and web frameworks:
 
-```
+```bash
 python nettacker.py -i eng.uber.com -m web_technologies_scan
 ```
 
@@ -349,7 +349,7 @@ python nettacker.py -i <CIDR/IP/Domain> -m f5_cve_2020_5902 -s
 
 - OWASP Nettacker can also scan subdomains by using this command: `-s`
 
-```bash
+```
 python nettacker.py -i owasp.org -s -m port_scan -t 10 -M 35 -g 20-100 --graph d3_tree_v2_graph
 ```
 
