@@ -257,8 +257,7 @@ def arrays_to_matrix(arrays):
     """
     Generate a Cartesian product of input arrays as a list of lists.
     """
-    data = [list(item) for item in product(*[arrays[array_name] for array_name in arrays])]
-    return data
+    return [list(item) for item in product(*[arrays[array_name] for array_name in arrays])]
 
 
 def string_to_bytes(string):
