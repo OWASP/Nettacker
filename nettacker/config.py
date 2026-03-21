@@ -191,6 +191,13 @@ class DefaultSettings(ConfigBase):
     verbose_mode = False
     scan_compare_id = None
     compare_report_path_filename = ""
+    
+    # DefectDojo Integration
+    defectdojo_auto_push = False
+    defectdojo_url = None
+    defectdojo_api_key = None
+    defectdojo_product_name = None
+    defectdojo_engagement_name = None
 
 
 class Config:

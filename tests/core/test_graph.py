@@ -1,6 +1,7 @@
 import json
 import sys
 import types
+from pathlib import Path
 from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
@@ -337,3 +338,161 @@ def test_create_report_with_graph_name(
                 }
             ],
         )
+
+# SARIF & DefectDojo Extension Tests
+
+@patch("nettacker.core.graph.all_module_severity_and_desc", {"port_scan": {"severity": 7, "desc": "Port scan module"}})
+def test_sarif_report_structure():
+    from nettacker.core.graph import create_sarif_report
+    log_data = [{
+        "module_name": "port_scan",
+        "date": "2026-03-21 10:00:00",
+        "port": 80,
+        "event": "open port",
+        "json_event": {"status": "open"},
+        "target": "127.0.0.1",
+        "scan_id": "test_id_123"
+    }]
+    
+    result = create_sarif_report(log_data)
+    sarif = json.loads(result)
+    
+    assert sarif["$schema"] == "https://json.schemastore.org/sarif-2.1.0.json"
+    assert sarif["version"] == "2.1.0"
+    assert len(sarif["runs"]) == 1
+    
+    # Check driver configuration
+    driver = sarif["runs"][0]["tool"]["driver"]
+    assert driver["name"] == "Nettacker"
+    assert "version" in driver
+    
+    # Check rule population
+    assert len(driver["rules"]) == 1
+    rule = driver["rules"][0]
+    assert rule["id"] == "port_scan"
+    assert rule["defaultConfiguration"]["level"] == "error" # severity 7 -> error
+    
+    # Check results
+    assert len(sarif["runs"][0]["results"]) == 1
+    res = sarif["runs"][0]["results"][0]
+    assert res["ruleId"] == "port_scan"
+    assert res["level"] == "error"
+    assert "locations" in res
+    assert "webRequest" in res
+    assert "partialFingerprints" in res
+
+@patch("nettacker.core.graph.all_module_severity_and_desc", {
+    "high_mod": {"severity": 8},
+    "med_mod": {"severity": 5},
+    "low_mod": {"severity": 2},
+    "info_mod": {"severity": 0}
+})
+def test_sarif_report_severity_mapping():
+    from nettacker.core.graph import create_sarif_report
+    logs = [
+        {"module_name": "high_mod", "date": "1", "port": "", "event": "", "json_event": "", "target": "", "scan_id": ""},
+        {"module_name": "med_mod", "date": "1", "port": "", "event": "", "json_event": "", "target": "", "scan_id": ""},
+        {"module_name": "low_mod", "date": "1", "port": "", "event": "", "json_event": "", "target": "", "scan_id": ""},
+        {"module_name": "info_mod", "date": "1", "port": "", "event": "", "json_event": "", "target": "", "scan_id": ""}
+    ]
+    
+    sarif = json.loads(create_sarif_report(logs))
+    results = sarif["runs"][0]["results"]
+    
+    levels = [r["level"] for r in results]
+    assert levels == ["error", "warning", "note", "none"]
+
+@patch("nettacker.core.graph.all_module_severity_and_desc", {"port_scan": {"severity": 7}})
+def test_dd_specific_json_structure():
+    from nettacker.core.graph import create_dd_specific_json
+    log_data = [{
+        "module_name": "port_scan",
+        "date": "2026-03-21 10:00:00.000000",
+        "port": 80,
+        "event": "open port",
+        "json_event": {"status": "open"},
+        "target": "127.0.0.1",
+        "scan_id": "test_id_123"
+    }]
+    
+    result = create_dd_specific_json(log_data)
+    dd_json = json.loads(result)
+    
+    assert "findings" in dd_json
+    assert len(dd_json["findings"]) == 1
+    
+    finding = dd_json["findings"][0]
+    # Date should be reformatted to MM/DD/YYYY
+    assert finding["date"] == "03/21/2026"
+    assert finding["title"] == "port_scan"
+    assert finding["severity"] == "High"  # severity 7 -> High
+    assert finding["test_type"] == "Nettacker Scan"
+    
+def test_dd_specific_json_no_strip_bug():
+    from nettacker.core.graph import create_dd_specific_json
+    """Verify that no AttributeError is thrown when event/json_event are dicts"""
+    log_data = [{
+        "module_name": "test_mod",
+        "date": "2026-03-21 10:00:00",
+        # These dicts previously caused an AttributeError: 'dict' object has no attribute 'strip'
+        "port": {"p": 80},
+        "event": {"msg": "found"},
+        "json_event": {"status": 200}, 
+        "target": "1.2.3.4",
+        "scan_id": "test"
+    }]
+    
+    try:
+        result = create_dd_specific_json(log_data)
+        dd_json = json.loads(result)
+        
+        # Verify it converted them to json strings safely
+        assert "{" in dd_json["findings"][0]["impact"]
+        assert "{" in dd_json["findings"][0]["severity_justification"]
+        assert "{" in dd_json["findings"][0]["param"]
+    except AttributeError:
+        pytest.fail("create_dd_specific_json raised AttributeError due to `.strip()` bug on dicts")
+
+@patch("nettacker.core.graph.get_logs_by_scan_id", return_value=[{"date": "2026-03-21 10:00:00", "target": "1", "module_name": "m", "port": "80", "event": "e", "json_event": "{}", "scan_id": "1"}])
+@patch("nettacker.core.graph.Path")
+@patch("nettacker.core.graph.submit_report_to_db")
+def test_sarif_file_created(mock_submit, mock_path, mock_get_logs):
+    options = MagicMock()
+    options.report_path_filename = "report.sarif"
+    
+    # Enable reading from the mock path
+    mock_file = MagicMock()
+    mock_path.return_value.open.return_value.__enter__.return_value = mock_file
+    
+    result = create_report(options, "scan-id")
+    assert result is True
+    # Verify open was called correctly for a .sarif file
+    mock_path.assert_called_with("report.sarif")
+    mock_path.return_value.open.assert_called_with("w", encoding="utf-8")
+    mock_file.write.assert_called()
+
+@patch("nettacker.core.graph.get_logs_by_scan_id", return_value=[{"date": "2026-03-21 10:00:00", "target": "1", "module_name": "m", "port": "80", "event": "e", "json_event": "{}", "scan_id": "1"}])
+@patch("nettacker.core.graph.Path")
+@patch("nettacker.core.graph.submit_report_to_db")
+def test_dd_file_created_and_auto_push(mock_submit, mock_path, mock_get_logs):
+    options = MagicMock()
+    options.report_path_filename = "report.dd.json"
+    options.defectdojo_auto_push = True
+    options.defectdojo_url = "http://test"
+    options.defectdojo_api_key = "key"
+    options.defectdojo_product_name = "prod"
+    options.defectdojo_engagement_name = "eng"
+    
+    # Enable reading from the mock path
+    mock_file = MagicMock()
+    mock_path.return_value.open.return_value.__enter__.return_value = mock_file
+    
+    from nettacker.lib.export.defectdojo import DefectDojoClient
+    with patch("nettacker.lib.export.defectdojo.DefectDojoClient.push_findings") as mock_push:
+        result = create_report(options, "scan-id")
+        
+        assert result is True
+        mock_path.assert_called_with("report.dd.json")
+        mock_path.return_value.open.assert_called_with("w", encoding="utf-8")
+        mock_file.write.assert_called()
+        mock_push.assert_called_once()
