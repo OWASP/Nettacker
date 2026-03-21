@@ -349,7 +349,7 @@ python nettacker.py -i <CIDR/IP/Domain> -m f5_cve_2020_5902 -s
 
 - OWASP Nettacker can also scan subdomains by using this command: `-s`
 
-```
+```bash
 python nettacker.py -i owasp.org -s -m port_scan -t 10 -M 35 -g 20-100 --graph d3_tree_v2_graph
 ```
 
