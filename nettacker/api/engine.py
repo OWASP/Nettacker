@@ -393,17 +393,26 @@ def get_result_content():
     safe_filename = secure_filename(os.path.basename(str(filename)))
 
     # Render HTML reports inline in the browser instead of forcing a download.
-    # Non-HTML files continue to be served as attachment downloads.
+    # This allows users to view scan results directly while maintaining security.
+    # Non-HTML files (.json, .csv, .txt) continue to be served as attachment downloads.
     if file_extension in (".html", ".htm"):
         response = Response(
             file_content,
             mimetype="text/html",
-            headers={"Content-Disposition": "inline;filename=" + safe_filename},
+            headers={"Content-Disposition": f"inline; filename={safe_filename}"},
         )
-        # Restrict inline HTML content to mitigate XSS risks (no scripts, no external resources)
-        response.headers[
-            "Content-Security-Policy"
-        ] = "default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'"
+        # Security: Strict Content-Security-Policy to mitigate XSS risks.
+        # We disable all script execution (script-src 'none') and restrict other resources
+        # to ensure that user-generated HTML reports cannot execute malicious code.
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'none'; "
+            "script-src 'none'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data:; "
+            "font-src 'self'; "
+            "connect-src 'self'; "
+            "frame-ancestors 'none';"
+        )
         return response
 
     return Response(

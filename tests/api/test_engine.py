@@ -100,7 +100,7 @@ def _stub_nettacker_modules():
     # Expose it on the fixture's module so tests can reference it.
     _stub_nettacker_modules.app = _app  # type: ignore[attr-defined]
 
-    yield
+    yield _stub_nettacker_modules
 
     # Restore sys.modules to its original state.
     for name, original in originals.items():
@@ -145,7 +145,9 @@ def test_html_report_rendered_inline(mock_get_scan_result, mock_api_key, client)
     assert "attachment" not in cd, "attachment must NOT appear for HTML reports"
     assert "report.html" in cd
     csp = response.headers.get("Content-Security-Policy", "")
+    assert "default-src 'none'" in csp
     assert "script-src 'none'" in csp, f"Expected CSP to block scripts, got: {csp}"
+    assert "frame-ancestors 'none'" in csp
 
 
 @patch("nettacker.api.engine.api_key_is_valid")
@@ -163,7 +165,9 @@ def test_htm_report_rendered_inline(mock_get_scan_result, mock_api_key, client):
     assert "attachment" not in cd
     # .htm must carry the same restrictive CSP as .html (security parity)
     csp = response.headers.get("Content-Security-Policy", "")
+    assert "default-src 'none'" in csp
     assert "script-src 'none'" in csp, f"Expected CSP to block scripts for .htm, got: {csp}"
+    assert "frame-ancestors 'none'" in csp
 
 
 @patch("nettacker.api.engine.api_key_is_valid")
