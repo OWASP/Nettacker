@@ -388,10 +388,28 @@ def get_result_content():
     except Exception:
         return jsonify(structure(status="error", msg="database error!")), 500
 
+    file_extension = os.path.splitext(filename)[1].lower()
+    # Use cross-platform basename and sanitize before embedding in headers.
+    safe_filename = secure_filename(os.path.basename(str(filename)))
+
+    # Render HTML reports inline in the browser instead of forcing a download.
+    # Non-HTML files continue to be served as attachment downloads.
+    if file_extension in (".html", ".htm"):
+        response = Response(
+            file_content,
+            mimetype="text/html",
+            headers={"Content-Disposition": "inline;filename=" + safe_filename},
+        )
+        # Restrict inline HTML content to mitigate XSS risks (no scripts, no external resources)
+        response.headers[
+            "Content-Security-Policy"
+        ] = "default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'"
+        return response
+
     return Response(
         file_content,
-        mimetype=mime_types().get(os.path.splitext(filename)[1], "text/plain"),
-        headers={"Content-Disposition": "attachment;filename=" + filename.split("/")[-1]},
+        mimetype=mime_types().get(file_extension, "text/plain"),
+        headers={"Content-Disposition": "attachment;filename=" + safe_filename},
     )
 
 
