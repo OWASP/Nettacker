@@ -48,9 +48,14 @@ def ensure_supported_python():
     """
     Perform the Python version check unless explicitly skipped.
 
-    This function should be called from the application entrypoint
-    (for example, nettacker.main:run) rather than at import time.
+    This helper is safe to call from application entrypoints or at
+    import time as part of package initialization.
     """
     if should_skip_python_version_check():
         return
     check_python_version()
+
+
+# Perform environment validation when this module is imported,
+# unless explicitly skipped via NETTACKER_SKIP_PYTHON_VERSION_CHECK.
+ensure_supported_python()
