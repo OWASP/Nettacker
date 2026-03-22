@@ -41,7 +41,7 @@ def resolve_input_format(value):
     )
 
 
-def is_valid_regex(regex: str, header_value: str = None) -> bool:
+def is_valid_regex(regex: str, header_value: str | None = None) -> bool:
     """Validate a regex pattern's syntax or verify it matches a specific header value."""
     try:
         pattern = re.compile(regex)
