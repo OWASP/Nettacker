@@ -79,7 +79,7 @@ If your default Python is unsupported (for example 3.13), pipx installation may 
 In that case, use one of the following:
 
 ```
-pipx install --python 3.12 nettacker
+pipx install --python python3.12 nettacker
 ```
 
 or run the official Docker image as documented below.
