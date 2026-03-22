@@ -6,6 +6,8 @@ import yaml
 from schema import Schema, Optional, And, Or
 
 BASE_DIRS = ["nettacker/modules/vuln", "nettacker/modules/scan", "nettacker/modules/brute"]
+# Maps request header names to response header names for known reflection patterns
+REFLECTED_HEADERS = {"origin": "access-control-allow-origin"}
 
 # ----------------------------
 # Utility
@@ -24,9 +26,27 @@ def load_yaml(file_path):
         return yaml.safe_load(f)
 
 
-def is_valid_regex(regex: str) -> bool:
+def resolve_input_format(value):
+    """Resolve a literal or nettacker_fuzzer header value to a concrete string by substituting
+    fuzzer double-brace variables with representative values. Single-brace placeholders like
+    {target} are left as-is so they remain valid literals in both the test string and the regex."""
+    if isinstance(value, dict) and "nettacker_fuzzer" in value:
+        fmt = value["nettacker_fuzzer"]["input_format"]
+    else:
+        fmt = str(value)
+    return (
+        fmt.replace("{{schema}}", "http")
+        .replace("{{ports}}", "80")
+        .replace("{{paths}}", "testpath")
+    )
+
+
+def is_valid_regex(regex: str, header_value: str = None) -> bool:
+    """Validate a regex pattern's syntax or verify it matches a specific header value."""
     try:
-        re.compile(regex)
+        pattern = re.compile(regex)
+        if header_value is not None:
+            return bool(re.search(pattern, header_value))
         return True
     except re.error:
         return False
@@ -170,6 +190,7 @@ BRUTE_PAYLOAD_SCHEMA = Schema(
 
 
 def extract_brute_regexes(payloads):
+    """Validate brute-force payloads against the schema and extract regex patterns."""
     regexes = []
 
     for payload in payloads:
@@ -182,12 +203,13 @@ def extract_brute_regexes(payloads):
             if "successful_login" in conditions:
                 regex = conditions["successful_login"].get("regex")
                 if regex is not None:
-                    regexes.append(regex)
+                    regexes.append((regex, None))
 
     return regexes
 
 
 def validate_http_conditions(conditions: dict):
+    """Validate an HTTP conditions block against the schema and extract regex patterns."""
     HTTP_CONDITION_SCHEMA.validate(conditions)
     regexes = []
     # Validate nested iterative_response_match structure
@@ -206,17 +228,18 @@ def validate_http_conditions(conditions: dict):
                 nested_conditions = nested_response["conditions"]
                 for field, value in nested_conditions.items():
                     if isinstance(value, dict) and "regex" in value:
-                        regexes.append(value["regex"])
+                        regexes.append((value["regex"], None))
                     # Headers special structure
                     if field == "headers" and isinstance(value, dict):
                         for header_name, header_block in value.items():
                             if isinstance(header_block, dict) and "regex" in header_block:
-                                regexes.append(header_block["regex"])
+                                regexes.append((header_block["regex"], None))
 
     return regexes
 
 
 def extract_http_regexes(payloads):
+    """Extract regex patterns and their expected header values from HTTP library payloads."""
     regexes = []
 
     for payload in payloads:
@@ -233,20 +256,36 @@ def extract_http_regexes(payloads):
                 continue
 
             regexes.extend(validate_http_conditions(conditions))
+            raw_headers = step.get("headers", {})
+            if isinstance(raw_headers, list):
+                request_headers = {k.lower(): v for h in raw_headers for k, v in h.items()}
+            else:
+                request_headers = {k.lower(): v for k, v in raw_headers.items()}
             for field, value in conditions.items():
                 # simple regex fields (status_code, reason, url, content, responsetime)
                 if isinstance(value, dict) and "regex" in value:
-                    regexes.append(value["regex"])
+                    regexes.append((value["regex"], None))
                 # headers case
                 if field == "headers":
-                    for header_name, header_block in value.items():
+                    for resp_header_name, header_block in value.items():
                         if isinstance(header_block, dict) and "regex" in header_block:
-                            regexes.append(header_block["regex"])
+                            header_value = None
+                            for req_header, resp_header in REFLECTED_HEADERS.items():
+                                if (
+                                    resp_header == resp_header_name.lower()
+                                    and req_header in request_headers
+                                ):
+                                    header_value = resolve_input_format(
+                                        request_headers[req_header]
+                                    )
+                                    break
+                            regexes.append((header_block["regex"], header_value))
 
     return regexes
 
 
 def extract_socket_regexes(payloads):
+    """Extract regex patterns from socket library payloads."""
     regexes = []
 
     for payload in payloads:
@@ -260,18 +299,19 @@ def extract_socket_regexes(payloads):
                 services = conditions["service"]
                 for service_block in services.values():
                     if isinstance(service_block, dict) and "regex" in service_block:
-                        regexes.append(service_block["regex"])
+                        regexes.append((service_block["regex"], None))
 
             elif "time_response" in conditions:  # for icmp.yaml
                 tr = conditions["time_response"]
                 if isinstance(tr, dict) and "regex" in tr:
-                    regexes.append(tr["regex"])
+                    regexes.append((tr["regex"], None))
 
     return regexes
 
 
 @pytest.mark.parametrize("yaml_file", list(get_yaml_files()))
 def test_yaml_schema_and_regex_valid(yaml_file):
+    """Test to validate all YAML module regexes against syntax and header values."""
     data = load_yaml(yaml_file)
     payloads = data.get("payloads", [])
 
@@ -292,5 +332,7 @@ def test_yaml_schema_and_regex_valid(yaml_file):
     if brute_payloads:
         regexes.extend(extract_brute_regexes(brute_payloads))
 
-    for regex in regexes:
-        assert is_valid_regex(regex), f"Invalid regex in {yaml_file}: `{regex}`"
+    for regex, header_value in regexes:
+        assert is_valid_regex(regex, header_value), f"Invalid regex in {yaml_file}: `{regex}`" + (
+            f" (must match: {header_value!r})" if header_value else ""
+        )
