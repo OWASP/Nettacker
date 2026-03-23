@@ -112,7 +112,9 @@ def test_get_statics_uses_expected_mimetype(api_client, path, expected_mimetype)
     assert response.status_code == 200
     assert response.data == b"file-data"
     assert response.mimetype == expected_mimetype
-    mock_get_file.assert_called_once_with(engine.os.path.join(engine.Config.path.web_static_dir, path))
+    mock_get_file.assert_called_once_with(
+        engine.os.path.join(engine.Config.path.web_static_dir, path)
+    )
 
 
 def test_index_renders_template_with_expected_context(api_client):
@@ -199,7 +201,9 @@ def test_session_kill_expires_cookie(api_client):
 
 
 def test_new_scan_rejects_invalid_report_filename(api_client, api_key):
-    with patch.object(engine, "Nettacker") as mock_nettacker, patch.object(engine, "Thread") as mock_thread:
+    with patch.object(engine, "Nettacker") as mock_nettacker, patch.object(
+        engine, "Thread"
+    ) as mock_thread:
         response = api_client.post(
             "/new/scan",
             query_string={"key": api_key},
@@ -222,9 +226,9 @@ def test_new_scan_starts_thread_and_merges_defaults(api_client, api_key, tmp_pat
         created["app"] = nettacker_app
         return nettacker_app
 
-    with patch.object(engine, "Nettacker", side_effect=nettacker_factory) as mock_nettacker, patch.object(
-        engine, "Thread"
-    ) as mock_thread:
+    with patch.object(
+        engine, "Nettacker", side_effect=nettacker_factory
+    ) as mock_nettacker, patch.object(engine, "Thread") as mock_thread:
         response = api_client.post(
             "/new/scan",
             query_string={"key": api_key},
@@ -250,7 +254,9 @@ def test_new_scan_starts_thread_and_merges_defaults(api_client, api_key, tmp_pat
     mock_thread.return_value.start.assert_called_once_with()
 
 
-def test_new_scan_without_http_header_keeps_skip_service_discovery_false(api_client, api_key, tmp_path):
+def test_new_scan_without_http_header_keeps_skip_service_discovery_false(
+    api_client, api_key, tmp_path
+):
     created = {}
 
     def nettacker_factory(*, api_arguments):
@@ -282,7 +288,9 @@ def test_new_scan_without_http_header_keeps_skip_service_discovery_false(api_cli
 
 
 def test_compare_scans_success_uses_generated_default_path(api_client, api_key):
-    with patch.object(engine, "create_compare_report", return_value=True) as mock_compare, patch.object(
+    with patch.object(
+        engine, "create_compare_report", return_value=True
+    ) as mock_compare, patch.object(
         engine, "generate_compare_filepath", return_value="compare.html"
     ) as mock_generate:
         response = api_client.post(
@@ -349,7 +357,9 @@ def test_compare_scans_returns_400_for_invalid_report_paths(api_client, api_key,
 
 
 def test_get_results_uses_default_and_selected_page(api_client, api_key):
-    with patch.object(engine, "select_reports", side_effect=lambda page: [{"page": page}]) as mock_select:
+    with patch.object(
+        engine, "select_reports", side_effect=lambda page: [{"page": page}]
+    ) as mock_select:
         default_page = api_client.get("/results/get_list", query_string={"key": api_key})
         selected_page = api_client.get(
             "/results/get_list",
@@ -364,7 +374,9 @@ def test_get_results_uses_default_and_selected_page(api_client, api_key):
 
 
 def test_get_last_host_logs_uses_default_and_selected_page(api_client, api_key):
-    with patch.object(engine, "last_host_logs", side_effect=lambda page: [{"page": page}]) as mock_logs:
+    with patch.object(
+        engine, "last_host_logs", side_effect=lambda page: [{"page": page}]
+    ) as mock_logs:
         default_page = api_client.get("/logs/get_list", query_string={"key": api_key})
         selected_page = api_client.get(
             "/logs/get_list",
@@ -397,7 +409,9 @@ def test_get_result_content_handles_database_errors(api_client, api_key):
 
 
 def test_get_result_content_returns_attachment_with_expected_mimetype(api_client, api_key):
-    with patch.object(engine, "get_scan_result", return_value=("/tmp/report.json", b'{"ok": true}')):
+    with patch.object(
+        engine, "get_scan_result", return_value=("/tmp/report.json", b'{"ok": true}')
+    ):
         response = api_client.get(
             "/results/get",
             query_string={"id": "scan-1", "key": api_key},
@@ -475,7 +489,9 @@ def test_get_results_csv_returns_attachment(api_client, api_key):
 
 
 def test_get_logs_html_returns_rendered_report(api_client, api_key):
-    with patch.object(engine, "logs_to_report_html", return_value="<h1>report</h1>") as mock_report:
+    with patch.object(
+        engine, "logs_to_report_html", return_value="<h1>report</h1>"
+    ) as mock_report:
         response = api_client.get(
             "/logs/get_html",
             query_string={"key": api_key, "target": "example.com"},
@@ -632,9 +648,7 @@ def test_start_api_server_starts_process_and_logs_key():
         engine.log, "write_to_api_console"
     ) as mock_log, patch.object(
         engine.multiprocessing, "Process", return_value=process
-    ) as mock_process, patch.object(
-        engine.multiprocessing, "active_children", return_value=[]
-    ):
+    ) as mock_process, patch.object(engine.multiprocessing, "active_children", return_value=[]):
         engine.start_api_server(options)
 
     mock_log.assert_called_once_with("API 8080 secret-key")
