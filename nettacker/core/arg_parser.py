@@ -383,7 +383,7 @@ class ArgParser(ArgumentParser):
         method_options.add_argument(
             "--set-hardware-usage",
             action="store",
-            deimport difflibst="set_hardware_usage",
+            dest="set_hardware_usage",
             default=Config.settings.set_hardware_usage,
             help=_("set_hardware_usage"),
         )
@@ -529,12 +529,17 @@ class ArgParser(ArgumentParser):
                     valid_flags.extend(action.option_strings)
 
                 for arg in unknown_args:
-                    if arg.startswith("-") and len(arg) > 1:
+                    if arg.startswith("--") and len(arg) > 1:
                         suggestion = difflib.get_close_matches(arg, valid_flags, n=1)
                         if suggestion:
-                           print(f"Error: Unknown argument '{arg}'. Did you mean '{suggestion[0]}'?")
+                            print(
+                                f"Error: Unknown argument '{arg}'. Did you mean '{suggestion[0]}'?",
+                                file=sys.stderr,
+                            )
                         else:
-                            print(f"Error: Unknown argument '{arg}'")
+                            print(f"Error: Unknown argument '{arg}'", file=sys.stderr)
+                    else:
+                        print(f"Error: Unexpected argument '{arg}'", file=sys.stderr)
 
                 sys.exit(1)
 
