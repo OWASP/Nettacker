@@ -692,14 +692,18 @@ class ArgParser(ArgumentParser):
             options.excluded_ports = list(tmp_excluded_ports)
 
         if options.user_agent == "random_user_agent":
-            options.user_agents = open(Config.path.user_agents_file, encoding="utf-8").read().split("\n")
+            options.user_agents = (
+                open(Config.path.user_agents_file, encoding="utf-8").read().split("\n")
+            )
 
         # Check user list
         if options.usernames:
             options.usernames = list(set(options.usernames.split(",")))
         elif options.usernames_list:
             try:
-                options.usernames = list(set(open(options.usernames_list, encoding="utf-8").read().split("\n")))
+                options.usernames = list(
+                    set(open(options.usernames_list, encoding="utf-8").read().split("\n"))
+                )
             except Exception:
                 die_failure(_("error_username").format(options.usernames_list))
         # Check password list
@@ -707,7 +711,9 @@ class ArgParser(ArgumentParser):
             options.passwords = list(set(options.passwords.split(",")))
         elif options.passwords_list:
             try:
-                options.passwords = list(set(open(options.passwords_list, encoding="utf-8").read().split("\n")))
+                options.passwords = list(
+                    set(open(options.passwords_list, encoding="utf-8").read().split("\n"))
+                )
             except Exception:
                 die_failure(_("error_passwords").format(options.passwords_list))
         # Check custom wordlist
