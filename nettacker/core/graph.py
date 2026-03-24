@@ -300,6 +300,22 @@ def create_report(options, scan_id):
                 dict_data = {key: value for key, value in log_list.items() if key in keys}
                 writer.writerow(dict_data)
 
+
+    elif report_path_filename.lower().endswith(".md"):
+     md_content = ""
+     md_content += "| Date | Target | Module | Port | Info |\n"
+     md_content += "|------|--------|--------|------|------|\n"
+
+     for event in all_scan_logs:
+         log_list = merge_logs_to_list(event, [])
+         log_text = ", ".join(log_list) if log_list else "Detected"
+
+         md_content += f"| {event.get('date','')} | {event.get('target','')} | {event.get('module_name','')} | {event.get('port','')} | {log_text} |\n"
+
+     with Path(report_path_filename).open("w", encoding="utf-8") as report_file:
+         report_file.write(md_content + "\n") 
+
+
     else:
         with Path(report_path_filename).open("w", encoding="utf-8") as report_file:
             report_file.write(build_text_table(all_scan_logs))
