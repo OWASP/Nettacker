@@ -6,6 +6,8 @@ info:
     reveal the full API schema structure to unauthenticated attackers,
     potentially exposing sensitive types, queries, and mutations.
   reference:
+    - https://graphql.org/learn/introspection/
+    - https://www.owasp.org/index.php/Testing_for_Exposed_GraphQL_Introspection
   profiles:
     - vuln
     - http
@@ -35,7 +37,6 @@ payloads:
                 - 80
                 - 443
               endpoint:
-                - 1239b01720/graphql
                 - graphql
                 - api/graphql
                 - v1/graphql
