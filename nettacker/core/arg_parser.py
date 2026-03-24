@@ -1,7 +1,8 @@
+import difflib
 import json
 import sys
 from argparse import ArgumentParser
-import difflib
+
 import yaml
 
 from nettacker import all_module_severity_and_desc
