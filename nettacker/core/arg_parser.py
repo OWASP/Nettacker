@@ -29,8 +29,8 @@ class ArgParser(ArgumentParser):
     def __init__(self, api_arguments=None) -> None:
         super().__init__(
             prog="Nettacker",
-            description="OWASP Nettacker - Automated Penetration Testing Framework",
-            epilog="""
+            description=_("OWASP Nettacker - Automated Penetration Testing Framework"),
+            epilog=("""
         Examples:
 
           Scan a target:
@@ -44,7 +44,7 @@ class ArgParser(ArgumentParser):
 
            Show all modules:
              python nettacker.py --show-all-modules
-        """,
+        """),
             formatter_class=RawTextHelpFormatter,
             add_help=False
         )
