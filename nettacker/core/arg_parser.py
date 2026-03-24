@@ -1,7 +1,7 @@
 import difflib
 import json
 import sys
-from argparse import ArgumentParser
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 import yaml
 
@@ -27,7 +27,27 @@ log = get_logger()
 
 class ArgParser(ArgumentParser):
     def __init__(self, api_arguments=None) -> None:
-        super().__init__(prog="Nettacker", add_help=False)
+        super().__init__(
+            prog="Nettacker",
+            description="OWASP Nettacker - Automated Penetration Testing Framework",
+            epilog="""
+        Examples:
+
+          Scan a target:
+            python nettacker.py -i 192.168.1.1
+
+          Scan multiple targets:
+            python nettacker.py -l targets.txt
+
+           Run specific module:
+            python nettacker.py -i example.com -m port_scan
+
+           Show all modules:
+             python nettacker.py --show-all-modules
+        """,
+            formatter_class=ArgumentDefaultsHelpFormatter,
+            add_help=False
+        )
 
         self.api_arguments = api_arguments
         self.graphs = self.load_graphs()
