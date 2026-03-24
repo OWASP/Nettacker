@@ -1,7 +1,7 @@
 import difflib
 import json
 import sys
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from argparse import ArgumentParser, RawTextHelpFormatter
 
 import yaml
 
@@ -45,7 +45,7 @@ class ArgParser(ArgumentParser):
            Show all modules:
              python nettacker.py --show-all-modules
         """,
-            formatter_class=ArgumentDefaultsHelpFormatter,
+            formatter_class=RawTextHelpFormatter,
             add_help=False
         )
 
