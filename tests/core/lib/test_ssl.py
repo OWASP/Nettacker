@@ -1,10 +1,10 @@
-# tests/test_ssl.py
+# tests/core/lib/test_ssl.py
 # Tests for nettacker/core/lib/ssl.py
 # Author: Parneet Kaur
 # GSoC 2026 - OWASP Nettacker
 
 import pytest
-from nettacker.core.lib.ssl import is_weak_hash_algo, get_cert_info
+from nettacker.core.lib.ssl import is_weak_hash_algo
 
 
 class TestIsWeakHashAlgo:
