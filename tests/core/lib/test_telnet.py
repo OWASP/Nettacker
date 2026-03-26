@@ -7,7 +7,7 @@ from nettacker.core.lib.telnet import TelnetEngine, TelnetLibrary
 HOST = "192.168.1.1"
 PORT = 23
 USERNAME = "admin"
-PASSWORD = "secret"
+PASSWORD = "secret"  # noqa: S105
 TIMEOUT = 10
 
 

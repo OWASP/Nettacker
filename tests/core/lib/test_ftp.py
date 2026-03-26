@@ -9,7 +9,7 @@ from nettacker.core.lib.ftps import FtpsEngine, FtpsLibrary
 HOST = "ftp.example.com"
 PORT = 21
 USERNAME = "admin"
-PASSWORD = "secret"
+PASSWORD = "secret"  # noqa: S105
 TIMEOUT = 10
 
 

@@ -68,6 +68,7 @@ class TestSetSocksProxySocks5:
             password="mypass",
         )
         assert sock is mock_socks.socksocket
+        assert addr_info is getaddrinfo
 
 
 class TestSetSocksProxySocks4:
@@ -77,13 +78,15 @@ class TestSetSocksProxySocks4:
         mock_socks.SOCKS4 = 1
 
         with patch.dict(sys.modules, {"socks": mock_socks}):
-            set_socks_proxy("socks4://10.0.0.1:1080")
+            sock, addr_info = set_socks_proxy("socks4://10.0.0.1:1080")
 
         mock_socks.set_default_proxy.assert_called_once_with(
             1,  # SOCKS4
             "10.0.0.1",
             1080,
         )
+        assert sock is mock_socks.socksocket
+        assert addr_info is getaddrinfo
 
     def test_no_scheme_defaults_to_socks4(self):
         mock_socks = MagicMock()
@@ -91,10 +94,12 @@ class TestSetSocksProxySocks4:
         mock_socks.SOCKS4 = 1
 
         with patch.dict(sys.modules, {"socks": mock_socks}):
-            set_socks_proxy("192.168.1.1:1080")
+            sock, addr_info = set_socks_proxy("192.168.1.1:1080")
 
         mock_socks.set_default_proxy.assert_called_once_with(
             1,  # SOCKS4
             "192.168.1.1",
             1080,
         )
+        assert sock is mock_socks.socksocket
+        assert addr_info is getaddrinfo

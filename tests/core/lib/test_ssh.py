@@ -9,7 +9,7 @@ from nettacker.core.lib.ssh import SshEngine, SshLibrary
 HOST = "ssh.example.com"
 PORT = 22
 USERNAME = "admin"
-PASSWORD = "secret"
+PASSWORD = "secret"  # noqa: S105
 
 
 class TestSshLibrary:

@@ -9,7 +9,7 @@ from nettacker.core.lib.pop3s import Pop3sEngine, Pop3sLibrary
 HOST = "mail.example.com"
 PORT = 110
 USERNAME = "user@example.com"
-PASSWORD = "secret"
+PASSWORD = "secret"  # noqa: S105
 TIMEOUT = 10
 
 

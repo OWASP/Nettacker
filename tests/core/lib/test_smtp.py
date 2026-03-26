@@ -9,7 +9,7 @@ from nettacker.core.lib.smtps import SmtpsEngine, SmtpsLibrary
 HOST = "smtp.example.com"
 PORT = 25
 USERNAME = "user@example.com"
-PASSWORD = "secret"
+PASSWORD = "secret"  # noqa: S105
 TIMEOUT = 10
 
 
