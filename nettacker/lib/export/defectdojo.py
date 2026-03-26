@@ -1,5 +1,7 @@
-import requests
 import io
+
+import requests
+
 from nettacker import logger
 from nettacker.core.messages import messages as _
 

@@ -567,7 +567,6 @@ def test_dd_file_created_and_auto_push(mock_submit, mock_path, mock_get_logs):
     mock_file = MagicMock()
     mock_path.return_value.open.return_value.__enter__.return_value = mock_file
 
-
     with patch("nettacker.lib.export.defectdojo.DefectDojoClient.push_findings") as mock_push:
         result = create_report(options, "scan-id")
 
