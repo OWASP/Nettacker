@@ -621,3 +621,4 @@ class TestIsWeakHashAlgo:
 
     def test_random_string_is_not_weak(self):
         assert is_weak_hash_algo("someRandomAlgorithm") is False
+        
