@@ -4,6 +4,10 @@ import importlib
 import json
 import os
 import uuid
+def escape_md(text):
+    if not text:
+        return ""
+    return str(text).replace("|", "\\|").replace("\n", " ")
 from datetime import datetime
 from pathlib import Path
 
@@ -310,7 +314,7 @@ def create_report(options, scan_id):
          log_list = merge_logs_to_list(event, [])
          log_text = ", ".join(log_list) if log_list else "Detected"
 
-         md_content += f"| {event.get('date','')} | {event.get('target','')} | {event.get('module_name','')} | {event.get('port','')} | {log_text} |\n"
+         md_content += f"| {escape_md(event.get('date', ''))} | {escape_md(event.get('target', ''))} | {escape_md(event.get('module', ''))} | {escape_md(event.get('port', ''))} | {escape_md(log_text)} |\n"
 
      with Path(report_path_filename).open("w", encoding="utf-8") as report_file:
          report_file.write(md_content + "\n") 
