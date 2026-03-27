@@ -8,6 +8,8 @@ def test_filter_large_content_truncates():
     content = "abcdefghij klm"
     result = engine.filter_large_content(content, filter_rate=10)
     assert result != content
+    assert result.startswith("abcdefghij")
+    assert "klm" not in result
 
 
 @patch("nettacker.core.lib.base.submit_logs_to_db")

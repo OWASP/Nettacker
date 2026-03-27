@@ -228,7 +228,8 @@ class TestLoadMessageClass:
         
         loader = load_message()
         assert loader.language == "fa"
-        assert mock_load_yaml.call_count >= 1
+        assert mock_load_yaml.call_count == 2
+        assert loader.messages.get("key") == "en_value"
 
 
 class TestMessagesGetter:
@@ -255,54 +256,25 @@ class TestMessagesGetter:
         assert hasattr(loader, "language")
 
 
-class TestProtocolEngines:
-    """Test protocol engine classes."""
-    
-    def test_smtp_engine_has_library(self):
-        """Test SmtpEngine has SmtpLibrary."""
-        assert SmtpEngine.library == SmtpLibrary
-    
-    def test_telnet_engine_has_library(self):
-        """Test TelnetEngine has TelnetLibrary."""
-        assert TelnetEngine.library == TelnetLibrary
-    
-    def test_ftp_engine_has_library(self):
-        """Test FtpEngine has FtpLibrary."""
-        assert FtpEngine.library == FtpLibrary
-    
-    def test_pop3_engine_has_library(self):
-        """Test Pop3Engine has Pop3Library."""
-        assert Pop3Engine.library == Pop3Library
-    
-    def test_ssh_engine_has_library(self):
-        """Test SshEngine has SshLibrary."""
-        assert SshEngine.library == SshLibrary
+@pytest.mark.parametrize(
+    "engine_class, expected_library",
+    [
+        (SmtpEngine, SmtpLibrary),
+        (TelnetEngine, TelnetLibrary),
+        (FtpEngine, FtpLibrary),
+        (Pop3Engine, Pop3Library),
+        (SshEngine, SshLibrary),
+        (SmtpsEngine, SmtpsLibrary),
+    ],
+)
+def test_protocol_engine_library_mapping(engine_class, expected_library):
+    assert engine_class.library == expected_library
 
 
-class TestProtocolClientAttributes:
-    """Test that protocol libraries have proper client attributes."""
-    
-    def test_smtp_has_client(self):
-        """Test SMTP library has client attribute."""
-        assert hasattr(SmtpLibrary, "client")
-        assert SmtpLibrary.client is not None
-    
-    def test_smtps_has_client(self):
-        """Test SMTPS library has client attribute."""
-        assert hasattr(SmtpsLibrary, "client")
-    
-    def test_telnet_has_client(self):
-        """Test Telnet library has client attribute."""
-        assert hasattr(TelnetLibrary, "client")
-    
-    def test_ftp_has_client(self):
-        """Test FTP library has client attribute."""
-        assert hasattr(FtpLibrary, "client")
-    
-    def test_pop3_has_client(self):
-        """Test POP3 library has client attribute."""
-        assert hasattr(Pop3Library, "client")
-    
-    def test_ssh_has_client(self):
-        """Test SSH library has client attribute."""
-        assert hasattr(SshLibrary, "client")
+@pytest.mark.parametrize(
+    "library_class",
+    [SmtpLibrary, SmtpsLibrary, TelnetLibrary, FtpLibrary, Pop3Library, SshLibrary],
+)
+def test_protocol_library_client_attribute(library_class):
+    assert hasattr(library_class, "client")
+    assert library_class.client is not None

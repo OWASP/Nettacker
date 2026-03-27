@@ -27,6 +27,8 @@ def create_tcp_socket(host, port, timeout):
 
     try:
         context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
         socket_connection = context.wrap_socket(socket_connection, server_hostname=host)
         ssl_flag = True
     except Exception:

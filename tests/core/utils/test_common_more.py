@@ -1,4 +1,4 @@
-import math
+import sys
 
 from nettacker.core.utils.common import (
     select_maximum_cpu_core,
@@ -25,26 +25,16 @@ def test_now_format():
     assert result.count(":") == 2
 
 
-def test_find_args_value_exists():
-    import sys
-    old_argv = sys.argv
-    try:
-        sys.argv = ["prog", "-t", "example.com"]
-        result = find_args_value("-t")
-        assert result == "example.com"
-    finally:
-        sys.argv = old_argv
+def test_find_args_value_exists(monkeypatch):
+    monkeypatch.setattr(sys, "argv", ["prog", "-t", "example.com"])
+    result = find_args_value("-t")
+    assert result == "example.com"
 
 
-def test_find_args_value_missing():
-    import sys
-    old_argv = sys.argv
-    try:
-        sys.argv = ["prog"]
-        result = find_args_value("-x")
-        assert result is None
-    finally:
-        sys.argv = old_argv
+def test_find_args_value_missing(monkeypatch):
+    monkeypatch.setattr(sys, "argv", ["prog"])
+    result = find_args_value("-x")
+    assert result is None
 
 
 def test_get_http_header_key():

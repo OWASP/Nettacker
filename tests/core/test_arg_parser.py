@@ -57,7 +57,6 @@ def make_options(tmp_path, **overrides):
         "scan_subdomains": False,
         "skip_service_discovery": False,
         "ping_before_scan": False,
-        "modules_extra_args": None,
     }
     base.update(overrides)
     return SimpleNamespace(**base)

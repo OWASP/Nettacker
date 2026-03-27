@@ -32,7 +32,7 @@ class TestReplaceDependentResponse:
         log = "Check response"
         
         result = replace_dependent_response(log, response_dependent)
-        assert result is not None
+        assert result == "Check response"
 
 
 class TestMergeLogsToList:
@@ -99,7 +99,7 @@ class TestReverseAndRegexCondition:
     def test_reverse_true_regex_true(self):
         """Test with both reverse and regex true."""
         result = reverse_and_regex_condition(True, True)
-        assert result is not None
+        assert result == []
 
 
 class TestGenerateWordList:
@@ -203,24 +203,22 @@ class TestFindArgsValue:
         """Test finding existing argument."""
         with patch.object(sys, "argv", ["prog", "-L", "en"]):
             result = find_args_value("-L")
-            assert result == "en" or result is None
+            assert result == "en"
     
     def test_find_args_value_not_exists(self):
         """Test finding non-existent argument."""
         with patch.object(sys, "argv", ["prog"]):
             result = find_args_value("-L")
-            # Should return None or False
-            assert result is None or result is False
+            assert result is None
     
     def test_find_args_long_flag(self):
         """Test finding long flag argument."""
         with patch.object(sys, "argv", ["prog", "--language", "fa"]):
             result = find_args_value("--language")
-            assert result == "fa" or result is None
+            assert result == "fa"
     
     def test_find_args_value_last_in_argv(self):
         """Test when flag is last argument with no value."""
         with patch.object(sys, "argv", ["prog", "-L"]):
             result = find_args_value("-L")
-            # Should handle end of list gracefully
-            assert result is not None or result is None
+            assert result is None

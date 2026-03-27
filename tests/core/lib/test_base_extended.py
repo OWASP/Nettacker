@@ -122,36 +122,29 @@ class TestTemplateLoaderParse:
 class TestTemplateLoaderOpen:
     """Test open method for reading YAML files."""
     
-    def test_open_valid_template(self):
+    def test_open_valid_template(self, tmp_path):
         """Test opening a valid template file."""
-        # Mock the Config.path.modules_dir
         mock_yaml_content = "target: '{target}'\nport: 80\n"
-        
-        with patch("nettacker.core.template.Config.path.modules_dir") as mock_modules_dir:
-            # Create a mock Path object
-            mock_path = MagicMock()
-            mock_modules_dir.__truediv__ = MagicMock(return_value=mock_path)
-            mock_path.__truediv__ = MagicMock(return_value=MagicMock(__truediv__=MagicMock(return_value=MagicMock())))
-            
-            with patch("builtins.open", mock_open(read_data=mock_yaml_content)):
+        expected_path = tmp_path / "scan" / "http_scan.yaml"
+
+        with patch("nettacker.core.template.Config.path.modules_dir", tmp_path):
+            with patch("builtins.open", mock_open(read_data=mock_yaml_content)) as mocked_open:
                 loader = TemplateLoader("http_scan_scan")
                 result = loader.open()
                 assert isinstance(result, str)
+                mocked_open.assert_called_once_with(expected_path)
     
-    def test_open_extracts_module_name_correctly(self):
+    def test_open_extracts_module_name_correctly(self, tmp_path):
         """Test that open correctly parses module name."""
         mock_yaml_content = "test: data\n"
-        
-        with patch("nettacker.core.template.Config.path.modules_dir") as mock_modules_dir:
-            mock_dir = MagicMock()
-            mock_modules_dir.__truediv__ = MagicMock(return_value=mock_dir)
-            
-            with patch("builtins.open", mock_open(read_data=mock_yaml_content)):
+        expected_path = tmp_path / "scan" / "port_scan.yaml"
+
+        with patch("nettacker.core.template.Config.path.modules_dir", tmp_path):
+            with patch("builtins.open", mock_open(read_data=mock_yaml_content)) as mocked_open:
                 loader = TemplateLoader("port_scan_scan")
-                # This should split "port_scan_scan" into action="scan", library="port_scan"
                 loader.open()
-                # Verify the correct path construction was attempted
                 assert loader.name == "port_scan_scan"
+                mocked_open.assert_called_once_with(expected_path)
 
 
 class TestTemplateLoaderFormat:

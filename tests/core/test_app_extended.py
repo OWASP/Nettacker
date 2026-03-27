@@ -28,17 +28,19 @@ def make_nettacker_with_options(**kwargs):
     return app
 
 
-@patch("nettacker.core.app.common_utils.generate_target_groups", return_value=[["example.com"]])
-@patch("nettacker.core.app.common_utils.generate_random_token", return_value="abc")
-def test_expand_targets_single_targets(mock_token, mock_groups):
-    app = make_nettacker_with_options(targets=["1.1.1.1"])
-    try:
-        app.expand_targets("scan-1")
-    except Exception:
-        pass  # Expected to fail without full setup
+@patch("nettacker.core.app.find_events", return_value=["ok"])
+def test_expand_targets_single_targets(mock_find_events):
+    app = make_nettacker_with_options(
+        targets=["1.1.1.1"],
+        skip_service_discovery=True,
+        scan_subdomains=False,
+        ping_before_scan=False,
+    )
 
-    # Just verify the method doesn't crash
-    assert app.arguments is not None
+    result = app.expand_targets("scan-1")
+
+    assert "1.1.1.1" in result
+    assert "1.1.1.1" in app.arguments.targets
 
 
 @patch("nettacker.core.app.find_events")
@@ -60,13 +62,6 @@ def test_expand_targets_url_extracts_host_and_path(mock_find):
     app.expand_targets("scan-1")
 
     assert app.arguments.url_base_path == "api/v1/"
-
-
-@patch("nettacker.core.app.die_failure", side_effect=RuntimeError("fail"))
-def test_scan_target_increments_loop(mock_die):
-    with patch.object(app_module, "Module"):
-        app = make_nettacker_with_options()
-        # Mocking the Module setup instead of calling die_failure
 
 
 @patch("nettacker.core.app.multiprocess.Process")

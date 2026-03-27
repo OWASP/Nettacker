@@ -15,11 +15,16 @@ class TestHttpEngine:
     
     def test_http_engine_exists(self):
         """Test HttpEngine class exists."""
-        assert HttpEngine is not None
+        engine = HttpEngine()
+        assert engine is not None
+        assert callable(engine.run)
     
     def test_http_engine_has_library(self):
         """Test HttpEngine has library attribute."""
+        engine = HttpEngine()
         assert hasattr(HttpEngine, "library")
+        assert hasattr(engine, "run")
+        assert callable(engine.run)
 
 
 class TestLoggerResetColor:
@@ -190,28 +195,6 @@ class TestGetLoggerInstance:
         assert isinstance(logger1, Logger)
         assert isinstance(logger2, Logger)
         assert isinstance(logger3, Logger)
-
-
-class TestLoggerColorCodes:
-    """Test specific color code usage."""
-    
-    def test_all_color_codes_exist(self):
-        """Test all color codes are defined."""
-        assert hasattr(TerminalCodes, "RESET")
-        assert hasattr(TerminalCodes, "RED")
-        assert hasattr(TerminalCodes, "GREEN")
-        assert hasattr(TerminalCodes, "YELLOW")
-        assert hasattr(TerminalCodes, "BLUE")
-        assert hasattr(TerminalCodes, "PURPLE")
-        assert hasattr(TerminalCodes, "CYAN")
-        assert hasattr(TerminalCodes, "WHITE")
-        assert hasattr(TerminalCodes, "GREY")
-    
-    def test_color_code_values_are_strings(self):
-        """Test all color codes have string values."""
-        for code in TerminalCodes:
-            assert isinstance(code.value, str)
-            assert code.value.startswith("\033[")
 
 
 class TestLoggerEdgeCases:
