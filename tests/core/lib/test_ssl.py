@@ -3,7 +3,7 @@
 # Author: Parneet Kaur
 # GSoC 2026 - OWASP Nettacker
 
-import pytest
+
 from nettacker.core.lib.ssl import is_weak_hash_algo
 
 
