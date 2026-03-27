@@ -1,6 +1,6 @@
 info:
   name: gitlab_cve_2021_39935_vuln
-  author: Ayomiposi Ayoola
+  author: OWASP Nettacker Team
   severity: 8
   description: Detects GitLab instances vulnerable to CVE-2021-39935,
     an unauthenticated Server-Side Request Forgery vulnerability in the
