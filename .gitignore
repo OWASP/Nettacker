@@ -31,3 +31,4 @@ results.*
 coverage.xml
 
 venv
+output.md
