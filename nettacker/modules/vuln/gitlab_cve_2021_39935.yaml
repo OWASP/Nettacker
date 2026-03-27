@@ -1,0 +1,93 @@
+info:
+  name: gitlab_cve_2021_39935_vuln
+  author: Ayomiposi Ayoola
+  severity: 8
+  description: Detects GitLab instances vulnerable to CVE-2021-39935,
+    an unauthenticated Server-Side Request Forgery vulnerability in the
+    CI Lint API endpoint. Affects GitLab CE and EE versions 10.5 through
+    14.5.1. Detection first confirms the instance is running a vulnerable
+    version via the public version API, then verifies the CI Lint endpoint
+    is accessible without authentication. Added to CISA KEV catalog with
+    federal patch deadline of February 24 2026.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2021-39935
+    - https://gitlab.com/gitlab-org/gitlab/-/issues/346569
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+    - https://about.gitlab.com/releases/2021/02/11/security-release-gitlab-13-8-4-released/
+  profiles:
+    - vuln
+    - http
+    - high_severity
+    - cve2021
+    - cve
+    - gitlab
+    - ssrf
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v4/version"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "\"version\":\"1[0-3]\\.|\"version\":\"14\\.[0-4]\\.|\"version\":\"14\\.5\\.0|\"version\":\"14\\.5\\.1"
+              reverse: false
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v4/ci/lint"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+        json:
+          content: "stages: [test]"
+          dry_run: true
+          ref: "main"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "valid|errors|warnings|merged_yaml"
+              reverse: false

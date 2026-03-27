@@ -2,8 +2,12 @@ info:
   name: graphql_vuln
   author: OWASP Nettacker Team
   severity: 3
-  description:
+  description: Detects exposed GraphQL introspection endpoints which can
+    reveal the full API schema structure to unauthenticated attackers,
+    potentially exposing sensitive types, queries, and mutations.
   reference:
+    - https://graphql.org/learn/introspection/
+    - https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/12-API_Testing/01-Testing_GraphQL
   profiles:
     - vuln
     - http
@@ -33,17 +37,12 @@ payloads:
                 - 80
                 - 443
               endpoint:
-                - 1239b01720/graphql
+                - graphql
+                - api/graphql
+                - v1/graphql
+                - query
         json:
-          query: "
-          {{
-              __schema {{
-                  types {{
-                  name
-                  }}
-              }}
-              }}
-          "
+          query: "{{__schema{{types{{name}}}}}}"
           variables: "{{}}"
         response:
           condition_type: and
