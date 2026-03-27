@@ -22,7 +22,7 @@ info:
     - cve
     - gitlab
     - ssrf
-
+    
 payloads:
   - library: http
     steps:
@@ -48,14 +48,16 @@ payloads:
                 - 8080
                 - 8443
         response:
+          save_to_temp_events_only: gitlab_version_check
           condition_type: and
           conditions:
             status_code:
               regex: "200"
               reverse: false
             content:
-              regex: "\"version\":\"1[0-3]\\.|\"version\":\"14\\.[0-4]\\.|\"version\":\"14\\.5\\.0|\"version\":\"14\\.5\\.1"
+              regex: "\"version\":\"10\\.[5-9]\\.|\"version\":\"10\\.\\d{2,}\\.|\"version\":\"1[1-3]\\.|\"version\":\"14\\.[0-4]\\.|\"version\":\"14\\.5\\.0|\"version\":\"14\\.5\\.1"
               reverse: false
+
       - method: post
         timeout: 3
         headers:
@@ -83,12 +85,12 @@ payloads:
           dry_run: true
           ref: "main"
         response:
+          dependent_on_temp_event: gitlab_version_check
           condition_type: and
           conditions:
             status_code:
               regex: "200"
               reverse: false
             content:
-              regex: "valid|errors|warnings|merged_yaml"
+              regex: "__schema|types.*name"
               reverse: false
-              
