@@ -42,7 +42,7 @@ payloads:
                 - v1/graphql
                 - query
         json:
-          query: "{{__schema{{types{{name}}}}}}"
+          query: "{__schema{types{name}}}"
           variables: "{{}}"
         response:
           condition_type: and
@@ -53,4 +53,3 @@ payloads:
             content:
               regex: "__schema|types.*name"
               reverse: false
-              

@@ -22,7 +22,7 @@ info:
     - cve
     - gitlab
     - ssrf
-    
+
 payloads:
   - library: http
     steps:
@@ -92,5 +92,5 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: "__schema|types.*name"
+              regex: '"status"\s*:\s*"(valid|invalid)"|"errors"\s*:\s*\['
               reverse: false
