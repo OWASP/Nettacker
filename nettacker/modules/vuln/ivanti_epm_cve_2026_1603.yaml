@@ -1,7 +1,7 @@
 info:
-  name: ivanti_epm_cve_2026_1603_vuln
+  name: ivanti_epm_cve_2026_1603
   author: OWASP Nettacker Team
-  severity: 9
+  severity: 8
   description: Detects Ivanti Endpoint Manager instances vulnerable to
     CVE-2026-1603, an authentication bypass via alternate path (CWE-288)
     affecting all EPM versions prior to 2024 SU5. A remote unauthenticated
