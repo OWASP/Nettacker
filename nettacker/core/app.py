@@ -289,8 +289,7 @@ class Nettacker(ArgParser):
     def scan_target_group(self, targets, scan_id, process_number):
         active_threads = []
         log.verbose_event_info(_("single_process_started").format(process_number))
-        if self.arguments.socks_proxy:
-           socket.socket, socket.getaddrinfo = set_socks_proxy(self.arguments.socks_proxy)
+        
         total_number_of_modules = len(targets) * len(self.arguments.selected_modules)
         total_number_of_modules_counter = 1
 
