@@ -51,5 +51,5 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: "__schema|types.*name"
+              regex: "(?s)__schema|types.*name"
               reverse: false
