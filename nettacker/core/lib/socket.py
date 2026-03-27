@@ -26,7 +26,10 @@ def create_tcp_socket(host, port, timeout):
         return None
 
     try:
-        context = ssl.create_default_context()
+        # Create an SSL context without certificate or hostname verification
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
         context.check_hostname = False
         context.verify_mode = ssl.CERT_NONE
         socket_connection = context.wrap_socket(socket_connection, server_hostname=host)
