@@ -1,0 +1,54 @@
+info:
+  name: php_cgi_cve_2024_4577_vuln
+  author: Aryan Shetty
+  severity: 9.8
+  description: >
+    PHP before 8.3.8, 8.2.20, and 8.1.29 on Windows in CGI mode is vulnerable
+    to argument injection (CVE-2024-4577). The Windows Best-Fit encoding feature
+    allows attackers to bypass the CVE-2012-1823 patch and inject PHP CLI
+    arguments via crafted URL parameters, enabling unauthenticated remote code
+    execution on the target server.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2024-4577
+    - https://devco.re/blog/2024/06/06/security-alert-cve-2024-4577-php-cgi-argument-injection-vulnerability/
+    - https://github.com/watchtowrlabs/CVE-2024-4577
+  profiles:
+    - vuln
+    - http
+    - cve
+    - cve_2024
+    - php
+    - rce
+    - critical_severity
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/php-cgi/php-cgi.exe?%ADd+phpinfo"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "(?s)(?=.*PHP Version)(?=.*php\\.ini)"
+              reverse: false
