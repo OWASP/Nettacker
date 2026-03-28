@@ -8,6 +8,7 @@ import math
 import multiprocessing
 import random
 import re
+import secrets
 import string
 import sys
 import time
@@ -31,7 +32,9 @@ def replace_dependent_response(log, response_dependent):
         return log
 
 
-def merge_logs_to_list(result, log_list=[]):
+def merge_logs_to_list(result, log_list=None):
+    if log_list is None:
+        log_list = []
     if isinstance(result, dict):
         if "json_event" in list(result.keys()):
             if not isinstance(result["json_event"], dict):
@@ -58,9 +61,7 @@ def reverse_and_regex_condition(regex, reverse):
 def wait_for_threads_to_finish(threads, maximum=None, terminable=False, sub_process=False):
     while threads:
         try:
-            for thread in threads:
-                if not thread.is_alive():
-                    threads.remove(thread)
+            threads[:] = [t for t in threads if t.is_alive()]
             if maximum and len(threads) < maximum:
                 break
             time.sleep(0.01)
@@ -387,7 +388,7 @@ def expand_step(step):
 
 
 def generate_random_token(length=10):
-    return "".join(random.choice(string.ascii_lowercase) for _ in range(length))
+    return secrets.token_hex(length)
 
 
 def now(format="%Y-%m-%d %H:%M:%S"):
