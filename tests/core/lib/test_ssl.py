@@ -572,6 +572,8 @@ class TestSslMethod:
         result = ssl_engine.response_conditions_matched(substeps.ssl_weak_version_vuln, None)
 
         assert result == []
+
+
 class TestIsWeakHashAlgo:
     """
     Tests for is_weak_hash_algo(algo).
@@ -621,4 +623,3 @@ class TestIsWeakHashAlgo:
 
     def test_random_string_is_not_weak(self):
         assert is_weak_hash_algo("someRandomAlgorithm") is False
-        
