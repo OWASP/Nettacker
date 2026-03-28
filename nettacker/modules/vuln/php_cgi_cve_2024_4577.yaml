@@ -1,6 +1,6 @@
 info:
   name: php_cgi_cve_2024_4577_vuln
-  author: Aryan Shetty
+  author: Aryan
   severity: 9.8
   description: >
     PHP before 8.3.8, 8.2.20, and 8.1.29 on Windows in CGI mode is vulnerable
