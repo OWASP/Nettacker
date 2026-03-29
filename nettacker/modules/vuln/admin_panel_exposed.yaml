@@ -1,0 +1,30 @@
+info:
+  name: admin_panel_exposed
+  author: priak388
+  severity: 3
+  description: Detects exposed admin or login panels accessible without restriction
+
+profiles:
+  - web
+  - http
+
+payloads:
+  - library: http
+
+steps:
+  - method: get
+    paths:
+      - /admin
+      - /login
+      - /dashboard
+    timeout: 3
+    allow_redirects: true
+
+    match:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "admin"
+          - "login"
