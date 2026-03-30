@@ -8,6 +8,7 @@ import math
 import multiprocessing
 import random
 import re
+import secrets
 import string
 import sys
 import time
@@ -387,7 +388,7 @@ def expand_step(step):
 
 
 def generate_random_token(length=10):
-    return "".join(random.choice(string.ascii_lowercase) for _ in range(length))
+    return secrets.token_hex(length)
 
 
 def now(format="%Y-%m-%d %H:%M:%S"):
