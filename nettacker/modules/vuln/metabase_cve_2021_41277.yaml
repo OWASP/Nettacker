@@ -12,6 +12,7 @@ info:
     - critical_severity
     - metabase
     - lfi
+    - cisa_kev
 payloads:
   - library: http
     steps:
