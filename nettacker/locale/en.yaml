@@ -32,8 +32,8 @@ finished_module: finished module {0} towards the target {1} | module thread numb
 modules_extra_args_help: add extra args to pass to modules (e.g. --modules-extra-args "x_api_key=123&xyz_passwd=abc"
 choose_scan_method: choose modules {0} to see full list use --show-all-modules
 cannot_run_api_server: You can't run API Server through itself!
-error_target: Cannot specify the target(s)
-error_target_file: "Cannot specify the target(s), unable to open file: {0}"
+error_target: No target specified. Use -t or --targets to define scan target(s).
+error_target_file: "Target file error: cannot open file: {0}"
 error_username: "Cannot specify the username(s), unable to open file: {0}"
 error_passwords: "Cannot specify the password(s), unable to open file: {0}"
 error_wordlist: "Cannot specify the word(s), unable to open file {0}"
