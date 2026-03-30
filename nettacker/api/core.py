@@ -224,20 +224,20 @@ def profiles():
             "title": _("scan_modules_title"),
             "desc": _("scan_modules_desc"),
             "label": "success",
-            "profiles": []
+            "profiles": [],
         },
         "brute": {
             "title": _("brute_modules_title"),
             "desc": _("brute_modules_desc"),
             "label": "warning",
-            "profiles": []
+            "profiles": [],
         },
         "vuln": {
             "title": _("vuln_modules_title"),
             "desc": _("vuln_modules_desc"),
             "label": "danger",
-            "profiles": []
-        }
+            "profiles": [],
+        },
     }
 
     for profile in sorted(all_profiles.keys()):
@@ -273,7 +273,9 @@ def profiles():
             </div>
             <div id="collapse_{0}" class="panel-collapse collapse">
                 <div class="panel-body text-justify">
-        """.format(cat_name, cat_info["label"], cat_info["title"], cat_info["desc"], _("select_all"))
+        """.format(
+            cat_name, cat_info["label"], cat_info["title"], cat_info["desc"], _("select_all")
+        )
 
         for profile in cat_info["profiles"]:
             label_type = cat_info["label"]
@@ -307,20 +309,20 @@ def scan_methods():
             "title": _("scan_modules_title"),
             "desc": _("scan_modules_desc"),
             "label": "success",
-            "modules": []
+            "modules": [],
         },
         "brute": {
             "title": _("brute_modules_title"),
             "desc": _("brute_modules_desc"),
             "label": "warning",
-            "modules": []
+            "modules": [],
         },
         "vuln": {
             "title": _("vuln_modules_title"),
             "desc": _("vuln_modules_desc"),
             "label": "danger",
-            "modules": []
-        }
+            "modules": [],
+        },
     }
 
     for sm in sorted(methods.keys()):
@@ -349,7 +351,9 @@ def scan_methods():
             </div>
             <div id="collapse_sm_{0}" class="panel-collapse collapse">
                 <div class="panel-body text-justify">
-        """.format(cat_name, cat_info["label"], cat_info["title"], cat_info["desc"], _("select_all"))
+        """.format(
+            cat_name, cat_info["label"], cat_info["title"], cat_info["desc"], _("select_all")
+        )
 
         for module in cat_info["modules"]:
             label_type = cat_info["label"]
