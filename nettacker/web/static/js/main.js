@@ -676,6 +676,38 @@ $(document).ready(function () {
     $(".checkbox").prop("checked", $(this).prop("checked"));
   });
 
+  $(document).on("change", "#profiles input[type='checkbox']", function () {
+    if ($(this).hasClass("check-all-category") || this.id === "all_profiles") {
+      return;
+    }
+    var modules = $(this).data("modules").split(",");
+    var isChecked = $(this).prop("checked");
+    for (var i = 0; i < modules.length; i++) {
+      var moduleId = modules[i];
+      if (isChecked) {
+        $("#" + moduleId).prop("checked", true);
+      } else {
+        // Only uncheck if no other checked profile includes this module
+        var stillNeeded = false;
+        $("#profiles input[type='checkbox']:checked").each(function () {
+          if (
+            this.id !== "all_profiles" &&
+            !$(this).hasClass("check-all-category")
+          ) {
+            var otherModules = $(this).data("modules").split(",");
+            if (otherModules.indexOf(moduleId) !== -1) {
+              stillNeeded = true;
+              return false;
+            }
+          }
+        });
+        if (!stillNeeded) {
+          $("#" + moduleId).prop("checked", false);
+        }
+      }
+    }
+  });
+
   $(".checkbox-brute-profile").click(function () {
     if (this.id === "brute") {
       $(".checkbox-sm-brute-module").prop("checked", $(this).prop("checked"));
@@ -695,13 +727,21 @@ $(document).ready(function () {
   });
 
   $(".check-all-profiles").click(function () {
-    $("#profiles input[type='checkbox']").not(this).prop("checked", $(this).prop("checked"));
-    $(".check-all-category").prop("checked", $(this).prop("checked"));
+    var isChecked = $(this).prop("checked");
+    $("#profiles input[type='checkbox']")
+      .not(this)
+      .not(".check-all-category")
+      .prop("checked", isChecked)
+      .trigger("change");
+    $(".check-all-category").prop("checked", isChecked);
   });
 
   $(document).on("change", ".check-all-category", function () {
     var category = $(this).data("category");
-    $(".checkbox-" + category + "-profile").prop("checked", $(this).prop("checked"));
+    var isChecked = $(this).prop("checked");
+    $(".checkbox-" + category + "-profile")
+      .prop("checked", isChecked)
+      .trigger("change");
   });
 
   $(document).on("show.bs.collapse", "#profile_accordion", function (e) {

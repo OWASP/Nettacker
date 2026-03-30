@@ -278,9 +278,9 @@ def profiles():
         for profile in cat_info["profiles"]:
             label_type = cat_info["label"]
             res += """
-                <label><input id="{0}" type="checkbox" class="checkbox checkbox-{1}-profile">
+                <label><input id="{0}" type="checkbox" class="checkbox checkbox-{1}-profile" data-modules="{3}">
                 <a class="label label-{2}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            """.format(profile, cat_name, label_type)
+            """.format(profile, cat_name, label_type, ",".join(all_profiles[profile]))
 
         res += """
                 </div>
