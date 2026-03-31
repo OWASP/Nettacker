@@ -243,7 +243,7 @@ def do_one(dest_addr, timeout, psize):
     #             print "failed. (socket error: '%s')" % e[1]
     #             break
     #
-    #         if delay != None:
+    #         if delay is not None:
     #             delay = delay * 1000
     #             plist.append(delay)
     #
