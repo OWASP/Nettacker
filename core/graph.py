@@ -367,7 +367,7 @@ def create_compare_report(options, scan_id):
     else:
         compare_report_path_filename = (
             options.compare_report_path_filename
-            if len(options.compare_report_path_filename) != 0
+            if options.compare_report_path_filename
             else generate_compare_filepath(scan_id)
         )
 

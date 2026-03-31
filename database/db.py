@@ -1168,6 +1168,6 @@ def search_logs(page, query):
                             )
         except Exception:
             return structure(status="error", msg=messages("database_error"))
-        if len(selected) == 0:
+        if not selected:
             return structure(status="finished", msg=messages("search_results_end"))
         return selected

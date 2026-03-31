@@ -156,8 +156,8 @@ def access_log(response):
         the flask response
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"]:
-        log_request = open(app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"], "ab")
-        log_request.write(
+        with open(app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"], "ab") as log_request:
+         log_request.write(
             '{0} [{1}] {2} "{3} {4}" {5} {6} {7}\r\n'.format(
                 flask_request.remote_addr,
                 now(),
