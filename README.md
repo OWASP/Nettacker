@@ -87,7 +87,6 @@ python nettacker.py -i example.com -m port_scan
 python nettacker.py -i example.com -v
 
 These examples help users quickly understand how to perform basic scans using OWASP Nettacker.
-
 ### CLI (Docker)
 ```bash
 
