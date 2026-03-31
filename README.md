@@ -18,7 +18,7 @@ OWASP Nettacker
 
 ![2018-01-19_0-45-07](https://user-images.githubusercontent.com/7676267/35123376-283d5a3e-fcb7-11e7-9b1c-92b78ed4fecc.gif)
 
-OWASP Nettacker is an open-source, Python-based automated penetration testing and information-gathering framework designed to help cyber security professionals and ethical hackers perform reconnaissance, vulnerability assessments, and network security audits efficiently. Nettacker automates tasks like port scanning, service detection, subdomain enumeration, network mapping, vulnerability scanning, credential brute-force testing making it a powerful tool for identifying weaknesses in networks, web applications, IoT devices and APIs.
+OWASP Nettacker is an open-source, Python-based automated penetration testing and information-gathering framework designed to help cyber security professionals and ethical hackers perform reconnaissance, vulnerability assessments, and network security audits efficiently. Nettacker automates tasks like port scanning, service detection, subdomain enumeration, network mapping, vulnerability scanning, credential brute-force testing, making it a powerful tool for identifying weaknesses in networks, web applications, IoT devices and APIs.
 
 ### Key Features
 
@@ -45,7 +45,7 @@ OWASP Nettacker is an open-source, Python-based automated penetration testing an
   Automate and scale common reconnaissance tasks like subdomain enumeration, directory brute-forcing, and default credential checks to speed up finding targets.  
 
 - **Network Vulnerability Scanning**  
-  Efficiently scan IPs, IP ranges, or entire CIDR blocks or all subdmains of the organisation in parallel using a modular, multithreaded approach for large-scale network assessments.  
+  Efficiently scan IPs, IP ranges, or entire CIDR blocks or all subdomains of the organisation in parallel using a modular, multithreaded approach for large-scale network assessments.  
 
 - **Shadow IT & Asset Discovery**  
   Use historical scan data and drift detection to uncover unmanaged or forgotten hosts, open ports/services, and subdomains appearing over time.  
@@ -90,7 +90,7 @@ $ docker run owasp/nettacker --help
 $ docker-compose up 
 ```
 * Use the API Key displayed in the CLI to login to the Web GUI
-* Web GUI is accessible from your (https://localhost:5000) or https://nettacker-api.z3r0d4y.com:5000/ (pointed to your localhost)
+* Web GUI is accessible from your (http://localhost:5000) or https://nettacker-api.z3r0d4y.com:5000/ (pointed to your localhost)
 * The local database is `.nettacker/data/nettacker.db` (sqlite).
 * Default results path is `.nettacker/data/results`
 * `docker-compose` will share your nettacker folder, so you will not lose any data after `docker-compose down`
