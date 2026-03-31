@@ -70,6 +70,24 @@ OWASP Nettacker is an open-source, Python-based automated penetration testing an
 ____________
 Quick Setup & Run
 ============
+_____________
+
+## Quick Start Example
+
+* Run a basic scan:
+
+python nettacker.py -i example.com
+
+* Run scan with specific module:
+
+python nettacker.py -i example.com -m port_scan
+
+* Run scan with verbose output:
+
+python nettacker.py -i example.com -v
+
+These examples help users quickly understand how to perform basic scans using OWASP Nettacker.
+
 ### CLI (Docker)
 ```bash
 
