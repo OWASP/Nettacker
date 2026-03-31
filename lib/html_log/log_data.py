@@ -1,7 +1,16 @@
 from nettacker.config import Config
 
-css_1 = open(Config.path.web_static_dir / "report/html_table.css").read()
-json_parse_js = open(Config.path.web_static_dir / "report/json_parse.js").read()
-table_end = open(Config.path.web_static_dir / "report/table_end.html").read()
-table_items = open(Config.path.web_static_dir / "report/table_items.html").read()
-table_title = open(Config.path.web_static_dir / "report/table_title.html").read()
+with open(Config.path.web_static_dir / "report/html_table.css") as f:
+    css_1 = f.read()
+
+with open(Config.path.web_static_dir / "report/json_parse.js") as f:
+    json_parse_js = f.read()
+
+with open(Config.path.web_static_dir / "report/table_end.html") as f:
+    table_end = f.read()
+
+with open(Config.path.web_static_dir / "report/table_items.html") as f:
+    table_items = f.read()
+
+with open(Config.path.web_static_dir / "report/table_title.html") as f:
+    table_title = f.read()
