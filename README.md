@@ -22,7 +22,12 @@ OWASP Nettacker is an open-source, Python-based automated penetration testing an
 
 ## Getting Started Tips
 
-OWASP Nettacker is a powerful security tool, but new users may find it complex initially. Adding clearer usage instructions and structured explanations of scan results can help improve onboarding and usability for contributors and developers.
+To get started with OWASP Nettacker:
+
+- Begin with basic scan commands to understand how the tool works.
+- Refer to the official documentation: https://nettacker.readthedocs.io/en/latest/Usage
+- Explore modules gradually to learn different capabilities.
+- Review scan results carefully to understand vulnerabilities and outputs.
 
 ### Key Features
 
