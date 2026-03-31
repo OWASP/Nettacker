@@ -20,6 +20,10 @@ OWASP Nettacker
 
 OWASP Nettacker is an open-source, Python-based automated penetration testing and information-gathering framework designed to help cyber security professionals and ethical hackers perform reconnaissance, vulnerability assessments, and network security audits efficiently. Nettacker automates tasks like port scanning, service detection, subdomain enumeration, network mapping, vulnerability scanning, credential brute-force testing making it a powerful tool for identifying weaknesses in networks, web applications, IoT devices and APIs.
 
+## Getting Started Tips
+
+OWASP Nettacker is a powerful security tool, but new users may find it complex initially. Adding clearer usage instructions and structured explanations of scan results can help improve onboarding and usability for contributors and developers.
+
 ### Key Features
 
 - **Modular architecture** - Each task — like port scanning, directory discovery, subdomain enumeration, vulnerability checks, or credential brute-forcing - is implemented as its own module, giving you control over what runs.
