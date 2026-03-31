@@ -118,7 +118,7 @@ thread_number_modules: मेजबान के लिए समानांत
 wrong_hardware_usage: "आपको हार्डवेयर उपयोग के लिए इनमें से एक प्रोफाइल का चयन करना होगा। (low, normal, high, maximum)"
 invalid_scan_id: आपकी स्कैन आईडी मान्य नहीं है
 compare_scans: "scan_id का उपयोग करके वर्तमान स्कैन की पुराने स्कैन से तुलना करें"
-compare_report_path_filename: "तुलना रिपोर्ट सहेजने के लिए फ़ाइल पथ"
+compare_report_path_filename: "तुलना रिपोर्ट सहेजने के लिए फ़ाइल पथ" 
 no_scan_to_compare: "तुलना के लिए scan_id नहीं मिला"
 compare_report_saved: "तुलना परिणाम {0} में सहेजे गए"
 build_compare_report: "तुलना रिपोर्ट बनाई जा रही है"
