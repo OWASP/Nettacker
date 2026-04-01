@@ -1,0 +1,55 @@
+info:
+  name: ivanti_connect_secure_cve_2025_0282_vuln
+  author: Aryan
+  severity: 9.0
+  description: >
+    Ivanti Connect Secure versions prior to 22.7R2.5, Ivanti Policy Secure
+    versions prior to 22.7R1.2, and Ivanti Neurons for ZTA Gateways prior to
+    22.7R2.3 are vulnerable to a stack-based buffer overflow (CVE-2025-0282).
+    An unauthenticated remote attacker can exploit this vulnerability to
+    achieve remote code execution. Actively exploited in the wild and listed
+    in the CISA Known Exploited Vulnerabilities catalog since January 2025.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-0282
+    - https://forums.ivanti.com/s/article/Security-Advisory-Ivanti-Connect-Secure-Policy-Secure-ZTA-Gateways-CVE-2025-0282-CVE-2025-0283
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+  profiles:
+    - vuln
+    - http
+    - cve
+    - cve_2025
+    - ivanti
+    - rce
+    - critical_severity
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/dana-na/auth/url_default/welcome.cgi"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+                - "http"
+              ports:
+                - 443
+                - 8443
+                - 80
+        response:
+          condition_type: or
+          conditions:
+            status_code:
+              regex: "200|301|302"
+              reverse: false
+            content:
+              regex: '(?i)(ivanti|pulse secure|connect secure|welcome\.cgi|dana-na)'
+              reverse: false
