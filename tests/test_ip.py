@@ -1,5 +1,7 @@
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import patch, MagicMock
+
 from nettacker.core.ip import (
     generate_ip_range,
     get_ip_range,
@@ -10,6 +12,8 @@ from nettacker.core.ip import (
     is_ipv6_range,
     is_ipv6_cidr,
 )
+
+
 class TestIsSingleIPv4:
     """
     is_single_ipv4() uses netaddr.valid_ipv4(str(ip))
@@ -55,6 +59,8 @@ class TestIsSingleIPv4:
     def test_none_input(self):
         # str(None) = "None" — not a valid IP, should be False
         assert is_single_ipv4(None) is False
+
+
 class TestIsSingleIPv6:
     """
     is_single_ipv6() uses netaddr.valid_ipv6(ip)
@@ -95,6 +101,8 @@ class TestIsSingleIPv6:
         # We document this bug with pytest.raises
         with pytest.raises((TypeError, Exception)):
             is_single_ipv6(None)
+
+
 class TestIsIPv4Range:
     """
     IMPORTANT: is_ipv4_range() actually checks for CIDR notation (has "/").
@@ -162,6 +170,8 @@ class TestIsIPv4CIDR:
 
     def test_empty_string_returns_false(self):
         assert is_ipv4_cidr("") is False
+
+
 class TestIsIPv6Range:
     """
     is_ipv6_range() checks for IPv6 DASH-RANGE notation (no "/", has ":", has "-").
@@ -188,7 +198,8 @@ class TestIsIPv6Range:
 
     def test_empty_string_returns_false(self):
         assert is_ipv6_range("") is False
-        
+
+
 class TestIsIPv6CIDR:
     """
     is_ipv6_cidr() checks for IPv6 CIDR notation (has "/", has ":", no "-").
@@ -218,6 +229,8 @@ class TestIsIPv6CIDR:
 
     def test_empty_string_returns_false(self):
         assert is_ipv6_cidr("") is False
+
+
 class TestGenerateIPRange:
     """
     generate_ip_range() returns a list of IP strings.
@@ -257,6 +270,8 @@ class TestGenerateIPRange:
     def test_dash_range_order_is_ascending(self):
         result = generate_ip_range("10.0.0.1-10.0.0.5")
         assert result == sorted(result)
+
+
 class TestGetIPRange:
     """
     get_ip_range() makes a live HTTP request to RIPE's API.
