@@ -4,10 +4,6 @@ import importlib
 import json
 import os
 import uuid
-def escape_md(text):
-    if not text:
-        return ""
-    return str(text).replace("|", "\\|").replace("\n", " ")
 from datetime import datetime
 from pathlib import Path
 
@@ -134,9 +130,9 @@ def create_dd_specific_json(all_scan_logs):
         module_name = log["module_name"].strip()
         date = datetime.strptime(log["date"], "%Y-%m-%d %H:%M:%S.%f").strftime("%m/%d/%Y")
         port = str(log.get("port", "")).strip()
-        impact = str(log.get("event","")).strip()
-        severity_justification = str(log.get("json_event", "")).strip()
-        service = str(log.get("target", "")).strip()
+        impact = log.get("event", "").strip()
+        severity_justification = log.get("json_event", "").strip()
+        service = log.get("target", "").strip()
         unique_id = log.get("scan_id", uuid.uuid4().hex)
 
         metadata = all_module_severity_and_desc.get(module_name, {})
@@ -303,22 +299,6 @@ def create_report(options, scan_id):
             for log_list in all_scan_logs:
                 dict_data = {key: value for key, value in log_list.items() if key in keys}
                 writer.writerow(dict_data)
-
-
-    elif report_path_filename.lower().endswith(".md"):
-     md_content = ""
-     md_content += "| Date | Target | Module | Port | Info |\n"
-     md_content += "|------|--------|--------|------|------|\n"
-
-     for event in all_scan_logs:
-         log_list = merge_logs_to_list(event, [])
-         log_text = ", ".join(log_list) if log_list else "Detected"
-
-         md_content += f"| {escape_md(event.get('date', ''))} | {escape_md(event.get('target', ''))} | {escape_md(event.get('module', ''))} | {escape_md(event.get('port', ''))} | {escape_md(log_text)} |\n"
-
-     with Path(report_path_filename).open("w", encoding="utf-8") as report_file:
-         report_file.write(md_content + "\n") 
-
 
     else:
         with Path(report_path_filename).open("w", encoding="utf-8") as report_file:

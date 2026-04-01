@@ -244,9 +244,9 @@ class Nettacker(ArgParser):
 
         log.info(_("start_multi_process").format(len(self.arguments.targets), len(target_groups)))
         active_processes = []
-        for t_id, group in enumerate(target_groups):
+        for t_id, target_groups in enumerate(target_groups):
             process = multiprocess.Process(
-                target=self.scan_target_group, args=(group, scan_id, t_id)
+                target=self.scan_target_group, args=(target_groups, scan_id, t_id)
             )
             process.start()
             active_processes.append(process)
@@ -254,7 +254,7 @@ class Nettacker(ArgParser):
         return wait_for_threads_to_finish(active_processes, sub_process=True)
 
     def scan_target(
-.        self,
+        self,
         target,
         module_name,
         scan_id,
@@ -264,6 +264,7 @@ class Nettacker(ArgParser):
     ):
         options = copy.deepcopy(self.arguments)
 
+        socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
         module = Module(
             module_name,
             options,
@@ -289,7 +290,6 @@ class Nettacker(ArgParser):
     def scan_target_group(self, targets, scan_id, process_number):
         active_threads = []
         log.verbose_event_info(_("single_process_started").format(process_number))
-        
         total_number_of_modules = len(targets) * len(self.arguments.selected_modules)
         total_number_of_modules_counter = 1
 
