@@ -45,12 +45,11 @@ payloads:
                 - 8443
                 - 80
         response:
-          condition_type: or
+          condition_type: and
           conditions:
             status_code:
               regex: "200"
               reverse: false
             content:
-              regex: "fwbcgi|FortiWeb|admin.*privilege|super_admin"
+              regex: "super_admin|\"privilege\"|fwbcgi"
               reverse: false
-              
