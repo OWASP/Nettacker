@@ -2,6 +2,7 @@ import ssl
 from unittest.mock import patch
 
 import pytest
+from OpenSSL import crypto
 
 from nettacker.core.lib.ssl import (
     SslEngine,
@@ -579,39 +580,32 @@ class TestGetCertInfo:
     """
     Tests for get_cert_info(cert).
 
-    get_cert_info() takes a PEM certificate string and returns a dict with:
-    expired, self_signed, issuer, subject, signing_algo, weak_signing_algo,
-    activation_date, expiration_date, not_activated, expiring_soon.
-
-    It calls is_weak_hash_algo() internally. Tests that verify weak_signing_algo
-    behaviour mock is_weak_hash_algo to isolate it from the hash logic.
+    Uses a runtime-generated self-signed certificate so tests never
+    expire. Certificate is created fresh for each test run using
+    pyOpenSSL with a 10-year validity window.
     """
 
-    # Self-signed certificate for testing (sha256, valid for 1 year from 2026-04-01)
-    SELF_SIGNED_CERT = """-----BEGIN CERTIFICATE-----
-MIICxDCCAawCAQAwDQYJKoZIhvcNAQELBQAwKDELMAkGA1UEBhMCVVMxGTAXBgNV
-BAMMEHRlc3QuZXhhbXBsZS5jb20wHhcNMjYwNDAxMDYzNTUzWhcNMjcwNDAxMDYz
-NTUzWjAoMQswCQYDVQQGEwJVUzEZMBcGA1UEAwwQdGVzdC5leGFtcGxlLmNvbTCC
-ASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAP59/Wf++uSdP6rejcN0/Gcc
-8ECfsKmbOQuLIyKV2mI37aiFa0FPLeyF8eJyLnx3GFbcbhdXBwCwRr+3t/MMFZYA
-lILWexgWoWVsj9kNLIjiRvp1+6V6/5xq1TWPIu0Jx6ePZRpW2p2eM8q6nlKQmP1D
-+N1yPdkt7p09sgTOfYcET/W0+jILG+zjyF+/dgIfNfs2vkNtmctZ8w3vs36VrY6z
-GslQQROvQOCJ4FQR4cRVTTgBBq6RDASWy4gFiEnerL81oHcl1yQy2YAD9s+CK4ed
-HfLY4yc9xuDvgIpp2F4sOjEZtvpwUgwtqZwMK7x2uMxASSNV5oMygZJgLwwiafkC
-AwEAATANBgkqhkiG9w0BAQsFAAOCAQEAQM8gvTB7J1/WnJ4prxiSa1q65S1korGF
-aYV69GmLXapI/1liGVTgIqkgXF71V0eY8isg/kcLr8HIbtwGzVi72417hSMpDjqv
-jtGyvn5kHypUrtvy6hFuI6j/yqTEpkYeUGf6P4I6iXmBmUg2P5kwp/vwyHjk+CZ4
-/UoFE7e1vj8uXWBzwQ0OJE8WI6VrBw6jxCbCNRTcMV3++/yNCU0+qT9oMhQb6NrZ
-c4UppOJX1JhC+LhAzDQV376QPFTJFrJ3YXK2Ab7slhS/7xwlU8XaIsRvdZJl1jqs
-EASCaxqoPd/kplFKCTR7usmZ39kMFjn87q0HofSjfKb/P7FniUHaig==
------END CERTIFICATE-----"""
+    @pytest.fixture
+    def self_signed_cert_pem(self):
+        """Generate a fresh self-signed certificate valid for 10 years."""
+        k = crypto.PKey()
+        k.generate_key(crypto.TYPE_RSA, 2048)
+        cert = crypto.X509()
+        cert.get_subject().C = "US"
+        cert.get_subject().CN = "test.example.com"
+        cert.set_issuer(cert.get_subject())
+        cert.set_pubkey(k)
+        cert.gmtime_adj_notBefore(0)
+        cert.gmtime_adj_notAfter(10 * 365 * 24 * 60 * 60)
+        cert.sign(k, "sha256")
+        return crypto.dump_certificate(crypto.FILETYPE_PEM, cert).decode()
 
-    def test_returns_dict(self):
-        result = get_cert_info(self.SELF_SIGNED_CERT)
+    def test_returns_dict(self, self_signed_cert_pem):
+        result = get_cert_info(self_signed_cert_pem)
         assert isinstance(result, dict)
 
-    def test_required_keys_present(self):
-        result = get_cert_info(self.SELF_SIGNED_CERT)
+    def test_required_keys_present(self, self_signed_cert_pem):
+        result = get_cert_info(self_signed_cert_pem)
         expected_keys = [
             "expired",
             "self_signed",
@@ -627,59 +621,52 @@ EASCaxqoPd/kplFKCTR7usmZ39kMFjn87q0HofSjfKb/P7FniUHaig==
         for key in expected_keys:
             assert key in result, f"Missing key: {key}"
 
-    def test_self_signed_is_true(self):
-        # Issuer and subject are identical — should be detected as self-signed
-        result = get_cert_info(self.SELF_SIGNED_CERT)
+    def test_self_signed_is_true(self, self_signed_cert_pem):
+        result = get_cert_info(self_signed_cert_pem)
         assert result["self_signed"] is True
 
-    def test_not_expired(self):
-        # Certificate is valid until 2027-04-01
-        result = get_cert_info(self.SELF_SIGNED_CERT)
+    def test_not_expired(self, self_signed_cert_pem):
+        result = get_cert_info(self_signed_cert_pem)
         assert result["expired"] is False
 
-    def test_subject_contains_cn(self):
-        result = get_cert_info(self.SELF_SIGNED_CERT)
+    def test_subject_contains_cn(self, self_signed_cert_pem):
+        result = get_cert_info(self_signed_cert_pem)
         assert "test.example.com" in result["subject"]
 
-    def test_signing_algo_is_string(self):
-        result = get_cert_info(self.SELF_SIGNED_CERT)
+    def test_signing_algo_is_string(self, self_signed_cert_pem):
+        result = get_cert_info(self_signed_cert_pem)
         assert isinstance(result["signing_algo"], str)
 
-    def test_activation_date_format(self):
-        # Should be YYYY-MM-DD format
-        result = get_cert_info(self.SELF_SIGNED_CERT)
+    def test_activation_date_format(self, self_signed_cert_pem):
+        result = get_cert_info(self_signed_cert_pem)
         assert len(result["activation_date"]) == 10
         assert result["activation_date"][4] == "-"
         assert result["activation_date"][7] == "-"
 
-    def test_expiration_date_format(self):
-        result = get_cert_info(self.SELF_SIGNED_CERT)
+    def test_expiration_date_format(self, self_signed_cert_pem):
+        result = get_cert_info(self_signed_cert_pem)
         assert len(result["expiration_date"]) == 10
         assert result["expiration_date"][4] == "-"
         assert result["expiration_date"][7] == "-"
 
-    def test_weak_signing_algo_false_for_sha256(self):
-        # sha256 is a safe algorithm — weak_signing_algo should be False
-        result = get_cert_info(self.SELF_SIGNED_CERT)
+    def test_weak_signing_algo_false_for_sha256(self, self_signed_cert_pem):
+        result = get_cert_info(self_signed_cert_pem)
         assert result["weak_signing_algo"] is False
 
-    def test_weak_signing_algo_mocked_true(self):
-        # Mock is_weak_hash_algo to return True regardless of actual algorithm
-        # This verifies get_cert_info correctly passes the result through
+    def test_weak_signing_algo_mocked_true(self, self_signed_cert_pem):
         with patch("nettacker.core.lib.ssl.is_weak_hash_algo", return_value=True):
-            result = get_cert_info(self.SELF_SIGNED_CERT)
+            result = get_cert_info(self_signed_cert_pem)
             assert result["weak_signing_algo"] is True
 
-    def test_weak_signing_algo_mocked_false(self):
-        # Mock is_weak_hash_algo to return False
+    def test_weak_signing_algo_mocked_false(self, self_signed_cert_pem):
         with patch("nettacker.core.lib.ssl.is_weak_hash_algo", return_value=False):
-            result = get_cert_info(self.SELF_SIGNED_CERT)
+            result = get_cert_info(self_signed_cert_pem)
             assert result["weak_signing_algo"] is False
 
-    def test_not_activated_is_bool(self):
-        result = get_cert_info(self.SELF_SIGNED_CERT)
+    def test_not_activated_is_bool(self, self_signed_cert_pem):
+        result = get_cert_info(self_signed_cert_pem)
         assert isinstance(result["not_activated"], bool)
 
-    def test_expiring_soon_is_bool(self):
-        result = get_cert_info(self.SELF_SIGNED_CERT)
+    def test_expiring_soon_is_bool(self, self_signed_cert_pem):
+        result = get_cert_info(self_signed_cert_pem)
         assert isinstance(result["expiring_soon"], bool)
