@@ -90,7 +90,7 @@ $ docker run owasp/nettacker --help
 $ docker-compose up 
 ```
 * Use the API Key displayed in the CLI to login to the Web GUI
-* Web GUI is accessible from your (http://localhost:5000) or https://nettacker-api.z3r0d4y.com:5000/ (pointed to your localhost)
+* Web GUI is accessible from your (https://localhost:5000) or https://nettacker-api.z3r0d4y.com:5000/ (pointed to your localhost)
 * The local database is `.nettacker/data/nettacker.db` (sqlite).
 * Default results path is `.nettacker/data/results`
 * `docker-compose` will share your nettacker folder, so you will not lose any data after `docker-compose down`
