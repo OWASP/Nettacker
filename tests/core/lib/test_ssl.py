@@ -623,3 +623,8 @@ class TestIsWeakHashAlgo:
 
     def test_random_string_is_not_weak(self):
         assert is_weak_hash_algo("someRandomAlgorithm") is False
+
+    def test_weak_algo_not_at_start_of_string(self):
+        # is_weak_hash_algo uses 'in' not 'startswith'
+        # so weak token anywhere in string should be detected
+        assert is_weak_hash_algo("rsaWithSHA1Encryption") is True
