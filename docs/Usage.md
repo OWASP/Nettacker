@@ -333,10 +333,9 @@ python nettacker.py -i 192.168.1.1/24 -m all -t 10 -M 35 -g 20-100 -o result.jso
 python nettacker.py -i 192.168.1.1/24 -m all -x ssh_brute -t 10 -M 35 -g 20-100 -o file.txt -U users.txt -P passwords.txt -T 3 -w 2
 ```
 
-- Using Whatcms Scan: API key can be found [here](https://whatcms.org/APIKey)
-
+- Using Web Technologies Scan:
 ```
-python nettacker.py -i eng.uber.com -m whatcms_scan --method-args whatcms_api_key=XXXX
+python nettacker.py -i eng.uber.com -m web_technologies_scan
 ```
 
 - Finding CVE 2020-5902:
