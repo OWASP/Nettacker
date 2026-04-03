@@ -49,7 +49,7 @@ Your PR description goes here:
 - [ ] I've added/updated any relevant documentation in the `docs/` folder 
 - [ ] I've linked this PR with an open issue
 - [ ] I've tested and verified that my code works as intended and resolves the issue as described
-- [ ] I have attached screenshots demonstrating that my code works as intended
+- [ ] I have attached screenshots demonstrating that my code works as intended (if applicable)
 - [ ] I've checked all other open PRs to avoid submitting duplicate work
 - [ ] I confirm that the code and comments in this PR are not direct unreviewed outputs of AI
 - [ ] I confirm that I am the Sole Responsible Author for every line of code, comment, and design decision
