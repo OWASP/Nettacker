@@ -43,7 +43,7 @@ Your PR description goes here:
 -->
 
 - [ ] I've followed the [contributing guidelines][contributing-guidelines]
-- [ ] I have **digitally signed** all my commits in this PR
+- [ ] I've **digitally signed** all my commits in this PR
 - [ ] I've run `make pre-commit` and confirm it didn't generate any warnings/changes
 - [ ] I've run `make test` and I confirm all tests passed locally
 - [ ] I've added/updated any relevant documentation in the `docs/` folder 
