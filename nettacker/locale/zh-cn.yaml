@@ -192,3 +192,5 @@ no_scan_to_compare: "未找到要比较的 scan_id"
 compare_report_saved: "对比结果已保存到 {0}"
 build_compare_report: "正在生成对比报告"
 finish_build_report: "对比报告生成完成" 
+
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"
