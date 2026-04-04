@@ -1,0 +1,63 @@
+info:
+  name: ivanti_epm_cve_2026_1603
+  author: OWASP Nettacker Team
+  severity: 8
+  description: Detects Ivanti Endpoint Manager instances vulnerable to
+    CVE-2026-1603, an authentication bypass via alternate path (CWE-288)
+    affecting all EPM versions prior to 2024 SU5. A remote unauthenticated
+    attacker sends a crafted HTTP request containing the magic number 64
+    to bypass authentication controls and leak stored credential data
+    including Domain Administrator password hashes and service account
+    credentials from the EPM Credential Vault. Added to CISA KEV catalog
+    with federal patch deadline of March 23 2026.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-1603
+    - https://hub.ivanti.com/s/article/Security-Advisory-EPM-February-2026-for-EPM-2024
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+    - https://www.zerodayinitiative.com/advisories/ZDI-26-1603/
+  profiles:
+    - vuln
+    - http
+    - high_severity
+    - cve2026
+    - cve
+    - ivanti
+    - auth_bypass
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          X-Ivanti-Magic: "64"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{endpoint}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8443
+              endpoint:
+                - dms/portal
+                - dms/services/AuthenticationService
+                - dms/authenticate
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "Ivanti|EPM|LanDesk|credential|Endpoint\\.Manager"
+              reverse: false
