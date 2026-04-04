@@ -32,6 +32,16 @@ def replace_dependent_response(log, response_dependent):
 
 
 def merge_logs_to_list(result, log_list=None):
+    """Recursively extract all 'log' values from a nested dict into a flat deduplicated list.
+
+    Args:
+        result: A dict (possibly nested) containing 'log' keys to extract.
+        log_list: Accumulator list for recursive calls. Defaults to a new empty list
+            on each top-level call to avoid mutable default argument pitfalls.
+
+    Returns:
+        A deduplicated list of extracted log values.
+    """
     if log_list is None:
         log_list = []
     if isinstance(result, dict):
