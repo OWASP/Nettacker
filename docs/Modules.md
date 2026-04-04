@@ -200,6 +200,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**exponent_cms_cve_2021_38751_vuln**' – check the target for Exponent CMS CVE-2021-38751
 - '**f5_cve_2020_5902_vuln**' – check the target for F5 RCE CVE-2020-5902 vulnerability
 - '**forgerock_am_cve_2021_35464_vuln**' – check the target for ForgeRock AM CVE-2021-35464
+- '**fortivoice_cve_2025_32756_vuln**' – check the target for Fortinet FortiVoice/FortiMail/FortiNDR/FortiRecorder/FortiCamera CVE-2025-32756 unauthenticated RCE vulnerability
 - '**galera_webtemp_cve_2021_40960_vuln**' – check the target for Galera WebTemplate CVE-2021-40960
 - '**grafana_cve_2021_43798_vuln**' – check the target for Grafana CVE-2021-43798 vulnerability
 - '**graphql_vuln**' – check the target for exposed GraphQL introspection endpoint

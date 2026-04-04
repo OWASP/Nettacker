@@ -1,0 +1,54 @@
+info:
+  name: fortivoice_cve_2025_32756_vuln
+  author: Parneet Kaur
+  severity: 9.8
+  description: >
+    Fortinet FortiVoice, FortiMail, FortiNDR, FortiRecorder and FortiCamera
+    stack-based buffer overflow in /remote/hostcheck_validate allowing
+    unauthenticated remote code execution via crafted HTTP requests.
+    Actively exploited in the wild. CISA KEV listed.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-32756
+    - https://www.fortiguard.com/psirt/FG-IR-25-254
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2025
+    - fortinet
+    - fortivoice
+    - cisa_kev
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/remote/hostcheck_validate"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^(200|400|405|500)$"
+              reverse: false
+            content:
+              regex: "(?i)(FortiVoice|FortiMail|FortiNDR|FortiRecorder|FortiCamera|hostcheck)"
+              reverse: false
