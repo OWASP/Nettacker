@@ -7,7 +7,7 @@ info:
     stack-based buffer overflow in /remote/hostcheck_validate allowing
     unauthenticated remote code execution via crafted HTTP requests.
     Actively exploited in the wild. CISA KEV listed.
-  references:
+  reference:
     - https://nvd.nist.gov/vuln/detail/CVE-2025-32756
     - https://www.fortiguard.com/psirt/FG-IR-25-254
     - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
@@ -43,7 +43,7 @@ payloads:
                 - 8080
                 - 8443
         response:
-          condition_type: or
+          condition_type: and
           conditions:
             status_code:
               regex: "^(200|400|405|500)$"
