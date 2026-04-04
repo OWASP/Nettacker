@@ -8,7 +8,7 @@ The OWASP Nettacker Events page lists various conferences and meetups where the 
   * OWASP Nettacker Video Conference/Webinar for GSoC Team 1 May 2018 - **Vahid Behzadan - ML/AI in CyberSecurity** [[1](https://www.youtube.com/watch?v=7RQH8oECSyg)]
   * **Shaddy Garg**'s GSoC Experience [[1](https://medium.com/@shaddygarg/google-summer-of-code-final-submission-12eb98993ba8)]
   * **Pradeep Jairamani**'s GSoC Experience [[1](https://medium.com/@pradeepjairamani/google-summer-of-code-final-submission-7a498856c914)]
-* OWASP Nettacker Tutorial by at **OWASP Bay Area** meetup (Presented by **Vahid Behzadan** - Sponsored by **OWASP Bay Area**) [[1](https://www.youtube.com/watch?v=4pu4hJMk6m8)]
+* OWASP Nettacker Tutorial at **OWASP Bay Area** meetup (Presented by **Vahid Behzadan** - Sponsored by **OWASP Bay Area**) [[1](https://www.youtube.com/watch?v=4pu4hJMk6m8)]
 * OWASP Nettacker Presented By Ali Razmjoo in OWASP Iran Chapter Meeting July 2018 [[1](https://www.owasp.org/index.php/Iran#tab=Past_Events)]
 * OWASP Nettacker ICS Section Presented in **P0SCON 2018 By Mohammad Reza Zamiri** [[1](http://www.poscon.ir/)] 
 * OWASP Nettacker ICS Section will be presented in **KasperSky Industrial Cybersecurity**: Opportunities and challenges in Digital Transformation 2018 by **Mohammad Reza Zamiri** [[1](https://github.com/zdresearch/OWASP-Nettacker/tree/master/lib/payload/scanner/ics_honeypot)] [[2](https://ics.kaspersky.com/conference/)]
