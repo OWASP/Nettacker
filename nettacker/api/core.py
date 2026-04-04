@@ -213,22 +213,83 @@ def profiles():
     Returns:
         HTML content or available profiles
     """
-    res = ""
-    for profile in sorted(Nettacker.load_profiles().keys()):
-        label = (
-            "success"
-            if (profile == "scan")
-            else "warning"
-            if (profile == "brute")
-            else "danger"
-            if (profile == "vulnerability")
-            else "default"
-        )
+    all_profiles = Nettacker.load_profiles()
+    if "all" in all_profiles:
+        del all_profiles["all"]
+    if "..." in all_profiles:
+        del all_profiles["..."]
+
+    categories = {
+        "scan": {
+            "title": _("scan_modules_title"),
+            "desc": _("scan_modules_desc"),
+            "label": "success",
+            "profiles": [],
+        },
+        "brute": {
+            "title": _("brute_modules_title"),
+            "desc": _("brute_modules_desc"),
+            "label": "warning",
+            "profiles": [],
+        },
+        "vuln": {
+            "title": _("vuln_modules_title"),
+            "desc": _("vuln_modules_desc"),
+            "label": "danger",
+            "profiles": [],
+        },
+    }
+
+    for profile in sorted(all_profiles.keys()):
+        modules = all_profiles[profile]
+        cats = set(m.split("_")[-1] for m in modules)
+
+        for cat in cats:
+            if cat in categories:
+                categories[cat]["profiles"].append(profile)
+            elif cat == "vulnerability" or cat == "vuln":
+                categories["vuln"]["profiles"].append(profile)
+
+    # Dedup and sort
+    for cat in categories:
+        categories[cat]["profiles"] = sorted(list(set(categories[cat]["profiles"])))
+
+    res = """
+    <div class="panel-group" id="profile_accordion">
+    """
+    for cat_name, cat_info in categories.items():
         res += """
-            <label><input id="{0}" type="checkbox" class="checkbox checkbox-{0}">
-            <a class="label label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(
-            profile, label
+        <div class="panel panel-default">
+            <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#profile_accordion" href="#collapse_{0}">
+                <h4 class="panel-title">
+                    <i class="fa fa-chevron-right"></i>
+                    <span class="label label-{1}" style="margin-right: 10px;">{2}</span>
+                    <small>{3}</small>
+                    <label class="pull-right" onclick="event.stopPropagation();">
+                        <input type="checkbox" class="check-all-category" data-category="{0}">
+                        <small>{4}</small>
+                    </label>
+                </h4>
+            </div>
+            <div id="collapse_{0}" class="panel-collapse collapse">
+                <div class="panel-body text-justify">
+        """.format(
+            cat_name, cat_info["label"], cat_info["title"], cat_info["desc"], _("select_all")
         )
+
+        for profile in cat_info["profiles"]:
+            label_type = cat_info["label"]
+            res += """
+                <label><input id="{0}" type="checkbox" class="checkbox checkbox-{1}-profile" data-modules="{3}">
+                <a class="label label-{2}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            """.format(profile, cat_name, label_type, ",".join(all_profiles[profile]))
+
+        res += """
+                </div>
+            </div>
+        </div>
+        """
+    res += "</div>"
     return res
 
 
@@ -240,29 +301,71 @@ def scan_methods():
         HTML content or available modules
     """
     methods = Nettacker.load_modules()
-    methods.pop("all")
-    res = ""
-    for sm in methods.keys():
-        label = (
-            "success"
-            if sm.endswith("_scan")
-            else "warning"
-            if sm.endswith("_brute")
-            else "danger"
-            if sm.endswith("_vuln")
-            else "default"
+    if "all" in methods:
+        methods.pop("all")
+
+    categories = {
+        "scan": {
+            "title": _("scan_modules_title"),
+            "desc": _("scan_modules_desc"),
+            "label": "success",
+            "modules": [],
+        },
+        "brute": {
+            "title": _("brute_modules_title"),
+            "desc": _("brute_modules_desc"),
+            "label": "warning",
+            "modules": [],
+        },
+        "vuln": {
+            "title": _("vuln_modules_title"),
+            "desc": _("vuln_modules_desc"),
+            "label": "danger",
+            "modules": [],
+        },
+    }
+
+    for sm in sorted(methods.keys()):
+        cat = sm.split("_")[-1]
+        if cat in categories:
+            categories[cat]["modules"].append(sm)
+        elif cat == "vulnerability":
+            categories["vuln"]["modules"].append(sm)
+
+    res = """
+    <div class="panel-group" id="scan_methods_accordion">
+    """
+    for cat_name, cat_info in categories.items():
+        res += """
+        <div class="panel panel-default">
+            <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#scan_methods_accordion" href="#collapse_sm_{0}">
+                <h4 class="panel-title">
+                    <i class="fa fa-chevron-right"></i>
+                    <span class="label label-{1}" style="margin-right: 10px;">{2}</span>
+                    <small>{3}</small>
+                    <label class="pull-right" onclick="event.stopPropagation();">
+                        <input type="checkbox" class="check-all-sm-category" data-category="{0}">
+                        <small>{4}</small>
+                    </label>
+                </h4>
+            </div>
+            <div id="collapse_sm_{0}" class="panel-collapse collapse">
+                <div class="panel-body text-justify">
+        """.format(
+            cat_name, cat_info["label"], cat_info["title"], cat_info["desc"], _("select_all")
         )
-        profile = (
-            "scan"
-            if sm.endswith("_scan")
-            else "brute"
-            if sm.endswith("_brute")
-            else "vuln"
-            if sm.endswith("_vuln")
-            else "default"
-        )
-        res += """<label><input id="{0}" type="checkbox" class="checkbox checkbox-{2}-module">
-        <a class="label label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(
-            sm, label, profile
-        )
+
+        for module in cat_info["modules"]:
+            label_type = cat_info["label"]
+            res += """
+                <label><input id="{0}" type="checkbox" class="checkbox checkbox-sm-{1}-module">
+                <a class="label label-{2}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            """.format(module, cat_name, label_type)
+
+        res += """
+                </div>
+            </div>
+        </div>
+        """
+    res += "</div>"
     return res
