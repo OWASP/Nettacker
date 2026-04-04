@@ -1,5 +1,5 @@
 import sys
-from io import StringIO
+from pathlib import Path
 
 import yaml
 
@@ -20,7 +20,8 @@ def application_language():
 
 
 def load_yaml(filename):
-    return yaml.load(StringIO(open(filename, "r").read()), Loader=yaml.FullLoader)
+    yaml_text = Path(filename).read_text(encoding="utf-8")
+    return yaml.safe_load(yaml_text)
 
 
 def get_languages():
