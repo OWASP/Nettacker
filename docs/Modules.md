@@ -266,3 +266,5 @@ If no extra users/passwords parameters are specified the following default usern
 - '**ssh_brute**' - try to brute force SSH (port 22)
 - '**telnet_brute**' - try to brute force via telnet (port23) (expects "login" and "Password" prompt)
 - '**wp_xmlrpc_brute**' - try to brute force Wordpress users using XMLRPC and wp.getUsersBlogs method
+- '**wing_ftp_cve_2025_47812_rce_vuln**' - check the target for remote code execution via wing ftp CVE-2025-47812 vulnerability
+- '**wing_ftp_cve_2025_47813_vuln_vuln**' - check the target for Wing FTP CVE-2025-47813 vulnerability
