@@ -1,6 +1,6 @@
 <!--
   Thanks for contributing to OWASP Nettacker! 
-  Please read and follow the instructions
+  Please read and follow the instructions!
   Please DO NOT REMOVE THIS PR TEMPLATE AND THE PR CHECKLIST AT THE BOTTOM!
 -->
 
