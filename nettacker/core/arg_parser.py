@@ -6,16 +6,16 @@ from pathlib import Path
 import yaml
 
 from nettacker import all_module_severity_and_desc
-from nettacker.config import version_info, Config
+from nettacker.config import Config, version_info
 from nettacker.core.die import die_failure, die_success
 from nettacker.core.ip import (
+    generate_ip_range,
+    is_ipv4_cidr,
+    is_ipv4_range,
+    is_ipv6_cidr,
+    is_ipv6_range,
     is_single_ipv4,
     is_single_ipv6,
-    is_ipv4_cidr,
-    is_ipv6_range,
-    is_ipv6_cidr,
-    is_ipv4_range,
-    generate_ip_range,
 )
 from nettacker.core.messages import messages as _
 from nettacker.core.template import TemplateLoader
@@ -307,6 +307,13 @@ class ArgParser(ArgumentParser):
             help=_("port_separator"),
         )
         method_options.add_argument(
+            "--schema",
+            action="store",
+            dest="schema",
+            default=Config.settings.schema,
+            help=_("schema_selector"),
+        )
+        method_options.add_argument(
             "--user-agent",
             action="store",
             dest="user_agent",
@@ -320,7 +327,7 @@ class ArgParser(ArgumentParser):
             dest="timeout",
             default=Config.settings.timeout,
             type=float,
-            help=_("read_passwords"),
+            help=_("timeout"),
         )
         method_options.add_argument(
             "-w",
@@ -674,6 +681,15 @@ class ArgParser(ArgumentParser):
                 except Exception:
                     die_failure(_("ports_int"))
             options.ports = list(tmp_ports)
+        # Check schema(s)
+        if options.schema:
+            tmp_schema = {schema.strip().lower() for schema in options.schema.split(",")}
+            allowed_schema = {"http", "https"}
+
+            if tmp_schema - allowed_schema:
+                die_failure(_("invalid_schema"))
+            else:
+                options.schema = list(tmp_schema)
         # Check for excluded ports
         if options.excluded_ports:
             tmp_excluded_ports = set()

@@ -47,7 +47,7 @@ payloads:
             content:
               regex: "\"issuer\":"
               reverse: false
-            header:
+            headers:
               Content-type: 
                 regex: application/json
                 reverse: false
