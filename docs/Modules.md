@@ -144,6 +144,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**content_type_options_vuln**' - check the web server for missing 'X-Content-Type-Options'=nosniff header
 - '**crushftp_cve_2025_31161_vuln**' - check the target for CrushFTP CVE-2025-31161 vulnerability
 - '**f5_cve_2020_5902_vuln**' - check the target for F5 RCE CVE-2020-5902 vulnerability
+- '**fortiweb_cve_2025_64446_vuln**' - check the target for Fortinet FortiWeb CVE-2025-64446 path traversal vulnerability (unauthenticated admin bypass, CVSS 9.8)
 - '**heartbleed_vuln**' - check SSL for Heartbleed vulnerability (CVE-2014-0160)
 - '**msexchange_cve_2021_26855**' - check the target for MS Exchange SSRF CVE-2021-26855 (proxylogon/hafnium)
 - '**nextjs_cve_2025_55182_vuln**' - check the target for CVE-2025-55182(React2Shell)
@@ -197,6 +198,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**crushftp_cve_2025_31161_vuln**' – check the target for CrushFTP CVE-2025-31161 vulnerability
 - '**cyberoam_netgenie_cve_2021_38702_vuln**' – check the target for Cyberoam NetGenie CVE-2021-38702
 - '**exponent_cms_cve_2021_38751_vuln**' – check the target for Exponent CMS CVE-2021-38751
+- '**fortiweb_cve_2025_64446_vuln**' – check the target for Fortinet FortiWeb CVE-2025-64446 path traversal vulnerability (unauthenticated admin bypass, CVSS 9.8)
 - '**f5_cve_2020_5902_vuln**' – check the target for F5 RCE CVE-2020-5902 vulnerability
 - '**forgerock_am_cve_2021_35464_vuln**' – check the target for ForgeRock AM CVE-2021-35464
 - '**galera_webtemp_cve_2021_40960_vuln**' – check the target for Galera WebTemplate CVE-2021-40960
