@@ -216,6 +216,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**maxsite_cms_cve_2021_35265_vuln**' – check the target for MaxSite CMS CVE-2021-35265
 - '**memos_cve_2025_22952_ssrf_vuln**' – check vulnerable Memos markdown metadata endpoint CVE-2025-22952
 - '**meteobridge_cve_2025_4008_vuln**' - check for MeteoBridge unauthenticated command injection CVE-2025-4008
+- '**fortivoice_cve_2025_32756_vuln**' - check the target for Fortinet FortiVoice/FortiMail/FortiNDR/FortiRecorder/FortiCamera CVE-2025-32756 unauthenticated RCE vulnerability
 - '**msexchange_cve_2021_26855_vuln**' – check the target for MS Exchange SSRF CVE-2021-26855
 - '**msexchange_cve_2021_34473_vuln**' – check the target for MS Exchange CVE-2021-34473 vulnerability
 - '**novnc_cve_2021_3654_vuln**' – check the target for noVNC CVE-2021-3654 vulnerability

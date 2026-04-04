@@ -1,0 +1,55 @@
+info:
+  name: fortiweb_cve_2025_64446_vuln
+  author: Parneet Kaur
+  severity: 9
+  description: >
+    CVE-2025-64446 is a critical relative path traversal vulnerability in Fortinet FortiWeb
+    WAF versions 8.0.1 and earlier. An unauthenticated attacker can send a crafted HTTP request
+    to traverse from the REST API path into the internal CGI handler, bypassing authentication
+    entirely and allowing execution of privileged administrative commands including creation of
+    new administrator accounts. Actively exploited in the wild since October 2025. Added to
+    CISA KEV catalog on November 14, 2025. Fixed in FortiWeb 8.0.2.
+  reference:
+    - https://www.fortiguard.com/psirt/FG-IR-25-513
+    - https://labs.watchtowr.com/when-the-impersonation-function-gets-used-to-impersonate-users-fortinet-fortiweb-auth-bypass/
+    - https://www.cisa.gov/news-events/alerts/2025/11/14/fortinet-releases-security-advisory-relative-path-traversal-vulnerability-affecting-fortiweb
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - fortinet
+    - fortiweb
+    - path_traversal
+    - authentication_bypass
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v2.0/cmdb/system/admin?/../../../../../cgi-bin/fwbcgi"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 443
+                - 8443
+                - 80
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "super_admin|\"privilege\"|fwbcgi"
+              reverse: false
