@@ -246,7 +246,7 @@ usage: Nettacker [-L LANGUAGE] [-v] [--verbose-event] [-V] [-o REPORT_PATH_FILEN
                         خواندن کلمه عبور (ها) از فایل
   -g PORTS, --ports PORTS
                         لیست درگاه (ها)، با "," جدا شود
-  --schema SCHMEA       schema(s) list, separate with ","
+  --schema SCHEMA       schema(s) list, separate with ","
   --user-agent USER_AGENT
                         Select a user agent to send with HTTP requests or enter "random_user_agent" to randomize the
                         User-Agent in the requests.
@@ -547,7 +547,7 @@ def nettacker_user_application_config():
 4. SARIF (.sarif)
 5. DefectDojo compatible json (.dd.json)
 
-These output types will help with integration with different softwares and dashboards. To set the output mode use the `-o` or `--output` flag
+These output types will help with integration with different software and dashboards. To set the output mode use the `-o` or `--output` flag
 
 ```
 python nettacker.py -i 192.168.1.1/24 --profile information_gathering -o report.sarif
