@@ -58,9 +58,7 @@ def reverse_and_regex_condition(regex, reverse):
 def wait_for_threads_to_finish(threads, maximum=None, terminable=False, sub_process=False):
     while threads:
         try:
-            for thread in threads:
-                if not thread.is_alive():
-                    threads.remove(thread)
+            threads[:] = [t for t in threads if t.is_alive()]
             if maximum and len(threads) < maximum:
                 break
             time.sleep(0.01)
