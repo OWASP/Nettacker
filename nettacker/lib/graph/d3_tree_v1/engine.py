@@ -48,7 +48,7 @@ def start(events):
                 d3_structure["children"].append({"name": target, "children": children_array})
 
     data = (
-        open(Config.path.web_static_dir / "report/d3_tree_v1.html")
+        open(Config.path.web_static_dir / "report/d3_tree_v1.html", encoding="utf-8")
         .read()
         .replace("__data_will_locate_here__", escape_for_html_js(json.dumps(d3_structure)))
         .replace("__title_to_replace__", messages("pentest_graphs"))
