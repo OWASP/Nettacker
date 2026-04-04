@@ -434,7 +434,7 @@ def get_results_csv():  # todo: need to fix time format
     scan_details = session.query(Report).filter(Report.id == result_id).first()
     data = get_logs_by_scan_id(scan_details.scan_unique_id)
     keys = data[0].keys()
-    filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".csv"
+    filename = os.path.splitext(scan_details.report_path_filename)[0] + ".csv"
     with open(filename, "w") as report_path_filename:
         dict_writer = csv.DictWriter(report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL)
         dict_writer.writeheader()
