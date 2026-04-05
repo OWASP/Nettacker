@@ -368,8 +368,27 @@ python nettacker.py -i nettackerwebsiteblabla.com,owasp.org,192.168.1.1 -s -r -m
 
 - Note: If host scan finishes, and couldn't get any result nothing will be listed in the output file unless you change the verbosity mode to a value from 1 to 5.
 
+## Additional Examples for Beginners
+
+### Basic Scan
 ```
-python nettacker.py -i 192.168.1.1/24 -m all -t 10 -M 35 -g 20-100 -o file.txt -u root,user -P passwords.txt -v 1
+python nettacker.py -i example.com -m port_scan
+```
+### Scan Multiple Targets from File
+```
+python nettacker.py -l targets.txt -m all
+```
+### Save Output to JSON
+```
+python nettacker.py -i example.com -o result.json
+```
+### Brute Force Example
+```
+python nettacker.py -i example.com -m ssh_brute -U users.txt -P passwords.txt
+```
+### Scan Specific Port Range
+```
+python nettacker.py -i example.com -m port_scan -g 20-100
 ```
 
 - Use `*` pattern for selecting modules
