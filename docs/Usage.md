@@ -371,23 +371,23 @@ python nettacker.py -i nettackerwebsiteblabla.com,owasp.org,192.168.1.1 -s -r -m
 ## Additional Examples for Beginners
 
 ### Basic Scan
-```
+```bash
 python nettacker.py -i example.com -m port_scan
 ```
 ### Scan Multiple Targets from File
-```
+```bash
 python nettacker.py -l targets.txt -m all
 ```
 ### Save Output to JSON
-```
+```bash
 python nettacker.py -i example.com -o result.json
 ```
 ### Brute Force Example
-```
+```bash
 python nettacker.py -i example.com -m ssh_brute -U users.txt -P passwords.txt
 ```
 ### Scan Specific Port Range
-```
+```bash
 python nettacker.py -i example.com -m port_scan -g 20-100
 ```
 
