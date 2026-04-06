@@ -25,12 +25,34 @@ MODULE_PATH = os.path.join(
 )
 
 
+EXPECTED_PROBE_PATH = "php/ztp_gate.php/.js.map"
+
+
 @pytest.fixture(scope="module")
 def module_step():
-    """Load the module YAML and return the first payload step."""
+    """Load the module YAML and return the first payload step.
+
+    Also verifies probe request invariants:
+      - The expected probe path is present in the URL fuzzer data.
+      - The X-PAN-AUTHCHECK bypass header is set to 'off'.
+    """
     with open(MODULE_PATH) as f:
         data = yaml.safe_load(f)
-    return data["payloads"][0]["steps"][0]
+    step = data["payloads"][0]["steps"][0]
+
+    # Verify probe path is configured correctly
+    paths = step["url"]["nettacker_fuzzer"]["data"]["paths"]
+    assert EXPECTED_PROBE_PATH in paths, (
+        f"Expected probe path '{EXPECTED_PROBE_PATH}' not found in module paths: {paths}"
+    )
+
+    # Verify bypass header is present (case-insensitive lookup)
+    headers = {k.lower(): v for k, v in step["headers"].items()}
+    assert headers.get("x-pan-authcheck") == "off", (
+        "X-PAN-AUTHCHECK header must be set to 'off' for the bypass to work"
+    )
+
+    return step
 
 
 class TestCVE20240012TruePositive:
@@ -141,6 +163,8 @@ class TestCVE20240012NonTarget:
 
         Validates that the specific regex pattern correctly requires the full
         'Zero Touch Provisioning' string and won't false positive on substrings.
+        The content includes 'Zero Touch' (partial) but NOT the full
+        'Zero Touch Provisioning' title required by the detection regex.
         """
         response = {
             "status_code": "200",
@@ -148,7 +172,10 @@ class TestCVE20240012NonTarget:
             "reason": "OK",
             "headers": {"Content-Type": "text/html"},
             "responsetime": 0.08,
-            "content": "<html><body>No ZTP here, just a regular page.</body></html>",
+            "content": (
+                "<html><head><title>Zero Touch</title></head>"
+                "<body>Not full ZTP title.</body></html>"
+            ),
         }
         result = http.response_conditions_matched(module_step, response)
         assert result == {}, "Module must NOT fire when content lacks ZTP title"
