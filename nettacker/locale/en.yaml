@@ -50,6 +50,7 @@ graph_module_404: "this graph module not found: {0}"
 graph_module_unavailable: this graph module "{0}" is not available
 graph_output: to use graph feature your output filename must end with ".html" or ".htm"!
 help_menu: Show Nettacker Help Menu
+invalid_schema: "Invalid schema: Only 'http' and 'https' are allowed"
 done: "done!"
 error_platform: "Unfortunately, this version of the software can run on Linux/darwin"
 file_saved: "report saved in {0} and database"
@@ -83,6 +84,7 @@ scan_method_options: Scan method options
 scan_method_select: please choose your scan method!
 scan_module_not_found: this scan module [{0}] not found!
 scan_started: "Nettacker engine started ..."
+schema_selector: schema(s) list, separate with ","
 select_language: select a language {0}
 select_profile: select profile {0}
 select_user_agent: "Select a user agent to send with HTTP requests or enter \"random_user_agent\"
@@ -112,6 +114,7 @@ target_list: target(s) list, separate with ","
 thread_number_connections: thread numbers for connections to a host
 thread_number_modules: parallel module scan for hosts
 time_to_sleep: time to sleep between each request
+timeout: request timeout in seconds
 unauthorized_IP: your IP not authorized
 updating_database: updating the database...
 username_from_file: read username(s) from file
@@ -128,3 +131,15 @@ finish_build_report: "Finished building compare report"
 user_wordlist: "Allows users to enter their own wordlist"
 exclude_ports: "Ports to exclude (e.g. 80 || 80,443|| 1000-1300)"
 http_header: "Add custom HTTP headers to requests (format: 'key: value'). For multiple headers, use multiple -H flags"
+apsw_ill_configuration: "APSW has been set in the configurations but not installed in the environment"
+apsw_connection_error: Failed to create the APSW connection {0}
+report_insertion_fail: Could not insert the report to the reports table
+remove_logs_fail: Could not remove old logs
+database_lock_issue: Retry {0}, Database is locked. Retrying submission to database
+database_retries_exhausted: All retries exhausted. Skipping this log.
+database_query_fail: Could not query the database
+report_retrieval_fail: Could not retrieve the report
+read_report_fail: Failed to read report file {0}
+search_results_end: No more search results
+database_error: Database error!
+error_exclude_all: "Cannot exclude all modules. Please specify individual module names to exclude using -x."

