@@ -154,6 +154,7 @@ class DefaultSettings(ConfigBase):
     ping_before_scan = False
     ports = None
     profiles = None
+    schema = None
     report_path_filename = "{results_path}/results_{date_time}_{random_chars}.html".format(
         results_path=PathConfig.results_dir,
         date_time=now(format="%Y_%m_%d_%H_%M_%S"),
