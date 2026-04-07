@@ -144,6 +144,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**content_type_options_vuln**' - check the web server for missing 'X-Content-Type-Options'=nosniff header
 - '**crushftp_cve_2025_31161_vuln**' - check the target for CrushFTP CVE-2025-31161 vulnerability
 - '**f5_cve_2020_5902_vuln**' - check the target for F5 RCE CVE-2020-5902 vulnerability
+- '**geoserver_cve_2024_36401_vuln**' - check the target for CVE-2024-36401 vulnerability
 - '**heartbleed_vuln**' - check SSL for Heartbleed vulnerability (CVE-2014-0160)
 - '**msexchange_cve_2021_26855**' - check the target for MS Exchange SSRF CVE-2021-26855 (proxylogon/hafnium)
 - '**nextjs_cve_2025_55182_vuln**' - check the target for CVE-2025-55182(React2Shell)
@@ -213,6 +214,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**justwriting_cve_2021_41878_vuln**' – check the target for JustWriting CVE-2021-41878
 - '**log4j_cve_2021_44228_vuln**' – check the target for Log4Shell CVE-2021-44228 vulnerability
 - '**maxsite_cms_cve_2021_35265_vuln**' – check the target for MaxSite CMS CVE-2021-35265
+- '**memos_cve_2025_22952_ssrf_vuln**' – check vulnerable Memos markdown metadata endpoint CVE-2025-22952
 - '**meteobridge_cve_2025_4008_vuln**' - check for MeteoBridge unauthenticated command injection CVE-2025-4008
 - '**msexchange_cve_2021_26855_vuln**' – check the target for MS Exchange SSRF CVE-2021-26855
 - '**msexchange_cve_2021_34473_vuln**' – check the target for MS Exchange CVE-2021-34473 vulnerability
