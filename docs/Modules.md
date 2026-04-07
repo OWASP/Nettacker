@@ -34,6 +34,7 @@ OWASP Nettacker Modules can be of type **Scan** (scan for something), **Vuln** (
 - '**moveit_version_scan**' - Scan the target and identify the Progress MOVEit version
 - '**pma_scan**' - Scan the target for PHP MyAdmin presence
 - '**port_scan**' - Scan the target for open ports identifying the popular services using signatures (.e.g SSH on port 2222)
+- '**smartermail_version_scan**' - Scan the target and identify the SmarterMail version
 - '**ssl_expiring_certificate_scan**' - Scan the target for SSL/TLS certificates nearing expiration
 - '**subdomain_scan**' - Scan the target for subdomains (target must be a domain e.g. owasp.org)
 - '**viewdns_reverse_iplookup_scan**' - Identify which sites/domains are hosted on the target host using ViewDNS.info
@@ -143,8 +144,10 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**content_type_options_vuln**' - check the web server for missing 'X-Content-Type-Options'=nosniff header
 - '**crushftp_cve_2025_31161_vuln**' - check the target for CrushFTP CVE-2025-31161 vulnerability
 - '**f5_cve_2020_5902_vuln**' - check the target for F5 RCE CVE-2020-5902 vulnerability
+- '**geoserver_cve_2024_36401_vuln**' - check the target for CVE-2024-36401 vulnerability
 - '**heartbleed_vuln**' - check SSL for Heartbleed vulnerability (CVE-2014-0160)
 - '**msexchange_cve_2021_26855**' - check the target for MS Exchange SSRF CVE-2021-26855 (proxylogon/hafnium)
+- '**nextjs_cve_2025_55182_vuln**' - check the target for CVE-2025-55182(React2Shell)
 - '**http_cors_vuln**' - check the web server for overly-permissive CORS (header 'Access-Control-Allow-Origin'=\*)
 - '**joomla_cve_2023_23752_vuln**' - check the target for Joomla CVE-2023-23752 information disclosure vulnerability
 - '**options_method_enabled_vuln**' - check if OPTIONS method is enabled on the web server
@@ -159,6 +162,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**ProFTPd_memory_leak_vuln**' - check ProFTPd for CVE-2001-0136
 - '**ProFTPd_restriction_bypass_vuln**' - check ProFTPd for CVE-2009-3639
 - '**server_version_vuln**' - check if the web server is leaking server banner in 'Server' response header
+- '**smartermail_cve_2026_24423_vuln**' - check the target for SmarterMail CVE-2026-24423 vulnerability
 - '**sonicwall_sslvpn_cve_2024_53704_vuln**' - check the target for SonicWALL SSLVPN CVE-2024-53704 vulnerability
 - '**ssl_signed_certificate_vuln**' - check for self-signed & other signing issues(weak signing algorithm) in SSL certificate
 - '**ssl_expired_certificate_vuln**' - check if SSL certificate has expired or is close to expiring
@@ -210,6 +214,8 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**justwriting_cve_2021_41878_vuln**' – check the target for JustWriting CVE-2021-41878
 - '**log4j_cve_2021_44228_vuln**' – check the target for Log4Shell CVE-2021-44228 vulnerability
 - '**maxsite_cms_cve_2021_35265_vuln**' – check the target for MaxSite CMS CVE-2021-35265
+- '**memos_cve_2025_22952_ssrf_vuln**' – check vulnerable Memos markdown metadata endpoint CVE-2025-22952
+- '**meteobridge_cve_2025_4008_vuln**' - check for MeteoBridge unauthenticated command injection CVE-2025-4008
 - '**msexchange_cve_2021_26855_vuln**' – check the target for MS Exchange SSRF CVE-2021-26855
 - '**msexchange_cve_2021_34473_vuln**' – check the target for MS Exchange CVE-2021-34473 vulnerability
 - '**novnc_cve_2021_3654_vuln**' – check the target for noVNC CVE-2021-3654 vulnerability
@@ -248,7 +254,6 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**x_powered_by_vuln**' – check if the web server is leaking server configuration in 'X-Powered-By' response header
 - '**x_xss_protection_vuln**' – check if header 'X-XSS-Protection' is missing or misconfigured
 - '**zoho_cve_2021_40539_vuln**' – check the target for Zoho CVE-2021-40539 vulnerability
-
 
 ## Brute Modules
 
