@@ -1,3 +1,3 @@
 # Documentation 
 
-OWASP Nettacker documentaion is now available on ReadTheDocs: [https://nettacker.readthedocs.io](https://nettacker.readthedocs.io)
+OWASP Nettacker documentation is now available on ReadTheDocs: [https://nettacker.readthedocs.io](https://nettacker.readthedocs.io)
