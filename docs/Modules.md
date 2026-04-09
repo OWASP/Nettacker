@@ -253,6 +253,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**xdebug_rce_vuln**' – check if Xdebug is vulnerable to remote code execution
 - '**x_powered_by_vuln**' – check if the web server is leaking server configuration in 'X-Powered-By' response header
 - '**x_xss_protection_vuln**' – check if header 'X-XSS-Protection' is missing or misconfigured
+- '**zimbra_cve_2025_68645_vuln**' – check the target for CVE-2025-68645 vulnerability
 - '**zoho_cve_2021_40539_vuln**' – check the target for Zoho CVE-2021-40539 vulnerability
 
 ## Brute Modules
