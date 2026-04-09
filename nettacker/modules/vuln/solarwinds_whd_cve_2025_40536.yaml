@@ -27,7 +27,7 @@ payloads:
   - library: http
     steps:
       - method: get
-        timeout: 10
+        timeout: 3
         headers:
           User-Agent: "{user_agent}"
           Host: "{target}"

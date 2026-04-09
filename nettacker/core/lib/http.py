@@ -8,7 +8,6 @@ import time
 
 import aiohttp
 import uvloop
-import traceback
 
 from nettacker.core.lib.base import BaseEngine
 from nettacker.core.utils.common import (
