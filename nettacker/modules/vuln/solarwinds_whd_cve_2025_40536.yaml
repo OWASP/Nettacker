@@ -6,8 +6,9 @@ info:
     Identifies SolarWinds Web Help Desk instances 
     by analyzing response content and extracting 
     the embedded build version token from resource URLs. 
-    The detected version is evaluated against the patched 
-    threshold (12.8.8 HF1) to determine potential exposure.
+    The detected version is evaluated against known vulnerable 
+    ranges (all 12.x versions up to and including 12.8.8 HF1). 
+    Versions prior to the fixed release (2026.1) are considered potentially vulnerable.
     This enables passive and safe identification of systems affected by the security control bypass vulnerability.
   reference:
     - https://www.solarwinds.com/trust-center/security-advisories/cve-2025-40536
