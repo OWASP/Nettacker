@@ -128,16 +128,37 @@ def create_dd_specific_json(all_scan_logs):
 
     for log in all_scan_logs:
         module_name = log["module_name"].strip()
-        date = datetime.strptime(log["date"], "%Y-%m-%d %H:%M:%S.%f").strftime("%m/%d/%Y")
-        port = str(log.get("port", "")).strip()
-        impact = log.get("event", "").strip()
-        severity_justification = log.get("json_event", "").strip()
+
+        # Handle date parsing gracefully (some logs might have microseconds, some might not)
+        date_str = log["date"]
+        try:
+            date_obj = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S.%f")
+        except ValueError:
+            date_obj = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+        date = date_obj.strftime("%m/%d/%Y")
+
+        port_data = log.get("port", "")
+        port = json.dumps(port_data) if isinstance(port_data, dict) else str(port_data).strip()
+
+        event_data = log.get("event", "")
+        impact = (
+            json.dumps(event_data) if isinstance(event_data, dict) else str(event_data).strip()
+        )
+
+        json_event_data = log.get("json_event", "")
+        severity_justification = (
+            json.dumps(json_event_data)
+            if isinstance(json_event_data, dict)
+            else str(json_event_data).strip()
+        )
+
         service = log.get("target", "").strip()
         unique_id = log.get("scan_id", uuid.uuid4().hex)
 
         metadata = all_module_severity_and_desc.get(module_name, {})
         severity_raw = metadata.get("severity", 0)
         description = metadata.get("desc", "")
+
         if severity_raw >= 9:
             severity = severity_mapping[5]
         elif severity_raw >= 7:
@@ -149,21 +170,22 @@ def create_dd_specific_json(all_scan_logs):
         else:
             severity = severity_mapping[1]
 
-        findings.append(
-            {
-                "date": date,
-                "title": module_name,
-                "description": description.strip(),
-                "severity": severity,
-                "param": port,
-                "impact": impact,
-                "severity_justification": severity_justification,
-                "service": service,
-                "unique_id_from_tool": unique_id,
-                "static_finding": False,
-                "dynamic_finding": True,
-            }
-        )
+        finding = {
+            "date": date,
+            "title": module_name,
+            "description": description.strip() if description else module_name,
+            "severity": severity,
+            "param": port,
+            "impact": impact,
+            "severity_justification": severity_justification,
+            "service": service,
+            "unique_id_from_tool": unique_id,
+            "static_finding": False,
+            "dynamic_finding": True,
+            "test_type": "Nettacker Scan",
+        }
+
+        findings.append(finding)
 
     return json.dumps({"findings": findings}, indent=4)
 
@@ -172,14 +194,34 @@ def create_sarif_report(all_scan_logs):
     """
     Takes all_scan_logs and converts them to a SARIF based json
     format. The schema and version used are 2.1.0 linked below.
-    The following conversions are made:
-    ruleId: name of the module
-    message: event value for each log in all_scan_logs
-    locations.physicalLocations.artifactLocation.uri: target value
-    webRequest.properties.json_event: json_event value for each log in all_scan_logs
-    properties.scan_id: scan_id unique value for each run
-    properties.date: date field specified in all_scan_logs
     """
+
+    # Pre-compute rules from logs to avoid duplicates
+    rules = {}
+    for log in all_scan_logs:
+        module_name = log["module_name"]
+        if module_name not in rules:
+            metadata = all_module_severity_and_desc.get(module_name, {})
+            desc = metadata.get("desc", "")
+            severity_raw = metadata.get("severity", 0)
+
+            # Map severity to SARIF levels
+            if severity_raw >= 7:
+                level = "error"
+            elif severity_raw >= 4:
+                level = "warning"
+            elif severity_raw > 0:
+                level = "note"
+            else:
+                level = "none"
+
+            rules[module_name] = {
+                "id": module_name,
+                "name": module_name,
+                "shortDescription": {"text": desc if desc else module_name},
+                "defaultConfiguration": {"level": level},
+                "properties": {"tags": ["nettacker", module_name]},
+            }
 
     sarif_structure = {
         "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
@@ -189,8 +231,9 @@ def create_sarif_report(all_scan_logs):
                 "tool": {
                     "driver": {
                         "name": "Nettacker",
-                        "version": "0.4.0",
+                        "version": version_info()[0],
                         "informationUri": "https://github.com/OWASP/Nettacker",
+                        "rules": list(rules.values()),
                     }
                 },
                 "results": [],
@@ -199,14 +242,46 @@ def create_sarif_report(all_scan_logs):
     }
 
     for log in all_scan_logs:
+        module_name = log["module_name"]
+        metadata = all_module_severity_and_desc.get(module_name, {})
+        severity_raw = metadata.get("severity", 0)
+
+        if severity_raw >= 7:
+            level = "error"
+        elif severity_raw >= 4:
+            level = "warning"
+        elif severity_raw > 0:
+            level = "note"
+        else:
+            level = "none"
+
+        event_data = log.get("event", "")
+        message_text = json.dumps(event_data) if isinstance(event_data, dict) else str(event_data)
+
+        json_event_data = log.get("json_event", "")
+        json_event_text = (
+            json.dumps(json_event_data)
+            if isinstance(json_event_data, dict)
+            else str(json_event_data)
+        )
+
+        port_data = log.get("port", "")
+        port_text = json.dumps(port_data) if isinstance(port_data, dict) else str(port_data)
+
+        # Create a stable fingerprint string based on target, module, and port
+        fingerprint = f"{log['target']}|{module_name}|{port_text}"
+
         sarif_result = {
-            "ruleId": log["module_name"],
-            "message": {"text": log["event"]},
+            "ruleId": module_name,
+            "level": level,
+            "kind": "open",
+            "message": {"text": message_text},
             "locations": [{"physicalLocation": {"artifactLocation": {"uri": log["target"]}}}],
+            "webRequest": {"properties": {"port": port_text, "json_event": json_event_text}},
+            "partialFingerprints": {"primaryLocationLineHash": fingerprint},
             "properties": {
                 "scan_id": log["scan_id"],
                 "date": log["date"],
-                "json_event": log["json_event"],
             },
         }
         sarif_structure["runs"][0]["results"].append(sarif_result)
@@ -281,6 +356,46 @@ def create_report(options, scan_id):
         with Path(report_path_filename).open("w", encoding="utf-8") as report_file:
             dd_content_json = create_dd_specific_json(all_scan_logs)
             report_file.write(dd_content_json + "\n")
+
+        # DefectDojo Auto-Push API Integration
+        defectdojo_auto_push = getattr(
+            options, "defectdojo_auto_push", Config.settings.defectdojo_auto_push
+        )
+        if defectdojo_auto_push:
+            dojo_url = getattr(options, "defectdojo_url", Config.settings.defectdojo_url)
+            dojo_api_key = getattr(
+                options, "defectdojo_api_key", Config.settings.defectdojo_api_key
+            )
+            dojo_product = getattr(
+                options, "defectdojo_product_name", Config.settings.defectdojo_product_name
+            )
+            dojo_engagement = getattr(
+                options, "defectdojo_engagement_name", Config.settings.defectdojo_engagement_name
+            )
+
+            if not dojo_url or not dojo_api_key or not dojo_product or not dojo_engagement:
+                log.warn(
+                    _(
+                        "DefectDojo auto-push is enabled but missing required configuration (URL, API Key, Product, or Engagement)."
+                    )
+                )
+            else:
+                try:
+                    from nettacker.lib.export.defectdojo import DefectDojoClient
+
+                    client = DefectDojoClient(
+                        url=dojo_url,
+                        api_key=dojo_api_key,
+                        product_name=dojo_product,
+                        engagement_name=dojo_engagement,
+                    )
+                    client.push_findings(dd_content_json)
+                except ImportError:
+                    log.error(
+                        "Could not import DefectDojoClient. Is nettacker/lib/export/defectdojo.py present?"
+                    )
+                except Exception as e:
+                    log.error(f"Error during DefectDojo push: {str(e)}")
 
     elif len(report_path_filename) >= 5 and report_path_filename[-5:] == ".json":
         with Path(report_path_filename).open("w", encoding="utf-8") as report_file:
