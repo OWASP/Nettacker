@@ -54,5 +54,5 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: "(?s)(?=.*(Web Help Desk Software|SolarWinds WorldWide|/WebObjects/Helpdesk\\.woa))(?=.*\\?v=12_([0-7]|8_[0-7])_[0-9]+_[0-9]+)"
+              regex: "(?s)(?=.*(Web Help Desk Software|SolarWinds WorldWide|/WebObjects/Helpdesk\\.woa))(?=.*\\?v=12_(?:[0-7]_[0-9]+|8_(?:[0-8])_[0-9]+)_[0-9]+)"
               reverse: false
