@@ -73,11 +73,55 @@ payloads:
                 # - date
                 # - action
               param:
-                - <script>alert(\"NETTACKER\");</script> #xss
-                # - UNION SELECT ALL FROM information_schema AND ' or SLEEP(5) or ' #sqli
-                # - /bin/cat /etc/passwd; ping 127.0.0.1; curl google.com #os
-                # - <!ENTITY xxe SYSTEM \"file:///etc/shadow\">]><pwn>&hack;</pwn> #xxe
-                # - ../../../../etc/passwd #lfi
+                # -------------------------
+                # XSS
+                # -------------------------
+                - '<script>alert(\"NETTACKER\");</script>'              # xss
+                - '<script>alert(1);</script>'                          # xss
+                - '<script>alert(\"test\");</script>'                   # xss
+                - "<script>alert('test');</script>"                     # xss
+                - "<img src=x onerror=alert(1)>"                         # xss (event-based)
+                - '\"><script>alert(\"XSS\");</script>'                 # xss (breakout)
+
+                # -------------------------
+                # SQL Injection – boolean based
+                # -------------------------
+                - "' AND 1=1 '"                                         # sqli (boolean)
+                - "' AND 1=1 OR 2=2 '"                                  # sqli (boolean)
+                - "' AND 1=1 OR 9=10"                                   # sqli (boolean)
+                - "AND 1=1"                                             # sqli (boolean)
+
+                # -------------------------
+                # SQL Injection – union based
+                # -------------------------
+                - "UNION SELECT ALL FROM information_schema AND SLEEP(5)"  # sqli (union)
+                - "484029 AS xDKy WHERE 5427=5427 UNION ALL SELECT NULL,NULL" # sqli (union)
+                - "AS start WHERE 1601=1601 UNION ALL SELECT NULL,NULL"     # sqli (union)
+                - "UNION SELECT * FROM users WHERE user='admin'"           # sqli (union)
+
+                # -------------------------
+                # SQL Injection – order by / stacked
+                # -------------------------
+                - "' AND 1=1 ORDER BY 1,2,3,4,5"                         # sqli (order by)
+                - "' AND 1=1;SELECT * FROM information_schema.tables"    # sqli (stacked)
+                - "SELECT * FROM information_schema.tables"              # sqli (info schema)
+
+                # -------------------------
+                # OS Command Injection
+                # -------------------------
+                - "/bin/cat /etc/passwd"                                 # os_command_injection
+                - "/bin/cat /etc/passwd; ping 127.0.0.1"                 # os_command_injection
+
+                # -------------------------
+                # LFI
+                # -------------------------
+                - "../../../../etc/passwd"                               # lfi
+
+                # -------------------------
+                # XXE
+                # -------------------------
+                - '<!ENTITY xxe SYSTEM \"file:///etc/passwd\">'          # xxe
+                - '<!ENTITY xxe SYSTEM \"file:///etc/shadow\">'          # xxe
         response:
           dependent_on_temp_event: valid_request_status
           condition_type: or
@@ -87,6 +131,27 @@ payloads:
               regex: dependent_on_temp_event[0]['status_code'][0]
               reverse: true
             iterative_response_match:
+              Anubis (Techaro):
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: /\.within\.website\/x\/cmd\/anubis\/|<script id="anubis_version"|<script id="anubis_challenge"|Protected by.*Anubis.*From.*Techaro|github\.com\/TecharoHQ\/anubis
+                      reverse: false
+                    headers:
+                      Set-Cookie:
+                        regex: -anubis-auth=
+                        reverse: false
+                  log: Anubis (Techaro) Found
+              Baffin Bay (Mastercard):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: baffin-bay-inlet
+                        reverse: false
+                  log: Baffin Bay (Mastercard) Found
               360WangZhanBao (360 Technologies):
                 response:
                   condition_type: or
@@ -156,6 +221,9 @@ payloads:
                       X-AMZ-Request-ID:
                         regex: .+?
                         reverse: false
+                      X-Blocked-By-WAF:
+                        regex: Blocked_by_custom_response_for_AWSManagedRules.*
+                        reverse: false
                   log: AWS Elastic Load Balancer (Amazon) Found
               AireeCDN (Airee):
                 response:
@@ -199,7 +267,7 @@ payloads:
                   condition_type: and
                   conditions:
                     content:
-                      regex: (?s)^(?=.*error(s)?\.aliyun(dun)?\.(com|net)?)(?=.*cdn\.aliyun(cs)?\.com).*$
+                      regex: (?s)(?=.*error(s)?\.aliyun(dun)?\.(com|net)?)(?=.*alicdn\.com\/sd\-base\/static\/\d{{1,2}}\.\d{{1,2}}\.\d{{1,2}}\/image\/405\.png)(?=.*Sorry, your request has been blocked as it may cause potential threats to the server's security\.)
                       reverse: false
                     headers:
                       Set-Cookie:
@@ -266,8 +334,7 @@ payloads:
                   condition_type: or
                   conditions:
                     content:
-                      regex: blocked by website protection from armor|please create an armor support
-                        ticket
+                      regex: blocked by website protection from armor|please create an armor support ticket
                       reverse: false
                   log: Armor Defense (Armor) Found
               ArvanCloud (ArvanCloud):
@@ -300,6 +367,14 @@ payloads:
                         regex: Azion([-_]CDN)?
                         reverse: false
                   log: AzionCDN (AzionCDN) Found
+              Azure Application Gateway (Microsoft):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)^(?=.*<center>Microsoft-Azure-Application-Gateway/v2</center>)(?=.*<h1>403 Forbidden</h1>).*$
+                      reverse: false
+                  log: Azure Application Gateway (Microsoft) Found
               Azure Front Door (Microsoft):
                 response:
                   condition_type: or
@@ -341,12 +416,16 @@ payloads:
                   log: BIG-IP AP Manager (F5 Networks) Found
               BIG-IP AppSec Manager (F5 Networks):
                 response:
-                  condition_type: and
+                  condition_type: or 
                   conditions:
                     content:
                       regex: (?s)^(?=.*the requested url was rejected)(?=.*please consult with your
                         administrator).*$
                       reverse: false
+                    headers:
+                      Set-Cookie:
+                        regex: TS[a-fA-F0-9]{{8}}=.+|TS[a-fA-F0-9]{{6}}=.+
+                        reverse: false
                   log: BIG-IP AppSec Manager (F5 Networks) Found
               BIG-IP Local Traffic Manager (F5 Networks):
                 response:
@@ -517,7 +596,7 @@ payloads:
                   condition_type: or
                   conditions:
                     content:
-                      regex: Cloud Protector.*?by Rohde.{{3,8}}?Schwarz Cybersecurity|https?:\/\/(?:www\.)?cloudprotector\.com\/
+                      regex: Cloud Protector.*?by Rohde.{{3,8}}?Schwarz Cybersecurity|<a href='https?:\/\/(?:www\.)?cloudprotector\.com\/'>R.{{1,6}}?S.Cloud Protector
                       reverse: false
                   log: Cloud Protector (Rohde & Schwarz CyberSecurity) Found
               Cloudbric (Penta Security):
@@ -543,7 +622,7 @@ payloads:
                         regex: .+?
                         reverse: false
                       server:
-                        regex: cloudflare[-_]nginx
+                        regex: cloudflare[-_]nginx|cloudflare
                         reverse: false
                   log: Cloudflare (Cloudflare Inc.) Found
               Cloudfloor (Cloudfloor DNS):
@@ -683,7 +762,7 @@ payloads:
                   conditions:
                     headers:
                       Server:
-                        regex: ^ECS(.*)?
+                        regex: ^ECS(.*)?|^ECD(.+)?
                         reverse: false
                   log: Edgecast (Verizon Digital Media) Found
               Eisoo Cloud Firewall (Eisoo):
@@ -719,6 +798,9 @@ payloads:
                       X-Fastly-Request-ID:
                         regex: \w+
                         reverse: false
+                      X-Served-By:
+                        regex: ^cache-[a-z]{{3}}\d+-[A-Z]{{3}}
+                        reverse: false
                   log: Fastly (Fastly CDN) Found
               FirePass (F5 Networks) condition1:
                 response:
@@ -741,6 +823,30 @@ payloads:
                         regex: (?s)^(?=.*^F5_fire.+?)(?=.*^F5_passid_shrinked).*$
                         reverse: false
                   log: FirePass (F5 Networks) Found
+              FortiGate (Fortinet) condition1:
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: (?s)(?=.*//globalurl\.fortinet\.net)(?=.*FortiGate Application Control)
+                      reverse: false
+                  log: FortiGate (Fortinet) Found
+              FortiGate (Fortinet) condition2:
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: (?s)(?=.*Web Application Firewall)(?=.*Event ID)(?=.*//globalurl\.fortinet\.net)
+                      reverse: false
+                  log: FortiGate (Fortinet) Found
+              FortiGuard (Fortinet):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: FortiGuard Intrusion Prevention|//globalurl\.fortinet\.net
+                      reverse: false
+                  log: FortiGuard (Fortinet) Found
               FortiWeb (Fortinet) condition1:
                 response:
                   condition_type: or
@@ -906,6 +1012,21 @@ payloads:
                       regex: /ks[-_]waf[-_]error\.png
                       reverse: false
                   log: KS-WAF (KnownSec) Found
+              Kemp LoadMaster (Progress Software):
+                response:
+                  condition_type: and
+                  conditions:
+                    headers:
+                      X-ServedBy:
+                        regex: KEMP-LM
+                        reverse: false
+                    status_code:
+                      regex: "403"
+                      reverse: false
+                    content:
+                      regex: <title>403 Forbidden</title>
+                      reverse: false
+                  log: Kemp LoadMaster (Progress Software) Found
               KeyCDN (KeyCDN):
                 response:
                   condition_type: or
@@ -933,6 +1054,15 @@ payloads:
                         regex: ^limelight|^l[mg]_sessid=
                         reverse: false
                   log: LimeLight CDN (LimeLight) Found
+              Link11 WAAP (Link11):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: rhino-core-shield
+                        reverse: false
+                  log: Link11 WAAP (Link11) Found
               LiteSpeed (LiteSpeed Technologies) condition1:
                 response:
                   condition_type: and
@@ -1031,15 +1161,6 @@ payloads:
                         regex: ^naxsi(.+)?
                         reverse: false
                   log: NAXSI (NBS Systems) Found
-              NSFocus (NSFocus Global Inc.):
-                response:
-                  condition_type: or
-                  conditions:
-                    headers:
-                      Server:
-                        regex: NSFocus
-                        reverse: false
-                  log: NSFocus (NSFocus Global Inc.) Found
               Nemesida (PentestIt):
                 response:
                   condition_type: or
@@ -1120,6 +1241,15 @@ payloads:
                         security reasons?.{{0,10}}?it was blocked and logged).*$
                       reverse: false
                   log: NinjaFirewall (NinTechNet) Found
+              NSFocus (NSFocus Global Inc.):
+                response:
+                  condition_type: and
+                  conditions:
+                    headers:
+                      Server:
+                        regex: NSFocus
+                        reverse: false
+                  log: NSFocus (NSFocus Global Inc.) Found
               NullDDoS Protection (NullDDoS):
                 response:
                   condition_type: or
@@ -1316,6 +1446,17 @@ payloads:
                         to contact us)(?=.*access denied \(\d{{3}}\)).*$
                       reverse: false
                   log: Reblaze (Reblaze) Found
+              Reflected Networks (Reflected Networks):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: <img class="logo loader" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAbgAAABHCAIAAAD6G8WcAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw|content="Request is denied"
+                      reverse: false
+                    status_code:
+                      regex: '403'
+                      reverse: false
+                  log: Reflected Networks (Reflected Networks) Found
               RequestValidationMode (Microsoft):
                 response:
                   condition_type: or
@@ -1388,6 +1529,15 @@ payloads:
                       regex: 'safeline|<!\-\-\sevent id:'
                       reverse: false
                   log: Safeline (Chaitin Tech.) Found
+              Scutum (Secure Sky Technology Inc.):
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      Server:
+                        regex: Scutum
+                        reverse: false
+                  log: Scutum (Secure Sky Technology Inc.) Found
               SecKing (SecKing):
                 response:
                   condition_type: or
@@ -1450,6 +1600,39 @@ payloads:
                         this site|Something in the URL.{{0,5}}?Form or Cookie data wasn\'t appropriate
                       reverse: false
                   log: Shield Security (One Dollar Plugin) Found
+              Shieldon Firewall (Shieldon.io) condition1:
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: (?s)(?=.*Please solve CAPTCHA)(?=.*shieldon_captcha)(?=.*Unusual behavior detected)(?=.*status-user-info)
+                      reverse: false
+                  log: Shieldon Firewall (Shieldon.io) Found
+              Shieldon Firewall (Shieldon.io) condition2:
+                response:
+                  condition_type: or 
+                  conditions:
+                    content:
+                      regex: (?s)(?=.*Access denied)(?=.*The IP address you are using has been blocked.)(?=.*status-user-info)
+                      reverse: false
+                  log: Shieldon Firewall (Shieldon.io) Found
+              Shieldon Firewall (Shieldon.io) condition3:
+                response:
+                  condition_type: or
+                  conditions:
+                    content:
+                      regex: (?s)(?=.*Please line up)(?=.*This page is limiting the number of people online. Please wait a moment.)
+                      reverse: false
+                  log: Shieldon Firewall (Shieldon.io) Found
+              Shieldon Firewall (Shieldon.io) condition4:
+                response:
+                  condition_type: or
+                  conditions:
+                    headers:
+                      X-Protected-By:
+                        regex: (?i)shieldon\.io
+                        reverse: false
+                  log: Shieldon Firewall (Shieldon.io) Found
               SiteGround (SiteGround):
                 response:
                   condition_type: or
@@ -1563,6 +1746,17 @@ payloads:
                         regex: ^st8id=
                         reverse: false
                   log: Teros (Citrix Systems) Found
+              ThreatX (A10 Networks):
+                response:
+                  condition_type: and
+                  conditions:
+                    status_code:
+                      regex: '403'
+                      reverse: false
+                    content:
+                      regex: '^Forbidden - ID\: ([a-fA-F0-9]{{32}})$'
+                      reverse: false
+                  log: ThreatX (A10 Networks) Found
               Trafficshield (F5 Networks):
                 response:
                   condition_type: or
@@ -1647,6 +1841,15 @@ payloads:
                         is).*$
                       reverse: false
                   log: UTM Web Protection (Sophos) Found
+              Variti (Variti):
+                response:
+                  condition_type: and
+                  conditions:
+                    headers:
+                      Server:
+                        regex: Variti(?:\/[a-z0-9\.\-]+)?
+                        reverse: false
+                  log: Variti (Variti) Found
               Varnish (OWASP):
                 response:
                   condition_type: or
@@ -1655,6 +1858,14 @@ payloads:
                       regex: Request rejected by xVarnish\-WAF
                       reverse: false
                   log: Varnish (OWASP) Found
+              Vercel WAF (Vercel):
+                response:
+                  condition_type: and
+                  conditions:
+                    content:
+                      regex: <title>Vercel Security Checkpoint</title>
+                      reverse: false
+                  log: Vercel WAF (Vercel) Found
               Viettel (Cloudrity):
                 response:
                   condition_type: or
@@ -1868,6 +2079,9 @@ payloads:
                       Server:
                         regex: Yunjiasu(.+)?
                         reverse: false
+                    content:
+                      regex: (?:href="/\.well-known/yunjiasu-cgi/"|document\.cookie='yjs_use_ob=0)
+                      reverse: false
                   log: Yunjiasu (Baidu Cloud Computing) Found
               Yunsuo (Yunsuo):
                 response:
@@ -1973,5 +2187,3 @@ payloads:
                       regex: (?s)^(?=.*403).*$
                       reverse: false
                   log: wpmudev WAF (Incsub) Found
-
-
