@@ -27,7 +27,7 @@ payloads:
   - library: http
     steps:
       - method: get
-        timeout: 50
+        timeout: 10
         headers:
           User-Agent: "{user_agent}"
           Host: "{target}"
@@ -53,6 +53,6 @@ payloads:
             status_code:
               regex: "200"
               reverse: false
-            # content:
-            #   regex: "(?s)(?=.*(Web Help Desk Software|SolarWinds WorldWide|/WebObjects/Helpdesk\\.woa))(?=.*\\?v=12_([0-7]|8_[0-7])_[0-9]+_[0-9]+)"
-            #   reverse: false
+            content:
+              regex: "(?s)(?=.*(Web Help Desk Software|SolarWinds WorldWide|/WebObjects/Helpdesk\\.woa))(?=.*\\?v=12_([0-7]|8_[0-7])_[0-9]+_[0-9]+)"
+              reverse: false

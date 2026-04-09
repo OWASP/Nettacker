@@ -24,7 +24,6 @@ asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 async def perform_request_action(action, request_options):
     start_time = time.time()
     async with action(**request_options) as response:
-        print(f"Received response with status {response.status} for URL: {response.url} and with content response: {await response.content.read()}")
         return {
             "reason": response.reason,
             "url": str(response.url),
@@ -47,7 +46,6 @@ async def send_request(request_options, method):
 def response_conditions_matched(sub_step, response):
     if not response:
         return {}
-    print(f"Received response with status {response.status} for URL: {response.url} and with content response: {response.content}")
     condition_type = sub_step["response"]["condition_type"]
     conditions = sub_step["response"]["conditions"]
     condition_results = {}
@@ -182,13 +180,8 @@ class HttpEngine(BaseEngine):
             try:
                 response = asyncio.run(send_request(sub_step, backup_method))
                 response["content"] = response["content"].decode(errors="ignore")
-                print(f"content is {response['content']}")
                 break
-            except Exception as e:
-                print(f"Error occurred during HTTP request: {e}")
-                print("error type:",type(e))
-                print("error:",repr(e))
-                traceback.print_exc()
+            except Exception:
                 response = []
         sub_step["method"] = backup_method
         sub_step["response"] = backup_response
