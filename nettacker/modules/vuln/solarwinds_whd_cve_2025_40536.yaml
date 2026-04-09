@@ -1,0 +1,58 @@
+info:
+  name: solarwinds_whd_cve_2025_40536_vuln
+  author: Nettacker Team
+  severity: 8.1
+  description: |
+    Identifies SolarWinds Web Help Desk instances 
+    by analyzing response content and extracting 
+    the embedded build version token from resource URLs. 
+    The detected version is evaluated against the patched 
+    threshold (12.8.8 HF1) to determine potential exposure.
+    This enables passive and safe identification of systems affected by the security control bypass vulnerability.
+  reference:
+    - https://www.solarwinds.com/trust-center/security-advisories/cve-2025-40536
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-40536
+  profiles:
+    - vuln
+    - http
+    - high_severity
+    - cve2025
+    - cve
+    - cisa kev 
+    - solarwinds
+    - webhelpdesk
+    - passive
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 50
+        headers:
+          User-Agent: "{user_agent}"
+          Host: "{target}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/helpdesk/WebObjects/Helpdesk.woa"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            # content:
+            #   regex: "(?s)(?=.*(Web Help Desk Software|SolarWinds WorldWide|/WebObjects/Helpdesk\\.woa))(?=.*\\?v=12_([0-7]|8_[0-7])_[0-9]+_[0-9]+)"
+            #   reverse: false
