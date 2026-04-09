@@ -388,10 +388,37 @@ def get_result_content():
     except Exception:
         return jsonify(structure(status="error", msg="database error!")), 500
 
+    file_extension = os.path.splitext(filename)[1].lower()
+    # Use cross-platform basename and sanitize before embedding in headers.
+    safe_filename = secure_filename(os.path.basename(str(filename)))
+
+    # Render HTML reports inline in the browser instead of forcing a download.
+    # This allows users to view scan results directly while maintaining security.
+    # Non-HTML files (.json, .csv, .txt) continue to be served as attachment downloads.
+    if file_extension in (".html", ".htm"):
+        response = Response(
+            file_content,
+            mimetype="text/html",
+            headers={"Content-Disposition": f"inline; filename={safe_filename}"},
+        )
+        # Security: Strict Content-Security-Policy to mitigate XSS risks.
+        # We disable all script execution (script-src 'none') and restrict other resources
+        # to ensure that user-generated HTML reports cannot execute malicious code.
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'none'; "
+            "script-src 'none'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data:; "
+            "font-src 'self'; "
+            "connect-src 'self'; "
+            "frame-ancestors 'none';"
+        )
+        return response
+
     return Response(
         file_content,
-        mimetype=mime_types().get(os.path.splitext(filename)[1], "text/plain"),
-        headers={"Content-Disposition": "attachment;filename=" + filename.split("/")[-1]},
+        mimetype=mime_types().get(file_extension, "text/plain"),
+        headers={"Content-Disposition": "attachment;filename=" + safe_filename},
     )
 
 
