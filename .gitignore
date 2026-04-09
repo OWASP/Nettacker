@@ -31,3 +31,4 @@ results.*
 coverage.xml
 
 venv
+report.html
