@@ -35,6 +35,7 @@ OWASP Nettacker Modules can be of type **Scan** (scan for something), **Vuln** (
 - '**pma_scan**' - Scan the target for PHP MyAdmin presence
 - '**port_scan**' - Scan the target for open ports identifying the popular services using signatures (.e.g SSH on port 2222)
 - '**smartermail_version_scan**' - Scan the target and identify the SmarterMail version
+- '**solarwinds_whd_version_scan**' - Scan the target and identify the SolarWinds Web Help Desk version
 - '**ssl_expiring_certificate_scan**' - Scan the target for SSL/TLS certificates nearing expiration
 - '**subdomain_scan**' - Scan the target for subdomains (target must be a domain e.g. owasp.org)
 - '**viewdns_reverse_iplookup_scan**' - Identify which sites/domains are hosted on the target host using ViewDNS.info
@@ -163,7 +164,6 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**ProFTPd_restriction_bypass_vuln**' - check ProFTPd for CVE-2009-3639
 - '**server_version_vuln**' - check if the web server is leaking server banner in 'Server' response header
 - '**smartermail_cve_2026_24423_vuln**' - check the target for SmarterMail CVE-2026-24423 vulnerability
-- '**solarwinds_whd_cve_2025_40536_vuln**' - check SolarWinds Web Help Desk vulnerable version via build token
 - '**sonicwall_sslvpn_cve_2024_53704_vuln**' - check the target for SonicWALL SSLVPN CVE-2024-53704 vulnerability
 - '**ssl_signed_certificate_vuln**' - check for self-signed & other signing issues(weak signing algorithm) in SSL certificate
 - '**ssl_expired_certificate_vuln**' - check if SSL certificate has expired or is close to expiring
