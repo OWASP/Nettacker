@@ -129,6 +129,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 
 ## Vuln Modules
 
+- '**activemq_cve_2026_34197_jolokia_rce_vuln**' - check Jolokia endpoint for RCE vulnerability CVE-2026-34197
 - '**aiohttp_cve_2024_23334_vuln**' - check the target for CVE-2024-23334
 - '**apache_ofbiz_cve_2024_38856**' - check the target for Apache OFBiz CVE-2024-38856
 - '**apache_struts_vuln**' - check Apache Struts for CVE-2017-5638
