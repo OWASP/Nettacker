@@ -124,7 +124,9 @@ class BaseEngine(ABC):
         event = remove_sensitive_header_keys(event)
         if "stop_at_first_success" in event["response"]:
             event_name = event["response"]["stop_at_first_success"]
-            existing = find_temp_events(target, module_name, scan_id, event_name)
+            existing = find_temp_events(
+                target, module_name, scan_id, event_name, port=event.get("ports", "")
+            )
             if existing:
                 return False
         if "save_to_temp_events_only" in event.get("response", ""):
@@ -292,7 +294,9 @@ class BaseEngine(ABC):
         backup_response = copy.deepcopy(sub_step["response"])
         if "stop_at_first_success" in backup_response:
             event_name = backup_response["stop_at_first_success"]
-            existing = find_temp_events(target, module_name, scan_id, event_name)
+            existing = find_temp_events(
+                target, module_name, scan_id, event_name, port=sub_step.get("ports", "")
+            )
             if existing:
                 return False
         del sub_step["method"]
