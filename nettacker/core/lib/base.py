@@ -296,7 +296,7 @@ class BaseEngine(ABC):
             existing = find_temp_events(target, module_name, scan_id, event_name)
             if existing:
                 return False
-            
+
         for attr_name in ("ports", "usernames", "passwords"):
             if attr_name in sub_step:
                 value = sub_step.pop(attr_name)
