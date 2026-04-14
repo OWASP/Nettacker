@@ -140,7 +140,9 @@ class BaseEngine(ABC):
                     "data": response,
                 }
             )
-        if "stop_at_first_success" in event.get("response", ""):
+        if event["response"]["conditions_results"] and "stop_at_first_success" in event.get(
+            "response", ""
+        ):
             submit_temp_logs_to_db(
                 {
                     "date": datetime.now(),
@@ -288,14 +290,13 @@ class BaseEngine(ABC):
         """Engine entry point."""
         backup_method = copy.deepcopy(sub_step["method"])
         backup_response = copy.deepcopy(sub_step["response"])
-        del sub_step["method"]
-        del sub_step["response"]
-
         if "stop_at_first_success" in backup_response:
             event_name = backup_response["stop_at_first_success"]
             existing = find_temp_events(target, module_name, scan_id, event_name)
             if existing:
                 return False
+        del sub_step["method"]
+        del sub_step["response"]
 
         for attr_name in ("ports", "usernames", "passwords"):
             if attr_name in sub_step:
