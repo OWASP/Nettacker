@@ -23,7 +23,7 @@ class TestSmbMethod(TestCase):
         HOST = "dc-01"
         PORT = 445
         USERNAME = "Administrator"
-        PASSWORD = "Password@123"
+        PASSWORD = "Password@123"  # noqa: S105
 
         mock_smb_connection.return_value = MockSmbConnectionObject(
             HOST, remoteHost=HOST, sess_port=PORT
