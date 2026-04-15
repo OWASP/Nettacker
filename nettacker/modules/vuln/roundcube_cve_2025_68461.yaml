@@ -1,0 +1,58 @@
+info:
+  name: roundcube_cve_2025_68461_vuln
+  author: luck9823
+  severity: 7.5
+  description: |
+    Roundcube Webmail < 1.5.12 and < 1.6.12 contains a cross-site scripting 
+    vulnerability via the animate tag in an SVG document. This vulnerability 
+    allows attackers to inject malicious scripts through specially crafted 
+    SVG images, potentially leading to session hijacking and data theft.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-68461
+    - https://roundcube.net/news/2025/12/13/security-updates-1.6.12-and-1.5.12
+    - https://github.com/roundcube/roundcubemail/commit/bfa032631c36b900e7444dfa278340b33cbf7cdb
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - high_severity
+    - cve
+    - cve2025
+    - roundcube
+    - webmail
+    - xss
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/program/VERSION"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              # Matches versions 1.5.0-1.5.11 or 1.6.0-1.6.11
+              regex: "1\\.(5\\.(0|1|2|3|4|5|6|7|8|9|10|11)|6\\.(0|1|2|3|4|5|6|7|8|9|10|11))"
+              reverse: false
