@@ -194,6 +194,51 @@ class Nettacker(ArgParser):
                 targets.remove(target)
         return targets
 
+    def is_module_applicable(self, target, module_name, scan_id, cache=None):
+        """
+        Check if a module should be executed for a given target based on
+        discovered services (e.g., don't run HTTP modules on an SSH port).
+
+        Args:
+            target: The target IP or Hostname.
+            module_name: The name of the module to check.
+            scan_id: Unique identifier for the current scan session.
+            cache: (Optional) A dictionary for caching module requirements
+                   and target services to optimize performance.
+
+        Returns:
+            bool: True if the module is applicable or unknown,
+                  False if the service mismatch is confirmed.
+        """
+        if cache is not None and module_name in cache["modules"]:
+            required_services = cache["modules"][module_name]
+        else:
+            options = copy.deepcopy(self.arguments)
+            module = Module(module_name, options, target, scan_id, 0, 0, 0)
+            required_services = module.get_required_services()
+
+            if cache is not None:
+                cache["modules"][module_name] = required_services
+        if not required_services:
+            return True
+
+        if cache is not None and target in cache["targets"]:
+            discovered_services = cache["targets"][target]
+        else:
+            found_events = find_events(target, "port_scan", scan_id)
+            discovered_services = set()
+            for event in found_events:
+                try:
+                    event_data = json.loads(event)
+                except json.JSONDecodeError:
+                    continue
+                found_service = event_data.get("response", {}).get("conditions_results", {})
+                discovered_services.update(found_service.keys())
+            if cache is not None:
+                cache["targets"][target] = discovered_services
+        # Return True if the service exists, False if not
+        return any(service in discovered_services for service in required_services)
+
     def run(self):
         """
         preparing for attacks and managing multi-processing for host
@@ -292,9 +337,20 @@ class Nettacker(ArgParser):
         log.verbose_event_info(_("single_process_started").format(process_number))
         total_number_of_modules = len(targets) * len(self.arguments.selected_modules)
         total_number_of_modules_counter = 1
-
+        scan_cache = {"modules": {}, "targets": {}}
         for target in targets:
             for module_name in self.arguments.selected_modules:
+                bypass_checks = self.arguments.skip_service_discovery or module_name in [
+                    "port_scan",
+                    "subdomain_scan",
+                    "icmp_scan",
+                ]
+                if not bypass_checks:
+                    if not self.is_module_applicable(
+                        target, module_name, scan_id, cache=scan_cache
+                    ):
+                        log.info(f"Skipping {module_name} for {target}: Service not found.")
+                        continue
                 thread = Thread(
                     target=self.scan_target,
                     args=(
