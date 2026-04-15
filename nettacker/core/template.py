@@ -18,7 +18,10 @@ class TemplateLoader:
                     if module_inputs[key] and key != "timeout":
                         module_content[key] = module_inputs[key]
                     # If the timeout value is not 3.0, then use the provided value. Otherwise, keep the value from the YAML file.
-                    elif key == "timeout" and abs(module_inputs[key] - 3.0) > 1e-9:
+                    elif (
+                        key == "timeout"
+                        and abs(module_inputs[key] - Config.settings.timeout) > 1e-9
+                    ):
                         module_content[key] = module_inputs[key]
                 elif isinstance(module_content[key], (dict, list)):
                     module_content[key] = TemplateLoader.parse(module_content[key], module_inputs)
