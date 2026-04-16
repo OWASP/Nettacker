@@ -19,6 +19,7 @@ payloads:
         headers:
           User-Agent: "{user_agent}"
           Content-Type: "text/plain"
+        ssl: false
 
         url:
           nettacker_fuzzer:
