@@ -193,9 +193,9 @@ def validate_http_conditions(conditions: dict):
     # Validate nested iterative_response_match structure
     if "iterative_response_match" in conditions:
         for vendor_name, vendor_block in conditions["iterative_response_match"].items():
-            assert (
-                "response" in vendor_block
-            ), f"Missing 'response' inside iterative_response_match -> {vendor_name}"
+            assert "response" in vendor_block, (
+                f"Missing 'response' inside iterative_response_match -> {vendor_name}"
+            )
 
             nested_response = vendor_block["response"]
 
