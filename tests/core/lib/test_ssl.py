@@ -630,7 +630,7 @@ class TestGetCertInfo:
 
     def test_subject_contains_cn(self, self_signed_cert_pem):
         result = get_cert_info(self_signed_cert_pem)
-        assert result["subject"] == "test.example.com"
+        assert result["subject"] == "C=US, CN=test.example.com"
 
     def test_signing_algo_is_string(self, self_signed_cert_pem):
         result = get_cert_info(self_signed_cert_pem)
