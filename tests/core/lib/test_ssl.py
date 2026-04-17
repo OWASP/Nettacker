@@ -154,27 +154,27 @@ class Substeps:
     }
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def ssl_engine():
     return SslEngine()
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def ssl_library():
     return SslLibrary()
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def substeps():
     return Substeps()
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def responses():
     return Responses()
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def connection_params():
     return {"HOST": "example.com", "PORT": 80, "TIMEOUT": 60}
 
@@ -580,12 +580,11 @@ class TestGetCertInfo:
     """
     Tests for get_cert_info(cert).
 
-    Uses a runtime-generated self-signed certificate so tests never
-    expire. Certificate is created fresh for each test run using
+    Uses a runtime-generated self-signed certificate so tests never rely on a hardcoded certificate that could expire. Certificate is created fresh for each test run using
     pyOpenSSL with a 10-year validity window.
     """
 
-    @pytest.fixture
+    @pytest.fixture(scope="module")
     def self_signed_cert_pem(self):
         """Generate a fresh self-signed certificate valid for 10 years."""
         k = crypto.PKey()
