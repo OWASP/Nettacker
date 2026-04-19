@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
 import asyncio
+import base64
+import binascii
 import copy
 import random
 import re
 import time
+import urllib.parse
 
 import aiohttp
 import uvloop
@@ -48,6 +51,7 @@ def response_conditions_matched(sub_step, response):
     condition_type = sub_step["response"]["condition_type"]
     conditions = sub_step["response"]["conditions"]
     condition_results = {}
+    response_metadata = {}
     for condition in conditions:
         if condition in ["reason", "status_code", "content", "url"]:
             regex = re.findall(re.compile(conditions[condition]["regex"]), response[condition])
@@ -90,6 +94,24 @@ def response_conditions_matched(sub_step, response):
                 )
             else:
                 condition_results["responsetime"] = []
+
+    # If the request used HTTP Basic auth, decode and expose the used credentials so
+    # modules can reference it via response_dependent['authorization_basic'] in their log field.
+    auth_header = sub_step.get("headers", {}).get("Authorization", "")
+    if isinstance(auth_header, str) and auth_header.startswith("Basic "):
+        try:
+            response_metadata["authorization_basic"] = [
+                base64.b64decode(auth_header[len("Basic ") :]).decode(errors="ignore")
+            ]
+        except (binascii.Error, UnicodeDecodeError):
+            pass
+
+    # If the request sent form data, expose it so modules can reference it
+    # via response_dependent['form_data'] in their log field.
+    form_data = sub_step.get("data")
+    if isinstance(form_data, str) and form_data:
+        response_metadata["form_data"] = [urllib.parse.unquote(form_data)]
+
     if condition_type.lower() == "or":
         # if one of the values are matched, it will be a string or float object in the array
         # we count False in the array and if it's not all []; then we know one of the conditions
@@ -110,6 +132,7 @@ def response_conditions_matched(sub_step, response):
                 != 0
             )
         ):
+            condition_results.update(response_metadata)
             if sub_step["response"].get("log", False):
                 condition_results["log"] = sub_step["response"]["log"]
                 if "response_dependent" in condition_results["log"]:
@@ -125,6 +148,7 @@ def response_conditions_matched(sub_step, response):
         ):
             return {}
         else:
+            condition_results.update(response_metadata)
             if sub_step["response"].get("log", False):
                 condition_results["log"] = sub_step["response"]["log"]
                 if "response_dependent" in condition_results["log"]:

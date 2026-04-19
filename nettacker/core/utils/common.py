@@ -283,10 +283,17 @@ def string_to_bytes(string):
     return string.encode()
 
 
+# Available data functions for fuzzer input processing.
+# The keys are the variable names provided under "data" in the fuzzer.
+# The values are sets of function names that can be applied to those items.
 AVAILABLE_DATA_FUNCTIONS = {
     "passwords": {"read_from_file"},
     "paths": {"read_from_file"},
     "urls": {"read_from_file"},
+    "usernames": {"read_from_file"},
+    # a wildcard "*" is used to indicate that the functions
+    #  can be applied to any item in the fuzzer data
+    "*": {"base64_encode", "url_encode"},
 }
 
 
@@ -298,12 +305,15 @@ def fuzzer_function_read_file_as_array(filename):
 
 def apply_data_functions(data):
     def apply_data_functions_new():
-        if item not in AVAILABLE_DATA_FUNCTIONS:
+        if not isinstance(data[item], dict):
             return
 
+        wildcard_functions = AVAILABLE_DATA_FUNCTIONS.get("*", set())
+        item_functions = AVAILABLE_DATA_FUNCTIONS.get(item, set())
         for fn_name in data[item]:
-            if fn_name in AVAILABLE_DATA_FUNCTIONS[item]:
-                fn = getattr(importlib.import_module("nettacker.core.fuzzer"), fn_name)
+            if fn_name in wildcard_functions or fn_name in item_functions:
+                fuzzer_module = importlib.import_module("nettacker.core.fuzzer")
+                fn = getattr(fuzzer_module, fn_name)
                 if fn is not None:
                     original_data[item] = fn(data[item][fn_name])
 
@@ -321,6 +331,9 @@ def apply_data_functions(data):
     for item in data:
         if isinstance((data[item]), str) and data[item].startswith("fuzzer_function"):
             apply_data_functions_old()
+        elif isinstance(data[item], dict) and "nettacker_fuzzer" in data[item]:
+            nested_result = fuzzer_repeater_perform({item: data[item]})
+            original_data[item] = nested_result[item]
         else:
             apply_data_functions_new()
 
@@ -357,11 +370,12 @@ def fuzzer_repeater_perform(arrays):
                 for interceptor in interceptors[::-1]:
                     interceptors_function += "{interceptor}(".format(interceptor=interceptor)
                 interceptors_function += "input_format.format(**formatted_data)" + str(
-                    ")" * interceptors_function.count("(")
+                    ")" * len(interceptors)
                 )
                 expected_variables = {}
-                globals().update(locals())
-                exec(interceptors_function, globals(), expected_variables)
+                fuzzer_module = importlib.import_module("nettacker.core.fuzzer")
+                exec_globals = {**globals(), **vars(fuzzer_module), **locals()}
+                exec(interceptors_function, exec_globals, expected_variables)
                 interceptors_function_processed = expected_variables[
                     "interceptors_function_processed"
                 ]

@@ -1,0 +1,76 @@
+info:
+  name: http_form_brute
+  author: Nettacker Team
+  severity: 3
+  description: HTTP Login Form Bruteforcer
+  reference:
+  profiles:
+    - brute
+    - http
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        ssl: false
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: application/x-www-form-urlencoded
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
+            prefix:
+            suffix:
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              paths:
+                - /login
+        data:
+          nettacker_fuzzer:
+            input_format: "{{username_form}}={{username}}&{{password_form}}={{password}}"
+            prefix:
+            suffix:
+            interceptors:
+            data:
+              username_form:
+                - username
+              password_form:
+                - password
+              username:
+                nettacker_fuzzer:
+                  input_format: "{{usernames}}"
+                  prefix:
+                  suffix:
+                  interceptors: url_encode
+                  data:
+                    usernames:
+                    - root
+                    - admin
+                    - user
+                    - test
+              password:
+                nettacker_fuzzer:
+                  input_format: "{{passwords}}"
+                  prefix:
+                  suffix:
+                  interceptors: url_encode
+                  data:
+                    passwords:
+                      read_from_file: passwords/top_1000_common_passwords.txt
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^[4-5][0-9][0-9]"
+              reverse: true
+            content:
+              regex: "failed|invalid|incorrect|unauthorized|access denied|try again"
+              reverse: true
+          log: "found credentials -> response_dependent['form_data']"
