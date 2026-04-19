@@ -68,11 +68,22 @@ def reverse_and_regex_condition(regex, reverse):
 
 
 def wait_for_threads_to_finish(threads, maximum=None, terminable=False, sub_process=False):
+    """Wait until all threads finish or the count drops below maximum.
+
+    Args:
+        threads: List of Thread (or Process) objects to monitor. Dead entries
+            are removed in-place each iteration.
+        maximum: If set, return early once fewer than *maximum* threads remain.
+        terminable: If True, forcibly terminate surviving threads on KeyboardInterrupt.
+        sub_process: If True, kill surviving sub-processes on KeyboardInterrupt.
+
+    Returns:
+        True when all threads completed (or fell below *maximum*),
+        False if interrupted by KeyboardInterrupt.
+    """
     while threads:
         try:
-            for thread in threads:
-                if not thread.is_alive():
-                    threads.remove(thread)
+            threads[:] = [t for t in threads if t.is_alive()]
             if maximum and len(threads) < maximum:
                 break
             time.sleep(0.01)

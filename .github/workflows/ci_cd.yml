@@ -115,6 +115,15 @@ jobs:
           python -m pip install --upgrade pip poetry
           poetry install
 
+      - name: Set pre-release version for Test PyPI
+        if: |
+          github.repository == 'OWASP/Nettacker' && 
+          github.event_name == 'push' && 
+          github.ref_name == 'master'
+        run: |
+          BASE="$(poetry version -s)"
+          poetry version "${BASE}.dev${{ github.run_number }}"
+
       - name: Build package
         run: |
           poetry build --no-interaction
