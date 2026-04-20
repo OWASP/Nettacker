@@ -242,7 +242,7 @@ def class_to_value(arrays):
 
 
 def generate_and_replace_md5(content):
-    # todo: make it betetr and document it
+    # todo: make it better and document it
     md5_content = content.split("NETTACKER_MD5_GENERATOR_START")[1].split(
         "NETTACKER_MD5_GENERATOR_STOP"
     )[0]
@@ -293,7 +293,7 @@ AVAILABLE_DATA_FUNCTIONS = {
 def fuzzer_function_read_file_as_array(filename):
     from nettacker.config import PathConfig
 
-    return open(PathConfig().payloads_dir / filename).read().split("\n")
+    return (PathConfig().payloads_dir / filename).read_text(encoding="utf-8").split("\n")
 
 
 def apply_data_functions(data):
@@ -444,7 +444,7 @@ def sort_dictionary(dictionary):
 
 def sanitize_path(path):
     """
-    Sanitize the file path to preven unathorized access
+    Sanitize the file path to prevent unauthorized access
     Args:
         path: filepath(user input)
 

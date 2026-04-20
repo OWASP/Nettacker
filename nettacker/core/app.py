@@ -52,9 +52,7 @@ class Nettacker(ArgParser):
         OWASP Nettacker Logo
         """
         log.write_to_api_console(
-            open(Config.path.logo_file)
-            .read()
-            .format(
+            Config.path.logo_file.read_text(encoding="utf-8").format(
                 cyan=TerminalCodes.CYAN.value,
                 red=TerminalCodes.RED.value,
                 rst=TerminalCodes.RESET.value,
