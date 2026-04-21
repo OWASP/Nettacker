@@ -1,0 +1,66 @@
+info:
+  name: beyondtrust_rs_pra_cve_2026_1731_vuln
+  author: OWASP Nettacker Team
+  severity: 9.9
+  description: >
+    CVE-2026-1731 is a critical unauthenticated command injection vulnerability in
+    BeyondTrust Remote Support (RS) versions 25.3.1 and prior, and Privileged Remote
+    Access (PRA) versions 24.3.4 and prior. Affected version ranges are 21.3.1-22.3.4,
+    23.2.1-25.1.5, and 25.2.1-25.3.1 (see advisory BT26-02 for exact per-product
+    ranges). The flaw resides in the thin-scc-wrapper script, reachable via the /nw
+    WebSocket endpoint, where Bash arithmetic evaluation of an attacker controlled
+    version number allows remote code execution. This module detects vulnerable
+    versions via the unauthenticated login page.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-1731
+    - https://www.beyondtrust.com/trust-center/security-advisories/bt26-02
+    - https://www.rapid7.com/blog/post/etr-cve-2026-1731-critical-unauthenticated-remote-code-execution-rce-beyondtrust-remote-support-rs-privileged-remote-access-pra/
+    - https://attackerkb.com/topics/CVE-2026-1731
+    - https://attackerkb.com/topics/jNMBccstay/cve-2026-1731/rapid7-analysis
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2026-1731
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2026
+    - beyondtrust
+    - rce
+    - cisa_kev
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:
+                - "appliance/login.ns"
+              schema:
+                - "https"
+              ports:
+                - 443
+                - 8443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              # Matches vulnerable versions: 21.3.1-22.3.4, 23.2.1-25.1.5, 25.2.1-25.3.1
+              # Note: RS is affected up to 25.3.1, PRA only up to 24.3.4.
+              # Version-only detection cannot differentiate products, so this
+              # regex covers the full RS range. PRA 25.x may produce false positives.
+              regex: "\\b(21\\.3\\.\\d+|21\\.[4-9]\\.\\d+|22\\.[0-2]\\.\\d+|22\\.3\\.[0-4]|23\\.2\\.\\d+|23\\.[3-9]\\.\\d+|24\\.\\d+\\.\\d+|25\\.0\\.\\d+|25\\.1\\.[0-5]|25\\.2\\.\\d+|25\\.3\\.[01])(?!\\d)"
+              reverse: false
