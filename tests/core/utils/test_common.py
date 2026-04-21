@@ -96,6 +96,43 @@ def test_select_maximum_cpu_core(cpu_count_mock):
         assert common_utils.select_maximum_cpu_core("invalid") == 1
 
 
+def test_merge_logs_to_list_simple():
+    result = {"log": "error occurred"}
+    assert common_utils.merge_logs_to_list(result) == ["error occurred"]
+
+
+def test_merge_logs_to_list_nested():
+    result = {
+        "log": "outer",
+        "nested": {"log": "inner"},
+    }
+    logs = common_utils.merge_logs_to_list(result)
+    assert sorted(logs) == ["inner", "outer"]
+
+
+def test_merge_logs_to_list_no_log_key():
+    result = {"status": "ok", "data": {"value": 42}}
+    assert common_utils.merge_logs_to_list(result) == []
+
+
+def test_merge_logs_to_list_deduplicates():
+    result = {
+        "log": "same",
+        "nested": {"log": "same"},
+    }
+    assert common_utils.merge_logs_to_list(result) == ["same"]
+
+
+def test_merge_logs_to_list_no_shared_state_between_calls():
+    """Verify that consecutive calls without explicit log_list don't leak state."""
+    result_a = {"log": "first"}
+    result_b = {"log": "second"}
+    logs_a = common_utils.merge_logs_to_list(result_a)
+    logs_b = common_utils.merge_logs_to_list(result_b)
+    assert logs_a == ["first"]
+    assert logs_b == ["second"]
+
+
 def test_wait_for_threads_to_finish_all_dead():
     """All threads already finished -- should return True immediately."""
     t = MagicMock(spec=threading.Thread)
