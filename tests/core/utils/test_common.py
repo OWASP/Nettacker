@@ -2,6 +2,8 @@ import threading
 import time
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from nettacker.core.utils import common as common_utils
 
 
@@ -183,3 +185,110 @@ def test_wait_for_threads_to_finish_empties_list():
     result = common_utils.wait_for_threads_to_finish(threads)
     assert result is True
     assert len(threads) == 0
+
+
+def test_set_nested_value_single_key():
+    d = {"a": 1}
+    common_utils.set_nested_value(d, "a/", "X")
+    assert d == {"a": "X"}
+
+
+def test_set_nested_value_nested_path():
+    d = {"a": {"b": {"c": 0}}}
+    common_utils.set_nested_value(d, "a/b/c/", "Z")
+    assert d == {"a": {"b": {"c": "Z"}}}
+
+
+def test_set_nested_value_ignores_empty_segments():
+    d = {"a": {"b": None}}
+    # Trailing slash -> last segment is empty and filtered out.
+    common_utils.set_nested_value(d, "a/b/", 42)
+    assert d["a"]["b"] == 42
+
+
+def test_generate_new_sub_steps_substitutes_values_without_exec():
+    sub_steps = {"url": {"schema": None, "ports": None}}
+    arrays = {"url/schema/": ["http"], "url/ports/": [80]}
+    data_matrix = [["http", 80], ["https", 443]]
+
+    result = common_utils.generate_new_sub_steps(sub_steps, data_matrix, arrays)
+
+    assert result == [
+        {"url": {"schema": "http", "ports": 80}},
+        {"url": {"schema": "https", "ports": 443}},
+    ]
+    # Caller's sub_steps must not be mutated.
+    assert sub_steps == {"url": {"schema": None, "ports": None}}
+
+
+def test_apply_data_functions_skips_unknown_item():
+    data = {"unrelated": {"read_from_file": "x.txt"}}
+    assert common_utils.apply_data_functions(data) == data
+
+
+def test_apply_data_functions_skips_unknown_function_name():
+    data = {"passwords": {"not_allowed_fn": "payload"}}
+    # Unknown function name is simply skipped, returning the original payload.
+    assert common_utils.apply_data_functions(data) == data
+
+
+def test_apply_data_functions_invokes_allowed_function():
+    data = {"passwords": {"read_from_file": "pw.txt"}}
+    with patch("nettacker.core.fuzzer.read_from_file", return_value=["a", "b"], create=True):
+        result = common_utils.apply_data_functions(data)
+    assert result == {"passwords": ["a", "b"]}
+
+
+def _fuzzer_arrays(interceptors):
+    return {
+        "url": {
+            "nettacker_fuzzer": {
+                "input_format": "http://host/{path}",
+                "prefix": "[",
+                "suffix": "]",
+                "interceptors": interceptors,
+                "data": {"path": ["a", "b"]},
+            }
+        }
+    }
+
+
+def test_fuzzer_repeater_perform_no_interceptors():
+    result = common_utils.fuzzer_repeater_perform(_fuzzer_arrays(""))
+    assert result == {"url": ["[http://host/a]", "[http://host/b]"]}
+
+
+def test_fuzzer_repeater_perform_allowed_interceptor_runs():
+    arrays = {
+        "url": {
+            "nettacker_fuzzer": {
+                "input_format": "NETTACKER_MD5_GENERATOR_START{seed}NETTACKER_MD5_GENERATOR_STOP",
+                "prefix": "",
+                "suffix": "",
+                "interceptors": "generate_and_replace_md5",
+                "data": {"seed": ["abc"]},
+            }
+        }
+    }
+    # This is basically: md5("abc")
+    assert common_utils.fuzzer_repeater_perform(arrays) == {
+        "url": ["900150983cd24fb0d6963f7d28e17f72"]
+    }
+
+
+def test_fuzzer_repeater_perform_disallowed_interceptor_raises():
+    arrays = _fuzzer_arrays("os.system")
+    with pytest.raises(ValueError, match="os.system"):
+        common_utils.fuzzer_repeater_perform(arrays)
+
+
+def test_fuzzer_repeater_perform_unknown_interceptor_alongside_allowed_raises():
+    # Disallowed name listed first so we hit the allow-list check before any allowed
+    # interceptor mutates the value.
+    arrays = _fuzzer_arrays("__import__,generate_and_replace_md5")
+    with pytest.raises(ValueError, match="__import__"):
+        common_utils.fuzzer_repeater_perform(arrays)
+
+
+def test_allowed_interceptors_registry_is_restricted():
+    assert set(common_utils.ALLOWED_INTERCEPTORS) == {"generate_and_replace_md5"}
