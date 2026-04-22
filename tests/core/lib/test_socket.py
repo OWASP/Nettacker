@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -140,9 +140,9 @@ def responses():
 
 
 class TestSocketMethod:
+    @patch("ssl.create_default_context")
     @patch("socket.socket")
-    @patch("ssl.wrap_socket")
-    def test_create_tcp_socket(self, mock_wrap, mock_socket):
+    def test_create_tcp_socket(self, mock_socket, mock_context):
         HOST = "example.com"
         PORT = 80
         TIMEOUT = 60
@@ -151,7 +151,9 @@ class TestSocketMethod:
         socket_instance = mock_socket.return_value
         socket_instance.settimeout.assert_called_with(TIMEOUT)
         socket_instance.connect.assert_called_with((HOST, PORT))
-        mock_wrap.assert_called_with(socket_instance)
+        mock_context.return_value.wrap_socket.assert_called_with(
+            socket_instance, server_hostname=HOST
+        )
 
     def test_response_conditions_matched_socket_icmp(self, socket_engine, substeps, responses):
         result = socket_engine.response_conditions_matched(
@@ -193,3 +195,34 @@ class TestSocketMethod:
             substeps.tcp_connect_send_and_receive, responses.none
         )
         assert result == []
+
+    @patch("ssl.create_default_context")
+    @patch("socket.socket")
+    def test_create_tcp_socket_wrap_failure(self, mock_socket, mock_context):
+        first_socket = MagicMock()
+        fallback_socket = MagicMock()
+        mock_socket.side_effect = [first_socket, fallback_socket]
+        mock_context.return_value.wrap_socket.side_effect = Exception("wrap fail")
+
+        conn, ssl_flag = create_tcp_socket("example.com", 80, 10)
+
+        assert conn is fallback_socket
+        assert ssl_flag is False
+        fallback_socket.connect.assert_called_with(("example.com", 80))
+
+    @patch("nettacker.core.lib.socket.create_tcp_socket")
+    @patch("socket.getservbyport", return_value="http")
+    def test_tcp_connect_send_and_receive_handles_errors(
+        self, mock_service, mock_create_tcp
+    ):
+        mock_socket = MagicMock()
+        mock_socket.getpeername.return_value = ("1.1.1.1", 80)
+        mock_socket.send.side_effect = Exception("send error")
+        mock_socket.close.return_value = None
+        mock_create_tcp.return_value = (mock_socket, False)
+
+        library = SocketEngine().library()
+        result = library.tcp_connect_send_and_receive("host", 80, 1)
+
+        assert result["response"] == ""
+        assert result["service"] == "http"
