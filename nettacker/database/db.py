@@ -403,7 +403,7 @@ def submit_temp_logs_to_db(log):
         return False
 
 
-def find_temp_events(target, module_name, scan_id, event_name):
+def find_temp_events(target, module_name, scan_id, event_name, port=None):
     """
     select all events by scan_unique id, target, module_name
 
@@ -420,16 +420,24 @@ def find_temp_events(target, module_name, scan_id, event_name):
     if isinstance(session, tuple):
         connection, cursor = session
         try:
-            cursor.execute(
-                """
-                SELECT event
-                FROM temp_events
-                WHERE target = ? AND module_name = ? AND scan_unique_id = ? AND event_name = ?
-                LIMIT 1
-            """,
-                (target, module_name, scan_id, event_name),
-            )
-
+            if port is not None:
+                cursor.execute(
+                    """
+                    SELECT event FROM temp_events
+                    WHERE target = ? AND module_name = ? AND scan_unique_id = ? AND event_name = ? AND port = ?
+                    LIMIT 1
+                    """,
+                    (target, module_name, scan_id, event_name, json.dumps(port)),
+                )
+            else:
+                cursor.execute(
+                    """
+                    SELECT event FROM temp_events
+                    WHERE target = ? AND module_name = ? AND scan_unique_id = ? AND event_name = ?
+                    LIMIT 1
+                    """,
+                    (target, module_name, scan_id, event_name),
+                )
             row = cursor.fetchone()
             if row:
                 return row[0]
@@ -444,17 +452,15 @@ def find_temp_events(target, module_name, scan_id, event_name):
             except Exception:
                 pass
     else:
-        result = (
-            session.query(TempEvents)
-            .filter(
-                TempEvents.target == target,
-                TempEvents.module_name == module_name,
-                TempEvents.scan_unique_id == scan_id,
-                TempEvents.event_name == event_name,
-            )
-            .first()
+        query = session.query(TempEvents).filter(
+            TempEvents.target == target,
+            TempEvents.module_name == module_name,
+            TempEvents.scan_unique_id == scan_id,
+            TempEvents.event_name == event_name,
         )
-
+        if port is not None:
+            query = query.filter(TempEvents.port == json.dumps(port))
+        result = query.first()
         return result.event if result else []
 
 
