@@ -9,6 +9,13 @@ API_invalid: invalid API key
 API_key: " * API is accessible from https://nettacker-api.z3r0d4y.com:{0}/ via API Key: {1}"
 API_options: API options
 API_port: API port number
+scan_modules_title: Scan Modules
+scan_modules_desc: (Information Gathering and Reconnaissance)
+brute_modules_title: Brute Force Modules
+brute_modules_desc: (Authentication Attacks)
+vuln_modules_title: Vulnerability Modules
+vuln_modules_desc: (Exploit and Vulnerability Detection)
+select_all: Select all
 Method: Method
 skip_service_discovery: skip service discovery before scan and enforce all modules to scan anyway
 no_live_service_found: no any live service found to scan.
