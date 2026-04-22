@@ -150,7 +150,9 @@ def test_json_report(mock_submit, mock_open_file, mock_get_logs):
 @patch("csv.DictWriter")
 @patch("nettacker.core.graph.Path.open", new_callable=mock_open)
 @patch("nettacker.core.graph.submit_report_to_db")
-def test_csv_report(mock_submit, mock_open_file, mock_csv_writer, mock_get_logs):
+def test_csv_report_new_file(mock_submit, mock_open_file, mock_csv_writer, mock_get_logs):
+    # tell() returns 0 for a new/empty file, so the header should be written
+    mock_open_file.return_value.__enter__.return_value.tell.return_value = 0
     options = MagicMock()
     options.report_path_filename = "report.csv"
     mock_writer_instance = MagicMock()
@@ -158,6 +160,28 @@ def test_csv_report(mock_submit, mock_open_file, mock_csv_writer, mock_get_logs)
     result = create_report(options, "scan-id")
     assert result is True
     mock_writer_instance.writeheader.assert_called_once()
+    mock_writer_instance.writerow.assert_called_once()
+
+
+@patch(
+    "nettacker.core.graph.get_logs_by_scan_id",
+    return_value=[
+        {"date": "now", "target": "x", "module_name": "mod", "port": 80, "json_event": "{}"}
+    ],
+)
+@patch("csv.DictWriter")
+@patch("nettacker.core.graph.Path.open", new_callable=mock_open)
+@patch("nettacker.core.graph.submit_report_to_db")
+def test_csv_report_existing_file(mock_submit, mock_open_file, mock_csv_writer, mock_get_logs):
+    # tell() returns non-zero for an existing file, so the header must not be written again
+    mock_open_file.return_value.__enter__.return_value.tell.return_value = 42
+    options = MagicMock()
+    options.report_path_filename = "report.csv"
+    mock_writer_instance = MagicMock()
+    mock_csv_writer.return_value = mock_writer_instance
+    result = create_report(options, "scan-id")
+    assert result is True
+    mock_writer_instance.writeheader.assert_not_called()
     mock_writer_instance.writerow.assert_called_once()
 
 
