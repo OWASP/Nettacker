@@ -305,7 +305,7 @@ AVAILABLE_DATA_FUNCTIONS = {
 def fuzzer_function_read_file_as_array(filename):
     from nettacker.config import PathConfig
 
-    return open(PathConfig().payloads_dir / filename).read().split("\n")
+    return (PathConfig().payloads_dir / filename).read_text(encoding="utf-8").split("\n")
 
 
 def apply_data_functions(data):
