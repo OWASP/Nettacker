@@ -20,7 +20,11 @@ def mysql_create_database():
             existing_databases = [d[0] for d in existing_databases]
 
             if Config.db.name not in existing_databases:
-                conn.execute(text("CREATE DATABASE {0} ".format(Config.db.name)))
+                db_name = Config.db.name
+                if db_name.isalnum() and db_name[0].isalpha():
+                    conn.execute(text(f"CREATE DATABASE `{db_name}` "))
+                else:
+                    raise ValueError(f"Invalid database name: {db_name}")
     except Exception as e:
         print(e)
 

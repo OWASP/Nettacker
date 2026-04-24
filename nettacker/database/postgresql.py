@@ -26,7 +26,11 @@ def postgres_create_database():
         )
         conn = engine.connect()
         conn = conn.execution_options(isolation_level="AUTOCOMMIT")
-        conn.execute(text(f"CREATE DATABASE {Config.db.name}"))
+        db_name = Config.db.name
+        if db_name.isalnum() and db_name[0].isalpha():
+            conn.execute(text(f'CREATE DATABASE "{db_name}"'))
+        else:
+            raise ValueError(f"Invalid database name: {db_name}")
         conn.close()
         engine = create_engine(
             "postgresql+psycopg2://{username}:{password}@{host}:{port}/{name}".format(
