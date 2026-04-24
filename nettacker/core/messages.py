@@ -20,7 +20,8 @@ def application_language():
 
 
 def load_yaml(filename):
-    return yaml.safe_load(open(filename, "r"))
+    with open(filename, "r") as f:
+        return yaml.safe_load(f)
 
 
 def get_languages():
