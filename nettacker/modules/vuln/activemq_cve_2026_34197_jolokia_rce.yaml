@@ -1,0 +1,109 @@
+info:
+  name: activemq_cve_2026_34197_jolokia_rce_vuln
+  author: Nettacker Team
+  severity: 8.8
+  description: |
+    Detects CVE-2026-34197 in Apache ActiveMQ Classic via Jolokia API.
+    The vulnerability allows execution of addNetworkConnector which can
+    load remote configuration via vm:// and xbean: protocol.
+    Detection is performed by invoking addNetworkConnector via the Jolokia
+    exec API with a benign vm:// URI (brokerConfig=none); patched brokers
+    (5.19.4 / 6.2.3) reject vm:// transport for this operation.
+    Note: on vulnerable brokers this creates a persistent network
+    connector entry that remains until broker restart or manual removal.
+
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-34197
+    - https://horizon3.ai/attack-research/disclosures/cve-2026-34197-activemq-rce-jolokia/
+
+  profiles:
+    - vuln
+    - http
+    - high_severity
+    - cve
+    - cve2026
+    - activemq
+    - jolokia
+    - rce
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 10
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
+          Authorization: "Basic YWRtaW46YWRtaW4="
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/jolokia/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 8161
+                - 80
+                - 443
+
+        data: |
+          {{
+            "type": "exec",
+            "mbean": "org.apache.activemq:type=Broker,brokerName=localhost",
+            "operation": "addNetworkConnector",
+            "arguments": ["static:(vm://nettacker-probe-000?brokerConfig=none)"]
+          }}
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+            content:
+              regex: '(?s)(?=.*addNetworkConnector)(?=.*org.apache.activemq)'
+              reverse: false
+
+      - method: post
+        timeout: 10
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/jolokia/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 8161
+                - 80
+                - 443
+
+        data: |
+          {{
+            "type": "exec",
+            "mbean": "org.apache.activemq:type=Broker,brokerName=localhost",
+            "operation": "addNetworkConnector",
+            "arguments": ["static:(vm://nettacker-probe-000?brokerConfig=none)"]
+          }}
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+            content:
+              regex: '(?s)(?=.*addNetworkConnector)(?=.*org.apache.activemq)'
+              reverse: false
