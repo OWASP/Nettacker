@@ -1,4 +1,6 @@
-from unittest.mock import patch
+import threading
+import time
+from unittest.mock import MagicMock, patch
 
 from nettacker.core.utils import common as common_utils
 
@@ -92,3 +94,92 @@ def test_select_maximum_cpu_core(cpu_count_mock):
         for level in ("low", "normal", "high", "maximum"):
             assert common_utils.select_maximum_cpu_core(level) == levels[level]
         assert common_utils.select_maximum_cpu_core("invalid") == 1
+
+
+def test_merge_logs_to_list_simple():
+    result = {"log": "error occurred"}
+    assert common_utils.merge_logs_to_list(result) == ["error occurred"]
+
+
+def test_merge_logs_to_list_nested():
+    result = {
+        "log": "outer",
+        "nested": {"log": "inner"},
+    }
+    logs = common_utils.merge_logs_to_list(result)
+    assert sorted(logs) == ["inner", "outer"]
+
+
+def test_merge_logs_to_list_no_log_key():
+    result = {"status": "ok", "data": {"value": 42}}
+    assert common_utils.merge_logs_to_list(result) == []
+
+
+def test_merge_logs_to_list_deduplicates():
+    result = {
+        "log": "same",
+        "nested": {"log": "same"},
+    }
+    assert common_utils.merge_logs_to_list(result) == ["same"]
+
+
+def test_merge_logs_to_list_no_shared_state_between_calls():
+    """Verify that consecutive calls without explicit log_list don't leak state."""
+    result_a = {"log": "first"}
+    result_b = {"log": "second"}
+    logs_a = common_utils.merge_logs_to_list(result_a)
+    logs_b = common_utils.merge_logs_to_list(result_b)
+    assert logs_a == ["first"]
+    assert logs_b == ["second"]
+
+
+def test_wait_for_threads_to_finish_all_dead():
+    """All threads already finished -- should return True immediately."""
+    t = MagicMock(spec=threading.Thread)
+    t.is_alive.return_value = False
+    threads = [t]
+    assert common_utils.wait_for_threads_to_finish(threads) is True
+    assert threads == []
+
+
+def test_wait_for_threads_to_finish_removes_all_dead_threads():
+    """Verify every dead thread is removed, not just alternating ones (the original bug)."""
+    dead = [MagicMock(spec=threading.Thread) for _ in range(5)]
+    for t in dead:
+        t.is_alive.return_value = False
+    threads = list(dead)
+    common_utils.wait_for_threads_to_finish(threads)
+    assert threads == []
+
+
+def test_wait_for_threads_to_finish_with_maximum():
+    """Should break early when thread count drops below maximum."""
+
+    def short_task():
+        time.sleep(0.02)
+
+    threads = [threading.Thread(target=short_task) for _ in range(3)]
+    for t in threads:
+        t.start()
+    result = common_utils.wait_for_threads_to_finish(threads, maximum=3)
+    assert result is True
+    # Clean up
+    for t in threads:
+        t.join(timeout=1)
+
+
+def test_wait_for_threads_to_finish_empties_list():
+    """Threads that finish are removed in-place from the original list."""
+
+    def quick():
+        pass
+
+    threads = [threading.Thread(target=quick) for _ in range(3)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    # All are dead now
+    result = common_utils.wait_for_threads_to_finish(threads)
+    assert result is True
+    assert len(threads) == 0
