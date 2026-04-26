@@ -8,6 +8,7 @@ import time
 
 import aiohttp
 import uvloop
+from yarl import URL
 
 from nettacker.core.lib.base import BaseEngine
 from nettacker.core.utils.common import (
@@ -34,6 +35,8 @@ async def perform_request_action(action, request_options):
 
 
 async def send_request(request_options, method):
+    if request_options.pop("url_raw", False):
+        request_options["url"] = URL(request_options["url"], encoded=True)
     async with aiohttp.ClientSession() as session:
         action = getattr(session, method, None)
         response = await asyncio.gather(
