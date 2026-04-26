@@ -69,6 +69,7 @@ HTTP_STEP_SCHEMA = Schema(
         Optional("timeout"): int,
         Optional("allow_redirects"): bool,
         Optional("ssl"): bool,
+        Optional("url_raw"): bool,
         Optional("data"): object,
         Optional("json"): object,
         Optional("ports"): object,
