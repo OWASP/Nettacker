@@ -4,11 +4,14 @@ info:
   severity: 7.5
   description: Detects Jenkins CVE-2024-23897 arbitrary file read via CLI argument parsing using @file syntax.
   reference:
-    - https://www.jenkins.io/security/advisory/2024-01-24/
+    - https://www.cisa.gov/news-events/alerts/2024/08/19/cisa-adds-one-known-exploited-vulnerability-catalog
   profiles:
     - vuln
     - jenkins
     - cve
+    - cve2024
+    - high_severity
+    - cisa_kev
 
 payloads:
   - library: http
@@ -44,7 +47,6 @@ payloads:
           help @/etc/passwd
 
         response:
-          log: "Confirmed CVE-2024-23897 vulnerability detected"
           condition_type: and
           conditions:
             status_code:
