@@ -12,6 +12,8 @@ info:
     - critical_severity
     - cve
     - f5
+    - cve2022
+    - cisa_kev
 
 payloads:
   - library: http
@@ -56,7 +58,6 @@ payloads:
           }}
 
         response:
-          log: "Confirmed CVE-2022-1388 vulnerability detected"
           condition_type: and
           conditions:
             status_code:
