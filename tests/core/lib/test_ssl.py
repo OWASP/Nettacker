@@ -463,6 +463,24 @@ class TestSslMethod:
             ("sha1", True),
             ("test_algo", False),
             ("sha256", False),
+            # Case insensitivity
+            ("MD5", True),
+            ("SHA1", True),
+            ("Md5", True),
+            # Real-world signature algorithm strings
+            ("sha1WithRSAEncryption", True),
+            ("md5WithRSAEncryption", True),
+            ("sha256WithRSAEncryption", False),
+            ("sha512WithRSAEncryption", False),
+            ("ecdsa-with-SHA256", False),
+            # Strong algorithms
+            ("sha384", False),
+            ("sha512", False),
+            ("sha3-256", False),
+            ("ed25519", False),
+            # Edge cases
+            ("rsa", False),
+            ("", False),
         ],
     )
     def test_is_weak_hash_algo(self, algo, expected):
