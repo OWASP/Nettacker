@@ -77,7 +77,7 @@ class BaseEngine(ABC):
                             )[0]
                             try:
                                 key_value = eval(key_name)
-                            except Exception:
+                            except (NameError, KeyError, TypeError, IndexError, SyntaxError):
                                 key_value = "error"
                             sub_step[key] = sub_step[key].replace(key_name, key_value)
         if isinstance(sub_step, list):
@@ -98,7 +98,7 @@ class BaseEngine(ABC):
                             )[0]
                             try:
                                 key_value = eval(key_name)
-                            except Exception:
+                            except (NameError, KeyError, TypeError, IndexError, SyntaxError):
                                 key_value = "error"
                             sub_step[value_index] = sub_step[value_index].replace(
                                 key_name, key_value
