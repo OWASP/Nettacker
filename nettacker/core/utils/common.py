@@ -249,10 +249,10 @@ def generate_and_replace_md5(content):
     md5_content_backup = md5_content
     if isinstance(md5_content, str):
         md5_content = md5_content.encode()
-    md5_hash = hashlib.md5(md5_content).hexdigest()
+    sha256_hash = hashlib.sha256(md5_content).hexdigest()
     return content.replace(
         "NETTACKER_MD5_GENERATOR_START" + md5_content_backup + "NETTACKER_MD5_GENERATOR_STOP",
-        md5_hash,
+        sha256_hash,
     )
 
 
