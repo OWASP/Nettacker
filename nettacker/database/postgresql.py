@@ -1,8 +1,20 @@
+import re
+
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import OperationalError
 
 from nettacker.config import Config
 from nettacker.database.models import Base
+
+
+def _validate_identifier(name):
+    """
+    Validate a database identifier to prevent SQL injection.
+    Only alphanumeric characters and underscores are allowed.
+    """
+    if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", name):
+        raise ValueError(f"Invalid database identifier: {name}")
+    return name
 
 
 def postgres_create_database():
@@ -26,7 +38,7 @@ def postgres_create_database():
         )
         conn = engine.connect()
         conn = conn.execution_options(isolation_level="AUTOCOMMIT")
-        conn.execute(text(f"CREATE DATABASE {Config.db.name}"))
+        conn.execute(text(f"CREATE DATABASE {_validate_identifier(Config.db.name)}"))
         conn.close()
         engine = create_engine(
             "postgresql+psycopg2://{username}:{password}@{host}:{port}/{name}".format(

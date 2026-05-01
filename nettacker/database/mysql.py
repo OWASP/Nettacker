@@ -1,7 +1,19 @@
+import re
+
 from sqlalchemy import create_engine, text
 
 from nettacker.config import Config
 from nettacker.database.models import Base
+
+
+def _validate_identifier(name):
+    """
+    Validate a database identifier to prevent SQL injection.
+    Only alphanumeric characters and underscores are allowed.
+    """
+    if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", name):
+        raise ValueError(f"Invalid database identifier: {name}")
+    return name
 
 
 def mysql_create_database():
@@ -20,7 +32,7 @@ def mysql_create_database():
             existing_databases = [d[0] for d in existing_databases]
 
             if Config.db.name not in existing_databases:
-                conn.execute(text("CREATE DATABASE {0} ".format(Config.db.name)))
+                conn.execute(text(f"CREATE DATABASE {_validate_identifier(Config.db.name)}"))
     except Exception as e:
         print(e)
 
