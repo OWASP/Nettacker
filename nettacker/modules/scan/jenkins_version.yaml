@@ -1,0 +1,48 @@
+info:
+  name: jenkins_version_scan
+  author: Mohamed Solaiman
+  severity: 3
+  description: Detect Jenkins instance and fetch version from X-Jenkins header
+  reference:
+    - https://www.jenkins.io/doc/book/managing/system-properties/
+  profiles:
+    - scan
+    - http
+    - jenkins
+    - low_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/login"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8888
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200|403"
+              reverse: false
+            headers:
+              X-Jenkins:
+                regex: (\d+\.\d+[\w.\-]*)
+                reverse: false
+          log: "response_dependent['headers']['X-Jenkins']"
