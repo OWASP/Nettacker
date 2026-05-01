@@ -540,6 +540,19 @@ class TestSslMethod:
             socket_instance, server_hostname=connection_params["HOST"]
         )
 
+    @patch("socket.socket")
+    @patch("ssl.SSLContext")
+    def test_is_weak_ssl_version_timeout(self, mock_context, mock_socket, connection_params):
+        """Test that socket timeout is handled gracefully."""
+        socket_instance = mock_socket.return_value
+        socket_instance.connect.side_effect = socket.timeout
+
+        result = is_weak_ssl_version(
+            connection_params["HOST"], connection_params["PORT"], connection_params["TIMEOUT"]
+        )
+
+        assert result == ([], True)
+
     def test_response_conditions_matched_expired_cert(self, ssl_engine, substeps, responses):
         result = ssl_engine.response_conditions_matched(
             substeps.ssl_certificate_expired_vuln, responses.ssl_certificate_expired
