@@ -1,4 +1,5 @@
 import json
+import re
 import time
 
 try:
@@ -59,9 +60,21 @@ def create_connection():
             connection.setbusytimeout(int(config.settings.timeout) * 100)
             cursor = connection.cursor()
 
+            # Validate PRAGMA values to prevent injection
+            valid_journal_modes = {"DELETE", "TRUNCATE", "PERSIST", "MEMORY", "WAL", "OFF"}
+            valid_sync_modes = {"OFF", "NORMAL", "FULL", "EXTRA"}
+
+            journal_mode = Config.db.journal_mode.upper()
+            sync_mode = Config.db.synchronous_mode.upper()
+
+            if journal_mode not in valid_journal_modes:
+                raise ValueError(f"Invalid journal_mode: {Config.db.journal_mode}")
+            if sync_mode not in valid_sync_modes:
+                raise ValueError(f"Invalid synchronous_mode: {Config.db.synchronous_mode}")
+
             # Performance enhancing configurations. Put WAL cause that helps with concurrency.
-            cursor.execute(f"PRAGMA journal_mode={Config.db.journal_mode}")
-            cursor.execute(f"PRAGMA synchronous={Config.db.synchronous_mode}")
+            cursor.execute(f"PRAGMA journal_mode={journal_mode}")
+            cursor.execute(f"PRAGMA synchronous={sync_mode}")
 
             return connection, cursor
         except Exception as e:
