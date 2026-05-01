@@ -1,12 +1,15 @@
 import ssl
-from unittest.mock import patch
+from datetime import datetime, timezone, timedelta
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from nettacker.core.lib.ssl import (
     SslEngine,
     SslLibrary,
+    create_socket_connection,
     create_tcp_socket,
+    get_cert_info,
     is_weak_cipher_suite,
     is_weak_hash_algo,
     is_weak_ssl_version,
@@ -590,3 +593,186 @@ class TestSslMethod:
         result = ssl_engine.response_conditions_matched(substeps.ssl_weak_version_vuln, None)
 
         assert result == []
+
+    @patch("nettacker.core.lib.ssl.create_tcp_socket")
+    def test_ssl_certificate_scan_connection_refused(self, mock_connection, ssl_library, connection_params):
+        mock_connection.return_value = None
+
+        result = ssl_library.ssl_certificate_scan(
+            connection_params["HOST"], connection_params["PORT"], connection_params["TIMEOUT"]
+        )
+
+        assert result is None
+
+    @patch("socket.socket")
+    @patch("ssl.wrap_socket")
+    def test_create_tcp_socket_connection_refused(self, mock_wrap, mock_socket):
+        socket_instance = mock_socket.return_value
+        socket_instance.connect.side_effect = ConnectionRefusedError
+
+        result = create_tcp_socket("example.com", 80, 60)
+
+        assert result is None
+
+
+class TestGetCertInfo:
+    """Tests for get_cert_info function."""
+
+    @patch("nettacker.core.lib.ssl.crypto.load_certificate")
+    def test_get_cert_info_valid_cert(self, mock_load_cert):
+        mock_x509 = Mockx509Object(
+            is_expired=False,
+            issuer="TestCA",
+            subject="TestSubject",
+            signing_algo="sha256WithRSAEncryption",
+            expire_date=b"21001207153045Z",
+            activation_date=b"20231207153045Z",
+        )
+        mock_load_cert.return_value = mock_x509
+
+        result = get_cert_info("fake_cert_pem_data")
+
+        assert result["expired"] is False
+        assert result["self_signed"] is False
+        assert result["weak_signing_algo"] is False
+        assert result["not_activated"] is False
+        assert result["expiring_soon"] is False
+        assert "TestCA" in result["issuer"]
+        assert "TestSubject" in result["subject"]
+
+    @patch("nettacker.core.lib.ssl.crypto.load_certificate")
+    def test_get_cert_info_weak_signature(self, mock_load_cert):
+        mock_x509 = Mockx509Object(
+            is_expired=False,
+            issuer="TestCA",
+            subject="TestSubject",
+            signing_algo="sha1WithRSAEncryption",
+            expire_date=b"21001207153045Z",
+            activation_date=b"20231207153045Z",
+        )
+        mock_load_cert.return_value = mock_x509
+
+        result = get_cert_info("fake_cert_pem_data")
+
+        assert result["weak_signing_algo"] is True
+        assert result["signing_algo"] == "sha1WithRSAEncryption"
+
+    @patch("nettacker.core.lib.ssl.crypto.load_certificate")
+    def test_get_cert_info_self_signed(self, mock_load_cert):
+        mock_x509 = Mockx509Object(
+            is_expired=False,
+            issuer="SameEntity",
+            subject="SameEntity",
+            signing_algo="sha256WithRSAEncryption",
+            expire_date=b"21001207153045Z",
+            activation_date=b"20231207153045Z",
+        )
+        mock_load_cert.return_value = mock_x509
+
+        result = get_cert_info("fake_cert_pem_data")
+
+        assert result["self_signed"] is True
+        assert result["issuer"] == result["subject"]
+
+    @patch("nettacker.core.lib.ssl.crypto.load_certificate")
+    def test_get_cert_info_expired(self, mock_load_cert):
+        mock_x509 = Mockx509Object(
+            is_expired=True,
+            issuer="TestCA",
+            subject="TestSubject",
+            signing_algo="sha256WithRSAEncryption",
+            expire_date=b"20201207153045Z",
+            activation_date=b"20151207153045Z",
+        )
+        mock_load_cert.return_value = mock_x509
+
+        result = get_cert_info("fake_cert_pem_data")
+
+        assert result["expired"] is True
+
+    @patch("nettacker.core.lib.ssl.crypto.load_certificate")
+    def test_get_cert_info_expiring_soon(self, mock_load_cert):
+        soon = datetime.now(timezone.utc) + timedelta(days=15)
+        expire_str = soon.strftime("%Y%m%d%H%M%SZ").encode()
+        past = datetime.now(timezone.utc) - timedelta(days=365)
+        activation_str = past.strftime("%Y%m%d%H%M%SZ").encode()
+
+        mock_x509 = Mockx509Object(
+            is_expired=False,
+            issuer="TestCA",
+            subject="TestSubject",
+            signing_algo="sha256WithRSAEncryption",
+            expire_date=expire_str,
+            activation_date=activation_str,
+        )
+        mock_load_cert.return_value = mock_x509
+
+        result = get_cert_info("fake_cert_pem_data")
+
+        assert result["expiring_soon"] is True
+        assert result["expired"] is False
+
+    @patch("nettacker.core.lib.ssl.crypto.load_certificate")
+    def test_get_cert_info_not_yet_activated(self, mock_load_cert):
+        future = datetime.now(timezone.utc) + timedelta(days=180)
+        activation_str = future.strftime("%Y%m%d%H%M%SZ").encode()
+        far_future = datetime.now(timezone.utc) + timedelta(days=365)
+        expire_str = far_future.strftime("%Y%m%d%H%M%SZ").encode()
+
+        mock_x509 = Mockx509Object(
+            is_expired=False,
+            issuer="TestCA",
+            subject="TestSubject",
+            signing_algo="sha256WithRSAEncryption",
+            expire_date=expire_str,
+            activation_date=activation_str,
+        )
+        mock_load_cert.return_value = mock_x509
+
+        result = get_cert_info("fake_cert_pem_data")
+
+        assert result["not_activated"] is True
+
+    @patch("nettacker.core.lib.ssl.crypto.load_certificate")
+    def test_get_cert_info_md5_signature(self, mock_load_cert):
+        mock_x509 = Mockx509Object(
+            is_expired=False,
+            issuer="TestCA",
+            subject="TestSubject",
+            signing_algo="md5WithRSAEncryption",
+            expire_date=b"21001207153045Z",
+            activation_date=b"20231207153045Z",
+        )
+        mock_load_cert.return_value = mock_x509
+
+        result = get_cert_info("fake_cert_pem_data")
+
+        assert result["weak_signing_algo"] is True
+        assert result["signing_algo"] == "md5WithRSAEncryption"
+
+
+class TestCreateSocketConnection:
+    """Tests for create_socket_connection function."""
+
+    @patch("nettacker.core.lib.ssl.ssl.SSLContext")
+    def test_create_socket_connection_success(self, mock_context_class):
+        mock_context = mock_context_class.return_value
+        mock_wrapped_socket = MagicMock()
+        mock_context.wrap_socket.return_value = mock_wrapped_socket
+
+        result = create_socket_connection(mock_context, "example.com", 443, 10)
+
+        assert result == mock_wrapped_socket
+        mock_context.wrap_socket.assert_called_once()
+
+    @patch("socket.socket")
+    @patch("nettacker.core.lib.ssl.ssl.SSLContext")
+    def test_create_socket_connection_sets_timeout(self, mock_context_class, mock_socket):
+        mock_socket_instance = mock_socket.return_value
+        mock_context = mock_context_class.return_value
+        mock_context.wrap_socket.return_value = MagicMock()
+
+        create_socket_connection(mock_context, "example.com", 443, 15)
+
+        mock_socket_instance.settimeout.assert_called_with(15)
+        mock_socket_instance.connect.assert_called_with(("example.com", 443))
