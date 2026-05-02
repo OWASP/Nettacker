@@ -6,9 +6,8 @@ info:
     n8n workflow automation platform versions 1.65.0 through 1.120.x are affected by
     CVE-2026-21858, a critical Content-Type confusion vulnerability in webhook endpoints 
     allowing Remote Code Execution (CVSS 10.0). This module detects vulnerable n8n
-    instances by fingerprinting the versionCli field in the /rest/settings endpoint and
-    subsequently probing to confirm that webhook endpoints are active and reachable.
-    Upgrade to n8n >= 1.121.0.
+    instances by fingerprinting the versionCli field in the /rest/settings endpoint.
+    Version-based detection only; no webhook exploitation is performed. Upgrade to n8n >= 1.121.0.
   reference:
     - https://nvd.nist.gov/vuln/detail/CVE-2026-21858
     - https://thehackernews.com/2026/01/critical-n8n-vulnerability-cvss-100.html
