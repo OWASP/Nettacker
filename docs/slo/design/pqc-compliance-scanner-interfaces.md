@@ -34,9 +34,26 @@ YAML keys consumed (must match library method signatures):
 | `class PqcEngine(BaseEngine)` | **stable** | Public class; auto-discovered via `{library.capitalize()}Engine` rule. |
 | `PqcLibrary.tls_pqc_scan(host: str, port: int, timeout: int) -> dict` | **stable** | YAML method. Return shape below. |
 | `PqcLibrary.ssh_pqc_scan(host: str, port: int, timeout: int) -> dict` | **stable** | YAML method. Return shape below. |
-| `TLS_PQC_NAMED_GROUPS: dict[int, dict]` | **evolving** | Module-level table mapping IANA codepoint → `{name, kind, status}` where `kind ∈ {pure_pq, hybrid}` and `status ∈ {standardized, draft, experimental}`. May grow with new IANA assignments. |
+| `TLS_PQC_NAMED_GROUPS: dict[int, dict]` | **evolving** | Module-level table mapping IANA codepoint → `{name, kind, status, key_share_bytes, source}` where `kind ∈ {pure_pq, hybrid}`, `status ∈ {standardized, draft, experimental}`, `key_share_bytes` is the IETF-pinned client `key_exchange` octet length (see "PQC named-group key_share lengths" table below), `source` is the IETF / IANA citation. May grow with new IANA assignments. |
 | `SSH_PQC_KEX_ALGORITHMS: dict[str, dict]` | **evolving** | Module-level table mapping OpenSSH algorithm string → `{kind, status, since_openssh_version}`. |
 | Internal helpers (e.g. `_build_tls13_client_hello()`, `_parse_ssh_kexinit()`) | **internal** | Fair game to refactor. |
+
+## PQC named-group `key_share` lengths (IETF-draft-pinned)
+
+The TLS 1.3 `key_share` extension carries a `KeyShareEntry` per group: `{group: NamedGroup, key_exchange: opaque<1..2^16-1>}`. For our PQC probes the `key_exchange` payload is a **client-side** ML-KEM encapsulation key (or a concatenation of an ECDHE public point + ML-KEM encapsulation key for hybrids). The exact byte length per algorithm is fixed by the spec — sending the wrong length triggers a `decode_error` alert from the server, which our parser must distinguish from `handshake_failure` (= group recognized but unsupported).
+
+We use a fixed all-zero buffer of the correct length as the client `key_exchange`. A real PQ client would send a freshly-generated ML-KEM encapsulation key, but since we never complete the handshake, the server only validates length, not key validity (we are observing whether it accepts the *shape* of a key share for this group, not negotiating).
+
+| Codepoint | Name | `key_share_bytes` | Composition | Source |
+|---:|---|---:|---|---|
+| `0x0200` | `mlkem512` | 800 | ML-KEM-512 encapsulation key (FIPS 203) | [draft-ietf-tls-mlkem](https://datatracker.ietf.org/doc/draft-ietf-tls-mlkem/) §3 |
+| `0x0201` | `mlkem768` | 1184 | ML-KEM-768 encapsulation key (FIPS 203) | [draft-ietf-tls-mlkem](https://datatracker.ietf.org/doc/draft-ietf-tls-mlkem/) §3 |
+| `0x0202` | `mlkem1024` | 1568 | ML-KEM-1024 encapsulation key (FIPS 203) | [draft-ietf-tls-mlkem](https://datatracker.ietf.org/doc/draft-ietf-tls-mlkem/) §3 |
+| `0x11EB` | `SecP256r1MLKEM768` | 1249 | secp256r1 uncompressed point (65 bytes, `0x04 ‖ X(32) ‖ Y(32)`) ‖ ML-KEM-768 encap key (1184) | [draft-ietf-tls-ecdhe-mlkem](https://datatracker.ietf.org/doc/draft-ietf-tls-ecdhe-mlkem/) §2 |
+| `0x11EC` | `X25519MLKEM768` | 1216 | ML-KEM-768 encap key (1184) ‖ X25519 public key (32) — note: this group puts ML-KEM **first**, opposite of the SecP* hybrids; per draft §2 this is intentional. | [draft-ietf-tls-ecdhe-mlkem](https://datatracker.ietf.org/doc/draft-ietf-tls-ecdhe-mlkem/) §2 |
+| `0x11ED` | `SecP384r1MLKEM1024` | 1665 | secp384r1 uncompressed point (97 bytes) ‖ ML-KEM-1024 encap key (1568) | [draft-ietf-tls-ecdhe-mlkem](https://datatracker.ietf.org/doc/draft-ietf-tls-ecdhe-mlkem/) §2 |
+
+Updates to this table require updating the source citation. The total ClientHello byte length cap (1500 bytes per the M2 invariant) accommodates `SecP384r1MLKEM1024` plus extensions overhead.
 
 ## Library method response shape (`tls_pqc_scan` / `ssh_pqc_scan`)
 

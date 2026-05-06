@@ -266,8 +266,9 @@ See Section 3 diagram. Net additions: one YAML manifest, one Python library, one
 ### What to Change
 
 - **`nettacker/core/module.py`** — add `"pqc_scan"` to the `ignored_core_modules` list. One-line edit, M1.
-- **`nettacker/modules/scan/pqc_scan.yaml`** — NEW manifest. M1 ships SSH step; M2 adds TLS step.
+- **`nettacker/modules/scan/pqc_scan.yaml`** — NEW manifest. M1 ships SSH step only; M2 adds TLS step (per critique F-ENG-2).
 - **`nettacker/core/lib/pqc.py`** — NEW library + engine + algorithm tables. M1 ships skeleton + SSH probe; M2 adds TLS probe; M3 finalizes verdict + opt-out.
+- **`docs/slo/design/pqc-compliance-scanner-interfaces.md`** — add IETF-pinned key_share length table at M2 pre-flight (per critique F-ENG-3).
 - **`docs/Modules.md`** — add user-facing entry for `pqc_scan`. M3.
 
 ### Global Red Lines
@@ -277,7 +278,7 @@ See Section 3 diagram. Net additions: one YAML manifest, one Python library, one
 - No changes to the SQLite schema.
 - No CLI flag rename or removal.
 - No edits to `nettacker/web/` (Web UI auto-discovers modules from the YAML directory).
-- No retries inside the library — each probe is single-shot. Nettacker's framework-level `retries` option still applies to the engine's `run()` call but the library MUST be idempotent and side-effect-free.
+- No retries inside the library — each probe is single-shot. **Library MUST catch every recoverable network exception** (`socket.timeout`, `socket.error`, `ConnectionRefusedError`, `ConnectionResetError`, `OSError`) and convert it to a `verdict=unknown` + `errors=[…]` dict — so [BaseEngine.run() at base.py:288-293](../nettacker/core/lib/base.py#L288-L293) never retries probe failures. The framework-level `retries` knob then only re-runs true library bugs (e.g., `AttributeError`), which we never want to mask anyway. (Critique F-ENG-1 + threat-model abuse-3.)
 - No background threads or async code in the library beyond what stdlib `socket` requires.
 - No mock objects committed to production paths.
 
@@ -365,11 +366,11 @@ Path: `docs/slo/completion/pqc-scanner-m<N>.md` (verbatim shape from v4 template
 | New dependencies allowed | `none`. |
 | Migration allowed | `no`. |
 | Compatibility commitments | Every existing module continues to function. `make test` baseline stays green. The `ssh.py` `SshLibrary.brute_force` path is untouched. The Web UI auto-discovers the new module without code changes. |
-| Resource bounds introduced/changed | (a) ≤4 SSH PQC algorithm strings in `SSH_PQC_KEX_ALGORITHMS` table (hard cap); (b) banner read ≤255 bytes; (c) KEXINIT packet read ≤35,000 bytes; (d) one TCP connection per (host, port). |
-| Invariants/assertions required | (a) `assert len(SSH_PQC_KEX_ALGORITHMS) <= 4`; (b) every table entry has keys `kind`, `status`, `since_openssh_version`; (c) `ProbeResult` discriminated by tag string in `{"kexinit_received","banner_only","timeout","tcp_closed"}`; (d) `Verdict` strictly in the four-value enum. |
+| Resource bounds introduced/changed | (a) ≤4 SSH PQC algorithm strings in `SSH_PQC_KEX_ALGORITHMS` table (hard cap); (b) banner read ≤255 bytes; (c) KEXINIT packet read ≤35,000 bytes; (d) one TCP connection per (host, port); (e) FD count delta is zero across every probe code path (success and failure). |
+| Invariants/assertions required | (a) `assert len(SSH_PQC_KEX_ALGORITHMS) <= 4`; (b) every table entry has keys `kind`, `status`, `since_openssh_version`; (c) `ProbeResult` discriminated by tag string in `{"kexinit_received","banner_only","timeout","tcp_closed"}`; (d) `Verdict` strictly in the four-value enum; (e) **library catches every recoverable network exception** so `BaseEngine.run()` retry loop is a no-op for probe failures (critique F-ENG-1); (f) **server-controlled SSH name-list strings are validated** against `^[A-Za-z0-9._@+/-]+$` per RFC 4250 §6 at parse boundary; non-conformant strings are dropped with an entry in `errors` (critique F-SEC-1, CWE-117); (g) FD count delta is zero across every probe (critique F-SEC-3, CWE-404). |
 | Debugger / inspection expectation | At least one test must be runnable under `pytest --pdb` (i.e., produces a controlled failure for inspection). Lessons file records one debugger session. |
 | Static analysis gates | `poetry run ruff format` + `poetry run ruff check` clean on all changed files. `pre-commit run --all-files` clean. |
-| Forbidden shortcuts | No paramiko `Transport`. No real network calls in unit tests (use a `socket.socketserver`-based fake that replays canned bytes). No `time.sleep` in production code. No swallowed `socket.error` — every failure is recorded in `errors`. No `# TODO`. |
+| Forbidden shortcuts | No paramiko `Transport`. No real network calls in unit tests (use a `socket.socketserver`-based fake that replays canned bytes). No `time.sleep` in production code. No swallowed `socket.error` — every failure is recorded in `errors`. No `# TODO`. **No log emission of unsanitized server-controlled bytes** (F-SEC-1). |
 | Data classification | Internal (network reachability + advertised algorithm lists; no credentials, no personal data). |
 | Proactive controls in play | OWASP Proactive Controls C2 (input validation — strict KEXINIT parse), C5 (secure-by-default — no handshake completion), C9 (security logging — every probe logged via existing `process_conditions`). |
 | Abuse acceptance scenarios | `tm-pqc-compliance-scanner-abuse-4` (oversized banner — capped at 255 bytes) and `tm-pqc-compliance-scanner-abuse-5` (transparent banner — documented as intentional choice) and `tm-pqc-compliance-scanner-abuse-6` (resource exhaustion — `timeout` enforced). All three covered in BDD scenarios below. |
@@ -390,13 +391,14 @@ Path: `docs/slo/completion/pqc-scanner-m<N>.md` (verbatim shape from v4 template
 3. Read the files in "Files to read before changing anything".
 4. Copy Evidence Log into working notes.
 5. Run `make test` and confirm baseline green; record output to `evidence/pqc-scanner-m1-baseline.txt`.
+6. **Verify Web UI module-discovery mechanism** (critique F-ENG-4): read [nettacker/web/](../nettacker/web/) and `nettacker/api/` for the source of the Web UI module list. If the Web UI maintains a separate manifest (JSON / static asset / hardcoded list) rather than auto-discovering YAMLs, add that file to M3's allow-list and document the finding in M1's Evidence Log. If auto-discovery is confirmed, document that confirmation in the Evidence Log.
 
 #### Files Allowed To Change
 
 | File | Planned Change |
 |---|---|
-| `nettacker/core/lib/pqc.py` | NEW: module-level constants `TLS_PQC_NAMED_GROUPS` (table only — actual TLS probe lands in M2), `SSH_PQC_KEX_ALGORITHMS`; classes `PqcLibrary` (with `ssh_pqc_scan` method only in M1; `tls_pqc_scan` may exist as a stub returning `verdict=unknown` + `errors=["tls_probe_not_yet_implemented"]` so the YAML can wire both methods) and `PqcEngine`. |
-| `nettacker/modules/scan/pqc_scan.yaml` | NEW: manifest with `info`, `payloads[0].library: pqc`, payload `steps` for both `ssh_pqc_scan` (default ports 22, 2222) and `tls_pqc_scan` (default TLS port list — but step returns `unknown` until M2). |
+| `nettacker/core/lib/pqc.py` | NEW: module-level constants `TLS_PQC_NAMED_GROUPS` (table only — actual TLS probe lands in M2), `SSH_PQC_KEX_ALGORITHMS`; classes `PqcLibrary` (with `ssh_pqc_scan` method only in M1) and `PqcEngine` (skeleton). **Per critique F-ENG-2, no `tls_pqc_scan` stub in M1** — that method is added in M2 alongside the YAML edit that references it. |
+| `nettacker/modules/scan/pqc_scan.yaml` | NEW: manifest with `info`, `payloads[0].library: pqc`, **one payload `step` for `ssh_pqc_scan`** (default ports 22, 2222) only. The TLS step is added in M2. |
 | `nettacker/core/module.py` | One-line edit: add `"pqc_scan"` to `ignored_core_modules` at the existing list (line ~48–58). |
 | `tests/core/lib/test_pqc.py` | NEW: unit tests for `SSH_PQC_KEX_ALGORITHMS` table well-formedness, `_parse_ssh_kexinit()` helper, `_send_ssh_banner()` helper, `ssh_pqc_scan()` end-to-end against a fake socket server. |
 | `tests/core/test_module_pqc.py` | NEW: integration test that loads `pqc_scan.yaml` via TemplateLoader, instantiates `PqcEngine`, and verifies a fake SSH server (bound to 127.0.0.1 on a random port) is correctly probed and produces a populated response dict. |
@@ -407,12 +409,12 @@ Path: `docs/slo/completion/pqc-scanner-m<N>.md` (verbatim shape from v4 template
 1. Write BDD test stubs in `tests/core/lib/test_pqc.py` for every scenario in the BDD table below; confirm they fail.
 2. Write the integration test in `tests/core/test_module_pqc.py`; confirm it fails.
 3. Implement `SSH_PQC_KEX_ALGORITHMS` table with the 2 OpenSSH-shipped algorithms + 2 reserved slots (table cap = 4).
-4. Implement the SSH probe: open TCP, send `SSH-2.0-Nettacker_PQC_Scan\r\n`, read banner (cap 255 bytes), read first packet (length-prefixed, cap 35000 bytes), parse MSG_KEXINIT (`uint8 type=20`, 16 bytes cookie, 10 name-list strings), extract `kex_algorithms` name-list, classify each entry against the table, close socket.
-5. Implement `_parse_ssh_kexinit()` helper as a pure function over `bytes → dict` for test isolation.
-6. Implement the YAML manifest. The `tls_pqc_scan` step exists in the manifest from M1 but the library method returns `verdict=unknown` + `errors=["tls_probe_not_yet_implemented"]` — this lets us validate YAML wiring end-to-end without M2 being done.
+4. Implement the SSH probe: open TCP, send `SSH-2.0-Nettacker_PQC_Scan\r\n`, read banner (cap 255 bytes), read first packet (length-prefixed, cap 35000 bytes), parse MSG_KEXINIT (`uint8 type=20`, 16 bytes cookie, 10 name-list strings), extract `kex_algorithms` name-list, **validate every name string against `^[A-Za-z0-9._@+/-]+$` (RFC 4250 §6) at the parse boundary; drop non-conformant strings into `errors`** (F-SEC-1, CWE-117), classify each conforming entry against the table, close socket.
+5. Implement `_parse_ssh_kexinit()` helper as a pure function over `bytes → dict` for test isolation. Wrap every `socket.*` exception in `tls_pqc_scan`/`ssh_pqc_scan` outer-try so the framework retry loop never sees an `Exception` (F-ENG-1).
+6. Implement the YAML manifest with the SSH step only.
 7. One-line edit to `nettacker/core/module.py` adding `"pqc_scan"` to `ignored_core_modules`.
 8. Run `pre-commit run --all-files`, `make test`, `poetry run nettacker -m pqc_scan -i <local fake SSH server>` smoke.
-9. Verify Evidence Log rows.
+9. Verify Evidence Log rows including FD-leak check and "library never raises" check.
 
 #### BDD Acceptance Scenarios
 
@@ -428,6 +430,9 @@ Path: `docs/slo/completion/pqc-scanner-m<N>.md` (verbatim shape from v4 template
 | Oversized banner | resource bound (abuse-4) | server sends 1MB banner | probe runs | exception caught, `errors == ["banner_overflow_capped_at_255"]`, socket closed cleanly |
 | Oversized KEXINIT | resource bound | server sends 100KB KEXINIT packet | probe runs | `errors == ["kexinit_overflow_capped_at_35000"]`, socket closed |
 | Server sends garbage | invalid input | server sends random bytes for banner | probe runs | `verdict="unknown"`, `errors == ["malformed_banner"]` |
+| Server advertises malformed algorithm name (`tm-pqc-compliance-scanner-abuse-5` variant; CWE-117 mitigation) | abuse case | mock server's KEXINIT contains `mlkem768x25519-sha256\n[CRITICAL]forged log line` in `kex_algorithms` | probe runs | malformed name dropped at parse boundary; `errors` includes `"malformed_algorithm_name_<hex_prefix>"`; advertised list contains only RFC-conformant strings; logged event contains no newlines from server |
+| FD leak prevention (CWE-404) | resource bound | snapshot `psutil.Process().num_fds()` before probe | run probe (success or failure path) | post-probe FD count == pre-probe FD count |
+| Library never raises into framework retry loop (F-ENG-1) | resource bound | force `socket.timeout` via mock server | run via `BaseEngine.run()` with `options['retries']=3` | library returns dict on first call; framework does NOT re-call (verified by mock-server connection counter == 1, not 3) |
 | Algorithm-table well-formed | assertion violation | unit test of table | iterate entries | every entry has required keys; len ≤ 4 |
 | Existing modules still work | compatibility | full `make test` | runs | existing test suite green |
 
@@ -511,14 +516,14 @@ Path: `docs/slo/completion/pqc-scanner-m<N>.md` (verbatim shape from v4 template
 | Inputs | (host, port, timeout) from existing YAML step. Per-call: a sequence of named-group probes determined by `TLS_PQC_NAMED_GROUPS`. |
 | Outputs | `tls_pqc_groups_advertised`, `tls_pqc_groups_probed`, `tls_classical_groups_advertised` (extracted from any received ServerHello extension when present), `errors`, `duration_ms`, `service="tls"`. |
 | Interfaces touched | `PqcLibrary.tls_pqc_scan(host, port, timeout) -> dict`. The stub from M1 is replaced with the real implementation. YAML manifest unchanged. |
-| Files allowed to change | `nettacker/core/lib/pqc.py` (real `tls_pqc_scan` + helpers `_build_tls13_client_hello`, `_parse_tls13_server_response`, `TLS_PQC_NAMED_GROUPS` table fully populated), `tests/core/lib/test_pqc.py` (TLS scenarios + golden bytes), `tests/core/test_module_pqc.py` (TLS integration scenario). |
+| Files allowed to change | `nettacker/core/lib/pqc.py` (add `tls_pqc_scan` method + helpers `_build_tls13_client_hello`, `_parse_tls13_server_response`, `TLS_PQC_NAMED_GROUPS` table fully populated), **`nettacker/modules/scan/pqc_scan.yaml` (add the TLS step that M1 deferred — critique F-ENG-2)**, `tests/core/lib/test_pqc.py` (TLS scenarios + golden bytes + parser fuzz/torture test), `tests/core/test_module_pqc.py` (TLS integration scenario), **`docs/slo/design/pqc-compliance-scanner-interfaces.md`** (add the IETF-pinned key_share length table — critique F-ENG-3, may already be added in pre-flight). |
 | Files to read before changing anything | `nettacker/core/lib/pqc.py` as it stands at end of M1, RFC 8446 §4.1.2 (for ClientHello shape — read offline reference; cite IANA codepoints from interfaces.md), [docs/slo/design/pqc-compliance-scanner-interfaces.md](slo/design/pqc-compliance-scanner-interfaces.md). |
 | New files allowed | `none`. |
 | New dependencies allowed | `none`. |
 | Migration allowed | `no`. |
 | Compatibility commitments | M1's SSH path continues to work. Stub `tls_pqc_scan` from M1 is REPLACED, not removed — the YAML reference is unchanged. `make test` stays green. |
-| Resource bounds introduced/changed | (a) `len(TLS_PQC_NAMED_GROUPS) <= 8` asserted; (b) one TCP connection per (host, port, group); (c) `recv()` per probe ≤ 16,384 bytes (one TLS record); (d) probe loop exits on first received `handshake_failure` alert (we do not retry the same group). |
-| Invariants/assertions required | (a) `assert len(TLS_PQC_NAMED_GROUPS) <= 8`; (b) every IANA codepoint in the table is in valid TLS NamedGroup numeric range; (c) emitted ClientHello length is ≤ 1024 bytes (paranoid cap to prevent accidental record fragmentation); (d) `ProbeResponse` is a tagged union as per §4.5. |
+| Resource bounds introduced/changed | (a) `len(TLS_PQC_NAMED_GROUPS) <= 8` asserted; (b) one TCP connection per (host, port, group); (c) `recv()` per probe ≤ 16,384 bytes (one TLS record); (d) probe loop exits on first received `handshake_failure` alert (we do not retry the same group); (e) FD count delta is zero across every probe code path (F-SEC-3, CWE-404). |
+| Invariants/assertions required | (a) `assert len(TLS_PQC_NAMED_GROUPS) <= 8`; (b) every IANA codepoint in the table is in valid TLS NamedGroup numeric range; (c) emitted ClientHello length is ≤ 1500 bytes (paranoid cap to prevent accidental record fragmentation — must accommodate the 1216-byte X25519MLKEM768 key_share + extensions overhead); (d) `ProbeResponse` is a tagged union as per §4.5; (e) `_parse_tls13_server_response()` is total — every `bytes` input maps to a tagged result; **no exception ever escapes** (F-SEC-2, CWE-787 / CWE-770); (f) `_build_tls13_client_hello()` uses key_share lengths from the IETF-pinned table in interfaces.md (F-ENG-3); (g) outer `tls_pqc_scan` catches every recoverable network exception so the framework retry loop is a no-op (F-ENG-1). |
 | Debugger / inspection expectation | At least one ClientHello byte sequence inspected via `wireshark` against a local mock TLS server during development; documented in lessons file. |
 | Static analysis gates | Same as M1: ruff format + ruff check + pre-commit. |
 | Forbidden shortcuts | No use of stdlib `ssl.SSLContext.wrap_socket()` for the probe — we construct bytes ourselves. No completing a handshake. No more than one record read per probe. No fragmented records emitted. No retries on the same group. No silent fallback when a server sends an unexpected response (record raw bytes in `errors`, do not invent classification). |
@@ -574,9 +579,12 @@ Path: `docs/slo/completion/pqc-scanner-m<N>.md` (verbatim shape from v4 template
 | Server sends decode_error alert | invalid input | mock server returns alert(level=2, description=50) | probe runs | group NOT advertised; `errors` records `"decode_error_for_<group>"` because this hints our ClientHello bytes are wrong |
 | Server times out after ClientHello | dependency failure | mock server accepts but never replies | probe runs | group NOT advertised; `errors` records `"timeout_<group>"` |
 | TCP refused on TLS port | dependency failure | local listener absent | probe runs | `scan_succeeded=False`, `errors=["tcp_refused"]`, no per-group rows |
-| Server sends oversized record | resource bound (abuse-2) | mock server replays 1MB after handshake header | probe runs | only 16,384 bytes consumed; socket closed; group recorded as "ambiguous_oversized_response" |
+| Server sends oversized record (`tm-pqc-compliance-scanner-abuse-2`) | resource bound | mock server replays 1MB after handshake header | probe runs | only 16,384 bytes consumed; socket closed; group recorded as "ambiguous_oversized_response" |
 | Probe completes ≤8 connections per (host, port) | resource bound | full table | probe runs against mock | exactly `len(TLS_PQC_NAMED_GROUPS)` TCP connects observed |
-| Algorithm-table well-formed | assertion violation | unit test | iterate `TLS_PQC_NAMED_GROUPS` | every entry valid; `len <= 8`; no duplicate codepoints |
+| FD leak prevention (CWE-404) | resource bound | snapshot `psutil.Process().num_fds()` before TLS probe loop | run probe (success or failure) | post-probe FD count == pre-probe FD count |
+| Library never raises into framework retry loop (F-ENG-1) | resource bound | force `socket.timeout` mid-probe via mock | call via `BaseEngine.run()` with `options['retries']=3` | mock-server connection counter == 1, not 3 |
+| Parser is total — torture test (F-SEC-2, CWE-787/770) | abuse case | seeded RNG generates 100 mutations of a valid ServerHello byte string | feed each to `_parse_tls13_server_response` | no exception escapes any call; every output is a tagged result OR an `errors` entry |
+| Algorithm-table well-formed | assertion violation | unit test | iterate `TLS_PQC_NAMED_GROUPS` | every entry valid; `len <= 8`; no duplicate codepoints; **every entry's `key_share_bytes` field matches the IETF-pinned table in interfaces.md** (F-ENG-3) |
 | Existing tests still pass | compatibility | full suite | `make test` | green |
 
 #### Regression Tests
@@ -630,7 +638,7 @@ Path: `docs/slo/completion/pqc-scanner-m<N>.md` (verbatim shape from v4 template
 
 #### Notes
 
-- We do NOT include `mlkem512` or `mlkem1024` in the v1 table because OpenSSL 3.5 / browsers / Cloudflare deployment as of 2026-05 standardize on `mlkem768` and `X25519MLKEM768`. The 8-codepoint cap forces this discipline. v2 can revisit.
+- The v1 table now includes `mlkem1024` (0x0202) and `SecP384r1MLKEM1024` (per critique F-CEO-1) so the M3 verdict can honestly map to **CNSA 2.0** which mandates ML-KEM-1024 for NSS by 2027-01-01. `mlkem512` remains excluded — no compliance framework requires it and OpenSSL 3.5 / browsers / Cloudflare deployments as of 2026-05 standardize on the 768/1024 tier. The 8-codepoint cap is now: `MLKEM768`, `MLKEM1024`, `X25519MLKEM768`, `SecP256r1MLKEM768`, `SecP384r1MLKEM1024`, plus 3 reserved slots (`MLKEM512` deliberately omitted; future X-Wing or other hybrids land in reserved slots).
 
 ---
 
@@ -711,7 +719,8 @@ Path: `docs/slo/completion/pqc-scanner-m<N>.md` (verbatim shape from v4 template
 |---|---|---|---|---|
 | `pqc_ready` requires standardized | happy path | response with `tls_pqc_groups_advertised=["X25519MLKEM768"]`, table marks it `status="standardized"` | engine runs verdict logic | `verdict="pqc_ready"`; `compliance_notes` mentions FIPS 203 / draft-ietf-tls-ecdhe-mlkem |
 | Draft-only does NOT trigger pqc_ready | invariant assertion | response with only a `status="draft"` algorithm | verdict logic | `verdict="hybrid_only"` or `"classical_only"` per actual classification — never `"pqc_ready"` |
-| Hybrid-only correctly flagged | happy path | only hybrid algorithms advertised | verdict logic | `verdict="hybrid_only"`; `compliance_notes` notes "hybrid PQ; meets transitional CNSA 2.0 guidance" |
+| Hybrid-only correctly flagged | happy path | only hybrid algorithms advertised | verdict logic | `verdict="hybrid_only"`; `compliance_notes` says "hybrid PQ (e.g. X25519MLKEM768); transitional — does NOT meet CNSA 2.0 (ML-KEM-1024 required by 2027-01-01)" (F-CEO-1: CNSA 2.0 requires the 1024 parameter set) |
+| ML-KEM-1024 advertised → CNSA-2.0-compliant note (F-CEO-1) | happy path | response with `tls_pqc_groups_advertised=["MLKEM1024"]` or `["SecP384r1MLKEM1024"]` | verdict logic | `verdict="pqc_ready"`; `compliance_notes` includes "meets CNSA 2.0 ML-KEM-1024 baseline" |
 | Classical-only flagged | happy path | no PQC advertised | verdict logic | `verdict="classical_only"`; `compliance_notes` mentions "fails OpenSSH 10.1 WarnWeakCrypto baseline" or "fails OMB M-23-02 PQ baseline" depending on service |
 | Unknown when probe failed | dependency failure | TCP refused | verdict logic | `verdict="unknown"`; `compliance_notes` is "scan inconclusive: <error reason>" |
 | Opt-out skips active TLS probe | abuse-1 mitigation | `pqc_no_active_probe=true` | TLS step | `tls_pqc_scan` early-returns; SSH step still runs; structured log line says "active probe disabled by operator" |
