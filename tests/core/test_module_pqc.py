@@ -106,6 +106,72 @@ class TestPqcModuleRegistration:
         assert '"pqc_scan"' in source, "pqc_scan not in core/module.py source — M1 edit missing"
 
 
+class TestPqcYamlManifestExpansion:
+    """Regression for the M2 YAML bug: the manifest must produce BOTH an
+    ssh_pqc_scan and a tls_pqc_scan sub-step group after expansion. M2's
+    commit lost the TLS step from the YAML; unit tests that called
+    PqcLibrary().tls_pqc_scan directly missed the regression because they
+    bypassed the YAML→engine→library wire entirely.
+    """
+
+    def test_yaml_loads_via_templateloader_with_both_steps(self):
+        from nettacker.core.template import TemplateLoader
+
+        content = TemplateLoader("pqc_scan", {"target": "example.com"}).load()
+        assert content["info"]["name"] == "pqc_scan"
+        assert len(content["payloads"]) == 1
+        steps = content["payloads"][0]["steps"]
+        methods = {step["method"] for step in steps}
+        assert "ssh_pqc_scan" in methods, (
+            "pqc.yaml is missing the ssh_pqc_scan step — module will not probe SSH"
+        )
+        assert "tls_pqc_scan" in methods, (
+            "pqc.yaml is missing the tls_pqc_scan step — module will not probe TLS "
+            "(see M2 closeout regression — unit tests must NOT bypass the YAML)"
+        )
+
+    def test_expand_module_steps_yields_both_method_groups(self):
+        from nettacker.core.template import TemplateLoader
+        from nettacker.core.utils.common import expand_module_steps
+
+        content = TemplateLoader("pqc_scan", {"target": "example.com"}).load()
+        expanded = expand_module_steps(content["payloads"])
+        assert len(expanded) == 1, "expected exactly 1 payload group (library=pqc)"
+        step_groups = expanded[0]["steps"]
+        # After expand_module_steps, each YAML step becomes a step group of N
+        # sub-steps (one per port in the YAML's ports list).
+        assert len(step_groups) >= 2, (
+            f"expected at least 2 step groups (SSH + TLS) but got {len(step_groups)} — "
+            "TLS step is missing or YAML is malformed"
+        )
+        methods = {sub["method"] for group in step_groups for sub in group}
+        assert methods == {"ssh_pqc_scan", "tls_pqc_scan"}, (
+            f"expanded methods {methods} do not match expected {{ssh_pqc_scan, tls_pqc_scan}}"
+        )
+
+    def test_yaml_tls_step_includes_443(self):
+        # Critical: TLS HTTPS port must be in the default scan list, otherwise
+        # operators running against a typical web target will get no TLS event.
+        from nettacker.core.template import TemplateLoader
+
+        content = TemplateLoader("pqc_scan", {"target": "example.com"}).load()
+        for step in content["payloads"][0]["steps"]:
+            if step["method"] == "tls_pqc_scan":
+                assert 443 in step["ports"], "tls_pqc_scan default port list must include 443"
+                return
+        pytest.fail("tls_pqc_scan step not found in pqc.yaml")
+
+    def test_yaml_ssh_step_includes_22(self):
+        from nettacker.core.template import TemplateLoader
+
+        content = TemplateLoader("pqc_scan", {"target": "example.com"}).load()
+        for step in content["payloads"][0]["steps"]:
+            if step["method"] == "ssh_pqc_scan":
+                assert 22 in step["ports"], "ssh_pqc_scan default port list must include 22"
+                return
+        pytest.fail("ssh_pqc_scan step not found in pqc.yaml")
+
+
 class TestPqcLibraryInvocationByName:
     """The Module.start() loop dispatches by ``getattr(library_class(), method)``.
     Confirm the auto-discovery wiring does not error for our YAML-referenced methods.

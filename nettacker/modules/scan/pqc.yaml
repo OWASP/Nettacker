@@ -33,3 +33,25 @@ payloads:
           conditions:
             scan_succeeded:
               reverse: false
+      - method: tls_pqc_scan
+        timeout: 5
+        host: "{target}"
+        ports:
+          - 443
+          - 21
+          - 25
+          - 110
+          - 143
+          - 587
+          - 990
+          - 993
+          - 995
+          - 5061
+          - 5222
+          - 5269
+          - 8443
+        response:
+          condition_type: or
+          conditions:
+            scan_succeeded:
+              reverse: false
