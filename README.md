@@ -28,7 +28,8 @@ OWASP Nettacker is an open-source, Python-based automated penetration testing an
 - **Built-in database & drift detection** - Stores past scans in the database for easy search and comparison with current results: useful to detect new hosts, open ports, or vulnerabilities in CI/CD pipelines.
 - **CLI, REST API & Web UI** - Offers both programmatic integration and a user-friendly web interface for defining scans and viewing results.
 - **Evasion techniques** - Enables configurable delays, proxy support, and randomized user-agents to reduce detection by firewalls or IDS systems.
-- **Flexible targets** - Accepts single IPv4s, IP ranges, CIDR blocks, domain names, and full HTTP/HTTPS URLs. Targets can be mixed in a single command or loaded from a file using the `-l/--targets-list` flag. 
+- **Flexible targets** - Accepts single IPv4s, IP ranges, CIDR blocks, domain names, and full HTTP/HTTPS URLs. Targets can be mixed in a single command or loaded from a file using the `-l/--targets-list` flag.
+- **Post-quantum cryptography (PQC) compliance scanning** - The `pqc_scan` module audits TLS 1.3 and SSH endpoints for PQC readiness against NIST FIPS 203 / OMB M-23-02 / CNSA 2.0 baselines, reporting a per-host posture verdict (`pqc_ready` / `hybrid_only` / `classical_only` / `unknown`). Useful for federal-contractor and EU-DORA cryptographic-inventory submissions. See [`docs/Modules.md`](docs/Modules.md#pqc-compliance-scanner-pqc_scan) for usage.
 
 ### Use Cases
 
@@ -79,11 +80,17 @@ $ docker run owasp/nettacker -i 192.168.0.1 -m port_scan
 $ docker run owasp/nettacker -i 192.168.0.0/24 -m port_scan -g 22
 # Scan all subdomains of 'owasp.org' for http/https services and return HTTP status code
 $ docker run owasp/nettacker -i owasp.org -d -s -m http_status_scan
+# Audit an SSH endpoint for post-quantum cryptography readiness:
+$ docker run owasp/nettacker -i github.com -m pqc_scan -g 22
+# Audit a TLS endpoint (HTTPS) for post-quantum cryptography readiness:
+$ docker run owasp/nettacker -i cloudflare.com -m pqc_scan -g 443
 # Display Help
 $ docker run owasp/nettacker --help
 
 
 ```
+
+For the `pqc_scan` module — usage examples, verdict semantics (`pqc_ready` / `hybrid_only` / `classical_only` / `unknown`), CI gate snippets, the `pqc_no_active_probe` opt-out, and compliance-mapping to NIST FIPS 203 / OMB M-23-02 / CNSA 2.0 — see [docs/Usage.md → Post-Quantum Cryptography (PQC) Compliance Scanning](docs/Usage.md#post-quantum-cryptography-pqc-compliance-scanning) and [docs/Modules.md → PQC Compliance Scanner](docs/Modules.md#pqc-compliance-scanner-pqc_scan).
 ### Web UI (Docker)
 
 ```bash

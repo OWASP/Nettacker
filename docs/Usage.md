@@ -555,6 +555,93 @@ python nettacker.py -i 192.168.1.1/24 --profile information_gathering -o report.
 python nettacker.py -i 192.168.1.1/24 --profile information_gathering --output report.dd.json
 ```
 
+# Post-Quantum Cryptography (PQC) Compliance Scanning
+
+The `pqc_scan` module audits TLS 1.3 and SSH endpoints for **post-quantum cryptography readiness** and reports a per-host posture verdict (`pqc_ready` / `hybrid_only` / `classical_only` / `unknown`). It is designed for compliance inventories required by frameworks like NIST FIPS 203, OMB M-23-02 / NSM-10 (annual federal cryptographic-system inventory through 2035), and CNSA 2.0 (NSS new-acquisition deadline 2027-01-01).
+
+For full details (verdict semantics, safety operating model, compliance-mapping table, output JSON schema, known limitations) see [Modules.md → PQC Compliance Scanner](Modules.md#pqc-compliance-scanner-pqc_scan).
+
+## Quick start
+
+```bash
+# SSH posture for one host (port 22)
+python nettacker.py -m pqc_scan -i github.com -g 22
+
+# TLS posture for one host (port 443)
+python nettacker.py -m pqc_scan -i cloudflare.com -g 443
+
+# Mixed: scan default TLS + SSH ports for one target
+python nettacker.py -m pqc_scan -i example.com
+
+# Bulk scan from a target list
+python nettacker.py -m pqc_scan -l targets.txt -o pqc-report.json
+
+# Inside Docker (web UI workflow)
+docker run owasp/nettacker -i github.com -m pqc_scan -g 22
+```
+
+## Reading the verdict
+
+The CLI summary table only shows `Detected` per (host, port). The full verdict (`pqc_ready`, advertised algorithms, `compliance_notes`) is in the JSON / HTML report. The cleanest one-liner that prints "host:port → verdict — compliance note":
+
+```bash
+python nettacker.py -m pqc_scan -i github.com -g 22 -o /tmp/pqc.json && \
+  jq -r '.[] | select(.module_name=="pqc_scan") | "\(.target):\(.port) → \(.json_event.response.conditions_results.verdict) — \(.json_event.response.conditions_results.compliance_notes)"' /tmp/pqc.json
+```
+
+Output:
+
+```
+github.com:22 → pqc_ready — advertises standardized PQ KEX (sntrup761x25519-sha512@openssh.com); meets OpenSSH 10.1 WarnWeakCrypto baseline
+```
+
+If `jq` is not installed, use the Python equivalent:
+
+```bash
+python nettacker.py -m pqc_scan -i github.com -g 22 -o /tmp/pqc.json && \
+  python -c "import json; [print(f\"{e['target']}:{e['port']} -> {e['json_event']['response']['conditions_results'].get('verdict')} | {e['json_event']['response']['conditions_results'].get('compliance_notes', '')}\") for e in json.load(open('/tmp/pqc.json')) if e['module_name']=='pqc_scan']"
+```
+
+## CI gate (fail when any endpoint is classical-only)
+
+```bash
+python nettacker.py -m pqc_scan -i $TARGET -o /tmp/pqc.json >/dev/null && \
+  jq -e '[.[] | select(.module_name=="pqc_scan") | .json_event.response.conditions_results.verdict] | all(. == "pqc_ready")' /tmp/pqc.json >/dev/null && \
+  echo "PQC ready" || { echo "NOT PQC ready"; exit 1; }
+```
+
+## Operator opt-out for fragile environments
+
+If a target endpoint is a known-fragile in-line device (legacy F5 BIG-IP, brittle WAF, etc.) that may misbehave when probed with TLS 1.3 ClientHellos containing PQC named-group codepoints, disable the active TLS probe via the per-module extra-arg. The SSH passive enumeration still runs:
+
+```bash
+python nettacker.py -m pqc_scan -i $TARGET --modules-extra-args pqc_no_active_probe=true
+```
+
+## Verdict semantics
+
+| Verdict | Meaning |
+|---|---|
+| `pqc_ready` | Server advertises at least one **standardized** PQ algorithm (NIST FIPS 203 ML-KEM family, OpenSSH 9.0+ PQ KEX). |
+| `hybrid_only` | Only draft / experimental PQ algorithms advertised. Below the standardized baseline. |
+| `classical_only` | Server responded successfully but advertised zero PQ algorithms — fails CNSA 2.0 / OMB M-23-02 baseline. |
+| `unknown` | Scan inconclusive (TCP refused, timeout, malformed response). Not a posture answer; investigate manually. |
+
+The `compliance_notes` field on each response is human-readable and cites the relevant standard. **CNSA 2.0 honest mapping**: only ML-KEM-1024 satisfies CNSA 2.0; servers advertising only ML-KEM-768 / X25519MLKEM768 are reported as transitional ("CNSA 2.0 requires ML-KEM-1024 by 2027-01-01").
+
+## Real-world examples
+
+| Target | Verdict | Notes |
+|---|---|---|
+| `github.com:22` (SSH) | `pqc_ready` | OpenSSH defaults since 9.0 (April 2022) |
+| `cloudflare.com:443` | `pqc_ready` | Hybrid X25519MLKEM768 |
+| `google.com:443` | `pqc_ready` | Advertises both `MLKEM1024` and `X25519MLKEM768` (CNSA 2.0 baseline met) |
+| `bankofamerica.com:443` | `pqc_ready` | Hybrid SecP256r1MLKEM768 + X25519MLKEM768 |
+| `gov.uk:443` | `pqc_ready` | UK government estate is on PQ-aware edge |
+| `github.com:443` (TLS) | `classical_only` | GitHub HTTPS edge has not yet rolled PQ — different infra than SSH |
+| `microsoft.com:443` | `classical_only` | — |
+| `nist.gov:443` | `classical_only` | The agency that authored FIPS 203 has not yet enabled it on their public edge |
+
 # API and WebUI
 
 API and WebUI are new interfaces through which you can send your commands to Nettacker. Technically WebUI was developed based on the present API to demonstrate an example of the current API and can be used as another easier interface. To start using this feature, simply run `python nettacker.py --start-api`.

@@ -55,6 +55,7 @@ class Module:
             "ssl_self_signed_certificate_vuln",
             "ssl_expired_certificate_vuln",
             "ssl_expiring_certificate_scan",
+            "pqc_scan",
         ]
 
         contents = TemplateLoader("port_scan", {"target": ""}).load()

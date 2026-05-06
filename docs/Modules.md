@@ -267,3 +267,93 @@ If no extra users/passwords parameters are specified the following default usern
 - '**ssh_brute**' - try to brute force SSH (port 22)
 - '**telnet_brute**' - try to brute force via telnet (port23) (expects "login" and "Password" prompt)
 - '**wp_xmlrpc_brute**' - try to brute force Wordpress users using XMLRPC and wp.getUsersBlogs method
+
+## PQC Compliance Scanner (`pqc_scan`)
+
+The `pqc_scan` module audits a TLS or SSH endpoint for **post-quantum cryptography readiness**, mapping advertised algorithms to NIST FIPS 203 / OMB M-23-02 / CNSA 2.0 baselines. It is designed for compliance inventories required by federal and EU regulators (annual cryptographic-system inventory through 2035 under [OMB M-23-02](https://www.whitehouse.gov/wp-content/uploads/2022/11/M-23-02-M-Memo-on-Migrating-to-Post-Quantum-Cryptography.pdf), CNSA 2.0 NSS new-acquisition deadline 2027-01-01).
+
+### Quick start
+
+```bash
+# SSH posture for one host
+docker run owasp/nettacker -i github.com -m pqc_scan -g 22
+
+# TLS + SSH posture for all default ports
+docker run owasp/nettacker -i pq.cloudflareresearch.com -m pqc_scan
+
+# Bulk scan from a target list
+docker run owasp/nettacker -l targets.txt -m pqc_scan
+
+# CI gate: fail when any endpoint is classical-only
+poetry run nettacker -i $TARGET -m pqc_scan --output-results-json - | jq '.[] | select(.verdict == "classical_only")'
+```
+
+### Output verdict
+
+Per scanned (host, port) the module emits one of four verdicts:
+
+| Verdict | Meaning | Example |
+|---|---|---|
+| `pqc_ready` | Server advertises at least one **standardized** PQ algorithm (NIST FIPS 203 ML-KEM family, OpenSSH 9.0+ PQ KEX). | TLS server advertises `X25519MLKEM768` (codepoint `0x11EC`); SSH server advertises `mlkem768x25519-sha256`. |
+| `hybrid_only` | Server advertises only draft / experimental PQ algorithms. Below the standardized baseline. | A server offering only a not-yet-standardized hybrid. |
+| `classical_only` | Server responded successfully but advertised zero PQ algorithms. **Fails CNSA 2.0 / OMB M-23-02 baseline.** | A bare-old-OpenSSH-8.x server, a TLS server with only `secp256r1` / `x25519` named-groups. |
+| `unknown` | Scan could not classify (TCP refused, timeout, unreachable, malformed response). |  — |
+
+The `compliance_notes` field on the response carries the human-readable rationale, citing the relevant standard. F-CEO-1 honest mapping: only **ML-KEM-1024** satisfies CNSA 2.0; servers advertising only ML-KEM-768 / X25519MLKEM768 are reported as **transitional** — meeting NIST FIPS 203 for general use but NOT meeting the CNSA 2.0 NSS baseline.
+
+### What the scanner probes
+
+**TLS 1.3** — for each PQC named-group in the v1 table, send a strict-RFC-8446 ClientHello with that group in `supported_groups` and an **empty `key_share`** extension. RFC 8446 §4.2.8 requires the server to reply with HelloRetryRequest specifying the group it supports, or with a `handshake_failure` alert if it has no common group. The scanner observes the response, never completes the handshake, and never holds connections open longer than the per-probe timeout. Empty `key_share` avoids decode_error false negatives on servers that content-validate the client key share (Cloudflare, OpenSSL 3.5+).
+
+The v1 table covers the 5 IANA-registered standardized groups:
+- `MLKEM768` (`0x0201`), `MLKEM1024` (`0x0202`) — pure ML-KEM per draft-ietf-tls-mlkem
+- `X25519MLKEM768` (`0x11EC`), `SecP256r1MLKEM768` (`0x11EB`), `SecP384r1MLKEM1024` (`0x11ED`) — hybrid per draft-ietf-tls-ecdhe-mlkem
+
+**SSH** — open one TCP connection, send the SSH-2.0 client banner, read the server's `MSG_KEXINIT` packet (which the server sends *before* any negotiation per RFC 4253 §7.1), parse the advertised `kex_algorithms` name-list, and classify each entry against the OpenSSH PQ KEX table:
+- `mlkem768x25519-sha256` — default since OpenSSH 10.0 (April 2025)
+- `sntrup761x25519-sha512@openssh.com` — default in OpenSSH 9.0–9.9, still supported in 10.x
+
+### Safety operating model
+
+- **One TCP connection per probe.** TLS path makes ≤5 connections per (host, port) — one per PQC named-group in the table. SSH path makes exactly 1 connection per (host, port). Honors Nettacker's framework-level `--time-sleep-between-requests` and `--thread-per-host` rate-limit settings.
+- **No handshake completion.** The scanner never sends a Finished record, never derives a key, never establishes a session.
+- **Strictly RFC-conformant ClientHellos / SSH banners.** No fragmented records, no malformed lengths, no novel extensions in unknown positions.
+- **Operator opt-out for fragile environments.** Pass `--modules-extra-args pqc_no_active_probe=true` to disable the active TLS probe — the SSH passive-KEXINIT enumeration still runs. Useful for known-fragile in-line load balancers / WAFs / legacy F5 BIG-IP that may react badly to ClientHellos with unfamiliar `supported_groups` codepoints.
+- **Bounded resource use.** TLS record reads capped at 16,384 bytes per RFC 8446 §5.1; SSH banner reads capped at 255 bytes per RFC 4253 §4.2; SSH packet reads capped at 35,000 bytes per RFC 4253 §6.1. File descriptors are released after every probe (regression-tested).
+
+### Compliance mapping cited in `compliance_notes`
+
+| Framework | Reference | What `pqc_scan` answers |
+|---|---|---|
+| **NIST FIPS 203** (ML-KEM, final 2024-08-14) | [csrc.nist.gov/pubs/fips/203/final](https://csrc.nist.gov/pubs/fips/203/final) | "Does this server advertise an FIPS-203-standardized PQ KEM?" |
+| **OMB M-23-02 / NSM-10** | [whitehouse.gov M-23-02](https://www.whitehouse.gov/wp-content/uploads/2022/11/M-23-02-M-Memo-on-Migrating-to-Post-Quantum-Cryptography.pdf) | "Annual federal cryptographic-system inventory (May 4 each year through 2035)." Scan output ingests directly. |
+| **CNSA 2.0** | NSA / DoD CSA "CNSA 2.0 Algorithms" (May 2025) | "Does this NSS-bound endpoint use ML-KEM-1024 + ML-DSA-87 by 2027-01-01?" |
+| **OpenSSH 10.1 WarnWeakCrypto baseline** | [openssh.com/pq.html](https://www.openssh.com/pq.html) | "Does this SSH endpoint pass the OpenSSH 10.1 default-warns-on-non-PQ-KEX baseline?" |
+
+### Known v1 limitations
+
+1. **No cert-chain PQ analysis.** `pqc_ready` reports on KEM/key-exchange advertisement only. A server may advertise X25519MLKEM768 yet still present an RSA-2048 certificate chain — that fails the "end-to-end PQ" criterion strict auditors apply. Cert-chain analysis is planned for v1.1 as a separate `tls_cert_pqc_scan` module that cross-references existing `ssl_certificate_scan` output.
+2. **Empty `key_share` discovery technique.** The scanner's TLS probes use an empty `KeyShareClientHello` per RFC 8446 §4.2.8 to elicit a HelloRetryRequest. This relies on the server respecting `supported_groups` even without a matching `key_share` (which is RFC-mandatory behavior). A non-conformant server that closes the connection on missing `key_share` would be reported as `unknown` with a `tcp_closed_<group>` error, not as `classical_only`.
+3. **No SSH host-key PQC analysis.** OpenSSH announced future PQ signature algorithm support but no concrete additions as of 2026-05. v2 will track this once IANA codepoints land.
+4. **Verdict is single-shot, not majority-vote.** A single scan represents one observation; subsequent scans may show a different posture as servers are updated. Use Nettacker's existing scan-history drift-detection to track posture changes over time.
+
+### Output JSON schema (per (host, port))
+
+```json
+{
+  "host": "pq.cloudflareresearch.com",
+  "port": 443,
+  "service": "tls",
+  "scan_succeeded": true,
+  "verdict": "pqc_ready",
+  "compliance_notes": "advertises standardized PQ groups (X25519MLKEM768); FIPS 203 / draft-ietf-tls-(ecdhe-)mlkem; transitional — CNSA 2.0 requires ML-KEM-1024 by 2027-01-01",
+  "tls_pqc_groups_advertised": ["X25519MLKEM768"],
+  "tls_pqc_groups_probed": ["MLKEM768", "MLKEM1024", "SecP256r1MLKEM768", "X25519MLKEM768", "SecP384r1MLKEM1024"],
+  "tls_classical_groups_advertised": [],
+  "ssh_pqc_kex_advertised": null,
+  "ssh_classical_kex_advertised": null,
+  "ssh_server_banner": null,
+  "errors": [],
+  "duration_ms": 312
+}
+```
