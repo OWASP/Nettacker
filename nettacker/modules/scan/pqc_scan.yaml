@@ -1,0 +1,35 @@
+info:
+  name: pqc_scan
+  author: OWASP Nettacker Contributors
+  severity: 4
+  description: >-
+    Scan a TLS or SSH endpoint for advertised post-quantum cryptography
+    algorithms (ML-KEM family, X25519MLKEM768, mlkem768x25519-sha256,
+    sntrup761x25519-sha512). Reports a per-host posture verdict
+    (pqc_ready / hybrid_only / classical_only / unknown). Passive observation
+    only — no handshake completion, no new system dependencies.
+  reference:
+    - https://www.openssh.com/pq.html
+    - https://datatracker.ietf.org/doc/draft-ietf-tls-mlkem/
+    - https://datatracker.ietf.org/doc/draft-ietf-tls-ecdhe-mlkem/
+    - https://csrc.nist.gov/pubs/fips/203/final
+    - https://www.whitehouse.gov/wp-content/uploads/2022/11/M-23-02-M-Memo-on-Migrating-to-Post-Quantum-Cryptography.pdf
+  profiles:
+    - scan
+    - pqc
+    - compliance
+
+payloads:
+  - library: pqc
+    steps:
+      - method: ssh_pqc_scan
+        timeout: 5
+        host: "{target}"
+        ports:
+          - 22
+          - 2222
+        response:
+          condition_type: or
+          conditions:
+            scan_succeeded:
+              reverse: false
