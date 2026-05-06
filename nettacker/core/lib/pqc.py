@@ -129,9 +129,7 @@ def _parse_ssh_kexinit(payload: bytes) -> dict:
             for name_bytes in raw.split(b","):
                 safe = _safe_ssh_name(name_bytes)
                 if safe is None:
-                    malformed.append(
-                        f"namelist{list_index}:{name_bytes[:16].hex()}"
-                    )
+                    malformed.append(f"namelist{list_index}:{name_bytes[:16].hex()}")
                 else:
                     names.append(safe)
         namelists.append(names)
@@ -153,26 +151,29 @@ def _parse_ssh_kexinit(payload: bytes) -> dict:
 
 
 def _read_ssh_banner(sock: socket.socket) -> bytes:
-    """Read SSH server banner up to first ``\\r\\n`` or ``\\n``, capped at 255 octets.
+    """Read SSH server banner up to first ``\\n``, capped at 255 octets.
 
-    Per RFC 4253 §4.2. Multiple lines (server-info pre-banner) are not handled
-    in v1 — first line wins.
+    Per RFC 4253 §4.2. Reads one byte at a time so we never over-consume into
+    the next packet — the server is allowed to send the KEXINIT immediately
+    after the banner, and recv'ing in larger chunks would silently drop the
+    first KEXINIT bytes. Byte-at-a-time is what OpenSSH does on the wire and
+    is fine for ≤255-octet banners.
     """
     buf = bytearray()
     while len(buf) < _SSH_BANNER_MAX:
-        chunk = sock.recv(min(64, _SSH_BANNER_MAX - len(buf)))
+        chunk = sock.recv(1)
         if not chunk:
             break
         buf.extend(chunk)
-        if b"\n" in chunk:
+        if buf.endswith(b"\n"):
             break
     if not buf:
         raise ValueError("banner_empty")
-    line, _, _ = buf.partition(b"\n")
-    line = line.rstrip(b"\r")
-    if len(buf) >= _SSH_BANNER_MAX and b"\n" not in buf:
+    if not buf.endswith(b"\n"):
+        # Read the cap without seeing a terminator — overflow.
         raise ValueError("banner_overflow_capped_at_255")
-    return bytes(line)
+    line = bytes(buf).rstrip(b"\r\n")
+    return line
 
 
 def _read_ssh_packet(sock: socket.socket) -> bytes:
@@ -219,9 +220,7 @@ def _provisional_verdict_ssh(pqc: list[str]) -> Verdict:
     """
     if not pqc:
         return "classical_only"
-    standardized = [
-        n for n in pqc if SSH_PQC_KEX_ALGORITHMS[n]["status"] == "standardized"
-    ]
+    standardized = [n for n in pqc if SSH_PQC_KEX_ALGORITHMS[n]["status"] == "standardized"]
     if standardized:
         return "pqc_ready"
     return "hybrid_only"

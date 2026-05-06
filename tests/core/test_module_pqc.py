@@ -1,15 +1,13 @@
 """Module-level integration tests for ``pqc_scan`` (M1)."""
 
+import inspect
 import socket
 import struct
 import threading
-import time
-from unittest.mock import patch
 
-import pytest
-
+from nettacker.core import module as nettacker_module
+from nettacker.core.lib.base import BaseEngine
 from nettacker.core.lib.pqc import PqcEngine, PqcLibrary
-from nettacker.core.module import Module
 
 
 # ---------- Fake SSH server (re-used pattern from test_pqc.py) --------------
@@ -100,16 +98,11 @@ class TestPqcModuleRegistration:
     """Confirm the one-line edit to ``ignored_core_modules`` took effect (E2E)."""
 
     def test_pqc_scan_in_ignored_core_modules(self):
-        # Build a lightweight stand-in for the options namespace Module() expects.
-        module = Module.__new__(Module)
-        # Mirror the constructor's initialization of the attribute.
-        Module.__init__.__wrapped__ if False else None  # type: ignore[truthy-function]
-        # We don't call the real __init__ (it requires a heavy options object);
-        # instead we directly verify the literal source list is correct.
-        from nettacker.core import module as _mod_src
-        import inspect
-
-        source = inspect.getsource(_mod_src)
+        # We don't construct a real Module() (it requires a heavy options
+        # object); instead verify the literal source contains the new entry.
+        # The runtime list is built in Module.__init__, so reading the source
+        # is the cheapest reliable check.
+        source = inspect.getsource(nettacker_module)
         assert '"pqc_scan"' in source, "pqc_scan not in core/module.py source — M1 edit missing"
 
 
@@ -123,8 +116,6 @@ class TestPqcLibraryInvocationByName:
         assert callable(getattr(lib, "ssh_pqc_scan"))
 
     def test_engine_subclasses_baseengine(self):
-        from nettacker.core.lib.base import BaseEngine
-
         assert issubclass(PqcEngine, BaseEngine)
 
     def test_engine_library_attribute_points_to_pqc_library(self):
@@ -160,12 +151,11 @@ class TestPqcScanModuleEndToEnd:
             engine.apply_extra_data(sub_step, response)
 
         assert sub_step["response"]["conditions_results"], (
-            "engine did not populate conditions_results: " f"{sub_step['response']}"
+            f"engine did not populate conditions_results: {sub_step['response']}"
         )
         assert sub_step["response"]["conditions_results"]["verdict"] == "pqc_ready"
         assert (
-            "mlkem768x25519-sha256"
-            in sub_step["response"]["conditions_results"]["advertised_pqc"]
+            "mlkem768x25519-sha256" in sub_step["response"]["conditions_results"]["advertised_pqc"]
         )
         assert srv.connection_count == 1
 

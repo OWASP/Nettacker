@@ -149,9 +149,7 @@ class TestParseSshKexinit:
         # drop it and record a hex prefix in `_malformed` rather than letting
         # the bytes flow into log lines.
         injected = b"mlkem768x25519-sha256,bad\nname"
-        payload = self._build_kexinit(
-            [injected, b"", b"", b"", b"", b"", b"", b"", b"", b""]
-        )
+        payload = self._build_kexinit([injected, b"", b"", b"", b"", b"", b"", b"", b"", b""])
         parsed = _parse_ssh_kexinit(payload)
         assert parsed["kex_algorithms"] == ["mlkem768x25519-sha256"]
         assert any(m.startswith("namelist0:") for m in parsed["_malformed"]), parsed["_malformed"]
@@ -277,14 +275,10 @@ class _FakeSshServer:
                         b"sntrup761x25519-sha512@openssh.com,curve25519-sha256"
                     )
                 elif self.mode == "classical_only":
-                    payload = self._build_kexinit_payload(
-                        b"curve25519-sha256,ecdh-sha2-nistp256"
-                    )
+                    payload = self._build_kexinit_payload(b"curve25519-sha256,ecdh-sha2-nistp256")
                 elif self.mode == "injected_name":
                     # F-SEC-1 abuse case
-                    payload = self._build_kexinit_payload(
-                        b"mlkem768x25519-sha256,bad\nname"
-                    )
+                    payload = self._build_kexinit_payload(b"mlkem768x25519-sha256,bad\nname")
                 else:
                     payload = self._build_kexinit_payload(b"curve25519-sha256")
                 client_sock.sendall(self._build_kexinit_packet(payload))
@@ -379,7 +373,7 @@ class TestSshProbeAgainstFakeServer:
         assert any("malformed_algorithm_name" in e for e in result["errors"])
         # The newline-injected bytes must NOT appear in any field.
         for field in ["ssh_pqc_kex_advertised", "ssh_classical_kex_advertised"]:
-            for entry in (result.get(field) or []):
+            for entry in result.get(field) or []:
                 assert "\n" not in entry
                 assert "bad" != entry  # not the injected fragment
 
@@ -431,9 +425,7 @@ class TestLibraryNeverRaises:
 
 
 class TestPqcEngineConditionsResults:
-    def test_apply_extra_data_populates_conditions_results_on_success(
-        self, pqc_engine
-    ):
+    def test_apply_extra_data_populates_conditions_results_on_success(self, pqc_engine):
         sub_step = {"response": {"conditions": {}, "condition_type": "or"}}
         response = {
             "host": "ex.com",

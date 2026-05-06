@@ -31,6 +31,7 @@ results.*
 coverage.xml
 
 venv
+.venv/
 
 # slo evidence (transient — milestone Evidence Log artifacts; never committed)
 evidence/

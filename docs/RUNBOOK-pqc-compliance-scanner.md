@@ -45,7 +45,7 @@
 
 | # | Milestone | Status | Started | Completed | Lessons File | Completion Summary |
 |---|---|---|---|---|---|---|
-| 1 | Foundation + SSH passive PQC probe | not_started | | | | |
+| 1 | Foundation + SSH passive PQC probe | done | 2026-05-06 | 2026-05-06 | [pqc-scanner-m1.md](slo/lessons/pqc-scanner-m1.md) | [pqc-scanner-m1.md](slo/completion/pqc-scanner-m1.md) |
 | 2 | TLS 1.3 active PQC ClientHello probe | not_started | | | | |
 | 3 | Verdict, opt-out, docs, end-to-end smoke | not_started | | | | |
 
