@@ -16,6 +16,7 @@ Design constraints (see ``docs/slo/design/pqc-compliance-scanner-*.md``):
   CI-fanout outage abuse case in the threat model).
 """
 
+import copy
 import logging
 import re
 import socket
@@ -415,9 +416,24 @@ def _build_tls13_client_hello(
     sa_payload = struct.pack(">H", len(_TLS_SIGALG_LIST)) + _TLS_SIGALG_LIST
     ext_sigalgs = struct.pack(">HH", _TLS_EXT_SIGNATURE_ALGORITHMS, len(sa_payload)) + sa_payload
 
-    # ---- extension: key_share (RFC 8446 §4.2.8) — single entry for the probed group ----
-    ks_entry = struct.pack(">HH", group_codepoint, len(key_share_payload)) + key_share_payload
-    ks_list = struct.pack(">H", len(ks_entry)) + ks_entry
+    # ---- extension: key_share (RFC 8446 §4.2.8) — empty client_shares ----
+    # We deliberately send an EMPTY KeyShareClientHello (zero entries). RFC 8446
+    # §4.2.8 allows ``client_shares<0..2^16-1>`` so zero is valid. When the server
+    # supports a group we listed in supported_groups, it MUST reply with a
+    # HelloRetryRequest selecting that group (we can't actually complete the
+    # handshake — but for posture detection HRR is the same signal as ServerHello).
+    # If the server does not support any group we offered, it sends
+    # handshake_failure or protocol_version alert.
+    #
+    # WHY this shape (and not a key_share with a fake key for this group):
+    # Some conformant servers (Cloudflare, recent OpenSSL) validate the
+    # *content* of the client's key_share, not just the length. Sending a
+    # fake/zero key_share triggers decode_error on those servers — false
+    # negative. Empty key_share avoids content validation entirely.
+    # ``key_share_payload`` is computed above for completeness / future use
+    # (and to keep the algorithm-table column meaningful) but is not emitted.
+    _ = key_share_payload  # suppress "unused" — see comment block above
+    ks_list = struct.pack(">H", 0)  # client_shares vector of length 0
     ext_key_share = struct.pack(">HH", _TLS_EXT_KEY_SHARE, len(ks_list)) + ks_list
 
     extensions = (
@@ -885,30 +901,125 @@ def _ssh_compliance_notes(verdict: Verdict, pqc: list[str]) -> str:
 
 
 def _tls_compliance_notes(verdict: Verdict, pqc_names: list[str]) -> str:
-    """Render the TLS compliance_notes string for a given verdict.
+    """Render the TLS compliance_notes string (M3-final).
 
-    M2 ships a working baseline; M3 finalizes the CNSA 2.0 / OMB M-23-02 wording.
+    F-CEO-1 honest mapping: only ML-KEM-1024 satisfies CNSA 2.0; ML-KEM-768 / hybrid
+    is transitional. Frameworks cited: NIST FIPS 203, OMB M-23-02 (annual federal
+    inventory through 2035), CNSA 2.0 (NSS new acquisitions PQ by 2027-01-01).
     """
     if verdict == "pqc_ready":
-        # F-CEO-1: only ML-KEM-1024 satisfies CNSA 2.0
         cnsa = any("MLKEM1024" in n for n in pqc_names)
         cnsa_note = (
             "; meets CNSA 2.0 ML-KEM-1024 baseline"
             if cnsa
             else "; transitional — CNSA 2.0 requires ML-KEM-1024 by 2027-01-01"
         )
-        return f"advertises standardized PQ groups ({', '.join(pqc_names)}){cnsa_note}"
+        return (
+            f"advertises standardized PQ groups ({', '.join(pqc_names)}); "
+            f"FIPS 203 / draft-ietf-tls-(ecdhe-)mlkem{cnsa_note}"
+        )
     if verdict == "hybrid_only":
-        return "advertises only draft / experimental PQ groups; below standardized baseline"
+        return (
+            "advertises only draft / experimental PQ groups; below FIPS 203 standardized baseline"
+        )
     if verdict == "classical_only":
-        return "no PQ groups advertised; fails OMB M-23-02 PQ baseline"
+        return "no PQ groups advertised; fails OMB M-23-02 PQ posture baseline"
     return "scan inconclusive"
+
+
+def _is_truthy_extra_arg(value) -> bool:
+    """Operator-supplied --modules-extra-args values arrive as strings.
+
+    Accept the typical truthy spellings (``true``, ``1``, ``yes``, ``on``).
+    Anything else — including ``None``, the empty string, ``"false"``, or a
+    bool ``False`` — is treated as not-set.
+    """
+    if value is None:
+        return False
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in {"true", "1", "yes", "on"}
 
 
 class PqcEngine(BaseEngine):
     """Engine binding YAML response.conditions to library output."""
 
     library = PqcLibrary
+
+    def run(
+        self,
+        sub_step,
+        module_name,
+        target,
+        scan_id,
+        options,
+        process_number,
+        module_thread_number,
+        total_module_thread_number,
+        request_number_counter,
+        total_number_of_requests,
+    ):
+        """Engine entry point with the M3 ``pqc_no_active_probe`` opt-out.
+
+        When the operator passes ``--modules-extra-args pqc_no_active_probe=true``
+        (or env-var equivalent) the active TLS probe is short-circuited — the
+        SSH passive enumeration still runs. This is the documented escape hatch
+        for known-fragile in-line devices (threat model abuse-1 mitigation).
+
+        For every other case we delegate to the standard ``BaseEngine.run``.
+        """
+        method = sub_step.get("method")
+        opt_out = _is_truthy_extra_arg(options.get("pqc_no_active_probe"))
+        if opt_out and method == "tls_pqc_scan":
+            host = sub_step.get("host", target)
+            port = int(sub_step.get("port", 0) or 0)
+            log.info(
+                "pqc_scan: active TLS probe disabled by operator opt-out "
+                "(pqc_no_active_probe=true) for %s:%s",
+                host,
+                port,
+            )
+            response = _empty_response(host, port, "tls")
+            response["errors"].append("active_probe_disabled_by_operator")
+            response["compliance_notes"] = (
+                "TLS active probe disabled by operator (pqc_no_active_probe=true); "
+                "verdict reflects no observation"
+            )
+            # Mirror the framework's run() shape: backup method/response, set
+            # conditions_results via apply_extra_data, dispatch process_conditions.
+            backup_method = sub_step["method"]
+            backup_response = copy.deepcopy(sub_step["response"])
+            del sub_step["method"]
+            del sub_step["response"]
+            sub_step["method"] = backup_method
+            sub_step["response"] = backup_response
+            sub_step["response"]["conditions_results"] = response
+            self.apply_extra_data(sub_step, response)
+            return self.process_conditions(
+                sub_step,
+                module_name,
+                target,
+                scan_id,
+                options,
+                response,
+                process_number,
+                module_thread_number,
+                total_module_thread_number,
+                request_number_counter,
+                total_number_of_requests,
+            )
+        return super().run(
+            sub_step,
+            module_name,
+            target,
+            scan_id,
+            options,
+            process_number,
+            module_thread_number,
+            total_module_thread_number,
+            request_number_counter,
+            total_number_of_requests,
+        )
 
     def apply_extra_data(self, sub_step, response):
         """Populate ``conditions_results`` so ``BaseEngine.process_conditions``

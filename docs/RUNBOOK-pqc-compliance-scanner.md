@@ -47,7 +47,7 @@
 |---|---|---|---|---|---|---|
 | 1 | Foundation + SSH passive PQC probe | done | 2026-05-06 | 2026-05-06 | [pqc-scanner-m1.md](slo/lessons/pqc-scanner-m1.md) | [pqc-scanner-m1.md](slo/completion/pqc-scanner-m1.md) |
 | 2 | TLS 1.3 active PQC ClientHello probe | done | 2026-05-06 | 2026-05-06 | [pqc-scanner-m2.md](slo/lessons/pqc-scanner-m2.md) | [pqc-scanner-m2.md](slo/completion/pqc-scanner-m2.md) |
-| 3 | Verdict, opt-out, docs, end-to-end smoke | not_started | | | | |
+| 3 | Verdict, opt-out, docs, end-to-end smoke | done | 2026-05-06 | 2026-05-06 | [pqc-scanner-m3.md](slo/lessons/pqc-scanner-m3.md) | [pqc-scanner-m3.md](slo/completion/pqc-scanner-m3.md) |
 
 <!-- Status: not_started | in_progress | blocked | done -->
 <!-- Lessons: docs/slo/lessons/pqc-scanner-m<N>.md -->

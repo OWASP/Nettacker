@@ -18,11 +18,14 @@ from nettacker.core.lib.pqc import (
     _build_tls13_client_hello,
     _classify_ssh_kex,
     _classify_tls_groups,
+    _is_truthy_extra_arg,
     _parse_ssh_kexinit,
     _parse_tls13_server_response,
     _provisional_verdict_ssh,
     _provisional_verdict_tls,
     _safe_ssh_name,
+    _ssh_compliance_notes,
+    _tls_compliance_notes,
 )
 
 # ---------- Pure-function tests ----------------------------------------------
@@ -574,17 +577,24 @@ class TestBuildClientHello:
         )
         assert b"owasp.org" in ch
 
-    def test_clienthello_key_share_payload_zero_filled(self):
-        # The PQC key_share is a fixed all-zero buffer of correct length.
+    def test_clienthello_uses_empty_key_share_for_hrr_signal(self):
+        # M3 correctness fix: client_shares is empty. RFC 8446 §4.2.8 allows
+        # zero entries; the server MUST reply with HelloRetryRequest specifying
+        # the group. This avoids decode_error from servers that content-validate
+        # the client's key_share (Cloudflare, OpenSSL 3.5+).
         ch = _build_tls13_client_hello(
-            0x0201,  # MLKEM768 = 1184 byte key_share
+            0x0201,  # MLKEM768
             "example.com",
             client_random=b"\x33" * 32,
             legacy_session_id=b"\x55" * 32,
         )
-        # Look for a run of 1184 zero bytes — only place this can appear is
-        # the key_share payload (random and sid are non-zero).
-        assert (b"\x00" * 1184) in ch
+        # The key_share extension type is 0x0033 (51). The extension payload
+        # for an empty client_shares is exactly 2 bytes: \x00\x00.
+        # We expect: bytes b"\x00\x33\x00\x02\x00\x00" somewhere in ch.
+        assert b"\x00\x33\x00\x02\x00\x00" in ch
+        # And we expect NO long run of 1184 zero bytes anymore (the old
+        # all-zero key_share payload is gone).
+        assert (b"\x00" * 1184) not in ch
 
     def test_clienthello_rejects_unknown_codepoint(self):
         with pytest.raises(ValueError, match="unknown_pqc_group_codepoint"):
@@ -943,3 +953,229 @@ class TestTlsLibraryNeverRaises:
             assert isinstance(result, dict)
             assert result["scan_succeeded"] is False
             assert result["verdict"] == "unknown"
+
+
+# ---------- M3: verdict, compliance_notes, opt-out, truthy parser ------------
+
+
+class TestIsTruthyExtraArg:
+    @pytest.mark.parametrize(
+        "value,expected",
+        [
+            ("true", True),
+            ("True", True),
+            ("TRUE", True),
+            ("1", True),
+            ("yes", True),
+            ("on", True),
+            ("  true  ", True),
+            (True, True),
+            ("false", False),
+            ("0", False),
+            ("no", False),
+            ("", False),
+            (None, False),
+            (False, False),
+            ("anything else", False),
+        ],
+    )
+    def test_truthy_recognition(self, value, expected):
+        assert _is_truthy_extra_arg(value) is expected
+
+
+class TestComplianceNotesFinalWording:
+    """M3 finalizes the compliance_notes strings.
+
+    F-CEO-1: pqc_ready maps to CNSA 2.0 baseline ONLY when ML-KEM-1024 is
+    advertised. ML-KEM-768-only / hybrid is transitional.
+    """
+
+    def test_ssh_pqc_ready_mentions_openssh_baseline(self):
+        text = _ssh_compliance_notes("pqc_ready", ["mlkem768x25519-sha256"])
+        assert "OpenSSH" in text
+        assert "WarnWeakCrypto" in text or "10.1" in text
+
+    def test_ssh_classical_only_mentions_failure(self):
+        text = _ssh_compliance_notes("classical_only", [])
+        assert "fails" in text.lower()
+        assert "OpenSSH" in text
+
+    def test_tls_pqc_ready_mlkem1024_meets_cnsa20(self):
+        # F-CEO-1 honest mapping
+        text = _tls_compliance_notes("pqc_ready", ["MLKEM1024"])
+        assert "CNSA 2.0" in text
+        assert "meets" in text.lower()
+
+    def test_tls_pqc_ready_mlkem768_only_is_transitional(self):
+        # F-CEO-1: ML-KEM-768 alone does NOT meet CNSA 2.0
+        text = _tls_compliance_notes("pqc_ready", ["MLKEM768"])
+        assert "transitional" in text.lower()
+        assert "ML-KEM-1024" in text
+        assert "2027" in text  # the deadline
+
+    def test_tls_pqc_ready_hybrid_is_transitional(self):
+        text = _tls_compliance_notes("pqc_ready", ["X25519MLKEM768"])
+        assert "transitional" in text.lower()
+
+    def test_tls_classical_only_mentions_omb_baseline(self):
+        text = _tls_compliance_notes("classical_only", [])
+        assert "OMB M-23-02" in text or "PQ posture baseline" in text
+
+    def test_tls_pqc_ready_includes_fips_203_citation(self):
+        text = _tls_compliance_notes("pqc_ready", ["X25519MLKEM768"])
+        assert "FIPS 203" in text
+
+
+class TestPqcNoActiveProbeOptOut:
+    """F-CEO-1 / F-ENG-2 mitigation: --modules-extra-args pqc_no_active_probe=true
+    short-circuits the active TLS probe; SSH passive enumeration still runs.
+    """
+
+    def _engine_run_args(self, sub_step: dict, options: dict) -> dict:
+        """Build the kwargs for ``PqcEngine.run`` minus the sub_step itself."""
+        return {
+            "module_name": "pqc_scan",
+            "target": "example.com",
+            "scan_id": "test-scan",
+            "options": options,
+            "process_number": 0,
+            "module_thread_number": 0,
+            "total_module_thread_number": 1,
+            "request_number_counter": 0,
+            "total_number_of_requests": 1,
+        }
+
+    def test_opt_out_short_circuits_tls_probe_no_network_call(self, pqc_engine):
+        """Verify the engine never invokes the library when opt-out is on.
+
+        We swap PqcLibrary's ``tls_pqc_scan`` with a tripwire that fails the test
+        if it gets called. With ``pqc_no_active_probe=true``, the engine must
+        return without invoking the library.
+        """
+        from unittest.mock import patch
+
+        sub_step = {
+            "method": "tls_pqc_scan",
+            "host": "example.com",
+            "port": 443,
+            "timeout": 1,
+            "response": {
+                "condition_type": "or",
+                "conditions": {"scan_succeeded": {"reverse": False}},
+            },
+        }
+        options = {
+            "retries": 1,
+            "pqc_no_active_probe": "true",
+            "modules_extra_args": {"pqc_no_active_probe": "true"},
+        }
+
+        called = {"count": 0}
+
+        def tripwire(*a, **kw):
+            called["count"] += 1
+            raise RuntimeError("tls_pqc_scan must not be called when opt-out is on")
+
+        # Patch the bound class method so even fresh instances pick it up.
+        with patch.object(PqcLibrary, "tls_pqc_scan", tripwire):
+            # We also need to short-circuit submit_logs_to_db; PqcEngine.run
+            # still calls process_conditions which writes to the DB. For unit
+            # testing we monkey-patch that function to a no-op.
+            with patch("nettacker.core.lib.base.submit_logs_to_db", lambda *a, **kw: None):
+                with patch(
+                    "nettacker.core.lib.base.submit_temp_logs_to_db", lambda *a, **kw: None
+                ):
+                    pqc_engine.run(sub_step, **self._engine_run_args(sub_step, options))
+
+        assert called["count"] == 0, "library was invoked despite opt-out"
+
+    def test_opt_out_does_not_affect_ssh_path(self, pqc_engine):
+        """Even when pqc_no_active_probe=true, the SSH passive probe must still
+        run — it's not active probing."""
+        from unittest.mock import patch
+
+        sub_step = {
+            "method": "ssh_pqc_scan",
+            "host": "127.0.0.1",
+            "port": 1,  # closed → quick tcp_refused, no real network
+            "timeout": 1,
+            "response": {
+                "condition_type": "or",
+                "conditions": {"scan_succeeded": {"reverse": False}},
+            },
+        }
+        options = {
+            "retries": 1,
+            "pqc_no_active_probe": "true",
+            "modules_extra_args": {"pqc_no_active_probe": "true"},
+        }
+
+        called = {"count": 0}
+        original = PqcLibrary.ssh_pqc_scan
+
+        def counting(self, *args, **kwargs):
+            called["count"] += 1
+            return original(self, *args, **kwargs)
+
+        with patch.object(PqcLibrary, "ssh_pqc_scan", counting):
+            with patch("nettacker.core.lib.base.submit_logs_to_db", lambda *a, **kw: None):
+                with patch(
+                    "nettacker.core.lib.base.submit_temp_logs_to_db", lambda *a, **kw: None
+                ):
+                    pqc_engine.run(sub_step, **self._engine_run_args(sub_step, options))
+
+        assert called["count"] == 1, "SSH probe was unexpectedly skipped"
+
+    def test_opt_out_off_runs_tls_path_normally(self, pqc_engine):
+        """Sanity: when the operator does NOT pass the opt-out, tls_pqc_scan runs."""
+        from unittest.mock import patch
+
+        sub_step = {
+            "method": "tls_pqc_scan",
+            "host": "127.0.0.1",
+            "port": 1,  # closed → fast tcp_refused, no real network
+            "timeout": 1,
+            "response": {
+                "condition_type": "or",
+                "conditions": {"scan_succeeded": {"reverse": False}},
+            },
+        }
+        options = {"retries": 1}  # no extra args
+
+        called = {"count": 0}
+        original = PqcLibrary.tls_pqc_scan
+
+        def counting(self, *args, **kwargs):
+            called["count"] += 1
+            return original(self, *args, **kwargs)
+
+        with patch.object(PqcLibrary, "tls_pqc_scan", counting):
+            with patch("nettacker.core.lib.base.submit_logs_to_db", lambda *a, **kw: None):
+                with patch(
+                    "nettacker.core.lib.base.submit_temp_logs_to_db", lambda *a, **kw: None
+                ):
+                    pqc_engine.run(sub_step, **self._engine_run_args(sub_step, options))
+
+        assert called["count"] == 1
+
+
+class TestProvisionalVerdictPqcReadyInvariant:
+    """F-CEO-1 invariant: pqc_ready ⇒ ≥1 advertised algorithm has status='standardized'."""
+
+    def test_ssh_pqc_ready_only_when_standardized_present(self):
+        # Currently every entry in our v1 SSH table is 'standardized'.
+        # If a future addition is 'draft', this test pins the invariant.
+        for name, entry in SSH_PQC_KEX_ALGORITHMS.items():
+            verdict = _provisional_verdict_ssh([name])
+            if entry["status"] == "standardized":
+                assert verdict == "pqc_ready"
+            else:
+                assert verdict != "pqc_ready"
+
+    def test_tls_pqc_ready_only_when_standardized_present(self):
+        for entry in TLS_PQC_NAMED_GROUPS.values():
+            verdict = _provisional_verdict_tls([entry["name"]])
+            if entry["status"] == "standardized":
+                assert verdict == "pqc_ready"
+            else:
+                assert verdict != "pqc_ready"
