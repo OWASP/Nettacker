@@ -26,6 +26,8 @@ By leveraging a modular framework, Nettacker supports multiple protocols and sca
 6. Built-in Database  
    Nettacker includes a built-in database for storing scan results. This ensures data persistence, allowing users to track past assessments, easily search and retrieve previous data from scan results, and generate reports for audit and compliance purposes  
 6. The Web UI and API provide enhanced user interaction and integration capabilities. The Web UI offers a user-friendly interface for configuring scans, visualizing results, andsearching the scan data, making Nettacker accessible to both technical and less-technical users. The API allows for programmatic access, enabling automation and integration with third-party tools, CI/CD pipelines, and custom applications. 
+7. Post-Quantum Cryptography (PQC) Compliance Scanning  
+   The `pqc_scan` module audits TLS 1.3 and SSH endpoints for advertised post-quantum cryptography algorithms (ML-KEM family, X25519MLKEM768, mlkem768x25519-sha256, sntrup761x25519-sha512) and reports a per-host posture verdict (`pqc_ready` / `hybrid_only` / `classical_only` / `unknown`) mapped to NIST FIPS 203, OMB M-23-02 (annual federal cryptographic-system inventory through 2035), and CNSA 2.0 (NSS new-acquisition deadline 2027-01-01) baselines. Useful for federal-contractor and EU-DORA cryptographic-inventory submissions. See [Usage → PQC Compliance Scanning](Usage.md#post-quantum-cryptography-pqc-compliance-scanning) and [Modules → PQC Compliance Scanner](Modules.md#pqc-compliance-scanner-pqc_scan).
 
 
 ## Links
