@@ -2,9 +2,11 @@
 
 import asyncio
 import copy
+import hashlib
 import random
 import re
 import time
+from urllib.parse import urlsplit, urlunsplit
 
 import aiohttp
 import uvloop
@@ -19,15 +21,67 @@ from nettacker.core.utils.common import (
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
+SIMPLE_RESPONSE_CONDITIONS = (
+    "reason",
+    "status_code",
+    "content",
+    "url",
+    "content_length",
+    "content_sha1",
+)
+
+
+def _content_fingerprint(content):
+    return {
+        "content_length": str(len(content)),
+        "content_sha1": hashlib.sha1(content).hexdigest(),
+    }
+
+
+def _random_baseline_url(url, segment_length=12):
+    parts = urlsplit(url)
+    random_segment = "nettacker-" + "".join(
+        random.choice("abcdefghijklmnopqrstuvwxyz0123456789") for _ in range(segment_length)
+    )
+    path = parts.path or "/"
+    directory = path.rstrip("/").rsplit("/", 1)[0]
+    baseline_path = f"{directory}/{random_segment}" if directory else f"/{random_segment}"
+    if path.endswith("/"):
+        baseline_path += "/"
+    return urlunsplit((parts.scheme, parts.netloc, baseline_path, "", ""))
+
+
+def _baseline_response_diff(response, baseline_response, options):
+    if not baseline_response:
+        return []
+
+    max_length_delta = int(options.get("max_content_length_delta", 64))
+    differences = []
+    if response["status_code"] != baseline_response["status_code"]:
+        differences.append("status_code")
+
+    length_delta = abs(
+        int(response.get("content_length", 0)) - int(baseline_response.get("content_length", 0))
+    )
+    if length_delta > max_length_delta:
+        differences.append("content_length")
+
+    if response.get("content_sha1") != baseline_response.get("content_sha1"):
+        differences.append("content_sha1")
+
+    return differences
+
 
 async def perform_request_action(action, request_options):
     start_time = time.time()
     async with action(**request_options) as response:
+        content = await response.content.read()
         return {
             "reason": response.reason,
             "url": str(response.url),
             "status_code": str(response.status),
-            "content": await response.content.read(),
+            "content": content,
+            **_content_fingerprint(content),
             "headers": dict(response.headers),
             "responsetime": time.time() - start_time,
         }
@@ -49,10 +103,16 @@ def response_conditions_matched(sub_step, response):
     conditions = sub_step["response"]["conditions"]
     condition_results = {}
     for condition in conditions:
-        if condition in ["reason", "status_code", "content", "url"]:
+        if condition in SIMPLE_RESPONSE_CONDITIONS:
             regex = re.findall(re.compile(conditions[condition]["regex"]), response[condition])
             reverse = conditions[condition]["reverse"]
             condition_results[condition] = reverse_and_regex_condition(regex, reverse)
+        if condition == "baseline_response":
+            condition_results[condition] = _baseline_response_diff(
+                response,
+                response.get("baseline_response"),
+                conditions[condition],
+            )
         if condition == "headers":
             # convert headers to case insensitive dict
             for key in response["headers"].copy():
@@ -65,7 +125,7 @@ def response_conditions_matched(sub_step, response):
                         re.compile(conditions["headers"][header]["regex"]),
                         response["headers"][header.lower()]
                         if header.lower() in response["headers"]
-                        else False,
+                        else "",
                     )
                     condition_results["headers"][header] = reverse_and_regex_condition(
                         regex, reverse
@@ -159,6 +219,9 @@ class HttpEngine(BaseEngine):
                     sub_step["headers"][key] = ""
         backup_method = copy.deepcopy(sub_step["method"])
         backup_response = copy.deepcopy(sub_step["response"])
+        backup_baseline_response = copy.deepcopy(
+            sub_step["response"]["conditions"].get("baseline_response", None)
+        )
         backup_iterative_response_match = copy.deepcopy(
             sub_step["response"]["conditions"].get("iterative_response_match", None)
         )
@@ -190,6 +253,25 @@ class HttpEngine(BaseEngine):
                 sub_step["response"]["conditions"].get("iterative_response_match")
             )
             del sub_step["response"]["conditions"]["iterative_response_match"]
+
+        if response and backup_baseline_response is not None:
+            baseline_request = copy.deepcopy(sub_step)
+            del baseline_request["method"]
+            del baseline_request["response"]
+            baseline_request["url"] = _random_baseline_url(
+                baseline_request["url"],
+                int(backup_baseline_response.get("random_path_segment_length", 12)),
+            )
+            for _i in range(options["retries"]):
+                try:
+                    baseline_response = asyncio.run(send_request(baseline_request, backup_method))
+                    baseline_response["content"] = baseline_response["content"].decode(
+                        errors="ignore"
+                    )
+                    response["baseline_response"] = baseline_response
+                    break
+                except Exception:
+                    response["baseline_response"] = []
 
         sub_step["response"]["conditions_results"] = response_conditions_matched(
             sub_step, response

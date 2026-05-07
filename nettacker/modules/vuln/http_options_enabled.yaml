@@ -38,3 +38,6 @@ payloads:
               allow:
                 regex: "\\S+"
                 reverse: false
+              Access-Control-Allow-Methods:
+                regex: "\\S+"
+                reverse: false

@@ -36,5 +36,5 @@ payloads:
           conditions:
             headers:
               x-xss-protection:
-                regex: ^((?!1; mode=block).)+$
+                regex: ^$|^((?!1; mode=block).)+$
                 reverse: false

@@ -5,6 +5,7 @@ import shutil
 import socket
 import sys
 from threading import Thread
+from urllib.parse import urlsplit
 
 import multiprocess
 
@@ -113,19 +114,26 @@ class Nettacker(ArgParser):
         """
         targets = []
         base_path = ""
+        explicit_url_ports = set()
+        explicit_url_schemas = set()
         for target in self.arguments.targets:
             if "://" in target:
+                parsed_target = urlsplit(target)
+                if parsed_target.scheme in {"http", "https"}:
+                    explicit_url_schemas.add(parsed_target.scheme)
                 try:
-                    if not target.split("://")[1].split("/")[1]:
-                        base_path = ""
-                    else:
-                        base_path = "/".join(target.split("://")[1].split("/")[1:])
-                        if base_path[-1] != "/":
-                            base_path += "/"
-                except IndexError:
+                    if parsed_target.port:
+                        explicit_url_ports.add(parsed_target.port)
+                except ValueError:
+                    pass
+
+                if not parsed_target.path or parsed_target.path == "/":
                     base_path = ""
-                # remove url proto; uri; port
-                target = target.split("://")[1].split("/")[0].split(":")[0]
+                else:
+                    base_path = parsed_target.path.lstrip("/")
+                    if base_path[-1] != "/":
+                        base_path += "/"
+                target = parsed_target.hostname or target.split("://")[1].split("/")[0]
                 targets.append(target)
             # single IPs
             elif is_single_ipv4(target) or is_single_ipv6(target):
@@ -144,6 +152,12 @@ class Nettacker(ArgParser):
             # domains probably
             else:
                 targets.append(target)
+
+        if explicit_url_ports and not self.arguments.ports:
+            self.arguments.ports = list(explicit_url_ports)
+        if explicit_url_schemas and not self.arguments.schema:
+            self.arguments.schema = list(explicit_url_schemas)
+
         self.arguments.targets = targets
         self.arguments.url_base_path = base_path
 
@@ -177,15 +191,18 @@ class Nettacker(ArgParser):
                     self.arguments.selected_modules.remove("icmp_scan")
         # port_scan
         if not self.arguments.skip_service_discovery:
-            self.arguments.skip_service_discovery = True
-            selected_modules = self.arguments.selected_modules
-            self.arguments.selected_modules = ["port_scan"]
-            self.start_scan(scan_id)
-            self.arguments.selected_modules = selected_modules
-            if "port_scan" in self.arguments.selected_modules:
-                self.arguments.selected_modules.remove("port_scan")
-            self.arguments.targets = self.filter_target_by_event(targets, scan_id, "port_scan")
-            self.arguments.skip_service_discovery = False
+            if self.arguments.ports:
+                self.arguments.skip_service_discovery = True
+            else:
+                self.arguments.skip_service_discovery = True
+                selected_modules = self.arguments.selected_modules
+                self.arguments.selected_modules = ["port_scan"]
+                self.start_scan(scan_id)
+                self.arguments.selected_modules = selected_modules
+                if "port_scan" in self.arguments.selected_modules:
+                    self.arguments.selected_modules.remove("port_scan")
+                self.arguments.targets = self.filter_target_by_event(targets, scan_id, "port_scan")
+                self.arguments.skip_service_discovery = False
         return list(set(self.arguments.targets))
 
     def filter_target_by_event(self, targets, scan_id, module_name):

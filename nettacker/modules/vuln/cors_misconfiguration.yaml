@@ -1,0 +1,80 @@
+info:
+  name: cors_misconfiguration_vuln
+  author: OWASP Nettacker Team
+  severity: 5
+  description: Detects unsafe CORS configurations that allow untrusted origins
+  reference:
+    - https://owasp.org/www-community/attacks/CORS_OriginHeaderScrutiny
+  profiles:
+    - vuln
+    - http
+    - medium_severity
+    - cors
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Origin: "https://evil.example"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          log: "CORS allows credentialed cross-origin access"
+          conditions:
+            headers:
+              Access-Control-Allow-Origin:
+                regex: ^(\*|https://evil\.example|null)$
+                reverse: false
+              Access-Control-Allow-Credentials:
+                regex: (?i)^true$
+                reverse: false
+
+      - method: options
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Origin: "https://evil.example"
+          Access-Control-Request-Method: "DELETE"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          log: "CORS allows untrusted origins with broad methods"
+          conditions:
+            headers:
+              Access-Control-Allow-Origin:
+                regex: ^(\*|https://evil\.example|null)$
+                reverse: false
+              Access-Control-Allow-Methods:
+                regex: (?i)(PUT|PATCH|DELETE)
+                reverse: false
