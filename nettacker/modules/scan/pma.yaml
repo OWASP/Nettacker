@@ -41,6 +41,8 @@ payloads:
             status_code:
               regex: 200|403|401
               reverse: false
+            baseline_response:
+              max_content_length_delta: 64
             url:
               regex: .*
               reverse: false
