@@ -129,7 +129,7 @@ jobs:
           poetry build --no-interaction
 
       - name: Upload package artifacts
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: dist
           path: dist
@@ -289,7 +289,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
 
       - name: Build and push
-        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f
         with:
           context: .
           file: Dockerfile
@@ -324,7 +324,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
 
       - name: Build and push
-        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f
         with:
           context: .
           file: Dockerfile
@@ -353,7 +353,7 @@ jobs:
           path: dist
 
       - name: Publish package distributions to Test PyPI
-        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b
         with:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
@@ -379,4 +379,4 @@ jobs:
           path: dist
 
       - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b
