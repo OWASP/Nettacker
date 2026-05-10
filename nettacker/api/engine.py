@@ -592,7 +592,7 @@ def start_api_subprocess(options):
                 ssl_context="adhoc",
                 threaded=True,
             )
-    except (ssl.SSLError, ValueError):
+    except ssl.SSLError:
         die_failure(_("load_ssl_fail"))
     except FileNotFoundError:
         die_failure(_("file_not_found"))
