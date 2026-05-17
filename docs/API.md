@@ -2,6 +2,7 @@ WebUI/API Manual usage explained in the [Usage](Usage#api-and-webui) page but le
 
 - [Purpose](#purpose)
 - [Requests Structure](#requests-structure)
+- [Upload File](#upload-file)
 - [New Scan](#new-scan)
 - [Set Session](#set-session)
   * [Set Cookie](#set-cookie)
@@ -69,6 +70,34 @@ At the first, you must send an API key through the request each time you send a 
 >>> r.status_code
 401
 ```
+
+## Upload File
+
+The parameters that accept a file path (`targets_list`, `usernames_list`, `passwords_list`, and `read_from_file`) cannot be set directly through `/new/scan`; the API strips them from the form values and only honours paths populated by a prior upload. To provide a file for one of these parameters, `POST` it to `/upload/file` first and the server will store it and bind it to the named parameter for subsequent scans.
+
+The request must be `multipart/form-data` with two fields:
+
+- `file` — the file contents
+- `param_name` — one of `targets_list`, `usernames_list`, `passwords_list`, `read_from_file`
+
+Constraints:
+
+- Maximum size: 10 MB (`MAX_CONTENT_LENGTH`)
+- Allowed extensions for `targets_list`/`usernames_list`/`passwords_list`: `txt`, `csv`, `lst`, `list` (configurable via `allowed_upload_extensions` in `nettacker/config.py`). `read_from_file` is not extension-checked here because module configs gate it in the core.
+- Filenames are sanitised and prefixed with a UUID before being written to the tmp directory.
+
+```python
+>>> r = requests.post(
+...     "https://127.0.0.1:5000/upload/file",
+...     data={"key": "<your_api_key>", "param_name": "targets_list"},
+...     files={"file": open("targets.txt", "rb")},
+...     verify=False,
+... )
+>>> r.json()
+{"msg": "<uuid>_targets.txt", "status": "ok"}
+```
+
+Possible error responses (HTTP 400): `upload_no_file`, `upload_no_file_selected`, `upload_invalid_filename`, `upload_file_type_not_allowed`. A subsequent `POST /new/scan` will automatically pick up the uploaded path for the matching `param_name`.
 
 ## New Scan
 
@@ -217,7 +246,7 @@ u'{"msg":"please choose your scan method!","status":"error"}\n'
 
 ```
 
-All variables in JSON you've got in results could be changed in `GET`/`POST`/`Cookies`, you can fill them all just like normal CLI commands. (e.g. same scan method name (modules), you can separate with `,`, you can use `ports` like `80,100-200,1000,2000`, set users and passwords `user1,user2`, `passwd1,passwd2`). You cannot use `read_from_file:/tmp/users.txt` syntax in `methods_args`. if you want to send a big password list, just send it through the `POST` requests and separated with `,`.
+All variables in JSON you've got in results could be changed in `GET`/`POST`/`Cookies`, you can fill them all just like normal CLI commands. (e.g. same scan method name (modules), you can separate with `,`, you can use `ports` like `80,100-200,1000,2000`, set users and passwords `user1,user2`, `passwd1,passwd2`). You cannot use `read_from_file:/tmp/users.txt` syntax in `methods_args`. If you want to send a big password list, either pass it inline through `POST` separated with `,` or upload it via [`/upload/file`](#upload-file) with `param_name=passwords_list` (the same applies to `targets_list`, `usernames_list`, and `read_from_file` — passing them as plain form values is ignored because the server only trusts paths produced by an upload).
 
 ## Set Session
 
