@@ -1,0 +1,14 @@
+{
+  "status": "ready",
+  "vertical": "translation",
+  "commit_message": "i18n(vi): add Vietnamese translations for compare scan and missing strings",
+  "pr_title": "i18n(vi): add Vietnamese translations for comparison and missing keys",
+  "pr_body": "## Summary\n\nFills in missing Vietnamese (`vi`) translations in `nettacker/locale/vi.yaml`, with primary focus on the comparison-functionality messages requested in #905.\n\n### Comparison strings (the issue)\n- `compare_scans`\n- `compare_report_path_filename`\n- `compare_report_saved`\n- `build_compare_report`\n- `finish_build_report`\n- `no_scan_to_compare`\n- `invalid_scan_id`\n\n### Other gaps closed in the same pass\nWhile auditing the file against `en.yaml`, another 56 keys were missing and have also been translated — API/cert strings, database error/retry messages, WHATCMS messages, hardware-usage and parallel-scan event strings, schema/header CLI help, etc.\n\n### Stats\n- Languages: `vi`\n- Files changed: 1 (`nettacker/locale/vi.yaml`)\n- Lines added: 63\n- Strings translated: 63\n- Source compared against: `nettacker/locale/en.yaml` (135 keys; vi was at 72 covered, now 135)\n\n### Validation\n- Parsed with `yaml.safe_load` — no syntax errors.\n- All en.yaml keys are now present in vi.yaml (verified via set diff).\n- File is UTF-8, no BOM, leading `---` document marker preserved.\n- Placeholders (`{0}`, `{1}` … `{8}`) preserved verbatim. Brand/CLI tokens (`OWASP Nettacker`, `APSW`, `WHATCMS`, `socks`, `http`/`https`, `mysql`/`sqlite`, `scan_id`, `--modules-extra-args`, module names) left untranslated. Formal `bạn` is used throughout.\n\nCloses #905\n",
+  "branch": "i18n-vi/issue-905-translations-needed-for-comparison",
+  "files_changed": ["nettacker/locale/vi.yaml"],
+  "strings_translated": 63,
+  "target_locale": "vi",
+  "tests_run": ["yaml.safe_load(nettacker/locale/vi.yaml)", "en/vi key parity diff"],
+  "tests_passed": true,
+  "notes": "vi.yaml was missing 63 of the 135 source keys (en.yaml); all 7 keys from the comparison feature in #905 are covered along with the rest. Pre-existing keys (including some with outdated/awkward MT-style wording in the original vi.yaml such as 'vớ vớ' for socks proxy) were intentionally left untouched to keep this PR scoped to additions only — they can be cleaned up in a follow-up. Used formal Vietnamese (bạn). Kept technical terms (API, schema, header, scan_id, wordlist, log) in English where no clean idiomatic Vietnamese exists, matching the style of existing vi.yaml entries."
+}
