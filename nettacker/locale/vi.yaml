@@ -252,3 +252,66 @@ no_response: không thể nhận phản hồi từ mục tiêu
 category_framework: "danh mục: {0}, khung: {1} được tìm thấy!"
 nothing_found: không tìm thấy gì trên {0} trong {1}!
 no_auth: "Không tìm thấy auth trên {0}: {1}"
+invalid_scan_id: scan id của bạn không hợp lệ!
+compare_scans: so sánh lần quét hiện tại với các lần quét cũ bằng cách dùng scan_id duy nhất
+compare_report_path_filename: đường dẫn tệp để lưu báo cáo compare_scan
+no_scan_to_compare: không tìm thấy scan_id để so sánh
+compare_report_saved: "kết quả so sánh đã được lưu trong {0}"
+build_compare_report: "đang xây dựng báo cáo so sánh"
+finish_build_report: "Đã hoàn tất xây dựng báo cáo so sánh"
+API_cert: CHỨNG CHỈ API
+API_cert_key: Khóa CHỨNG CHỈ API
+Invalid_whatcms_api_key: "{0}"
+searching_whatcms_database: "Đang tìm CMS trên whatcms.org..."
+whatcms_monthly_quota_exceeded: Bạn đã vượt quá hạn ngạch yêu cầu WHATCMS hàng tháng
+cannot_run_api_server: Bạn không thể chạy máy chủ API qua chính nó!
+error_passwords: "Không thể chỉ định (các) mật khẩu, không thể mở tệp: {0}"
+error_wordlist: "Không thể chỉ định (các) từ, không thể mở tệp {0}"
+file_saved: "báo cáo đã được lưu trong {0} và cơ sở dữ liệu"
+filtered_content: "... [xem nội dung đầy đủ trong báo cáo]"
+finished_module: "đã hoàn thành mô-đun {0} hướng đến mục tiêu {1} | số luồng mô-đun {2} trong {3}!"
+finished_parallel_module_scan: "process-{0}|{1}|{2}| đã hoàn thành luồng mô-đun số {3} trong {4}"
+http_header: "Thêm HTTP header tùy chỉnh vào yêu cầu (định dạng: 'key: value'). Để dùng nhiều header, hãy dùng nhiều cờ -H"
+icmp_need_root_access: "để sử dụng mô-đun icmp_scan hoặc --ping-before-scan, bạn cần chạy script với quyền root!"
+invalid_database: Vui lòng chọn mysql hoặc sqlite trong tệp cấu hình
+invalid_json_type_to_db: "Kiểu dữ liệu JSON không hợp lệ cho cơ sở dữ liệu. Bỏ qua việc gửi đến cơ sở dữ liệu. Dữ liệu:{0}"
+invalid_schema: "Schema không hợp lệ: Chỉ cho phép 'http' và 'https'"
+library_not_supported: "thư viện [{0}] không được hỗ trợ!"
+loading_modules: "đang tải tất cả các mô-đun... việc này có thể mất một chút thời gian!"
+loading_profiles: "đang tải tất cả các hồ sơ... việc này có thể mất một chút thời gian!"
+module_profile_full_information: "{0}{1}{2}: {3}"
+modules_extra_args_help: 'thêm tham số bổ sung để truyền cho các mô-đun (ví dụ: --modules-extra-args "x_api_key=123&xyz_passwd=abc"'
+no_events_for_report: không có sự kiện nào để tạo báo cáo! bỏ qua phần này.
+no_live_service_found: không tìm thấy dịch vụ nào đang hoạt động để quét.
+regrouping_targets: đang nhóm lại các mục tiêu dựa trên tài nguyên phần cứng!
+removing_old_db_records: Đang xóa bản ghi cơ sở dữ liệu cũ cho các mục tiêu và mô-đun đã chọn.
+schema_selector: '(các) schema, tách biệt với ","'
+select_user_agent: "Chọn một user agent để gửi cùng các yêu cầu HTTP hoặc nhập \"random_user_agent\" để ngẫu nhiên hóa User-Agent trong các yêu cầu."
+send_success_event_from_module: "process-{0}|{1}|{2}|module-thread {3}/{4}|request-thread {5}/{6}|{7}|\nsuccess_condition (s): \n{8}"
+send_unsuccess_event_from_module: "process-{0}|{1}|{2}|module-thread {3}/{4}|request-thread {5}/{6}| tất cả điều kiện đều thất bại"
+sending_module_request: "process-{0}|{1}|{2}|module-thread {3}/{4}| đang gửi yêu cầu {5} trong {6}"
+set_hardware_usage: "Đặt mức sử dụng phần cứng khi quét. (low, normal, high, maximum)"
+show_all_modules: hiển thị tất cả các mô-đun và thông tin của chúng
+show_all_profiles: hiển thị tất cả các hồ sơ và thông tin của chúng
+single_process_started: "process-{0}| tiến trình đã bắt đầu!"
+skip_service_discovery: bỏ qua phát hiện dịch vụ trước khi quét và buộc tất cả các mô-đun phải quét
+start_multi_process: "đã nhập {0} mục tiêu trong {1} tiến trình."
+start_parallel_module_scan: "process-{0}|{1}|{2}| đã bắt đầu luồng mô-đun số {3} trong {4}"
+thread_number_modules: quét mô-đun song song cho các máy chủ
+timeout: thời gian chờ yêu cầu tính bằng giây
+user_wordlist: Cho phép người dùng nhập wordlist của riêng họ
+verbose_event: bật sự kiện chi tiết để xem trạng thái của từng luồng
+wrong_hardware_usage: "Bạn phải chọn một trong các hồ sơ này cho việc sử dụng phần cứng. (low, normal, high, maximum)"
+apsw_ill_configuration: APSW đã được thiết lập trong cấu hình nhưng chưa được cài đặt trong môi trường
+apsw_connection_error: Không thể tạo kết nối APSW {0}
+report_insertion_fail: Không thể chèn báo cáo vào bảng reports
+remove_logs_fail: Không thể xóa log cũ
+database_lock_issue: "Thử lại {0}, Cơ sở dữ liệu đang bị khóa. Đang thử gửi lại đến cơ sở dữ liệu"
+database_retries_exhausted: Đã hết số lần thử lại. Bỏ qua log này.
+database_query_fail: Không thể truy vấn cơ sở dữ liệu
+report_retrieval_fail: Không thể lấy báo cáo
+read_report_fail: Không thể đọc tệp báo cáo {0}
+search_results_end: Không còn kết quả tìm kiếm nào
+database_error: Lỗi cơ sở dữ liệu!
+database_connection_failed: Kết nối đến cơ sở dữ liệu được chọn không thành công
+exclude_ports: "Cổng cần loại trừ (ví dụ: 80 || 80,443 || 1000-1300)"
