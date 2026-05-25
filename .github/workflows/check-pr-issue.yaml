@@ -1,0 +1,32 @@
+name: Check PR linked issue and assignee
+
+on:
+  pull_request_target:
+    types:
+      - opened
+
+permissions: {}
+
+jobs:
+  check-pr-issue:
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+
+      - name: Check PR linked issue and assignee
+        uses: arkid15r/check-pr-issue-action@09f681e4d30d66e3ba085dfbbf7e07e0b3e4e263 # v0.1.5
+        with:
+          check_issue_reference: 'true'
+          close_pr_on_failure: 'true'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          no_assignee_message: The linked issue must be assigned to the PR author.
+          no_issue_message: The PR must be linked to an issue assigned to the PR author.
+          require_assignee: 'true'
+          skip_users_file_path: .github/workflows/check-pr-issue-skip-usernames.txt
+    timeout-minutes: 5
