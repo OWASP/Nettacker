@@ -76,6 +76,44 @@ payloads:
         headers:
           User-Agent: "{user_agent}"
           Content-Type: "application/json"
+          Authorization: "Basic YWRtaW46YWRtaW4="
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/jolokia/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 8161
+                - 80
+                - 443
+
+        data: |
+          {{
+            "type": "exec",
+            "mbean": "org.apache.activemq:type=Broker,brokerName=localhost",
+            "operation": "removeNetworkConnector",
+            "arguments": ["NC"]
+          }}
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+          log: "Removed network connector (cleanup step)"
+
+      - method: post
+        timeout: 10
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
         ssl: false
         url:
           nettacker_fuzzer:
@@ -108,4 +146,41 @@ payloads:
               reverse: false
             content:
               regex: '(?s)(?=.*addNetworkConnector)(?=.*org.apache.activemq)'
+              reverse: false
+
+      - method: post
+        timeout: 10
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/jolokia/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 8161
+                - 80
+                - 443
+
+        data: |
+          {{
+            "type": "exec",
+            "mbean": "org.apache.activemq:type=Broker,brokerName=localhost",
+            "operation": "removeNetworkConnector",
+            "arguments": ["NC"]
+          }}
+
+        response:
+          log: "Removed network connector (cleanup step)"
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
               reverse: false
