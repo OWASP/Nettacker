@@ -102,12 +102,13 @@ payloads:
           }}
 
         response:
+          save_to_temp_events_only: cleanup_step_1
           condition_type: and
           conditions:
             status_code:
               regex: '200'
               reverse: false
-          log: "Removed network connector (cleanup step)"
+        
 
       - method: post
         timeout: 10
@@ -178,7 +179,7 @@ payloads:
           }}
 
         response:
-          log: "Removed network connector (cleanup step)"
+          save_to_temp_events_only: cleanup_step_2
           condition_type: and
           conditions:
             status_code:
