@@ -1,0 +1,35 @@
+module_name: wing_ftp_cve_2025_47812_vuln
+module_description: Detects Wing FTP Server instances vulnerable to CVE-2025-47812 (RCE via Null Byte + Lua Injection) in versions prior to 7.4.4.
+module_author:
+  - Young-Zizo
+module_type: vulnerability
+module_severity: critical
+module_profiles:
+  - vulnerabilities
+module_protocols:
+  - http
+  - https
+module_ports:
+  - 80
+  - 443
+  - 8080
+module_cves:
+  - CVE-2025-47812
+  - CVE-2025-47813
+
+payloads:
+  - library: http
+    requests:
+      - url: /loginok.html
+        method: GET
+        headers:
+          User-Agent: Nettacker
+        responses:
+          - condition_type: and
+            conditions:
+              - search_in: response_body
+                regex: "(Wing FTP Server|WingFTP|wftpserver)"
+              - search_in: response_body
+                regex: "(Wing FTP Server|Version:|WFTPServer/)(v?([0-6]\.\d+\.\d+|7\.[0-3]\.\d+|7\.4\.[0-3]))"
+              - search_in: status_code
+                regex: "200"
