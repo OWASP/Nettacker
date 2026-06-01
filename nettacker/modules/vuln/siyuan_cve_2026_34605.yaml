@@ -53,5 +53,5 @@ payloads:
                 regex: "image/svg\\+xml"
                 reverse: false
             content:
-              regex: (?s)(?=.*id="dynamic_icon_type8)(?=.*</text><x:script xmlns:x="http://www\.w3\.org/2000/svg">alert\(document\.domain\)</x:script><text>).*
+              regex: (?s)(?=.*id="dynamic_icon_type8")(?=.*</text><x:script xmlns:x="http://www\.w3\.org/2000/svg">alert\(document\.domain\)</x:script><text>).*
               reverse: false
