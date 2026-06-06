@@ -12,6 +12,7 @@ info:
     - critical_severity
     - cve2021
     - cve
+    - cisa_kev
     - apache
     - path_traversal
     - lfi
