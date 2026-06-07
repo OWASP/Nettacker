@@ -5,40 +5,40 @@ info:
   description: fetch CUPS version from target to help identify CVE-2024-47176
   reference: https://thehackernews.com/2024/09/critical-linux-cups-printing-system.html
   profiles:
-    - scan
-    - http
-    - backup
-    - low_severity
-    - drupal
-
+  - scan
+  - http
+  - backup
+  - low_severity
+  - drupal
+  - cve_2024
 payloads:
-  - library: http
-    steps:
-      - method: get
-        timeout: 3
+- library: http
+  steps:
+  - method: get
+    timeout: 3
+    headers:
+      User-Agent: '{user_agent}'
+    allow_redirects: false
+    ssl: false
+    url:
+      nettacker_fuzzer:
+        input_format: '{{schema}}://{target}:{{ports}}/'
+        prefix: ''
+        suffix: ''
+        interceptors: null
+        data:
+          schema:
+          - http
+          ports:
+          - 631
+    response:
+      condition_type: and
+      conditions:
+        status_code:
+          regex: \d\d\d
+          reverse: false
         headers:
-          User-Agent: "{user_agent}"
-        allow_redirects: false
-        ssl: false
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              schema:
-                - "http"
-              ports:
-                - 631
-        response:
-          condition_type: and        
-          conditions:
-            status_code:
-                regex: \d\d\d
-                reverse: false
-            headers:
-              Server:
-                regex: (CUPS\/[0-9]+\.[0-9]+)
-                reverse: false
-          log: "response_dependent['headers']['Server']"
+          Server:
+            regex: (CUPS\/[0-9]+\.[0-9]+)
+            reverse: false
+      log: response_dependent['headers']['Server']
