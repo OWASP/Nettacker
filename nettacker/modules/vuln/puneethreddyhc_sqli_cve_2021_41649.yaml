@@ -2,51 +2,51 @@ info:
   name: puneethreddyhc_sql_cve_2021_41649_vuln
   author: OWASP Nettacker Team
   severity: 8
-  description: An un-authenticated SQL Injection exists in PuneethReddyHC online-shopping-system-advanced through the /homeaction.php cat_id parameter. Using a post request does not sanitize the user input.
-  reference: 
-    - https://github.com/MobiusBinary/CVE-2021-41649
+  description: An un-authenticated SQL Injection exists in PuneethReddyHC online-shopping-system-advanced
+    through the /homeaction.php cat_id parameter. Using a post request does not sanitize
+    the user input.
+  reference:
+  - https://github.com/MobiusBinary/CVE-2021-41649
   profiles:
-    - vuln
-    - http
-    - high_severity
-    - cve2021
-    - cve
-    - sqli
-
+  - vuln
+  - http
+  - high_severity
+  - sqli
+  - cve_2021
 payloads:
-  - library: http
-    steps:
-      - method: post
-        timeout: 3
-        headers:
-          User-Agent: "{user_agent}"
-        allow_redirects: false
-        ssl: false
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/homeaction.php"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
+- library: http
+  steps:
+  - method: post
+    timeout: 3
+    headers:
+      User-Agent: '{user_agent}'
+    allow_redirects: false
+    ssl: false
+    url:
+      nettacker_fuzzer:
+        input_format: '{{schema}}://{target}:{{ports}}/homeaction.php'
+        prefix: ''
+        suffix: ''
+        interceptors: null
         data:
-          "cat_id=4'&get_seleted_Category=1"
-        response:
-          condition_type: and
-          conditions:
-            status_code:
-              regex: '200'
-              reverse: false
-            headers:
-              Content-Type: 
-                regex: text/html
-                reverse: false
-            content:
-              regex: 'Warning: mysqli_num_rows\(\) expects parameter 1 to be&xdebug-error xe-warning'
-              reverse: false
+          schema:
+          - http
+          - https
+          ports:
+          - 80
+          - 443
+    data: cat_id=4'&get_seleted_Category=1
+    response:
+      condition_type: and
+      conditions:
+        status_code:
+          regex: '200'
+          reverse: false
+        headers:
+          Content-Type:
+            regex: text/html
+            reverse: false
+        content:
+          regex: 'Warning: mysqli_num_rows\(\) expects parameter 1 to be&xdebug-error
+            xe-warning'
+          reverse: false

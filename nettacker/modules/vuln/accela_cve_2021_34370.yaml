@@ -3,44 +3,41 @@ info:
   author: OWASP Nettacker Team
   severity: 6
   description: Accela Civic Platform Cross-Site-Scripting and Open Redirect <= 21.1
-  reference: 
-    - https://www.exploit-db.com/exploits/49990
-    - https://nvd.nist.gov/vuln/detail/CVE-2021-34370
+  reference:
+  - https://www.exploit-db.com/exploits/49990
+  - https://nvd.nist.gov/vuln/detail/CVE-2021-34370
   profiles:
-    - vuln
-    - http
-    - medium_severity
-    - cve2021
-    - cve
-    - accela
-    - open_redirect
-
+  - vuln
+  - http
+  - medium_severity
+  - accela
+  - open_redirect
+  - cve_2021
 payloads:
-  - library: http
-    steps:
-      - method: get
-        timeout: 3
+- library: http
+  steps:
+  - method: get
+    timeout: 3
+    headers:
+      User-Agent: '{user_agent}'
+    ssl: false
+    url:
+      nettacker_fuzzer:
+        input_format: '{{schema}}://{target}:{{ports}}/ssoAdapter/logoutAction.do?servProvCode=SAFVC&successURL=https://example.com/'
+        prefix: ''
+        suffix: ''
+        interceptors: null
+        data:
+          schema:
+          - http
+          - https
+          ports:
+          - 80
+          - 443
+    response:
+      condition_type: and
+      conditions:
         headers:
-          User-Agent: "{user_agent}"
-        ssl: false
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/ssoAdapter/logoutAction.do?servProvCode=SAFVC&successURL=https://example.com/"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
-
-        response:
-          condition_type: and
-          conditions:
-            headers:
-              Location:
-                regex: (?:https?:\/\/|\/\/)(?:[a-zA-Z0-9\-_\.@]*)example\.com.*$
-                reverse: false
+          Location:
+            regex: (?:https?:\/\/|\/\/)(?:[a-zA-Z0-9\-_\.@]*)example\.com.*$
+            reverse: false

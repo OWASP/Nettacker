@@ -3,49 +3,47 @@ info:
   author: OWASP Nettacker Team
   severity: 4
   description: phpinfo() exposure in unprotected composer vendor folder via phpfastcache/phpfastcache.
-  reference: 
-    - https://github.com/PHPSocialNetwork/phpfastcache/pull/813
-    - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-37704
+  reference:
+  - https://github.com/PHPSocialNetwork/phpfastcache/pull/813
+  - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-37704
   profiles:
-    - vuln
-    - http
-    - medium_severity
-    - cve2021
-    - cve
-    - exposure
-    - phpfastcache
-
+  - vuln
+  - http
+  - medium_severity
+  - exposure
+  - phpfastcache
+  - cve_2021
 payloads:
-  - library: http
-    steps:
-      - method: get
-        timeout: 3
-        headers:
-          User-Agent: "{user_agent}"
-        allow_redirects: false
-        ssl: false
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
-              paths:
-                - vendor/phpfastcache/phpfastcache/docs/examples/phpinfo.php
-                - vendor/phpfastcache/phpfastcache/examples/phpinfo.php
-        response:
-          condition_type: and
-          conditions:
-            status_code:
-              regex: '200'
-              reverse: false
-            content:
-              regex: PHP Extension|PHP Version
-              reverse: false
+- library: http
+  steps:
+  - method: get
+    timeout: 3
+    headers:
+      User-Agent: '{user_agent}'
+    allow_redirects: false
+    ssl: false
+    url:
+      nettacker_fuzzer:
+        input_format: '{{schema}}://{target}:{{ports}}/{{paths}}'
+        prefix: ''
+        suffix: ''
+        interceptors: null
+        data:
+          schema:
+          - http
+          - https
+          ports:
+          - 80
+          - 443
+          paths:
+          - vendor/phpfastcache/phpfastcache/docs/examples/phpinfo.php
+          - vendor/phpfastcache/phpfastcache/examples/phpinfo.php
+    response:
+      condition_type: and
+      conditions:
+        status_code:
+          regex: '200'
+          reverse: false
+        content:
+          regex: PHP Extension|PHP Version
+          reverse: false

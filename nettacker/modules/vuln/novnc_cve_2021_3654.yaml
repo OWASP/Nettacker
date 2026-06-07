@@ -3,47 +3,44 @@ info:
   author: OWASP Nettacker Team
   severity: 3
   description: A user-controlled input redirects noVNC users to an external website.
-  reference: 
-    - https://seclists.org/oss-sec/2021/q3/188
-    - http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-3654
+  reference:
+  - https://seclists.org/oss-sec/2021/q3/188
+  - http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-3654
   profiles:
-    - vuln
-    - http
-    - low_severity
-    - cve2021
-    - cve
-    - novnc
-    - open_redirect
-
+  - vuln
+  - http
+  - low_severity
+  - novnc
+  - open_redirect
+  - cve_2021
 payloads:
-  - library: http
-    steps:
-      - method: get
-        timeout: 3
+- library: http
+  steps:
+  - method: get
+    timeout: 3
+    headers:
+      User-Agent: '{user_agent}'
+    ssl: false
+    url:
+      nettacker_fuzzer:
+        input_format: '{{schema}}://{target}:{{ports}}//example.com/%2f..'
+        prefix: ''
+        suffix: ''
+        interceptors: null
+        data:
+          schema:
+          - http
+          - https
+          ports:
+          - 80
+          - 443
+    response:
+      condition_type: and
+      conditions:
+        status_code:
+          regex: 301|302
+          reverse: false
         headers:
-          User-Agent: "{user_agent}"
-        ssl: false
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}//example.com/%2f.."
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
-
-        response:
-          condition_type: and
-          conditions:
-            status_code:
-              regex: '301|302'
-              reverse: false
-            headers:
-              Location:
-                regex: (?:https?:\/\/|\/\/)(?:[a-zA-Z0-9\-_\.@]*)example\.com.*$
-                reverse: false
+          Location:
+            regex: (?:https?:\/\/|\/\/)(?:[a-zA-Z0-9\-_\.@]*)example\.com.*$
+            reverse: false

