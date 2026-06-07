@@ -47,6 +47,9 @@ ENV PATH=/usr/src/owaspnettacker/.venv/bin:$PATH
 RUN pip install --no-deps --no-cache-dir nettacker-*.whl && \
     rm -f nettacker-*.whl
 
+### Preserve Apache-2.0 license text in the final image for downstream attribution
+COPY LICENSE ./
+
 ### We now have Nettacker installed in the virtualenv with 'nettacker' command which is the new entrypoint
 ENV docker_env=true
 ENTRYPOINT [ "nettacker" ]
