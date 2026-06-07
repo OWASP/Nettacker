@@ -81,12 +81,12 @@ def response_conditions_matched(sub_step, response):
                 ">",
                 "<",
             ]:
+                op = conditions["responsetime"].split()[0]
+                rhs = float(conditions["responsetime"].split()[-1])
                 exec(
-                    "condition_results['responsetime'] = response['responsetime'] if ("
-                    + "response['responsetime'] {0} float(conditions['responsetime'].split()[-1])".format(
-                        conditions["responsetime"].split()[0]
-                    )
-                    + ") else []"
+                    f"condition_results['responsetime'] = "
+                    f"response['responsetime'] if ("
+                    f"response['responsetime'] {op} {rhs}) else []"
                 )
             else:
                 condition_results["responsetime"] = []

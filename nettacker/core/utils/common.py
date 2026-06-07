@@ -132,7 +132,8 @@ def get_http_header_key(http_header):
         http_header: a string entered by the user following the -H flag
     Returns:
         1. The HTTP header key if http_header is a key-value pair
-        2. The http_header itself if http_header is NOT a key_value pair (i.e. http_header is a plain string)
+        2. The http_header itself if http_header is NOT a key_value pair
+           (i.e. http_header is a plain string)
         3. An empty string if http_header is empty
     Example:
         http_header: "Authorization: Bearer abcdefgh"

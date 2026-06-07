@@ -64,12 +64,9 @@ class ApiConfig(ConfigBase):
 
     api_access_log = str(CWD / ".nettacker/data/nettacker.log")
     api_access_key = generate_random_token(32)
-    api_client_whitelisted_ips = []  # disabled - to enable please put an array with list of ips/cidr/ranges
-    # [
-    #     "127.0.0.1",
-    #     "10.0.0.0/24",
-    #     "192.168.1.1-192.168.1.255"
-    # ],
+    api_client_whitelisted_ips = []  # disabled - to enable, put an array with
+    # list of ips/cidr/ranges, e.g.:
+    # ["127.0.0.1", "10.0.0.0/24", "192.168.1.1-192.168.1.255"]
     api_debug_mode = False
     api_hostname = "0.0.0.0"
     api_port = 5000

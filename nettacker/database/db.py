@@ -249,7 +249,8 @@ def submit_logs_to_db(log):
                             connection.execute("BEGIN")
                         cursor.execute(
                             """
-                            INSERT INTO scan_events (target, date, module_name, scan_unique_id, port, event, json_event)
+                            INSERT INTO scan_events
+                            (target, date, module_name, scan_unique_id, port, event, json_event)
                             VALUES (?, ?, ?, ?, ?, ?, ?)
                             """,
                             (
@@ -335,7 +336,9 @@ def submit_temp_logs_to_db(log):
                             cursor.execute("BEGIN")
                         cursor.execute(
                             """
-                            INSERT INTO temp_events (target, date, module_name, scan_unique_id, event_name, port, event, data)
+                            INSERT INTO temp_events
+                            (target, date, module_name, scan_unique_id,
+                             event_name, port, event, data)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                             """,
                             (
@@ -644,9 +647,9 @@ def last_host_logs(page):
         try:
             cursor.execute(
                 """
-                SELECT DISTINCT target 
+                SELECT DISTINCT target
                 FROM scan_events
-                ORDER BY id DESC 
+                ORDER BY id DESC
                 LIMIT 10 OFFSET ?
                 """,
                 [(page - 1) * 10],
@@ -663,7 +666,7 @@ def last_host_logs(page):
             for (target,) in targets:
                 cursor.execute(
                     """
-                    SELECT DISTINCT module_name 
+                    SELECT DISTINCT module_name
                     FROM scan_events
                     WHERE target = ?
                     """,
@@ -673,10 +676,10 @@ def last_host_logs(page):
 
                 cursor.execute(
                     """
-                    SELECT date 
+                    SELECT date
                     FROM scan_events
-                    WHERE target = ? 
-                    ORDER BY id DESC 
+                    WHERE target = ?
+                    ORDER BY id DESC
                     LIMIT 1
                     """,
                     [target],
@@ -686,7 +689,7 @@ def last_host_logs(page):
 
                 cursor.execute(
                     """
-                    SELECT event 
+                    SELECT event
                     FROM scan_events
                     WHERE target = ?
                     """,
@@ -767,8 +770,10 @@ def get_logs_by_scan_id(scan_id):
         connection, cursor = session
         try:
             cursor.execute(
-                "SELECT scan_unique_id, target, module_name, date, port, event, json_event from scan_events WHERE scan_unique_id = ?",
-                (scan_id,),  # We have to put this as an indexed element
+                "SELECT scan_unique_id, target, module_name, date, "
+                "port, event, json_event FROM scan_events "
+                "WHERE scan_unique_id = ?",
+                (scan_id,),
             )
             rows = cursor.fetchall()
             return [
@@ -856,7 +861,8 @@ def logs_to_report_json(target):
             return_logs = []
             try:
                 cursor.execute(
-                    "SELECT scan_unique_id, target, port, event, json_event FROM scan_events WHERE target = ?",
+                    "SELECT scan_unique_id, target, port, event, "
+                    "json_event FROM scan_events WHERE target = ?",
                     (target,),
                 )
                 rows = cursor.fetchall()
