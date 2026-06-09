@@ -112,3 +112,5 @@ no_scan_to_compare: "তুলনা করার জন্য scan_id পাও
 compare_report_saved: "তুলনা ফলাফল সংরক্ষিত হয়েছে: {0}"
 build_compare_report: "তুলনা রিপোর্ট তৈরি করা হচ্ছে"
 finish_build_report: "তুলনা রিপোর্ট সম্পূর্ণ হয়েছে"
+
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"
