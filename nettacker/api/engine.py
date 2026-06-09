@@ -384,14 +384,44 @@ def get_result_content():
         return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
 
     try:
-        filename, file_content = get_scan_result(scan_id)
+        result = get_scan_result(scan_id)
     except Exception:
+        log.error("Failed to retrieve scan result for id: %s", scan_id)
         return jsonify(structure(status="error", msg="database error!")), 500
+
+    if result is None:
+        return jsonify(structure(status="error", msg=_("not_found"))), 404
+
+    if isinstance(result, dict):
+        return jsonify(result), 500
+
+    filename, file_content = result
+    ext = os.path.splitext(filename)[1].lower()
+    safe_filename = secure_filename(os.path.basename(filename))
+    if not safe_filename:
+        safe_filename = f"report{ext or '.txt'}"
+    mimetype = mime_types().get(ext, "text/plain")
+    headers = {}
+
+    if ext in (".html", ".htm"):
+        headers["Content-Disposition"] = f'inline; filename="{safe_filename}"'
+        headers["Content-Security-Policy"] = (
+            "sandbox allow-scripts; "
+            "default-src 'none'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "script-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data:; "
+            "font-src 'self' data:; "
+            "base-uri 'none'; "
+            "frame-ancestors 'none'"
+        )
+    else:
+        headers["Content-Disposition"] = f'attachment; filename="{safe_filename}"'
 
     return Response(
         file_content,
-        mimetype=mime_types().get(os.path.splitext(filename)[1], "text/plain"),
-        headers={"Content-Disposition": "attachment;filename=" + filename.split("/")[-1]},
+        mimetype=mimetype,
+        headers=headers,
     )
 
 
