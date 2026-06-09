@@ -87,6 +87,10 @@ class Module:
                             services[protocol].append(port)
                         else:
                             services[protocol] = [port]
+            # FALLBACK if port_scan didn't run
+            if not services:
+                ports = self.module_inputs.get("ports") or [80, 443]
+                services = {"http": ports, "https": ports}
             self.discovered_services = copy.deepcopy(services)
             index_payload = 0
             for payload in copy.deepcopy(self.module_content["payloads"]):

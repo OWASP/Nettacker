@@ -84,6 +84,10 @@ class SocketLibrary(BaseLibrary):
         except OSError:
             service = "unknown"
 
+        # If SSL was used during connection, treat service as HTTPS
+        if ssl_flag:
+            service = "https"
+
         return {
             "peer_name": peer_name,
             "response": response.decode(errors="ignore"),
