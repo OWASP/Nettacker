@@ -443,6 +443,46 @@ class ArgParser(ArgumentParser):
             help=_("http_header"),
         )
 
+        # Export Options
+        export_options = self.add_argument_group(
+            "Export", "Export formatting and API integrations"
+        )
+        export_options.add_argument(
+            "--defectdojo-url",
+            action="store",
+            dest="defectdojo_url",
+            default=Config.settings.defectdojo_url,
+            help="DefectDojo instance URL",
+        )
+        export_options.add_argument(
+            "--defectdojo-api-key",
+            action="store",
+            dest="defectdojo_api_key",
+            default=Config.settings.defectdojo_api_key,
+            help="DefectDojo API token",
+        )
+        export_options.add_argument(
+            "--defectdojo-product-name",
+            action="store",
+            dest="defectdojo_product_name",
+            default=Config.settings.defectdojo_product_name,
+            help="DefectDojo Product Name",
+        )
+        export_options.add_argument(
+            "--defectdojo-engagement-name",
+            action="store",
+            dest="defectdojo_engagement_name",
+            default=Config.settings.defectdojo_engagement_name,
+            help="DefectDojo Engagement Name",
+        )
+        export_options.add_argument(
+            "--defectdojo-push",
+            action="store_true",
+            dest="defectdojo_auto_push",
+            default=Config.settings.defectdojo_auto_push,
+            help="Automatically push findings to DefectDojo",
+        )
+
         # API Options
         api_options = self.add_argument_group(_("API"), _("API_options"))
         api_options.add_argument(

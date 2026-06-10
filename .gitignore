@@ -30,4 +30,10 @@ results.*
 .coverage
 coverage.xml
 
-venv
+venv/
+venv312/
+__pycache__/
+output*.txt
+pytest_output.txt
+report.html
+*.pytest_cache
