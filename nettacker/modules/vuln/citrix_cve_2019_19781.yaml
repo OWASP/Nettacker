@@ -10,6 +10,8 @@ info:
     - http
     - high_severity
     - cve
+    - cve2019
+    - cisa_kev
     - citrix
 
 payloads:
