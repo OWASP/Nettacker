@@ -25,9 +25,6 @@ define_white_list: "হোয়াইট লিস্ট হোস্টকে 
 engine: ইঞ্জিন
 filtered_content: ... [রিপোর্টে পূর্ণ সামগ্রী দেখুন]
 engine_input: ইঞ্জিন ইনপুট বিকল্প
-Invalid_whatcms_api_key: "{0}"
-searching_whatcms_database: whatcms.org এ CMS অনুসন্ধান করা হচ্ছে...
-whatcms_monthly_quota_exceeded: আপনি আপনার মাসিক WhatCMS অনুরোধ কোটা অতিক্রম করেছেন
 finished_module: শেষ মডিউল {0} টার্গেটের দিকে {1} |মডিউল থ্রেড নম্বর {2} {3} থেকে!
 modules_extra_args_help: মডিউল পাস করার জন্য অতিরিক্ত আর্গুমেন্ট যোগ করুন (E.G. --MODULES-ARGR-ARGS "x_api_key=123&xyz_passwd=abc"
 choose_scan_method: --show-all-modules ব্যবহার করে সম্পূর্ণ তালিকা দেখতে {0} মডিউল বেছে নিন
