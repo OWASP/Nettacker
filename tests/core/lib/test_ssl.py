@@ -7,9 +7,9 @@ from nettacker.core.lib.ssl import (
     SslEngine,
     SslLibrary,
     create_tcp_socket,
-    is_weak_cipher_suite,
     is_weak_hash_algo,
     is_weak_ssl_version,
+    is_weak_cipher_suite,
 )
 
 
@@ -463,6 +463,13 @@ class TestSslMethod:
             ("sha1", True),
             ("test_algo", False),
             ("sha256", False),
+            ("md2WithRSAEncryption", True),
+            ("md4WithRSAEncryption", True),
+            ("md5WithRSAEncryption", True),
+            ("sha1WithRSAEncryption", True),
+            ("SHA1WithRSAEncryption", True),
+            ("MD5WithRSAEncryption", True),
+            ("sha256WithRSAEncryption", False),
         ],
     )
     def test_is_weak_hash_algo(self, algo, expected):
