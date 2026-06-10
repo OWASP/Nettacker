@@ -293,7 +293,7 @@ def create_report(options, scan_id):
 
     elif len(report_path_filename) >= 5 and report_path_filename[-4:] == ".csv":
         keys = all_scan_logs[0].keys()
-        with Path(report_path_filename).open("a") as csvfile:
+        with Path(report_path_filename).open("a", encoding="utf-8") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=keys)
             writer.writeheader()
             for log_list in all_scan_logs:
@@ -389,7 +389,7 @@ def create_compare_report(options, scan_id):
             compare_report.write(str(json.dumps(compare_results)) + "\n")
     elif len(fullpath) >= 5 and fullpath[-4:] == ".csv":
         keys = compare_results.keys()
-        with Path(fullpath).open("a") as csvfile:
+        with Path(fullpath).open("a", encoding="utf-8") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=keys)
             if csvfile.tell() == 0:
                 writer.writeheader()

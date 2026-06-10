@@ -435,12 +435,12 @@ def get_results_csv():  # todo: need to fix time format
     data = get_logs_by_scan_id(scan_details.scan_unique_id)
     keys = data[0].keys()
     filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".csv"
-    with open(filename, "w") as report_path_filename:
+    with open(filename, "w", encoding="utf-8") as report_path_filename:
         dict_writer = csv.DictWriter(report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL)
         dict_writer.writeheader()
         for event in data:
             dict_writer.writerow({key: value for key, value in event.items() if key in keys})
-    with open(filename, "r") as report_path_filename:
+    with open(filename, "r", encoding="utf-8") as report_path_filename:
         reader = report_path_filename.read()
     return Response(
         reader,
@@ -518,12 +518,12 @@ def get_logs_csv():
         + now(format="%Y_%m_%d_%H_%M_%S")
         + "".join(random.choice(string.ascii_lowercase) for _ in range(10))
     )
-    with open(filename, "w") as report_path_filename:
+    with open(filename, "w", encoding="utf-8") as report_path_filename:
         dict_writer = csv.DictWriter(report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL)
         dict_writer.writeheader()
         for event in data:
             dict_writer.writerow({key: value for key, value in event.items() if key in keys})
-    with open(filename, "r") as report_path_filename:
+    with open(filename, "r", encoding="utf-8") as report_path_filename:
         reader = report_path_filename.read()
     return Response(
         reader,
