@@ -28,15 +28,19 @@ def start(events):
     normalisedjson = {"name": "Started attack", "children": {}}
     # get data for normalised_json
     for event in events:
-        if event["target"] not in normalisedjson["children"]:
-            normalisedjson["children"].update({event["target"]: {}})
-            normalisedjson["children"][event["target"]].update({event["module_name"]: []})
+        target = event.get("target", "unknown_target")
+        module_name = event.get("module_name", "unknown_module")
+        port = event.get("port", "unknown_port")
+        event_name = event.get("event", "unknown_event")
 
-        if event["module_name"] not in normalisedjson["children"][event["target"]]:
-            normalisedjson["children"][event["target"]].update({event["module_name"]: []})
-        normalisedjson["children"][event["target"]][event["module_name"]].append(
-            f"target: {event['target']}, module_name: {event['module_name']}, port: "
-            f"{event['port']}, event: {event['event']}"
+        if target not in normalisedjson["children"]:
+            normalisedjson["children"].update({target: {}})
+            normalisedjson["children"][target].update({module_name: []})
+
+        if module_name not in normalisedjson["children"][target]:
+            normalisedjson["children"][target].update({module_name: []})
+        normalisedjson["children"][target][module_name].append(
+            f"target: {target}, module_name: {module_name}, port: {port}, event: {event_name}"
         )
     # define a d3_structure_json
     d3_structure = {"name": "Starting attack", "children": []}
