@@ -191,6 +191,7 @@ class DefaultSettings(ConfigBase):
     verbose_mode = False
     scan_compare_id = None
     compare_report_path_filename = ""
+    allowed_upload_extensions = ("txt", "csv", "lst", "list")
 
 
 class Config:

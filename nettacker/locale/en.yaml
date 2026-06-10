@@ -143,3 +143,7 @@ read_report_fail: Failed to read report file {0}
 search_results_end: No more search results
 database_error: Database error!
 error_exclude_all: "Cannot exclude all modules. Please specify individual module names to exclude using -x."
+upload_no_file: no file provided
+upload_no_file_selected: no file selected
+upload_invalid_filename: invalid filename
+upload_file_type_not_allowed: file type not allowed
