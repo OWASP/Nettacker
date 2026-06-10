@@ -165,7 +165,7 @@ payloads:
                       reverse: false
               Flexbe Takeover:
                 response:
-                  condition_type: or
+                  condition_type: and
                   log: Flexbe Takeover detected
                   conditions:
                     content:
@@ -538,7 +538,7 @@ payloads:
                       reverse: false
               Uptimerobot Takeover:
                 response:
-                  condition_type: or
+                  condition_type: and
                   log: Uptimerobot Takeover detected
                   conditions:
                     content:
