@@ -1,0 +1,50 @@
+info:
+  name: solarwinds_whd_version_scan
+  author: Nettacker Team
+  severity: 3
+  description: fetch SolarWinds Web Help Desk version from target
+  reference:
+    - https://www.solarwinds.com/
+  profiles:
+    - scan
+    - http
+    - solarwinds
+    - webhelpdesk
+    - version
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Host: "{target}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/helpdesk/WebObjects/Helpdesk.woa"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+
+            content:
+              regex: "\\?v=([0-9]+_[0-9]+_[0-9]+_[0-9]+)"
+              reverse: false
+
+          log: "SolarWinds WHD version: response_dependent['content']"
