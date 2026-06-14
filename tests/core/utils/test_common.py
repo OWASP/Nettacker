@@ -292,3 +292,20 @@ def test_fuzzer_repeater_perform_unknown_interceptor_alongside_allowed_raises():
 
 def test_allowed_interceptors_registry_is_restricted():
     assert set(common_utils.ALLOWED_INTERCEPTORS) == {"generate_and_replace_md5"}
+
+
+def test_get_languages():
+    from pathlib import Path
+    from nettacker.config import Config
+    from nettacker.core.messages import get_languages
+
+    mock_locale_dir = MagicMock()
+    mock_locale_dir.glob.return_value = [
+        Path("/tmp/locale/en.yaml"),
+        Path("/tmp/locale/fa.yaml"),
+        Path("C:\\locale\\fr.yaml"),  # Windows path format
+    ]
+
+    with patch.object(Config.path, "locale_dir", mock_locale_dir):
+        languages = get_languages()
+        assert sorted(languages) == ["en", "fa", "fr"]
