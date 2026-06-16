@@ -102,7 +102,6 @@ def response_conditions_matched(sub_step, response):
             version_patterns = version_config.get("patterns", [])
             source = version_config.get("source", "content")
             dsl_expression = version_config.get("expression", "")
-            
             # Get the content to search from
             search_content = ""
             if source == "content":
@@ -113,7 +112,6 @@ def response_conditions_matched(sub_step, response):
             
             # Extract version
             detected_version = extract_version_from_content(search_content, version_patterns)
-            
             # Match against DSL expression
             if detected_version and dsl_expression:
                 match_result = version_matches_dsl(detected_version, dsl_expression)
