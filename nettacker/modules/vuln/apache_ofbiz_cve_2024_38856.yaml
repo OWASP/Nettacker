@@ -13,6 +13,7 @@ info:
     - http
     - critical_severity
     - cve
+    - cve2024
     - apache
     - apache_ofbiz
     - cisa_kev
