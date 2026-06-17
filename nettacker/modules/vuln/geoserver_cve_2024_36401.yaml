@@ -16,7 +16,7 @@ info:
     - http
     - critical_severity
     - cve
-    - cve_2024
+    - cve2024
     - geoserver
     - cisa_kev
 

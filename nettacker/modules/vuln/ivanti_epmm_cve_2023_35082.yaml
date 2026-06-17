@@ -13,6 +13,7 @@ info:
     - http
     - high_severity
     - cve
+    - cve2023
     - ivanti
     - ivanti_epmm
     - cisa_kev

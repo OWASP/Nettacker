@@ -10,6 +10,8 @@ info:
     - critical_severity
     - vbulletin
     - cve
+    - cve2019
+    - cisa_kev
 
 payloads:
   - library: http

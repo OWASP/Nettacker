@@ -9,6 +9,8 @@ info:
     - http
     - critical_severity
     - cve
+    - cve2020
+    - cisa_kev
     - f5
 
 payloads:
