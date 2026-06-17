@@ -442,7 +442,8 @@ class DSLMatcher:
     def extract_version_from_response(self, content, patterns):
         if not content or not patterns:
             return None
-        patterns = [patterns]
+        if isinstance(patterns, str):
+            patterns = [patterns]
         for pattern in patterns:
             try:
                 match = re.search(pattern, content, re.IGNORECASE)
