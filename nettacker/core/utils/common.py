@@ -456,21 +456,21 @@ def generate_compare_filepath(scan_id):
 def version_matches_dsl(detected_version, dsl_expression):
     """
     Check if a detected version matches a DSL expression.
-    
+
     Supports various version comparison operators:
     - Range operators: >=, <=, >, <, ==, !=
     - Semantic operators: ~ (tilde), ^ (caret)
     - Logical operators: ||, &&, or, and
     - Range syntax: "1.0 to 2.0", "1.0 - 2.0"
     - Wildcards: *, ?
-    
+
     Args:
         detected_version: Version string detected from target
         dsl_expression: DSL expression to match against
-        
+
     Returns:
         bool: True if version matches the expression
-        
+
     Examples:
         version_matches_dsl("2.4.51", ">=2.4.0, <2.4.54")  # True
         version_matches_dsl("1.2.3", "~1.2.0")  # True (patch-level match)
@@ -482,11 +482,11 @@ def version_matches_dsl(detected_version, dsl_expression):
 def extract_version_from_content(content, patterns):
     """
     Extract version from content using regex patterns.
-    
+
     Args:
         content: String content to search
         patterns: List of regex patterns to try
-        
+
     Returns:
         str: Extracted version or None
     """
