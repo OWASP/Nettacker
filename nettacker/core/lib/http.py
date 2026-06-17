@@ -97,6 +97,8 @@ def response_conditions_matched(sub_step, response):
                 condition_results["responsetime"] = []
         # DSL version matching support
         if condition == "version_match":
+            for key in response["headers"].copy():
+                response["headers"][key.lower()] = response["headers"][key]
             version_config = conditions[condition]
             # Extract version from response using patterns
             version_patterns = version_config.get("patterns", [])
