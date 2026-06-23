@@ -31,3 +31,7 @@ results.*
 coverage.xml
 
 venv
+
+# SQLite database files
+*.sqlite3
+*.db
