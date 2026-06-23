@@ -52,5 +52,5 @@ payloads:
                 reverse: false
 
             content:
-              regex: '(?s)Command:.*"><img src=x onerror=alert\(document\.domain\)>|"><img src=x onerror=alert\(document\.domain\)>.*Command:'
+              regex: "(?=.*Command:)(?=.*><img src=x onerror=alert(document.domain)>)"
               reverse: false
