@@ -269,3 +269,5 @@ no_scan_to_compare: "l'id du scan à comparer est introuvable"
 compare_report_saved: "résultats de la comparaison sauvagardés dans {0}"
 build_compare_report: "élaboration du rapport de comparaison"
 finish_build_report: "rapport de comparaison terminé"
+compare_scans: comparer l'analyse actuelle aux anciennes analyses à l'aide du scan_id
+  unique

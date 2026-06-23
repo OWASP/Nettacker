@@ -216,3 +216,5 @@ no_scan_to_compare: "L'ID della scansione da confrontare non è stato trovato"
 compare_report_saved: "Risultati del confronto salvati in {0}"
 build_compare_report: "Creazione del report di confronto"
 finish_build_report: "Creazione del report di confronto completata"
+compare_scans: confronta la scansione corrente con le scansioni precedenti utilizzando
+  lo scan_id univoco

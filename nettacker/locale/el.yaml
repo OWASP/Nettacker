@@ -265,3 +265,11 @@ no_response: δεν μπορεί να πάρει απάντηση από τον 
 category_framework: "κατηγορία: {0}, πλαίσια: {1} βρέθηκαν!"
 nothing_found: τίποτα δεν βρέθηκε στο {0} στο {1}!
 no_auth: "Δεν βρέθηκε auth στο {0}: {1}"
+compare_scans: συγκρίνετε την τρέχουσα σάρωση με παλιές σαρώσεις χρησιμοποιώντας το
+  μοναδικό scan_id
+compare_report_path_filename: τη διαδρομή αρχείου για την αποθήκευση της αναφοράς
+  compare_scan
+no_scan_to_compare: το scan_id προς σύγκριση δεν βρέθηκε
+compare_report_saved: συγκρίνετε αποτελέσματα που έχουν αποθηκευτεί στο {0}
+build_compare_report: Έκθεση σύγκρισης κτιρίων
+finish_build_report: Έκθεση σύγκρισης τελικού κτιρίου

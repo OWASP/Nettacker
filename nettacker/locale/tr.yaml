@@ -254,3 +254,9 @@ no_response: hedeften cevap alamıyor
 category_framework: "kategori: {0}, çerçeveler: {1} bulundu!"
 nothing_found: "{1} 'de {0} tarihinde hiçbir şey bulunamadı!"
 no_auth: "{0} tarihinde hiçbir kimlik bulunamadı: {1}"
+compare_scans: benzersiz scan_id'yi kullanarak mevcut taramayı eski taramalarla karşılaştırın
+compare_report_path_filename: Compare_scan raporunu saklayacak dosya yolu
+no_scan_to_compare: karşılaştırılacak scan_id bulunamadı
+compare_report_saved: '{0}''da kaydedilen sonuçları karşılaştırın'
+build_compare_report: bina karşılaştırma raporu
+finish_build_report: Bitmiş bina karşılaştırma raporu

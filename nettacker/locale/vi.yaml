@@ -252,3 +252,10 @@ no_response: không thể nhận phản hồi từ mục tiêu
 category_framework: "danh mục: {0}, khung: {1} được tìm thấy!"
 nothing_found: không tìm thấy gì trên {0} trong {1}!
 no_auth: "Không tìm thấy auth trên {0}: {1}"
+compare_scans: so sánh lần quét hiện tại với lần quét cũ bằng cách sử dụng scan_id
+  duy nhất
+compare_report_path_filename: đường dẫn tệp để lưu trữ báo cáo so sánh_scan
+no_scan_to_compare: không tìm thấy scan_id cần so sánh
+compare_report_saved: so sánh kết quả được lưu trong {0}
+build_compare_report: báo cáo so sánh xây dựng
+finish_build_report: Báo cáo so sánh công trình hoàn thiện

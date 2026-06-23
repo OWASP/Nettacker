@@ -252,3 +252,9 @@ no_response: kan geen reactie krijgen van het doelwit
 category_framework: "categorie: {0}, frameworks: {1} gevonden!"
 nothing_found: niets gevonden op {0} in {1}!
 no_auth: "Geen authenticatie gevonden op {0}: {1}"
+compare_scans: vergelijk de huidige scan met oude scans met behulp van de unieke scan_id
+compare_report_path_filename: het bestandspad om het Compare_scan-rapport op te slaan
+no_scan_to_compare: de te vergelijken scan_id is niet gevonden
+compare_report_saved: vergelijk resultaten opgeslagen in {0}
+build_compare_report: bouwvergelijkingsrapport
+finish_build_report: Voltooid bouwvergelijkingsrapport

@@ -279,3 +279,10 @@ no_event_found: nenhum evento encontrado nesse escaneio
 invalid_json_type_to_db: >-
   Tipo inválido de dados JSON para o banco de dados. Pulando a submissão para
   obanco de dados. Dado:{0}
+compare_scans: compare a varredura atual com as varreduras antigas usando o scan_id
+  exclusivo
+compare_report_path_filename: o caminho do arquivo para armazenar o relatório compare_scan
+no_scan_to_compare: o scan_id a ser comparado não encontrado
+compare_report_saved: comparar resultados salvos em {0}
+build_compare_report: construindo relatório de comparação
+finish_build_report: Relatório de comparação de construção concluída

@@ -247,3 +247,10 @@ no_response: عدم توانایی در گرفتن پاسخ از هدف
 category_framework: "دسته: {0}، چارچوب : {1} پیدا شد!"
 nothing_found: "{0} هیچ چیزی در {1} پیدا نشد!!"
 no_auth: احراز هویت در {0}:{1} پیدا نشد
+compare_scans: اسکن فعلی را با اسکن های قدیمی با استفاده از scan_id منحصر به فرد مقایسه
+  کنید
+compare_report_path_filename: مسیر فایل برای ذخیره گزارش compare_scan
+no_scan_to_compare: scan_id مورد مقایسه یافت نشد
+compare_report_saved: مقایسه نتایج ذخیره شده در {0}
+build_compare_report: گزارش مقایسه ساختمان
+finish_build_report: گزارش مقایسه ساختمان تمام شده

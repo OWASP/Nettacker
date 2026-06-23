@@ -212,3 +212,4 @@ no_scan_to_compare: "비교할 scan_id를 찾을 수 없습니다"
 compare_report_saved: "비교 결과가 {0}에 저장되었습니다"
 build_compare_report: "비교 보고서 생성 중"
 finish_build_report: "비교 보고서 생성 완료"
+compare_scans: 고유한 scan_id를 사용하여 현재 스캔과 이전 스캔을 비교합니다.

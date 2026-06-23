@@ -240,3 +240,9 @@ no_response: د هدف څخه ځواب نشي ترلاسه کولی
 category_framework: "وېشنيزه: {0}، چوکاټونه: {1} وموندل شو!"
 nothing_found: په {1} کې {1} کې هیڅ شی ندی موندلی!
 no_auth: "په {0}: {1} کې هیڅ لیک نه موندل شوی"
+compare_scans: اوسنی سکین د ځانګړي سکین_id په کارولو سره زاړه سکینونو سره پرتله کړئ
+compare_report_path_filename: د compare_scan راپور ذخیره کولو لپاره د فایل لاره
+no_scan_to_compare: scan_id د پرتله کولو لپاره ونه موندل شو
+compare_report_saved: په {0} کې خوندي شوي پایلې پرتله کړئ
+build_compare_report: د پرتله کولو راپور جوړول
+finish_build_report: د راپور پرتله کول بشپړ شوي
