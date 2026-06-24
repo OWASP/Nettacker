@@ -1,3 +1,5 @@
+"""Engine for generating interactive D3 tree (v1) HTML graphs from scan events."""
+
 import json
 
 from nettacker.config import Config
@@ -5,10 +7,17 @@ from nettacker.core.messages import messages
 
 
 def escape_for_html_js(json_str: str) -> str:
-    """
-    This is necessary because some payloads have HTML tags for XSS
-    as in waf.yaml, which break the HTML and output no graph. These are unicode escape
-    characters for the same
+    """Escape HTML-sensitive characters in a JSON string for safe embedding in HTML/JS.
+
+    Replaces ``<``, ``>``, and ``&`` with their Unicode escape sequences so that
+    payloads containing HTML tags (e.g. XSS vectors in ``waf.yaml``) do not break
+    the rendered graph.
+
+    Args:
+        json_str: The JSON string to sanitise.
+
+    Returns:
+        The escaped string safe for inline use in HTML and JavaScript.
     """
     return json_str.replace("<", "\\u003C").replace(">", "\\u003E").replace("&", "\\u0026")
 
@@ -47,10 +56,10 @@ def start(events):
                 children_array = [{"name": module_name, "children": [{"name": description}]}]
                 d3_structure["children"].append({"name": target, "children": children_array})
 
+    with open(Config.path.web_static_dir / "report/d3_tree_v1.html") as f:
+        template = f.read()
     data = (
-        open(Config.path.web_static_dir / "report/d3_tree_v1.html")
-        .read()
-        .replace("__data_will_locate_here__", escape_for_html_js(json.dumps(d3_structure)))
+        template.replace("__data_will_locate_here__", escape_for_html_js(json.dumps(d3_structure)))
         .replace("__title_to_replace__", messages("pentest_graphs"))
         .replace("__description_to_replace__", messages("graph_message"))
         .replace("__html_title_to_replace__", messages("nettacker_report"))
