@@ -252,3 +252,5 @@ no_scan_to_compare: "scan_id yang akan dibandingkan tidak ditemukan"
 compare_report_saved: "hasil perbandingan disimpan di {0}"
 build_compare_report: "membuat laporan perbandingan"
 finish_build_report: "selesai membuat laporan perbandingan"
+
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"
