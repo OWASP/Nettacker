@@ -54,7 +54,7 @@ def mime_types():
         ".eot": "application/vnd.ms-fontobject",
         ".epub": "application/epub+zip",
         ".gif": "image/gif",
-        ".htm": ".htm",
+        ".htm": "text/html",
         ".html": "text/html",
         ".ico": "image/x-icon",
         ".ics": "text/calendar",
