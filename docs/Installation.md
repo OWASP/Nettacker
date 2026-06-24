@@ -153,3 +153,124 @@ docker run -it owasp/nettacker /bin/bash
 ```
 
 For usage instructions and examples please read [Usage.md](Usage.md)
+
+Absolutely—here’s your **complete, clean markdown block** matching the style of your existing file (simple headings, bullet points, code blocks).
+
+👉 **Just paste this at the VERY END of `docs/Installation.md`**
+
+
+## Who is this for?
+
+OWASP Nettacker is designed for:
+
+* **Security researchers** who want to automate reconnaissance and vulnerability scanning  
+* **Developers** who want to test and secure their applications  
+* **Beginners** who are learning about penetration testing and security tools  
+
+## Choose the Right Installation Method
+
+You can install OWASP Nettacker in different ways depending on your needs:
+
+* **pip (Recommended for beginners)**  
+  Simple and quick setup for immediate use  
+
+* **pipx**  
+  Installs Nettacker in an isolated environment without affecting system packages  
+
+* **Git Clone + pip**  
+  Best for contributors or users who want the latest source code  
+
+* **Poetry**  
+  Useful for developers managing dependencies and working on the project  
+
+* **Docker**  
+  Ideal if you don’t want to install dependencies on your system  
+
+## Quick Start (TL;DR)
+
+Run Nettacker quickly with minimal setup:
+
+```
+
+python3 -m venv venv
+source venv/bin/activate
+pip install nettacker
+nettacker --help
+
+```
+
+Example scan:
+
+```
+
+nettacker -i example.com -m port_scan
+
+```
+
+## Environment Setup Best Practices
+
+* Always use a **virtual environment** to avoid dependency conflicts  
+* Ensure you are using **Python 3.10 or higher**  
+* Keep your tools updated using:
+```
+
+pip install --upgrade pip
+
+```
+* Avoid mixing global and virtual environment installations  
+
+## Common Setup Mistakes
+
+* Using unsupported Python versions (< 3.10)  
+* Forgetting to activate the virtual environment  
+* Missing required system dependencies  
+* Running commands outside the project directory (when using git clone)  
+
+**Fix:**  
+Reinstall dependencies and ensure the correct environment is active.
+
+## Verification Checklist
+
+After installation, verify everything is working:
+
+* Run:
+```
+
+nettacker --help
+
+```
+or
+```
+
+python3 nettacker.py -h
+
+```
+
+* Confirm no errors are shown  
+* Check Python version:
+```
+
+python3 -V
+
+```
+* Ensure environment is activated (if using venv)
+
+## Next Steps
+
+After successful installation:
+
+* Explore usage options in [Usage.md](Usage.md)  
+* Run your first scan:
+```
+
+nettacker -i example.com -m port_scan
+
+```
+* View available modules and commands:
+```
+
+nettacker --help
+
+```
+
+This will help you get started quickly with OWASP Nettacker.
