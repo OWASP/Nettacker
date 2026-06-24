@@ -1,0 +1,54 @@
+info:
+  name: adminer_cve_2026_25892_vuln
+  author: OWASP Nettacker Team
+  severity: 7.5
+  description: Adminer 4.6.2 - 5.4.1 vulnerable to unauthenticated persistent DoS due to missing origin validation.
+  reference:
+    - https://github.com/vrana/adminer/security/advisories/GHSA-q4f2-39gr-45jh
+    - https://github.com/vrana/adminer/commit/21d3a3150388677b18647d68aec93b7850e457d3
+  profiles:
+    - vuln
+    - http
+    - dos
+    - adminer
+    - cve2026
+    - cve
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        allow_redirects: true
+        ssl: false
+        headers:
+          User-Agent: "{user_agent}"
+          Host: "{target}"
+          Accept-Language: en-US,en;q=0.5
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{path}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - http
+                - https
+              ports:
+                - 80
+                - 443
+              path:
+                - "/adminer.php"
+                - "/editor.php"
+                - "/adminer/"
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: '(?s)(?=.*(Adminer</title>|Adminer</a>))(?=.*version=(4\.6\.[2-9]|4\.[7-9]\.\d+|5\.[0-3]\.\d+|5\.4\.[01]))'
+              reverse: false
