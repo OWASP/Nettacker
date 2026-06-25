@@ -66,6 +66,10 @@ def build_compare_report(compare_results):
             "build_report",
         )
     except ModuleNotFoundError:
+        from nettacker.core.alert import error
+        error("Required module not found. Please check your installation.")
+        import sys
+        sys.exit(1)
         die_failure(_("graph_module_unavailable").format("compare_report"))
 
     log.info(_("finish_build_report"))
