@@ -33,10 +33,10 @@ def test_build_graph_success(mock_import_module):
 
 @patch("nettacker.core.graph.die_failure")
 @patch("nettacker.core.graph.importlib.import_module", side_effect=ModuleNotFoundError)
-@pytest.mark.xfail(reason="It will hit an UnboundLocalError")
 def test_build_graph_module_not_found(mock_import_module, mock_die_failure):
-    build_graph("missing_graph", [])
+    result = build_graph("missing_graph", [])
     mock_die_failure.assert_called_once()
+    assert result is None
 
 
 @patch("nettacker.core.graph.importlib.import_module")
@@ -49,10 +49,10 @@ def test_build_compare_report_success(mock_import_module):
 
 @patch("nettacker.core.graph.die_failure")
 @patch("nettacker.core.graph.importlib.import_module", side_effect=ModuleNotFoundError)
-@pytest.mark.xfail(reason="It will hit an UnboundLocalError")
 def test_build_compare_report_module_not_found(mock_import_module, mock_die_failure):
-    build_compare_report({"some": "results"})
+    result = build_compare_report({"some": "results"})
     mock_die_failure.assert_called_once()
+    assert result is None
 
 
 @patch("nettacker.core.graph.merge_logs_to_list", return_value=["event1", "event2"])
