@@ -1031,6 +1031,10 @@ payloads:
                 regex: \d{{1,5}}
                 reverse: false
 
+              elasticsearch:
+                regex: "X-elastic-product:\\s*Elasticsearch|\"reason\":\"text is empty \\(possibly HTTP/\\d+\\.\\d+\\)\""
+                reverse: false
+              
               ftp: &ftp
                 regex: "220-You are user number|530 USER and PASS required|Invalid command: try being more creative|220 \\S+ FTP (Service|service|Server|server).*?(530 Please login with USER and PASS\\.\\s*)+|220 FTP Server ready|Directory status|Service closing control connection|Requested file action|Connection closed; transfer aborted|Directory not empty|220 Welcome to the ftp service\\r\\n"
                 reverse: false
