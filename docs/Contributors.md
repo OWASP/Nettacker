@@ -31,6 +31,10 @@ People who helped to create the OWASP Nettacker. You can see the complete list o
 * [Pinaki Mondal aka 0xInfection](https://github.com/0xInfection) 
 * [Divyansh Jain](https://github.com/itsdivyanshjain)
 * [Akshay Behl](https://github.com/Captain-T2004)
+* [Aryan Kumar](mailto:aryansinghkumar786@gmail.com)
+
+* [Aryan Kumar](mailto:aryansinghkumar786@gmail.com)
+
 * **[FULL LIST](https://github.com/OWASP/Nettacker/graphs/contributors)**
 
 
