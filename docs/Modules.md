@@ -212,6 +212,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**http_options_enabled_vuln**' – check if OPTIONS method is enabled on the web server
 - '**ivanti_epmm_cve_2023_35082_vuln**' – check the target for Ivanti EPMM CVE-2023-35082 vulnerability
 - '**ivanti_ics_cve_2023_46805_vuln**' – check the target for Ivanti ICS CVE-2023-46805 vulnerability
+- '**jenkins_cve_2024_23897_vuln**' – check the target for Jenkins CVE-2024-23897 arbitrary file read vulnerability via @file argument parsing.
 - '**joomla_cve_2023_23752_vuln**' – check the target for Joomla CVE-2023-23752 information disclosure
 - '**justwriting_cve_2021_41878_vuln**' – check the target for JustWriting CVE-2021-41878
 - '**langflow_cve_2025_3248_vuln**' - check the target for Langflow CVE-2025-3248 vulnerability
