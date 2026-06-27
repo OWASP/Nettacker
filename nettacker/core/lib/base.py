@@ -122,6 +122,13 @@ class BaseEngine(ABC):
     ):
         # Remove sensitive keys from headers before submitting to DB
         event = remove_sensitive_header_keys(event)
+        if "stop_at_first_success" in event["response"]:
+            event_name = event["response"]["stop_at_first_success"]
+            existing = find_temp_events(
+                target, module_name, scan_id, event_name, port=event.get("ports", "")
+            )
+            if existing:
+                return False
         if "save_to_temp_events_only" in event.get("response", ""):
             submit_temp_logs_to_db(
                 {
@@ -130,6 +137,21 @@ class BaseEngine(ABC):
                     "module_name": module_name,
                     "scan_id": scan_id,
                     "event_name": event["response"]["save_to_temp_events_only"],
+                    "port": event.get("ports", ""),
+                    "event": event,
+                    "data": response,
+                }
+            )
+        if event["response"]["conditions_results"] and "stop_at_first_success" in event.get(
+            "response", ""
+        ):
+            submit_temp_logs_to_db(
+                {
+                    "date": datetime.now(),
+                    "target": target,
+                    "module_name": module_name,
+                    "scan_id": scan_id,
+                    "event_name": event["response"]["stop_at_first_success"],
                     "port": event.get("ports", ""),
                     "event": event,
                     "data": response,
@@ -270,6 +292,13 @@ class BaseEngine(ABC):
         """Engine entry point."""
         backup_method = copy.deepcopy(sub_step["method"])
         backup_response = copy.deepcopy(sub_step["response"])
+        if "stop_at_first_success" in backup_response:
+            event_name = backup_response["stop_at_first_success"]
+            existing = find_temp_events(
+                target, module_name, scan_id, event_name, port=sub_step.get("ports", "")
+            )
+            if existing:
+                return False
         del sub_step["method"]
         del sub_step["response"]
 
