@@ -103,14 +103,16 @@ def test_graphs_empty(mock_graphs):
 
 @patch(
     "nettacker.core.app.Nettacker.load_profiles",
-    return_value={"scan": {}, "brute": {}, "custom": {}},
+    return_value={"scan": ["a_scan"], "brute": ["b_brute"], "custom": ["c_vuln"]},
 )
 def test_profiles(mock_profiles):
     result = profiles()
-    assert "checkbox-scan" in result
+    assert "checkbox-scan-profile" in result
     assert 'label-success">scan</a>' in result
+    assert "checkbox-brute-profile" in result
     assert 'label-warning">brute</a>' in result
-    assert 'label-default">custom</a>' in result
+    assert "checkbox-vuln-profile" in result
+    assert 'label-danger">custom</a>' in result
 
 
 @patch(
@@ -119,13 +121,13 @@ def test_profiles(mock_profiles):
 )
 def test_scan_methods(mock_methods):
     result = scan_methods()
-    assert "checkbox-scan-module" in result
+    assert "checkbox-sm-scan-module" in result
     assert 'label-success">tcp_scan</a>' in result
-    assert "checkbox-brute-module" in result
+    assert "checkbox-sm-brute-module" in result
     assert 'label-warning">ssh_brute</a>' in result
-    assert "checkbox-vuln-module" in result
+    assert "checkbox-sm-vuln-module" in result
     assert 'label-danger">http_vuln</a>' in result
-    assert "all" not in result
+    assert 'id="all"' not in result
 
 
 @patch("nettacker.core.messages.get_languages", return_value=["en", "fr", "es", "de"])

@@ -350,20 +350,30 @@ $(document).ready(function () {
     // profiles
     var p = [];
     var n = 0;
-    $("#profiles input:checked").each(function () {
-      if (this.id !== "all_profiles") {
+    $("#profiles input[type='checkbox']:checked").each(function () {
+      if (
+        this.id !== "all_profiles" &&
+        !$(this).hasClass("check-all-category")
+      ) {
         p[n] = this.id;
         n += 1;
       }
     });
+    // Deduplicate profiles as they might appear in multiple categories
+    p = Array.from(new Set(p));
     var profiles = p.join(",");
 
     // scan_methods
     n = 0;
     sm = [];
-    $("#selected_modules input:checked").each(function () {
-      sm[n] = this.id;
-      n += 1;
+    $("#selected_modules input[type='checkbox']:checked").each(function () {
+      if (
+        this.id !== "all" &&
+        !$(this).hasClass("check-all-sm-category")
+      ) {
+        sm[n] = this.id;
+        n += 1;
+      }
     });
     var selected_modules = sm.join(",");
     // language
@@ -666,48 +676,137 @@ $(document).ready(function () {
     $(".checkbox").prop("checked", $(this).prop("checked"));
   });
 
-  $(".checkbox-brute").click(function () {
-    $(".checkbox-brute-module").prop("checked", $(this).prop("checked"));
+  $(document).on("change", "#profiles input[type='checkbox']", function () {
+    if ($(this).hasClass("check-all-category") || this.id === "all_profiles") {
+      return;
+    }
+    var modules = $(this).data("modules").split(",");
+    var isChecked = $(this).prop("checked");
+    for (var i = 0; i < modules.length; i++) {
+      var moduleId = modules[i];
+      if (isChecked) {
+        $("#" + moduleId).prop("checked", true);
+      } else {
+        // Only uncheck if no other checked profile includes this module
+        var stillNeeded = false;
+        $("#profiles input[type='checkbox']:checked").each(function () {
+          if (
+            this.id !== "all_profiles" &&
+            !$(this).hasClass("check-all-category")
+          ) {
+            var otherModules = $(this).data("modules").split(",");
+            if (otherModules.indexOf(moduleId) !== -1) {
+              stillNeeded = true;
+              return false;
+            }
+          }
+        });
+        if (!stillNeeded) {
+          $("#" + moduleId).prop("checked", false);
+        }
+      }
+    }
   });
 
-  $(".checkbox-scan").click(function () {
-    $(".checkbox-scan-module").prop("checked", $(this).prop("checked"));
+  $(".checkbox-brute-profile").click(function () {
+    if (this.id === "brute") {
+      $(".checkbox-sm-brute-module").prop("checked", $(this).prop("checked"));
+    }
   });
 
-  $(".checkbox-vulnerability").click(function () {
-    $(".checkbox-vuln-module").prop("checked", $(this).prop("checked"));
+  $(".checkbox-scan-profile").click(function () {
+    if (this.id === "scan") {
+      $(".checkbox-sm-scan-module").prop("checked", $(this).prop("checked"));
+    }
+  });
+
+  $(".checkbox-vuln-profile").click(function () {
+    if (this.id === "vulnerability" || this.id === "vuln") {
+      $(".checkbox-sm-vuln-module").prop("checked", $(this).prop("checked"));
+    }
   });
 
   $(".check-all-profiles").click(function () {
-    $("#profiles input[type='checkbox']").not(this).prop("checked", $(this).prop("checked"));
+    var isChecked = $(this).prop("checked");
+    $("#profiles input[type='checkbox']")
+      .not(this)
+      .not(".check-all-category")
+      .prop("checked", isChecked)
+      .trigger("change");
+    $(".check-all-category").prop("checked", isChecked);
+  });
+
+  $(document).on("change", ".check-all-category", function () {
+    var category = $(this).data("category");
+    var isChecked = $(this).prop("checked");
+    $(".checkbox-" + category + "-profile")
+      .prop("checked", isChecked)
+      .trigger("change");
+  });
+
+  $(document).on("show.bs.collapse", "#profile_accordion", function (e) {
+    $(e.target)
+      .prev(".panel-heading")
+      .find(".fa")
+      .removeClass("fa-chevron-right")
+      .addClass("fa-chevron-down");
+  });
+
+  $(document).on("hide.bs.collapse", "#profile_accordion", function (e) {
+    $(e.target)
+      .prev(".panel-heading")
+      .find(".fa")
+      .removeClass("fa-chevron-down")
+      .addClass("fa-chevron-right");
   });
 
   $(".check-all-scans").click(function () {
-    $(".checkbox-brute-module").prop("checked", $(this).prop("checked"));
-    $(".checkbox-scan-module").prop("checked", $(this).prop("checked"));
-    $(".checkbox-vuln-module").prop("checked", $(this).prop("checked"));
+    $("#selected_modules input[type='checkbox']").not(this).prop("checked", $(this).prop("checked"));
+    $(".check-all-sm-category").prop("checked", $(this).prop("checked"));
   });
 
-  $(".checkbox-vuln-module").click(function () {
+  $(document).on("change", ".check-all-sm-category", function () {
+    var category = $(this).data("category");
+    $(".checkbox-sm-" + category + "-module").prop("checked", $(this).prop("checked"));
+  });
+
+  $(document).on("show.bs.collapse", "#scan_methods_accordion", function (e) {
+    $(e.target)
+      .prev(".panel-heading")
+      .find(".fa")
+      .removeClass("fa-chevron-right")
+      .addClass("fa-chevron-down");
+  });
+
+  $(document).on("hide.bs.collapse", "#scan_methods_accordion", function (e) {
+    $(e.target)
+      .prev(".panel-heading")
+      .find(".fa")
+      .removeClass("fa-chevron-down")
+      .addClass("fa-chevron-right");
+  });
+
+  $(document).on("click", ".checkbox-sm-vuln-module", function () {
     if (!$(this).is(":checked")) {
       $(".checkAll").prop("checked", false);
-      $(".checkbox-vulnerability").prop("checked", false);
+      $("#vulnerability").prop("checked", false);
+      $("#vuln").prop("checked", false);
       $(".check-all-scans").prop("checked", false);
     }
   });
 
-  $(".checkbox-scan-module").click(function () {
+  $(document).on("click", ".checkbox-sm-scan-module", function () {
     if (!$(this).is(":checked")) {
       $(".checkAll").prop("checked", false);
-      $(".checkbox-scan").prop("checked", false);
+      $("#scan").prop("checked", false);
       $(".check-all-scans").prop("checked", false);
     }
   });
 
-  $(".checkbox-brute-module").click(function () {
+  $(document).on("click", ".checkbox-sm-brute-module", function () {
     if (!$(this).is(":checked")) {
       $(".checkAll").prop("checked", false);
-      $(".checkbox-brute").prop("checked", false);
+      $("#brute").prop("checked", false);
       $(".check-all-scans").prop("checked", false);
     }
   });
