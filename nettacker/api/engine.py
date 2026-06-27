@@ -5,6 +5,7 @@ import os
 import random
 import string
 import time
+import uuid
 from threading import Thread
 from types import SimpleNamespace
 
@@ -50,6 +51,11 @@ log = logger.get_logger()
 
 app = Flask(__name__, template_folder=str(Config.path.web_static_dir))
 app.config.from_object(__name__)
+app.config["MAX_CONTENT_LENGTH"] = (
+    10 * 1024 * 1024
+)  # https://flask.palletsprojects.com/en/stable/patterns/fileuploads/
+FILE_UPLOAD_PARAMS = ("targets_list", "passwords_list", "usernames_list", "read_from_file")
+uploaded_files = {}
 
 nettacker_path_config = Config.path
 nettacker_application_config = Config.settings.as_dict()
@@ -236,6 +242,35 @@ def sanitize_report_path_filename(report_path_filename):
     return safe_report_path
 
 
+def allowed_file(filename):
+    return (
+        "." in filename
+        and filename.rsplit(".", 1)[1].lower() in Config.settings.allowed_upload_extensions
+    )
+
+
+@app.route("/upload/file", methods=["POST"])
+def upload_file():
+    api_key_is_valid(app, flask_request)
+    param_name = get_value(flask_request, "param_name")
+    if "file" not in flask_request.files:
+        return jsonify(structure(status="error", msg=_("upload_no_file"))), 400
+    uploaded = flask_request.files["file"]
+    if uploaded.filename == "":
+        return jsonify(structure(status="error", msg=_("upload_no_file_selected"))), 400
+    if not allowed_file(uploaded.filename):
+        return jsonify(structure(status="error", msg=_("upload_file_type_not_allowed"))), 400
+    filename = secure_filename(uploaded.filename)
+    if not filename:
+        return jsonify(structure(status="error", msg=_("upload_invalid_filename"))), 400
+    unique_name = f"{uuid.uuid4().hex}_{filename}"
+    tmp_dir = nettacker_path_config.tmp_dir
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    uploaded.save(str(tmp_dir / unique_name))
+    uploaded_files[param_name] = str(tmp_dir / unique_name)
+    return jsonify(structure(status="ok", msg=unique_name)), 200
+
+
 @app.route("/new/scan", methods=["GET", "POST"])
 def new_scan():
     """
@@ -253,6 +288,12 @@ def new_scan():
     if not report_path_filename:
         return jsonify(structure(status="error", msg="Invalid report filename")), 400
     form_values["report_path_filename"] = str(report_path_filename)
+
+    # Ensuring that these parameters cannot be set by the user without a file upload
+    for key in FILE_UPLOAD_PARAMS:
+        form_values.pop(key, None)
+    form_values.update(uploaded_files)
+
     for key in nettacker_application_config:
         if key not in form_values:
             form_values[key] = nettacker_application_config[key]

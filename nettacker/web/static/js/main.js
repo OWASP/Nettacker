@@ -320,6 +320,33 @@ $(document).ready(function () {
     }
   });
 
+  // file upload handler
+  $.each(["targets_list", "usernames_list", "passwords_list", "read_from_file"], function(_, param) {
+    $("#" + param + "_file").change(function () {
+      var fileInput = this;
+      if (!fileInput.files.length) return;
+      var formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      formData.append("param_name", param);
+      var statusSpan = $("#" + param + "_status");
+      statusSpan.text("Uploading...");
+      $.ajax({
+        type: "POST",
+        url: "/upload/file",
+        data: formData,
+        processData: false,
+        contentType: false,
+      })
+        .done(function () {
+          statusSpan.text("Uploaded: " + fileInput.files[0].name);
+        })
+        .fail(function (jqXHR) {
+          statusSpan.text("Upload failed");
+          fileInput.value = "";
+        });
+    });
+  });
+  
   // submit new scan
   $("#submit_new_scan").click(function () {
     // set variables
