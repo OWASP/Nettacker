@@ -68,4 +68,4 @@ def messages(msg_id):
         the message content in the selected language if
         message found otherwise return message in English
     """
-    return message_cache[str(msg_id)]
+    return message_cache.get(str(msg_id), str(msg_id))
