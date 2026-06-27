@@ -44,3 +44,6 @@ payloads:
             status_code:
               regex: 200|403|401
               reverse: false
+            content:
+              regex: (?i)(Cloudflare|Incapsula|Sucuri|Access Denied|Webroot|Error 403 Forbidden)
+              reverse: true
