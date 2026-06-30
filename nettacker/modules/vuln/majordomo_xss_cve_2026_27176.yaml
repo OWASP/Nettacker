@@ -53,5 +53,5 @@ payloads:
 
             content:
               regex: |
-                (?=.*Command:)(?=.*\">\x3Cimg src=x onerror=alert\\(document\\.domain\\)\x3E)
+                (?s)(?=.*Command:)(?=.*\">\x3Cimg src=x onerror=alert\(document\.domain\)\x3E)
               reverse: false
