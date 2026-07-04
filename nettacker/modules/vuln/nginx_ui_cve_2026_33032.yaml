@@ -1,7 +1,7 @@
 info:
   name: nginx_ui_cve_2026_33032_vuln
   author: Nettacker Team
-  severity: critical
+  severity: 9.8
   description: |
     Detects a Broken Access Control vulnerability in Nginx UI versions prior
     to 2.3.4. The `/mcp_message` endpoint processes unauthenticated JSON-RPC
@@ -21,6 +21,7 @@ info:
     - nginx_ui
     - mcp
     - unauth
+    - critical_severity
 
 payloads:
   - library: http
