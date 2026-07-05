@@ -21,28 +21,28 @@ class TestSmtpMethod(TestCase):
     @patch("nettacker.core.lib.smtp.SmtpLibrary.client")
     def test_brute_force_password(self, mock_smtp_client):
         library = SmtpLibrary()
-        HOST = "mail.example.com"
-        PORT = SMTP_SESSION_PORT
-        USERNAME = "admin"
-        PASSWORD = "Password@123"
-        TIMEOUT = 5
+        host = "mail.example.com"
+        port = SMTP_SESSION_PORT
+        username = "admin"
+        password = "Password@123"
+        timeout = 5
 
         mock_smtp_client.return_value = MockSmtpConnectionObject()
 
         self.assertEqual(
             library.brute_force(
-                host=HOST,
-                port=PORT,
-                username=USERNAME,
-                password=PASSWORD,
-                timeout=TIMEOUT,
+                host=host,
+                port=port,
+                username=username,
+                password=password,
+                timeout=timeout,
             ),
             {
-                "host": HOST,
-                "port": PORT,
-                "username": USERNAME,
-                "password": PASSWORD,
+                "host": host,
+                "port": port,
+                "username": username,
+                "password": password,
             },
         )
 
-        mock_smtp_client.assert_called_once_with(HOST, PORT, timeout=TIMEOUT)
+        mock_smtp_client.assert_called_once_with(host, port, timeout=timeout)
