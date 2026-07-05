@@ -17,6 +17,7 @@ info:
     - critical_severity
     - cve
     - cve2025
+    - cisa_kev
     - langflow
     - rce
 
