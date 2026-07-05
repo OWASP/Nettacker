@@ -321,6 +321,7 @@ $(document).ready(function () {
   });
 
   // file upload handler
+  var uploaded_tokens = {};
   $.each(["targets_list", "usernames_list", "passwords_list", "read_from_file"], function(_, param) {
     $("#" + param + "_file").change(function () {
       var fileInput = this;
@@ -337,10 +338,12 @@ $(document).ready(function () {
         processData: false,
         contentType: false,
       })
-        .done(function () {
+        .done(function (res) {
+          uploaded_tokens[param] = res.msg;
           statusSpan.text("Uploaded: " + fileInput.files[0].name);
         })
         .fail(function (jqXHR) {
+          delete uploaded_tokens[param];
           statusSpan.text("Upload failed");
           fileInput.value = "";
         });
@@ -443,6 +446,8 @@ $(document).ready(function () {
         data[key] = tmp_data[key];
       }
     }
+
+    $.extend(data, uploaded_tokens);
 
     $.ajax({
       type: "POST",

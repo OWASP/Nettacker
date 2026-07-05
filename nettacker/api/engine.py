@@ -55,7 +55,6 @@ app.config["MAX_CONTENT_LENGTH"] = (
     10 * 1024 * 1024
 )  # https://flask.palletsprojects.com/en/stable/patterns/fileuploads/
 FILE_UPLOAD_PARAMS = ("targets_list", "passwords_list", "usernames_list", "read_from_file")
-uploaded_files = {}
 
 nettacker_path_config = Config.path
 nettacker_application_config = Config.settings.as_dict()
@@ -252,7 +251,6 @@ def allowed_file(filename):
 @app.route("/upload/file", methods=["POST"])
 def upload_file():
     api_key_is_valid(app, flask_request)
-    param_name = get_value(flask_request, "param_name")
     if "file" not in flask_request.files:
         return jsonify(structure(status="error", msg=_("upload_no_file"))), 400
     uploaded = flask_request.files["file"]
@@ -267,7 +265,6 @@ def upload_file():
     tmp_dir = nettacker_path_config.tmp_dir
     tmp_dir.mkdir(parents=True, exist_ok=True)
     uploaded.save(str(tmp_dir / unique_name))
-    uploaded_files[param_name] = str(tmp_dir / unique_name)
     return jsonify(structure(status="ok", msg=unique_name)), 200
 
 
@@ -289,10 +286,17 @@ def new_scan():
         return jsonify(structure(status="error", msg="Invalid report filename")), 400
     form_values["report_path_filename"] = str(report_path_filename)
 
-    # Ensuring that these parameters cannot be set by the user without a file upload
+    uploaded_paths = []
     for key in FILE_UPLOAD_PARAMS:
-        form_values.pop(key, None)
-    form_values.update(uploaded_files)
+        token = form_values.get(key)
+        if not token:
+            form_values.pop(key, None)
+            continue
+        file_path = nettacker_path_config.tmp_dir / secure_filename(token)
+        if not file_path.is_file():
+            return jsonify(structure(status="error", msg="Uploaded file not found")), 400
+        form_values[key] = str(file_path)
+        uploaded_paths.append(file_path)
 
     for key in nettacker_application_config:
         if key not in form_values:
@@ -304,7 +308,11 @@ def new_scan():
         ]
     # Handle service discovery
     form_values["skip_service_discovery"] = form_values.get("skip_service_discovery", "") == "true"
-    nettacker_app = Nettacker(api_arguments=SimpleNamespace(**form_values))
+    try:
+        nettacker_app = Nettacker(api_arguments=SimpleNamespace(**form_values))
+    finally:
+        for file_path in uploaded_paths:
+            file_path.unlink(missing_ok=True)
     app.config["OWASP_NETTACKER_CONFIG"]["options"] = nettacker_app.arguments
     thread = Thread(target=nettacker_app.run)
     thread.start()
