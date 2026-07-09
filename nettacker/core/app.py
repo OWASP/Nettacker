@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import shutil
 import socket
 import sys
 from threading import Thread
@@ -11,16 +12,16 @@ from nettacker import logger
 from nettacker.config import Config, version_info
 from nettacker.core.arg_parser import ArgParser
 from nettacker.core.die import die_failure
-from nettacker.core.graph import create_report, create_compare_report
+from nettacker.core.graph import create_compare_report, create_report
 from nettacker.core.ip import (
-    get_ip_range,
     generate_ip_range,
-    is_single_ipv4,
-    is_ipv4_range,
+    get_ip_range,
     is_ipv4_cidr,
-    is_single_ipv6,
-    is_ipv6_range,
+    is_ipv4_range,
     is_ipv6_cidr,
+    is_ipv6_range,
+    is_single_ipv4,
+    is_single_ipv6,
 )
 from nettacker.core.messages import messages as _
 from nettacker.core.module import Module
@@ -65,7 +66,7 @@ class Nettacker(ArgParser):
         log.reset_color()
 
     def check_dependencies(self):
-        if sys.platform not in {"darwin", "linux"}:
+        if sys.platform not in {"darwin", "freebsd13", "freebsd14", "freebsd15", "linux"}:
             die_failure(_("error_platform"))
 
         try:
@@ -76,8 +77,13 @@ class Nettacker(ArgParser):
 
         if Config.db.engine == "sqlite":
             try:
-                if not Config.path.database_file.exists():
-                    sqlite_create_tables()
+                if not Config.path.new_database_file.exists():
+                    Config.path.new_database_file.parent.mkdir(parents=True, exist_ok=True)
+                    if Config.path.old_database_file.exists():
+                        shutil.copy(Config.path.old_database_file, Config.path.new_database_file)
+                        log.warn("Database files migrated from .data to .nettacker ...")
+                    else:
+                        sqlite_create_tables()
             except PermissionError:
                 die_failure("cannot access the directory {0}".format(Config.path.home_dir))
         elif Config.db.engine == "mysql":
@@ -152,9 +158,7 @@ class Nettacker(ArgParser):
 
             for target in copy.deepcopy(self.arguments.targets):
                 for row in find_events(target, "subdomain_scan", scan_id):
-                    for sub_domain in json.loads(row.json_event)["response"]["conditions_results"][
-                        "content"
-                    ]:
+                    for sub_domain in json.loads(row)["response"]["conditions_results"]["content"]:
                         if sub_domain not in self.arguments.targets:
                             self.arguments.targets.append(sub_domain)
         # icmp_scan

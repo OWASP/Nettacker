@@ -37,5 +37,5 @@ payloads:
           condition_type: or
           conditions:
             content:
-              regex: \/(?i)\bthemes\b\/(.+?)\/
+              regex: (?i)\/\bthemes\b\/(.+?)\/
               reverse: false

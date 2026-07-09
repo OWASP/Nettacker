@@ -8,7 +8,6 @@ info:
     - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-41878
   profiles:
     - vuln
-    - vulnerability
     - http
     - medium_severity
     - cve2021
@@ -44,7 +43,7 @@ payloads:
             status_code:
               regex: '200'
               reverse: false
-            header:
+            headers:
               Content-type: 
                 regex: text/html
                 reverse: false

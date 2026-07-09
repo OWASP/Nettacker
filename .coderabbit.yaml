@@ -1,0 +1,22 @@
+chat:
+  auto_reply: true
+code_generation:
+  docstrings:
+    language: en-US
+early_access: true
+language: en-US
+reviews:
+  assess_linked_issues: true
+  auto_apply_labels: false
+  auto_review:
+    enabled: true
+    drafts: true
+  collapse_walkthrough: false
+  high_level_summary: true
+  high_level_summary_in_walkthrough: true
+  labeling_instructions: []
+  poem: false
+  profile: chill
+  request_changes_workflow: false
+  review_status: true
+  sequence_diagrams: false

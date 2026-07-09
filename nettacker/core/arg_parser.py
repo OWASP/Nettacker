@@ -4,16 +4,17 @@ from argparse import ArgumentParser
 
 import yaml
 
-from nettacker.config import version_info, Config
+from nettacker import all_module_severity_and_desc
+from nettacker.config import Config, version_info
 from nettacker.core.die import die_failure, die_success
 from nettacker.core.ip import (
+    generate_ip_range,
+    is_ipv4_cidr,
+    is_ipv4_range,
+    is_ipv6_cidr,
+    is_ipv6_range,
     is_single_ipv4,
     is_single_ipv6,
-    is_ipv4_cidr,
-    is_ipv6_range,
-    is_ipv6_cidr,
-    is_ipv4_range,
-    generate_ip_range,
 )
 from nettacker.core.messages import messages as _
 from nettacker.core.template import TemplateLoader
@@ -80,7 +81,6 @@ class ArgParser(ArgumentParser):
             an array of all module names
         """
         # Search for Modules
-
         module_names = {}
         for module_name in sorted(Config.path.modules_dir.glob("**/*.yaml")):
             library = str(module_name).split("/")[-1].split(".")[0]
@@ -88,7 +88,11 @@ class ArgParser(ArgumentParser):
             module = f"{library}_{category}"
             contents = yaml.safe_load(TemplateLoader(module).open().split("payload:")[0])
             module_names[module] = contents["info"] if full_details else None
-
+            info = contents.get("info", {})
+            all_module_severity_and_desc[module] = {
+                "severity": info.get("severity", 0),
+                "desc": info.get("description", ""),
+            }
             if len(module_names) == limit:
                 module_names["..."] = {}
                 break
@@ -255,6 +259,14 @@ class ArgParser(ArgumentParser):
             help=_("exclude_scan_method").format(exclude_modules),
         )
         method_options.add_argument(
+            "-X",
+            "--exclude-ports",
+            action="store",
+            dest="excluded_ports",
+            default=Config.settings.excluded_ports,
+            help=_("exclude_ports"),
+        )
+        method_options.add_argument(
             "-u",
             "--usernames",
             action="store",
@@ -295,6 +307,13 @@ class ArgParser(ArgumentParser):
             help=_("port_separator"),
         )
         method_options.add_argument(
+            "--schema",
+            action="store",
+            dest="schema",
+            default=Config.settings.schema,
+            help=_("schema_selector"),
+        )
+        method_options.add_argument(
             "--user-agent",
             action="store",
             dest="user_agent",
@@ -308,7 +327,7 @@ class ArgParser(ArgumentParser):
             dest="timeout",
             default=Config.settings.timeout,
             type=float,
-            help=_("read_passwords"),
+            help=_("timeout"),
         )
         method_options.add_argument(
             "-w",
@@ -414,6 +433,14 @@ class ArgParser(ArgumentParser):
             default=Config.settings.read_from_file,
             dest="read_from_file",
             help=_("user_wordlist"),
+        )
+        method_options.add_argument(
+            "-H",
+            "--add-http-header",
+            action="append",
+            default=Config.settings.http_header,
+            dest="http_header",
+            help=_("http_header"),
         )
 
         # API Options
@@ -641,21 +668,44 @@ class ArgParser(ArgumentParser):
                     options.selected_modules.remove(excluded_module)
         # Check port(s)
         if options.ports:
-            tmp_ports = []
+            tmp_ports = set()
             for port in options.ports.split(","):
                 try:
                     if "-" in port:
                         for port_number in range(
                             int(port.split("-")[0]), int(port.split("-")[1]) + 1
                         ):
-                            if port_number not in tmp_ports:
-                                tmp_ports.append(port_number)
+                            tmp_ports.add(port_number)
                     else:
-                        if int(port) not in tmp_ports:
-                            tmp_ports.append(int(port))
+                        tmp_ports.add(int(port))
                 except Exception:
                     die_failure(_("ports_int"))
-            options.ports = tmp_ports
+            options.ports = list(tmp_ports)
+        # Check schema(s)
+        if options.schema:
+            tmp_schema = {schema.strip().lower() for schema in options.schema.split(",")}
+            allowed_schema = {"http", "https"}
+
+            if tmp_schema - allowed_schema:
+                die_failure(_("invalid_schema"))
+            else:
+                options.schema = list(tmp_schema)
+        # Check for excluded ports
+        if options.excluded_ports:
+            tmp_excluded_ports = set()
+
+            for excluded_port in options.excluded_ports.split(","):
+                try:
+                    if "-" in excluded_port:
+                        for excluded_port_number in range(
+                            int(excluded_port.split("-")[0]), int(excluded_port.split("-")[1]) + 1
+                        ):
+                            tmp_excluded_ports.add(excluded_port_number)
+                    else:
+                        tmp_excluded_ports.add(int(excluded_port))
+                except Exception:
+                    die_failure(_("ports_int"))
+            options.excluded_ports = list(tmp_excluded_ports)
 
         if options.user_agent == "random_user_agent":
             options.user_agents = open(Config.path.user_agents_file).read().split("\n")

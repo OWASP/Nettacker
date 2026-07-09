@@ -8,22 +8,21 @@ import time
 from threading import Thread
 from types import SimpleNamespace
 
-from flask import Flask, jsonify
+from flask import Flask, Response, abort, jsonify, make_response, render_template
 from flask import request as flask_request
-from flask import render_template, abort, Response, make_response
 from werkzeug.serving import WSGIRequestHandler
 from werkzeug.utils import secure_filename
 
 from nettacker import logger
 from nettacker.api.core import (
-    get_value,
+    api_key_is_valid,
     get_file,
-    mime_types,
-    scan_methods,
-    profiles,
+    get_value,
     graphs,
     languages_to_country,
-    api_key_is_valid,
+    mime_types,
+    profiles,
+    scan_methods,
 )
 from nettacker.api.helpers import structure
 from nettacker.config import Config
@@ -31,16 +30,16 @@ from nettacker.core.app import Nettacker
 from nettacker.core.die import die_failure
 from nettacker.core.graph import create_compare_report
 from nettacker.core.messages import messages as _
-from nettacker.core.utils.common import now, generate_compare_filepath
+from nettacker.core.utils.common import generate_compare_filepath, now
 from nettacker.database.db import (
     create_connection,
     get_logs_by_scan_id,
-    select_reports,
     get_scan_result,
     last_host_logs,
+    logs_to_report_html,
     logs_to_report_json,
     search_logs,
-    logs_to_report_html,
+    select_reports,
 )
 from nettacker.database.models import Report
 
@@ -247,7 +246,9 @@ def new_scan():
     """
     api_key_is_valid(app, flask_request)
     form_values = dict(flask_request.form)
+    # variables for future reference
     raw_report_path_filename = form_values.get("report_path_filename")
+    http_header = form_values.get("http_header")
     report_path_filename = sanitize_report_path_filename(raw_report_path_filename)
     if not report_path_filename:
         return jsonify(structure(status="error", msg="Invalid report filename")), 400
@@ -255,7 +256,13 @@ def new_scan():
     for key in nettacker_application_config:
         if key not in form_values:
             form_values[key] = nettacker_application_config[key]
-
+    # Handle HTTP headers
+    if http_header:
+        form_values["http_header"] = [
+            line.strip() for line in http_header.split("\n") if line.strip()
+        ]
+    # Handle service discovery
+    form_values["skip_service_discovery"] = form_values.get("skip_service_discovery", "") == "true"
     nettacker_app = Nettacker(api_arguments=SimpleNamespace(**form_values))
     app.config["OWASP_NETTACKER_CONFIG"]["options"] = nettacker_app.arguments
     thread = Thread(target=nettacker_app.run)
@@ -570,6 +577,7 @@ def start_api_subprocess(options):
                 host=options.api_hostname,
                 port=options.api_port,
                 debug=options.api_debug_mode,
+                use_reloader=False,
                 ssl_context=(options.api_cert, options.api_cert_key),
                 threaded=True,
             )
@@ -578,6 +586,7 @@ def start_api_subprocess(options):
                 host=options.api_hostname,
                 port=options.api_port,
                 debug=options.api_debug_mode,
+                use_reloader=False,
                 ssl_context="adhoc",
                 threaded=True,
             )

@@ -7,12 +7,12 @@ info:
     - https://portswigger.net/research/pre-auth-rce-in-forgerock-openam-cve-2021-35464
   profiles:
     - vuln
-    - vulnerability
     - http
     - critical_severity
     - cve2021
     - cve
     - rce
+    - cisa_kev
     - openam
     - forgerock_am
 

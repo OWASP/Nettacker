@@ -11,7 +11,7 @@ import struct
 import time
 
 from nettacker.core.lib.base import BaseEngine, BaseLibrary
-from nettacker.core.utils.common import reverse_and_regex_condition, replace_dependent_response
+from nettacker.core.utils.common import replace_dependent_response, reverse_and_regex_condition
 
 log = logging.getLogger(__name__)
 
@@ -47,9 +47,15 @@ class SocketLibrary(BaseLibrary):
         socket_connection, ssl_flag = tcp_socket
         peer_name = socket_connection.getpeername()
         socket_connection.close()
+
+        try:
+            service = socket.getservbyport(port)
+        except OSError:
+            service = "unknown"
+
         return {
             "peer_name": peer_name,
-            "service": socket.getservbyport(int(port)),
+            "service": service,
             "ssl_flag": ssl_flag,
         }
 
@@ -72,10 +78,16 @@ class SocketLibrary(BaseLibrary):
                 response = b""
             except Exception:
                 response = b""
+
+        try:
+            service = socket.getservbyport(port)
+        except OSError:
+            service = "unknown"
+
         return {
             "peer_name": peer_name,
-            "service": socket.getservbyport(port),
             "response": response.decode(errors="ignore"),
+            "service": service,
             "ssl_flag": ssl_flag,
         }
 

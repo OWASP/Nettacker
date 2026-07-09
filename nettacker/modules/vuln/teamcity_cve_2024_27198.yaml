@@ -10,10 +10,11 @@ info:
     - https://nvd.nist.gov/vuln/detail/CVE-2024-27198
   profiles:
     - vuln
-    - vulnerability
     - http
     - critical_severity
     - cve
+    - cve2024
+    - cisa_kev
     - jetbrains
     - teamcity
 

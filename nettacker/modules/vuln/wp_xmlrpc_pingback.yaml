@@ -6,10 +6,8 @@ info:
   reference:
   profiles:
     - vuln
-    - vulnerability
     - http
     - wordpress
-    - wp
 
 payloads:
   - library: http

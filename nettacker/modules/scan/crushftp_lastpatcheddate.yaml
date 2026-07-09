@@ -1,0 +1,46 @@
+info:
+  name:  crushftp_lastpatcheddate_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: CrushFTP Last Patched Date Scan
+  reference:
+  profiles:
+    - scan
+    - http
+    - crushftp
+    - low_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: head
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/WebInterface/CrushTunnel.jar"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+        response:
+          condition_type: and
+          log: "response_dependent['headers']['Last-Modified']"
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            headers:
+              Last-Modified:
+                regex: .*
+                reverse: false

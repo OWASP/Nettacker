@@ -12,10 +12,10 @@ info:
     - https://nvd.nist.gov/vuln/detail/CVE-2023-22515
   profiles:
     - vuln
-    - vulnerability
     - http
     - critical_severity
     - cve
+    - cve2023
     - confluence
     - atlassian
 

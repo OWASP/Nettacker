@@ -6,12 +6,12 @@ info:
   reference:
   profiles:
     - vuln
-    - vulnerability
     - http
     - critical_severity
     - msexchange
     - cve
     - cve2021
+    - cisa_kev
 
 payloads:
   - library: http

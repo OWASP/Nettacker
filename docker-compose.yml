@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: poetry run python ./nettacker.py --start-api --api-host 0.0.0.0
+    command: --start-api --api-host 0.0.0.0
     container_name: nettacker
     environment:
       - docker_env=true

@@ -10,10 +10,10 @@ info:
     - https://thehackernews.com/2025/02/cisa-adds-palo-alto-networks-and.html
   profiles:
     - vuln
-    - vulnerability
     - http
     - high_severity
     - cve
+    - cve2025
     - paloalto
     - paloalto_panos
     - panos
@@ -52,7 +52,7 @@ payloads:
             status_code:
               regex: "200"
               reverse: false
-            header:
+            headers:
               Content-Type: 
                 regex: text/html
                 reverse: false
