@@ -606,7 +606,7 @@ def get_scan_result(id):
                     logger.error(messages("read_report_fail").format(e))
                     return None
             else:
-                return structure(status="error", msg=messages("database_error"))
+                return None
         finally:
             try:
                 cursor.close()
