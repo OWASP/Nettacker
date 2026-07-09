@@ -6,7 +6,6 @@ info:
   reference:
   profiles:
     - brute
-    - brute_force
     - ssh
 
 payloads:

@@ -9,11 +9,11 @@ info:
     
   profiles:
     - vuln
-    - vulnerability
     - http
+    - cve
+    - cve2023
     - medium_severity
     - wordpress
-    - wp
 
 payloads:
   - library: http

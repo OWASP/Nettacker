@@ -16,6 +16,7 @@ info:
     - http
     - medium_severity
     - cve
+    - cve2025
     - paloalto
     - paloalto_globalprotect
     - globalprotect
@@ -55,7 +56,7 @@ payloads:
             status_code:
               regex: '200'
               reverse: false
-            header:
+            headers:
               X-Content-Type-Options:
                 regex: 'nosniff'
                 reverse: false

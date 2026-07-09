@@ -6,11 +6,12 @@ info:
   reference:
   profiles:
     - vuln
-    - vulnerability
     - http
     - critical_severity
     - vbulletin
     - cve
+    - cve2019
+    - cisa_kev
 
 payloads:
   - library: http

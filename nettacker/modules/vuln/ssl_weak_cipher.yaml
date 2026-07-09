@@ -7,7 +7,7 @@ info:
     - https://www.manageengine.com/privileged-access-management/help/ssl_vulnerability.html
     - https://www.acunetix.com/vulnerabilities/web/tls-ssl-weak-cipher-suites/
   profiles:
-    - scan
+    - vuln
     - ssl
 
 payloads:

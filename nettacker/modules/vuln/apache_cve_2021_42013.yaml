@@ -8,11 +8,11 @@ info:
     - https://nvd.nist.gov/vuln/detail/CVE-2021-42013
   profiles:
     - vuln
-    - vulnerability
     - http
     - critical_severity
     - cve2021
     - cve
+    - cisa_kev
     - apache
     - path_traversal
     - lfi

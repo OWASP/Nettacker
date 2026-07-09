@@ -8,11 +8,11 @@ info:
     - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-40539
   profiles:
     - vuln
-    - vulnerability
     - http
     - critical_severity
     - cve2021
     - cve
+    - cisa_kev
     - zoho
     - rce
 

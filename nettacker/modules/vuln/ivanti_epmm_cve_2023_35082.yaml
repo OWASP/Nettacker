@@ -10,10 +10,10 @@ info:
     - https://www.rapid7.com/blog/post/2023/08/02/cve-2023-35082-mobileiron-core-unauthenticated-api-access-vulnerability/
   profiles:
     - vuln
-    - vulnerability
     - http
     - high_severity
     - cve
+    - cve2023
     - ivanti
     - ivanti_epmm
     - cisa_kev
