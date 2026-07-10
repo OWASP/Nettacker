@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR Review Recommender"
+  short_description: "Structured PR reviews with merge guidance"
+  default_prompt: "Use $pr-review-recommender to review this pull request and recommend whether to merge it."
