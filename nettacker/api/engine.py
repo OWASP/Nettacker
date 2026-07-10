@@ -434,7 +434,7 @@ def get_results_csv():  # todo: need to fix time format
     scan_details = session.query(Report).filter(Report.id == result_id).first()
     data = get_logs_by_scan_id(scan_details.scan_unique_id)
     if not data:
-        return jsonify(structure(status="error", msg="No scan data found")), 404
+        return jsonify(structure(status="error", msg=_("no_scan_data_found"))), 404
     keys = data[0].keys()
     filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".csv"
     with open(filename, "w") as report_path_filename:
@@ -515,7 +515,7 @@ def get_logs_csv():
     target = get_value(flask_request, "target")
     data = logs_to_report_json(target)
     if not data:
-        return jsonify(structure(status="error", msg="No scan data found")), 404
+        return jsonify(structure(status="error", msg=_("no_scan_data_found"))), 404
     keys = data[0].keys()
     filename = (
         "report-"

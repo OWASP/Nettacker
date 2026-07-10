@@ -9,14 +9,22 @@ API_KEY = "test_key"
 
 @pytest.fixture
 def client():
+    original_config = {key: app.config.get(key) for key in ("OWASP_NETTACKER_CONFIG", "TESTING")}
     app.config["OWASP_NETTACKER_CONFIG"] = {
         "api_access_key": API_KEY,
         "api_client_whitelisted_ips": [],
         "api_access_log": False,
     }
     app.config["TESTING"] = True
-    with app.test_client() as client:
-        yield client
+    try:
+        with app.test_client() as client:
+            yield client
+    finally:
+        for key, value in original_config.items():
+            if value is None:
+                app.config.pop(key, None)
+            else:
+                app.config[key] = value
 
 
 @patch("nettacker.api.engine.get_logs_by_scan_id", return_value=[])
