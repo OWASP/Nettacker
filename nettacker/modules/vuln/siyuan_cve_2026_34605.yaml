@@ -16,7 +16,7 @@ info:
     - vuln
     - http
     - cve
-    - cve-2026
+    - cve2026
     - siyuan
     - xss
 
