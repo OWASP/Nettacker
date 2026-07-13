@@ -115,18 +115,31 @@ class Nettacker(ArgParser):
         base_path = ""
         for target in self.arguments.targets:
             if "://" in target:
-                try:
-                    if not target.split("://")[1].split("/")[1]:
-                        base_path = ""
-                    else:
-                        base_path = "/".join(target.split("://")[1].split("/")[1:])
-                        if base_path[-1] != "/":
-                            base_path += "/"
-                except IndexError:
-                    base_path = ""
-                # remove url proto; uri; port
-                target = target.split("://")[1].split("/")[0].split(":")[0]
-                targets.append(target)
+                   try:
+                        parts = target.split("://")[1].split("/")
+                        # base path handling
+                        if len(parts) <= 1:
+                             base_path = ""
+                        else:
+                             base_path = "/".join(parts[1:])
+                             if not base_path.endswith("/"):
+                                         base_path += "/"
+
+                        #remove url proto, uri, port
+                        target = parts[0].split(":")[0]
+                        if not target:
+                             raise ValueError(
+                                "Invalid target format. Host cannot be empty. "
+                                "Please verify the provided URL."
+                             ) 
+                        targets.append(target)
+
+                   except IndexError as e:
+                        raise ValueError(
+                             "Invalid target format. Expected a valid URL or hostname. "
+                             "Please verify target, ports, and module arguments."
+                        ) from e
+
             # single IPs
             elif is_single_ipv4(target) or is_single_ipv6(target):
                 if self.arguments.scan_ip_range:
