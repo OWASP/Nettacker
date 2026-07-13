@@ -28,6 +28,7 @@ OWASP Nettacker Modules can be of type **Scan** (scan for something), **Vuln** (
 - '**ivanti_epmm_lastpatcheddate_scan**' - Scan the target for Ivanti EPMM last patched date via headers
 - '**ivanti_ics_lastpatcheddate_scan**' - Scan the target for Ivanti ICS last patched date via headers
 - '**ivanti_vtm_version_scan**' - Scan the target for Ivanti vTM appliance and return its version number
+- '**jenkins_version_scan**' - Scan the target for Jenkins automation server software version
 - '**joomla_template_scan**' - Scan the target for Joomla templates (identify Joomla sites)
 - '**joomla_user_enum_scan**' - Scan the target and enumerate Joomla users
 - '**joomla_version_scan**' - Scan the target and identify the Joomla version
