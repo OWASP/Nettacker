@@ -64,6 +64,7 @@ loading_profiles: loading all profiles... it might get some time!
 module_profile_full_information: "{0}{1}{2}: {3}"
 nettacker_report: OWASP Nettacker Report
 nettacker_version_details: "Software Details: OWASP Nettacker version {0} [{1}] in {2}"
+no_scan_data_found: No scan data found
 not_found: Not Found!
 outgoing_proxy: "outgoing connections proxy (socks). example socks5: 127.0.0.1:9050,
   socks://127.0.0.1:9050 socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050,
