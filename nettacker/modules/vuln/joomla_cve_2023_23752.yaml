@@ -12,6 +12,7 @@ info:
     - medium_severity
     - cve
     - cve2023
+    - cisa_kev
     - joomla
 
 payloads:
