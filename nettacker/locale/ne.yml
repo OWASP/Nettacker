@@ -1,0 +1,160 @@
+API: "API"
+API_access_key: "API पहुँच कुञ्जी"
+API_access_log_file: "API पहुँच लग फाइल"
+API_cert: "API प्रमाणपत्र"
+API_cert_key: "API प्रमाणपत्र कुञ्जी"
+API_debug: "API डिबग मोड"
+API_host: "API होस्ट ठेगाना"
+API_invalid: "अमान्य API कुञ्जी"
+API_key: "API कुञ्जी"
+API_options: "API विकल्पहरू"
+API_port: "API पोर्ट नम्बर"
+
+Method: "विधि"
+
+skip_service_discovery: "स्क्यान अघि सेवा खोजाई स्किप गर्नुहोस् र सबै मोड्युलहरूलाई जबरजस्ती स्क्यान गराउनुहोस्"
+no_live_service_found: "स्क्यान गर्न कुनै सक्रिय सेवा फेला परेन"
+icmp_need_root_access: "icmp_scan मोड्युल प्रयोग गर्न वा --ping-before-scan प्रयोग गर्न root आवश्यक हुन्छ"
+available_graph: "सबै गतिविधि र जानकारीको ग्राफ बनाउन HTML आउटपुट प्रयोग गर्नुहोस्, उपलब्ध ग्राफहरू: {0}"
+browser_session_killed: "तपाईंको ब्राउजर सत्र समाप्त भयो"
+browser_session_valid: "तपाईंको ब्राउजर सत्र मान्य छ"
+build_graph: "ग्राफ निर्माण गर्दै"
+
+connection_retries: "जडान टाइमआउट हुँदा पुन: प्रयास संख्या (डिफल्ट 3)"
+current_version: "तपाईं OWASP Nettacker संस्करण {0} चलाउँदै हुनुहुन्छ (कोड नाम {3}{4}{5})"
+
+database_connect_fail: "डाटाबेससँग जडान हुन सकेन"
+database_connection_failed: "डाटाबेससँग जडान असफल भयो"
+
+define_white_list: "ह्वाइटलिस्ट होस्टहरू परिभाषित गर्नुहोस्, , द्वारा छुट्याउनुहोस् (उदाहरण: 127.0.0.1, 192.168.0.1/24)"
+
+engine: "इन्जिन"
+filtered_content: "पूर्ण सामग्री रिपोर्टमा हेर्नुहोस्"
+engine_input: "इन्जिन इनपुट विकल्पहरू"
+
+searching_whatcms_database: "whatcms.org मा CMS खोज्दैछ..."
+whatcms_monthly_quota_exceeded: "तपाईंले मासिक WHATCMS अनुरोध सीमा पार गर्नुभयो"
+finished_module: "मोड्युल समाप्त भयो"
+
+modules_extra_args_help: "मोड्युलहरूमा पास गर्न थप arguments थप्नुहोस्"
+choose_scan_method: "उपलब्ध सबै मोड्युलहरू हेर्नका लागि चयन गर्नुहोस्"
+
+cannot_run_api_server: "तपाईं API Server आफैँबाट चलाउन सक्नुहुन्न"
+
+error_target: "लक्ष्य(हरू) निर्दिष्ट गर्न सकिँदैन"
+error_target_file: "लक्ष्य फाइल खोल्न सकिँदैन: {0}"
+error_username: "प्रयोगकर्ता नाम निर्दिष्ट गर्न सकिँदैन"
+error_passwords: "पासवर्ड(हरू) निर्दिष्ट गर्न सकिँदैन"
+error_wordlist: "शब्दसूची खोल्न सकिँदैन: {0}"
+
+excluded_scan_method: "बहिष्कृत स्क्यान विधि {0}"
+file_write_error: "फाइल {0} लेख्न मिल्दैन"
+library_not_supported: "लाइब्रेरी {0} समर्थित छैन"
+
+removing_old_db_records: "पुराना डाटाबेस रेकर्डहरू हटाउँदै"
+regrouping_targets: "हार्डवेयर स्रोतका आधारमा लक्ष्यहरू पुन: समूहबद्ध गर्दै"
+
+finish_building_graph: "ग्राफ निर्माण पूरा भयो"
+
+finish_parallel_module_scan: "प्रक्रिया {0}{1}{2} मोड्युल थ्रेड {3} समाप्त भयो {4} बाट"
+
+graph_message: "यो ग्राफ OWASP Nettacker द्वारा सिर्जना गरिएको हो, यसमा सबै गतिविधि र नेटवर्क जानकारी हुन्छ"
+sensitive_information: "कृपया यो फाइल साझा नगर्नुहोस् यदि तपाईंलाई विश्वास छैन"
+graph_module_404: "ग्राफ मोड्युल {0} फेला परेन"
+graph_module_unavailable: "ग्राफ मोड्युल {0} उपलब्ध छैन"
+graph_output: "ग्राफ सुविधा प्रयोग गर्न फाइल नाम .html वा .htm मा अन्त्य हुनुपर्छ"
+
+help_menu: "Nettacker सहायता मेनु देखाउनुहोस्"
+done: "सम्पन्न"
+
+error_platform: "यो संस्करण Linux/Darwin मा मात्र चल्छ"
+
+file_saved: "रिपोर्ट {0} मा सुरक्षित गरियो र डाटाबेसमा थपियो"
+inserting_report_db: "रिपोर्ट डाटाबेसमा राख्दै"
+invalid_database: "कन्फिगरेशन फाइलमा mysql वा sqlite चयन गर्नुहोस्"
+invalid_json_type_to_db: "Invalid type of JSON data for the database. Skipping the submission to database. Data:{0}"
+license: "Please read license and agreements https://github.com/OWASP/Nettacker"
+loaded_modules: "{0} modules loaded ..."
+loading_modules: loading all modules... it might get some time!
+loading_profiles: loading all profiles... it might get some time!
+module_profile_full_information: "{0}{1}{2}: {3}"
+nettacker_report: OWASP Nettacker Report
+nettacker_version_details: "Software Details: OWASP Nettacker version {0} [{1}] in {2}"
+not_found: Not Found!
+outgoing_proxy: "outgoing connections proxy (socks). example socks5: 127.0.0.1:9050,
+  socks://127.0.0.1:9050 socks5://127.0.0.1:9050 or socks4: socks4://127.0.0.1:9050,
+  authentication: socks://username: password@127.0.0.1, socks4://username:password@127.0.0.1,
+  socks5://username:password@127.0.0.1"
+password_separator: password(s) list, separate with ","
+pentest_graphs: Penetration Testing Graphs
+ping_before_scan: ping before scan the host
+port_separator: port(s) list, separate with ","
+ports_int: ports must be integers! (e.g. 80 || 80,1080 || 80,1080-1300,9000,12000-15000)
+profile_404: the profile "{0}" not found!
+range: scan all IPs in the range
+read_passwords: read password(s) from file
+read_target: read target(s) from file
+removing_logs_db: removing old logs from db
+save_logs: save all logs in file (results.txt, results.csv, results.html, results.json)
+scan_method_options: Scan method options
+scan_method_select: please choose your scan method!
+scan_module_not_found: this scan module [{0}] not found!
+scan_started: "Nettacker engine started ..."
+select_language: select a language {0}
+select_profile: select profile {0}
+select_user_agent: "Select a user agent to send with HTTP requests or enter \"random_user_agent\"
+  to randomize the User-Agent in the requests."
+send_success_event_from_module: "process-{0}|{1}|{2}|module-thread {3}/{4}|request-thread {5}/{6}|{7}|\nsuccess_condition
+(s): \n{8}"
+send_unsuccess_event_from_module: "process-{0}|{1}|{2}|module-thread {3}/{4}|request-thread
+  {5}/{6}| all conditions failed"
+sending_module_request: "process-{0}|{1}|{2}|module-thread {3}/{4}| sending request
+  {5} from {6}"
+verbose_event: enable verbose event to see state of each thread
+no_events_for_report: there are no events exist to create a report! skipping this section.
+set_hardware_usage: Set hardware usage while scanning. (low, normal, high, maximum)
+show_all_modules: show all modules and their information
+show_all_profiles: show all profiles and their information
+single_process_started: process-{0}| process is started!
+software_version: show software version
+start_api_server: start the API service
+start_multi_process: imported {0} targets in {1} process(es).
+start_parallel_module_scan:
+  process-{0}|{1}|{2}| started module thread number {3}
+  from {4}
+subdomains: find and scan subdomains
+target: Target
+target_input: Target input options
+target_list: target(s) list, separate with ","
+thread_number_connections: thread numbers for connections to a host
+thread_number_modules: parallel module scan for hosts
+time_to_sleep: time to sleep between each request
+timeout: request timeout in seconds
+unauthorized_IP: your IP not authorized
+updating_database: updating the database...
+username_from_file: read username(s) from file
+username_list: username(s) list, separate with ","
+verbose_mode: verbose mode level (0-5) (default 0)
+wrong_hardware_usage: "You must select one of these profiles for hardware usage. (low, normal, high, maximum)"
+invalid_scan_id: your scan id is not valid!
+compare_scans: compare current scan to old scans using the unique scan_id
+compare_report_path_filename: the file-path to store the compare_scan report
+no_scan_to_compare: the scan_id to be compared not found
+compare_report_saved: "compare results saved in {0}"
+build_compare_report: "building compare report"
+finish_build_report: "Finished building compare report"
+user_wordlist: "Allows users to enter their own wordlist"
+exclude_ports: "Ports to exclude (e.g. 80 || 80,443|| 1000-1300)"
+http_header: "Add custom HTTP headers to requests (format: 'key: value'). For multiple headers, use multiple -H flags"
+apsw_ill_configuration: "APSW has been set in the configurations but not installed in the environment"
+apsw_connection_error: Failed to create the APSW connection {0}
+report_insertion_fail: Could not insert the report to the reports table
+remove_logs_fail: Could not remove old logs
+database_lock_issue: Retry {0}, Database is locked. Retrying submission to database
+database_retries_exhausted: All retries exhausted. Skipping this log.
+database_query_fail: Could not query the database
+report_retrieval_fail: Could not retrieve the report
+read_report_fail: Failed to read report file {0}
+search_results_end: No more search results
+database_error: Database error!
+error_exclude_all: "Cannot exclude all modules. Please specify individual module names to exclude using -x."
