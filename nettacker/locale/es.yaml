@@ -143,6 +143,11 @@ nettacker_version_details:
 no_open_ports: "¡No se encontraron puertos abiertos!"
 no_user_passwords: "¡no se encontró usuario / contraseña!"
 loaded_modules: "{0} módulos cargados ..."
+compare_report_path_filename: "Ruta del archivo para el reporte de comparación"
+no_scan_to_compare: "No se encontró el ID de escaneo a comparar"
+compare_report_saved: "Resultados de comparación guardados en {0}"
+build_compare_report: "Generando reporte de comparación"
+finish_build_report: "Finalizó la generación del reporte de comparación"
 graph_module_404: "este módulo gráfico no se encuentra: {0}"
 graph_module_unavailable: este módulo de gráfico "{0}" no está disponible
 ping_before_scan: ping antes de escanear el host
