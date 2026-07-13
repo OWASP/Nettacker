@@ -10,6 +10,8 @@ info:
   profiles:
     - vuln
     - http
+    - cve
+    - cve2023
     - medium_severity
     - wordpress
 

@@ -1,33 +1,30 @@
 info:
-  name: msexchange_cve_2021_26855_vuln
+  name: jenkins_version_scan
   author: OWASP Nettacker Team
-  severity: 9
-  description:
+  severity: 3
+  description: Jenkins version scan - detects and displays the Jenkins automation server software version.
   reference:
+    - https://www.jenkins.io/
+    - https://www.jenkins.io/changelog/
+    - https://www.jenkins.io/changelog-stable/
   profiles:
-    - vuln
+    - scan
     - http
-    - critical_severity
-    - msexchange
-    - cve
-    - cve2021
-    - cisa_kev
+    - jenkins
+    - info_severity
 
 payloads:
   - library: http
     steps:
       - method: get
         timeout: 3
-        allow_redirects: false
         headers:
           User-Agent: "{user_agent}"
-          Cookie:
-            - "X-AnonResource=true; X-AnonResource-Backend=http://{target}/ecp/default.flt?~3;"
-            - "X-AnonResource=true; X-AnonResource-Backend=https://{target}/ecp/default.flt?~3;"
+        allow_redirects: true
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/owa/auth/x.js"
+            input_format: "{{schema}}://{target}:{{ports}}/"
             prefix: ""
             suffix: ""
             interceptors:
@@ -38,16 +35,16 @@ payloads:
               ports:
                 - 80
                 - 443
+                - 8080
+                - 8443
         response:
           condition_type: and
           conditions:
             status_code:
-              regex: 500|503
+              regex: "200|403"
               reverse: false
             headers:
-              x-calculatedbetarget:
-                regex: localhost
+              X-Jenkins:
+                regex: \d+\.\d+(?:\.\d+)?
                 reverse: false
-            content:
-              regex: NegotiateSecurityContext
-              reverse: false
+          log: "response_dependent['headers']['X-Jenkins']"
