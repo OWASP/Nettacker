@@ -15,7 +15,6 @@ from nettacker.core.arg_parser import ArgParser
 from nettacker.core.die import die_failure
 from nettacker.core.graph import create_report, create_compare_report
 from nettacker.core.hostcheck import resolve_quick
-from nettacker.core.graph import create_compare_report, create_report
 from nettacker.core.ip import (
     generate_ip_range,
     get_ip_range,
