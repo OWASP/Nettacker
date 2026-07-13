@@ -8,22 +8,21 @@ import time
 from threading import Thread
 from types import SimpleNamespace
 
-from flask import Flask, jsonify
+from flask import Flask, Response, abort, jsonify, make_response, render_template
 from flask import request as flask_request
-from flask import render_template, abort, Response, make_response
 from werkzeug.serving import WSGIRequestHandler
 from werkzeug.utils import secure_filename
 
 from nettacker import logger
 from nettacker.api.core import (
-    get_value,
+    api_key_is_valid,
     get_file,
-    mime_types,
-    scan_methods,
-    profiles,
+    get_value,
     graphs,
     languages_to_country,
-    api_key_is_valid,
+    mime_types,
+    profiles,
+    scan_methods,
 )
 from nettacker.api.helpers import structure
 from nettacker.config import Config
@@ -31,16 +30,16 @@ from nettacker.core.app import Nettacker
 from nettacker.core.die import die_failure
 from nettacker.core.graph import create_compare_report
 from nettacker.core.messages import messages as _
-from nettacker.core.utils.common import now, generate_compare_filepath
+from nettacker.core.utils.common import generate_compare_filepath, now
 from nettacker.database.db import (
     create_connection,
     get_logs_by_scan_id,
-    select_reports,
     get_scan_result,
     last_host_logs,
+    logs_to_report_html,
     logs_to_report_json,
     search_logs,
-    logs_to_report_html,
+    select_reports,
 )
 from nettacker.database.models import Report
 
@@ -434,6 +433,8 @@ def get_results_csv():  # todo: need to fix time format
         return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
     scan_details = session.query(Report).filter(Report.id == result_id).first()
     data = get_logs_by_scan_id(scan_details.scan_unique_id)
+    if not data:
+        return jsonify(structure(status="error", msg=_("no_scan_data_found"))), 404
     keys = data[0].keys()
     filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".csv"
     with open(filename, "w") as report_path_filename:
@@ -513,6 +514,8 @@ def get_logs_csv():
     api_key_is_valid(app, flask_request)
     target = get_value(flask_request, "target")
     data = logs_to_report_json(target)
+    if not data:
+        return jsonify(structure(status="error", msg=_("no_scan_data_found"))), 404
     keys = data[0].keys()
     filename = (
         "report-"
@@ -578,6 +581,7 @@ def start_api_subprocess(options):
                 host=options.api_hostname,
                 port=options.api_port,
                 debug=options.api_debug_mode,
+                use_reloader=False,
                 ssl_context=(options.api_cert, options.api_cert_key),
                 threaded=True,
             )
@@ -586,6 +590,7 @@ def start_api_subprocess(options):
                 host=options.api_hostname,
                 port=options.api_port,
                 debug=options.api_debug_mode,
+                use_reloader=False,
                 ssl_context="adhoc",
                 threaded=True,
             )

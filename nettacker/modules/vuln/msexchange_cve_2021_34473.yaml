@@ -13,6 +13,7 @@ info:
     - msexchange
     - cve
     - cve2021
+    - cisa_kev
     - rce
 
 payloads:

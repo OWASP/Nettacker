@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from nettacker.core.lib.socket import create_tcp_socket, SocketEngine
+from nettacker.core.lib.socket import SocketEngine, create_tcp_socket
 
 
 class Responses:

@@ -13,6 +13,8 @@ info:
     - http
     - high_severity
     - cve
+    - cve2023
+    - cisa_kev
     - citrix
 
 payloads:
@@ -47,7 +49,7 @@ payloads:
             content:
               regex: "\"issuer\":"
               reverse: false
-            header:
+            headers:
               Content-type: 
                 regex: application/json
                 reverse: false

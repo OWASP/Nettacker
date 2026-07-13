@@ -4,8 +4,8 @@ from flask import abort
 
 from nettacker.config import Config
 from nettacker.core.app import Nettacker
-from nettacker.core.messages import messages as _
 from nettacker.core.messages import get_languages
+from nettacker.core.messages import messages as _
 
 
 def get_value(flask_request, key):
@@ -175,6 +175,7 @@ def languages_to_country():
         "ru": "ru",
         "tr": "tr",
         "ur": "pk",
+        "uz": "uz",
         "vi": "vi",
         "zh-cn": "cn",
     }

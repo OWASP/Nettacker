@@ -1,7 +1,7 @@
 from io import StringIO
 from unittest.mock import patch
 
-from nettacker.core.die import die_success, die_failure
+from nettacker.core.die import die_failure, die_success
 from nettacker.logger import TerminalCodes
 
 
