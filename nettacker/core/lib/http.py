@@ -13,13 +13,10 @@ from nettacker.core.lib.base import BaseEngine
 from nettacker.core.utils.common import (
     get_http_header_key,
     get_http_header_value,
-<<<<<<< HEAD
     replace_dependent_response,
     reverse_and_regex_condition,
-=======
     version_matches_dsl,
     extract_version_from_content,
->>>>>>> refs/rewritten/rxenium-dsl-integration-oct25
 )
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
@@ -97,13 +94,12 @@ def response_conditions_matched(sub_step, response):
                 condition_results["responsetime"] = []
         # DSL version matching support
         if condition == "version_match":
-            for key in response["headers"].copy():
-                response["headers"][key.lower()] = response["headers"][key]
             version_config = conditions[condition]
             # Extract version from response using patterns
             version_patterns = version_config.get("patterns", [])
             source = version_config.get("source", "content")
             dsl_expression = version_config.get("expression", "")
+
             # Get the content to search from
             search_content = ""
             if source == "content":
@@ -114,6 +110,7 @@ def response_conditions_matched(sub_step, response):
 
             # Extract version
             detected_version = extract_version_from_content(search_content, version_patterns)
+
             # Match against DSL expression
             if detected_version and dsl_expression:
                 match_result = version_matches_dsl(detected_version, dsl_expression)
