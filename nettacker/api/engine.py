@@ -3,6 +3,8 @@ import json
 import multiprocessing
 import os
 import random
+import re
+import secrets
 import string
 import time
 import uuid
@@ -11,6 +13,7 @@ from types import SimpleNamespace
 
 from flask import Flask, Response, abort, jsonify, make_response, render_template
 from flask import request as flask_request
+from itsdangerous import BadData, URLSafeTimedSerializer
 from werkzeug.serving import WSGIRequestHandler
 from werkzeug.utils import secure_filename
 
@@ -55,6 +58,16 @@ app.config["MAX_CONTENT_LENGTH"] = (
     10 * 1024 * 1024
 )  # https://flask.palletsprojects.com/en/stable/patterns/fileuploads/
 FILE_UPLOAD_PARAMS = ("targets_list", "passwords_list", "usernames_list", "read_from_file")
+# Uploaded files are referenced by a signed, self-expiring token instead of a raw
+# filename, so /new/scan only trusts paths that /upload/file actually issued (for the
+# matching parameter) and never has to keep any server-side upload state.
+UPLOAD_TOKEN_TTL_SECONDS = 15 * 60
+_upload_token_serializer = URLSafeTimedSerializer(
+    secrets.token_hex(32), salt="nettacker-file-upload"
+)
+# Only files written by upload_file() match this prefix (uuid4 hex + "_"); the cleanup
+# sweep is scoped to it so it can never touch reports or other tmp artifacts.
+UPLOAD_FILENAME_RE = re.compile(r"^[0-9a-f]{32}_")
 
 nettacker_path_config = Config.path
 nettacker_application_config = Config.settings.as_dict()
@@ -248,9 +261,37 @@ def allowed_file(filename):
     )
 
 
+def cleanup_expired_uploads():
+    """Delete upload temp files whose token has expired.
+
+    Files that were uploaded but never submitted to a scan are otherwise never
+    cleaned up. The sweep is opportunistic (run on every upload) so it needs no
+    background task or shared state, and is scoped to the upload naming prefix so
+    it can never remove reports or other tmp artifacts.
+    """
+    tmp_dir = nettacker_path_config.tmp_dir
+    if not tmp_dir.is_dir():
+        return
+    cutoff = time.time() - UPLOAD_TOKEN_TTL_SECONDS
+    for entry in tmp_dir.iterdir():
+        try:
+            if (
+                entry.is_file()
+                and UPLOAD_FILENAME_RE.match(entry.name)
+                and entry.stat().st_mtime < cutoff
+            ):
+                entry.unlink(missing_ok=True)
+        except OSError:
+            continue
+
+
 @app.route("/upload/file", methods=["POST"])
 def upload_file():
     api_key_is_valid(app, flask_request)
+    cleanup_expired_uploads()
+    param_name = flask_request.form.get("param_name", "")
+    if param_name not in FILE_UPLOAD_PARAMS:
+        return jsonify(structure(status="error", msg=_("upload_invalid_param"))), 400
     if "file" not in flask_request.files:
         return jsonify(structure(status="error", msg=_("upload_no_file"))), 400
     uploaded = flask_request.files["file"]
@@ -261,11 +302,12 @@ def upload_file():
     filename = secure_filename(uploaded.filename)
     if not filename:
         return jsonify(structure(status="error", msg=_("upload_invalid_filename"))), 400
-    unique_name = f"{uuid.uuid4().hex}_{filename}"
+    stored_name = f"{uuid.uuid4().hex}_{filename}"
     tmp_dir = nettacker_path_config.tmp_dir
     tmp_dir.mkdir(parents=True, exist_ok=True)
-    uploaded.save(str(tmp_dir / unique_name))
-    return jsonify(structure(status="ok", msg=unique_name)), 200
+    uploaded.save(str(tmp_dir / stored_name))
+    token = _upload_token_serializer.dumps({"param": param_name, "name": stored_name})
+    return jsonify(structure(status="ok", msg=token)), 200
 
 
 @app.route("/new/scan", methods=["GET", "POST"])
@@ -292,9 +334,18 @@ def new_scan():
         if not token:
             form_values.pop(key, None)
             continue
-        file_path = nettacker_path_config.tmp_dir / secure_filename(token)
-        if not file_path.is_file():
-            return jsonify(structure(status="error", msg="Uploaded file not found")), 400
+        try:
+            payload = _upload_token_serializer.loads(token, max_age=UPLOAD_TOKEN_TTL_SECONDS)
+        except BadData:
+            # tampered, forged, or expired token
+            return jsonify(structure(status="error", msg=_("upload_token_invalid"))), 400
+        if not isinstance(payload, dict) or payload.get("param") != key:
+            # token was issued for a different parameter
+            return jsonify(structure(status="error", msg=_("upload_token_invalid"))), 400
+        stored_name = secure_filename(payload.get("name", ""))
+        file_path = nettacker_path_config.tmp_dir / stored_name
+        if not stored_name or not file_path.is_file():
+            return jsonify(structure(status="error", msg=_("upload_file_not_found"))), 400
         form_values[key] = str(file_path)
         uploaded_paths.append(file_path)
 

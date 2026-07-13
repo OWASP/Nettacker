@@ -147,3 +147,6 @@ upload_no_file: no file provided
 upload_no_file_selected: no file selected
 upload_invalid_filename: invalid filename
 upload_file_type_not_allowed: file type not allowed
+upload_invalid_param: invalid or missing upload parameter
+upload_token_invalid: invalid or expired upload token
+upload_file_not_found: uploaded file not found or expired

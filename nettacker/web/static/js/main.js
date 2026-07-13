@@ -322,6 +322,7 @@ $(document).ready(function () {
 
   // file upload handler
   var uploaded_tokens = {};
+  var pendingUploads = 0;
   $.each(["targets_list", "usernames_list", "passwords_list", "read_from_file"], function(_, param) {
     $("#" + param + "_file").change(function () {
       var fileInput = this;
@@ -331,6 +332,7 @@ $(document).ready(function () {
       formData.append("param_name", param);
       var statusSpan = $("#" + param + "_status");
       statusSpan.text("Uploading...");
+      pendingUploads++;
       $.ajax({
         type: "POST",
         url: "/upload/file",
@@ -346,12 +348,24 @@ $(document).ready(function () {
           delete uploaded_tokens[param];
           statusSpan.text("Upload failed");
           fileInput.value = "";
+        })
+        .always(function () {
+          pendingUploads--;
         });
     });
   });
-  
+
   // submit new scan
   $("#submit_new_scan").click(function () {
+    // block submission while file uploads are still in flight, otherwise the
+    // scan is submitted without the uploaded file tokens and silently misses them
+    if (pendingUploads > 0) {
+      document.getElementById("error_msg").innerHTML =
+        "Please wait for file uploads to finish before submitting.";
+      $("#failed_request").removeClass("hidden");
+      setTimeout('$("#failed_request").addClass("hidden");', 5000);
+      return;
+    }
     // set variables
     // check ranges
     if (document.getElementById("scan_ip_range").checked) {
@@ -455,6 +469,13 @@ $(document).ready(function () {
       data: data,
     })
       .done(function (res) {
+        // the server deletes the uploaded temp files once the scan starts, so
+        // clear the consumed tokens to avoid re-sending stale ones on the next scan
+        uploaded_tokens = {};
+        $.each(["targets_list", "usernames_list", "passwords_list", "read_from_file"], function (_, param) {
+          $("#" + param + "_status").text("");
+          $("#" + param + "_file").val("");
+        });
         var results = JSON.stringify(res);
         results = results.replaceAll(",", ",<br>");
         document.getElementById("success_msg").innerHTML = results;

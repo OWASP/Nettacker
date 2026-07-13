@@ -75,7 +75,7 @@ At the first, you must send an API key through the request each time you send a 
 
 The parameters that accept a file path (`targets_list`, `usernames_list`, `passwords_list`, and `read_from_file`) cannot be set directly through `/new/scan`; the API strips them from the form values and only honours paths populated by a prior upload. To provide a file for one of these parameters, `POST` it to `/upload/file` first and the server will store it and bind it to the named parameter for subsequent scans.
 
-The request must be `multipart/form-data` with two fields:
+The request must be `multipart/form-data` with two **required** fields:
 
 - `file` — the file contents
 - `param_name` — one of `targets_list`, `usernames_list`, `passwords_list`, `read_from_file`
@@ -83,8 +83,10 @@ The request must be `multipart/form-data` with two fields:
 Constraints:
 
 - Maximum size: 10 MB (`MAX_CONTENT_LENGTH`)
-- Allowed extensions for `targets_list`/`usernames_list`/`passwords_list`: `txt`, `csv`, `lst`, `list` (configurable via `allowed_upload_extensions` in `nettacker/config.py`). `read_from_file` is not extension-checked here because module configs gate it in the core.
+- Allowed extensions: `txt`, `csv`, `lst`, `list` (configurable via `allowed_upload_extensions` in `nettacker/config.py`). The check applies to every `param_name`.
 - Filenames are sanitised and prefixed with a UUID before being written to the tmp directory.
+
+On success the response `msg` is an **opaque signed token**, not a filename. The token is bound to the `param_name` it was uploaded for and **expires 15 minutes** after upload. Pass it back through `/new/scan` under the matching parameter; the server verifies the signature, the expiry, and that the token's parameter matches the field it is submitted under. Tokens are stateless (nothing is stored server-side beyond the temp file), so they do not survive an API restart. Temp files left by uploads that are never submitted are swept once their token expires.
 
 ```python
 >>> r = requests.post(
@@ -94,10 +96,11 @@ Constraints:
 ...     verify=False,
 ... )
 >>> r.json()
-{"msg": "<uuid>_targets.txt", "status": "ok"}
+{"msg": "<signed_token>", "status": "ok"}
+>>> # then, in POST /new/scan: targets_list=<signed_token>
 ```
 
-Possible error responses (HTTP 400): `upload_no_file`, `upload_no_file_selected`, `upload_invalid_filename`, `upload_file_type_not_allowed`. A subsequent `POST /new/scan` will automatically pick up the uploaded path for the matching `param_name`.
+Possible error responses (HTTP 400): `upload_invalid_param`, `upload_no_file`, `upload_no_file_selected`, `upload_invalid_filename`, `upload_file_type_not_allowed`. At `/new/scan`, a bad token yields `upload_token_invalid` (forged/expired/wrong parameter) or `upload_file_not_found` (already consumed or swept).
 
 ## New Scan
 
