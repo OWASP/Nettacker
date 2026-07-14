@@ -222,6 +222,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**msexchange_cve_2021_26855_vuln**' – check the target for MS Exchange SSRF CVE-2021-26855
 - '**msexchange_cve_2021_34473_vuln**' – check the target for MS Exchange CVE-2021-34473 vulnerability
 - '**novnc_cve_2021_3654_vuln**' – check the target for noVNC CVE-2021-3654 vulnerability
+- '**nginx_ui_cve_2026_33032_vuln**' – check unauthenticated MCP endpoint exposure vulnerability CVE-2026-33032
 - '**omigod_cve_2021_38647_vuln**' – check the target for OMIGOD CVE-2021-38647 vulnerability
 - '**paloalto_globalprotect_cve_2025_0133_vuln**' – check the target for PaloAlto GlobalProtect CVE-2025-0133 XSS vulnerability
 - '**paloalto_panos_cve_2025_0108_vuln**' – check the target for PaloAlto PAN-OS CVE-2025-0108 vulnerability
