@@ -1,0 +1,59 @@
+info:
+  name: n8n_cve_2026_21858_vuln
+  author: Swarnim Bandekar
+  severity: 10
+  description: >
+    n8n workflow automation platform versions 1.65.0 through 1.120.x are affected by
+    CVE-2026-21858, a critical Content-Type confusion vulnerability in webhook endpoints 
+    allowing Remote Code Execution (CVSS 10.0). This module detects vulnerable n8n
+    instances by fingerprinting the versionCli field in the /rest/settings endpoint.
+    Version-based detection only; no webhook exploitation is performed. Upgrade to n8n >= 1.121.0.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-21858
+    - https://thehackernews.com/2026/01/critical-n8n-vulnerability-cvss-100.html
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve2026
+    - cve
+    - n8n
+    - rce
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/rest/settings"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 5678
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            headers:
+              Content-Type:
+                regex: application/json
+                reverse: false
+            content:
+              regex: "\"versionCli\":\\s*\"1\\.(?:6[5-9]|[7-9][0-9]|1[01][0-9]|120)\\.[0-9]+\""
+              reverse: false
+          log: "n8n instance with vulnerable version detected (CVE-2026-21858)"
