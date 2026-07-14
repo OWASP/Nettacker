@@ -204,6 +204,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**forgerock_am_cve_2021_35464_vuln**' – check the target for ForgeRock AM CVE-2021-35464
 - '**galera_webtemp_cve_2021_40960_vuln**' – check the target for Galera WebTemplate CVE-2021-40960
 - '**grafana_cve_2021_43798_vuln**' – check the target for Grafana CVE-2021-43798 vulnerability
+- '**grafana_cve_2025_4123_vuln**' – check the target for Grafana CVE-2025-4123 vulnerability
 - '**graphql_vuln**' – check the target for exposed GraphQL introspection endpoint
 - '**gurock_testrail_cve_2021_40875_vuln**' – check the target for TestRail CVE-2021-40875 vulnerability
 - '**hoteldruid_cve_2021_37833_vuln**' – check the target for HotelDruid CVE-2021-37833 XSS vulnerability
