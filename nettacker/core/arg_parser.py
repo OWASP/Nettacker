@@ -1,6 +1,7 @@
 import json
 import sys
 from argparse import ArgumentParser
+from pathlib import Path
 
 import yaml
 
@@ -48,10 +49,9 @@ class ArgParser(ArgumentParser):
         Returns:
             an array of graph names
         """
-
         graph_names = []
         for graph_library in Config.path.graph_dir.glob("*/engine.py"):
-            graph_names.append(str(graph_library).split("/")[-2] + "_graph")
+            graph_names.append(graph_library.parent.name + "_graph")
         return list(set(graph_names))
 
     @staticmethod
@@ -65,8 +65,7 @@ class ArgParser(ArgumentParser):
         languages_list = []
 
         for language in Config.path.locale_dir.glob("*.yaml"):
-            languages_list.append(str(language).split("/")[-1].split(".")[0])
-
+            languages_list.append(Path(language).stem)
         return list(set(languages_list))
 
     @staticmethod
@@ -83,8 +82,9 @@ class ArgParser(ArgumentParser):
         # Search for Modules
         module_names = {}
         for module_name in sorted(Config.path.modules_dir.glob("**/*.yaml")):
-            library = str(module_name).split("/")[-1].split(".")[0]
-            category = str(module_name).split("/")[-2]
+            module_path = Path(module_name)
+            library = module_path.stem
+            category = module_path.parent.name
             module = f"{library}_{category}"
             contents = yaml.safe_load(TemplateLoader(module).open().split("payload:")[0])
             module_names[module] = contents["info"] if full_details else None
