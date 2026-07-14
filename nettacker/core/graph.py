@@ -46,6 +46,7 @@ def build_graph(graph_name, events):
         )
     except ModuleNotFoundError:
         die_failure(_("graph_module_unavailable").format(graph_name))
+        return
 
     log.info(_("finish_build_graph"))
     return start(events)
@@ -67,6 +68,7 @@ def build_compare_report(compare_results):
         )
     except ModuleNotFoundError:
         die_failure(_("graph_module_unavailable").format("compare_report"))
+        return
 
     log.info(_("finish_build_report"))
     return build_report(compare_results)
