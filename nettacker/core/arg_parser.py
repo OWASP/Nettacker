@@ -1,3 +1,4 @@
+import difflib
 import json
 import sys
 from argparse import ArgumentParser
@@ -518,7 +519,32 @@ class ArgParser(ArgumentParser):
             all ARGS with applied rules
         """
         # Checking Requirements
-        options = self.api_arguments or self.parse_args()
+        if self.api_arguments:
+            options = self.api_arguments
+        else:
+            known_args, unknown_args = self.parse_known_args()
+
+            if unknown_args:
+                valid_flags = []
+                for action in self._actions:
+                    valid_flags.extend(action.option_strings)
+
+                for arg in unknown_args:
+                    if arg.startswith("--") and len(arg) > 1:
+                        suggestion = difflib.get_close_matches(arg, valid_flags, n=1)
+                        if suggestion:
+                            print(
+                                f"Error: Unknown argument '{arg}'. Did you mean '{suggestion[0]}'?",
+                                file=sys.stderr,
+                            )
+                        else:
+                            print(f"Error: Unknown argument '{arg}'", file=sys.stderr)
+                    else:
+                        print(f"Error: Unexpected argument '{arg}'", file=sys.stderr)
+
+                sys.exit(1)
+
+            options = known_args
 
         if options.language not in self.languages:
             die_failure("Please select one of these languages {0}".format(self.languages))
