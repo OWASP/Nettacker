@@ -265,3 +265,5 @@ no_response: δεν μπορεί να πάρει απάντηση από τον 
 category_framework: "κατηγορία: {0}, πλαίσια: {1} βρέθηκαν!"
 nothing_found: τίποτα δεν βρέθηκε στο {0} στο {1}!
 no_auth: "Δεν βρέθηκε auth στο {0}: {1}"
+
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"
