@@ -320,8 +320,50 @@ $(document).ready(function () {
     }
   });
 
+  // file upload handler
+  var uploaded_tokens = {};
+  var pendingUploads = 0;
+  $.each(["targets_list", "usernames_list", "passwords_list", "read_from_file"], function(_, param) {
+    $("#" + param + "_file").change(function () {
+      var fileInput = this;
+      if (!fileInput.files.length) return;
+      var formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      formData.append("param_name", param);
+      var statusSpan = $("#" + param + "_status");
+      statusSpan.text("Uploading...");
+      pendingUploads++;
+      $.ajax({
+        type: "POST",
+        url: "/upload/file",
+        data: formData,
+        processData: false,
+        contentType: false,
+      })
+        .done(function (res) {
+          uploaded_tokens[param] = res.msg;
+          statusSpan.text("Uploaded: " + fileInput.files[0].name);
+        })
+        .fail(function (jqXHR) {
+          delete uploaded_tokens[param];
+          statusSpan.text("Upload failed");
+          fileInput.value = "";
+        })
+        .always(function () {
+          pendingUploads--;
+        });
+    });
+  });
+
   // submit new scan
   $("#submit_new_scan").click(function () {
+    if (pendingUploads > 0) {
+      document.getElementById("error_msg").innerHTML =
+        "Please wait for file uploads to finish before submitting.";
+      $("#failed_request").removeClass("hidden");
+      setTimeout('$("#failed_request").addClass("hidden");', 5000);
+      return;
+    }
     // set variables
     // check ranges
     if (document.getElementById("scan_ip_range").checked) {
@@ -417,12 +459,19 @@ $(document).ready(function () {
       }
     }
 
+    $.extend(data, uploaded_tokens);
+
     $.ajax({
       type: "POST",
       url: "/new/scan",
       data: data,
     })
       .done(function (res) {
+        uploaded_tokens = {};
+        $.each(["targets_list", "usernames_list", "passwords_list", "read_from_file"], function (_, param) {
+          $("#" + param + "_status").text("");
+          $("#" + param + "_file").val("");
+        });
         var results = JSON.stringify(res);
         results = results.replaceAll(",", ",<br>");
         document.getElementById("success_msg").innerHTML = results;

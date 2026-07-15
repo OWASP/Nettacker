@@ -162,6 +162,10 @@
                     <span class="input-group-addon"><i class="fa fa-space-shuttle"></i></span>
                     <input id="targets" type="text" class="form-control" data-role="tagsinput" placeholder="Add new target" >
                 </div>
+                <label class="btn btn-default btn-sm" style="margin-top: 5px;">
+                    Upload targets file <input type="file" id="targets_list_file" style="display:none;">
+                </label>
+                <span id="targets_list_status"></span>
                 <div class="form-group" style="margin-top: 10px;">
                     <label>
                         <input id="skip_service_discovery" type="checkbox">
@@ -313,21 +317,39 @@
                 </div>
                 <br>
 
+
                 <div class="form-group col-md-6">
                     <h3>Usernames</h3>
                     <textarea class="input-mini form-control" rows="8" cols="50" id="usernames"
                               data-role="tagsinput" placeholder="separate with commas or new line">
                     </textarea>
+                    <label class="btn btn-default btn-sm" style="margin-top: 5px;">
+                        Upload usernames file <input type="file" id="usernames_list_file" style="display:none;" >
+                    </label>
+                    <span id="usernames_list_status"></span>
                 </div>
                 <div class="form-group col-md-6">
                     <h3>Passwords</h3>
                     <textarea class="form-control" rows="8" cols="50" id="passwords"
                                placeholder="separate with commas or new line"></textarea>
+                    <label class="btn btn-default btn-sm" style="margin-top: 5px;">
+                            Upload passwords file <input type="file" id="passwords_list_file" style="display:none;" >
+                        </label>
+                        <span id="passwords_list_status"></span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group col-md-6">
+                    <h3>Wordlist</h3>
+                    <label class="btn btn-default btn-sm">
+                        Upload wordlist file <input type="file" id="read_from_file_file" style="display:none;">   <!-- Not checking for file extensions here because that is a config in the core -->
+                    </label>
+                    <span id="read_from_file_status"></span>
                 </div>
                 <br>
             </div>
+            <div class="clearfix"></div>
             <br>
-            <ul id="submit_new_scan" class="btn btn-primary" action="javascript:submit_new_scan()">
+            <ul id="submit_new_scan" class="btn btn-primary" style="margin-left: 15px;" action="javascript:submit_new_scan()">
                 Submit
             </ul>
         </form>
