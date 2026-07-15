@@ -357,8 +357,6 @@ $(document).ready(function () {
 
   // submit new scan
   $("#submit_new_scan").click(function () {
-    // block submission while file uploads are still in flight, otherwise the
-    // scan is submitted without the uploaded file tokens and silently misses them
     if (pendingUploads > 0) {
       document.getElementById("error_msg").innerHTML =
         "Please wait for file uploads to finish before submitting.";
@@ -469,8 +467,6 @@ $(document).ready(function () {
       data: data,
     })
       .done(function (res) {
-        // the server deletes the uploaded temp files once the scan starts, so
-        // clear the consumed tokens to avoid re-sending stale ones on the next scan
         uploaded_tokens = {};
         $.each(["targets_list", "usernames_list", "passwords_list", "read_from_file"], function (_, param) {
           $("#" + param + "_status").text("");

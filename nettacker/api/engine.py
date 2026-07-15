@@ -58,15 +58,10 @@ app.config["MAX_CONTENT_LENGTH"] = (
     10 * 1024 * 1024
 )  # https://flask.palletsprojects.com/en/stable/patterns/fileuploads/
 FILE_UPLOAD_PARAMS = ("targets_list", "passwords_list", "usernames_list", "read_from_file")
-# Uploaded files are referenced by a signed, self-expiring token instead of a raw
-# filename, so /new/scan only trusts paths that /upload/file actually issued (for the
-# matching parameter) and never has to keep any server-side upload state.
 UPLOAD_TOKEN_TTL_SECONDS = 15 * 60
 _upload_token_serializer = URLSafeTimedSerializer(
     secrets.token_hex(32), salt="nettacker-file-upload"
 )
-# Only files written by upload_file() match this prefix (uuid4 hex + "_"); the cleanup
-# sweep is scoped to it so it can never touch reports or other tmp artifacts.
 UPLOAD_FILENAME_RE = re.compile(r"^[0-9a-f]{32}_")
 
 nettacker_path_config = Config.path
@@ -262,13 +257,6 @@ def allowed_file(filename):
 
 
 def cleanup_expired_uploads():
-    """Delete upload temp files whose token has expired.
-
-    Files that were uploaded but never submitted to a scan are otherwise never
-    cleaned up. The sweep is opportunistic (run on every upload) so it needs no
-    background task or shared state, and is scoped to the upload naming prefix so
-    it can never remove reports or other tmp artifacts.
-    """
     tmp_dir = nettacker_path_config.tmp_dir
     if not tmp_dir.is_dir():
         return
@@ -337,10 +325,8 @@ def new_scan():
         try:
             payload = _upload_token_serializer.loads(token, max_age=UPLOAD_TOKEN_TTL_SECONDS)
         except BadData:
-            # tampered, forged, or expired token
             return jsonify(structure(status="error", msg=_("upload_token_invalid"))), 400
         if not isinstance(payload, dict) or payload.get("param") != key:
-            # token was issued for a different parameter
             return jsonify(structure(status="error", msg=_("upload_token_invalid"))), 400
         stored_name = secure_filename(payload.get("name", ""))
         file_path = nettacker_path_config.tmp_dir / stored_name
