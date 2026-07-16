@@ -210,7 +210,6 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**http_options_enabled_vuln**' – check if OPTIONS method is enabled on the web server
 - '**ivanti_epmm_cve_2023_35082_vuln**' – check the target for Ivanti EPMM CVE-2023-35082 vulnerability
 - '**ivanti_ics_cve_2023_46805_vuln**' – check the target for Ivanti ICS CVE-2023-46805 vulnerability
-- '**jenkins_cve_2024_23897_vuln**' – check the target for Jenkins CVE-2024-23897 arbitrary file read vulnerability via @file argument parsing.
 - '**joomla_cve_2023_23752_vuln**' – check the target for Joomla CVE-2023-23752 information disclosure
 - '**justwriting_cve_2021_41878_vuln**' – check the target for JustWriting CVE-2021-41878
 - '**log4j_cve_2021_44228_vuln**' – check the target for Log4Shell CVE-2021-44228 vulnerability
@@ -219,6 +218,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**meteobridge_cve_2025_4008_vuln**' - check for MeteoBridge unauthenticated command injection CVE-2025-4008
 - '**msexchange_cve_2021_26855_vuln**' – check the target for MS Exchange SSRF CVE-2021-26855
 - '**msexchange_cve_2021_34473_vuln**' – check the target for MS Exchange CVE-2021-34473 vulnerability
+- '**nexus_cve_2024_4956_vuln**' – Detects Sonatype Nexus Repository Manager CVE-2024-4956, an unauthenticated path traversal vulnerability that allows arbitrary file read.
 - '**novnc_cve_2021_3654_vuln**' – check the target for noVNC CVE-2021-3654 vulnerability
 - '**omigod_cve_2021_38647_vuln**' – check the target for OMIGOD CVE-2021-38647 vulnerability
 - '**paloalto_globalprotect_cve_2025_0133_vuln**' – check the target for PaloAlto GlobalProtect CVE-2025-0133 XSS vulnerability
