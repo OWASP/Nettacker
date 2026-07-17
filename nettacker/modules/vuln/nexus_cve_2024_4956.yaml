@@ -60,5 +60,5 @@ payloads:
               reverse: false
 
             content:
-              regex: "root:x:0:0:"
+              regex: "root:.:0:0:"
               reverse: false
