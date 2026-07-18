@@ -15,7 +15,7 @@ info:
     - cve
     - cve2024
     - high_severity
-    - cisa_kev
+    
 
 payloads:
   - library: http
@@ -40,6 +40,7 @@ payloads:
             data:
               schema:
                 - "http"
+                - "https"
 
               ports:
                 - 80
