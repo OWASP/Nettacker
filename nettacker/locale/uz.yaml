@@ -1,0 +1,121 @@
+API: API
+API_access_key: API kirish kaliti
+API_access_log_file: API kirish log fayl nomi
+API_cert: API SERTIFIKATI
+API_cert_key: API SERTIFIKAT Kaliti
+API_debug: API nosozliklarni tuzatish rejimi
+API_host: API host manzili
+API_invalid: yaroqsiz API kaliti
+API_key: " * API https://nettacker-api.z3r0d4y.com:{0}/ orqali API kaliti bilan kirish mumkin: {1}"
+API_options: API parametrlari
+API_port: API port raqami
+Method: Usul
+skip_service_discovery: skanerdan oldin xizmat topishni o'tkazib yuborish va barcha modullarni skanerlashni majburlash
+no_live_service_found: skanerash uchun jonli xizmat topilmadi
+icmp_need_root_access: icmp_scan modulidan yoki --ping-before-scan dan foydalanish uchun skriptni root sifatida ishga tushirish kerak!
+available_graph: "barcha faoliyat va ma'lumotlarning grafigini yaratish, HTML chiqishidan foydalanishingiz kerak. mavjud grafiklar: {0}"
+browser_session_killed: brauzer sessiyangiz tugatildi
+browser_session_valid: brauzer sessiyangiz amal qiladi
+build_graph: grafik qurilmoqda ...
+connection_retries: Ulanish vaqti tugaganda qayta urinishlar (standart 3)
+current_version: "siz {0}{1}{2}{6} OWASP Nettacker versiyasini {3}{4}{5} kod nomi bilan ishlatyapsiz"
+database_connect_fail: ma'lumotlar bazasiga ulanib bo'lmadi!
+database_connection_failed: Tanlangan ma'lumotlar bazasiga ulanish muvaffaqiyatsiz bo'ldi
+define_white_list: "oq ro'yxat hostlarini aniqlang, vergul bilan ajrating (misollar: 127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)"
+engine: Dvigatel
+filtered_content: "... [to'liq mazmunni hisobotda ko'ring]"
+engine_input: Dvigatel kirish parametrlari
+Invalid_whatcms_api_key: "{0}"
+searching_whatcms_database: whatcms.org saytida CMS qidirilmoqda...
+whatcms_monthly_quota_exceeded: Siz oylik WHATCMS so'rovlar kvotasidan oshdingiz
+finished_module: "{0} moduli {1} maqsadga nisbatan tugatildi | modul oqimi raqami {2} dan {3}!"
+modules_extra_args_help: "modullarga uzatish uchun qo'shimcha argumentlar qo'shing (masalan: --modules-extra-args 'x_api_key=123&xyz_passwd=abc')"
+choose_scan_method: "{0} modullarini tanlang, to'liq ro'yxatni ko'rish uchun --show-all-modules dan foydalaning"
+cannot_run_api_server: API Serverni o'zi orqali ishga tushira olmaysiz!
+error_target: Maqsad(lar)ni belgilab bo'lmadi
+error_target_file: "Maqsad(lar)ni belgilab bo'lmadi, faylni ochib bo'lmadi: {0}"
+error_username: "Foydalanuvchi nom(lar)ini belgilab bo'lmadi, faylni ochib bo'lmadi: {0}"
+error_passwords: "Parol(lar)ni belgilab bo'lmadi, faylni ochib bo'lmadi: {0}"
+error_wordlist: "So'z(lar)ni belgilab bo'lmadi, faylni ochib bo'lmadi: {0}"
+exclude_scan_method: "istisno qilish uchun skanerlash usulini tanlang {0}"
+file_write_error: "{0} fayli yozib bo'lmaydigan!"
+library_not_supported: "[{0}] kutubxonasi qo'llab-quvvatlanmaydi!"
+removing_old_db_records: Tanlangan maqsadlar va modullar uchun eski ma'lumotlar bazasi yozuvlari o'chirilmoqda.
+regrouping_targets: apparat resurslari asosida maqsadlarni qayta guruhlash!
+finish_build_graph: grafik qurilishi tugatildi!
+finished_parallel_module_scan: "jarayon-{0}|{1}|{2}| modul oqimi raqami {3} dan {4} tugatildi"
+graph_message: "Bu grafik OWASP Nettacker tomonidan yaratilgan. Grafik barcha modullar faoliyatini, tarmoq xaritasini va maxfiy ma'lumotlarni o'z ichiga oladi, Iltimos, bu faylni ishonchli bo'lmagan odam bilan baham ko'rmang."
+graph_module_404: "bu grafik moduli topilmadi: {0}"
+graph_module_unavailable: "bu grafik moduli '{0}' mavjud emas"
+s: s
+build_compare_report: taqqoslash hisoboti qurilmoqda
+compare_report_path_filename: "taqqoslash hisoboti fayl yo'li: {0}"
+compare_report_saved: taqqoslash hisoboti saqlandi
+compare_scans: skanerlashlarni taqqoslash
+done: bajarildi
+error_platform: "noto'g'ri platforma, iltimos quyidagilardan birini tanlang: {0}"
+exclude_ports: istisno qilinadigan portlar
+file_saved: "fayl saqlandi: {0}"
+finish_build_report: hisobotni yaratish tugatildi
+graph_output: grafik chiqishi
+help_menu: yordam menyusi
+http_header: HTTP sarlavha
+inserting_report_db: hisobot ma'lumotlar bazasiga kiritilmoqda
+invalid_database: yaroqsiz ma'lumotlar bazasi
+invalid_json_type_to_db: ma'lumotlar bazasiga yaroqsiz JSON turi
+invalid_scan_id: yaroqsiz skanerlash ID
+license: litsenziya
+loaded_modules: "{0} modullar yuklandi"
+loading_modules: modullar yuklanmoqda
+loading_profiles: profillar yuklanmoqda
+module_profile_full_information: "modul: {0}, profil: {1}, info: {2}"
+nettacker_report: Nettacker hisoboti
+nettacker_version_details: "OWASP Nettacker {0} {1}"
+no_events_for_report: hisobot uchun hodisalar yo'q
+no_scan_to_compare: taqqoslash uchun skanerlash yo'q
+not_found: topilmadi
+outgoing_proxy: chiquvchi proksi
+password_separator: parol ajratuvchisi
+pentest_graphs: penetratsiya testi grafiklari
+ping_before_scan: skanerdan oldin ping
+port_separator: port ajratuvchisi
+ports_int: portlar butun son bo'lishi kerak
+profile_404: "profil topilmadi: {0}"
+range: oraliq
+read_passwords: parollar o'qilmoqda
+read_target: maqsadlar o'qilmoqda
+removing_logs_db: ma'lumotlar bazasidan loglar o'chirilmoqda
+save_logs: loglarni saqlash
+scan_method_options: skanerlash usuli parametrlari
+scan_method_select: skanerlash usulini tanlang
+scan_module_not_found: "skanerlash moduli topilmadi: {0}"
+scan_started: skanerlash boshlandi
+select_language: tilni tanlang
+select_profile: profilni tanlang
+select_user_agent: user agent tanlang
+send_success_event_from_module: "moduldan muvaffaqiyatli hodisa yuborildi: {0}"
+send_unsuccess_event_from_module: "moduldan muvaffaqiyatsiz hodisa yuborildi: {0}"
+sending_module_request: "{0} modulidan so'rov yuborilmoqda"
+set_hardware_usage: apparat foydalanishini o'rnatish
+show_all_modules: barcha modullarni ko'rsatish
+show_all_profiles: barcha profillarni ko'rsatish
+single_process_started: yagona jarayon boshlandi
+software_version: dasturiy ta'minot versiyasi
+start_api_server: API serverni ishga tushirish
+start_multi_process: ko'p jarayonni boshlash
+start_parallel_module_scan: parallel modul skanerlashni boshlash
+subdomains: subdomenlar
+target: maqsad
+target_input: maqsad kiritish
+target_list: maqsadlar ro'yxati
+thread_number_connections: ulanishlar uchun ip oqimlari soni
+thread_number_modules: modullar uchun ip oqimlari soni
+time_to_sleep: uxlash vaqti
+unauthorized_IP: ruxsat etilmagan IP
+updating_database: ma'lumotlar bazasi yangilanmoqda
+user_wordlist: foydalanuvchi so'zlar ro'yxati
+username_from_file: fayldan foydalanuvchi nomlari
+username_list: foydalanuvchi nomlari ro'yxati
+verbose_event: batafsil hodisa
+verbose_mode: batafsil rejim
+wrong_hardware_usage: "noto'g'ri apparat foydalanishi, iltimos 0 dan 1 gacha raqam kiriting. kiritilgan: {0}"

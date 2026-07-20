@@ -1,21 +1,19 @@
 # Help Menu
 
 - [Target inputs Option](#target-inputs-option)
-  * [Command Examples](#command-examples)
+  - [Command Examples](#command-examples)
 - [API and WebUI](#api-and-webui)
-  * [API Options](#api-options)
-  * [API Examples](#api-examples)
+  - [API Options](#api-options)
+  - [API Examples](#api-examples)
 - [Database](#database)
-  * [SQLite configuration](#sqlite-configuration)
-  * [MySQL configuration](#mysql-configuration)
+  - [SQLite configuration](#sqlite-configuration)
+  - [MySQL configuration](#mysql-configuration)
 - [Maltego Transforms](#maltego-transforms)
 
 By using the `--help`/`-h` switch you can read the help menu in the CLI:
- `python3 nettacker.py --help`
+`python3 nettacker.py --help`
 
-
-
-* Note: This example may not reflect the latest version.
+- Note: This example may not reflect the latest version.
 
 ```
    ______          __      _____ _____
@@ -35,8 +33,8 @@ By using the `--help`/`-h` switch you can read the help menu in the CLI:
 [2024-09-26 07:51:09][+] 106 modules loaded ...
 usage: Nettacker [-L LANGUAGE] [-v] [--verbose-event] [-V] [-o REPORT_PATH_FILENAME] [--graph GRAPH_NAME] [-h]
                  [-i TARGETS] [-l TARGETS_LIST] [-m SELECTED_MODULES] [--modules-extra-args MODULES_EXTRA_ARGS]
-                 [--show-all-modules] [--profile PROFILES] [--show-all-profiles] [-x EXCLUDED_MODULES] 
-                 [-X EXCLUDED_PORTS] [-u USERNAMES] [-U USERNAMES_LIST] [-p PASSWORDS] [-P PASSWORDS_LIST] [-g PORTS]
+                 [--show-all-modules] [--profile PROFILES] [--show-all-profiles] [-x EXCLUDED_MODULES]
+                 [-X EXCLUDED_PORTS] [-u USERNAMES] [-U USERNAMES_LIST] [-p PASSWORDS] [-P PASSWORDS_LIST] [-g PORTS] [--schema SCHEMA]
                  [--user-agent USER_AGENT] [-T TIMEOUT] [-w TIME_SLEEP_BETWEEN_REQUESTS] [-r] [-s] [-d] [-t THREAD_PER_HOST]
                  [--show-all-modules] [--profile PROFILES] [--show-all-profiles] [-x EXCLUDED_MODULES] [-H HTTP_HEADER]
                  [-M PARALLEL_MODULE_SCAN] [--set-hardware-usage SET_HARDWARE_USAGE] [-R SOCKS_PROXY]
@@ -88,7 +86,7 @@ Method:
                         'adobe_coldfusion_cve_2023_26360_vuln', 'apache_cve_2021_41773_vuln',
                         'apache_cve_2021_42013_vuln', 'apache_ofbiz_cve_2024_38856_vuln', 'apache_struts_vuln',
                         'aviatrix_cve_2021_40870_vuln', 'cisco_hyperflex_cve_2021_1497_vuln']
-  -X EXCLUDED_PORTS, --exclude-ports 
+  -X EXCLUDED_PORTS, --exclude-ports
                         Ports to exclude (e.g. 80 || 80,443|| 1000-1300)
   -u USERNAMES, --usernames USERNAMES
                         username(s) list, separate with ","
@@ -100,6 +98,7 @@ Method:
                         read password(s) from file
   -g PORTS, --ports PORTS
                         port(s) list, separate with ","
+  --schema SCHEMA       schema(s) list, separate with ","
   --user-agent USER_AGENT
                         Select a user agent to send with HTTP requests or enter "random_user_agent" to randomize the
                         User-Agent in the requests.
@@ -156,13 +155,14 @@ Please read license and agreements https://github.com/OWASP/Nettacker%
 
 ## Language Selection
 
-You can choose from 21 languages when using Nettacker. Use the language flag: 
+You can choose from 21 languages when using Nettacker. Use the language flag:
 `$ nettacker -L fa`
 
 The `-L` is the language flag and in this case sets the output language to Farsi, indicated by the `fa`. Farsi and 20 other languages are available, as listed in the command line help: `el`, `fr`, `en`, `nl`, `ps`, `tr`, `de`, `ko`, `it`, `ja`, `fa`, `hy`, `ar`, `zh-cn`, `vi`, `ru`, `hi`, `ur`, `id`, `es`, `iw`.
 
-* Your CLI must support Unicode to make use of multiple languages. Search the web for "How to use Farsi on cmd/terminal."
-* You can fix Persian (Farsi) and other Unicode languages RTL and Chars with [bicon](https://www.google.com/search?q=Persian+support+with+bicon&oq=Persian+support+with+bicon&aqs=chrome..69i57.178j0j7&sourceid=chrome&ie=UTF-8) in terminal/windows bash.
+- Your CLI must support Unicode to make use of multiple languages. Search the web for "How to use Farsi on cmd/terminal."
+- You can fix Persian (Farsi) and other Unicode languages RTL and Chars with [bicon](https://www.google.com/search?q=Persian+support+with+bicon&oq=Persian+support+with+bicon&aqs=chrome..69i57.178j0j7&sourceid=chrome&ie=UTF-8) in terminal/windows bash.
+
 ```
 $ python nettacker.py --help -L fa
    ______          __      _____ _____
@@ -185,7 +185,7 @@ $ python nettacker.py --help -L fa
 usage: Nettacker [-L LANGUAGE] [-v] [--verbose-event] [-V] [-o REPORT_PATH_FILENAME] [--graph GRAPH_NAME] [-h]
                  [-i TARGETS] [-l TARGETS_LIST] [-m SELECTED_MODULES] [--modules-extra-args MODULES_EXTRA_ARGS]
                  [--show-all-modules] [--profile PROFILES] [--show-all-profiles] [-x EXCLUDED_MODULES] [-u USERNAMES]
-                 [-U USERNAMES_LIST] [-p PASSWORDS] [-P PASSWORDS_LIST] [-g PORTS] [--user-agent USER_AGENT]
+                 [-U USERNAMES_LIST] [-p PASSWORDS] [-P PASSWORDS_LIST] [-g PORTS] [--schema SCHEMA] [--user-agent USER_AGENT]
                  [-T TIMEOUT] [-w TIME_SLEEP_BETWEEN_REQUESTS] [-r] [-s] [-d] [-t THREAD_PER_HOST]
                  [-M PARALLEL_MODULE_SCAN] [--set-hardware-usage SET_HARDWARE_USAGE] [-R SOCKS_PROXY]
                  [--retries RETRIES] [--ping-before-scan] [-K SCAN_COMPARE_ID] [-J COMPARE_REPORT_PATH_FILENAME]
@@ -246,6 +246,7 @@ usage: Nettacker [-L LANGUAGE] [-v] [--verbose-event] [-V] [-o REPORT_PATH_FILEN
                         خواندن کلمه عبور (ها) از فایل
   -g PORTS, --ports PORTS
                         لیست درگاه (ها)، با "," جدا شود
+  --schema SCHEMA       schema(s) list, separate with ","
   --user-agent USER_AGENT
                         Select a user agent to send with HTTP requests or enter "random_user_agent" to randomize the
                         User-Agent in the requests.
@@ -297,13 +298,14 @@ API:
 لطفا مجوز و موافقت نامه را مطالعه فرمایید https://github.com/OWASP/Nettacker
 ```
 
-***
+---
 
 # Target inputs Option
 
-* OWASP Nettacker supports several types of targets, including `IPv4`, `IPv4_Range`, `IPv4_CIDR`, `DOMAIN`, and `HTTP` (which may be useful for some of the modules).
+- OWASP Nettacker supports several types of targets, including `IPv4`, `IPv4_Range`, `IPv4_CIDR`, `DOMAIN`, and `HTTP` (which may be useful for some of the modules).
 
 ## Command Examples
+
 ```
 192.168.1.1
 192.168.1.1-192.168.255.255
@@ -314,7 +316,7 @@ http://owasp.org
 https://owasp.org
 ```
 
-* Targets can be read from a list by using the `-l` or `--target-list` command or you can split them with a comma if you don't want to use a text list.
+- Targets can be read from a list by using the `-l` or `--target-list` command or you can split them with a comma if you don't want to use a text list.
 
 ```
 python nettacker.py -i 192.168.1.1,192.168.1.2-192.168.1.10,127.0.0.1,owasp.org,192.168.2.1/24 -m port_scan -g 20-100 -t 10
@@ -322,7 +324,8 @@ python nettacker.py -l targets.txt -m all -x port_scan -g 20-100 -t 5 -u root -p
 python nettacker.py -l targets.txt -m all -t 100 -d -u root -p 12345,432123 -X 80
 ```
 
-* Here are some more command line examples:
+- Here are some more command line examples:
+
 ```
 python nettacker.py -i 192.168.1.1/24 -m port_scan -t 10 -M 35 -g 20-100 --graph d3_tree_v2_graph -o result.html
 python nettacker.py -i 192.168.1.1/24 -m port_scan -t 10 -M 35 -g 20-100 -o file.html --graph jit_circle_v1_graph
@@ -330,48 +333,53 @@ python nettacker.py -i 192.168.1.1/24 -m all -t 10 -M 35 -g 20-100 -o result.jso
 python nettacker.py -i 192.168.1.1/24 -m all -x ssh_brute -t 10 -M 35 -g 20-100 -o file.txt -U users.txt -P passwords.txt -T 3 -w 2
 ```
 
-* Using Whatcms Scan: API key can be found [here](https://whatcms.org/APIKey)
+- Using Whatcms Scan: API key can be found [here](https://whatcms.org/APIKey)
+
 ```
 python nettacker.py -i eng.uber.com -m whatcms_scan --method-args whatcms_api_key=XXXX
 ```
-* Finding CVE 2020-5902:
+
+- Finding CVE 2020-5902:
+
 ```
 python nettacker.py -i <CIDR/IP/Domain> -m f5_cve_2020_5902
 python nettacker.py -l <List of IP/CIDR/Domain> -m f5_cve_2020_5902
 python nettacker.py -i <CIDR/IP/Domain> -m f5_cve_2020_5902 -s
 ```
 
-* OWASP Nettacker can also scan subdomains by using this command: `-s`
+- OWASP Nettacker can also scan subdomains by using this command: `-s`
 
 ```
 python nettacker.py -i owasp.org -s -m port_scan -t 10 -M 35 -g 20-100 --graph d3_tree_v2_graph
 ```
 
-* Using the `-H` command you can add your own HTTP headers to requests (useful for authentication) and chain it using multiple `-H` commands
+- Using the `-H` command you can add your own HTTP headers to requests (useful for authentication) and chain it using multiple `-H` commands
 
 ```
 python nettacker.py -i owasp.org -s -m http_status_scan -H "Authorization: Basic abcd" -H "Content-Type: abcd" -t 100 -d
 ```
 
-* If you use `-r` command, it will scan the IP range automatically by getting the range from the RIPE database online.
+- If you use `-r` command, it will scan the IP range automatically by getting the range from the RIPE database online.
+
 ```
 python nettacker.py -i owasp.org -s -r -m port_scan -t 10 -M 35 -g 20-100 --graph d3_tree_v2_graph
 python nettacker.py -i nettackerwebsiteblabla.com,owasp.org,192.168.1.1 -s -r -m all -t 10 -M 35 -g 20-100 -o file.txt -u root,user -P passwords.txt
 ```
 
-* Note: If host scan finishes, and couldn't get any result nothing will be listed in the output file unless you change the verbosity mode to a value from 1 to 5.
+- Note: If host scan finishes, and couldn't get any result nothing will be listed in the output file unless you change the verbosity mode to a value from 1 to 5.
 
 ```
 python nettacker.py -i 192.168.1.1/24 -m all -t 10 -M 35 -g 20-100 -o file.txt -u root,user -P passwords.txt -v 1
 ```
-* Use `*` pattern for selecting modules
+
+- Use `*` pattern for selecting modules
 
 ```
 python nettacker.py -i 192.168.1.1/24 -m *_scan
 python nettacker.py -i 192.168.1.1/24 -m *_scan,*_vuln
 ```
 
-* Use profiles for using all modules inside a given profile
+- Use profiles for using all modules inside a given profile
 
 ```
 python nettacker.py -i 192.168.1.1/24 --profile info
@@ -381,8 +389,8 @@ python nettacker.py -i 192.168.1.1/24 --profile all
 
 ![](https://user-images.githubusercontent.com/24669027/39022564-bf96bde2-4453-11e8-9814-c30db364aa4d.gif)
 
+- Use socks proxy for outgoing connections (default socks version is 5)
 
-* Use socks proxy for outgoing connections (default socks version is 5)
 ```
 python nettacker.py -i 192.168.1.1 -m tcp_connect_port_scan -T 5 --socks-proxy socks://127.0.0.1:9050
 python nettacker.py -i 192.168.1.1 -m tcp_connect_port_scan -T 5 --socks-proxy socks4://127.0.0.1:9050
@@ -392,7 +400,8 @@ python nettacker.py -i 192.168.1.1 -m tcp_connect_port_scan -T 5 --socks-proxy s
 python nettacker.py -i 192.168.1.1 -m tcp_connect_port_scan -T 5 --socks-proxy socks5://username:password@127.0.0.1:9050
 ```
 
-* Get the list of all modules with details about it using `--show-all-modules`
+- Get the list of all modules with details about it using `--show-all-modules`
+
 ```
 python nettacker.py --show-all-modules
    ______          __      _____ _____
@@ -452,14 +461,14 @@ python nettacker.py --show-all-modules
 [2021-08-31 17:42:06][+] all:
 ```
 
-
 - you can quick run the tool by using profiles
+
 ```
 python nettacker.py -i example.com --profile vulnerabilities
 python nettacker.py -i example.com --profile high_severity
 ```
 
-* You may want to create a new profile. To do that, you need to edit the particular modules by adding profiles name to it inside modules directory. for e.g i want add profile as `asset_discovery` to subdomain_scan,port_scan module, then i can just edit profile field in `modules/scan/subdomain.yaml` and `port_scan.yaml` 
+- You may want to create a new profile. To do that, you need to edit the particular modules by adding profiles name to it inside modules directory. for e.g i want add profile as `asset_discovery` to subdomain_scan,port_scan module, then i can just edit profile field in `modules/scan/subdomain.yaml` and `port_scan.yaml`
 
 ```
 info:
@@ -476,7 +485,7 @@ info:
 
 ```
 
-* You may want to change the default values (`timeout`, `socks proxy`, `target`, `ports`) or anything that could be set with the command line.To do that, you will have to edit them in the config.py `nettacker_user_application_config()` function in the main directory in JSON style.
+- You may want to change the default values (`timeout`, `socks proxy`, `target`, `ports`) or anything that could be set with the command line.To do that, you will have to edit them in the config.py `nettacker_user_application_config()` function in the main directory in JSON style.
 
 ```python
 def nettacker_user_application_config():
@@ -509,6 +518,7 @@ def nettacker_user_application_config():
         "passwords": None,
         "passwords_list": None,
         "ports": None,
+        "schemas": None,
         "timeout": 3.0,
         "time_sleep_between_requests": 0.0,
         "scan_ip_range": False,
@@ -529,7 +539,7 @@ def nettacker_user_application_config():
     }
 ```
 
-* Nettacker supports five different output types for the final report
+- Nettacker supports five different output types for the final report
 
 1. HTML (.html) -> This also renders the graph
 2. CSV (.csv)
@@ -537,7 +547,7 @@ def nettacker_user_application_config():
 4. SARIF (.sarif)
 5. DefectDojo compatible json (.dd.json)
 
-These output types will help with integration with different softwares and dashboards. To set the output mode use the `-o` or `--output` flag
+These output types will help with integration with different software and dashboards. To set the output mode use the `-o` or `--output` flag
 
 ```
 python nettacker.py -i 192.168.1.1/24 --profile information_gathering -o report.sarif
@@ -546,22 +556,24 @@ python nettacker.py -i 192.168.1.1/24 --profile information_gathering --output r
 ```
 
 # API and WebUI
+
 API and WebUI are new interfaces through which you can send your commands to Nettacker. Technically WebUI was developed based on the present API to demonstrate an example of the current API and can be used as another easier interface. To start using this feature, simply run `python nettacker.py --start-api`.
+
 ```
-   ______          __      _____ _____  
-  / __ \ \        / /\    / ____|  __ \ 
+   ______          __      _____ _____
+  / __ \ \        / /\    / ____|  __ \
  | |  | \ \  /\  / /  \  | (___ | |__) |
- | |  | |\ \/  \/ / /\ \  \___ \|  ___/ 
- | |__| | \  /\  / ____ \ ____) | |     Version 0.0.1  
+ | |  | |\ \/  \/ / /\ \  \___ \|  ___/
+ | |__| | \  /\  / ____ \ ____) | |     Version 0.0.1
   \____/   \/  \/_/    \_\_____/|_|     SAME
-                          _   _      _   _             _            
-                         | \ | |    | | | |           | |            
-  github.com/zdresearch  |  \| | ___| |_| |_ __ _  ___| | _____ _ __ 
+                          _   _      _   _             _
+                         | \ | |    | | | |           | |
+  github.com/zdresearch  |  \| | ___| |_| |_ __ _  ___| | _____ _ __
   owasp.org              | . ` |/ _ \ __| __/ _` |/ __| |/ / _ \ '__|
-  zdresearch.com         | |\  |  __/ |_| || (_| | (__|   <  __/ |   
-                         |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|   
-                                               
-    
+  zdresearch.com         | |\  |  __/ |_| || (_| | (__|   <  __/ |
+                         |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|
+
+
 
  * API Key: ec5e067581f29a28d8c8bbfc6e548f02
  * Serving Flask app "api.engine" (lazy loading)
@@ -576,7 +588,7 @@ API and WebUI are new interfaces through which you can send your commands to Net
 As you can see, the API key will be a random MD5 hash every time you run the API. You don't need to set the key.
 You can also add your own SSL certificate and the key to run the API on an https connection.
 
-```python nettacker.py --start-api --api-cert ~/cert.crt --api-cert-key ~/key.pem```
+`python nettacker.py --start-api --api-cert ~/cert.crt --api-cert-key ~/key.pem`
 
 You can modify the default API config by editing the `config.py`.
 
@@ -605,6 +617,7 @@ def nettacker_api_config():
 ```
 
 ## API Options
+
 ```
   --start-api           start the API service
   --api-host API_HOST   API host address
@@ -633,71 +646,84 @@ python nettacker.py --start-api --api-cert ~/cert.crt --api-cert-key ~/key.pem
 python nettacker.py --start-api --api-access-key mysecretkey
 python nettacker.py --start-api --api-client-white-list
 python nettacker.py --start-api --api-client-white-list --api-client-white-list-ips 127.0.0.1,192.168.0.1/24,10.0.0.1-10.0.0.255
-python nettacker.py --start-api --api-access-log 
+python nettacker.py --start-api --api-access-log
 python nettacker.py --start-api --api-access-log --api-access-log-filename log.txt
-python nettacker.py --start-api --api-access-key mysecretkey --api-client-white-list --api-access-log 
-python nettacker.py --start-api --api-access-key mysecretkey --api-client-white-list --api-access-log 
+python nettacker.py --start-api --api-access-key mysecretkey --api-client-white-list --api-access-log
+python nettacker.py --start-api --api-access-key mysecretkey --api-client-white-list --api-access-log
 python nettacker.py --start-api --api-access-key mysecretkey --api-host 192.168.1.2 --api-port 80
 python nettacker.py --start-api --api-access-log --api-port 8080 --api-debug-mode
 ```
 
-* For further information on how to use the RESTful API please visit the [API page](https://github.com/zdresearch/OWASP-Nettacker/wiki/API).
+- For further information on how to use the RESTful API please visit the [API page](https://github.com/zdresearch/OWASP-Nettacker/wiki/API).
 
 ![](https://github.com/aman566/DiceGameJS/blob/master/Screencast-from-Tuesday-09-June-2020-02-32-32-IST-_online-video-cutter.com_.gif)
 
 # Database
-OWASP Nettacker, currently supports two databases:
-- SQLite
+
+OWASP Nettacker, currently supports three databases:
+
 - MySQL
+- PostgreSQL
+- SQLite
+
 The default database is SQLite. You can, however, configure the db to your liking.
+
 ## SQLite configuration
-The SQLite database can be configured in `core/config.py` file under the `_database_config()` function. Here is a sample configuration:
+
+The configurations below are for a SQLite wrapper called **APSW** (Another Python SQLite Wrapper). The configurations can be found inside `nettacker/config.py` file under the `DBConfig` class.
+
+```python
+    engine = "sqlite"
+    name = str(CWD / ".nettacker/data/nettacker.db")
+    host = ""
+    port = ""
+    username = ""
+    password = ""
+    ssl_mode = "disable"
+    journal_mode = "WAL"
+    synchronous_mode = "NORMAL"
 ```
-return {
-        "DB": "sqlite",
-        "DATABASE":  _paths()["home_path"] + "/nettacker.db", # This is the location of your db
-        "USERNAME": "",
-        "PASSWORD": "",
-        "HOST": "",
-        "PORT": ""
-    }
-```
+
+These are the default and recommended settings. Feel free to play around and change them according to need. To use SQLite database, ensure that the `engine` value is set to `sqlite` and the `name` is the path to your database. The `journal_mode` and `synchronous_mode` are chosen to be optimal for multithreaded I/O operations.
+
+> Note: You can choose to use a lite wrapper for Sqlite called APSW by setting the `use_apsw_for_sqlite` parameter inside config to True for performance enhancements.
+
 ## MySQL configuration:
-The MySQL database can be configured in `core/config.py` file under the `_database_config()` function. Here is a sample configuration:
+
+The MySQL database can be configured in `nettacker/config.py` file under the `DBConfig` class. Here is a sample configuration:
+
+```python
+    engine = "mysql"
+    name = "nettacker"
+    host = "localhost"
+    port = 3306
+    username = "root"
+    password = "some-password"
+    ssl_mode = "disable"
+    journal_mode = "WAL"
+    synchronous_mode = "NORMAL"
 ```
-return {
-        "DB": "mysql",
-        "DATABASE": "nettacker", # This is the name of your db
-        "USERNAME": "username",
-        "PASSWORD": "password",
-        "HOST": "localhost or some other host",
-        "PORT": "3306 or some other custom port"
-    }
-```
-After this configuration:
-1. Open the configuration file of mysql(`/etc/mysql/my.cnf` in case of linux) as a sudo user
-2. Add this to the end of the file :
-``` 
-[mysqld]  
-sql_mode = "STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
-```
-3.  Restart MySQL
+
+Only the relevant fields will be considered and you don't need to update/change/remove the irrelevant ones (`ssl_mode`, `journal_mode` and `synchronous_mode` aren't relevant in this case).
 
 ## Postgres Configuration
 
-The Postgres database can be configured in core/config.py file under the _database_config() function. Here is a sample configuration:
-`
-return {
-        "DB": "postgreas",
-        "DATABASE": "nettacker" # Name of db
-        "USERNAME": "username",
-        "PASSWORD": "password",
-        "HOST": "localhost or some other host",
-        "PORT": "5432 or some other custom port"
-    }
-`
-After this configuration please comment out the following line in database/db.py   `connect_args={'check_same_thread': False}` 
+The Postgres database can be configured in `nettacker/config.py` file under the `DBConfig` class. Here is a sample configuration:
 
+```python
+    engine = "postgres"
+    name = "nettacker"
+    host = "localhost"
+    port = 5432
+    username = "root"
+    password = "some-password"
+    ssl_mode = "disable"
+    journal_mode = "WAL"
+    synchronous_mode = "NORMAL"
+```
 
+In this case the irrelevant fields are `journal_mode` and `synchronous_mode`. You don't have to update/change/remove them.
+
+**Note**: If you want encryption, then set `ssl_mode` to `require`.
 
 Let me know if you have any more questions.

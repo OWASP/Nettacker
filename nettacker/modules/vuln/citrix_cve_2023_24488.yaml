@@ -12,6 +12,7 @@ info:
     - http
     - medium_severity
     - cve
+    - cve2023
     - citrix
 
 payloads:

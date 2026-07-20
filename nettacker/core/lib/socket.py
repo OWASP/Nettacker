@@ -15,9 +15,13 @@ from nettacker.core.lib.probe_sender import raw_to_bytes
 from nettacker.core.lib.probes_loader import build_probes_from_yaml
 from nettacker.core.lib.Probe_Engine import ProbeEngine
 from nettacker.core.lib.base import BaseEngine, BaseLibrary
+<<<<<<< HEAD
 from nettacker.core.utils.common import reverse_and_regex_condition, replace_dependent_response
 from nettacker.core.ip import checksum,resolve_hostname,build_ip_header,get_src_ip,ICMP_PROTO,TCP_PROTO
 
+=======
+from nettacker.core.utils.common import replace_dependent_response, reverse_and_regex_condition
+>>>>>>> master
 
 log = logging.getLogger(__name__)
 

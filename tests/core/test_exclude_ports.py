@@ -1,5 +1,5 @@
 import json
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -60,7 +60,7 @@ def test_load_with_service_discovery(
     mock_loader.return_value = mock_loader_inst
 
     mock_find_events.return_value = [
-        MagicMock(json_event='{"port": 80, "response": {"conditions_results": {"http": {}}}}')
+        json.dumps({"port": 80, "response": {"conditions_results": {"http": {}}}})
     ]
 
     module = Module("test_module", options, **module_args)
@@ -94,11 +94,9 @@ def test_sort_loops(mock_loader, mock_find_events, options, module_args):
     }
     mock_loader.return_value = mock_loader_inst
 
-    mock_event = MagicMock()
-    mock_event.json_event = json.dumps(
-        {"port": 80, "response": {"conditions_results": {"http": True}}}
-    )
-    mock_find_events.return_value = [mock_event]
+    mock_find_events.return_value = [
+        json.dumps({"port": 80, "response": {"conditions_results": {"http": True}}})
+    ]
 
     module = Module("test_module", options, **module_args)
     module.libraries = ["http"]
@@ -119,11 +117,9 @@ def test_start_unsupported_library(mock_loader, mock_find_events, options, modul
     }
     mock_loader.return_value = mock_loader_inst
 
-    mock_event = MagicMock()
-    mock_event.json_event = json.dumps(
-        {"port": 1234, "response": {"conditions_results": {"unsupported_lib": True}}}
-    )
-    mock_find_events.return_value = [mock_event]
+    mock_find_events.return_value = [
+        json.dumps({"port": 1234, "response": {"conditions_results": {"unsupported_lib": True}}})
+    ]
 
     module = Module("test_module", options, **module_args)
     module.libraries = ["http"]
@@ -179,11 +175,9 @@ def test_sort_loops_behavior(mock_loader_cls, mock_find_events, mock_parse, opti
     # This one is painful
     mock_loader_cls.side_effect = template_loader_side_effect
 
-    mock_event = MagicMock()
-    mock_event.json_event = json.dumps(
-        {"port": 80, "response": {"conditions_results": {"http": True}}}
-    )
-    mock_find_events.return_value = [mock_event]
+    mock_find_events.return_value = [
+        json.dumps({"port": 80, "response": {"conditions_results": {"http": True}}})
+    ]
 
     module = Module("test_module", options, **module_args)
     module.libraries = ["http"]
@@ -307,12 +301,8 @@ def test_load_appends_port_to_existing_protocol(
 
     mock_loader_cls.side_effect = loader_side_effect_specific
     mock_find_events.return_value = [
-        MagicMock(
-            json_event=json.dumps({"port": 80, "response": {"conditions_results": {"http": {}}}})
-        ),
-        MagicMock(
-            json_event=json.dumps({"port": 443, "response": {"conditions_results": {"http": {}}}})
-        ),
+        json.dumps({"port": 80, "response": {"conditions_results": {"http": {}}}}),
+        json.dumps({"port": 443, "response": {"conditions_results": {"http": {}}}}),
     ]
 
     module = Module("test_module", options, **module_args)

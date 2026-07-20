@@ -9,17 +9,17 @@ from pathlib import Path
 
 import texttable
 
-from nettacker import logger, all_module_severity_and_desc
+from nettacker import all_module_severity_and_desc, logger
 from nettacker.config import Config, version_info
 from nettacker.core.die import die_failure
 from nettacker.core.messages import messages as _
 from nettacker.core.utils.common import (
+    generate_compare_filepath,
     merge_logs_to_list,
     now,
     sanitize_path,
-    generate_compare_filepath,
 )
-from nettacker.database.db import get_logs_by_scan_id, submit_report_to_db, get_options_by_scan_id
+from nettacker.database.db import get_logs_by_scan_id, get_options_by_scan_id, submit_report_to_db
 
 log = logger.get_logger()
 nettacker_path_config = Config.path
@@ -86,7 +86,7 @@ def build_text_table(events):
     table_headers = ["date", "target", "module_name", "port", "logs"]
     _table.add_rows([table_headers])
     for event in events:
-        log = merge_logs_to_list(json.loads(event["json_event"]), [])
+        log = merge_logs_to_list(event, [])
         _table.add_rows(
             [
                 table_headers,
@@ -252,7 +252,7 @@ def create_report(options, scan_id):
         )
         index = 1
         for event in all_scan_logs:
-            log_list = merge_logs_to_list(json.loads(event["json_event"]), [])
+            log_list = merge_logs_to_list(event, [])
             html_table_content += log_data.table_items.format(
                 event["date"],
                 event["target"],
@@ -260,7 +260,7 @@ def create_report(options, scan_id):
                 event["port"],
                 "<br>".join(log_list) if log_list else "Detected",  # event["event"], #log
                 index,
-                html.escape(event["json_event"]),
+                html.escape(json.dumps(event)),
             )
             index += 1
         html_table_content += (

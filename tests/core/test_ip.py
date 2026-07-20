@@ -4,12 +4,12 @@ from unittest.mock import patch
 from nettacker.core.ip import (
     generate_ip_range,
     get_ip_range,
-    is_single_ipv4,
-    is_ipv4_range,
     is_ipv4_cidr,
-    is_single_ipv6,
-    is_ipv6_range,
+    is_ipv4_range,
     is_ipv6_cidr,
+    is_ipv6_range,
+    is_single_ipv4,
+    is_single_ipv6,
 )
 
 

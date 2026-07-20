@@ -1,6 +1,6 @@
 import logging
 
-from paramiko import SSHClient, AutoAddPolicy
+from paramiko import AutoAddPolicy, SSHClient
 from paramiko.auth_strategy import NoneAuth, Password
 
 from nettacker.core.lib.base import BaseEngine, BaseLibrary

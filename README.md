@@ -45,7 +45,7 @@ OWASP Nettacker is an open-source, Python-based automated penetration testing an
   Automate and scale common reconnaissance tasks like subdomain enumeration, directory brute-forcing, and default credential checks to speed up finding targets.  
 
 - **Network Vulnerability Scanning**  
-  Efficiently scan IPs, IP ranges, or entire CIDR blocks or all subdmains of the organisation in parallel using a modular, multithreaded approach for large-scale network assessments.  
+  Efficiently scan IPs, IP ranges, or entire CIDR blocks or all subdomains of the organisation in parallel using a modular, multithreaded approach for large-scale network assessments.  
 
 - **Shadow IT & Asset Discovery**  
   Use historical scan data and drift detection to uncover unmanaged or forgotten hosts, open ports/services, and subdomains appearing over time.  

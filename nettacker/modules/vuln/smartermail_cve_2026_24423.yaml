@@ -1,0 +1,67 @@
+info:
+  name: smartermail_cve_2026_24423_vuln
+  author: OWASP Nettacker Team
+  severity: 9.3
+  description: >
+    CVE-2026-24423 is a critical unauthenticated remote code execution vulnerability in SmarterTools
+    SmarterMail before build 9511. The ConnectToHub API endpoint
+    (/api/v1/settings/sysadmin/connect-to-hub) allows anonymous users to trigger arbitrary command
+    execution via attacker-controlled hubAddress parameter. This module safely probes the vulnerable
+    endpoint with a non-routable hubAddress; vulnerable versions process the anonymous request and
+    return SmarterMail-specific response data (e.g. machineName), while patched versions (9511+)
+    require authentication and reject the request.
+  reference:
+    - https://www.vulncheck.com/blog/smartermail-connecttohub-rce-cve-2026-24423
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-24423
+    - https://www.smartertools.com/smartermail/release-notes/current
+    - https://www.cve.org/CVERecord?id=CVE-2026-24423
+    - https://code-white.com/public-vulnerability-list/
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2026
+    - smartermail
+    - smartertools
+    - cisa_kev
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
+          Accept: "application/json"
+        allow_redirects: false
+        ssl: false
+        json:
+          hubAddress: "http://127.0.0.1:1"
+          oneTimePassword: "nettacker-probe"
+          nodeName: "nettacker-probe"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/settings/sysadmin/connect-to-hub"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 9998
+                - 17017
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200|400|500"
+              reverse: false
+            content:
+              regex: "machineName|ConnectToHub|setup-initial-connection|node-management|Encountered an exception"
+              reverse: false

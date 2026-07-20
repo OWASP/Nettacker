@@ -1,17 +1,17 @@
 import json
 import sys
 import types
-from unittest.mock import patch, mock_open, MagicMock
+from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 
 from nettacker.core.graph import (
-    build_graph,
     build_compare_report,
+    build_graph,
     build_text_table,
+    create_compare_report,
     create_compare_text_table,
     create_report,
-    create_compare_report,
 )
 
 

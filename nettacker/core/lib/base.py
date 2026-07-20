@@ -10,8 +10,8 @@ import yaml
 from nettacker.config import Config
 from nettacker.core.messages import messages as _
 from nettacker.core.utils.common import merge_logs_to_list, remove_sensitive_header_keys
-from nettacker.database.db import find_temp_events, submit_temp_logs_to_db, submit_logs_to_db
-from nettacker.logger import get_logger, TerminalCodes
+from nettacker.database.db import find_temp_events, submit_logs_to_db, submit_temp_logs_to_db
+from nettacker.logger import TerminalCodes, get_logger
 
 log = get_logger()
 
@@ -52,7 +52,7 @@ class BaseEngine(ABC):
             while True:
                 event = find_temp_events(target, module_name, scan_id, event_name)
                 if event:
-                    events.append(json.loads(event.event)["response"]["conditions_results"])
+                    events.append(json.loads(event)["response"]["conditions_results"])
                     break
                 time.sleep(0.1)
         return events
