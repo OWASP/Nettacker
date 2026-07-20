@@ -34,7 +34,7 @@ from nettacker.database.mysql import mysql_create_database, mysql_create_tables
 from nettacker.database.postgresql import postgres_create_database
 from nettacker.database.sqlite import sqlite_create_tables
 from nettacker.logger import TerminalCodes
-from nettacker.core.lib.probes_loader import load_probes_from_yaml
+from nettacker.core.utils.probes_loader import load_probes_from_yaml
 log = logger.get_logger()
 
 
@@ -228,7 +228,7 @@ class Nettacker(ArgParser):
             self.arguments.targets, self.arguments.set_hardware_usage
         )
         log.info(_("removing_old_db_records"))
-
+        
         for target_group in target_groups:
             for target in target_group:
                 for module_name in self.arguments.selected_modules:
@@ -265,7 +265,7 @@ class Nettacker(ArgParser):
         total_number_threads,
     ):
         options = copy.deepcopy(self.arguments)
-
+        print("hey actually running scan_target")
         socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
         module = Module(
             module_name,

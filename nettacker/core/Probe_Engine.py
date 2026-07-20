@@ -1,6 +1,6 @@
 from collections import deque
-from nettacker.core.lib.probe_sender import tcp_probe,udp_probe,tcp_probe_ssl
-from nettacker.core.lib.probes_loader import version_details
+from nettacker.core.probe_sender import tcp_probe,udp_probe,tcp_probe_ssl
+from nettacker.core.utils.probes_loader import version_details
 import re 
 import string
 from nettacker.core.lib.base import BaseEngine, BaseLibrary

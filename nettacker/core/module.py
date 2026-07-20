@@ -49,6 +49,7 @@ class Module:
             "subdomain_scan",
             "icmp_scan",
             "port_scan",
+            "version_scan",
             "ssl_weak_version_vuln",
             "ssl_weak_cipher_vuln",
             "ssl_certificate_weak_signature_vuln",
@@ -139,6 +140,7 @@ class Module:
             )
 
     def start(self):
+        print(f"Starting module {self.module_name} for target {self.target}")
         active_threads = []
 
         # counting total number of requests
@@ -159,6 +161,7 @@ class Module:
             )()
             for step in payload["steps"]:
                 for sub_step in step:
+                  #  print(f"Starting sub_step {sub_step} for target {self.target} in module {self.module_name}")
                     thread = Thread(
                         target=engine.run,
                         args=(

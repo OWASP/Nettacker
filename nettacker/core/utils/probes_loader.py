@@ -51,7 +51,7 @@ def load_probes_from_yaml():
     if _PROBES_CACHE is not None:
         return _PROBES_CACHE
 
-    with resources.files("nettacker.core.lib").joinpath("probes.yaml").open(
+    with resources.files("nettacker.core.utils").joinpath("probes.yaml").open(
         "r", encoding="utf-8"
     ) as f:
         _PROBES_CACHE = yaml.safe_load(f)
