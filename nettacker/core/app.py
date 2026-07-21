@@ -4,7 +4,6 @@ import os
 import shutil
 import socket
 import sys
-import time
 from threading import Thread
 
 import multiprocess
@@ -29,12 +28,13 @@ from nettacker.core.module import Module
 from nettacker.core.socks_proxy import set_socks_proxy
 from nettacker.core.utils import common as common_utils
 from nettacker.core.utils.common import wait_for_threads_to_finish
+from nettacker.core.utils.probes_loader import load_probes_from_yaml
 from nettacker.database.db import find_events, remove_old_logs
 from nettacker.database.mysql import mysql_create_database, mysql_create_tables
 from nettacker.database.postgresql import postgres_create_database
 from nettacker.database.sqlite import sqlite_create_tables
 from nettacker.logger import TerminalCodes
-from nettacker.core.utils.probes_loader import load_probes_from_yaml
+
 log = logger.get_logger()
 
 
@@ -228,7 +228,7 @@ class Nettacker(ArgParser):
             self.arguments.targets, self.arguments.set_hardware_usage
         )
         log.info(_("removing_old_db_records"))
-        
+
         for target_group in target_groups:
             for target in target_group:
                 for module_name in self.arguments.selected_modules:

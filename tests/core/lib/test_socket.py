@@ -121,7 +121,7 @@ class Substeps:
             "condition_type": "or",
             "conditions": {"time_response": {"regex": "", "reverse": False}},
         },
-        "logs":[{"status":"alive"}],
+        "logs": [{"status": "alive"}],
     }
 
 

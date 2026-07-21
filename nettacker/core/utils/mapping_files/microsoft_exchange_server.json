@@ -1,0 +1,25 @@
+{
+  "purl": "pkg:generic/microsoft-exchange-server",
+  "display_name": "Microsoft Exchange Server",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "msexchange_cve_2021_26855_vuln",
+      "msexchange_cve_2021_34473_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": null,
+      "range_end": null,
+      "cves": [
+        {
+          "cve_id": "CVE-2021-26855"
+        },
+        {
+          "cve_id": "CVE-2021-34473"
+        }
+      ]
+    }
+  ]
+}

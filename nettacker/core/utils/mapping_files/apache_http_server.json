@@ -1,0 +1,31 @@
+{
+  "purl": "pkg:generic/apache-http-server",
+  "display_name": "Apache HTTP Server",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "apache_cve_2021_41773_vuln",
+      "apache_cve_2021_42013_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "2.4.49",
+      "range_end": "2.4.50",
+      "cves": [
+        {
+          "cve_id": "CVE-2021-41773"
+        }
+      ]
+    },
+    {
+      "range_start": "2.4.50",
+      "range_end": "2.4.51",
+      "cves": [
+        {
+          "cve_id": "CVE-2021-42013"
+        }
+      ]
+    }
+  ]
+}

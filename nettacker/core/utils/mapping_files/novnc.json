@@ -1,0 +1,21 @@
+{
+  "purl": "pkg:npm/@novnc/novnc",
+  "display_name": "noVNC",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "novnc_cve_2021_3654_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": null,
+      "range_end": null,
+      "cves": [
+        {
+          "cve_id": "CVE-2021-3654"
+        }
+      ]
+    }
+  ]
+}

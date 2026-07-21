@@ -1,0 +1,21 @@
+{
+  "purl": "pkg:generic/tjws",
+  "display_name": "Tiny Java Web Server (TJWS)",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "tjws_cve_2021_37573_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": null,
+      "range_end": null,
+      "cves": [
+        {
+          "cve_id": "CVE-2021-37573"
+        }
+      ]
+    }
+  ]
+}

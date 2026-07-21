@@ -1,0 +1,23 @@
+{
+  "purl": "pkg:generic/ivanti-epmm",
+  "display_name": "Ivanti Endpoint Manager Mobile (EPMM)",
+  "nettacker_modules": {
+    "scan": [
+      "ivanti_epmm_lastpatcheddate_scan"
+    ],
+    "vuln": [
+      "ivanti_epmm_cve_2023_35082_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": null,
+      "range_end": null,
+      "cves": [
+        {
+          "cve_id": "CVE-2023-35082"
+        }
+      ]
+    }
+  ]
+}

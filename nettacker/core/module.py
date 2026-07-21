@@ -40,7 +40,7 @@ class Module:
                     module_extra_args
                 ]
         self.target = target
-        
+
         self.scan_id = scan_id
         self.skip_service_discovery = options.skip_service_discovery
 
@@ -161,7 +161,7 @@ class Module:
             )()
             for step in payload["steps"]:
                 for sub_step in step:
-                  #  print(f"Starting sub_step {sub_step} for target {self.target} in module {self.module_name}")
+                    #  print(f"Starting sub_step {sub_step} for target {self.target} in module {self.module_name}")
                     thread = Thread(
                         target=engine.run,
                         args=(

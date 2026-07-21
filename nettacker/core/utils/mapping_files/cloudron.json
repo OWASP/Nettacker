@@ -1,0 +1,21 @@
+{
+  "purl": "pkg:generic/cloudron",
+  "display_name": "Cloudron",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "cloudron_cve_2021_40868_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": null,
+      "range_end": null,
+      "cves": [
+        {
+          "cve_id": "CVE-2021-40868"
+        }
+      ]
+    }
+  ]
+}

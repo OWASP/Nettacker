@@ -1,0 +1,23 @@
+{
+  "purl": "pkg:wordpress-plugin/dzs-zoomsounds",
+  "display_name": "ZoomSounds WordPress Audio Player",
+  "nettacker_modules": {
+    "scan": [
+      "wp_plugin_scan"
+    ],
+    "vuln": [
+      "wp_plugin_cve_2021_39316_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "0.0.0",
+      "range_end": "6.46.0",
+      "cves": [
+        {
+          "cve_id": "CVE-2021-39316"
+        }
+      ]
+    }
+  ]
+}

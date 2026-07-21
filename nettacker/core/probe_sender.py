@@ -1,6 +1,7 @@
 import socket
-import time
 import ssl
+import time
+
 from nettacker.core.ip import is_single_ipv4, is_single_ipv6
 
 
@@ -14,14 +15,14 @@ def raw_to_bytes(payload: str) -> bytes:
 def tcp_probe(host: str, port: int, payload: str = "", timeout_ms=5000, tcpwrappedms=3000):
     timeout = timeout_ms / 1000.0
     tcp_wrapped = tcpwrappedms / 1000.0
-    
+
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(timeout)
-    
+
     tcp_wrap = False
     peer_name = None
     chunks = []
-    
+
     if not isinstance(payload, bytes):
         try:
             payload = raw_to_bytes(payload)
@@ -32,15 +33,15 @@ def tcp_probe(host: str, port: int, payload: str = "", timeout_ms=5000, tcpwrapp
     try:
         s.connect((host, port))
         peer_name = s.getpeername()
-        
+
         if payload:
             s.sendall(payload)
-            
+
         try:
             s.shutdown(socket.SHUT_WR)
         except OSError:
             pass  # Peer might have closed the socket already
-        
+
         start = time.time()
         while True:
             remaining_time = timeout - (time.time() - start)
@@ -54,11 +55,11 @@ def tcp_probe(host: str, port: int, payload: str = "", timeout_ms=5000, tcpwrapp
                 chunks.append(data)
             except socket.timeout:
                 break  # Break loop to return what we captured so far
-                
+
         elapsed = time.time() - start
         if elapsed <= tcp_wrapped and not chunks:
             tcp_wrap = True
-            
+
     except (socket.timeout, OSError):
         pass
     finally:
@@ -82,11 +83,11 @@ def tcp_probe_ssl(
     payload: str = "",
     timeout_ms=5000,
     tcpwrappedms=3000,
-    server_hostname=None
+    server_hostname=None,
 ):
     if not isinstance(payload, bytes):
         payload = raw_to_bytes(payload)
-        
+
     # SNI configuration fallback
     if not server_hostname:
         if not is_single_ipv4(host) and not is_single_ipv6(host):
@@ -101,7 +102,7 @@ def tcp_probe_ssl(
     context = ssl.create_default_context()
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
-    
+
     chunks = []
     tcp_wrap = False
     peer_name = None
@@ -113,9 +114,7 @@ def tcp_probe_ssl(
         raw_sock.connect((host, port))
 
         ssl_sock = context.wrap_socket(
-            raw_sock,
-            server_hostname=server_hostname,
-            do_handshake_on_connect=True
+            raw_sock, server_hostname=server_hostname, do_handshake_on_connect=True
         )
 
         peer_name = ssl_sock.getpeername()
@@ -142,7 +141,7 @@ def tcp_probe_ssl(
 
         elapsed = time.time() - start
         tcp_wrap = elapsed <= tcp_wrapped and not chunks
-        
+
     except (OSError, ssl.SSLError):
         pass
     finally:
@@ -164,19 +163,19 @@ def tcp_probe_ssl(
         "ssl_flag": True,
         "peer_name": peer_name or "",
         "raw_bytes": raw,
-        "cipher": cipher
+        "cipher": cipher,
     }
 
-        
+
 def udp_probe(host: str, port: int, payload: str = "", timeout_ms=5000, max_tries=1):
     timeout = timeout_ms / 1000.0
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.settimeout(timeout)
     addr = (host, port)
-    
+
     if not isinstance(payload, bytes):
         payload = raw_to_bytes(payload)
-        
+
     raw = b""
     try:
         for _ in range(max_tries):
@@ -184,7 +183,7 @@ def udp_probe(host: str, port: int, payload: str = "", timeout_ms=5000, max_trie
                 s.sendto(payload, addr)
                 data, peer = s.recvfrom(4096)
                 raw += data
-                break 
+                break
             except socket.timeout:
                 continue
     except Exception:

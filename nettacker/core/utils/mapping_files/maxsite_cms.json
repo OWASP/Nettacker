@@ -1,0 +1,21 @@
+{
+  "purl": "pkg:generic/maxsite-cms",
+  "display_name": "MaxSite CMS",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "maxsite_cms_cve_2021_35265_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": null,
+      "range_end": null,
+      "cves": [
+        {
+          "cve_id": "CVE-2021-35265"
+        }
+      ]
+    }
+  ]
+}

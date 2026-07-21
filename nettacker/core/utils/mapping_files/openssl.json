@@ -1,0 +1,52 @@
+{
+  "purl": "pkg:generic/openssl",
+  "display_name": "OpenSSL",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "CCS_injection_vuln",
+      "heartbleed_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "0.9.8",
+      "range_end": "0.9.8za",
+      "cves": [
+        {
+          "cve_id": "CVE-2014-0224"
+        }
+      ]
+    },
+    {
+      "range_start": "1.0.0",
+      "range_end": "1.0.0m",
+      "cves": [
+        {
+          "cve_id": "CVE-2014-0224"
+        }
+      ]
+    },
+    {
+      "range_start": "1.0.1",
+      "range_end": "1.0.1g",
+      "cves": [
+        {
+          "cve_id": "CVE-2014-0160"
+        },
+        {
+          "cve_id": "CVE-2014-0224"
+        }
+      ]
+    },
+    {
+      "range_start": "1.0.1g",
+      "range_end": "1.0.1h",
+      "cves": [
+        {
+          "cve_id": "CVE-2014-0224"
+        }
+      ]
+    }
+  ]
+}

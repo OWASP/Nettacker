@@ -1,0 +1,24 @@
+{
+  "purl": "pkg:generic/adobe-experience-manager",
+  "display_name": "Adobe Experience Manager",
+  "nettacker_modules": {
+    "scan": [
+      "adobe_aem_lastpatcheddate_scan"
+    ],
+    "vuln": []
+  },
+  "versions": [
+    {
+      "range_start": "0.0.0",
+      "range_end": "6.5.23",
+      "cves": [
+        {
+          "cve_id": "CVE-2025-46837"
+        },
+        {
+          "cve_id": "CVE-2025-46840"
+        }
+      ]
+    }
+  ]
+}

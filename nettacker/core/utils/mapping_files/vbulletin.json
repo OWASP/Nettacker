@@ -1,0 +1,21 @@
+{
+  "purl": "pkg:generic/vbulletin",
+  "display_name": "vBulletin",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "vbulletin_cve_2019_16759_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "5.0.0",
+      "range_end": "5.5.5",
+      "cves": [
+        {
+          "cve_id": "CVE-2019-16759"
+        }
+      ]
+    }
+  ]
+}

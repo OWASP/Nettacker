@@ -1,0 +1,21 @@
+{
+  "purl": "pkg:maven/org.apache.ofbiz/framework",
+  "display_name": "Apache OFBiz",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "apache_ofbiz_cve_2024_38856_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "0.0.0",
+      "range_end": "18.12.15",
+      "cves": [
+        {
+          "cve_id": "CVE-2024-38856"
+        }
+      ]
+    }
+  ]
+}

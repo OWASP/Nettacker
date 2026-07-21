@@ -1,0 +1,21 @@
+{
+  "purl": "pkg:generic/manageengine-adselfservice-plus",
+  "display_name": "ManageEngine ADSelfService Plus",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "zoho_cve_2021_40539_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "0.0.0",
+      "range_end": "6114.0.0",
+      "cves": [
+        {
+          "cve_id": "CVE-2021-40539"
+        }
+      ]
+    }
+  ]
+}

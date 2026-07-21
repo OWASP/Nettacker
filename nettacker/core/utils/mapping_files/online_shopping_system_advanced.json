@@ -1,0 +1,25 @@
+{
+  "purl": "pkg:generic/online-shopping-system-advanced",
+  "display_name": "PuneethReddyHC Online Shopping System Advanced",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "puneethreddyhc_sqli_cve_2021_41648_vuln",
+      "puneethreddyhc_sqli_cve_2021_41649_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "1.0.0",
+      "range_end": null,
+      "cves": [
+        {
+          "cve_id": "CVE-2021-41648"
+        },
+        {
+          "cve_id": "CVE-2021-41649"
+        }
+      ]
+    }
+  ]
+}

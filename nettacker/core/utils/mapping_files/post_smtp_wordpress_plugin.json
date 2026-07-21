@@ -1,0 +1,23 @@
+{
+  "purl": "pkg:wordpress-plugin/post-smtp",
+  "display_name": "Post SMTP Mailer",
+  "nettacker_modules": {
+    "scan": [
+      "wp_plugin_scan"
+    ],
+    "vuln": [
+      "wp_plugin_cve_2023_6875_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "0.0.0",
+      "range_end": "2.8.8",
+      "cves": [
+        {
+          "cve_id": "CVE-2023-6875"
+        }
+      ]
+    }
+  ]
+}

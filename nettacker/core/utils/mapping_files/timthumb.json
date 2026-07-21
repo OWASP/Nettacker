@@ -1,0 +1,21 @@
+{
+  "purl": "pkg:generic/timthumb",
+  "display_name": "TimThumb",
+  "nettacker_modules": {
+    "scan": [
+      "wp_timethumbs_scan"
+    ],
+    "vuln": []
+  },
+  "versions": [
+    {
+      "range_start": "0.0.0",
+      "range_end": "1.33.0",
+      "cves": [
+        {
+          "cve_id": "CVE-2011-4106"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "purl": "pkg:github/siyuan-note/siyuan",
+  "display_name": "SiYuan",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "siyuan_cve_2026_34605_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "3.6.0",
+      "range_end": "3.6.2",
+      "cves": [
+        {
+          "cve_id": "CVE-2026-34605"
+        }
+      ]
+    }
+  ]
+}

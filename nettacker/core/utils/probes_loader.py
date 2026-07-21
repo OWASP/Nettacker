@@ -1,10 +1,23 @@
-import yaml
 import re
 from importlib import resources
+
+import yaml
+
+
 class version_details:
-    def __init__(self, raw ,version_template=None , product=None , info=None ,hostname=None,
-                 operating_device=None, device_type=None ,
-                 cpe_service=None , cpe_os=None , cpe_h=None):
+    def __init__(
+        self,
+        raw,
+        version_template=None,
+        product=None,
+        info=None,
+        hostname=None,
+        operating_device=None,
+        device_type=None,
+        cpe_service=None,
+        cpe_os=None,
+        cpe_h=None,
+    ):
         self.raw = raw
         self.version_template = version_template
         self.product = product
@@ -15,21 +28,41 @@ class version_details:
         self.cpe_service = cpe_service
         self.cpe_os = cpe_os
         self.cpe_h = cpe_h
-        
-        
+
+
 class Signature:
-    def __init__(self , service , regex ,sig_type="match", version_details=None, ignore_case=False,dotall=False ):
+    def __init__(
+        self,
+        service,
+        regex,
+        sig_type="match",
+        version_details=None,
+        ignore_case=False,
+        dotall=False,
+    ):
         self.sig_type = sig_type
         self.service = service
         self.regex = regex
         self.version_details = version_details
         self.ignore_case = ignore_case
         self.dotall = dotall
-        
+
+
 class Probe:
-    def __init__(self , name , protocol , totalwaits=6000 , tcpwrappedms=3000 ,
-                 rarity=5 , ports=None , sslports=None , fallbacks=None ,
-                 probe_string="", no_payload=False , Signatures=None):
+    def __init__(
+        self,
+        name,
+        protocol,
+        totalwaits=6000,
+        tcpwrappedms=3000,
+        rarity=5,
+        ports=None,
+        sslports=None,
+        fallbacks=None,
+        probe_string="",
+        no_payload=False,
+        Signatures=None,
+    ):
         self.name = name
         self.protocol = protocol
         self.totalwaits = totalwaits
@@ -41,10 +74,12 @@ class Probe:
         self.probe_string = probe_string
         self.no_payload = no_payload
         self.Signatures = Signatures or []
-  
+
 
 _PROBES_CACHE = None
-_probes_by_name={}
+_probes_by_name = {}
+
+
 def load_probes_from_yaml():
     global _PROBES_CACHE
 
@@ -63,22 +98,22 @@ def load_probes_from_yaml():
     global _probes_by_name
     for p in data["probes"]:
         name = p["name"]
-        protocol = p.get("protocol","tcp").lower()
-        totalwaits = int(p.get("totalwaits",6000))
-        tcpwrappedms = int(p.get("tcpwrappedms",3000))
-        rarity = int(p.get("rarity",5))
-        ports = p.get("ports",[])
-        sslports = p.get("sslports",[])
-        fallbacks = p.get("fallbacks",[])
+        protocol = p.get("protocol", "tcp").lower()
+        totalwaits = int(p.get("totalwaits", 6000))
+        tcpwrappedms = int(p.get("tcpwrappedms", 3000))
+        rarity = int(p.get("rarity", 5))
+        ports = p.get("ports", [])
+        sslports = p.get("sslports", [])
+        fallbacks = p.get("fallbacks", [])
         fallbacks.append("NULL")
-        probe_string = p.get("probe_string","")
-        no_payload = p.get("no_payload" ,False)
-        
+        probe_string = p.get("probe_string", "")
+        no_payload = p.get("no_payload", False)
+
         signatures = []
-        for s in p.get("signatures",[]):
-            sig_type = s.get("type","match")
-            service = s.get("service","")
-            pattern = s.get("regex","")
+        for s in p.get("signatures", []):
+            sig_type = s.get("type", "match")
+            service = s.get("service", "")
+            pattern = s.get("regex", "")
             ignore_case = bool(s.get("Ignore_case", False))
             new_line_specifier = bool(s.get("New_line_specifier", False))
             try:
@@ -88,7 +123,7 @@ def load_probes_from_yaml():
                     flags |= re.IGNORECASE
                 if new_line_specifier:
                     flags |= re.DOTALL
-                regex = re.compile(regex ,flags)
+                regex = re.compile(regex, flags)
             except Exception as e:
                 print(f"Probe failed {pattern} with {e}")
             v = s.get("version", {}) or {}
@@ -107,14 +142,14 @@ def load_probes_from_yaml():
             signatures.append(
                 Signature(
                     service=service,
-                    regex =regex,
+                    regex=regex,
                     sig_type=sig_type,
-                    version_details = version,
-                    ignore_case= ignore_case,
-                    dotall= new_line_specifier,
+                    version_details=version,
+                    ignore_case=ignore_case,
+                    dotall=new_line_specifier,
                 )
             )
-            
+
         probe = Probe(
             name=name,
             protocol=protocol,
@@ -129,9 +164,9 @@ def load_probes_from_yaml():
             Signatures=signatures,
         )
         _probes_by_name[name] = probe
-        
+
     print("probes loaded!")
-        
+
+
 def build_probes_from_yaml():
     return _probes_by_name
-     

@@ -1,14 +1,13 @@
 import json
+import random
+import socket
+import struct
 
 import netaddr
 import requests
-import struct
-import socket
-import random
 
 ICMP_PROTO = socket.getprotobyname("icmp")
 TCP_PROTO = socket.getprotobyname("tcp")
-
 
 
 def generate_ip_range(ip_range):
@@ -129,20 +128,20 @@ def is_ipv6_cidr(ip_range):
         return False
 
 
-
 def checksum(data):
     s = 0
     for i in range(0, len(data), 2):
-        word = data[i] << 8 | (data[i+1] if i+1 < len(data) else 0)
+        word = data[i] << 8 | (data[i + 1] if i + 1 < len(data) else 0)
         s += word
-    s = (s >> 16) + (s & 0xffff)
+    s = (s >> 16) + (s & 0xFFFF)
     s += s >> 16
-    return ~s & 0xffff
+    return ~s & 0xFFFF
+
 
 def build_ip_header(src, dst):
     return struct.pack(
-        '!BBHHHBBH4s4s',
-        69,     # Version + IHL
+        "!BBHHHBBH4s4s",
+        69,  # Version + IHL
         0,
         40,
         random.randint(0, 65535),
@@ -151,8 +150,9 @@ def build_ip_header(src, dst):
         TCP_PROTO,
         0,
         socket.inet_aton(src),
-        socket.inet_aton(dst)
+        socket.inet_aton(dst),
     )
+
 
 def get_src_ip(dst_ip):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -164,9 +164,9 @@ def get_src_ip(dst_ip):
         s.close()
     return src_ip
 
+
 def resolve_hostname(hostname):
     try:
         return socket.gethostbyname(hostname)
     except socket.gaierror:
         return None
-    

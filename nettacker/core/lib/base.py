@@ -6,7 +6,6 @@ from abc import ABC
 from datetime import datetime
 
 import yaml
-import traceback
 
 from nettacker.config import Config
 from nettacker.core.messages import messages as _
@@ -290,7 +289,7 @@ class BaseEngine(ABC):
             try:
                 response = action(**sub_step)
                 break
-            except:
+            except Exception:
                 response = []
 
         sub_step["method"] = backup_method

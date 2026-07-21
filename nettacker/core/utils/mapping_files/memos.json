@@ -1,0 +1,21 @@
+{
+  "purl": "pkg:github/usememos/memos",
+  "display_name": "Memos",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "memos_cve_2025_22952_ssrf_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": null,
+      "range_end": null,
+      "cves": [
+        {
+          "cve_id": "CVE-2025-22952"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "purl": "pkg:generic/geoserver",
+  "display_name": "GeoServer",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "geoserver_cve_2024_36401_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "2.15.0",
+      "range_end": "2.23.6",
+      "cves": [
+        {
+          "cve_id": "CVE-2024-36401"
+        }
+      ]
+    },
+    {
+      "range_start": "2.24.0",
+      "range_end": "2.24.4",
+      "cves": [
+        {
+          "cve_id": "CVE-2024-36401"
+        }
+      ]
+    },
+    {
+      "range_start": "2.25.0",
+      "range_end": "2.25.2",
+      "cves": [
+        {
+          "cve_id": "CVE-2024-36401"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "purl": "pkg:generic/sonicwall-sma",
+  "display_name": "SonicWall SMA / SSL VPN",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "sonicwall_sslvpn_cve_2024_53704_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": null,
+      "range_end": null,
+      "cves": [
+        {
+          "cve_id": "CVE-2024-53704"
+        }
+      ]
+    }
+  ]
+}

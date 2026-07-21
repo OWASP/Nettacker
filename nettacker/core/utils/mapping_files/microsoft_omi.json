@@ -1,0 +1,21 @@
+{
+  "purl": "pkg:github/microsoft/omi",
+  "display_name": "Microsoft Open Management Infrastructure (OMI)",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "omigod_cve_2021_38647_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "0.0.0",
+      "range_end": "1.6.8-1",
+      "cves": [
+        {
+          "cve_id": "CVE-2021-38647"
+        }
+      ]
+    }
+  ]
+}

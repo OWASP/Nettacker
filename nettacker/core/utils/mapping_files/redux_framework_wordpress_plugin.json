@@ -1,0 +1,23 @@
+{
+  "purl": "pkg:wordpress-plugin/redux-framework",
+  "display_name": "Gutenberg Template Library & Redux Framework",
+  "nettacker_modules": {
+    "scan": [
+      "wp_plugin_scan"
+    ],
+    "vuln": [
+      "wp_plugin_cve_2021_38314_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "0.0.0",
+      "range_end": "4.2.13",
+      "cves": [
+        {
+          "cve_id": "CVE-2021-38314"
+        }
+      ]
+    }
+  ]
+}

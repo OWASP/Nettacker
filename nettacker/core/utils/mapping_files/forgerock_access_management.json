@@ -1,0 +1,21 @@
+{
+  "purl": "pkg:generic/forgerock-access-management",
+  "display_name": "ForgeRock Access Management",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "forgerock_am_cve_2021_35464_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": null,
+      "range_end": null,
+      "cves": [
+        {
+          "cve_id": "CVE-2021-35464"
+        }
+      ]
+    }
+  ]
+}

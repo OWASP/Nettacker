@@ -1,0 +1,21 @@
+{
+  "purl": "pkg:generic/exponent-cms",
+  "display_name": "Exponent CMS",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "exponent_cms_cve_2021_38751_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": null,
+      "range_end": null,
+      "cves": [
+        {
+          "cve_id": "CVE-2021-38751"
+        }
+      ]
+    }
+  ]
+}

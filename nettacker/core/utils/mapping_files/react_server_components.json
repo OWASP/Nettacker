@@ -1,0 +1,39 @@
+{
+  "purl": "pkg:npm/react-server-dom-webpack",
+  "display_name": "React Server Components",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "nextjs_cve_2025_55182_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "19.0.0",
+      "range_end": "19.0.1",
+      "cves": [
+        {
+          "cve_id": "CVE-2025-55182"
+        }
+      ]
+    },
+    {
+      "range_start": "19.1.0",
+      "range_end": "19.1.2",
+      "cves": [
+        {
+          "cve_id": "CVE-2025-55182"
+        }
+      ]
+    },
+    {
+      "range_start": "19.2.0",
+      "range_end": "19.2.1",
+      "cves": [
+        {
+          "cve_id": "CVE-2025-55182"
+        }
+      ]
+    }
+  ]
+}

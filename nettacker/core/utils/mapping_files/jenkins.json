@@ -1,0 +1,24 @@
+{
+  "purl": "pkg:maven/org.jenkins-ci.main/jenkins-core",
+  "display_name": "Jenkins",
+  "nettacker_modules": {
+    "scan": [
+      "jenkins_version_scan"
+    ],
+    "vuln": []
+  },
+  "versions": [
+    {
+      "range_start": "0.0.0",
+      "range_end": "2.442.0",
+      "cves": [
+        {
+          "cve_id": "CVE-2024-23897"
+        },
+        {
+          "cve_id": "CVE-2024-23898"
+        }
+      ]
+    }
+  ]
+}

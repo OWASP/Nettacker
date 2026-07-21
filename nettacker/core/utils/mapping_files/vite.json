@@ -1,0 +1,57 @@
+{
+  "purl": "pkg:npm/vite",
+  "display_name": "Vite",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "vite_cve_2025_31125_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "4.0.0",
+      "range_end": "4.5.11",
+      "cves": [
+        {
+          "cve_id": "CVE-2025-31125"
+        }
+      ]
+    },
+    {
+      "range_start": "5.0.0",
+      "range_end": "5.4.16",
+      "cves": [
+        {
+          "cve_id": "CVE-2025-31125"
+        }
+      ]
+    },
+    {
+      "range_start": "6.0.0",
+      "range_end": "6.0.13",
+      "cves": [
+        {
+          "cve_id": "CVE-2025-31125"
+        }
+      ]
+    },
+    {
+      "range_start": "6.1.0",
+      "range_end": "6.1.3",
+      "cves": [
+        {
+          "cve_id": "CVE-2025-31125"
+        }
+      ]
+    },
+    {
+      "range_start": "6.2.0",
+      "range_end": "6.2.4",
+      "cves": [
+        {
+          "cve_id": "CVE-2025-31125"
+        }
+      ]
+    }
+  ]
+}

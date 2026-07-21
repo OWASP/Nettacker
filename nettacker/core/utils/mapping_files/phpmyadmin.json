@@ -1,0 +1,51 @@
+{
+  "purl": "pkg:composer/phpmyadmin/phpmyadmin",
+  "display_name": "phpMyAdmin",
+  "nettacker_modules": {
+    "scan": [
+      "pma_scan"
+    ],
+    "vuln": []
+  },
+  "versions": [
+    {
+      "range_start": "0.0.0",
+      "range_end": "4.8.0",
+      "cves": [
+        {
+          "cve_id": "CVE-2020-26934"
+        }
+      ]
+    },
+    {
+      "range_start": "4.8.0",
+      "range_end": "4.8.2",
+      "cves": [
+        {
+          "cve_id": "CVE-2018-12613"
+        },
+        {
+          "cve_id": "CVE-2020-26934"
+        }
+      ]
+    },
+    {
+      "range_start": "4.8.2",
+      "range_end": "4.9.7",
+      "cves": [
+        {
+          "cve_id": "CVE-2020-26934"
+        }
+      ]
+    },
+    {
+      "range_start": "5.0.0",
+      "range_end": "5.0.4",
+      "cves": [
+        {
+          "cve_id": "CVE-2020-26934"
+        }
+      ]
+    }
+  ]
+}

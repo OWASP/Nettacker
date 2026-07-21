@@ -1,0 +1,54 @@
+{
+  "purl": "pkg:generic/bftpd",
+  "display_name": "Bftpd",
+  "nettacker_modules": {
+    "scan": [],
+    "vuln": [
+      "Bftpd_double_free_vuln",
+      "Bftpd_memory_leak_vuln",
+      "Bftpd_parsecmd_overflow_vuln",
+      "Bftpd_remote_dos_vuln"
+    ]
+  },
+  "versions": [
+    {
+      "range_start": "0.0.0",
+      "range_end": "1.8.0",
+      "cves": [
+        {
+          "cve_id": "CVE-2007-2010"
+        },
+        {
+          "cve_id": "CVE-2007-2051"
+        },
+        {
+          "cve_id": "CVE-2009-4593"
+        },
+        {
+          "cve_id": "CVE-2017-16892"
+        }
+      ]
+    },
+    {
+      "range_start": "1.8.0",
+      "range_end": "2.4.0",
+      "cves": [
+        {
+          "cve_id": "CVE-2009-4593"
+        },
+        {
+          "cve_id": "CVE-2017-16892"
+        }
+      ]
+    },
+    {
+      "range_start": "2.4.0",
+      "range_end": "4.7.0",
+      "cves": [
+        {
+          "cve_id": "CVE-2017-16892"
+        }
+      ]
+    }
+  ]
+}
