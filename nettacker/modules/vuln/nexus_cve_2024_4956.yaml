@@ -59,6 +59,11 @@ payloads:
             status_code:
               regex: "200"
               reverse: false
+            
+            headers:
+              Content-Type:
+                regex: "^application/octet-stream$"
+                reverse: false
 
             content:
               regex: "root:.:0:0:"
