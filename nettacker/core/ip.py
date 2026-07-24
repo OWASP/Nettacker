@@ -1,14 +1,7 @@
 import json
-import random
-import socket
-import struct
 
 import netaddr
 import requests
-
-ICMP_PROTO = socket.getprotobyname("icmp")
-TCP_PROTO = socket.getprotobyname("tcp")
-
 
 def generate_ip_range(ip_range):
     """
@@ -114,7 +107,6 @@ def is_ipv6_range(ip_range):
         )
     except Exception:
         return False
-
 
 def is_ipv6_cidr(ip_range):
     try:
