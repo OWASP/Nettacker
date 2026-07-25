@@ -1,10 +1,13 @@
 import csv
+import io
 import json
 import multiprocessing
 import os
 import random
 import string
 import time
+from pathlib import Path
+from pathlib import PureWindowsPath
 from threading import Thread
 from types import SimpleNamespace
 
@@ -55,6 +58,14 @@ nettacker_path_config = Config.path
 nettacker_application_config = Config.settings.as_dict()
 nettacker_application_config.update(Config.api.as_dict())
 del nettacker_application_config["api_access_key"]
+
+
+def _build_download_filename(report_path_filename: str, extension: str) -> str:
+    """Return a cross-platform report filename for download endpoints."""
+    filename = Path(report_path_filename).name
+    if filename == report_path_filename:
+        filename = PureWindowsPath(report_path_filename).name
+    return Path(filename).with_suffix(extension).name
 
 
 @app.errorhandler(400)
@@ -409,8 +420,10 @@ def get_results_json():
     if not result_id:
         return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
     scan_details = session.query(Report).filter(Report.id == result_id).first()
+    if not scan_details:
+        return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
     json_object = json.dumps(get_logs_by_scan_id(scan_details.scan_unique_id))
-    filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".json"
+    filename = _build_download_filename(scan_details.report_path_filename, ".json")
     return Response(
         json_object,
         mimetype="application/json",
@@ -432,18 +445,20 @@ def get_results_csv():  # todo: need to fix time format
     if not result_id:
         return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
     scan_details = session.query(Report).filter(Report.id == result_id).first()
+    if not scan_details:
+        return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
     data = get_logs_by_scan_id(scan_details.scan_unique_id)
     if not data:
         return jsonify(structure(status="error", msg=_("no_scan_data_found"))), 404
     keys = data[0].keys()
-    filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".csv"
-    with open(filename, "w") as report_path_filename:
-        dict_writer = csv.DictWriter(report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL)
-        dict_writer.writeheader()
-        for event in data:
-            dict_writer.writerow({key: value for key, value in event.items() if key in keys})
-    with open(filename, "r") as report_path_filename:
-        reader = report_path_filename.read()
+    filename = _build_download_filename(scan_details.report_path_filename, ".csv")
+    report_buffer = io.StringIO()
+    dict_writer = csv.DictWriter(report_buffer, fieldnames=keys, quoting=csv.QUOTE_ALL)
+    dict_writer.writeheader()
+    for event in data:
+        dict_writer.writerow({key: value for key, value in event.items() if key in keys})
+    report_buffer.seek(0)
+    reader = report_buffer.getvalue()
     return Response(
         reader,
         mimetype="text/csv",
