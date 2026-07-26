@@ -180,7 +180,8 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**vite_cve_2025_31125_vuln**' - check the target for CVE-2025-31125
 - '**vbulletin_cve_2019_16759_vuln**' - check the target for vBulletin RCE CVE-2019-16759 vulnerability
 - '**accela_cve_2021_34370_vuln**' – check for authentication bypass vulnerability in Accela Civic Platform
-- '**adobe_coldfusion_cve_2023_26360_vuln**' – check for remote code execution vulnerability in Adobe ColdFusion
+- '**adobe_coldfusion_cve_2023_26360_vuln**' – check the target for Adobe ColdFusion CVE-2023-26360 insecure deserialization RCE vulnerability
+- '**adobe_coldfusion_cve_2026_48282_vuln**' - check the target for Adobe ColdFusion CVE-2026-48282 RDS path traversal vulnerability
 - '**aiohttp_cve_2024_23334_vuln**' – check the target for CVE-2024-23334
 - '**apache_cve_2021_41773_vuln**' – check for path traversal vulnerability in Apache HTTP Server
 - '**apache_cve_2021_42013_vuln**' – check for remote code execution vulnerability in Apache HTTP Server
