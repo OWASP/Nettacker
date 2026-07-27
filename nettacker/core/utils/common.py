@@ -31,7 +31,19 @@ def replace_dependent_response(log, response_dependent):
         return log
 
 
-def merge_logs_to_list(result, log_list=[]):
+def merge_logs_to_list(result, log_list=None):
+    """Recursively extract all 'log' values from a nested dict into a flat deduplicated list.
+
+    Args:
+        result: A dict (possibly nested) containing 'log' keys to extract.
+        log_list: Accumulator list for recursive calls. Defaults to a new empty list
+            on each top-level call to avoid mutable default argument pitfalls.
+
+    Returns:
+        A deduplicated list of extracted log values.
+    """
+    if log_list is None:
+        log_list = []
     if isinstance(result, dict):
         if "json_event" in list(result.keys()):
             if not isinstance(result["json_event"], dict):
@@ -56,11 +68,22 @@ def reverse_and_regex_condition(regex, reverse):
 
 
 def wait_for_threads_to_finish(threads, maximum=None, terminable=False, sub_process=False):
+    """Wait until all threads finish or the count drops below maximum.
+
+    Args:
+        threads: List of Thread (or Process) objects to monitor. Dead entries
+            are removed in-place each iteration.
+        maximum: If set, return early once fewer than *maximum* threads remain.
+        terminable: If True, forcibly terminate surviving threads on KeyboardInterrupt.
+        sub_process: If True, kill surviving sub-processes on KeyboardInterrupt.
+
+    Returns:
+        True when all threads completed (or fell below *maximum*),
+        False if interrupted by KeyboardInterrupt.
+    """
     while threads:
         try:
-            for thread in threads:
-                if not thread.is_alive():
-                    threads.remove(thread)
+            threads[:] = [t for t in threads if t.is_alive()]
             if maximum and len(threads) < maximum:
                 break
             time.sleep(0.01)
@@ -168,29 +191,20 @@ def find_args_value(args_name):
         return None
 
 
-def re_address_repeaters_key_name(key_name):
-    return "".join(["['" + _key + "']" for _key in key_name.split("/")[:-1]])
+def set_nested_value(d, key_path, value):
+    keys = [k for k in key_path.split("/") if k]
+    for key in keys[:-1]:
+        d = d[key]
+    d[keys[-1]] = value
 
 
 def generate_new_sub_steps(sub_steps, data_matrix, arrays):
     original_sub_steps = copy.deepcopy(sub_steps)
     steps_array = []
+    array_names = list(arrays.keys())
     for array in data_matrix:
-        array_name_position = 0
-        for array_name in arrays:
-            for sub_step in sub_steps:
-                exec(
-                    "original_sub_steps{key_name} = {matrix_value}".format(
-                        key_name=re_address_repeaters_key_name(array_name),
-                        matrix_value=(
-                            '"' + str(array[array_name_position]) + '"'
-                            if isinstance(array[array_name_position], int)
-                            or isinstance(array[array_name_position], str)
-                            else array[array_name_position]
-                        ),
-                    )
-                )
-            array_name_position += 1
+        for i, array_name in enumerate(array_names):
+            set_nested_value(original_sub_steps, array_name, array[i])
         steps_array.append(copy.deepcopy(original_sub_steps))
     return steps_array
 
@@ -209,6 +223,7 @@ def find_repeaters(sub_content, root, arrays):
         isinstance(sub_content, list) or "nettacker_fuzzer" in sub_content
     ):
         arrays[root] = sub_content
+
     return (sub_content, root, arrays) if root != "" else arrays
 
 
@@ -286,9 +301,10 @@ def fuzzer_function_read_file_as_array(filename):
 
 
 def apply_data_functions(data):
-    def apply_data_functions_new():
+    original_data = copy.deepcopy(data)
+    for item in data:
         if item not in AVAILABLE_DATA_FUNCTIONS:
-            return
+            continue
 
         for fn_name in data[item]:
             if fn_name in AVAILABLE_DATA_FUNCTIONS[item]:
@@ -296,24 +312,12 @@ def apply_data_functions(data):
                 if fn is not None:
                     original_data[item] = fn(data[item][fn_name])
 
-    def apply_data_functions_old():
-        function_results = {}
-        globals().update(locals())
-        exec(
-            "fuzzer_function = {fuzzer_function}".format(fuzzer_function=data[item]),
-            globals(),
-            function_results,
-        )
-        original_data[item] = function_results["fuzzer_function"]
-
-    original_data = copy.deepcopy(data)
-    for item in data:
-        if isinstance((data[item]), str) and data[item].startswith("fuzzer_function"):
-            apply_data_functions_old()
-        else:
-            apply_data_functions_new()
-
     return original_data
+
+
+ALLOWED_INTERCEPTORS = {
+    "generate_and_replace_md5": generate_and_replace_md5,
+}
 
 
 def fuzzer_repeater_perform(arrays):
@@ -338,24 +342,16 @@ def fuzzer_repeater_perform(arrays):
             for value in sub_data:
                 formatted_data[list(data.keys())[index_input]] = value
                 index_input += 1
-            interceptors_function = ""
-            interceptors_function_processed = ""
+
+            interceptors_function_processed = input_format.format(**formatted_data)
 
             if interceptors:
-                interceptors_function += "interceptors_function_processed = "
-                for interceptor in interceptors[::-1]:
-                    interceptors_function += "{interceptor}(".format(interceptor=interceptor)
-                interceptors_function += "input_format.format(**formatted_data)" + str(
-                    ")" * interceptors_function.count("(")
-                )
-                expected_variables = {}
-                globals().update(locals())
-                exec(interceptors_function, globals(), expected_variables)
-                interceptors_function_processed = expected_variables[
-                    "interceptors_function_processed"
-                ]
-            else:
-                interceptors_function_processed = input_format.format(**formatted_data)
+                for interceptor in interceptors:
+                    if interceptor not in ALLOWED_INTERCEPTORS:
+                        raise ValueError(f"Interceptor '{interceptor}' is not allowed")
+                    interceptors_function_processed = ALLOWED_INTERCEPTORS[interceptor](
+                        interceptors_function_processed
+                    )
 
             processed_sub_data = interceptors_function_processed
             if prefix:
