@@ -175,6 +175,7 @@ def languages_to_country():
         "ru": "ru",
         "tr": "tr",
         "ur": "pk",
+        "uz": "uz",
         "vi": "vi",
         "zh-cn": "cn",
     }

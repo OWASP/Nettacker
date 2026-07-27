@@ -1,0 +1,48 @@
+info:
+  name: smartermail_version_scan
+  author: OWASP Nettacker Team
+  severity: 1
+  description: SmarterMail Version Scan - extracts version from the /api/v1/licensing/about API
+  reference:
+    - https://www.smartertools.com/smartermail/
+  profiles:
+    - scan
+    - http
+    - info
+    - smartermail
+    - smartertools
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/licensing/about"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 9998
+                - 17017
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "version\":\"([^\"]+)\""
+              reverse: false
+          log: "response_dependent['content']"

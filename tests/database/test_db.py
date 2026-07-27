@@ -424,7 +424,7 @@ class TestDatabase:
         submit_logs_to_db(log)
         mock_warn.assert_has_calls(
             [
-                call("[Retry 1/1] Database is locked. Retrying..."),
+                call("Retry 1/1, Database is locked. Retrying submission to database"),
                 call("All retries exhausted. Skipping this log."),
             ]
         )
@@ -564,7 +564,7 @@ class TestDatabase:
         result = submit_temp_logs_to_db(self.sample_log_temp)
         mock_warn.assert_has_calls(
             [
-                call("[Retry 1/1] Database is locked. Retrying..."),
+                call("Retry 1/1, Database is locked. Retrying submission to database"),
                 call("All retries exhausted. Skipping this log."),
             ]
         )
@@ -795,7 +795,7 @@ class TestDatabase:
         result = find_events("192.168.1.1", "http", "scan_123")
 
         assert result == []
-        mock_warn.assert_called_once_with("Database query failed...")
+        mock_warn.assert_called_once_with("Could not query the database")
 
     @patch("nettacker.database.db.create_connection")
     def test_find_events_sqlalchemy(self, mock_create_conn):
@@ -864,8 +864,8 @@ class TestDatabase:
         mock_cursor.execute.side_effect = Exception("DB Error")
 
         result = select_reports(self.page)
-        assert result == structure(status="error", msg="database error!")
-        mock_warn.assert_called_once_with("Could not retrieve report...")
+        assert result == structure(status="error", msg="Database error!")
+        mock_warn.assert_called_once_with("Could not retrieve the report")
 
     @patch("nettacker.database.db.create_connection")
     def test_select_reports_sqlalchemy(self, mock_create_conn):
@@ -900,7 +900,7 @@ class TestDatabase:
         mock_create_conn.return_value = mock_session
         mock_session.query.side_effect = Exception("DB Error")
         result = select_reports(self.page)
-        assert result == structure(status="error", msg="database error!")
+        assert result == structure(status="error", msg="Database error!")
 
     # -------------------------------------------------------
     #               tests for get_scan_result
@@ -1224,7 +1224,7 @@ class TestDatabase:
 
         result = search_logs(self.page, self.query)
         assert result["status"] == "error"
-        assert "database error" in result["msg"]
+        assert "Database error" in result["msg"]
 
     @patch("nettacker.database.db.create_connection")
     def test_sqlalchemy_path_success(self, mock_create_conn):
@@ -1260,7 +1260,7 @@ class TestDatabase:
 
         result = search_logs(self.page, self.query)
         assert result["status"] == "error"
-        assert "database error" in result["msg"]
+        assert "Database error" in result["msg"]
 
     @patch("nettacker.database.db.create_connection")
     def test_sqlalchemy_path_no_results(self, mock_create_conn):
