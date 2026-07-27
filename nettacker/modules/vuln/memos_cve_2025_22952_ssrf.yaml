@@ -14,7 +14,7 @@ info:
     - http
     - ssrf
     - cve
-    - cve_2025
+    - cve2025
     - memos
     - critical_severity
 
