@@ -13,6 +13,7 @@ info:
     - http
     - high_severity
     - cve
+    - cve2025
     - paloalto
     - paloalto_panos
     - panos

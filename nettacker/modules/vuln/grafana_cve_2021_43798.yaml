@@ -11,6 +11,9 @@ info:
     - http
     - critical_severity
     - grafana
+    - cve
+    - cve2021
+    - cisa_kev
     - lfi
 
 payloads:
