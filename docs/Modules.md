@@ -180,7 +180,8 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**vite_cve_2025_31125_vuln**' - check the target for CVE-2025-31125
 - '**vbulletin_cve_2019_16759_vuln**' - check the target for vBulletin RCE CVE-2019-16759 vulnerability
 - '**accela_cve_2021_34370_vuln**' – check for authentication bypass vulnerability in Accela Civic Platform
-- '**adobe_coldfusion_cve_2023_26360_vuln**' – check for remote code execution vulnerability in Adobe ColdFusion
+- '**adobe_coldfusion_cve_2023_26360_vuln**' – check the target for Adobe ColdFusion CVE-2023-26360 insecure deserialization RCE vulnerability
+- '**adobe_coldfusion_cve_2026_48282_vuln**' - check the target for Adobe ColdFusion CVE-2026-48282 RDS path traversal vulnerability
 - '**aiohttp_cve_2024_23334_vuln**' – check the target for CVE-2024-23334
 - '**apache_cve_2021_41773_vuln**' – check for path traversal vulnerability in Apache HTTP Server
 - '**apache_cve_2021_42013_vuln**' – check for remote code execution vulnerability in Apache HTTP Server
@@ -217,11 +218,13 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**langflow_cve_2025_3248_vuln**' - check the target for Langflow CVE-2025-3248 vulnerability
 - '**log4j_cve_2021_44228_vuln**' – check the target for Log4Shell CVE-2021-44228 vulnerability
 - '**majordomo_xss_cve_2026_27176_vuln**' – check MajorDoMo reflected XSS vulnerability CVE-2026-27176
+- '**majordomo_rce_cve_2026_27174_vuln**' – check for MajorDoMo CVE-2026-27174 vulnerability
 - '**maxsite_cms_cve_2021_35265_vuln**' – check the target for MaxSite CMS CVE-2021-35265
 - '**memos_cve_2025_22952_ssrf_vuln**' – check vulnerable Memos markdown metadata endpoint CVE-2025-22952
 - '**meteobridge_cve_2025_4008_vuln**' - check for MeteoBridge unauthenticated command injection CVE-2025-4008
 - '**msexchange_cve_2021_26855_vuln**' – check the target for MS Exchange SSRF CVE-2021-26855
 - '**msexchange_cve_2021_34473_vuln**' – check the target for MS Exchange CVE-2021-34473 vulnerability
+- '**nexus_cve_2024_4956_vuln**' – Detects Sonatype Nexus Repository Manager CVE-2024-4956, an unauthenticated path traversal vulnerability that allows arbitrary file read.
 - '**novnc_cve_2021_3654_vuln**' – check the target for noVNC CVE-2021-3654 vulnerability
 - '**omigod_cve_2021_38647_vuln**' – check the target for OMIGOD CVE-2021-38647 vulnerability
 - '**paloalto_globalprotect_cve_2025_0133_vuln**' – check the target for PaloAlto GlobalProtect CVE-2025-0133 XSS vulnerability
