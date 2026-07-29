@@ -12,6 +12,7 @@ info:
     - vuln
     - http
     - cve
+    - medium_severity
     - cve2025
     - librechat
 
@@ -20,7 +21,7 @@ payloads:
     steps:
       - method: get
         timeout: 3
-        ssl: true
+        ssl: false
         headers:
           User-Agent: "{user_agent}"
           Accept-Language: "<h3>nettacker_test</h3>"
