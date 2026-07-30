@@ -13,6 +13,7 @@ info:
     - adminer
     - cve2026
     - cve
+    - high_severity
 
 payloads:
   - library: http
@@ -23,7 +24,6 @@ payloads:
         ssl: false
         headers:
           User-Agent: "{user_agent}"
-          Host: "{target}"
           Accept-Language: en-US,en;q=0.5
         url:
           nettacker_fuzzer:
@@ -38,10 +38,12 @@ payloads:
               ports:
                 - 80
                 - 443
+                - 8080
               path:
                 - "/adminer.php"
                 - "/editor.php"
                 - "/adminer/"
+                - "/"
 
         response:
           condition_type: and
@@ -50,5 +52,5 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: '(?s)(?=.*(Adminer</title>|Adminer</a>))(?=.*version=(4\.6\.[2-9]|4\.[7-9]\.\d+|5\.[0-3]\.\d+|5\.4\.[01]))'
+              regex: '(?s)(?=.*(Adminer</title>|Adminer</a>))(?=.*version=(4\.6\.[2-9]|4\.[7-9]\.\d+|5\.[0-3]\.\d+|5\.4\.[01])(?:[^0-9]|$))'
               reverse: false
