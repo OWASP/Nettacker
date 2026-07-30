@@ -1,5 +1,5 @@
 info:
-  name: gladinet_centrestack_lfi_cve_2025_11371_vuln
+  name: gladinet_centrestack_cve_2025_11371_vuln
   author: OWASP Nettacker Team
   severity: 6.2
   description: |
@@ -23,7 +23,8 @@ info:
     - centrestack
     - triofox
     - lfi
-    - kev
+    - cisa_kev
+    - medium_severity
 
 payloads:
   - library: http
