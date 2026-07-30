@@ -1,5 +1,5 @@
 info:
-  name: triofox_improper_access_control_cve_2025_12480_vuln
+  name: triofox_improper_access_cve_2025_12480_vuln
   author: OWASP Nettacker Team
   severity: 9.1
   description: |
@@ -21,7 +21,7 @@ info:
     - unauth
     - exposure
     - triofox
-    - kev
+    - cisa_kev
 
 payloads:
   - library: http
