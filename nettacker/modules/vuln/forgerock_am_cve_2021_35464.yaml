@@ -12,6 +12,7 @@ info:
     - cve2021
     - cve
     - rce
+    - cisa_kev
     - openam
     - forgerock_am
 
