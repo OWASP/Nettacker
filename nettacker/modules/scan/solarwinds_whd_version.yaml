@@ -35,6 +35,8 @@ payloads:
               ports:
                 - 80
                 - 443
+                - 8081
+                - 8443
 
         response:
           condition_type: and
@@ -44,7 +46,7 @@ payloads:
               reverse: false
 
             content:
-              regex: "\\?v=([0-9]+_[0-9]+_[0-9]+_[0-9]+)"
+              regex: "(?s)(?=.*Web Help Desk Software)(?=.*\\?v=([0-9]+_[0-9]+_[0-9]+_[0-9]+))"
               reverse: false
 
           log: "SolarWinds WHD version: response_dependent['content']"
