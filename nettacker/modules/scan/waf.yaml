@@ -120,8 +120,8 @@ payloads:
                 # -------------------------
                 # XXE
                 # -------------------------
-                - '<!ENTITY xxe SYSTEM \"file:///etc/passwd\">'          # xxe
-                - '<!ENTITY xxe SYSTEM \"file:///etc/shadow\">'          # xxe
+                - '<!ENTITY xxe SYSTEM "file:///etc/passwd">'
+                - '<!ENTITY xxe SYSTEM "file:///etc/shadow">'     # xxe
         response:
           dependent_on_temp_event: valid_request_status
           condition_type: or
@@ -844,7 +844,7 @@ payloads:
                   condition_type: and
                   conditions:
                     content:
-                      regex: FortiGuard Intrusion Prevention|//globalurl\.fortinet\.net
+                      regex: FortiGuard Intrusion Prevention
                       reverse: false
                   log: FortiGuard (Fortinet) Found
               FortiWeb (Fortinet) condition1:
