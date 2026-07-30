@@ -39,6 +39,7 @@ payloads:
               ports:
                 - 80
                 - 443
+                - 3923
               paths:
                 - "/?ru&filter=%3C%2Fscript%3E%3Cscript%3Ealert(document.domain)%3C%2Fscript%3E"
         response:
