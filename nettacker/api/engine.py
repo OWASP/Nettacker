@@ -1,10 +1,12 @@
 import csv
+import io
 import json
 import multiprocessing
 import os
 import random
 import string
 import time
+from pathlib import Path
 from threading import Thread
 from types import SimpleNamespace
 
@@ -410,7 +412,7 @@ def get_results_json():
         return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
     scan_details = session.query(Report).filter(Report.id == result_id).first()
     json_object = json.dumps(get_logs_by_scan_id(scan_details.scan_unique_id))
-    filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".json"
+    filename = Path(scan_details.report_path_filename).with_suffix(".json").name
     return Response(
         json_object,
         mimetype="application/json",
@@ -436,16 +438,14 @@ def get_results_csv():  # todo: need to fix time format
     if not data:
         return jsonify(structure(status="error", msg=_("no_scan_data_found"))), 404
     keys = data[0].keys()
-    filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".csv"
-    with open(filename, "w") as report_path_filename:
-        dict_writer = csv.DictWriter(report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL)
-        dict_writer.writeheader()
-        for event in data:
-            dict_writer.writerow({key: value for key, value in event.items() if key in keys})
-    with open(filename, "r") as report_path_filename:
-        reader = report_path_filename.read()
+    filename = Path(scan_details.report_path_filename).with_suffix(".csv").name
+    report = io.StringIO()
+    dict_writer = csv.DictWriter(report, fieldnames=keys, quoting=csv.QUOTE_ALL)
+    dict_writer.writeheader()
+    for event in data:
+        dict_writer.writerow({key: value for key, value in event.items() if key in keys})
     return Response(
-        reader,
+        report.getvalue(),
         mimetype="text/csv",
         headers={"Content-Disposition": "attachment;filename=" + filename},
     )

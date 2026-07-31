@@ -1,3 +1,4 @@
+import os
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -51,3 +52,53 @@ def test_get_logs_csv_empty_data(mock_logs_to_report_json, client):
     assert response.status_code == 404
     assert response.json["status"] == "error"
     assert response.json["msg"] == "No scan data found"
+
+
+@patch(
+    "nettacker.api.engine.get_logs_by_scan_id",
+    return_value=[{"target": "example.com", "date": "2026-01-01"}],
+)
+@patch("nettacker.api.engine.create_connection")
+def test_get_results_csv_filename_and_no_disk_write(
+    mock_create_connection, mock_get_logs, client, tmp_path
+):
+    """The download filename must keep every character of the report name, and
+    the CSV must be built in memory rather than left behind on disk."""
+    scan_details = MagicMock(
+        scan_unique_id="abc", report_path_filename="/tmp/results/nettacker.html"
+    )
+    session = MagicMock()
+    session.query.return_value.filter.return_value.first.return_value = scan_details
+    mock_create_connection.return_value = session
+
+    cwd = os.getcwd()
+    os.chdir(tmp_path)
+    try:
+        response = client.get(f"/results/get_csv?id=1&key={API_KEY}")
+        leftovers = list(tmp_path.iterdir())
+    finally:
+        os.chdir(cwd)
+
+    assert response.status_code == 200
+    assert response.headers["Content-Disposition"] == "attachment;filename=nettacker.csv"
+    assert leftovers == []
+
+
+@patch(
+    "nettacker.api.engine.get_logs_by_scan_id",
+    return_value=[{"target": "example.com"}],
+)
+@patch("nettacker.api.engine.create_connection")
+def test_get_results_json_filename(mock_create_connection, mock_get_logs, client):
+    """Same for the JSON endpoint: a dotted directory must not truncate the name."""
+    scan_details = MagicMock(
+        scan_unique_id="abc", report_path_filename="/home/user/.nettacker/results/scan.html"
+    )
+    session = MagicMock()
+    session.query.return_value.filter.return_value.first.return_value = scan_details
+    mock_create_connection.return_value = session
+
+    response = client.get(f"/results/get_json?id=1&key={API_KEY}")
+
+    assert response.status_code == 200
+    assert response.headers["Content-Disposition"] == "attachment;filename=scan.json"
