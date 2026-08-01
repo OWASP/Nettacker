@@ -8,6 +8,10 @@ on:
       - reopened
       - synchronize
 
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+
 permissions: {}
 
 jobs:
