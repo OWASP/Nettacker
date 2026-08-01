@@ -39,7 +39,7 @@ payloads:
 
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/?rest_route=/batch/v1"
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
             prefix: ""
             suffix: ""
             interceptors:
@@ -52,6 +52,9 @@ payloads:
                 - 443
                 - 8080
                 - 8443
+              paths:
+                - "/?rest_route=/batch/v1"
+                - "/wp-json/batch/v1"
 
         data: |
           {{"validation":"normal","requests":[{{"method":"POST","path":"http://:"}},{{"method":"DELETE","path":"/wp/v2/categories/0"}},{{"method":"POST","path":"/wp/v2/block-renderer/core/paragraph"}}]}}
