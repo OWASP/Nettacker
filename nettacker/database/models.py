@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, Text
+from sqlalchemy import Column, DateTime, Integer, Text,  UniqueConstraint
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -34,7 +34,16 @@ class TempEvents(Base):
     """
 
     __tablename__ = "temp_events"
-
+    __table_args__ = (
+        UniqueConstraint(
+            "target",
+            "module_name",
+            "scan_unique_id",
+            "event_name",
+            "port",
+            name="uq_temp_events_claim",
+        ),
+    )
     id = Column(Integer, primary_key=True, autoincrement=True)
     date = Column(DateTime)
     target = Column(Text)

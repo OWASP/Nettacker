@@ -1,6 +1,8 @@
 import json
 import time
 
+from sqlalchemy.exc import IntegrityError
+
 try:
     import apsw
 except ImportError:
@@ -349,7 +351,14 @@ def submit_temp_logs_to_db(log):
                                 json.dumps(log["data"]),
                             ),
                         )
-                        return send_submit_query(session)
+                        # 0 rows changed means the UNIQUE constraint silently
+                        # blocked the insert (OR IGNORE) — someone else
+                        # already claimed this event first.
+
+                        claimed = connection.changes() == 1
+                        if not send_submit_query(session):
+                            return False
+                        return claimed
                     except apsw.BusyError as e:
                         if "database is locked" in str(e).lower():
                             logger.warn(
@@ -380,24 +389,35 @@ def submit_temp_logs_to_db(log):
                         return False
                 # All retries exhausted but we want to continue operation
                 logger.warn(messages("database_retries_exhausted"))
-                return True
+                return False
             finally:
                 cursor.close()
                 connection.close()
         else:
-            session.add(
-                TempEvents(
-                    target=log["target"],
-                    date=log["date"],
-                    module_name=log["module_name"],
-                    scan_unique_id=log["scan_id"],
-                    event_name=log["event_name"],
-                    port=json.dumps(log["port"]),
-                    event=json.dumps(log["event"]),
-                    data=json.dumps(log["data"]),
+            try:
+                session.add(
+                    TempEvents(
+                        target=log["target"],
+                        date=log["date"],
+                        module_name=log["module_name"],
+                        scan_unique_id=log["scan_id"],
+                        event_name=log["event_name"],
+                        port=json.dumps(log["port"]),
+                        event=json.dumps(log["event"]),
+                        data=json.dumps(log["data"]),
+                    )
                 )
-            )
-            return send_submit_query(session)
+                session.commit()
+                return True
+            except IntegrityError:
+                # Unique constraint hit -> another thread/process already
+                # claimed this event first.
+                session.rollback()
+                return False
+            except Exception:
+                session.rollback()
+                logger.warn(messages("database_connect_fail"))
+                return False
     else:
         logger.warn(messages("invalid_json_type_to_db").format(log))
         return False
