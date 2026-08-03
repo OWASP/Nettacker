@@ -5,6 +5,7 @@ import copy
 import random
 import re
 import time
+import operator
 
 import aiohttp
 import uvloop
@@ -18,6 +19,14 @@ from nettacker.core.utils.common import (
 )
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+OPERATORS = {
+    "==": operator.eq,
+    "!=": operator.ne,
+    ">=": operator.ge,
+    "<=": operator.le,
+    ">": operator.gt,
+    "<": operator.lt,
+}
 
 
 async def perform_request_action(action, request_options):
@@ -73,21 +82,21 @@ def response_conditions_matched(sub_step, response):
                 except TypeError:
                     condition_results["headers"][header] = []
         if condition == "responsetime":
-            if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
-                "==",
-                "!=",
-                ">=",
-                "<=",
-                ">",
-                "<",
-            ]:
-                exec(
-                    "condition_results['responsetime'] = response['responsetime'] if ("
-                    + "response['responsetime'] {0} float(conditions['responsetime'].split()[-1])".format(
-                        conditions["responsetime"].split()[0]
-                    )
-                    + ") else []"
-                )
+            value_str = conditions[condition]
+            if not isinstance(value_str, str):
+                condition_results["responsetime"] = []
+                continue
+
+            operator_value = conditions[condition].split()
+            if len(operator_value) == 2 and operator_value[0] in OPERATORS:
+                try:
+                    value = float(operator_value[1])
+                    if OPERATORS[operator_value[0]](response["responsetime"], value):
+                        condition_results["responsetime"] = response["responsetime"]
+                    else:
+                        condition_results["responsetime"] = []
+                except ValueError:
+                    condition_results["responsetime"] = []
             else:
                 condition_results["responsetime"] = []
     if condition_type.lower() == "or":
