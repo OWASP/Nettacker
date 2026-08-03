@@ -148,6 +148,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**geoserver_cve_2024_36401_vuln**' - check the target for CVE-2024-36401 vulnerability
 - '**heartbleed_vuln**' - check SSL for Heartbleed vulnerability (CVE-2014-0160)
 - '**msexchange_cve_2021_26855**' - check the target for MS Exchange SSRF CVE-2021-26855 (proxylogon/hafnium)
+- '**n8n_cve_2026_21858_vuln**' - check the target for n8n CVE-2026-21858 Content-Type confusion RCE and related CVEs (CVE-2025-68613, CVE-2025-68668, CVE-2026-21877)
 - '**nextjs_cve_2025_55182_vuln**' - check the target for CVE-2025-55182(React2Shell)
 - '**http_cors_vuln**' - check the web server for overly-permissive CORS (header 'Access-Control-Allow-Origin'=\*)
 - '**joomla_cve_2023_23752_vuln**' - check the target for Joomla CVE-2023-23752 information disclosure vulnerability
