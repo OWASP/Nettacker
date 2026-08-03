@@ -265,3 +265,5 @@ finish_build_report: "کمپیر رپورٹ مکمل کر لی گئی ہے"
 
 
 
+
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"

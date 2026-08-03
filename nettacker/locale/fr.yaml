@@ -269,3 +269,5 @@ no_scan_to_compare: "l'id du scan à comparer est introuvable"
 compare_report_saved: "résultats de la comparaison sauvagardés dans {0}"
 build_compare_report: "élaboration du rapport de comparaison"
 finish_build_report: "rapport de comparaison terminé"
+
+ssl_certificate_fetch_failed: "Failed to fetch SSL certificate for {0}:{1}"
