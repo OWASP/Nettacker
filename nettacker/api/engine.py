@@ -5,6 +5,7 @@ import os
 import random
 import string
 import time
+from pathlib import Path
 from threading import Thread
 from types import SimpleNamespace
 
@@ -179,16 +180,23 @@ def get_statics(path):
     getting static files and return content mime types
 
     Args:
-        path: path and filename
-
+        path: the static file path
+        
     Returns:
-        file content and content type if file found otherwise abort(404)
-    """
+        the static file content
+    """  
     static_types = mime_types()
+    base_dir = Path(Config.path.web_static_dir).resolve()
+    requested_path = (base_dir / path).resolve()
+    
+    if not requested_path.is_relative_to(base_dir):
+        abort(404)
+
     return Response(
-        get_file(os.path.join(Config.path.web_static_dir, path)),
-        mimetype=static_types.get(os.path.splitext(path)[1], "text/html"),
+        get_file(str(requested_path)),
+        mimetype=static_types.get(requested_path.suffix, "text/html"),
     )
+
 
 
 @app.route("/", methods=["GET", "POST"])
