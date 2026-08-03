@@ -220,6 +220,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**majordomo_rce_cve_2026_27174_vuln**' – check for MajorDoMo CVE-2026-27174 vulnerability
 - '**maxsite_cms_cve_2021_35265_vuln**' – check the target for MaxSite CMS CVE-2021-35265
 - '**memos_cve_2025_22952_ssrf_vuln**' – check vulnerable Memos markdown metadata endpoint CVE-2025-22952
+- '**metabase_cve_2021_41277_vuln**' – check the target for Metabase LFI CVE-2021-41277
 - '**meteobridge_cve_2025_4008_vuln**' - check for MeteoBridge unauthenticated command injection CVE-2025-4008
 - '**msexchange_cve_2021_26855_vuln**' – check the target for MS Exchange SSRF CVE-2021-26855
 - '**msexchange_cve_2021_34473_vuln**' – check the target for MS Exchange CVE-2021-34473 vulnerability
