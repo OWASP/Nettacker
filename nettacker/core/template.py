@@ -1,8 +1,10 @@
 import copy
+import re
 
 import yaml
 
 from nettacker.config import Config
+from nettacker.core.utils import common as common_utils
 
 
 class TemplateLoader:
@@ -27,6 +29,26 @@ class TemplateLoader:
 
         return module_content
 
+    def _apply_dynamic_placeholders(self, content: str) -> str:
+        """
+        Handle runtime placeholders like:
+        - {rand_str(10)}
+        """
+
+        def _rand_str_replacer(match):
+            length = min(
+                int(match.group(1)),
+                256,  # maximum length allowed in rand_str
+            )
+            return common_utils.generate_random_token(length)
+
+        content = re.sub(
+            r"\{rand_str\((\d+)\)\}",
+            _rand_str_replacer,
+            content,
+        )
+        return content
+
     def open(self):
         module_name_parts = self.name.split("_")
         action = module_name_parts[-1]
@@ -36,7 +58,9 @@ class TemplateLoader:
             return yaml_file.read()
 
     def format(self):
-        return self.open().format(**self.inputs)
+        content = self.open()
+        content = self._apply_dynamic_placeholders(content)
+        return content.format(**self.inputs)
 
     def load(self):
         return self.parse(yaml.safe_load(self.format()), self.inputs)
