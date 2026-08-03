@@ -108,6 +108,21 @@ class Module:
                         index_step += 1
                 index_payload += 1
 
+    def get_required_services(self):
+        """
+        Extract required services/profiles from the module template.
+        """
+        try:
+            module_content = TemplateLoader(self.module_name, self.module_inputs).load()
+            required = set(module_content.get("profiles", []))
+            for payload in module_content.get("payloads", []):
+                service = payload.get("service") or payload.get("library")
+                if service:
+                    required.add(service)
+            return required
+        except Exception:
+            return set()
+
     def generate_loops(self):
         if self.module_inputs["excluded_ports"]:
             excluded_port_set = set(self.module_inputs["excluded_ports"])
