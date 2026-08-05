@@ -130,8 +130,8 @@ class BaseEngine(ABC):
                     "module_name": module_name,
                     "scan_id": scan_id,
                     "event_name": event["response"]["save_to_temp_events_only"],
-                    "port": event.get("ports")
-                    or event.get("port")
+                    "port": int(event.get("ports"))
+                    or int(event.get("port"))
                     or (
                         int(event.get("url").split(":")[2].split("/")[0])
                         if isinstance(event.get("url"), str)
@@ -167,8 +167,8 @@ class BaseEngine(ABC):
                     "target": target,
                     "module_name": module_name,
                     "scan_id": scan_id,
-                    "port": event.get("ports")
-                    or event.get("port")
+                    "port": int(event.get("ports"))
+                    or int(event.get("port"))
                     or (
                         int(event.get("url").split(":")[2].split("/")[0])
                         if isinstance(event.get("url"), str)
