@@ -74,7 +74,7 @@ class BaseEngine(ABC):
             if existing:
                 return True
         return False
-    
+
     def find_and_replace_dependent_values(self, sub_step, dependent_on_temp_event):
         if isinstance(sub_step, dict):
             for key in copy.deepcopy(sub_step):
@@ -143,7 +143,11 @@ class BaseEngine(ABC):
         if "stop_at_first_success" in event["response"]:
             event_name = event["response"]["stop_at_first_success"]
             existing = find_temp_events(
-                target, module_name, scan_id, event_name,  port=event.get("ports") or event.get("port") or ""
+                target,
+                module_name,
+                scan_id,
+                event_name,
+                port=event.get("ports") or event.get("port") or "",
             )
             if existing:
                 return False
@@ -203,7 +207,7 @@ class BaseEngine(ABC):
                 )
                 log.verbose_info(json.dumps(event))
                 return False
-            
+
         if event["response"]["conditions_results"] and "save_to_temp_events_only" not in event.get(
             "response", ""
         ):

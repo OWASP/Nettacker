@@ -162,7 +162,7 @@ class HttpEngine(BaseEngine):
 
         if self.check_prior_success(backup_response, sub_step, module_name, target, scan_id):
             return False
-        
+
         backup_iterative_response_match = copy.deepcopy(
             sub_step["response"]["conditions"].get("iterative_response_match", None)
         )
