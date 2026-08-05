@@ -35,12 +35,13 @@ async def perform_request_action(action, request_options):
 
 
 async def send_request(request_options, method):
-    if request_options.pop("url_raw", False):
-        request_options["url"] = URL(request_options["url"], encoded=True)
+    transport_options = request_options.copy()
+    if transport_options.pop("url_raw", False):
+        transport_options["url"] = URL(transport_options["url"], encoded=True)
     async with aiohttp.ClientSession() as session:
         action = getattr(session, method, None)
         response = await asyncio.gather(
-            *[asyncio.ensure_future(perform_request_action(action, request_options))]
+            *[asyncio.ensure_future(perform_request_action(action, transport_options))]
         )
         return response[0]
 
