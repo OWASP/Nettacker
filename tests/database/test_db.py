@@ -523,6 +523,7 @@ class TestDatabase:
         mock_create_conn.return_value = (mock_connection, mock_cursor)
         mock_send_submit.return_value = True
         mock_connection.in_transaction = False
+        mock_connection.changes.return_value = 1
         mock_config.settings.max_retries = 3
 
         result = submit_temp_logs_to_db(self.sample_log_temp)
@@ -602,7 +603,7 @@ class TestDatabase:
         result = submit_temp_logs_to_db(self.sample_log_temp)
 
         mock_session.add.assert_called()
-        mock_send.assert_called_with(mock_session)
+        mock_session.commit.assert_called_once()
         assert result
 
     @patch("nettacker.database.db.create_connection")
@@ -612,6 +613,7 @@ class TestDatabase:
         mock_cursor = Mock()
         mock_create_conn.return_value = (mock_connection, mock_cursor)
         mock_connection.in_transaction = False
+        mock_connection.changes.return_value = 1
 
         with patch("nettacker.database.db.send_submit_query", return_value=True):
             with patch("nettacker.database.db.Config") as mock_config:

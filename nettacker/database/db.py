@@ -1,6 +1,8 @@
 import json
 import time
 
+from sqlalchemy.exc import IntegrityError
+
 try:
     import apsw
 except ImportError:
@@ -349,7 +351,14 @@ def submit_temp_logs_to_db(log):
                                 json.dumps(log["data"]),
                             ),
                         )
-                        return send_submit_query(session)
+                        # 0 rows changed means the UNIQUE constraint silently
+                        # blocked the insert (OR IGNORE) — someone else
+                        # already claimed this event first.
+
+                        claimed = connection.changes() == 1
+                        if not send_submit_query(session):
+                            return False
+                        return claimed
                     except apsw.BusyError as e:
                         if "database is locked" in str(e).lower():
                             logger.warn(
@@ -385,25 +394,36 @@ def submit_temp_logs_to_db(log):
                 cursor.close()
                 connection.close()
         else:
-            session.add(
-                TempEvents(
-                    target=log["target"],
-                    date=log["date"],
-                    module_name=log["module_name"],
-                    scan_unique_id=log["scan_id"],
-                    event_name=log["event_name"],
-                    port=json.dumps(log["port"]),
-                    event=json.dumps(log["event"]),
-                    data=json.dumps(log["data"]),
+            try:
+                session.add(
+                    TempEvents(
+                        target=log["target"],
+                        date=log["date"],
+                        module_name=log["module_name"],
+                        scan_unique_id=log["scan_id"],
+                        event_name=log["event_name"],
+                        port=json.dumps(log["port"]),
+                        event=json.dumps(log["event"]),
+                        data=json.dumps(log["data"]),
+                    )
                 )
-            )
-            return send_submit_query(session)
+                session.commit()
+                return True
+            except IntegrityError:
+                # Unique constraint hit -> another thread/process already
+                # claimed this event first.
+                session.rollback()
+                return False
+            except Exception:
+                session.rollback()
+                logger.warn(messages("database_connect_fail"))
+                return False
     else:
         logger.warn(messages("invalid_json_type_to_db").format(log))
         return False
 
 
-def find_temp_events(target, module_name, scan_id, event_name):
+def find_temp_events(target, module_name, scan_id, event_name, port=None):
     """
     select all events by scan_unique id, target, module_name
 
@@ -420,16 +440,24 @@ def find_temp_events(target, module_name, scan_id, event_name):
     if isinstance(session, tuple):
         connection, cursor = session
         try:
-            cursor.execute(
-                """
-                SELECT event
-                FROM temp_events
-                WHERE target = ? AND module_name = ? AND scan_unique_id = ? AND event_name = ?
-                LIMIT 1
-            """,
-                (target, module_name, scan_id, event_name),
-            )
-
+            if port is not None:
+                cursor.execute(
+                    """
+                    SELECT event FROM temp_events
+                    WHERE target = ? AND module_name = ? AND scan_unique_id = ? AND event_name = ? AND port = ?
+                    LIMIT 1
+                    """,
+                    (target, module_name, scan_id, event_name, json.dumps(port)),
+                )
+            else:
+                cursor.execute(
+                    """
+                    SELECT event FROM temp_events
+                    WHERE target = ? AND module_name = ? AND scan_unique_id = ? AND event_name = ?
+                    LIMIT 1
+                    """,
+                    (target, module_name, scan_id, event_name),
+                )
             row = cursor.fetchone()
             if row:
                 return row[0]
@@ -444,17 +472,15 @@ def find_temp_events(target, module_name, scan_id, event_name):
             except Exception:
                 pass
     else:
-        result = (
-            session.query(TempEvents)
-            .filter(
-                TempEvents.target == target,
-                TempEvents.module_name == module_name,
-                TempEvents.scan_unique_id == scan_id,
-                TempEvents.event_name == event_name,
-            )
-            .first()
+        query = session.query(TempEvents).filter(
+            TempEvents.target == target,
+            TempEvents.module_name == module_name,
+            TempEvents.scan_unique_id == scan_id,
+            TempEvents.event_name == event_name,
         )
-
+        if port is not None:
+            query = query.filter(TempEvents.port == json.dumps(port))
+        result = query.first()
         return result.event if result else []
 
 
