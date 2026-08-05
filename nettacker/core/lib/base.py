@@ -147,7 +147,15 @@ class BaseEngine(ABC):
                 module_name,
                 scan_id,
                 event_name,
-                port=event.get("ports") or event.get("port") or "",
+                port = event.get("ports")
+                or event.get("port")
+                or (
+                    event.get("url").split(":")[2].split("/")[0]
+                    if isinstance(event.get("url"), str)
+                    and len(event.get("url").split(":")) >= 3
+                    and event.get("url").split(":")[2].split("/")[0].isdigit()
+                    else ""
+                )
             )
             if existing:
                 return False

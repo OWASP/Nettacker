@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, text
 
 from nettacker.config import Config
 from nettacker.database.models import Base
-
+from nettacker.database.postgresql import _ensure_temp_events_unique_constraint
 
 def mysql_create_database():
     """
@@ -40,3 +40,4 @@ def mysql_create_tables():
         "mysql+pymysql://{username}:{password}@{host}:{port}/{name}".format(**Config.db.as_dict())
     )
     Base.metadata.create_all(db_engine)
+    _ensure_temp_events_unique_constraint(db_engine)  #    Create MySQL tables and upgrade existing databases with the temp_events unique constraint if required.
