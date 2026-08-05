@@ -90,7 +90,8 @@ OWASP Nettacker is using multi-language libraries (default English) to create a 
 In some cases, a language library may not yet exist. A new translation file may be added to the framework, but it must be contributed or reviewed by a **fluent native speaker** of that language:
 
 * 1- Goto `nettacker/locale`
-* 2- Name your message library in accordance with the ISO two-letter code e.g. `fa.yaml` . In some edge cases we can accept a language-region identifier, for example `pt-br`.
+* 2- Name your message library in accordance with the ISO two-letter code e.g. `fa.yaml`.
+In some cases we can accept a language-region identifier, for example `pt-br`.
 * 3- Copy the default language lib (`en.yaml`) and start your translation.
 * 4- **Please note that you should not change the key-value like `scan_started`, `options` and etc. you just need to modify the Values.**
   
