@@ -18,14 +18,46 @@ from nettacker import logger
 log = logger.get_logger()
 
 
+_INDEX_RE = re.compile(r"\[(-?\d+|'[^'\\]*'|\"[^\"\\]*\")\]")
+
+
+def safe_indexed_lookup(root, expression, root_name):
+    """Evaluate `root_name[i]['k'][j]...` against `root` without `eval`.
+
+    The only expressions this tool ever needs to resolve are chained integer or
+    quoted-string index lookups into `root`. `eval()` on a regex-extracted substring
+    accepted arbitrary Python, since the extracting regex (`\\S+`) matches any
+    non-whitespace character -- including code. Parsing the fixed index grammar
+    directly removes that risk class instead of trying to further sanitize the input.
+
+    Raises ValueError if `expression` is not exactly a chain of index accesses on
+    `root_name` -- callers should treat that the same as the old `except Exception`
+    fallback.
+    """
+    if not expression.startswith(root_name):
+        raise ValueError("expression does not reference %s: %r" % (root_name, expression))
+    rest = expression[len(root_name):]
+    keys = _INDEX_RE.findall(rest)
+    if "".join("[%s]" % k for k in keys) != rest:
+        raise ValueError("unsupported index expression: %r" % expression)
+
+    value = root
+    for key in keys:
+        if key[:1] in ("'", '"'):
+            value = value[key[1:-1]]
+        else:
+            value = value[int(key)]
+    return value
+
+
 def replace_dependent_response(log, response_dependent):
-    """The `response_dependent` is needed for `eval` below."""
+    """`response_dependent` is indexed into via `safe_indexed_lookup` below."""
     if str(log):
         key_name = re.findall(re.compile("response_dependent\\['\\S+\\]"), log)
         for i in key_name:
             try:
-                key_value = eval(i)
-            except Exception:
+                key_value = safe_indexed_lookup(response_dependent, i, "response_dependent")
+            except (ValueError, KeyError, IndexError, TypeError):
                 key_value = "response dependent error"
             log = log.replace(i, " ".join(key_value))
         return log

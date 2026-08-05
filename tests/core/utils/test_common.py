@@ -292,3 +292,47 @@ def test_fuzzer_repeater_perform_unknown_interceptor_alongside_allowed_raises():
 
 def test_allowed_interceptors_registry_is_restricted():
     assert set(common_utils.ALLOWED_INTERCEPTORS) == {"generate_and_replace_md5"}
+
+
+def test_safe_indexed_lookup_resolves_nested_index_chain():
+    root = [{"headers": {"Set-Cookie": ["a", "session=abc123"]}}]
+    assert (
+        common_utils.safe_indexed_lookup(
+            root, "dependent_on_temp_event[0]['headers']['Set-Cookie'][1]",
+            "dependent_on_temp_event",
+        )
+        == "session=abc123"
+    )
+
+
+def test_safe_indexed_lookup_resolves_single_key():
+    root = {"foo": "bar"}
+    assert common_utils.safe_indexed_lookup(root, "response_dependent['foo']", "response_dependent") == "bar"
+
+
+def test_safe_indexed_lookup_rejects_expressions_outside_the_index_grammar():
+    """These previously reached eval(). Anything not a plain chain of index
+    accesses must raise instead of being evaluated."""
+    root = [{"a": 1}]
+    injections = [
+        "dependent_on_temp_event[__import__('os').system('id')]",
+        "dependent_on_temp_event[0].__class__",
+        "dependent_on_temp_event[0]; __import__('os').system('id')",
+        "dependent_on_temp_event[0]['a'] + open('/etc/passwd').read()",
+    ]
+    for expr in injections:
+        with pytest.raises(ValueError):
+            common_utils.safe_indexed_lookup(root, expr, "dependent_on_temp_event")
+
+
+def test_safe_indexed_lookup_rejects_wrong_root_name():
+    with pytest.raises(ValueError):
+        common_utils.safe_indexed_lookup([1], "other_name[0]", "dependent_on_temp_event")
+
+
+def test_safe_indexed_lookup_propagates_lookup_errors():
+    root = {"a": 1}
+    with pytest.raises(KeyError):
+        common_utils.safe_indexed_lookup(root, "response_dependent['missing']", "response_dependent")
+    with pytest.raises(IndexError):
+        common_utils.safe_indexed_lookup([1], "response_dependent[5]", "response_dependent")

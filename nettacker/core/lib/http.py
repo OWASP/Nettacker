@@ -2,6 +2,7 @@
 
 import asyncio
 import copy
+import operator
 import random
 import re
 import time
@@ -18,6 +19,15 @@ from nettacker.core.utils.common import (
 )
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
+_RESPONSETIME_OPS = {
+    "==": operator.eq,
+    "!=": operator.ne,
+    ">=": operator.ge,
+    "<=": operator.le,
+    ">": operator.gt,
+    "<": operator.lt,
+}
 
 
 async def perform_request_action(action, request_options):
@@ -73,20 +83,13 @@ def response_conditions_matched(sub_step, response):
                 except TypeError:
                     condition_results["headers"][header] = []
         if condition == "responsetime":
-            if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
-                "==",
-                "!=",
-                ">=",
-                "<=",
-                ">",
-                "<",
-            ]:
-                exec(
-                    "condition_results['responsetime'] = response['responsetime'] if ("
-                    + "response['responsetime'] {0} float(conditions['responsetime'].split()[-1])".format(
-                        conditions["responsetime"].split()[0]
-                    )
-                    + ") else []"
+            parts = conditions[condition].split()
+            op = _RESPONSETIME_OPS.get(parts[0]) if len(parts) == 2 else None
+            if op is not None:
+                condition_results["responsetime"] = (
+                    response["responsetime"]
+                    if op(response["responsetime"], float(parts[-1]))
+                    else []
                 )
             else:
                 condition_results["responsetime"] = []

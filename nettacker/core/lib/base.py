@@ -9,7 +9,11 @@ import yaml
 
 from nettacker.config import Config
 from nettacker.core.messages import messages as _
-from nettacker.core.utils.common import merge_logs_to_list, remove_sensitive_header_keys
+from nettacker.core.utils.common import (
+    merge_logs_to_list,
+    remove_sensitive_header_keys,
+    safe_indexed_lookup,
+)
 from nettacker.database.db import find_temp_events, submit_logs_to_db, submit_temp_logs_to_db
 from nettacker.logger import TerminalCodes, get_logger
 
@@ -67,7 +71,6 @@ class BaseEngine(ABC):
                 else:
                     if isinstance(sub_step[key], str):
                         if "dependent_on_temp_event" in sub_step[key]:
-                            globals().update(locals())
                             generate_new_step = copy.deepcopy(sub_step[key])
                             key_name = re.findall(
                                 re.compile(
@@ -76,8 +79,10 @@ class BaseEngine(ABC):
                                 generate_new_step,
                             )[0]
                             try:
-                                key_value = eval(key_name)
-                            except Exception:
+                                key_value = safe_indexed_lookup(
+                                    dependent_on_temp_event, key_name, "dependent_on_temp_event"
+                                )
+                            except (ValueError, KeyError, IndexError, TypeError):
                                 key_value = "error"
                             sub_step[key] = sub_step[key].replace(key_name, key_value)
         if isinstance(sub_step, list):
@@ -90,15 +95,16 @@ class BaseEngine(ABC):
                 else:
                     if isinstance(sub_step[value_index], str):
                         if "dependent_on_temp_event" in sub_step[value_index]:
-                            globals().update(locals())
                             generate_new_step = copy.deepcopy(sub_step[key])
                             key_name = re.findall(
                                 re.compile("dependent_on_temp_event\\['\\S+\\]\\[\\S+\\]"),
                                 generate_new_step,
                             )[0]
                             try:
-                                key_value = eval(key_name)
-                            except Exception:
+                                key_value = safe_indexed_lookup(
+                                    dependent_on_temp_event, key_name, "dependent_on_temp_event"
+                                )
+                            except (ValueError, KeyError, IndexError, TypeError):
                                 key_value = "error"
                             sub_step[value_index] = sub_step[value_index].replace(
                                 key_name, key_value
