@@ -74,7 +74,7 @@ Examples include:
 * module-development tutorials;
 * lab exercises and other educational resources.
 
-Content may be produced in any language. Contributors are encouraged to make materials accessible to their local communities and to provide English subtitles or summaries where practical. Currently, we collected a few media on [Media](https://github.com/OWASP/Nettacker/wiki/Media) page. 
+Content may be produced in any language. Contributors are encouraged to make materials accessible to their local communities and to provide English subtitles or summaries where practical. Currently, we collected a few media on [Media](Media.md) page. 
 
 
 Feel free to post your Media as a comment on [this](https://github.com/OWASP/Nettacker/issues/1) page.
