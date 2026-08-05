@@ -180,7 +180,8 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**vite_cve_2025_31125_vuln**' - check the target for CVE-2025-31125
 - '**vbulletin_cve_2019_16759_vuln**' - check the target for vBulletin RCE CVE-2019-16759 vulnerability
 - '**accela_cve_2021_34370_vuln**' – check for authentication bypass vulnerability in Accela Civic Platform
-- '**adobe_coldfusion_cve_2023_26360_vuln**' – check for remote code execution vulnerability in Adobe ColdFusion
+- '**adobe_coldfusion_cve_2023_26360_vuln**' – check the target for Adobe ColdFusion CVE-2023-26360 insecure deserialization RCE vulnerability
+- '**adobe_coldfusion_cve_2026_48282_vuln**' - check the target for Adobe ColdFusion CVE-2026-48282 RDS path traversal vulnerability
 - '**aiohttp_cve_2024_23334_vuln**' – check the target for CVE-2024-23334
 - '**apache_cve_2021_41773_vuln**' – check for path traversal vulnerability in Apache HTTP Server
 - '**apache_cve_2021_42013_vuln**' – check for remote code execution vulnerability in Apache HTTP Server
@@ -216,6 +217,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**justwriting_cve_2021_41878_vuln**' – check the target for JustWriting CVE-2021-41878
 - '**langflow_cve_2025_3248_vuln**' - check the target for Langflow CVE-2025-3248 vulnerability
 - '**log4j_cve_2021_44228_vuln**' – check the target for Log4Shell CVE-2021-44228 vulnerability
+- '**majordomo_rce_cve_2026_27174_vuln**' – check for MajorDoMo CVE-2026-27174 vulnerability
 - '**maxsite_cms_cve_2021_35265_vuln**' – check the target for MaxSite CMS CVE-2021-35265
 - '**memos_cve_2025_22952_ssrf_vuln**' – check vulnerable Memos markdown metadata endpoint CVE-2025-22952
 - '**meteobridge_cve_2025_4008_vuln**' - check for MeteoBridge unauthenticated command injection CVE-2025-4008
@@ -247,6 +249,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**tieline_cve_2021_35336_vuln**' – check the target for Tieline CVE-2021-35336 vulnerability
 - '**tjws_cve_2021_37573_vuln**' – check the target for TJWS CVE-2021-37573 vulnerability
 - '**vbulletin_cve_2019_16759_vuln**' – check the target for vBulletin CVE-2019-16759 vulnerability
+- '**wordpress_core_cve_2026_63030_vuln**' – check the target for WordPress core CVE-2026-63030 
 - '**wp_plugin_cve_2021_38314_vuln**' – check the target for WordPress plugin CVE-2021-38314
 - '**wp_plugin_cve_2021_39316_vuln**' – check the target for WordPress plugin CVE-2021-39316
 - '**wp_plugin_cve_2021_39320_vuln**' – check the target for WordPress plugin CVE-2021-39320
