@@ -45,7 +45,7 @@ OWASP Nettacker is an open-source, Python-based automated penetration testing an
   Automate and scale common reconnaissance tasks like subdomain enumeration, directory brute-forcing, and default credential checks to speed up finding targets.  
 
 - **Network Vulnerability Scanning**  
-  Efficiently scan IPs, IP ranges, or entire CIDR blocks or all subdmains of the organisation in parallel using a modular, multithreaded approach for large-scale network assessments.  
+  Efficiently scan IPs, IP ranges, or entire CIDR blocks or all subdomains of the organisation in parallel using a modular, multithreaded approach for large-scale network assessments.  
 
 - **Shadow IT & Asset Discovery**  
   Use historical scan data and drift detection to uncover unmanaged or forgotten hosts, open ports/services, and subdomains appearing over time.  
@@ -122,8 +122,7 @@ _____________
 <a href="https://summerofcode.withgoogle.com"><img src="https://betanews.com/wp-content/uploads/2016/03/vertical-GSoC-logo.jpg" width="200"></img></a>
 
 _____________
-## Stargazers over time
 
-[![Stargazers over time](https://starchart.cc/OWASP/Nettacker.svg)](https://starchart.cc/OWASP/Nettacker)
+## Supporters
 
-<img alt="" referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=8e922d16-445a-4c63-b4cf-5152fbbaf7fd" />
+OWASP Nettacker is supported by [Sorena AI](https://www.sorena.io/), a compliance and GRC platform that helps security teams streamline assessments, evidence collection, risk management, and regulatory workflows.
