@@ -74,7 +74,7 @@ Examples include:
 * module-development tutorials;
 * lab exercises and other educational resources.
 
-Content may be produced in any language. Contributors are encouraged to make materials accessible to their local communities and to provide English subtitles or summaries where practical. Currently, we collected a few media on [Media](Media.md) page. 
+Content may be produced in any language. Contributors are encouraged to make materials accessible to their local communities and to provide English subtitles or summaries where practical. A few media items are currently collected on the [Media](Media.md) page. 
 
 
 Feel free to post your Media as a comment on [this](https://github.com/OWASP/Nettacker/issues/1) page.
@@ -83,7 +83,7 @@ Please note: Submission does not guarantee inclusion. Project maintainers may de
 
 # Contribute to Language Libraries
 
-OWASP Nettacker is using multi-language libraries (default English) to create a better user experience. Please check `nettacker/locale/`  for the list of currently supported languages. If you are a native language speaker in one these languages, It would be a great favor to review and contribute to one of these. If any language you want to contribute is not listed, feel free to follow the below steps to add it.
+OWASP Nettacker is using multi-language libraries (default English) to create a better user experience. Please check `nettacker/locale/`  for the list of currently supported languages. If you are a native speaker of one of these languages, it would be a great favor to review and contribute to one of these. If any language you want to contribute is not listed, feel free to follow the below steps to add it.
 
 ## Add a New Language Library
 
