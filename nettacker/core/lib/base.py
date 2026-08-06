@@ -122,6 +122,22 @@ class BaseEngine(ABC):
     ):
         # Remove sensitive keys from headers before submitting to DB
         event = remove_sensitive_header_keys(event)
+        port = (
+            event.get("ports")
+            or event.get("port")
+            or (
+                event.get("url").split(":")[2].split("/")[0]
+                if isinstance(event.get("url"), str)
+                and len(event.get("url").split(":")) >= 3
+                and event.get("url").split(":")[2].split("/")[0].isdigit()
+                else None
+            )
+        )
+        if isinstance(port, str):
+            if port.isdigit():
+                port = int(port)
+            else:
+                port = None
         if "save_to_temp_events_only" in event.get("response", ""):
             submit_temp_logs_to_db(
                 {
@@ -130,15 +146,7 @@ class BaseEngine(ABC):
                     "module_name": module_name,
                     "scan_id": scan_id,
                     "event_name": event["response"]["save_to_temp_events_only"],
-                    "port": int(event.get("ports"))
-                    or int(event.get("port"))
-                    or (
-                        int(event.get("url").split(":")[2].split("/")[0])
-                        if isinstance(event.get("url"), str)
-                        and len(event.get("url").split(":")) >= 3
-                        and event.get("url").split(":")[2].split("/")[0].isdigit()
-                        else ""
-                    ),
+                    "port": port,
                     "event": event,
                     "data": response,
                 }
@@ -167,15 +175,7 @@ class BaseEngine(ABC):
                     "target": target,
                     "module_name": module_name,
                     "scan_id": scan_id,
-                    "port": int(event.get("ports"))
-                    or int(event.get("port"))
-                    or (
-                        int(event.get("url").split(":")[2].split("/")[0])
-                        if isinstance(event.get("url"), str)
-                        and len(event.get("url").split(":")) >= 3
-                        and event.get("url").split(":")[2].split("/")[0].isdigit()
-                        else ""
-                    ),
+                    "port": port,
                     "event": " ".join(yaml.dump(event_request_keys).split())
                     + " conditions: "
                     + " ".join(yaml.dump(event["response"]["conditions_results"]).split()),
