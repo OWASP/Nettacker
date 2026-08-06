@@ -33,6 +33,7 @@ payloads:
   - library: http
     steps:
       # Step 1: Obtain unauthenticated access token via AUTO_LOGIN (default enabled)
+      # Uses capturing group to extract actual token value from response
       - method: get
         timeout: 5
         headers:
@@ -40,7 +41,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "http://{target}:7860/api/v1/auto_login"
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/auto_login"
         response:
           save_to_temp_events_only: token
           condition_type: and
@@ -49,10 +50,12 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: access_token
+              # Capturing group: extract actual token string from "access_token":"<value>"
+              regex: '"access_token":"([^"]*)"'
               reverse: false
 
       # Step 2: Create a public flow (required to obtain flow_id for build endpoint)
+      # Uses capturing group to extract actual flow UUID
       - method: post
         timeout: 5
         headers:
@@ -68,7 +71,7 @@ payloads:
           access_type: PUBLIC
         url:
           nettacker_fuzzer:
-            input_format: "http://{target}:7860/api/v1/flows/"
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/flows/"
         response:
           dependent_on_temp_event: token
           save_to_temp_events_only: flow_id
@@ -78,12 +81,14 @@ payloads:
               regex: "20[01]"
               reverse: false
             content:
-              regex: '"id"'
+              # Capturing group: extract actual flow UUID from "id":"<uuid>"
+              regex: '"id":"([a-f0-9\-]{36})"'
               reverse: false
 
       # Step 3: Submit attacker-controlled flow data to build_public_tmp
       # On vulnerable versions, this node data is accepted and processed.
       # On patched versions, it is silently discarded before graph construction.
+      # Uses capturing group to extract actual job UUID
       - method: post
         timeout: 10
         headers:
@@ -112,7 +117,7 @@ payloads:
             edges: []
         url:
           nettacker_fuzzer:
-            input_format: "http://{target}:7860/api/v1/build_public_tmp/dependent_on_temp_event[1]['content'][0]/flow"
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/build_public_tmp/dependent_on_temp_event[1]['content'][0]/flow"
         response:
           save_to_temp_events_only: job_id
           dependent_on_temp_event: "token,flow_id"
@@ -122,7 +127,8 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: job_id
+              # Capturing group: extract actual job UUID from "job_id":"<uuid>"
+              regex: '"job_id":"([a-f0-9\-]{36})"'
               reverse: false
 
       # Step 4: Poll build-event stream to detect vulnerable behavior
@@ -139,7 +145,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "http://{target}:7860/api/v1/build/dependent_on_temp_event[1]['content'][0]/events"
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/build/dependent_on_temp_event[2]['content'][0]/events"
         response:
           dependent_on_temp_event: "token,flow_id,job_id"
           condition_type: and
@@ -152,3 +158,24 @@ payloads:
               # (vulnerable versions reference it during processing; patched versions ignore it)
               regex: nettacker_vuln_check
               reverse: false
+
+      # Step 5: Cleanup - Delete the created flow to avoid accumulating test artifacts
+      - method: delete
+        timeout: 5
+        headers:
+          User-Agent: Nettacker
+          Authorization: "Bearer dependent_on_temp_event[0]['content'][0]"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/flows/dependent_on_temp_event[1]['content'][0]"
+        response:
+          dependent_on_temp_event: "token,flow_id"
+          condition_type: or
+          conditions:
+            status_code:
+              regex: "20[0-4]"
+              reverse: false
+            content:
+              regex: "deleted|Deleted|success"
+              reverse: true
