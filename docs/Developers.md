@@ -38,7 +38,8 @@ These are the guidelines you need to keep in mind while contributing:
 * Please ensure that **all commits are signed** before submitting the PR
 * Use the automated checks: run `make pre-commit` and `make test`
 * Thoroughly test your code locally.
-* When submitting new modules test them in your own lab VM.
+* When submitting new modules test them in your own lab VM. Where available, use a Docker image running the vulnerable software version targeted by the module to test the module.
+* Please attach screenshots demonstrating that the code works as intended (if applicable)
 * Be sure to add/update related documentation.
 
 ## AI Policy
