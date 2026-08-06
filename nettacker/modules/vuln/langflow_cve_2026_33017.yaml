@@ -4,21 +4,17 @@ info:
   severity: 9.8
   description: >
     CVE-2026-33017 (CVSS 9.8) is an unauthenticated RCE in Langflow <= 1.8.2
-    via the /api/v1/build_public_tmp/{{flow_id}}/flow endpoint, which processes
-    attacker-controlled flow node definitions instead of using only the stored
-    flow data. The official fix in 1.9.0 removes this behavior entirely, ignoring
-    attacker-supplied node data and building only the stored (empty) flow.
-    This module detects the vulnerable input-validation flaw by submitting a
-    uniquely-identified CustomComponent node and checking whether the server's
-    build-event stream references it. Testing against 1.8.2 (vulnerable) and
-    1.9.0 (patched) shows: vulnerable instances process and reference the
-    injected node (visible as processing errors); patched instances discard
-    it before processing (empty vertex list in events). This confirms the
-    vulnerability's root cause (improper input handling); it does not
-    independently verify code execution. Non-destructive detection suitable
-    for production scanning. KNOWN LIMITATION: The /api/v1/build/{{job_id}}/events
-    endpoint is a long-polling stream that waits for build events. Detection
-    requires sufficient timeout (use --thread-per-host 1 for sequential execution).
+    via the /api/v1/build_public_tmp/{{flow_id}}/flow endpoint. This module
+    detects the vulnerability by submitting a uniquely-identified CustomComponent
+    node and monitoring the build event stream. Vulnerable instances (≤1.8.2)
+    process the injected node and reference it in build events. Patched instances
+    (≥1.9.0) silently discard attacker-supplied nodes. Detection confirms the
+    input-validation flaw without independently verifying code execution.
+    LIMITATION: Step 4 (event polling) currently times out due to Nettacker's
+    global CLI timeout (default 3.0s) overriding per-step timeout specifications
+    (module specifies 30s). Workaround: increase --timeout CLI flag when running.
+    Steps 1-3 are verified working. Non-destructive, suitable for production
+    scanning once timeout issue is resolved.
   reference:
     - https://nvd.nist.gov/vuln/detail/CVE-2026-33017
     - https://github.com/langflow-ai/langflow/security/advisories/GHSA-vwmf-pq79-vjvx
@@ -151,3 +147,4 @@ payloads:
             content:
               regex: nettacker_vuln_check
               reverse: false
+          log: "CVE-2026-33017: Vulnerable instance confirmed - injected node processed by build engine"

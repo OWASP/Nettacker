@@ -34,7 +34,9 @@ async def perform_request_action(action, request_options):
 
 
 async def send_request(request_options, method):
-    async with aiohttp.ClientSession() as session:
+    timeout_val = request_options.get("timeout", 3.0)
+    timeout = aiohttp.ClientTimeout(total=timeout_val)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
         action = getattr(session, method, None)
         response = await asyncio.gather(
             *[asyncio.ensure_future(perform_request_action(action, request_options))]
