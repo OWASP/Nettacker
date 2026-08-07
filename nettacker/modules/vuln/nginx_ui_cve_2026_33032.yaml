@@ -1,0 +1,80 @@
+info:
+  name: nginx_ui_cve_2026_33032_vuln
+  author: Nettacker Team
+  severity: 9.8
+  description: |
+    Detects a Broken Access Control vulnerability in Nginx UI versions prior
+    to 2.3.4. The `/mcp_message` endpoint processes unauthenticated JSON-RPC
+    requests and returns a JSON-RPC error indicating a missing session ID
+    instead of rejecting the request with an authentication error. Successful
+    detection indicates the endpoint is reachable without authentication and
+    is likely vulnerable to CVE-2026-33032.
+  references:
+    - https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-h6c2-x2m2-mwhf
+    - https://github.com/0xJacky/nginx-ui/commit/413dc631
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-33032
+  profiles:
+    - vuln
+    - http
+    - cve
+    - cve2026
+    - nginx_ui
+    - mcp
+    - unauth
+    - critical_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
+        ssl: false
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/mcp_message"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 9000
+
+        data: |
+          {{
+            "jsonrpc":"2.0",
+            "method":"initialize",
+            "params":{{
+              "protocolVersion":"2024-11-05",
+              "capabilities":{{}},
+              "clientInfo":{{
+                "name":"nettacker",
+                "version":"1.0"
+              }}
+            }},
+            "id":1
+          }}
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "400"
+              reverse: false
+
+            headers:
+              Content-Type:
+                regex: "application/json"
+                reverse: false
+
+            content:
+              regex: '(?s)(?=.*"jsonrpc":)(?=.*"message")(?=.*"id").*'
+              reverse: false
