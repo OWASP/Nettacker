@@ -44,8 +44,11 @@ payloads:
             data:
               schema:
                 - "http"
+                - "https"
               ports:
-                - 7860
+                - 7860 # Default Langflow port
+                - 80
+                - 443
         response:
           save_to_temp_events_only: token
           condition_type: and
@@ -74,8 +77,11 @@ payloads:
             data:
               schema:
                 - "http"
+                - "https"
               ports:
-                - 7860
+                - 7860 # Default Langflow port
+                - 80
+                - 443
         response:
           dependent_on_temp_event: token
           save_to_temp_events_only: flow_id
@@ -106,8 +112,11 @@ payloads:
             data:
               schema:
                 - "http"
+                - "https"
               ports:
-                - 7860
+                - 7860 # Default Langflow port
+                - 80
+                - 443
         response:
           save_to_temp_events_only: job_id
           dependent_on_temp_event: "token,flow_id"
@@ -121,6 +130,10 @@ payloads:
               reverse: false
 
       - method: get
+        # NOTE: This module requires running with --timeout 30 (or higher) due to a
+        # Nettacker engine limitation where TemplateLoader.parse() overwrites this
+        # per-step timeout with the global CLI --timeout default (currently default 3.0s).
+        # Workaround: use `nettacker.py ... --timeout 30` when running this module.
         timeout: 30
         headers:
           User-Agent: Nettacker
@@ -135,8 +148,11 @@ payloads:
             data:
               schema:
                 - "http"
+                - "https"
               ports:
-                - 7860
+                - 7860 # Default Langflow port
+                - 80
+                - 443
         response:
           dependent_on_temp_event: "token,flow_id,job_id"
           condition_type: and
@@ -148,3 +164,32 @@ payloads:
               regex: nettacker_vuln_check
               reverse: false
           log: "CVE-2026-33017: Vulnerable instance confirmed - injected node processed by build engine"
+
+      - method: delete
+        timeout: 5
+        headers:
+          User-Agent: Nettacker
+          Authorization: "Bearer dependent_on_temp_event[0]['content'][0]"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/flows/dependent_on_temp_event[1]['content'][0]"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 7860 # Default Langflow port
+                - 80
+                - 443
+        response:
+          save_to_temp_events_only: cleanup
+          dependent_on_temp_event: "token,flow_id"
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "20[0-4]"
+              reverse: false
