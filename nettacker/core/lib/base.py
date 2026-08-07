@@ -130,14 +130,12 @@ class BaseEngine(ABC):
                 if isinstance(event.get("url"), str)
                 and len(event.get("url").split(":")) >= 3
                 and event.get("url").split(":")[2].split("/")[0].isdigit()
-                else None
+                else ""
             )
         )
         if isinstance(port, str):
             if port.isdigit():
                 port = int(port)
-            else:
-                port = None
         if "save_to_temp_events_only" in event.get("response", ""):
             submit_temp_logs_to_db(
                 {
