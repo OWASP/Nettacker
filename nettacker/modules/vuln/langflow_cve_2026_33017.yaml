@@ -134,6 +134,7 @@ payloads:
         # Nettacker engine limitation where TemplateLoader.parse() overwrites this
         # per-step timeout with the global CLI --timeout default (currently default 3.0s).
         # Workaround: use `nettacker.py ... --timeout 30` when running this module.
+        # See issue #1654 for details.
         timeout: 30
         headers:
           User-Agent: Nettacker
