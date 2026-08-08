@@ -162,6 +162,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**ProFTPd_integer_overflow_vuln**' - check ProFTPd for CVE-2011-1137
 - '**ProFTPd_memory_leak_vuln**' - check ProFTPd for CVE-2001-0136
 - '**ProFTPd_restriction_bypass_vuln**' - check ProFTPd for CVE-2009-3639
+- '**sangoma_freepbx_cve_2025_57819_vuln**' - check target for CVE-2025-57819
 - '**server_version_vuln**' - check if the web server is leaking server banner in 'Server' response header
 - '**siyuan_cve_2026_34605_vuln**' - check for reflected SVG XSS vulnerability CVE-2026-34605
 - '**smartermail_cve_2026_24423_vuln**' - check the target for SmarterMail CVE-2026-24423 vulnerability
