@@ -18,6 +18,7 @@ info:
   reference:
     - https://nvd.nist.gov/vuln/detail/CVE-2026-33017
     - https://github.com/langflow-ai/langflow/security/advisories/GHSA-vwmf-pq79-vjvx
+    - https://www.cisa.gov/news-events/alerts/2026/03/25/cisa-adds-one-known-exploited-vulnerability-catalog
   profiles:
     - vuln
     - http
@@ -26,6 +27,7 @@ info:
     - cve2026
     - langflow
     - rce
+    - cisa_kev
 
 payloads:
   - library: http
@@ -134,7 +136,11 @@ payloads:
         # Nettacker engine limitation where TemplateLoader.parse() overwrites this
         # per-step timeout with the global CLI --timeout default (currently default 3.0s).
         # Workaround: use `nettacker.py ... --timeout 30` when running this module.
-        # See issue #1654 for details.
+        # Step 4 timeout was empirically measured at 30s with the full 5-step module.
+        # This value was set before recent fixes (missing fuzzer fields, JSON escaping,
+        # restored DELETE step, schema/ports coverage). Re-evaluation recommended if
+        # maintainer review (securestep9) questions this requirement -- the timeout
+        # measurement may have been inflated by bugs since fixed. See issue #1654.
         timeout: 30
         headers:
           User-Agent: Nettacker
