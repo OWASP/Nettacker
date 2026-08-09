@@ -73,6 +73,9 @@ class ApiConfig(ConfigBase):
     api_debug_mode = False
     api_hostname = "0.0.0.0"
     api_port = 5000
+    api_upload_allowed_extensions = ("txt", "csv", "lst", "list")
+    api_upload_max_size = 10 * 1024 * 1024
+    api_upload_token_ttl = 15 * 60
     start_api_server = False
 
 
@@ -191,7 +194,6 @@ class DefaultSettings(ConfigBase):
     verbose_mode = False
     scan_compare_id = None
     compare_report_path_filename = ""
-    allowed_upload_extensions = ("txt", "csv", "lst", "list")
 
 
 class Config:

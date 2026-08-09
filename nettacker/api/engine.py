@@ -5,6 +5,7 @@ import os
 import random
 import re
 import secrets
+import shutil
 import string
 import time
 import uuid
@@ -55,14 +56,16 @@ log = logger.get_logger()
 app = Flask(__name__, template_folder=str(Config.path.web_static_dir))
 app.config.from_object(__name__)
 app.config["MAX_CONTENT_LENGTH"] = (
-    10 * 1024 * 1024
+    Config.api.api_upload_max_size
 )  # https://flask.palletsprojects.com/en/stable/patterns/fileuploads/
-FILE_UPLOAD_PARAMS = ("targets_list", "passwords_list", "usernames_list", "read_from_file")
-UPLOAD_TOKEN_TTL_SECONDS = 15 * 60
+UPLOAD_PARAMS_READ_AT_INIT = ("targets_list", "passwords_list", "usernames_list")
+UPLOAD_PARAMS_READ_DURING_SCAN = ("read_from_file",)
+FILE_UPLOAD_PARAMS = UPLOAD_PARAMS_READ_AT_INIT + UPLOAD_PARAMS_READ_DURING_SCAN
+UPLOAD_TOKEN_TTL_SECONDS = Config.api.api_upload_token_ttl
 _upload_token_serializer = URLSafeTimedSerializer(
     secrets.token_hex(32), salt="nettacker-file-upload"
 )
-UPLOAD_FILENAME_RE = re.compile(r"^[0-9a-f]{32}_")
+UPLOAD_FILENAME_RE = re.compile(rf"^[0-9a-f]{{32}}_({'|'.join(FILE_UPLOAD_PARAMS)})_")
 
 nettacker_path_config = Config.path
 nettacker_application_config = Config.settings.as_dict()
@@ -252,7 +255,7 @@ def sanitize_report_path_filename(report_path_filename):
 def allowed_file(filename):
     return (
         "." in filename
-        and filename.rsplit(".", 1)[1].lower() in Config.settings.allowed_upload_extensions
+        and filename.rsplit(".", 1)[1].lower() in Config.api.api_upload_allowed_extensions
     )
 
 
@@ -263,9 +266,11 @@ def cleanup_expired_uploads():
     cutoff = time.time() - UPLOAD_TOKEN_TTL_SECONDS
     for entry in tmp_dir.iterdir():
         try:
+            match = UPLOAD_FILENAME_RE.match(entry.name)
             if (
                 entry.is_file()
-                and UPLOAD_FILENAME_RE.match(entry.name)
+                and match
+                and match.group(1) in UPLOAD_PARAMS_READ_AT_INIT
                 and entry.stat().st_mtime < cutoff
             ):
                 entry.unlink(missing_ok=True)
@@ -290,9 +295,10 @@ def upload_file():
     filename = secure_filename(uploaded.filename)
     if not filename:
         return jsonify(structure(status="error", msg=_("upload_invalid_filename"))), 400
-    stored_name = f"{uuid.uuid4().hex}_{filename}"
+    stored_name = f"{uuid.uuid4().hex}_{param_name}_{filename}"
     tmp_dir = nettacker_path_config.tmp_dir
     tmp_dir.mkdir(parents=True, exist_ok=True)
+    os.chmod(tmp_dir, 0o700)
     uploaded.save(str(tmp_dir / stored_name))
     token = _upload_token_serializer.dumps({"param": param_name, "name": stored_name})
     return jsonify(structure(status="ok", msg=token)), 200
@@ -333,7 +339,8 @@ def new_scan():
         if not stored_name or not file_path.is_file():
             return jsonify(structure(status="error", msg=_("upload_file_not_found"))), 400
         form_values[key] = str(file_path)
-        uploaded_paths.append(file_path)
+        if key in UPLOAD_PARAMS_READ_AT_INIT:
+            uploaded_paths.append(file_path)
 
     for key in nettacker_application_config:
         if key not in form_values:
@@ -704,3 +711,4 @@ def start_api_server(options):
             for process in multiprocessing.active_children():
                 process.terminate()
             break
+    shutil.rmtree(nettacker_path_config.tmp_dir, ignore_errors=True)

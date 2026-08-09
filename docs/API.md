@@ -83,10 +83,10 @@ The request must be `multipart/form-data` with two **required** fields:
 Constraints:
 
 - Maximum size: 10 MB (`MAX_CONTENT_LENGTH`)
-- Allowed extensions: `txt`, `csv`, `lst`, `list` (configurable via `allowed_upload_extensions` in `nettacker/config.py`). The check applies to every `param_name`.
+- Allowed extensions: `txt`, `csv`, `lst`, `list` (configurable via `api_upload_allowed_extensions` in `nettacker/config.py`). The check applies to every `param_name`.
 - Filenames are sanitised and prefixed with a UUID before being written to the tmp directory.
 
-On success the response `msg` is an **opaque signed token**, not a filename. The token is bound to the `param_name` it was uploaded for and **expires 15 minutes** after upload. Pass it back through `/new/scan` under the matching parameter; the server verifies the signature, the expiry, and that the token's parameter matches the field it is submitted under. Tokens are stateless (nothing is stored server-side beyond the temp file), so they do not survive an API restart. Temp files left by uploads that are never submitted are swept once their token expires.
+On success the response `msg` is an **opaque signed token**, not a filename. The token is bound to the `param_name` it was uploaded for and **expires 15 minutes** after upload. Pass it back through `/new/scan` under the matching parameter; the server verifies the signature, the expiry, and that the token's parameter matches the field it is submitted under. Tokens are stateless (nothing is stored server-side beyond the temp file), so they do not survive an API restart. Temp files left by uploads that are never submitted are swept once their token expires. `read_from_file` uploads are the exception: the scan reads the wordlist while it runs, so they are kept until the API shuts down.
 
 ```python
 >>> r = requests.post(
