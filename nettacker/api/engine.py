@@ -55,7 +55,9 @@ log = logger.get_logger()
 
 app = Flask(__name__, template_folder=str(Config.path.web_static_dir))
 app.config.from_object(__name__)
-app.config["MAX_CONTENT_LENGTH"] = (
+app.config[
+    "MAX_CONTENT_LENGTH"
+] = (
     Config.api.api_upload_max_size
 )  # https://flask.palletsprojects.com/en/stable/patterns/fileuploads/
 UPLOAD_PARAMS_READ_AT_INIT = ("targets_list", "passwords_list", "usernames_list")
