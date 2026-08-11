@@ -122,8 +122,7 @@ _____________
 <a href="https://summerofcode.withgoogle.com"><img src="https://betanews.com/wp-content/uploads/2016/03/vertical-GSoC-logo.jpg" width="200"></img></a>
 
 _____________
-## Stargazers over time
 
-[![Stargazers over time](https://starchart.cc/OWASP/Nettacker.svg)](https://starchart.cc/OWASP/Nettacker)
+## Supporters
 
-<img alt="" referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=8e922d16-445a-4c63-b4cf-5152fbbaf7fd" />
+OWASP Nettacker is supported by [Sorena AI](https://www.sorena.io/), a compliance and GRC platform that helps security teams streamline assessments, evidence collection, risk management, and regulatory workflows.
