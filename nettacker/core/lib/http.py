@@ -73,21 +73,20 @@ def response_conditions_matched(sub_step, response):
                 except TypeError:
                     condition_results["headers"][header] = []
         if condition == "responsetime":
-            if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
-                "==",
-                "!=",
-                ">=",
-                "<=",
-                ">",
-                "<",
-            ]:
-                exec(
-                    "condition_results['responsetime'] = response['responsetime'] if ("
-                    + "response['responsetime'] {0} float(conditions['responsetime'].split()[-1])".format(
-                        conditions["responsetime"].split()[0]
-                    )
-                    + ") else []"
-                )
+            ops = {
+                "==": float.__eq__,
+                "!=": float.__ne__,
+                ">=": float.__ge__,
+                "<=": float.__le__,
+                ">": float.__gt__,
+                "<": float.__lt__,
+            }
+            parts = conditions[condition].split()
+            if len(parts) == 2 and parts[0] in ops:
+                op = ops[parts[0]]
+                threshold = float(parts[1])
+                t = response["responsetime"]
+                condition_results["responsetime"] = t if op(t, threshold) else []
             else:
                 condition_results["responsetime"] = []
     if condition_type.lower() == "or":
