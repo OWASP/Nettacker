@@ -1,1 +1,59 @@
-{0}{1}<center><br><br><br><table><tr><th>{2}</th><th>{3}</th><th>{4}</th><th>{5}</th><th>{6}</th><th>{7}</th></tr>
+{0}
+{1}
+<div class="nettacker-report">
+  <header class="nettacker-report__header">
+    <div class="nettacker-report__title-block">
+      <h1 class="nettacker-report__title">OWASP Nettacker Scan Report</h1>
+      <p class="nettacker-report__subtitle">Network security scan summary and findings</p>
+    </div>
+    <div class="nettacker-report__meta">
+      <div class="nettacker-report__meta-item">
+        <span class="nettacker-report__meta-label">Scan ID</span>
+        <span class="nettacker-report__meta-value" id="scan-id-summary"></span>
+      </div>
+      <div class="nettacker-report__meta-item">
+        <span class="nettacker-report__meta-label">Generated</span>
+        <span class="nettacker-report__meta-value" id="generated-at-summary"></span>
+      </div>
+      <div class="nettacker-report__meta-item">
+        <span class="nettacker-report__meta-label">Findings</span>
+        <span class="nettacker-report__meta-value" id="findings-count">0</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="nettacker-report__summary" id="report-summary">
+    <!-- Filled by json_parse.js using scan results -->
+  </section>
+
+  <section class="nettacker-report__toolbar">
+    <div class="nettacker-report__export-group">
+      <span class="nettacker-report__export-label">Export</span>
+      <button type="button" id="export-json" class="nettacker-btn nettacker-btn--sm">
+        JSON
+      </button>
+      <button type="button" id="export-csv" class="nettacker-btn nettacker-btn--sm">
+        CSV
+      </button>
+      <button type="button" id="export-text" class="nettacker-btn nettacker-btn--sm">
+        Text
+      </button>
+      <button type="button" id="export-pdf" class="nettacker-btn nettacker-btn--sm">
+        PDF
+      </button>
+    </div>
+  </section>
+
+  <section class="nettacker-report__table-wrapper">
+    <table class="nettacker-report__table">
+      <thead>
+        <tr>
+          <th>{2}</th>
+          <th>{3}</th>
+          <th>{4}</th>
+          <th>{5}</th>
+          <th>{6}</th>
+          <th>{7}</th>
+        </tr>
+      </thead>
+      <tbody>
