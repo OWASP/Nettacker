@@ -19,6 +19,41 @@ OWASP Nettacker
 ![2018-01-19_0-45-07](https://user-images.githubusercontent.com/7676267/35123376-283d5a3e-fcb7-11e7-9b1c-92b78ed4fecc.gif)
 
 OWASP Nettacker is an open-source, Python-based automated penetration testing and information-gathering framework designed to help cyber security professionals and ethical hackers perform reconnaissance, vulnerability assessments, and network security audits efficiently. Nettacker automates tasks like port scanning, service detection, subdomain enumeration, network mapping, vulnerability scanning, credential brute-force testing making it a powerful tool for identifying weaknesses in networks, web applications, IoT devices and APIs.
+ ## ⚠️ Windows Support
+
+OWASP Nettacker does not support native Windows execution due to compatibility issues with certain Python dependencies and networking libraries.
+
+### Recommended Solutions
+
+#### 1. Docker (Recommended)
+Docker provides the easiest cross-platform solution.
+
+- Install Docker Desktop: https://docs.docker.com/desktop/install/windows-install/
+- Follow Nettacker Docker usage instructions in this repository
+
+#### 2. Windows Subsystem for Linux (WSL)
+- Install WSL: https://learn.microsoft.com/en-us/windows/wsl/install
+- Install Ubuntu
+- Run Nettacker inside WSL environment
+
+#### 3. Kali Linux / Virtual Machine
+- Use Kali Linux or any Linux VM
+- Install dependencies and run Nettacker normally
+
+These methods ensure full compatibility and avoid runtime errors.
+OWASP Nettacker does not support native Windows execution.
+
+### Recommended Solutions:
+
+**1. Windows Subsystem for Linux (WSL)**
+- Install WSL
+- Install Ubuntu
+- Run Nettacker inside Linux environment
+
+**2. Kali Linux / Virtual Machine**
+- Use Kali Linux or any Linux VM
+
+This ensures compatibility and avoids runtime errors.
 
 ### Key Features
 
@@ -28,7 +63,28 @@ OWASP Nettacker is an open-source, Python-based automated penetration testing an
 - **Built-in database & drift detection** - Stores past scans in the database for easy search and comparison with current results: useful to detect new hosts, open ports, or vulnerabilities in CI/CD pipelines.
 - **CLI, REST API & Web UI** - Offers both programmatic integration and a user-friendly web interface for defining scans and viewing results.
 - **Evasion techniques** - Enables configurable delays, proxy support, and randomized user-agents to reduce detection by firewalls or IDS systems.
-- **Flexible targets** - Accepts single IPv4s, IP ranges, CIDR blocks, domain names, and full HTTP/HTTPS URLs. Targets can be mixed in a single command or loaded from a file using the `-l/--targets-list` flag. 
+## ⚠️ Windows Support
+
+OWASP Nettacker does not support native Windows execution due to compatibility issues with certain Python dependencies and networking libraries.
+
+### Recommended Solutions
+
+#### 1. Docker (Recommended)
+Docker provides the easiest cross-platform solution.
+
+- Install Docker Desktop: https://docs.docker.com/desktop/install/windows-install/
+- Follow Nettacker Docker usage instructions in this repository
+
+#### 2. Windows Subsystem for Linux (WSL)
+- Install WSL: https://learn.microsoft.com/en-us/windows/wsl/install
+- Install Ubuntu
+- Run Nettacker inside WSL environment
+
+#### 3. Kali Linux / Virtual Machine
+- Use Kali Linux or any Linux VM
+- Install dependencies and run Nettacker normally
+
+These methods ensure full compatibility and avoid runtime errors.- **Flexible targets** - Accepts single IPv4s, IP ranges, CIDR blocks, domain names, and full HTTP/HTTPS URLs. Targets can be mixed in a single command or loaded from a file using the `-l/--targets-list` flag. 
 
 ### Use Cases
 
