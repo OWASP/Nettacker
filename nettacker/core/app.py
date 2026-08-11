@@ -1,3 +1,5 @@
+
+
 import copy
 import json
 import os
@@ -5,6 +7,7 @@ import shutil
 import socket
 import sys
 from threading import Thread
+from urllib.parse import urlsplit
 
 import multiprocess
 
@@ -107,26 +110,36 @@ class Nettacker(ArgParser):
         Args:
             options: all options
             scan_id: unique scan identifier
-
-        Returns:
+      Returns:
             a generator
         """
         targets = []
         base_path = ""
+        
         for target in self.arguments.targets:
             if "://" in target:
                 try:
-                    if not target.split("://")[1].split("/")[1]:
-                        base_path = ""
-                    else:
-                        base_path = "/".join(target.split("://")[1].split("/")[1:])
-                        if base_path[-1] != "/":
-                            base_path += "/"
-                except IndexError:
-                    base_path = ""
-                # remove url proto; uri; port
-                target = target.split("://")[1].split("/")[0].split(":")[0]
-                targets.append(target)
+                    parsed = urlsplit(target)
+                    hostname = parsed.hostname
+
+                    if not hostname:
+                         raise ValueError(
+                               "Invalid scan configuration: target host cannot be empty"
+                         )
+
+                    target = hostname
+
+                    base_path = parsed.path.lstrip("/")
+                    if base_path and not base_path.endswith("/"):
+                         base_path += "/"
+
+                    targets.append(target)
+
+                except Exception as e:
+                         raise ValueError(
+                               "Invalid scan configuration: malformed target URL"
+                         ) from e
+
             # single IPs
             elif is_single_ipv4(target) or is_single_ipv6(target):
                 if self.arguments.scan_ip_range:
