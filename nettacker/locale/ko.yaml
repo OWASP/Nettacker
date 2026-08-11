@@ -212,3 +212,59 @@ no_scan_to_compare: "비교할 scan_id를 찾을 수 없습니다"
 compare_report_saved: "비교 결과가 {0}에 저장되었습니다"
 build_compare_report: "비교 보고서 생성 중"
 finish_build_report: "비교 보고서 생성 완료"
+API_cert: API 인증서
+API_cert_key: API 인증서 키
+Invalid_whatcms_api_key: "{0}"
+apsw_connection_error: APSW 연결을 생성하지 못했습니다 {0}
+apsw_ill_configuration: "APSW가 설정에 구성되어 있지만 환경에 설치되어 있지 않습니다"
+cannot_run_api_server: API 서버를 통해 API 서버를 실행할 수 없습니다!
+compare_scans: 고유한 scan_id를 사용하여 현재 스캔과 이전 스캔을 비교합니다
+database_connection_failed: 선택한 데이터베이스에 연결하지 못했습니다
+database_error: 데이터베이스 오류!
+database_lock_issue: 재시도 {0}, 데이터베이스가 잠겨 있습니다. 데이터베이스 제출을 재시도합니다
+database_query_fail: 데이터베이스를 쿼리할 수 없습니다
+database_retries_exhausted: 모든 재시도가 소진되었습니다. 이 로그를 건너뜁니다.
+error_passwords: "비밀번호를 지정할 수 없습니다. 파일을 열 수 없습니다: {0}"
+error_wordlist: "단어를 지정할 수 없습니다. 파일을 열 수 없습니다: {0}"
+exclude_ports: "제외할 포트 (예: 80 || 80,443 || 1000-1300)"
+file_saved: "보고서가 {0} 및 데이터베이스에 저장되었습니다"
+filtered_content: "... [전체 내용은 보고서에서 확인하세요]"
+finished_module: "대상 {1}에 대한 모듈 {0} 완료 | 모듈 스레드 번호 {2}/{3}!"
+finished_parallel_module_scan: process-{0}|{1}|{2}| 모듈 스레드 번호 {3}/{4} 완료
+http_header: "HTTP 요청에 사용자 정의 HTTP 헤더를 추가합니다 (형식: 'key: value'). 여러 헤더의 경우 -H 플래그를 여러 번 사용합니다"
+icmp_need_root_access: "icmp_scan 모듈 또는 --ping-before-scan을 사용하려면 루트 권한으로 스크립트를 실행해야 합니다!"
+invalid_database: 설정 파일에서 mysql 또는 sqlite를 선택하십시오
+invalid_json_type_to_db: "데이터베이스에 유효하지 않은 JSON 데이터 유형입니다. 데이터베이스 제출을 건너뜁니다. 데이터:{0}"
+invalid_scan_id: 스캔 ID가 유효하지 않습니다!
+library_not_supported: "라이브러리 [{0}]은(는) 지원되지 않습니다!"
+loading_modules: 모든 모듈을 로드하는 중... 시간이 다소 걸릴 수 있습니다!
+loading_profiles: 모든 프로필을 로드하는 중... 시간이 다소 걸릴 수 있습니다!
+module_profile_full_information: "{0}{1}{2}: {3}"
+modules_extra_args_help: "모듈에 전달할 추가 인수를 추가합니다 (예: --modules-extra-args \"x_api_key=123&xyz_passwd=abc\")"
+no_events_for_report: 보고서를 생성할 이벤트가 없습니다! 이 섹션을 건너뜁니다.
+no_live_service_found: 스캔할 활성 서비스를 찾을 수 없습니다.
+read_report_fail: 보고서 파일 {0}을(를) 읽지 못했습니다
+regrouping_targets: 하드웨어 리소스에 따라 대상을 재그룹화합니다!
+remove_logs_fail: 이전 로그를 제거할 수 없습니다
+removing_old_db_records: 선택한 대상 및 모듈에 대한 이전 데이터베이스 레코드를 제거합니다.
+report_insertion_fail: 보고서 테이블에 보고서를 삽입할 수 없습니다
+report_retrieval_fail: 보고서를 검색할 수 없습니다
+search_results_end: 더 이상 검색 결과가 없습니다
+searching_whatcms_database: whatcms.org에서 CMS 검색 중...
+select_user_agent: "HTTP 요청에 사용할 사용자 에이전트를 선택하거나 \"random_user_agent\"를 입력하여 요청의 User-Agent를 무작위화합니다."
+send_success_event_from_module: "process-{0}|{1}|{2}|module-thread {3}/{4}|request-thread {5}/{6}|{7}|\nsuccess_condition(s): \n{8}"
+send_unsuccess_event_from_module: "process-{0}|{1}|{2}|module-thread {3}/{4}|request-thread {5}/{6}| 모든 조건이 실패했습니다"
+sending_module_request: "process-{0}|{1}|{2}|module-thread {3}/{4}| {6}개 중 요청 {5} 전송 중"
+set_hardware_usage: 스캔 중 하드웨어 사용량을 설정합니다. (low, normal, high, maximum)
+show_all_modules: 모든 모듈 및 정보를 표시합니다
+show_all_profiles: 모든 프로필 및 정보를 표시합니다
+single_process_started: process-{0}| 프로세스가 시작되었습니다!
+skip_service_discovery: 스캔 전 서비스 탐색을 건너뛰고 모든 모듈을 강제로 스캔합니다
+start_multi_process: "{1}개의 프로세스에서 {0}개의 대상을 가져왔습니다."
+start_parallel_module_scan: "process-{0}|{1}|{2}| 모듈 스레드 번호 {3}/{4} 시작"
+thread_number_modules: 호스트에 대한 병렬 모듈 스캔
+timeout: 요청 시간 제한 (초)
+user_wordlist: "사용자가 자신만의 워드리스트를 입력할 수 있습니다"
+verbose_event: 각 스레드의 상태를 보려면 상세 이벤트를 활성화하십시오
+whatcms_monthly_quota_exceeded: 월간 WHATCMS 요청 할당량을 초과했습니다
+wrong_hardware_usage: "하드웨어 사용량에 대해 다음 프로필 중 하나를 선택해야 합니다. (low, normal, high, maximum)"
