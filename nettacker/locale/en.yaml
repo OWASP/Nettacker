@@ -37,6 +37,20 @@ error_target_file: "Cannot specify the target(s), unable to open file: {0}"
 error_username: "Cannot specify the username(s), unable to open file: {0}"
 error_passwords: "Cannot specify the password(s), unable to open file: {0}"
 error_wordlist: "Cannot specify the word(s), unable to open file {0}"
+error_modules_extra_args_format: |
+  Invalid format for --modules-extra-args: '{0}'
+  Expected format: key1=value1&key2=value2
+  Example: --modules-extra-args "x_api_key=123&xyz_passwd=abc"
+error_modules_extra_args_empty_key: |
+  Invalid --modules-extra-args: empty key is not allowed
+  Each argument must be in format: key=value
+error_socks_proxy_invalid_credentials: |
+  Invalid SOCKS proxy format.
+  Expected format with credentials: username:password@host:port or socks5://username:password@host:port
+error_socks_proxy_missing_colon: |
+  Invalid SOCKS proxy format. Credentials must contain ':' separator.
+  Expected format with credentials: username:password@host:port or socks5://username:password@host:port
+error_socks_proxy_missing_port: Invalid SOCKS proxy format. Missing port in host:port section
 exclude_scan_method: choose scan method to exclude {0}
 file_write_error: file "{0}" is not writable!
 library_not_supported: library [{0}] is not support!
