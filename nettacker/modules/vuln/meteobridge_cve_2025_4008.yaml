@@ -16,6 +16,7 @@ info:
     - high_severity
     - cve
     - cve2025
+    - cisa_kev
     - meteobridge
     - rce
 
