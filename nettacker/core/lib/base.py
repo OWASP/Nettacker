@@ -10,7 +10,12 @@ import yaml
 from nettacker.config import Config
 from nettacker.core.messages import messages as _
 from nettacker.core.utils.common import merge_logs_to_list, remove_sensitive_header_keys
-from nettacker.database.db import find_temp_events, submit_logs_to_db, submit_temp_logs_to_db
+from nettacker.database.db import (
+    CLAIM_DUPLICATE,
+    find_temp_events,
+    submit_logs_to_db,
+    submit_temp_logs_to_db,
+)
 from nettacker.logger import TerminalCodes, get_logger
 
 log = get_logger()
@@ -69,7 +74,19 @@ class BaseEngine(ABC):
         if "stop_at_first_success" in response_meta:
             event_name = response_meta["stop_at_first_success"]
             existing = find_temp_events(
-                target, module_name, scan_id, event_name, port=sub_step.get("ports", "")
+                target,
+                module_name,
+                scan_id,
+                event_name,
+                port=sub_step.get("ports")
+                or sub_step.get("port")
+                or (
+                    sub_step.get("url").split(":")[2].split("/")[0]
+                    if isinstance(sub_step.get("url"), str)
+                    and len(sub_step.get("url").split(":")) >= 3
+                    and sub_step.get("url").split(":")[2].split("/")[0].isdigit()
+                    else ""
+                ),
             )
             if existing:
                 return True
@@ -147,7 +164,7 @@ class BaseEngine(ABC):
                 module_name,
                 scan_id,
                 event_name,
-                port = event.get("ports")
+                port=event.get("ports")
                 or event.get("port")
                 or (
                     event.get("url").split(":")[2].split("/")[0]
@@ -155,7 +172,7 @@ class BaseEngine(ABC):
                     and len(event.get("url").split(":")) >= 3
                     and event.get("url").split(":")[2].split("/")[0].isdigit()
                     else ""
-                )
+                ),
             )
             if existing:
                 return False
@@ -173,11 +190,11 @@ class BaseEngine(ABC):
                 }
             )
 
-        claimed = True
+        claim_status = None
         if event["response"]["conditions_results"] and "stop_at_first_success" in event.get(
             "response", ""
         ):
-            claimed = submit_temp_logs_to_db(
+            claim_status = submit_temp_logs_to_db(
                 {
                     "date": datetime.now(),
                     "target": target,
@@ -197,7 +214,7 @@ class BaseEngine(ABC):
                     "data": response,
                 }
             )
-            if not claimed:
+            if claim_status == CLAIM_DUPLICATE:
                 # Another concurrent substep already won the race for this
                 # event — this is a duplicate, so log it as unsuccessful
                 # instead of emitting a second success.

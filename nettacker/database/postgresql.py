@@ -39,6 +39,7 @@ def _ensure_temp_events_unique_constraint(engine):
             )
         )
 
+
 def postgres_create_database():
     """
     Create the PostgreSQL database (if needed), create tables,

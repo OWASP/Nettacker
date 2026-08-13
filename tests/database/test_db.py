@@ -3,9 +3,13 @@ from datetime import datetime
 from unittest.mock import MagicMock, Mock, call, mock_open, patch
 
 import apsw
+from sqlalchemy.exc import IntegrityError
 
 from nettacker.api.helpers import structure
 from nettacker.database.db import (
+    CLAIM_CLAIMED,
+    CLAIM_DUPLICATE,
+    CLAIM_FAILED,
     create_connection,
     db_inputs,
     find_events,
@@ -530,7 +534,7 @@ class TestDatabase:
 
         mock_cursor.execute.assert_any_call("BEGIN")
         sql, params = mock_cursor.execute.call_args[0]
-        assert "INSERT INTO temp_events" in sql.strip()
+        assert "INSERT OR IGNORE INTO temp_events" in sql.strip()
         assert params == (
             "192.168.1.1",
             "2024-01-01",
@@ -542,13 +546,13 @@ class TestDatabase:
             json.dumps({"info": "some data"}),
         )
 
-        assert result
+        assert result == CLAIM_CLAIMED
 
     @patch("nettacker.database.db.messages", return_value="invalid log")
     @patch("nettacker.database.db.logger.warn")
     def test_temp_log_not_dict(self, mock_warn, mock_messages):
         result = submit_temp_logs_to_db("notadict")
-        assert not result
+        assert result == CLAIM_FAILED
         mock_warn.assert_called_once_with("invalid log")
 
     @patch("nettacker.database.db.Config.settings.retry_delay", 0)
@@ -569,7 +573,9 @@ class TestDatabase:
                 call("All retries exhausted. Skipping this log."),
             ]
         )
-        assert result  # we're continuing operation hence it returns True
+        # Outcome is genuinely unknown after exhausting retries — must fail
+        # closed (CLAIM_FAILED), not claim a win we never confirmed.
+        assert result == CLAIM_FAILED
 
     @patch("nettacker.database.db.create_connection")
     def test_temp_log_operational_error(self, mock_create_conn):
@@ -580,7 +586,7 @@ class TestDatabase:
         mock_create_conn.return_value = (mock_conn, mock_cursor)
 
         result = submit_temp_logs_to_db(self.sample_log_temp)
-        assert not result
+        assert result == CLAIM_FAILED
 
     @patch("nettacker.database.db.create_connection")
     def test_temp_log_generic_exception(self, mock_create_conn):
@@ -591,12 +597,11 @@ class TestDatabase:
         mock_create_conn.return_value = (mock_conn, mock_cursor)
 
         result = submit_temp_logs_to_db(self.sample_log_temp)
-        assert not result
+        assert result == CLAIM_FAILED
 
     @patch("nettacker.database.db.TempEvents")
-    @patch("nettacker.database.db.send_submit_query", return_value=True)
     @patch("nettacker.database.db.create_connection")
-    def test_temp_log_sqlalchemy_path(self, mock_create_conn, mock_send, mock_temp):
+    def test_temp_log_sqlalchemy_path(self, mock_create_conn, mock_temp):
         mock_session = Mock()
         mock_create_conn.return_value = mock_session
 
@@ -604,7 +609,19 @@ class TestDatabase:
 
         mock_session.add.assert_called()
         mock_session.commit.assert_called_once()
-        assert result
+        assert result == CLAIM_CLAIMED
+
+    @patch("nettacker.database.db.TempEvents")
+    @patch("nettacker.database.db.create_connection")
+    def test_temp_log_sqlalchemy_integrity_error(self, mock_create_conn, mock_temp):
+        mock_session = Mock()
+        mock_session.commit.side_effect = IntegrityError("stmt", "params", "orig")
+        mock_create_conn.return_value = mock_session
+
+        result = submit_temp_logs_to_db(self.sample_log_temp)
+
+        mock_session.rollback.assert_called_once()
+        assert result == CLAIM_DUPLICATE
 
     @patch("nettacker.database.db.create_connection")
     def test_submit_temp_logs_to_db_sqlite(self, mock_create_conn):
@@ -635,7 +652,7 @@ class TestDatabase:
                 mock_cursor.execute.assert_any_call("BEGIN")
                 mock_cursor.execute.assert_any_call(
                     """
-                            INSERT INTO temp_events (target, date, module_name, scan_unique_id, event_name, port, event, data)
+                            INSERT OR IGNORE INTO temp_events (target, date, module_name, scan_unique_id, event_name, port, event, data)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                             """,
                     (
@@ -649,7 +666,49 @@ class TestDatabase:
                         json.dumps({"info": "test_data"}),
                     ),
                 )
-                assert result
+                assert result == CLAIM_CLAIMED
+
+    @patch("nettacker.database.db.create_connection")
+    @patch("nettacker.database.db.send_submit_query")
+    @patch("nettacker.database.db.Config")
+    def test_submit_temp_logs_to_db_sqlite_duplicate(
+        self, mock_config, mock_send_submit, mock_create_conn
+    ):
+        """INSERT OR IGNORE silently no-ops when the unique constraint
+        already has this key — connection.changes() == 0 means someone
+        else already claimed it, not that this call succeeded."""
+        mock_connection = Mock()
+        mock_cursor = Mock()
+        mock_create_conn.return_value = (mock_connection, mock_cursor)
+        mock_send_submit.return_value = True
+        mock_connection.in_transaction = False
+        mock_connection.changes.return_value = 0
+        mock_config.settings.max_retries = 3
+
+        result = submit_temp_logs_to_db(self.sample_log_temp)
+
+        assert result == CLAIM_DUPLICATE
+
+    @patch("nettacker.database.db.create_connection")
+    @patch("nettacker.database.db.send_submit_query")
+    @patch("nettacker.database.db.Config")
+    def test_submit_temp_logs_to_db_sqlite_commit_fails(
+        self, mock_config, mock_send_submit, mock_create_conn
+    ):
+        """Even if the row was inserted (changes()==1), a failed commit
+        means nothing durably happened — must report CLAIM_FAILED, not
+        CLAIM_CLAIMED."""
+        mock_connection = Mock()
+        mock_cursor = Mock()
+        mock_create_conn.return_value = (mock_connection, mock_cursor)
+        mock_send_submit.return_value = False
+        mock_connection.in_transaction = False
+        mock_connection.changes.return_value = 1
+        mock_config.settings.max_retries = 3
+
+        result = submit_temp_logs_to_db(self.sample_log_temp)
+
+        assert result == CLAIM_FAILED
 
     # -------------------------------------------------------
     #           tests for find_temp_events
