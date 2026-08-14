@@ -225,6 +225,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**msexchange_cve_2021_34473_vuln**' – check the target for MS Exchange CVE-2021-34473 vulnerability
 - '**nexus_cve_2024_4956_vuln**' – Detects Sonatype Nexus Repository Manager CVE-2024-4956, an unauthenticated path traversal vulnerability that allows arbitrary file read.
 - '**novnc_cve_2021_3654_vuln**' – check the target for noVNC CVE-2021-3654 vulnerability
+- '**nginx_ui_cve_2026_33032_vuln**' – check unauthenticated MCP endpoint exposure vulnerability CVE-2026-33032
 - '**omigod_cve_2021_38647_vuln**' – check the target for OMIGOD CVE-2021-38647 vulnerability
 - '**paloalto_globalprotect_cve_2025_0133_vuln**' – check the target for PaloAlto GlobalProtect CVE-2025-0133 XSS vulnerability
 - '**paloalto_panos_cve_2025_0108_vuln**' – check the target for PaloAlto PAN-OS CVE-2025-0108 vulnerability
@@ -248,6 +249,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**tieline_cve_2021_35336_vuln**' – check the target for Tieline CVE-2021-35336 vulnerability
 - '**tjws_cve_2021_37573_vuln**' – check the target for TJWS CVE-2021-37573 vulnerability
 - '**vbulletin_cve_2019_16759_vuln**' – check the target for vBulletin CVE-2019-16759 vulnerability
+- '**wordpress_core_cve_2026_63030_vuln**' – check the target for WordPress core CVE-2026-63030 
 - '**wp_plugin_cve_2021_38314_vuln**' – check the target for WordPress plugin CVE-2021-38314
 - '**wp_plugin_cve_2021_39316_vuln**' – check the target for WordPress plugin CVE-2021-39316
 - '**wp_plugin_cve_2021_39320_vuln**' – check the target for WordPress plugin CVE-2021-39320

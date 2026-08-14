@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Install Poetry
         run: pipx install poetry
@@ -52,14 +52,14 @@ jobs:
           - python
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a
+        uses: github/codeql-action/init@7188fc363630916deb702c7fdcf4e481b751f97a
         with:
           languages: ${{ matrix.language }}
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a
+        uses: github/codeql-action/analyze@7188fc363630916deb702c7fdcf4e481b751f97a
         with:
           category: /language:${{ matrix.language }}
 
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       
       - name: Install Poetry
         run: pipx install poetry
@@ -98,7 +98,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Install Poetry
         run: pipx install poetry
@@ -145,7 +145,7 @@ jobs:
           - ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       
       - name: Install Poetry
         run: pipx install poetry
@@ -181,7 +181,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Build Docker image
         run: docker build . -t nettacker
 
@@ -257,7 +257,7 @@ jobs:
           sudo apt-get install docker-ce=5:${{ matrix.docker-version }} docker-ce-cli=5:${{ matrix.docker-version }}
 
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Print Docker version
         run: docker -v
 
@@ -276,7 +276,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Login to Docker Hub
         uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0
         with:
@@ -309,7 +309,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Set up QEMU
         uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8
       - name: Login to Docker Hub
