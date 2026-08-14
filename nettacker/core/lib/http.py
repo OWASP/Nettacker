@@ -7,7 +7,10 @@ import re
 import time
 
 import aiohttp
-import uvloop
+try:
+    import uvloop
+except ImportError:
+    uvloop = None
 
 from nettacker.core.lib.base import BaseEngine
 from nettacker.core.utils.common import (
@@ -17,7 +20,8 @@ from nettacker.core.utils.common import (
     reverse_and_regex_condition,
 )
 
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+if uvloop is not None:
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 async def perform_request_action(action, request_options):
