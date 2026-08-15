@@ -1,4 +1,4 @@
-WebUI/API Manual usage explained in the [Usage](Usage#api-and-webui) page but let's get into the structure of the request now.
+WebUI/API Manual usage explained in the [Usage](Usage.md#api-and-webui) page but let's get into the structure of the request now.
 
 - [Purpose](#purpose)
 - [Requests Structure](#requests-structure)
