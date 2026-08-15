@@ -14,6 +14,21 @@ from nettacker.database.db import find_temp_events, submit_logs_to_db, submit_te
 from nettacker.logger import TerminalCodes, get_logger
 
 log = get_logger()
+DEPENDENT_VALUE_RE = re.compile(
+    r"dependent_on_temp_event(?:\[(?:\d+|'[^']+'|\"[^\"]+\")\])+"
+)
+DEPENDENT_VALUE_PART_RE = re.compile(r"\[(\d+|'[^']+'|\"[^\"]+\")\]")
+
+
+def resolve_dependent_value(key_name, dependent_on_temp_event):
+    key_value = dependent_on_temp_event
+    for key_part in DEPENDENT_VALUE_PART_RE.findall(key_name):
+        if key_part.isdigit():
+            key_part = int(key_part)
+        else:
+            key_part = key_part[1:-1]
+        key_value = key_value[key_part]
+    return str(key_value)
 
 
 class BaseLibrary(ABC):
@@ -67,16 +82,12 @@ class BaseEngine(ABC):
                 else:
                     if isinstance(sub_step[key], str):
                         if "dependent_on_temp_event" in sub_step[key]:
-                            globals().update(locals())
                             generate_new_step = copy.deepcopy(sub_step[key])
-                            key_name = re.findall(
-                                re.compile(
-                                    "dependent_on_temp_event\\[\\S+\\]\\['\\S+\\]\\[\\S+\\]"
-                                ),
-                                generate_new_step,
-                            )[0]
+                            key_name = DEPENDENT_VALUE_RE.findall(generate_new_step)[0]
                             try:
-                                key_value = eval(key_name)
+                                key_value = resolve_dependent_value(
+                                    key_name, dependent_on_temp_event
+                                )
                             except Exception:
                                 key_value = "error"
                             sub_step[key] = sub_step[key].replace(key_name, key_value)
@@ -84,20 +95,21 @@ class BaseEngine(ABC):
             value_index = 0
             for key in copy.deepcopy(sub_step):
                 if type(sub_step[value_index]) not in [str, float, int, bytes]:
-                    sub_step[key] = self.find_and_replace_dependent_values(
+                    sub_step[value_index] = self.find_and_replace_dependent_values(
                         copy.deepcopy(sub_step[value_index]), dependent_on_temp_event
                     )
                 else:
                     if isinstance(sub_step[value_index], str):
                         if "dependent_on_temp_event" in sub_step[value_index]:
-                            globals().update(locals())
-                            generate_new_step = copy.deepcopy(sub_step[key])
+                            generate_new_step = copy.deepcopy(sub_step[value_index])
                             key_name = re.findall(
-                                re.compile("dependent_on_temp_event\\['\\S+\\]\\[\\S+\\]"),
+                                DEPENDENT_VALUE_RE,
                                 generate_new_step,
                             )[0]
                             try:
-                                key_value = eval(key_name)
+                                key_value = resolve_dependent_value(
+                                    key_name, dependent_on_temp_event
+                                )
                             except Exception:
                                 key_value = "error"
                             sub_step[value_index] = sub_step[value_index].replace(
