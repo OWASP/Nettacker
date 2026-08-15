@@ -56,6 +56,7 @@ HTTP_RESPONSE_SCHEMA = Schema(
         Optional("log"): str,
         Optional("dependent_on_temp_event"): str,
         Optional("save_to_temp_events_only"): str,
+        Optional("stop_at_first_success"): str,
         Optional("success_conditions"): object,
     },
     ignore_extra_keys=False,
