@@ -2,6 +2,7 @@
 
 import asyncio
 import copy
+import operator
 import random
 import re
 import time
@@ -73,23 +74,24 @@ def response_conditions_matched(sub_step, response):
                 except TypeError:
                     condition_results["headers"][header] = []
         if condition == "responsetime":
-            if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
-                "==",
-                "!=",
-                ">=",
-                "<=",
-                ">",
-                "<",
-            ]:
-                exec(
-                    "condition_results['responsetime'] = response['responsetime'] if ("
-                    + "response['responsetime'] {0} float(conditions['responsetime'].split()[-1])".format(
-                        conditions["responsetime"].split()[0]
-                    )
-                    + ") else []"
-                )
-            else:
+            compare_operators = {
+                "==": operator.eq,
+                "!=": operator.ne,
+                ">=": operator.ge,
+                "<=": operator.le,
+                ">": operator.gt,
+                "<": operator.lt,
+            }
+            condition_parts = conditions[condition].split()
+            if len(condition_parts) != 2 or condition_parts[0] not in compare_operators:
                 condition_results["responsetime"] = []
+                continue
+            threshold = float(condition_parts[1])
+            condition_results["responsetime"] = (
+                response["responsetime"]
+                if compare_operators[condition_parts[0]](response["responsetime"], threshold)
+                else []
+            )
     if condition_type.lower() == "or":
         # if one of the values are matched, it will be a string or float object in the array
         # we count False in the array and if it's not all []; then we know one of the conditions
