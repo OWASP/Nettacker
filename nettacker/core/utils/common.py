@@ -19,15 +19,14 @@ log = logger.get_logger()
 
 
 def replace_dependent_response(log, response_dependent):
-    """The `response_dependent` is needed for `eval` below."""
     if str(log):
         key_name = re.findall(re.compile("response_dependent\\['\\S+\\]"), log)
         for i in key_name:
-            try:
-                key_value = eval(i)
-            except Exception:
-                key_value = "response dependent error"
-            log = log.replace(i, " ".join(key_value))
+            key = i.removeprefix("response_dependent['").removesuffix("']")
+            key_value = response_dependent.get(key, "response dependent error")
+            if isinstance(key_value, list):
+                key_value = " ".join(key_value)
+            log = log.replace(i, str(key_value))
         return log
 
 

@@ -135,6 +135,27 @@ def test_merge_logs_to_list_no_shared_state_between_calls():
     assert logs_b == ["second"]
 
 
+def test_replace_dependent_response_uses_key_lookup():
+    response_dependent = {
+        "status_code": ["200"],
+        "__import__('os').system('echo_unsafe')": ["safe"],
+    }
+
+    assert (
+        common_utils.replace_dependent_response(
+            "status response_dependent['status_code']", response_dependent
+        )
+        == "status 200"
+    )
+    assert (
+        common_utils.replace_dependent_response(
+            "expr response_dependent['__import__('os').system('echo_unsafe')']",
+            response_dependent,
+        )
+        == "expr safe"
+    )
+
+
 def test_wait_for_threads_to_finish_all_dead():
     """All threads already finished -- should return True immediately."""
     t = MagicMock(spec=threading.Thread)
