@@ -54,18 +54,14 @@ def response_conditions_matched(sub_step, response):
             reverse = conditions[condition]["reverse"]
             condition_results[condition] = reverse_and_regex_condition(regex, reverse)
         if condition == "headers":
-            # convert headers to case insensitive dict
-            for key in response["headers"].copy():
-                response["headers"][key.lower()] = response["headers"][key]
+            headers = {key.lower(): value for key, value in response["headers"].items()}
             condition_results["headers"] = {}
             for header in conditions["headers"]:
                 reverse = conditions["headers"][header]["reverse"]
                 try:
                     regex = re.findall(
                         re.compile(conditions["headers"][header]["regex"]),
-                        response["headers"][header.lower()]
-                        if header.lower() in response["headers"]
-                        else False,
+                        headers[header.lower()] if header.lower() in headers else False,
                     )
                     condition_results["headers"][header] = reverse_and_regex_condition(
                         regex, reverse

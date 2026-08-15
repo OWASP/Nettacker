@@ -290,9 +290,11 @@ def test_response_conditions_headers_case_insensitive():
         "responsetime": 0.05,
         "content": "body",
     }
+    original_headers = response["headers"].copy()
     out = http.response_conditions_matched(sub_step, response)
     assert out != {}
     assert out["headers"]["Content-Type"] == ["text/html"]
+    assert response["headers"] == original_headers
 
 
 def test_response_conditions_responsetime(monkeypatch):
