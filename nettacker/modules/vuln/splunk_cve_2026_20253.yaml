@@ -55,7 +55,7 @@ payloads:
       - method: post
         timeout: 5
         headers:
-          User-Agent: Nettacker
+          User-Agent: {user_agent}
           Content-Type: application/json
           Authorization: "Basic Og=="
         ssl: false
