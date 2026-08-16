@@ -5,6 +5,19 @@ $(document).ready(function () {
     return target.replace(new RegExp(search, "g"), replacement);
   };
 
+  // escape untrusted content before inserting it into innerHTML
+  function escapeHtml(value) {
+    if (value === undefined || value === null) {
+      return value;
+    }
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   // hide set session key
   $("#set_session").hide();
 
@@ -837,15 +850,15 @@ function filter_large_content(content, filter_rate){
       for (j = 0; j < module_name.length; j++) {
           html_module_name +=
             "<p class='mb-1 bold label label-info'>selected_modules:" +
-            module_name[j] +
+            escapeHtml(module_name[j]) +
             "</p> ";
         }
         html_module_name += "<br><br>"
        for (j = 0; j < events.length; j++) {
           event = events[j].split('conditions: ')[0]
           results = events[j].split('conditions: ')[1]
-          html_module_name +=   "<p class='mb-1 bold label label-success'>event: " + filter_large_content(event, 100) + "</p> ";
-          html_module_name += "<p class='mb-1 bold label label-warning'>condition_results: " + filter_large_content(results, 100) + "</p> <br><br>";
+          html_module_name +=   "<p class='mb-1 bold label label-success'>event: " + escapeHtml(filter_large_content(event, 100)) + "</p> ";
+          html_module_name += "<p class='mb-1 bold label label-warning'>condition_results: " + escapeHtml(filter_large_content(results, 100)) + "</p> <br><br>";
         }
 
 
@@ -890,14 +903,14 @@ function filter_large_content(content, filter_rate){
       HTMLData +=
         '<div class="row myBox" ><div class="d-flex w-100 text-justify justify-content-between">\n' +
         '<button class="btn btn-primary" style="margin-right: 1rem"> <a target=\'_blank\' style="color: white" href="/logs/get_html?target=' +
-        target +
+        encodeURIComponent(target) +
         '">' +
-        target +
+        escapeHtml(target) +
         '</a></button></span><button class="btn btn-btn-secondary" style="margin-right: 1rem"><a href="/logs/get_json?target=' +
-        target +
+        encodeURIComponent(target) +
         '">Get JSON</a></button>' +
         '<button class="btn btn-btn-secondary"><a href="/logs/get_csv?target=' +
-        target +
+        encodeURIComponent(target) +
         '">Get CSV </a></button></h3>\n' +
         "</div>\n" +
         '<p class="mb-1"> ' +
