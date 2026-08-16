@@ -18,6 +18,42 @@ $(document).ready(function () {
       .replace(/'/g, "&#39;");
   }
 
+  // filter a list of checkboxes (Profiles / Scan Methods) by the label's own text,
+  // without touching innerHTML, so it can never introduce markup from the search box
+  function filterChecklist(searchInputId, containerId, skipClass) {
+    var query = document.getElementById(searchInputId).value.trim().toLowerCase();
+    var labels = document.getElementById(containerId).getElementsByTagName("label");
+    for (var i = 0; i < labels.length; i++) {
+      var label = labels[i];
+      if (label.querySelector("." + skipClass)) {
+        // always keep the "select all" control visible
+        continue;
+      }
+      var text = label.textContent.toLowerCase();
+      label.style.display = query === "" || text.indexOf(query) !== -1 ? "" : "none";
+    }
+  }
+
+  document.getElementById("profile_search").addEventListener("input", function () {
+    filterChecklist("profile_search", "profiles", "check-all-profiles");
+  });
+
+  document.getElementById("scan_method_search").addEventListener("input", function () {
+    filterChecklist("scan_method_search", "selected_modules", "check-all-scans");
+  });
+
+  // filter rendered scan result cards by their visible text (row id, scan id, date)
+  function filter_results() {
+    var query = document.getElementById("results_search").value.trim().toLowerCase();
+    var cards = document.getElementById("scan_results").children;
+    for (var i = 0; i < cards.length; i++) {
+      var text = cards[i].textContent.toLowerCase();
+      cards[i].style.display = query === "" || text.indexOf(query) !== -1 ? "" : "none";
+    }
+  }
+
+  document.getElementById("results_search").addEventListener("input", filter_results);
+
   // hide set session key
   $("#set_session").hide();
 
@@ -549,20 +585,20 @@ $(document).ready(function () {
       // host = scan_cmd.split(" ")[2];
       HTMLData +=
         "<a target='_blank' href=\"/results/get?id=" +
-        id +
+        encodeURIComponent(id) +
         '" class="list-group-item list-group-item-action flex-column align-items-start">\n' +
         '<div class="row" ><div class="d-flex w-100">\n' +
         '<h3  class="mb-1">&nbsp;&nbsp;&nbsp;<span id="logintext"\n' +
         'class="bold label label-primary">' +
-        id +
+        escapeHtml(id) +
         "</span>" +
         '<small class="label label-info card-date">' +
-        date +
+        escapeHtml(date) +
         "</small></h3>" +
         "</div></div>" +
         "<hr class='card-hr'>" +
         "<p class='mb-1  bold label label-default'>scan_id:" +
-        scan_id +
+        escapeHtml(scan_id) +
         "</p><br>"
         // "<p class='mb-1  bold label label-info'>report_filename:" +
         // report_filename +
@@ -605,10 +641,10 @@ $(document).ready(function () {
         // "</p>" +
         // '</p>\n </a>' +
         '<button class="mb-1 bold label card-date""><a href="/results/get_json?id=' +
-        id +
+        encodeURIComponent(id) +
         '">Get JSON</a></button>' +
         '<button class="mb-1 bold label card-date""><a href="/results/get_csv?id=' +
-        id +
+        encodeURIComponent(id) +
         '">Get CSV </a></button>';
     }
 
@@ -617,6 +653,7 @@ $(document).ready(function () {
     }
 
     document.getElementById("scan_results").innerHTML = HTMLData;
+    filter_results();
   }
 
   function get_results_list(result_page) {
