@@ -47,6 +47,10 @@ $(document).ready(function () {
     var query = document.getElementById("results_search").value.trim().toLowerCase();
     var cards = document.getElementById("scan_results").children;
     for (var i = 0; i < cards.length; i++) {
+      // keep status messages (e.g. "No more results to show!!") visible during filtering
+      if (cards[i].classList.contains("scan-status-message")) {
+        continue;
+      }
       var text = cards[i].textContent.toLowerCase();
       cards[i].style.display = query === "" || text.indexOf(query) !== -1 ? "" : "none";
     }
@@ -649,7 +653,7 @@ $(document).ready(function () {
     }
 
     if (res["msg"] == "No more search results") {
-      HTMLData = '<p class="mb-1"> No more results to show!!</p>';
+      HTMLData = '<p class="mb-1 scan-status-message"> No more results to show!!</p>';
     }
 
     document.getElementById("scan_results").innerHTML = HTMLData;
