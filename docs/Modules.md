@@ -216,6 +216,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**joomla_cve_2023_23752_vuln**' – check the target for Joomla CVE-2023-23752 information disclosure
 - '**justwriting_cve_2021_41878_vuln**' – check the target for JustWriting CVE-2021-41878
 - '**langflow_cve_2025_3248_vuln**' - check the target for Langflow CVE-2025-3248 vulnerability
+- '**langflow_cve_2026_33017_vuln**' – check the target for Langflow CVE-2026-33017 unauthenticated RCE vulnerability
 - '**log4j_cve_2021_44228_vuln**' – check the target for Log4Shell CVE-2021-44228 vulnerability
 - '**majordomo_rce_cve_2026_27174_vuln**' – check for MajorDoMo CVE-2026-27174 vulnerability
 - '**maxsite_cms_cve_2021_35265_vuln**' – check the target for MaxSite CMS CVE-2021-35265
