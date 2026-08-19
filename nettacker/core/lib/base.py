@@ -130,7 +130,15 @@ class BaseEngine(ABC):
                     "module_name": module_name,
                     "scan_id": scan_id,
                     "event_name": event["response"]["save_to_temp_events_only"],
-                    "port": event.get("ports", ""),
+                    "port": event.get("ports")
+                    or event.get("port")
+                    or (
+                        event.get("url").split(":")[2].split("/")[0]
+                        if isinstance(event.get("url"), str)
+                        and len(event.get("url").split(":")) >= 3
+                        and event.get("url").split(":")[2].split("/")[0].isdigit()
+                        else ""
+                    ),
                     "event": event,
                     "data": response,
                 }
