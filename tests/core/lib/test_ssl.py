@@ -191,7 +191,9 @@ class TestSslMethod:
         socket_instance.connect.assert_called_with(
             (connection_params["HOST"], connection_params["PORT"])
         )
-        context_instance.wrap_socket.assert_called_with(socket_instance)
+        context_instance.wrap_socket.assert_called_with(
+            socket_instance, server_hostname=connection_params["HOST"]
+        )
 
     @patch("nettacker.core.lib.ssl.is_weak_cipher_suite")
     @patch("nettacker.core.lib.ssl.is_weak_ssl_version")

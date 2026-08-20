@@ -152,7 +152,7 @@ class TestSocketMethod:
         context_instance = mock_ssl_context.return_value
         socket_instance.settimeout.assert_called_with(TIMEOUT)
         socket_instance.connect.assert_called_with((HOST, PORT))
-        context_instance.wrap_socket.assert_called_with(socket_instance)
+        context_instance.wrap_socket.assert_called_with(socket_instance, server_hostname=HOST)
 
     def test_response_conditions_matched_socket_icmp(self, socket_engine, substeps, responses):
         result = socket_engine.response_conditions_matched(
