@@ -31,7 +31,7 @@ payloads:
         ssl: false
         allow_redirects: false
         json:
-          token: placeholder``
+          token: placeholder
           password: ab640cb2-83ce-40e4-a5c9-9f15da614053 # avoid hitting too-common password error
           user-id:
             raw:
