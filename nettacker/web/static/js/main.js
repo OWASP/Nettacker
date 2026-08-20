@@ -476,7 +476,7 @@ $(document).ready(function () {
       data: data,
     })
       .done(function (res) {
-        var results = JSON.stringify(res);
+        var results = escapeHtml(JSON.stringify(res));
         results = results.replaceAll(",", ",<br>");
         document.getElementById("success_msg").innerHTML = results;
         $("#success_request").removeClass("hidden");
@@ -485,7 +485,7 @@ $(document).ready(function () {
         $("#success_request").removeClass("animated fadeOut");
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
-        document.getElementById("error_msg").innerHTML = jqXHR.responseText;
+        document.getElementById("error_msg").innerHTML = escapeHtml(jqXHR.responseText);
         if (errorThrown == "BAD REQUEST") {
           $("#failed_request").removeClass("hidden");
           setTimeout('$("#failed_request").addClass("hidden");', 5000);
