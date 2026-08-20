@@ -30,7 +30,7 @@ def create_tcp_socket(host, port, timeout):
         context.check_hostname = False
         context.verify_mode = ssl.CERT_NONE
         context.minimum_version = ssl.TLSVersion.TLSv1_2
-        socket_connection = context.wrap_socket(socket_connection)
+        socket_connection = context.wrap_socket(socket_connection, server_hostname=host)
         ssl_flag = True
     except Exception:
         socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

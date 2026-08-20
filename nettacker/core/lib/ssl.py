@@ -121,10 +121,13 @@ def create_tcp_socket(host, port, timeout):
         # is_weak_cipher_suite() at the call site. Setting minimum_version here would
         # prevent connecting to servers running TLS 1.0/1.1, producing false negatives
         # in vulnerability detection which would make it the opposite of what this module is for.
+        # minimum_version is set explicitly to MINIMUM_SUPPORTED to make this permissive intent
+        # reliable across platforms, rather than relying on PROTOCOL_TLS_CLIENT's implicit default.
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         context.check_hostname = False
         context.verify_mode = ssl.CERT_NONE
-        socket_connection = context.wrap_socket(socket_connection)
+        context.minimum_version = ssl.TLSVersion.MINIMUM_SUPPORTED
+        socket_connection = context.wrap_socket(socket_connection, server_hostname=host)
         ssl_flag = True
     except Exception:
         socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
