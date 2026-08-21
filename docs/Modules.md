@@ -144,6 +144,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**content_security_policy_vuln**' - check the web server for missing 'Content-Security-Policy' header
 - '**content_type_options_vuln**' - check the web server for missing 'X-Content-Type-Options'=nosniff header
 - '**crushftp_cve_2025_31161_vuln**' - check the target for CrushFTP CVE-2025-31161 vulnerability
+- '**drupal_cve_2026_9082_vuln**' - Scan the target for Drupal CVE-2026-9082 unauthenticated Postgres SQL injection vulnerability
 - '**f5_cve_2020_5902_vuln**' - check the target for F5 RCE CVE-2020-5902 vulnerability
 - '**geoserver_cve_2024_36401_vuln**' - check the target for CVE-2024-36401 vulnerability
 - '**heartbleed_vuln**' - check SSL for Heartbleed vulnerability (CVE-2014-0160)
