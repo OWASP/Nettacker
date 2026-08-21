@@ -238,7 +238,10 @@ Relevant styles below
 }
 
 .scrollable-checkbox-list {
-  max-height: 220px;
+  height: 340px;
+  min-height: 260px;
+  max-height: 70vh;
+  resize: vertical;
   overflow-y: auto;
   border: 1px solid #ddd;
   border-radius: 4px;
