@@ -7,6 +7,7 @@ import yaml
 from nettacker import all_module_severity_and_desc
 from nettacker.config import Config, version_info
 from nettacker.core.die import die_failure, die_success
+from nettacker.core.flow import FlowError, FlowLoader
 from nettacker.core.ip import (
     generate_ip_range,
     is_ipv4_cidr,
@@ -219,7 +220,7 @@ class ArgParser(ArgumentParser):
             action="store",
             dest="module_flow",
             default=Config.settings.module_flow,
-            help=_("module_flow"),
+            help=_("module_flow").format(Config.path.flows_dir),
         )
         method_options.add_argument(
             "-m",
@@ -618,6 +619,26 @@ class ArgParser(ArgumentParser):
             except Exception:
                 die_failure(_("error_target_file").format(options.targets_list))
 
+        # module flow: a YAML file (looked up by name under Config.path.flows_dir, or
+        # given directly as a path) that defines the modules to run and the dependency
+        # graph between them. It fully determines selected_modules, overriding -m/--profile.
+        if options.module_flow:
+            if options.selected_modules or options.profiles:
+                log.warn(_("flow_overrides_module_selection"))
+
+            try:
+                flow = FlowLoader.load(options.module_flow)
+                options.selected_modules = sorted({step.module for step in flow.steps})
+                options.flow_inputs = FlowLoader.resolve_inputs(flow, options)
+            except FlowError as error:
+                die_failure(str(error))
+
+            options.profiles = None
+            options.flow = flow
+        else:
+            options.flow = None
+            options.flow_inputs = None
+
         # check for modules
         if not (options.selected_modules or options.profiles):
             die_failure(_("scan_method_select"))
@@ -625,53 +646,12 @@ class ArgParser(ArgumentParser):
             if options.selected_modules == "all":
                 options.selected_modules = list(set(self.modules.keys()))
                 options.selected_modules.remove("all")
-            else:
+            elif isinstance(options.selected_modules, str):
                 options.selected_modules = list(set(options.selected_modules.split(",")))
             for module_name in options.selected_modules:
                 if module_name not in self.modules:
                     die_failure(_("scan_module_not_found").format(module_name))
-                    
-        # validate module flow
-        if options.module_flow:
-            flow_rules = options.module_flow.split(",")
 
-            for rule in flow_rules:
-                if "->" not in rule:
-                    die_failure(_("invalid_module_flow"))
-                parent, child = rule.split("->")
-                if child not in options.selected_modules:
-                    die_failure(f"Module '{child}' in module-flow not selected.")
-                if parent not in options.selected_modules:
-                    die_failure(f"Module '{parent}' in module-flow not selected.")
-            
-            # detect cycles in input 
-            graph = {m: [] for m in options.selected_modules}
-            for rule in options.module_flow.split(","):
-                parent, child = rule.split("->")
-                graph[child].append(parent)
-                
-            visited = set()
-            stack = set()
-            
-            def dfs(node):
-                if node in stack:
-                    die_failure(_("cycle_detection_error"))
-                if node in visited:
-                    return
-                stack.add(node)
-                for parent in graph[node]:
-                    dfs(parent)
-                stack.remove(node)
-                visited.add(node)
-                
-            for node in graph:
-                dfs(node)
-
-            options.module_flow_graph = graph
-        else:
-            options.module_flow_graph = None
-            
-            
         if options.profiles:
             if not options.selected_modules:
                 options.selected_modules = []

@@ -1,0 +1,108 @@
+info:
+  name: webapp_assessment
+  author: OWASP Nettacker Team
+  description: "Recon -> service detection -> branch into web / TLS / auth checks based on what succeeded"
+  severity: high
+  references:
+    - https://owasp.org/www-project-nettacker/
+  tags: [http, tls, recon, cve]
+  profiles: [scan, vuln]
+
+inputs:
+  target:
+    type: string
+    required: true            # Nettacker -i : IP / domain / URL / target list
+  ports:
+    type: list
+    default: [21, 22, 80, 443, 8080, 8443]
+
+defaults:
+  on_failure: continue        # continue | abort
+  timeout: 30
+  retries: 1
+
+execution:
+  max_parallel: 4             # steps run as soon as depends_on is satisfied (DAG-ordered)
+
+steps:
+  # ---------- Layer 0: recon (root) ----------
+  - id: port_scan
+    module: port_scan
+    depends_on: []             # root step, no prerequisites
+    params:
+      target: "{target}"
+      ports: "{ports}"
+
+  # ---------- Layer 1: service detection (each needs the port scan) ----------
+  - id: http_detect
+    module: http_status_scan
+    depends_on: [port_scan]
+    params:
+      target: "{target}"
+
+  - id: tls_detect
+    module: ssl_expiring_certificate_scan
+    depends_on: [port_scan]
+    params:
+      target: "{target}"
+
+  - id: ssh_detect
+    module: ssh_brute
+    depends_on: [port_scan]
+    params:
+      target: "{target}"
+
+  # ---------- Layer 2: branches driven by nested logic ----------
+
+  # Web content scan: run if EITHER an HTTP OR a TLS service was found.
+  - id: dir_scan
+    module: dir_scan
+    depends_on:
+      any: [http_detect, tls_detect]        # http_detect OR tls_detect
+    params:
+      target: "{target}"
+
+  # Weak-cipher check: only meaningful when TLS was detected.
+  - id: weak_cipher_scan
+    module: ssl_weak_cipher_vuln
+    depends_on: [tls_detect]                # single prerequisite
+    params:
+      target: "{target}"
+
+  # Auth surface: run if a web login surface was found,
+  # OR if SSH is exposed  ->  (port_scan AND http_detect AND dir_scan) OR ssh_detect
+  - id: auth_brute
+    module: ssh_brute
+    depends_on:
+      any:
+        - all: [port_scan, http_detect, dir_scan]
+        - ssh_detect
+    params:
+      target: "{target}"
+
+  # ---------- Layer 3: deep nesting example ----------
+
+  # Apache CVE test - fire on any of three independent success paths:
+  #   (http_detect AND dir_scan)  OR  (tls_detect AND weak_cipher_scan)  OR  auth_brute
+  - id: apache_cve_check
+    module: apache_cve_2021_41773_vuln
+    depends_on:
+      any:
+        - all: [http_detect, dir_scan]
+        - all: [tls_detect, weak_cipher_scan]
+        - auth_brute
+    params:
+      target: "{target}"
+    on_failure: abort
+
+  # Even deeper: all-of, where one branch is itself an any-of
+  #   port_scan AND (http_detect OR tls_detect) AND (dir_scan OR auth_brute)
+  - id: final_report_gate
+    module: http_html_title_scan
+    depends_on:
+      all:
+        - port_scan
+        - any: [http_detect, tls_detect]
+        - any: [dir_scan, auth_brute]
+    params:
+      target: "{target}"

@@ -141,6 +141,15 @@ read_report_fail: Failed to read report file {0}
 search_results_end: No more search results
 database_error: Database error!
 error_exclude_all: "Cannot exclude all modules. Please specify individual module names to exclude using -x."
-module_flow: "Define module dependency graph. Example: B->A,C->B"
-invalid_module_flow: "Invalid module flow syntax. Use format B->A,C->B"
-cycle_detection_error: "Circular dependency in module-flow is invalid"
+module_flow: "Run a module flow defined in a YAML file. Provide a flow name (looked up under {0}) or a path to a flow .yaml file"
+flow_overrides_module_selection: "--module-flow was given along with -m/--modules or --profile; the flow's own steps determine which modules run"
+flow_not_found: "Module flow '{0}' not found"
+flow_invalid_yaml: "Could not parse module flow file {0}: {1}"
+flow_invalid_schema: "Module flow file {0} is missing a 'steps' list"
+flow_step_missing_fields: "Every step in module flow file {0} must have an 'id' and a 'module'"
+flow_duplicate_step_id: "Duplicate step id '{0}' in module flow"
+flow_unknown_dependency: "Step '{0}' depends on unknown step '{1}'"
+flow_cycle_detected: "Circular dependency detected in module flow at step '{0}'"
+flow_invalid_depends_on: "Invalid depends_on expression in module flow: {0}"
+flow_invalid_on_failure: "Invalid on_failure value '{0}' in module flow. Use 'continue' or 'abort'"
+flow_missing_required_input: "Module flow requires input '{0}' but no value or default was provided"

@@ -12,6 +12,7 @@ from nettacker import logger
 from nettacker.config import Config, version_info
 from nettacker.core.arg_parser import ArgParser
 from nettacker.core.die import die_failure
+from nettacker.core.flow import evaluate_depends_on, render_params
 from nettacker.core.graph import create_compare_report, create_report
 from nettacker.core.ip import (
     generate_ip_range,
@@ -261,8 +262,13 @@ class Nettacker(ArgParser):
         process_number,
         thread_number,
         total_number_threads,
+        extra_options=None,
     ):
         options = copy.deepcopy(self.arguments)
+        if extra_options:
+            for key, value in extra_options.items():
+                if value is not None:
+                    setattr(options, key, value)
 
         socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
         module = Module(
@@ -290,8 +296,8 @@ class Nettacker(ArgParser):
     def scan_target_group(self, targets, scan_id, process_number):
         active_threads = []
         log.verbose_event_info(_("single_process_started").format(process_number))
-        flow_graph = getattr(self.arguments, "module_flow_graph", None)
-        if not flow_graph:
+        flow = getattr(self.arguments, "flow", None)
+        if not flow:
             total_number_of_modules = len(targets) * len(self.arguments.selected_modules)
             total_number_of_modules_counter = 1
             for target in targets:
@@ -326,120 +332,123 @@ class Nettacker(ArgParser):
                         return False
             wait_for_threads_to_finish(active_threads, maximum=None, terminable=True)
             return True
-        else:
-            
-            modules = self.arguments.selected_modules
 
-            # Expand graph so all modules exist
-            graph = {m: [] for m in modules}
-            for m in flow_graph:
-                graph[m] = flow_graph[m]
+        return self.scan_flow_group(flow, targets, scan_id, process_number, active_threads)
 
-            total_number_of_modules = len(targets) * len(graph)
-            total_number_of_modules_counter = 1
+    def scan_flow_group(self, flow, targets, scan_id, process_number, active_threads):
+        """
+        Run a YAML-defined module flow against a group of targets: steps are scheduled
+        as soon as their `depends_on` expression is satisfied (dependencies may be a
+        plain list, or nested any/all trees), independently per target.
+        """
+        steps_by_id = {step.id: step for step in flow.steps}
+        max_parallel = min(self.arguments.parallel_module_scan, flow.max_parallel)
+        flow_inputs = self.arguments.flow_inputs or {}
 
-            # Track module state per target
-            target_state = {}
+        total_number_of_modules = len(targets) * len(steps_by_id)
+        total_number_of_modules_counter = 1
+
+        target_state = {
+            target: {"completed": set(), "blocked": set(), "running": set(), "aborted": False}
+            for target in targets
+        }
+
+        step_threads = {}
+
+        while True:
+            work_remaining = False
             for target in targets:
-                target_state[target] = {
-                    "completed": set(),
-                    "blocked": set(),
-                    "running": set(),
-                }
-
-            module_threads = {}
-
-            while True:
-                work_remaining = False
-                for target in targets:
-                    state = target_state[target]
-                    # Skip if all modules resolved
-                    if len(state["completed"]) + len(state["blocked"]) == len(graph):
-                        continue
-                    work_remaining = True
-                    for module_name in graph:
-                        if (
-                            module_name in state["completed"]
-                            or module_name in state["blocked"]
-                            or module_name in state["running"]
-                        ):
-                            continue
-
-                        dependencies = graph[module_name]
-
-                        # dependency blocked
-                        if any(dependency in state["blocked"] for dependency in dependencies):
-                            state["blocked"].add(module_name)
-                            continue
-
-                        # dependency not satisfied
-                        if not all(dependency in state["completed"] for dependency in dependencies):
-                            continue
-
-                        # launch module
-                        thread = Thread(
-                            target=self.scan_target,
-                            args=(
-                                target,
-                                module_name,
-                                scan_id,
-                                process_number,
-                                total_number_of_modules_counter,
-                                total_number_of_modules,
-                            ),
-                        )
-
-                        thread.name = f"{target} -> {module_name}"
-                        thread.start()
-
-                        log.verbose_event_info(
-                            _("start_parallel_module_scan").format(
-                                process_number,
-                                module_name,
-                                target,
-                                total_number_of_modules_counter,
-                                total_number_of_modules,
-                            )
-                        )
-
-                        total_number_of_modules_counter += 1
-
-                        active_threads.append(thread)
-                        state["running"].add(module_name)
-                        module_threads[(target, module_name)] = thread
-
-                        if not wait_for_threads_to_finish(
-                            active_threads,
-                            self.arguments.parallel_module_scan,
-                            True,
-                        ):
-                            return False
-
-                # detect finished threads
-                for (target, module_name), thread in list(module_threads.items()):
-
-                    if not thread.is_alive():
-
-                        state = target_state[target]
-                        state["running"].remove(module_name)
-
-                        # check success
-                        if find_events(target, module_name, scan_id):
-                            state["completed"].add(module_name)
-                        else:
-                            state["blocked"].add(module_name)
-
-                        del module_threads[(target, module_name)]
-
-                if not work_remaining and not module_threads:
-                    break
-
-                if not wait_for_threads_to_finish(
-                    active_threads,
-                    self.arguments.parallel_module_scan,
-                    True,
+                state = target_state[target]
+                if state["aborted"] or len(state["completed"]) + len(state["blocked"]) == len(
+                    steps_by_id
                 ):
-                    return False
+                    continue
+                work_remaining = True
 
-            wait_for_threads_to_finish(active_threads, maximum=None, terminable=True)
-            return True
+                for step_id, step in steps_by_id.items():
+                    if (
+                        step_id in state["completed"]
+                        or step_id in state["blocked"]
+                        or step_id in state["running"]
+                    ):
+                        continue
+
+                    status = evaluate_depends_on(
+                        step.depends_on, state["completed"], state["blocked"]
+                    )
+                    if status == "blocked":
+                        state["blocked"].add(step_id)
+                        continue
+                    if status == "pending":
+                        continue
+
+                    # launch step
+                    context = {**flow_inputs, "target": target}
+                    extra_options = render_params(step.params, context)
+                    effective_timeout = step.timeout if step.timeout is not None else flow.timeout
+                    effective_retries = step.retries if step.retries is not None else flow.retries
+                    if effective_timeout is not None:
+                        extra_options["timeout"] = effective_timeout
+                    if effective_retries is not None:
+                        extra_options["retries"] = effective_retries
+
+                    thread = Thread(
+                        target=self.scan_target,
+                        args=(
+                            target,
+                            step.module,
+                            scan_id,
+                            process_number,
+                            total_number_of_modules_counter,
+                            total_number_of_modules,
+                            extra_options,
+                        ),
+                    )
+                    thread.name = f"{target} -> {step_id} ({step.module})"
+                    thread.start()
+
+                    log.verbose_event_info(
+                        _("start_parallel_module_scan").format(
+                            process_number,
+                            step.module,
+                            target,
+                            total_number_of_modules_counter,
+                            total_number_of_modules,
+                        )
+                    )
+
+                    total_number_of_modules_counter += 1
+
+                    active_threads.append(thread)
+                    state["running"].add(step_id)
+                    step_threads[(target, step_id)] = thread
+
+                    if not wait_for_threads_to_finish(active_threads, max_parallel, True):
+                        return False
+
+            # detect finished threads
+            for (target, step_id), thread in list(step_threads.items()):
+                if not thread.is_alive():
+                    step = steps_by_id[step_id]
+                    state = target_state[target]
+                    state["running"].remove(step_id)
+
+                    # success is tracked per (target, module_name, scan_id) in the database,
+                    # so two steps invoking the same module share this success signal
+                    if find_events(target, step.module, scan_id):
+                        state["completed"].add(step_id)
+                    else:
+                        state["blocked"].add(step_id)
+                        if (step.on_failure or flow.on_failure) == "abort":
+                            state["aborted"] = True
+
+                    del step_threads[(target, step_id)]
+
+            if not work_remaining and not step_threads:
+                break
+
+            if not wait_for_threads_to_finish(active_threads, max_parallel, True):
+                return False
+
+        wait_for_threads_to_finish(active_threads, maximum=None, terminable=True)
+        return True
