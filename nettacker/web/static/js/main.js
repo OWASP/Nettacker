@@ -5,6 +5,59 @@ $(document).ready(function () {
     return target.replace(new RegExp(search, "g"), replacement);
   };
 
+  // escape untrusted content before inserting it into innerHTML
+  function escapeHtml(value) {
+    if (value === undefined || value === null) {
+      return value;
+    }
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  // filter a list of checkboxes (Profiles / Scan Methods) by the label's own text,
+  // without touching innerHTML, so it can never introduce markup from the search box
+  function filterChecklist(searchInputId, containerId, skipClass) {
+    var query = document.getElementById(searchInputId).value.trim().toLowerCase();
+    var labels = document.getElementById(containerId).getElementsByTagName("label");
+    for (var i = 0; i < labels.length; i++) {
+      var label = labels[i];
+      if (label.querySelector("." + skipClass)) {
+        // always keep the "select all" control visible
+        continue;
+      }
+      var text = label.textContent.toLowerCase();
+      label.style.display = query === "" || text.indexOf(query) !== -1 ? "" : "none";
+    }
+  }
+
+  document.getElementById("profile_search").addEventListener("input", function () {
+    filterChecklist("profile_search", "profiles", "check-all-profiles");
+  });
+
+  document.getElementById("scan_method_search").addEventListener("input", function () {
+    filterChecklist("scan_method_search", "selected_modules", "check-all-scans");
+  });
+
+  // filter rendered scan result cards by their visible text (row id, scan id, date)
+  function filter_results() {
+    var query = document.getElementById("results_search").value.trim().toLowerCase();
+    var cards = document.getElementById("scan_results").children;
+    for (var i = 0; i < cards.length; i++) {
+      // keep status messages (e.g. "No more results to show!!") visible during filtering
+      if (cards[i].classList.contains("scan-status-message")) {
+        continue;
+      }
+      var text = cards[i].textContent.toLowerCase();
+      cards[i].style.display = query === "" || text.indexOf(query) !== -1 ? "" : "none";
+    }
+  }
+
+  document.getElementById("results_search").addEventListener("input", filter_results);
+
   // hide set session key
   $("#set_session").hide();
 
@@ -472,7 +525,7 @@ $(document).ready(function () {
           $("#" + param + "_status").text("");
           $("#" + param + "_file").val("");
         });
-        var results = JSON.stringify(res);
+        var results = escapeHtml(JSON.stringify(res));
         results = results.replaceAll(",", ",<br>");
         document.getElementById("success_msg").innerHTML = results;
         $("#success_request").removeClass("hidden");
@@ -481,7 +534,7 @@ $(document).ready(function () {
         $("#success_request").removeClass("animated fadeOut");
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
-        document.getElementById("error_msg").innerHTML = jqXHR.responseText;
+        document.getElementById("error_msg").innerHTML = escapeHtml(jqXHR.responseText);
         if (errorThrown == "BAD REQUEST") {
           $("#failed_request").removeClass("hidden");
           setTimeout('$("#failed_request").addClass("hidden");', 5000);
@@ -585,20 +638,20 @@ $(document).ready(function () {
       // host = scan_cmd.split(" ")[2];
       HTMLData +=
         "<a target='_blank' href=\"/results/get?id=" +
-        id +
+        encodeURIComponent(id) +
         '" class="list-group-item list-group-item-action flex-column align-items-start">\n' +
         '<div class="row" ><div class="d-flex w-100">\n' +
         '<h3  class="mb-1">&nbsp;&nbsp;&nbsp;<span id="logintext"\n' +
         'class="bold label label-primary">' +
-        id +
+        escapeHtml(id) +
         "</span>" +
         '<small class="label label-info card-date">' +
-        date +
+        escapeHtml(date) +
         "</small></h3>" +
         "</div></div>" +
         "<hr class='card-hr'>" +
         "<p class='mb-1  bold label label-default'>scan_id:" +
-        scan_id +
+        escapeHtml(scan_id) +
         "</p><br>"
         // "<p class='mb-1  bold label label-info'>report_filename:" +
         // report_filename +
@@ -641,18 +694,19 @@ $(document).ready(function () {
         // "</p>" +
         // '</p>\n </a>' +
         '<button class="mb-1 bold label card-date""><a href="/results/get_json?id=' +
-        id +
+        encodeURIComponent(id) +
         '">Get JSON</a></button>' +
         '<button class="mb-1 bold label card-date""><a href="/results/get_csv?id=' +
-        id +
+        encodeURIComponent(id) +
         '">Get CSV </a></button>';
     }
 
     if (res["msg"] == "No more search results") {
-      HTMLData = '<p class="mb-1"> No more results to show!!</p>';
+      HTMLData = '<p class="mb-1 scan-status-message"> No more results to show!!</p>';
     }
 
     document.getElementById("scan_results").innerHTML = HTMLData;
+    filter_results();
   }
 
   function get_results_list(result_page) {
@@ -886,15 +940,15 @@ function filter_large_content(content, filter_rate){
       for (j = 0; j < module_name.length; j++) {
           html_module_name +=
             "<p class='mb-1 bold label label-info'>selected_modules:" +
-            module_name[j] +
+            escapeHtml(module_name[j]) +
             "</p> ";
         }
         html_module_name += "<br><br>"
        for (j = 0; j < events.length; j++) {
           event = events[j].split('conditions: ')[0]
           results = events[j].split('conditions: ')[1]
-          html_module_name +=   "<p class='mb-1 bold label label-success'>event: " + filter_large_content(event, 100) + "</p> ";
-          html_module_name += "<p class='mb-1 bold label label-warning'>condition_results: " + filter_large_content(results, 100) + "</p> <br><br>";
+          html_module_name +=   "<p class='mb-1 bold label label-success'>event: " + escapeHtml(filter_large_content(event, 100)) + "</p> ";
+          html_module_name += "<p class='mb-1 bold label label-warning'>condition_results: " + escapeHtml(filter_large_content(results, 100)) + "</p> <br><br>";
         }
 
 
@@ -939,14 +993,14 @@ function filter_large_content(content, filter_rate){
       HTMLData +=
         '<div class="row myBox" ><div class="d-flex w-100 text-justify justify-content-between">\n' +
         '<button class="btn btn-primary" style="margin-right: 1rem"> <a target=\'_blank\' style="color: white" href="/logs/get_html?target=' +
-        target +
+        encodeURIComponent(target) +
         '">' +
-        target +
+        escapeHtml(target) +
         '</a></button></span><button class="btn btn-btn-secondary" style="margin-right: 1rem"><a href="/logs/get_json?target=' +
-        target +
+        encodeURIComponent(target) +
         '">Get JSON</a></button>' +
         '<button class="btn btn-btn-secondary"><a href="/logs/get_csv?target=' +
-        target +
+        encodeURIComponent(target) +
         '">Get CSV </a></button></h3>\n' +
         "</div>\n" +
         '<p class="mb-1"> ' +
