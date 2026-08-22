@@ -1,6 +1,5 @@
 import copy
 import json
-import re
 import time
 from abc import ABC
 from datetime import datetime
@@ -9,7 +8,11 @@ import yaml
 
 from nettacker.config import Config
 from nettacker.core.messages import messages as _
-from nettacker.core.utils.common import merge_logs_to_list, remove_sensitive_header_keys
+from nettacker.core.utils.common import (
+    merge_logs_to_list,
+    remove_sensitive_header_keys,
+    replace_dependent_expressions,
+)
 from nettacker.database.db import find_temp_events, submit_logs_to_db, submit_temp_logs_to_db
 from nettacker.logger import TerminalCodes, get_logger
 
@@ -57,53 +60,36 @@ class BaseEngine(ABC):
                 time.sleep(0.1)
         return events
 
+    def replace_dependent_value_in_item(self, item, dependent_on_temp_event):
+        """Resolve dependent-value expressions inside one step item.
+
+        Only chains of integer or quoted-string indexes into
+        *dependent_on_temp_event* are supported; anything else is left
+        untouched instead of being evaluated.
+        """
+        if isinstance(item, str):
+            return replace_dependent_expressions(
+                item,
+                "dependent_on_temp_event",
+                dependent_on_temp_event,
+                renderer=str,
+                default="error",
+            )
+        if not isinstance(item, (str, float, int, bytes)):
+            return self.find_and_replace_dependent_values(item, dependent_on_temp_event)
+        return item
+
     def find_and_replace_dependent_values(self, sub_step, dependent_on_temp_event):
         if isinstance(sub_step, dict):
-            for key in copy.deepcopy(sub_step):
-                if not isinstance(sub_step[key], (str, float, int, bytes)):
-                    sub_step[key] = self.find_and_replace_dependent_values(
-                        copy.deepcopy(sub_step[key]), dependent_on_temp_event
-                    )
-                else:
-                    if isinstance(sub_step[key], str):
-                        if "dependent_on_temp_event" in sub_step[key]:
-                            globals().update(locals())
-                            generate_new_step = copy.deepcopy(sub_step[key])
-                            key_name = re.findall(
-                                re.compile(
-                                    "dependent_on_temp_event\\[\\S+\\]\\['\\S+\\]\\[\\S+\\]"
-                                ),
-                                generate_new_step,
-                            )[0]
-                            try:
-                                key_value = eval(key_name)
-                            except Exception:
-                                key_value = "error"
-                            sub_step[key] = sub_step[key].replace(key_name, key_value)
+            for key in sub_step:
+                sub_step[key] = self.replace_dependent_value_in_item(
+                    sub_step[key], dependent_on_temp_event
+                )
         if isinstance(sub_step, list):
-            value_index = 0
-            for key in copy.deepcopy(sub_step):
-                if type(sub_step[value_index]) not in [str, float, int, bytes]:
-                    sub_step[key] = self.find_and_replace_dependent_values(
-                        copy.deepcopy(sub_step[value_index]), dependent_on_temp_event
-                    )
-                else:
-                    if isinstance(sub_step[value_index], str):
-                        if "dependent_on_temp_event" in sub_step[value_index]:
-                            globals().update(locals())
-                            generate_new_step = copy.deepcopy(sub_step[key])
-                            key_name = re.findall(
-                                re.compile("dependent_on_temp_event\\['\\S+\\]\\[\\S+\\]"),
-                                generate_new_step,
-                            )[0]
-                            try:
-                                key_value = eval(key_name)
-                            except Exception:
-                                key_value = "error"
-                            sub_step[value_index] = sub_step[value_index].replace(
-                                key_name, key_value
-                            )
-                value_index += 1
+            for index, item in enumerate(sub_step):
+                sub_step[index] = self.replace_dependent_value_in_item(
+                    item, dependent_on_temp_event
+                )
         return sub_step
 
     def process_conditions(

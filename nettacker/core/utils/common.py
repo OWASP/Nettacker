@@ -1,3 +1,4 @@
+import ast
 import copy
 import ctypes
 import datetime
@@ -18,17 +19,95 @@ from nettacker import logger
 log = logger.get_logger()
 
 
+class UnsafeDependentExpression(ValueError):
+    """A dependent-value expression is outside the supported grammar."""
+
+
+# Matches `<root>[<integer>|<'key'>|"key"]...` chains only. Anything else
+# (calls, attributes, operators, bare names) is not matched at all.
+DEPENDENT_INDEX_PATTERN = r"(?:\[-?\d+\]|\['[^']*'\]|\[\"[^\"]*\"\])+"
+
+
+def find_dependent_expressions(text, root_name):
+    """Find all supported `<root_name>[...]...` expressions inside a string."""
+    return re.findall(re.escape(root_name) + DEPENDENT_INDEX_PATTERN, text)
+
+
+def parse_dependent_expression(expression, root_name):
+    """Validate a dependent-value expression and return its index path.
+
+    Only chains of integer or quoted-string subscript literals into one root
+    name are accepted (e.g. ``root[0]['headers']['Set-Cookie'][1]``). Anything
+    else raises UnsafeDependentExpression instead of being evaluated.
+    """
+    try:
+        tree = ast.parse(expression, mode="eval")
+    except SyntaxError as exc:
+        raise UnsafeDependentExpression(expression) from exc
+    node = tree.body
+    path = []
+    while isinstance(node, ast.Subscript):
+        index = node.slice
+        if isinstance(index, ast.UnaryOp) and isinstance(index.op, ast.USub):
+            if (
+                isinstance(index.operand, ast.Constant)
+                and isinstance(index.operand.value, int)
+                and not isinstance(index.operand.value, bool)
+            ):
+                path.append(-index.operand.value)
+                node = node.value
+                continue
+            raise UnsafeDependentExpression(expression)
+        if (
+            isinstance(index, ast.Constant)
+            and isinstance(index.value, (int, str))
+            and not isinstance(index.value, bool)
+        ):
+            path.append(index.value)
+            node = node.value
+            continue
+        raise UnsafeDependentExpression(expression)
+    if not isinstance(node, ast.Name) or node.id != root_name or not path:
+        raise UnsafeDependentExpression(expression)
+    path.reverse()
+    return path
+
+
+def resolve_dependent_value(expression, root_name, root_value):
+    """Resolve a supported dependent-value expression against its root object."""
+    value = root_value
+    for index in parse_dependent_expression(expression, root_name):
+        value = value[index]
+    return value
+
+
+def replace_dependent_expressions(text, root_name, root_value, renderer, default):
+    """Replace every supported dependent expression in *text* with its value.
+
+    Expressions outside the grammar are never evaluated; failures to resolve
+    (missing key/index, wrong types) render *default*, matching the previous
+    ``eval`` error fallback behaviour.
+    """
+    result = text
+    for expression in sorted(set(find_dependent_expressions(text, root_name))):
+        try:
+            rendered = renderer(resolve_dependent_value(expression, root_name, root_value))
+        except Exception:
+            rendered = default
+        result = result.replace(expression, rendered)
+    return result
+
+
 def replace_dependent_response(log, response_dependent):
-    """The `response_dependent` is needed for `eval` below."""
+    """Replace ``response_dependent[...]`` expressions inside a log line."""
     if str(log):
-        key_name = re.findall(re.compile("response_dependent\\['\\S+\\]"), log)
-        for i in key_name:
-            try:
-                key_value = eval(i)
-            except Exception:
-                key_value = "response dependent error"
-            log = log.replace(i, " ".join(key_value))
-        return log
+        return replace_dependent_expressions(
+            log,
+            "response_dependent",
+            response_dependent,
+            lambda value: " ".join(value),
+            "response dependent error",
+        )
 
 
 def merge_logs_to_list(result, log_list=None):

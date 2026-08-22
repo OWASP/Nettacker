@@ -323,6 +323,83 @@ def test_response_conditions_responsetime(monkeypatch):
     assert http.response_conditions_matched(sub_step, response) == {}
 
 
+@pytest.mark.parametrize(
+    "condition, responsetime, matched",
+    [
+        ("== 0.5", 0.5, True),
+        ("== 0.5", 0.4999, False),
+        ("!= 0.5", 0.7, True),
+        ("!= 0.5", 0.5, False),
+        (">= 0.5", 0.5, True),
+        (">= 0.5", 0.4999, False),
+        ("<= 0.5", 0.5, True),
+        ("<= 0.5", 0.5001, False),
+        ("> 0.5", 0.5001, True),
+        ("> 0.5", 0.5, False),
+        ("< 0.5", 0.4999, True),
+        ("< 0.5", 0.5, False),
+    ],
+)
+def test_response_conditions_responsetime_all_operators(condition, responsetime, matched):
+    sub_step = {
+        "response": {
+            "condition_type": "and",
+            "conditions": {"responsetime": condition},
+        },
+    }
+    response = {
+        "status_code": "200",
+        "url": "http://owasp.org:443",
+        "reason": "OK",
+        "headers": {},
+        "responsetime": responsetime,
+        "content": "body",
+    }
+    result = http.response_conditions_matched(sub_step, response)
+    if matched:
+        assert result["responsetime"] == responsetime
+    else:
+        # a failed condition empties the whole result set
+        assert result == {}
+
+
+def test_response_conditions_responsetime_rejects_bad_operator():
+    sub_step = {
+        "response": {
+            "condition_type": "and",
+            "conditions": {"responsetime": "~ 0.5"},
+        },
+    }
+    response = {
+        "status_code": "200",
+        "url": "",
+        "reason": "",
+        "headers": {},
+        "responsetime": 0.1,
+        "content": "",
+    }
+    assert http.response_conditions_matched(sub_step, response) == {}
+
+
+def test_response_conditions_responsetime_rejects_non_numeric_threshold():
+    """A non-numeric threshold yields [] instead of raising like the old exec()."""
+    sub_step = {
+        "response": {
+            "condition_type": "and",
+            "conditions": {"responsetime": ">= fast"},
+        },
+    }
+    response = {
+        "status_code": "200",
+        "url": "",
+        "reason": "",
+        "headers": {},
+        "responsetime": 0.1,
+        "content": "",
+    }
+    assert http.response_conditions_matched(sub_step, response) == {}
+
+
 # ----------------------------
 # Tests for HttpEngine.run
 # ----------------------------

@@ -294,3 +294,44 @@ def test_yaml_schema_and_regex_valid(yaml_file):
 
     for regex in regexes:
         assert is_valid_regex(regex), f"Invalid regex in {yaml_file}: `{regex}`"
+
+
+# ----------------------------
+# Dependent-value expressions must stay inside the safe resolver grammar
+# ----------------------------
+
+DEPENDENT_EXPRESSION_PATTERN = re.compile(
+    r"dependent_on_temp_event(?:\[-?\d+\]|\['[^']*'\]|\[\"[^\"]*\"\])+"
+)
+RESPONSE_DEPENDENT_EXPRESSION_PATTERN = re.compile(
+    r"response_dependent(?:\[-?\d+\]|\['[^']*'\]|\[\"[^\"]*\"\])+"
+)
+
+
+@pytest.mark.parametrize("yaml_file", list(get_yaml_files()))
+def test_dependent_value_expressions_use_safe_grammar(yaml_file):
+    """Every dependent-value expression in module YAMLs must be resolvable
+    without eval/exec (issue #1651)."""
+    from nettacker.core.utils.common import parse_dependent_expression
+
+    content = open(yaml_file).read()
+
+    for match in DEPENDENT_EXPRESSION_PATTERN.findall(content):
+        parse_dependent_expression(match, "dependent_on_temp_event")
+
+    for match in RESPONSE_DEPENDENT_EXPRESSION_PATTERN.findall(content):
+        parse_dependent_expression(match, "response_dependent")
+
+    for line_number, line in enumerate(content.splitlines(), start=1):
+        for root_name, pattern in (
+            ("dependent_on_temp_event", DEPENDENT_EXPRESSION_PATTERN),
+            ("response_dependent", RESPONSE_DEPENDENT_EXPRESSION_PATTERN),
+        ):
+            # the bare root name also appears as a YAML key declaring the
+            # dependency (e.g. `dependent_on_temp_event: event_name`);
+            # only `root[...` occurrences must be safe expressions.
+            stripped = re.sub(pattern, "", line)
+            assert f"{root_name}[" not in stripped, (
+                f"{yaml_file}:{line_number}: dependent-value syntax outside the "
+                f"safe resolver grammar: {line.strip()}"
+            )

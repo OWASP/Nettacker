@@ -5,6 +5,13 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from nettacker.core.utils import common as common_utils
+from nettacker.core.utils.common import (
+    UnsafeDependentExpression,
+    find_dependent_expressions,
+    parse_dependent_expression,
+    replace_dependent_response,
+    resolve_dependent_value,
+)
 
 
 def test_arrays_to_matrix():
@@ -292,3 +299,132 @@ def test_fuzzer_repeater_perform_unknown_interceptor_alongside_allowed_raises():
 
 def test_allowed_interceptors_registry_is_restricted():
     assert set(common_utils.ALLOWED_INTERCEPTORS) == {"generate_and_replace_md5"}
+
+
+# ----------------------------
+# Safe dependent-value resolution (replaces eval/exec, see issue #1651)
+# ----------------------------
+
+TEMP_EVENT = [
+    {
+        "status_code": ["200"],
+        "content": ["<html>ns1.example.com</html>"],
+        "headers": {"Set-Cookie": ["csrftoken=abc123", "sessionid=xyz789"]},
+    }
+]
+
+
+@pytest.mark.parametrize(
+    "expression, expected",
+    [
+        ("dependent_on_temp_event[0]['status_code'][0]", "200"),
+        ("dependent_on_temp_event[0]['content'][0]", "<html>ns1.example.com</html>"),
+        ("dependent_on_temp_event[0]['headers']['Set-Cookie'][1]", "sessionid=xyz789"),
+    ],
+)
+def test_resolve_dependent_value_shipped_module_shapes(expression, expected):
+    """Every dependent_on_temp_event expression used by shipped modules resolves."""
+    assert resolve_dependent_value(expression, "dependent_on_temp_event", TEMP_EVENT) == expected
+
+
+def test_parse_dependent_expression_returns_index_path():
+    assert parse_dependent_expression(
+        "dependent_on_temp_event[0]['headers']['Set-Cookie'][1]",
+        "dependent_on_temp_event",
+    ) == [0, "headers", "Set-Cookie", 1]
+    assert parse_dependent_expression("response_dependent['service']", "response_dependent") == [
+        "service"
+    ]
+    assert parse_dependent_expression('root[-1]["k"]', "root") == [-1, "k"]
+
+
+def test_find_dependent_expressions_multiple_in_one_string():
+    log = "response_dependent['status_code'] response_dependent['headers']['Location']"
+    assert find_dependent_expressions(log, "response_dependent") == [
+        "response_dependent['status_code']",
+        "response_dependent['headers']['Location']",
+    ]
+
+
+@pytest.mark.parametrize(
+    "expression",
+    [
+        # payload from issue #1651: import must never run
+        "dependent_on_temp_event[0]['a'][__import__('platform').system()!='']",
+        "dependent_on_temp_event[__import__('os').system('true')]",
+        # attribute access after the chain
+        "dependent_on_temp_event[0].keys",
+        # non-literal subscripts
+        "dependent_on_temp_event[name]",
+        "dependent_on_temp_event[0 + 1]",
+        "dependent_on_temp_event[True]",
+        # call instead of subscript chain
+        "__import__('os').getcwd()",
+        # bare root without any index
+        "dependent_on_temp_event",
+        # wrong root name
+        "response_dependent['service']",
+    ],
+)
+def test_parse_dependent_expression_rejects_non_whitelisted_forms(expression):
+    with pytest.raises(UnsafeDependentExpression):
+        parse_dependent_expression(expression, "dependent_on_temp_event")
+
+
+def test_replace_dependent_response_shipped_module_shapes():
+    response = {
+        "status_code": ["200"],
+        "url": ["http://target/"],
+        "service": ["http"],
+        "content": ["Apache Tomcat"],
+        "headers": {"Server": ["Apache"], "Last-Modified": ["Tue, 12 Mar 2024"]},
+    }
+    assert (
+        replace_dependent_response("found: response_dependent['status_code']", response)
+        == "found: 200"
+    )
+    assert (
+        replace_dependent_response("u=response_dependent['url']", response) == "u=http://target/"
+    )
+    assert (
+        replace_dependent_response(
+            "srv: response_dependent['headers']['Server'] mod: "
+            "response_dependent['headers']['Last-Modified']",
+            response,
+        )
+        == "srv: Apache mod: Tue, 12 Mar 2024"
+    )
+
+
+def test_replace_dependent_response_multiple_expressions():
+    response = {
+        "status_code": ["301"],
+        "headers": {"Location": ["http://target/login"]},
+    }
+    log = "moved response_dependent['status_code'] to response_dependent['headers']['Location']"
+    assert replace_dependent_response(log, response) == "moved 301 to http://target/login"
+
+
+def test_replace_dependent_response_unresolvable_uses_default():
+    response = {"status_code": ["200"]}
+    assert (
+        replace_dependent_response("x response_dependent['missing_key']", response)
+        == "x response dependent error"
+    )
+    assert replace_dependent_response("", {}) is None
+
+
+def test_replace_dependent_response_never_evaluates_hostile_text():
+    """Expressions outside the grammar stay literal; nothing gets executed."""
+    response = {}
+    hostile = "response_dependent['a' if __import__('platform').system() else 'b']"
+    assert replace_dependent_response(hostile, response) == hostile
+
+
+def test_replace_dependent_expression_string_subscript_is_data_only():
+    """Quoted keys are plain dict lookups, never attribute/call resolution."""
+    response = {"__class__": ["not-a-class"]}
+    assert (
+        replace_dependent_response("v=response_dependent['__class__']", response)
+        == "v=not-a-class"
+    )

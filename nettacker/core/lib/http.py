@@ -2,6 +2,7 @@
 
 import asyncio
 import copy
+import operator
 import random
 import re
 import time
@@ -18,6 +19,15 @@ from nettacker.core.utils.common import (
 )
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
+RESPONSETIME_COMPARISONS = {
+    "==": operator.eq,
+    "!=": operator.ne,
+    ">=": operator.ge,
+    "<=": operator.le,
+    ">": operator.gt,
+    "<": operator.lt,
+}
 
 
 async def perform_request_action(action, request_options):
@@ -73,23 +83,17 @@ def response_conditions_matched(sub_step, response):
                 except TypeError:
                     condition_results["headers"][header] = []
         if condition == "responsetime":
-            if len(conditions[condition].split()) == 2 and conditions[condition].split()[0] in [
-                "==",
-                "!=",
-                ">=",
-                "<=",
-                ">",
-                "<",
-            ]:
-                exec(
-                    "condition_results['responsetime'] = response['responsetime'] if ("
-                    + "response['responsetime'] {0} float(conditions['responsetime'].split()[-1])".format(
-                        conditions["responsetime"].split()[0]
-                    )
-                    + ") else []"
-                )
-            else:
-                condition_results["responsetime"] = []
+            condition_results["responsetime"] = []
+            parts = conditions[condition].split()
+            if len(parts) == 2 and parts[0] in RESPONSETIME_COMPARISONS:
+                try:
+                    threshold = float(parts[-1])
+                except ValueError:
+                    pass
+                else:
+                    comparison = RESPONSETIME_COMPARISONS[parts[0]]
+                    if comparison(response["responsetime"], threshold):
+                        condition_results["responsetime"] = response["responsetime"]
     if condition_type.lower() == "or":
         # if one of the values are matched, it will be a string or float object in the array
         # we count False in the array and if it's not all []; then we know one of the conditions
