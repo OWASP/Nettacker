@@ -49,4 +49,4 @@ payloads:
               regex: "(?s)(?=.*Web Help Desk Software)(?=.*\\?v=([0-9]+_[0-9]+_[0-9]+_[0-9]+))"
               reverse: false
 
-          log: "SolarWinds WHD version: response_dependent['content']"
+          log: "response_dependent['content']"
