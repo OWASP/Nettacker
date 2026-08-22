@@ -231,6 +231,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**paloalto_globalprotect_cve_2025_0133_vuln**' – check the target for PaloAlto GlobalProtect CVE-2025-0133 XSS vulnerability
 - '**paloalto_panos_cve_2025_0108_vuln**' – check the target for PaloAlto PAN-OS CVE-2025-0108 vulnerability
 - '**payara_cve_2021_41381_vuln**' – check the target for Payara CVE-2021-41381 vulnerability
+- '**php_cgi_cve_2024_4577_vuln**' – check the target for PHP CGI argument injection CVE-2024-4577 (RCE on Windows PHP-CGI/XAMPP)
 - '**phpinfo_cve_2021_37704_vuln**' – check the target for phpinfo CVE-2021-37704 information disclosure
 - '**placeos_cve_2021_41826_vuln**' – check the target for PlaceOS CVE-2021-41826 vulnerability
 - '**prestashop_cve_2021_37538_vuln**' – check the target for PrestaShop CVE-2021-37538 vulnerability

