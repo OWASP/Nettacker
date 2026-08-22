@@ -239,6 +239,7 @@ If you want to scan all ports please define -g 1-65535 range. Otherwise Nettacke
 - '**qsan_storage_xss_cve_2021_37216_vuln**' – check the target for QSAN CVE-2021-37216 XSS vulnerability
 - '**server_version_vuln**' – check if the web server is leaking server banner in 'Server' response header
 - '**sonicwall_sslvpn_cve_2024_53704_vuln**' – check the target for SonicWall SSLVPN CVE-2024-53704 vulnerability
+- '**splunk_cve_2026_20253_vuln**' – check the target for Splunk Enterprise CVE-2026-20253 unauthenticated auth-bypass vulnerability
 - '**ssl_certificate_weak_signature_vuln**' – check SSL certificate for weak signing algorithms
 - '**ssl_expired_certificate_vuln**' – check if SSL certificate has expired or is close to expiring
 - '**ssl_self_signed_certificate_vuln**' – check for self-signed SSL certificates

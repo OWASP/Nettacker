@@ -1,0 +1,85 @@
+info:
+  name: splunk_cve_2026_20253_vuln
+  author: NSK-394
+  severity: 9.8
+  description: >
+    CVE-2026-20253 (CVSS 9.8, CISA KEV) is a missing-authentication flaw
+    (CWE-306) in Splunk Enterprise's bundled PostgreSQL sidecar service,
+    reachable through an unauthenticated raw-passthrough proxy path on
+    Splunk Web (default port 8000). Splunk Enterprise 10.0.0-10.0.6 and
+    10.2.0-10.2.3 accept POST /en-US/splunkd/__raw/v1/postgres/recovery/backup
+    with ANY syntactically-valid HTTP Basic Authorization header -- including
+    a blank ":" credential or entirely fabricated ones -- because the
+    credential value itself is never checked and the request is allowed to
+    proceed past authentication. Patched versions (10.0.7, 10.2.4, 10.4.0+)
+    reject the identical request with 401 "Authorization header must use
+    Splunk token" before ever inspecting the body, having dropped Basic-auth
+    support on this endpoint entirely. This module detects that
+    unauthenticated auth-bypass primitive -- the CVE's actual root cause --
+    non-destructively: it sends a blank-Basic-auth POST whose JSON body
+    deliberately omits the required "backupFile" field. On vulnerable
+    instances, auth is bypassed first and the request then fails input
+    validation with 400 "backupFile is a required field" -- no backup job
+    is ever created. On patched instances, the same request is rejected at
+    the auth layer with 401 before validation runs. An earlier version of
+    this module distinguished the two by checking for a real 200 response
+    with a "BackupPending" job-creation body; that was corrected after
+    review because it meant every scan created a real, tracked backup job
+    on the target, contradicting a non-destructive design. Both the old and
+    new signatures were confirmed live and repeatable against the official
+    splunk/splunk:10.0.6 (vulnerable) and splunk/splunk:10.0.7 (patched)
+    Docker images. This module does NOT attempt or verify the full RCE
+    chain some public writeups describe: that chain additionally requires
+    standing up an attacker-controlled external PostgreSQL server to inject
+    a malicious connection string via this same endpoint, then waiting on
+    Splunk's own task scheduler to execute a file planted through a
+    lo_export-based restore. This module confirms the input-validation/auth
+    flaw that chain depends on, not code execution itself.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-20253
+    - https://advisory.splunk.com/advisories/SVD-2026-0603
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2026-20253
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2026
+    - splunk
+    - cisa_kev
+    - auth_bypass
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: application/json
+          Authorization: "Basic Og=="
+        ssl: false
+        data: '{{"database": "postgres"}}'
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/en-US/splunkd/__raw/v1/postgres/recovery/backup"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 8000 # Default Splunk Web port
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "400"
+              reverse: false
+            content:
+              regex: "backupFile is a required field"
+              reverse: false
