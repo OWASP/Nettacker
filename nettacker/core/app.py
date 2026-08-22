@@ -151,9 +151,12 @@ class Nettacker(ArgParser):
         # subdomain_scan
         if self.arguments.scan_subdomains:
             selected_modules = self.arguments.selected_modules
+            flow = self.arguments.flow
             self.arguments.selected_modules = ["subdomain_scan"]
+            self.arguments.flow = None
             self.start_scan(scan_id)
             self.arguments.selected_modules = selected_modules
+            self.arguments.flow = flow
             if "subdomain_scan" in self.arguments.selected_modules:
                 self.arguments.selected_modules.remove("subdomain_scan")
 
@@ -166,9 +169,12 @@ class Nettacker(ArgParser):
         if self.arguments.ping_before_scan:
             if os.geteuid() == 0:
                 selected_modules = self.arguments.selected_modules
+                flow = self.arguments.flow
                 self.arguments.selected_modules = ["icmp_scan"]
+                self.arguments.flow = None
                 self.start_scan(scan_id)
                 self.arguments.selected_modules = selected_modules
+                self.arguments.flow = flow
                 if "icmp_scan" in self.arguments.selected_modules:
                     self.arguments.selected_modules.remove("icmp_scan")
                 self.arguments.targets = self.filter_target_by_event(targets, scan_id, "icmp_scan")
@@ -180,9 +186,12 @@ class Nettacker(ArgParser):
         if not self.arguments.skip_service_discovery:
             self.arguments.skip_service_discovery = True
             selected_modules = self.arguments.selected_modules
+            flow = self.arguments.flow
             self.arguments.selected_modules = ["port_scan"]
+            self.arguments.flow = None
             self.start_scan(scan_id)
             self.arguments.selected_modules = selected_modules
+            self.arguments.flow = flow
             if "port_scan" in self.arguments.selected_modules:
                 self.arguments.selected_modules.remove("port_scan")
             self.arguments.targets = self.filter_target_by_event(targets, scan_id, "port_scan")

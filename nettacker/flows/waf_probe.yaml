@@ -1,0 +1,50 @@
+info:
+  name: waf_probe
+  author: OWASP Nettacker Team
+  description: "Confirm the site is up, then fingerprint the WAF and check the TLS cert on top of that"
+  severity: medium
+  references:
+    - https://owasp.org/www-project-nettacker/
+  tags: [http, tls, waf]
+  profiles: [scan]
+
+inputs:
+  target:
+    type: string
+    required: true            # Nettacker -i : IP / domain / URL / target list
+
+defaults:
+  on_failure: continue        # continue | abort
+  timeout: 30
+  retries: 1
+
+execution:
+  max_parallel: 3
+
+steps:
+  # ---------- Layer 0: confirm there's an HTTP(S) service to test ----------
+  - id: http_check
+    module: http_status_scan
+    depends_on: []
+    params:
+      target: "{target}"
+
+  # ---------- Layer 1: run on top of the confirmed HTTP service ----------
+  - id: waf_check
+    module: waf_scan
+    depends_on: [http_check]
+    params:
+      target: "{target}"
+
+  - id: ssl_check
+    module: ssl_expiring_certificate_scan
+    depends_on: [http_check]
+    params:
+      target: "{target}"
+
+  # ---------- Layer 2: only worth grabbing the title once we know a WAF is (or isn't) fronting it ----------
+  - id: title_check
+    module: http_html_title_scan
+    depends_on: [waf_check]
+    params:
+      target: "{target}"

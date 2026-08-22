@@ -305,11 +305,14 @@ def create_report(options, scan_id):
             report_file.write(build_text_table(all_scan_logs))
 
     log.write(build_text_table(all_scan_logs))
+    persistable_options = {
+        key: value for key, value in vars(options).items() if key not in ("flow", "flow_inputs")
+    }
     submit_report_to_db(
         {
             "date": datetime.now(),
             "scan_id": scan_id,
-            "options": vars(options),
+            "options": persistable_options,
         }
     )
 
