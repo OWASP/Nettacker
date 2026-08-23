@@ -1,0 +1,48 @@
+info:
+  name: swagger_openapi_scan
+  author:  ninjax11
+  severity: 3
+  description: Discover exposed Swagger/OpenAPI documentation endpoints
+  reference:
+  profiles:
+    - scan
+    - http
+    - low_severity
+    - api
+    - swagger
+    - openapi
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{url_base_path}{{urls}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              urls:
+                read_from_file: wordlists/swagger_wordlist.txt
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          log: "response_dependent['url']"
+          conditions:
+            url:
+              regex: .*
+              reverse: false
+            status_code:
+              regex: 200|401|403
+              reverse: false
