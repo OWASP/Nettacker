@@ -3,11 +3,11 @@
 Nettacker modules define the checks that run against a target. Each module belongs to one of
 three categories:
 
-- **Scan** modules discover hosts, services, technologies, and other information ("scan" foor something).
-- **Vulne** (**Vulnerability**) modules check for a specific vulnerability or insecure configuration.
-- **Brute** (**Brute -force**) modules test authentication using supplied or module-defined credentials.
+- **Scan** modules discover hosts, services, technologies, and other information ("scan" for something).
+- **Vuln** (**Vulnerability**) modules check for a specific vulnerability (e.g. a CVE) or insecure configuration.
+- **Brute** (**Brute-force**) modules test authentication using supplied or module-defined credentials.
 
-> Only scan systems you own or have explicit permission to test. 
+> Only scan systems you own or have explicit permission to test!
 
 
 ## On this page
@@ -15,8 +15,10 @@ three categories:
 - [Find and select modules](#find-and-select-modules)
 - [Ports and service discovery](#ports-and-service-discovery)
 - [Module-specific values](#module-specific-values)
-- [Brute-force credentials](#brute-force-credentials)
 - [Available modules](#available-modules)
+  - [Scan modules](#scan-modules)
+  - [Vulnerability modules](#vulnerability-modules)
+  - [Brute-force modules](#brute-force-modules)
 
 ## Find and select modules
 
