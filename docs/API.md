@@ -1,776 +1,451 @@
-WebUI/API Manual usage explained in the [Usage](Usage#api-and-webui) page but let's get into the structure of the request now.
+# Nettacker Web UI and API
 
-- [Purpose](#purpose)
-- [Requests Structure](#requests-structure)
-- [Upload File](#upload-file)
-- [New Scan](#new-scan)
-- [Set Session](#set-session)
-  * [Set Cookie](#set-cookie)
-  * [Check Cookie](#check-cookie)
-  * [UnSet Cookie](#unset-cookie)
-- [Results List](#results-list)
-  * [Get a Scan Result](#get-a-scan-result)
-- [Hosts List](#hosts-list)
-  * [Search in the Hosts](#search-in-the-hosts)
-- [Generate a HTML Scan Result for a Host](#generate-a-html-scan-result-for-a-host)
-  * [Get the Scan Result in JSON Type](#get-the-scan-result-in-json-type)
+Nettacker includes a Web UI and an HTTP API for starting scans and reading stored results.
+Both are served by the same process.
 
+Only use Nettacker against systems you are authorized to test. API clients can start intrusive
+modules, including vulnerability checks and credential brute-force attempts.
 
-## Purpose 
+## Contents
 
-API usage purposes depend on the users, Some of them may want to scan their local company to monitor the network, This feature let all security staff use OWASP Nettacker on a shared server safely. API supports SSL. User can give their own Certificate and the key to run server on HTTPS.
+- [Start the API](#start-the-api)
+- [Authentication](#authentication)
+- [Submit a scan](#submit-a-scan)
+- [Upload target and wordlist files](#upload-target-and-wordlist-files)
+- [Scan lifecycle and identifiers](#scan-lifecycle-and-identifiers)
+- [Endpoint reference](#endpoint-reference)
+- [Compare scans](#compare-scans)
+- [Errors](#errors)
+- [Production and security guidance](#production-and-security-guidance)
 
+## Start the API
 
-## Requests Structure
+The shortest way to start the Web UI and API is:
 
-```
-am4n@am4n-HP-ProBook-450-G4:~/Documents/OWASP-Nettacker$ python nettacker.py --start-api
-    
-   ______          __      _____ _____  
-  / __ \ \        / /\    / ____|  __ \ 
- | |  | \ \  /\  / /  \  | (___ | |__) |
- | |  | |\ \/  \/ / /\ \  \___ \|  ___/ 
- | |__| | \  /\  / ____ \ ____) | |     Version 0.0.1  
-  \____/   \/  \/_/    \_\_____/|_|     SAME
-                          _   _      _   _             _            
-                         | \ | |    | | | |           | |            
-  github.com/zdresearch  |  \| | ___| |_| |_ __ _  ___| | _____ _ __ 
-  owasp.org              | . ` |/ _ \ __| __/ _` |/ __| |/ / _ \ '__|
-  zdresearch.com         | |\  |  __/ |_| || (_| | (__|   <  __/ |   
-                         |_| \_|\___|\__|\__\__,_|\___|_|\_\___|_|   
-                                               
-    
-
- * API Key: 2608863752f1f89fa385e43c76c2853b
- * Serving Flask app "api.engine" (lazy loading)
- * Environment: production
-   WARNING: This is a development server. Do not use it in a production deployment.
-   Use a production WSGI server instead.
- * Debug mode: off
- * Running on https://127.0.0.1:5000/ (Press CTRL+C to quit)
-
+```bash
+nettacker --start-api
 ```
 
-At the first, you must send an API key through the request each time you send a request in `GET`, `POST`, or `Cookies` in the value named `key` or you will get `401` error in the restricted area.
+With no additional API arguments, Nettacker:
+
+- listens on `0.0.0.0:5000`, making the service available through every network interface allowed
+  by the host firewall;
+- generates a random API key and prints it in the API console;
+- serves HTTPS using an ad-hoc self-signed certificate;
+- accepts connections from any client IP address because the client whitelist is empty;
+- writes API requests to `.nettacker/data/nettacker.log`.
+
+On the same machine, open `https://127.0.0.1:5000/` and enter the printed API key in the Web UI.
+The browser will warn about the temporary self-signed certificate. Do not expose this default
+configuration to an untrusted network. Use an explicit bind address, strong persistent key, trusted
+certificate, and network restrictions for anything beyond local testing.
+
+Start the server on the loopback interface while testing locally:
+
+```bash
+nettacker --start-api \
+  --api-host 127.0.0.1 \
+  --api-port 5000 \
+  --api-access-key 'replace-with-a-long-random-secret'
+```
+
+The Web UI is then available at `https://127.0.0.1:5000/`.
+
+When no certificate is supplied, Nettacker creates an ad-hoc self-signed TLS certificate. Browsers
+and HTTP clients will not trust that certificate automatically. Supply a certificate and matching
+private key for a trusted TLS configuration:
+
+```bash
+nettacker --start-api \
+  --api-host 127.0.0.1 \
+  --api-port 5000 \
+  --api-access-key 'replace-with-a-long-random-secret' \
+  --api-cert /path/to/server.crt \
+  --api-cert-key /path/to/server.key
+```
+
+If `--api-access-key` is omitted, Nettacker generates a random key and prints it in the API console.
+Supplying an explicit key is recommended for repeatable deployments.
+
+### API startup options
+
+| Option | Meaning |
+| --- | --- |
+| `--start-api` | Start the Web UI and API server. |
+| `--api-host HOST` | Bind address. The configured default is `0.0.0.0`; use `127.0.0.1` unless remote access is required. |
+| `--api-port PORT` | Listening port; default `5000`. |
+| `--api-access-key KEY` | Shared API key. A random key is generated when this is omitted. |
+| `--api-client-whitelisted-ips VALUE` | Comma-separated IP addresses, ranges, or CIDRs permitted to connect. |
+| `--api-access-log FILE` | Access-log path. The default is `.nettacker/data/nettacker.log`. |
+| `--api-cert FILE` | TLS certificate. Use with `--api-cert-key`. |
+| `--api-cert-key FILE` | TLS private key. Use with `--api-cert`. |
+| `--api-debug-mode` | Enable Flask debug mode. Never enable this on an exposed server. |
+
+For Docker, publish the API port and bind Nettacker to all container interfaces:
+
+```bash
+docker run --rm -p 5000:5000 owasp/nettacker \
+  --start-api \
+  --api-host 0.0.0.0 \
+  --api-access-key 'replace-with-a-long-random-secret'
+```
+
+## Authentication
+
+Protected endpoints expect the shared key in a request parameter or a cookie named `key`. Nettacker
+checks, in order:
+
+1. the query string;
+2. form data;
+3. cookies.
+
+JSON request bodies are not used for authentication or scan parameters. Send
+`application/x-www-form-urlencoded` data, or `multipart/form-data` when uploading a file.
+
+### Direct authentication
+
+The shortest form is a query parameter:
 
 ```python
->>> import requests
->>> from requests.packages.urllib3.exceptions import InsecureRequestWarning
->>> requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
->>> r = requests.get('https://127.0.0.1:5000/?key=8370bd0a0b9a98ac25b341833fb0fb07')
->>> r.status_code
-200
->>> r = requests.post('https://127.0.0.1:5000/', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07"})
->>> r.status_code
-200
->>> r = requests.get('https://127.0.0.1:5000/', cookies={"key": "8370bd0a0b9a98ac25b341833fb0fb07"})
->>> r.status_code
-200
->>> r = requests.get('https://127.0.0.1:5000/new/scan', cookies={"key": "wrong_key"})
->>> r.status_code
-401
+import os
+
+import requests
+
+base_url = "https://127.0.0.1:5000"
+api_key = os.environ["NETTACKER_API_KEY"]
+
+response = requests.get(
+    f"{base_url}/results/get_list",
+    params={"key": api_key, "page": 1},
+    verify=False,  # Local ad-hoc certificate only; verify trusted certificates normally.
+    timeout=30,
+)
+response.raise_for_status()
+print(response.json())
 ```
 
-## Upload File
+Avoid putting keys in URLs in shared environments because URLs are commonly retained in logs and
+browser history.
 
-The parameters that accept a file path (`targets_list`, `usernames_list`, `passwords_list`, and `read_from_file`) cannot be set directly through `/new/scan`; the API strips them from the form values and only honours paths populated by a prior upload. To provide a file for one of these parameters, `POST` it to `/upload/file` first and the server will store it and bind it to the named parameter for subsequent scans.
+### Cookie session
 
-The request must be `multipart/form-data` with two **required** fields:
-
-- `file` — the file contents
-- `param_name` — one of `targets_list`, `usernames_list`, `passwords_list`, `read_from_file`
-
-Constraints:
-
-- Maximum size: 10 MB (`MAX_CONTENT_LENGTH`)
-- Allowed extensions: `txt`, `csv`, `lst`, `list` (configurable via `api_upload_allowed_extensions` in `nettacker/config.py`). The check applies to every `param_name`.
-- Filenames are sanitised and prefixed with a UUID before being written to the tmp directory.
-
-On success the response `msg` is an **opaque signed token**, not a filename. The token is bound to the `param_name` it was uploaded for and **expires 15 minutes** after upload. Pass it back through `/new/scan` under the matching parameter; the server verifies the signature, the expiry, and that the token's parameter matches the field it is submitted under. Tokens are stateless (nothing is stored server-side beyond the temp file), so they do not survive an API restart. Temp files left by uploads that are never submitted are swept once their token expires. `read_from_file` uploads are the exception: the scan reads the wordlist while it runs, so they are kept until the API shuts down.
+For multiple calls, exchange the key for a secure, HTTP-only cookie:
 
 ```python
->>> r = requests.post(
-...     "https://127.0.0.1:5000/upload/file",
-...     data={"key": "<your_api_key>", "param_name": "targets_list"},
-...     files={"file": open("targets.txt", "rb")},
-...     verify=False,
-... )
->>> r.json()
-{"msg": "<signed_token>", "status": "ok"}
->>> # then, in POST /new/scan: targets_list=<signed_token>
+import os
+
+import requests
+
+base_url = "https://127.0.0.1:5000"
+session = requests.Session()
+session.verify = False  # Local ad-hoc certificate only.
+
+login = session.post(
+    f"{base_url}/session/set",
+    data={"key": os.environ["NETTACKER_API_KEY"]},
+    timeout=30,
+)
+login.raise_for_status()
+
+check = session.get(f"{base_url}/session/check", timeout=30)
+check.raise_for_status()
+print(check.json())
 ```
 
-Possible error responses (HTTP 400): `upload_invalid_param`, `upload_no_file`, `upload_no_file_selected`, `upload_invalid_filename`, `upload_file_type_not_allowed`. At `/new/scan`, a bad token yields `upload_token_invalid` (forged/expired/wrong parameter) or `upload_file_not_found` (already consumed or swept).
+End the cookie session with `GET /session/kill`.
 
-## New Scan
+## Submit a scan
 
-To submit a new scan follow this step.
+Use `POST /new/scan`. A minimal port scan looks like this:
 
 ```python
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07", "targets": "127.0.0.1,owasp.org", "selected_modules": "port_scan", "report_path_filename": "/home/test.html"})
->>> r.status_code
-200
->>> import json
->>> print json.dumps(json.loads(r.content), sort_keys=True, indent=4)
+response = session.post(
+    f"{base_url}/new/scan",
+    data={
+        "targets": "192.0.2.10",
+        "selected_modules": "port_scan",
+        "ports": "22,80,443",
+        "report_path_filename": "api-port-scan.json",
+    },
+    timeout=30,
+)
+response.raise_for_status()
+print(response.json())
+```
+
+`192.0.2.0/24` is reserved for documentation. Replace it with an authorized target.
+
+The request must include:
+
+- `report_path_filename`;
+- exactly one target source: `targets` or an uploaded `targets_list` token;
+- at least one module source: `selected_modules` or `profiles`.
+
+`report_path_filename` is reduced to its basename and stored under
+`.nettacker/data/results/`. Client-supplied parent directories are discarded. API scan submissions
+currently accept `.html`, `.htm`, `.txt`, `.json`, and `.csv`, or a filename without an extension.
+
+Module names and profile names come from the installed version. Use `nettacker --show-all-modules`
+and `nettacker --show-all-profiles` on the server to list them.
+
+### Common scan parameters
+
+| Parameter | Format and behavior |
+| --- | --- |
+| `targets` | Comma-separated hosts, IP addresses, ranges, CIDRs, or domain names. |
+| `selected_modules` | Comma-separated module IDs, such as `port_scan,http_status_scan`; `all` selects every module. |
+| `profiles` | Comma-separated profile names; `all` selects every module. |
+| `report_path_filename` | Required report basename and output format. |
+| `ports` | Comma-separated ports and inclusive ranges, for example `22,80,443,8000-8010`. |
+| `excluded_ports` | Ports and ranges to exclude. |
+| `excluded_modules` | Comma-separated module IDs to exclude. |
+| `schema` | `http`, `https`, or both separated by a comma. |
+| `usernames` | Comma-separated usernames for supported brute-force modules. |
+| `passwords` | Comma-separated passwords for supported brute-force modules. |
+| `timeout` | Per-request timeout in seconds. |
+| `retries` | Number of connection attempts. |
+| `time_sleep_between_requests` | Delay in seconds between requests. |
+| `thread_per_host` | Maximum concurrent module requests per host. |
+| `parallel_module_scan` | Maximum modules processed concurrently within a target group. |
+| `set_hardware_usage` | `low`, `normal`, `high`, or `maximum`; controls target process grouping. |
+| `scan_subdomains` | Enable subdomain enumeration before the selected modules run. |
+| `scan_ip_range` | For a single IP, request its registered range from RIPE and scan that range. Explicit ranges and CIDRs are expanded without this parameter. |
+| `ping_before_scan` | Require a successful ICMP check before continuing. ICMP requires appropriate operating-system privileges. |
+| `skip_service_discovery` | Skip the preliminary port scan and run selected modules without service filtering. |
+| `http_header` | One or more `Name: value` headers separated by newlines. Sensitive headers are removed from stored event data. |
+| `user_agent` | Custom HTTP user agent, or `random_user_agent`. |
+| `socks_proxy` | SOCKS proxy URL, for example `socks5://127.0.0.1:9050`. |
+| `graph_name` | Graph renderer for HTML output, such as `d3_tree_v2_graph`; omit it for non-HTML output. |
+| `language` | Installed locale identifier; default `en`. |
+| `modules_extra_args` | Module-specific values encoded as `name=value&other=value`. |
+
+For boolean options, send `true` only when enabling the option and omit the field when it is false.
+In particular, `skip_service_discovery` is enabled only by the exact lowercase value `true`.
+
+## Upload target and wordlist files
+
+The API does not accept server filesystem paths for `targets_list`, `usernames_list`,
+`passwords_list`, or `read_from_file`. Upload the file first, then submit the returned token under
+the matching scan parameter.
+
+### 1. Upload the file
+
+Send `POST /upload/file` as `multipart/form-data` with:
+
+- `file`: the file contents;
+- `param_name`: one of `targets_list`, `usernames_list`, `passwords_list`, or `read_from_file`.
+
+```python
+with open("targets.txt", "rb") as target_file:
+    upload = session.post(
+        f"{base_url}/upload/file",
+        data={"param_name": "targets_list"},
+        files={"file": target_file},
+        timeout=30,
+    )
+
+upload.raise_for_status()
+target_token = upload.json()["msg"]
+```
+
+### 2. Submit the token
+
+```python
+response = session.post(
+    f"{base_url}/new/scan",
+    data={
+        "targets_list": target_token,
+        "selected_modules": "port_scan",
+        "report_path_filename": "uploaded-targets.json",
+    },
+    timeout=30,
+)
+response.raise_for_status()
+```
+
+Upload constraints:
+
+- maximum file size: 10 MiB;
+- accepted extensions: `.txt`, `.csv`, `.lst`, and `.list`;
+- tokens are tied to the `param_name` used during upload;
+- tokens expire after 15 minutes;
+- tokens do not survive an API restart;
+- `targets_list`, `usernames_list`, and `passwords_list` files are consumed and removed when the
+  scan is submitted;
+- `read_from_file` is retained until API shutdown because modules may read it while the scan runs.
+
+Treat the returned `msg` as an opaque token. Do not decode it or replace it with a path.
+
+## Scan lifecycle and identifiers
+
+`POST /new/scan` validates the request, starts the scan in a background thread, and immediately
+returns the normalized scan options. HTTP `200` means the scan was accepted; it does not mean the
+scan has completed.
+
+There is currently no job-status or cancellation endpoint, and the submission response does not
+return the scan ID. Poll `GET /results/get_list?page=1` for a completed report.
+
+The API exposes two different identifiers:
+
+- `id`: the numeric database report ID used by `/results/get`, `/results/get_json`, and
+  `/results/get_csv`;
+- `scan_id`: the scan's unique string identifier, used by `/compare/scans`.
+
+Do not pass a `scan_id` where an endpoint expects `id`.
+
+## Endpoint reference
+
+Except where noted, endpoints require the shared API key or a valid cookie session.
+
+| Method | Endpoint | Parameters | Result |
+| --- | --- | --- | --- |
+| `GET`, `POST` | `/` | None | Public Web UI. |
+| `POST` | `/upload/file` | Multipart `file`, `param_name` | Upload token in `msg`. |
+| `POST` | `/new/scan` | Form-encoded scan options | Normalized options; scan starts asynchronously. |
+| `POST` | `/compare/scans` | `scan_id_first`, `scan_id_second`, optional `compare_report_path` | Writes a comparison report. |
+| `GET`, `POST` | `/session/set` | `key` | Sets a secure API-key cookie. |
+| `GET` | `/session/check` | None | Confirms that the current key or cookie is valid. |
+| `GET` | `/session/kill` | None | Public endpoint that expires the key cookie. |
+| `GET` | `/results/get_list` | Optional `page`, default `1` | Up to 10 completed scan reports, newest first. |
+| `GET` | `/results/get` | Numeric report `id` | Downloads the stored report in its original format. |
+| `GET` | `/results/get_json` | Numeric report `id` | Downloads that scan's events as JSON. |
+| `GET` | `/results/get_csv` | Numeric report `id` | Downloads that scan's events as CSV. |
+| `GET` | `/logs/get_list` | Optional `page`, default `1` | Up to 10 targets with aggregated event information. |
+| `GET` | `/logs/get_html` | `target` | HTML report containing all stored events for the target. |
+| `GET` | `/logs/get_json` | `target` | JSON download containing all stored events for the target. |
+| `GET` | `/logs/get_csv` | `target` | CSV download containing all stored events for the target. |
+| `GET` | `/logs/search` | Optional `q`, optional `page` | Search stored targets and event fields. |
+
+### List and download completed reports
+
+```python
+reports = session.get(
+    f"{base_url}/results/get_list",
+    params={"page": 1},
+    timeout=30,
+)
+reports.raise_for_status()
+
+for report in reports.json():
+    print(report["id"], report["scan_id"], report["report_path_filename"])
+```
+
+Download the original report using its numeric `id`:
+
+```python
+report_id = reports.json()[0]["id"]
+download = session.get(
+    f"{base_url}/results/get",
+    params={"id": report_id},
+    timeout=30,
+)
+download.raise_for_status()
+
+with open("nettacker-report", "wb") as output_file:
+    output_file.write(download.content)
+```
+
+Use `/results/get_json` or `/results/get_csv` with the same numeric ID to convert stored events to
+those formats.
+
+### Read events by target
+
+The `/logs/*` endpoints aggregate events for a target across stored scans:
+
+```python
+events = session.get(
+    f"{base_url}/logs/get_json",
+    params={"target": "192.0.2.10"},
+    timeout=30,
+)
+events.raise_for_status()
+print(events.json())
+```
+
+Search matches target, date, module name, port, event content, and scan ID:
+
+```python
+matches = session.get(
+    f"{base_url}/logs/search",
+    params={"q": "port_scan", "page": 1},
+    timeout=30,
+)
+matches.raise_for_status()
+print(matches.json())
+```
+
+## Compare scans
+
+Use the unique `scan_id` values returned by `/results/get_list`, not the numeric report IDs:
+
+```python
+comparison = session.post(
+    f"{base_url}/compare/scans",
+    data={
+        "scan_id_first": "first-scan-id",
+        "scan_id_second": "second-scan-id",
+        "compare_report_path": "comparison.json",
+    },
+    timeout=30,
+)
+comparison.raise_for_status()
+print(comparison.json())
+```
+
+The comparison report is written under `.nettacker/data/results/`. Supported suffixes are `.html`,
+`.htm`, `.json`, and `.csv`; other suffixes produce a text report. When
+`compare_report_path` is omitted, Nettacker creates a timestamped JSON filename.
+
+A successful response is:
+
+```json
 {
-    "backup_ports": null, 
-    "check_ranges": false, 
-    "check_subdomains": false, 
-    "database_host": "", 
-    "database_name": "/home/am4n/owasp-nettacker/.nettacker/data/nettacker.db", 
-    "database_password": "", 
-    "database_port": "", 
-    "database_type": "sqlite", 
-    "database_username": "", 
-    "graph_flag": "d3_tree_v2_graph", 
-    "home_path": "/home/am4n/owasp-nettacker/.nettacker/data", 
-    "language": "en", 
-    "log_in_file": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_36_56_mibtrtoacd.html", 
-    "methods_args": {
-        "as_user_set": "set_successfully"
-    }, 
-    "passwds": null, 
-    "ping_flag": false, 
-    "ports": null, 
-    "profile": null, 
-    "results_path": "/home/am4n/owasp-nettacker/.nettacker/data/results", 
-    "retries": 3, 
-    "scan_method": [
-        "port_scan"
-    ], 
-    "socks_proxy": null, 
-    "targets": [
-        "owasp.org"
-    ], 
-    "thread_number": 100, 
-    "thread_number_host": 5, 
-    "time_sleep": 0.0, 
-    "timeout_sec": 3, 
-    "tmp_path": "/home/am4n/owasp-nettacker/.nettacker/data/tmp", 
-    "users": null, 
-    "verbose_level": 0
+  "status": "success",
+  "msg": "scan_comparison_completed"
 }
 ```
 
-Please note, `targets` and `selected_modules` are **necessary** to submit a new scan unless you modify the config file before! The `selected_modules` could be empty if you define the `profile`.
+## Errors
 
-```python
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "8370bd0a0b9a98ac25b341833fb0fb07"})
->>> r.content
-'{"msg":"Cannot specify the target(s)","status":"error"}\n'
+Handled errors normally use this structure:
 
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "09877e92c75f6afdca6ae61ad3f53727", "targets": "127.0.0.1"})
->>> r.content
-u'{"msg":"please choose your scan method!","status":"error"}\n'
-
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "09877e92c75f6afdca6ae61ad3f53727", "targets": "127.0.0.1", "selected_modules": "dir_scan,port_scan", "report_path_filename": "/home/test.html"})
->>> print json.dumps(json.loads(r.content), sort_keys=True, indent=4)
+```json
 {
-    "backup_ports": null, 
-    "check_ranges": false, 
-    "check_subdomains": false, 
-    "database_host": "", 
-    "database_name": "/home/am4n/owasp-nettacker/.nettacker/data/nettacker.db", 
-    "database_password": "", 
-    "database_port": "", 
-    "database_type": "sqlite", 
-    "database_username": "", 
-    "graph_flag": "d3_tree_v2_graph", 
-    "home_path": "/home/am4n/owasp-nettacker/.nettacker/data", 
-    "language": "en", 
-    "log_in_file": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_47_08_dugacttfmf.html", 
-    "methods_args": {
-        "as_user_set": "set_successfully"
-    }, 
-    "passwds": null, 
-    "ping_flag": false, 
-    "ports": null, 
-    "profile": null, 
-    "results_path": "/home/am4n/owasp-nettacker/.nettacker/data/results", 
-    "retries": 3, 
-    "scan_method": [
-        "dir_scan", 
-        "port_scan"
-    ], 
-    "socks_proxy": null, 
-    "targets": [
-        "127.0.0.1"
-    ], 
-    "thread_number": 100, 
-    "thread_number_host": 5, 
-    "time_sleep": 0.0, 
-    "timeout_sec": 3, 
-    "tmp_path": "/home/am4n/owasp-nettacker/.nettacker/data/tmp", 
-    "users": null, 
-    "verbose_level": 0
-}
->>> r = requests.post('https://127.0.0.1:5000/new/scan', data={"key": "09877e92c75f6afdca6ae61ad3f53727", "targets": "127.0.0.1", "profile": "information_gathering"})
->>> print json.dumps(json.loads(r.content), sort_keys=True, indent=4)
-{
-    "backup_ports": null, 
-    "check_ranges": false, 
-    "check_subdomains": false, 
-    "database_host": "", 
-    "database_name": "/home/am4n/owasp-nettacker/.nettacker/data/nettacker.db", 
-    "database_password": "", 
-    "database_port": "", 
-    "database_type": "sqlite", 
-    "database_username": "", 
-    "graph_flag": "d3_tree_v2_graph", 
-    "home_path": "/home/am4n/owasp-nettacker/.nettacker/data", 
-    "language": "en", 
-    "log_in_file": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_50_09_xjqatmkngn.html", 
-    "methods_args": {
-        "as_user_set": "set_successfully"
-    }, 
-    "passwds": null, 
-    "ping_flag": false, 
-    "ports": null, 
-    "profile": "information_gathering", 
-    "results_path": "/home/am4n/owasp-nettacker/.nettacker/data/results", 
-    "retries": 3, 
-    "scan_method": [
-        "port_scan"
-    ], 
-    "socks_proxy": null, 
-    "targets": [
-        "127.0.0.1"
-    ], 
-    "thread_number": 100, 
-    "thread_number_host": 5, 
-    "time_sleep": 0.0, 
-    "timeout_sec": 3, 
-    "tmp_path": "/home/am4n/owasp-nettacker/.nettacker/data/tmp", 
-    "users": null, 
-    "verbose_level": 0
-}
-
->>>
-
-```
-
-All variables in JSON you've got in results could be changed in `GET`/`POST`/`Cookies`, you can fill them all just like normal CLI commands. (e.g. same scan method name (modules), you can separate with `,`, you can use `ports` like `80,100-200,1000,2000`, set users and passwords `user1,user2`, `passwd1,passwd2`). You cannot use `read_from_file:/tmp/users.txt` syntax in `methods_args`. If you want to send a big password list, either pass it inline through `POST` separated with `,` or upload it via [`/upload/file`](#upload-file) with `param_name=passwords_list` (the same applies to `targets_list`, `usernames_list`, and `read_from_file` — passing them as plain form values is ignored because the server only trusts paths produced by an upload).
-
-## Set Session
-
-To enable session-based requests, like (e.g. Python `requests.session()` or browsers), I developed a feature to interact with Cookie.
-
-### Set Cookie
-
-```python
->>> s = requests.session()
->>> r = s.get("https://localhost:5000/session/set?key=09877e92c75f6afdca6ae61ad3f53727")
->>> print json.dumps(json.loads(r.content), sort_keys=True, indent=4)
-{
-    "msg": "your browser session is valid", 
-    "status": "ok"
-}
->>> print r.cookies
-<RequestsCookieJar[<Cookie key=09877e92c75f6afdca6ae61ad3f53727 for localhost.local/>]>
->>> r = s.get("https://localhost:5000/new/scan")
->>> print r.content
-{
-  "msg": "Cannot specify the target(s)",
-  "status": "error"
-}
-
->>>
-```
-### Check Cookie
-
-```python
->>> r = s.get("https://localhost:5000/session/check")
->>> print r.content
-{
-  "msg": "your browser session is valid",
-  "status": "ok"
+  "status": "error",
+  "msg": "error description"
 }
 ```
-### UnSet Cookie
 
-```python
->>> r = s.get("https://localhost:5000/session/kill")
->>> print r.content
-{
-  "msg": "your browser session killed",
-  "status": "ok"
-}
+Common status codes:
 
->>> print r.cookies
-<RequestsCookieJar[]>
->>>
-```
+| Status | Meaning |
+| --- | --- |
+| `400` | Missing or invalid parameters, invalid output filename, or invalid upload token. |
+| `401` | Missing or invalid API key. |
+| `403` | Client address is not permitted by the configured whitelist. |
+| `404` | Route, scan data, or comparison scan ID was not found. |
+| `500` | Unexpected server or database failure. |
 
-## Results List
+An empty page may return a JSON message with `status` set to `finished` rather than an HTTP error.
 
-```python
->>> r = s.get("https://localhost:5000/results/get_list?page=1")
->>> print(json.dumps(json.loads(r.content), sort_keys=True, indent=4))
-[
-    {
-        "api_flag": 0, 
-        "category": "vuln,brute,scan", 
-        "date": "2020-06-09 11:08:45", 
-        "events_num": 317, 
-        "graph_flag": "d3_tree_v2_graph", 
-        "id": 8, 
-        "language": "en", 
-        "ports": "default", 
-        "profile": null, 
-        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_11_04_17_pisajfbfyp.html", 
-        "report_type": "HTML", 
-        "scan_cmd": "nettacker.py -i 127.0.0.1 -m all -M 100", 
-        "scan_id": "b745337b4feeb99cee3eb4ff4cb45fad", 
-        "scan_method": "XSS_protection_vuln,ProFTPd_directory_traversal_vuln,port_scan,telnet_brute,ssl_certificate_expired_vuln,http_form_brute,ProFTPd_integer_overflow_vuln,heartbleed_vuln,joomla_user_enum_scan,http_basic_auth_brute,http_ntlm_brute,wp_user_enum_scan,ProFTPd_restriction_bypass_vuln,http_cors_vuln,apache_struts_vuln,wordpress_version_scan,clickjacking_vuln,wp_xmlrpc_bruteforce_vuln,cms_detection_scan,wordpress_dos_cve_2018_6389_vuln,content_security_policy_vuln,pma_scan,ftp_brute,wp_theme_scan,wappalyzer_scan,wp_xmlrpc_brute,wp_xmlrpc_pingback_vuln,smtp_brute,drupal_version_scan,ProFTPd_memory_leak_vuln,wp_plugin_scan,ssh_brute,joomla_template_scan,wp_timthumbs_scan,self_signed_certificate_vuln,Bftpd_memory_leak_vuln,CCS_injection_vuln,dir_scan,viewdns_reverse_ip_lookup_scan,Bftpd_parsecmd_overflow_vuln,icmp_scan,ProFTPd_exec_arbitary_vuln,server_version_vuln,x_powered_by_vuln,admin_scan,citrix_cve_2019_19781_vuln,joomla_version_scan,sender_policy_scan,ProFTPd_cpu_consumption_vuln,Bftpd_double_free_vuln,drupal_theme_scan,ProFTPd_heap_overflow_vuln,weak_signature_algorithm_vuln,drupal_modules_scan,subdomain_scan,Bftpd_remote_dos_vuln,content_type_options_vuln,xdebug_rce_vuln,options_method_enabled_vuln,ProFTPd_bypass_sqli_protection_vuln", 
-        "verbose": 0
-    }, 
-    {
-        "api_flag": 0, 
-        "category": "vuln,brute,scan", 
-        "date": "2020-06-09 11:08:42", 
-        "events_num": 372, 
-        "graph_flag": "d3_tree_v2_graph", 
-        "id": 7, 
-        "language": "en", 
-        "ports": "default", 
-        "profile": null, 
-        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_11_04_04_bdzipsmtcc.html", 
-        "report_type": "HTML", 
-        "scan_cmd": "nettacker.py -i 127.0.0.1 -m all", 
-        "scan_id": "8e9a1b2fd03cb7b969d99beea1cff2aa", 
-        "scan_method": "XSS_protection_vuln,ProFTPd_directory_traversal_vuln,port_scan,telnet_brute,ssl_certificate_expired_vuln,http_form_brute,ProFTPd_integer_overflow_vuln,heartbleed_vuln,joomla_user_enum_scan,http_basic_auth_brute,http_ntlm_brute,wp_user_enum_scan,ProFTPd_restriction_bypass_vuln,http_cors_vuln,apache_struts_vuln,wordpress_version_scan,clickjacking_vuln,wp_xmlrpc_bruteforce_vuln,cms_detection_scan,wordpress_dos_cve_2018_6389_vuln,content_security_policy_vuln,pma_scan,ftp_brute,wp_theme_scan,wappalyzer_scan,wp_xmlrpc_brute,wp_xmlrpc_pingback_vuln,smtp_brute,drupal_version_scan,ProFTPd_memory_leak_vuln,wp_plugin_scan,ssh_brute,joomla_template_scan,wp_timthumbs_scan,self_signed_certificate_vuln,Bftpd_memory_leak_vuln,CCS_injection_vuln,dir_scan,viewdns_reverse_ip_lookup_scan,Bftpd_parsecmd_overflow_vuln,icmp_scan,ProFTPd_exec_arbitary_vuln,server_version_vuln,x_powered_by_vuln,admin_scan,citrix_cve_2019_19781_vuln,joomla_version_scan,sender_policy_scan,ProFTPd_cpu_consumption_vuln,Bftpd_double_free_vuln,drupal_theme_scan,ProFTPd_heap_overflow_vuln,weak_signature_algorithm_vuln,drupal_modules_scan,subdomain_scan,Bftpd_remote_dos_vuln,content_type_options_vuln,xdebug_rce_vuln,options_method_enabled_vuln,ProFTPd_bypass_sqli_protection_vuln", 
-        "verbose": 0
-    }, 
-    {
-        "api_flag": 0, 
-        "category": "vuln,brute,scan", 
-        "date": "2020-06-09 11:06:52", 
-        "events_num": 1016, 
-        "graph_flag": "d3_tree_v2_graph", 
-        "id": 6, 
-        "language": "en", 
-        "ports": "default", 
-        "profile": null, 
-        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_11_03_23_ubytvgauvj.html", 
-        "report_type": "HTML", 
-        "scan_cmd": "nettacker.py -i 127.0.0.1 -m all -M 100 -t 1000", 
-        "scan_id": "7d84af54f343e19671d1c52357bf928f", 
-        "scan_method": "XSS_protection_vuln,ProFTPd_directory_traversal_vuln,port_scan,telnet_brute,ssl_certificate_expired_vuln,http_form_brute,ProFTPd_integer_overflow_vuln,heartbleed_vuln,joomla_user_enum_scan,http_basic_auth_brute,http_ntlm_brute,wp_user_enum_scan,ProFTPd_restriction_bypass_vuln,http_cors_vuln,apache_struts_vuln,wordpress_version_scan,clickjacking_vuln,wp_xmlrpc_bruteforce_vuln,cms_detection_scan,wordpress_dos_cve_2018_6389_vuln,content_security_policy_vuln,pma_scan,ftp_brute,wp_theme_scan,wappalyzer_scan,wp_xmlrpc_brute,wp_xmlrpc_pingback_vuln,smtp_brute,drupal_version_scan,ProFTPd_memory_leak_vuln,wp_plugin_scan,ssh_brute,joomla_template_scan,wp_timthumbs_scan,self_signed_certificate_vuln,Bftpd_memory_leak_vuln,CCS_injection_vuln,dir_scan,viewdns_reverse_ip_lookup_scan,Bftpd_parsecmd_overflow_vuln,icmp_scan,ProFTPd_exec_arbitary_vuln,server_version_vuln,x_powered_by_vuln,admin_scan,citrix_cve_2019_19781_vuln,joomla_version_scan,sender_policy_scan,ProFTPd_cpu_consumption_vuln,Bftpd_double_free_vuln,drupal_theme_scan,ProFTPd_heap_overflow_vuln,weak_signature_algorithm_vuln,drupal_modules_scan,subdomain_scan,Bftpd_remote_dos_vuln,content_type_options_vuln,xdebug_rce_vuln,options_method_enabled_vuln,ProFTPd_bypass_sqli_protection_vuln", 
-        "verbose": 0
-    }, 
-    {
-        "api_flag": 0, 
-        "category": "vuln,brute,scan", 
-        "date": "2020-06-09 11:01:14", 
-        "events_num": 1017, 
-        "graph_flag": "d3_tree_v2_graph", 
-        "id": 5, 
-        "language": "en", 
-        "ports": "default", 
-        "profile": null, 
-        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_59_29_oyzxmegtuk.html", 
-        "report_type": "HTML", 
-        "scan_cmd": "nettacker.py -i 127.0.0.1 -m all -t 1000", 
-        "scan_id": "d944c9a02053fd387d1e3343fec6b320", 
-        "scan_method": "XSS_protection_vuln,ProFTPd_directory_traversal_vuln,port_scan,telnet_brute,ssl_certificate_expired_vuln,http_form_brute,ProFTPd_integer_overflow_vuln,heartbleed_vuln,joomla_user_enum_scan,http_basic_auth_brute,http_ntlm_brute,wp_user_enum_scan,ProFTPd_restriction_bypass_vuln,http_cors_vuln,apache_struts_vuln,wordpress_version_scan,clickjacking_vuln,wp_xmlrpc_bruteforce_vuln,cms_detection_scan,wordpress_dos_cve_2018_6389_vuln,content_security_policy_vuln,pma_scan,ftp_brute,wp_theme_scan,wappalyzer_scan,wp_xmlrpc_brute,wp_xmlrpc_pingback_vuln,smtp_brute,drupal_version_scan,ProFTPd_memory_leak_vuln,wp_plugin_scan,ssh_brute,joomla_template_scan,wp_timthumbs_scan,self_signed_certificate_vuln,Bftpd_memory_leak_vuln,CCS_injection_vuln,dir_scan,viewdns_reverse_ip_lookup_scan,Bftpd_parsecmd_overflow_vuln,icmp_scan,ProFTPd_exec_arbitary_vuln,server_version_vuln,x_powered_by_vuln,admin_scan,citrix_cve_2019_19781_vuln,joomla_version_scan,sender_policy_scan,ProFTPd_cpu_consumption_vuln,Bftpd_double_free_vuln,drupal_theme_scan,ProFTPd_heap_overflow_vuln,weak_signature_algorithm_vuln,drupal_modules_scan,subdomain_scan,Bftpd_remote_dos_vuln,content_type_options_vuln,xdebug_rce_vuln,options_method_enabled_vuln,ProFTPd_bypass_sqli_protection_vuln", 
-        "verbose": 0
-    }, 
-    {
-        "api_flag": 0, 
-        "category": "scan", 
-        "date": "2020-06-09 10:50:18", 
-        "events_num": 9, 
-        "graph_flag": "d3_tree_v2_graph", 
-        "id": 4, 
-        "language": "en", 
-        "ports": "default", 
-        "profile": "information_gathering", 
-        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_50_09_xjqatmkngn.html", 
-        "report_type": "HTML", 
-        "scan_cmd": "Through the OWASP Nettacker API", 
-        "scan_id": "05ba4e5b839b5ba525c9a35baa8864a1", 
-        "scan_method": "port_scan", 
-        "verbose": 0
-    }, 
-    {
-        "api_flag": 0, 
-        "category": "scan", 
-        "date": "2020-06-09 10:47:17", 
-        "events_num": 9, 
-        "graph_flag": "d3_tree_v2_graph", 
-        "id": 3, 
-        "language": "en", 
-        "ports": "default", 
-        "profile": null, 
-        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_47_08_dugacttfmf.html", 
-        "report_type": "HTML", 
-        "scan_cmd": "Through the OWASP Nettacker API", 
-        "scan_id": "18af7af856b4ceefac659a59c4908088", 
-        "scan_method": "dir_scan,port_scan", 
-        "verbose": 0
-    }, 
-    {
-        "api_flag": 0, 
-        "category": "scan", 
-        "date": "2020-06-09 10:38:50", 
-        "events_num": 0, 
-        "graph_flag": "d3_tree_v2_graph", 
-        "id": 2, 
-        "language": "en", 
-        "ports": "default", 
-        "profile": null, 
-        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_35_10_jvxotwxako.html", 
-        "report_type": "HTML", 
-        "scan_cmd": "Through the OWASP Nettacker API", 
-        "scan_id": "78d253c3a28d2bb4f467ac040ccaa854", 
-        "scan_method": "port_scan", 
-        "verbose": 0
-    }, 
-    {
-        "api_flag": 0, 
-        "category": "scan", 
-        "date": "2020-06-09 10:38:49", 
-        "events_num": 3, 
-        "graph_flag": "d3_tree_v2_graph", 
-        "id": 1, 
-        "language": "en", 
-        "ports": "default", 
-        "profile": null, 
-        "report_filename": "/home/am4n/owasp-nettacker/.nettacker/data/results/results_2020_06_09_10_36_56_mibtrtoacd.html", 
-        "report_type": "HTML", 
-        "scan_cmd": "Through the OWASP Nettacker API", 
-        "scan_id": "708e1dcf0f2ce9fe71038ccea7bf28bb", 
-        "scan_method": "port_scan", 
-        "verbose": 0
-    }
-]
-```
+## Production and security guidance
 
-### Get a Scan Result
+The built-in server is Flask's development server. It is useful for local operation and testing but
+is not a hardened multi-user service.
 
-```python
->>> r = s.get("https://localhost:5000/results/get?id=8")
->>> print r.content[:500]
-<!DOCTYPE html>
-<!-- THIS PAGE COPIED AND MODIFIED FROM http://bl.ocks.org/robschmuecker/7880033-->
-<title>OWASP Nettacker Report</title>
-<meta charset="utf-8">
-<div class="header">
-    <h3><a href="https://github.com/zdresearch/nettacker">OWASP Nettacker</a></h3>
-    <h3>Penetration Testing Graphs</h3>
-</div>
-<style type="text/css">
+Before allowing remote access:
 
-    .header{
-    margin:2%;
-    text-align:center;
-  }
-  .node {
-    cursor: pointer;
-  }
+- bind to loopback unless remote access is necessary;
+- place the service behind appropriate network controls and a production TLS/reverse-proxy setup;
+- use `--api-client-whitelisted-ips` as an additional restriction when clients connect directly;
+- set a strong explicit API key and rotate it if disclosed;
+- protect and rotate the API access log: it records the full URL and submitted form fields, which may
+  include API keys, target information, usernames, or passwords;
+- do not enable `--api-debug-mode`;
+- remember that the shared API key provides no per-user identity, role separation, or per-user audit
+  trail;
+- apply external request rate limits and resource controls where required;
+- persist and back up `.nettacker/data/` if scan history must survive container replacement.
 
-  .overlay{
-      background-color:#EEE;
-  }
-
-  .node circle {
-    fill: #f
-
-...
-
-```
-
-## Hosts List
-```python
->>> r = s.get("https://localhost:5000/logs/search?q=&page=1")
->>> print json.dumps(json.loads(r.content), sort_keys=True, indent=4)
-[
-    {
-        "host": "owasp.org", 
-        "info": {
-            "category": [
-                "scan"
-            ], 
-            "descriptions": [
-                "8443/http/TCP_CONNECT", 
-                "80/http/TCP_CONNECT", 
-                "443/http/TCP_CONNECT"
-            ], 
-            "open_ports": [], 
-            "scan_methods": [
-                "port_scan"
-            ]
-        }
-    }
-]
-
-
->>>
-```
-
-### Search in the Hosts
-
-```python
->>> r = s.get("https://localhost:5000/logs/search?q=port_scan&page=3")
->>> print r.content
-[
-  {
-    "host": "owasp4.owasp.org",
-    "info": {
-      "category": [
-        "scan"
-      ],
-      "descriptions": [
-        "22/TCP_CONNECT",
-        "80/TCP_CONNECT"
-      ],
-      "open_ports": [
-        22,
-        80
-      ],
-      "scan_methods": [
-        "port_scan"
-      ]
-    }
-  },
-  {
-    "host": "new-wiki.owasp.org",
-    "info": {
-      "category": [
-        "scan"
-      ],
-      "descriptions": [
-        "22/TCP_CONNECT",
-        "80/TCP_CONNECT"
-      ],
-      "open_ports": [
-        22,
-        80
-      ],
-      "scan_methods": [
-        "port_scan"
-      ]
-    }
-  },
-  {
-    "host": "cheesemonkey.owasp.org",
-    "info": {
-      "category": [
-        "scan"
-      ],
-      "descriptions": [
-        "80/TCP_CONNECT"
-      ],
-      "open_ports": [
-        80
-      ],
-      "scan_methods": [
-        "port_scan"
-      ]
-    }
-  },
-  {
-    "host": "5.79.66.240",
-    "info": {
-      "category": [
-        "scan"
-      ],
-      "descriptions": [
-        "filesmog.com",
-        "\u062f\u0631\u06af\u0627\u0647 \u0628\u0627\u0632"
-      ],
-      "open_ports": [
-        5901,
-        6001,
-        22
-      ],
-      "scan_methods": [
-        "viewdns_reverse_ip_lookup_scan",
-        "port_scan"
-      ]
-    }
-  },
-  {
-    "host": "5.79.66.237",
-    "info": {
-      "category": [
-        "scan"
-      ],
-      "descriptions": [
-        "\u062f\u0631\u06af\u0627\u0647 \u0628\u0627\u0632",
-        "http://5.79.66.237/robots.txt \u067e\u06cc\u062f\u0627 \u0634\u062f!(OK:200)",
-        "http://5.79.66.237/.htaccess.txt \u067e\u06cc\u062f\u0627 \u0634\u062f!(Forbidden:403)",
-        "http://5.79.66.237/.htaccess.save \u067e\u06cc\u062f\u0627 \u0634\u062f!(Forbidden:403)",
-        "http://5.79.66.237/phpmyadmin \u067e\u06cc\u062f\u0627 \u0634\u062f!(OK:200)",
-        "http://5.79.66.237/.htaccess.old \u067e\u06cc\u062f\u0627 \u0634\u062f!(Forbidden:403)",
-        "http://5.79.66.237/.htaccess \u067e\u06cc\u062f\u0627 \u0634\u062f!(Forbidden:403)",
-        "http://5.79.66.237/server-status \u067e\u06cc\u062f\u0627 \u0634\u062f!(Forbidden:403)",
-        "http://5.79.66.237//phpmyadmin/ \u067e\u06cc\u062f\u0627 \u0634\u062f!(OK:200)",
-        "http://5.79.66.237//phpMyAdmin/ \u067e\u06cc\u062f\u0627 \u0634\u062f!(OK:200)",
-        "offsec.ir"
-      ],
-      "open_ports": [
-        8083,
-        8000,
-        443,
-        80,
-        22,
-        21
-      ],
-      "scan_methods": [
-        "port_scan",
-        "dir_scan",
-        "pma_scan",
-        "viewdns_reverse_ip_lookup_scan"
-      ]
-    }
-  },
-  {
-    "host": "192.168.1.124",
-    "info": {
-      "category": [
-        "scan"
-      ],
-      "descriptions": [
-        "2179/TCP_CONNECT",
-        "445/TCP_CONNECT",
-        "135/TCP_CONNECT",
-        "22/TCP_CONNECT",
-        "139/TCP_CONNECT",
-        "zhanpang.cn",
-        "yowyeh.cn",
-        "treelights.website",
-        "sxyhed.com",
-        "redlxin.com",
-        "ppoo6.com",
-        "miancan.cn",
-        "maynard.top",
-        "liyedai.site",
-        "linterfund.com",
-        "li5xs.com",
-        "hxinglan.win",
-        "heresylly.top",
-        "gzptjwangye.bid",
-        "eatpeanutfree.com",
-        "comgmultiservices.com",
-        "biyao123.com"
-      ],
-      "open_ports": [
-        2179,
-        445,
-        135,
-        22,
-        139
-      ],
-      "scan_methods": [
-        "port_scan",
-        "viewdns_reverse_ip_lookup_scan"
-      ]
-    }
-  },
-  {
-    "host": "192.168.1.127",
-    "info": {
-      "category": [
-        "scan"
-      ],
-      "descriptions": [
-        "49152/TCP_CONNECT",
-        "49154/TCP_CONNECT",
-        "49155/TCP_CONNECT",
-        "49153/TCP_CONNECT"
-      ],
-      "open_ports": [
-        49152,
-        49154,
-        49155,
-        49153
-      ],
-      "scan_methods": [
-        "port_scan"
-      ]
-    }
-  }
-]
-
->>>
-```
-## Generate a HTML Scan Result for a Host
-```python
->>> r = s.get("https://localhost:5000/logs/get_html?target=127.0.0.1&key=<your_api_key>")
->>> print r.content[:1000]
-<!DOCTYPE html>
-<!-- THIS PAGE COPIED AND MODIFIED FROM http://bl.ocks.org/robschmuecker/7880033-->
-<title>OWASP Nettacker Report</title>
-<meta charset="utf-8">
-<div class="header">
-    <h3><a href="https://github.com/zdresearch/nettacker">OWASP Nettacker</a></h3>
-    <h3>Penetration Testing Graphs</h3>
-</div>
-<style type="text/css">
-
-    .header{
-    margin:2%;
-    text-align:center;
-  }
-  .node {
-    cursor: pointer;
-  }
-
-  .overlay{
-      background-color:#EEE;
-  }
-
-  .node circle {
-    fill: #fff;
-    stroke: steelblue;
-    stroke-width: 1.5px;
-  }
-
-  .node text {
-    font-size:12px;
-    font-family:sans-serif;
-  }
-...
-...
->>>
-```
-
-### Get the Scan Result in JSON Type
-```python
->>> r = s.get("https://localhost:5000/logs/get_json?target=owasp.org&key=<your_api_key>")
->>> print(json.dumps(json.loads(r.content), sort_keys=True, indent=4))
-[
-    {
-        "DESCRIPTION": "443/http/TCP_CONNECT", 
-        "HOST": "owasp.org", 
-        "PASSWORD": "", 
-        "PORT": "443", 
-        "SCAN_ID": "708e1dcf0f2ce9fe71038ccea7bf28bb", 
-        "TIME": "2020-06-09 10:36:59", 
-        "TYPE": "port_scan", 
-        "USERNAME": ""
-    }, 
-    {
-        "DESCRIPTION": "80/http/TCP_CONNECT", 
-        "HOST": "owasp.org", 
-        "PASSWORD": "", 
-        "PORT": "80", 
-        "SCAN_ID": "708e1dcf0f2ce9fe71038ccea7bf28bb", 
-        "TIME": "2020-06-09 10:36:59", 
-        "TYPE": "port_scan", 
-        "USERNAME": ""
-    }, 
-    {
-        "DESCRIPTION": "8443/http/TCP_CONNECT", 
-        "HOST": "owasp.org", 
-        "PASSWORD": "", 
-        "PORT": "8443", 
-        "SCAN_ID": "708e1dcf0f2ce9fe71038ccea7bf28bb", 
-        "TIME": "2020-06-09 10:38:17", 
-        "TYPE": "port_scan", 
-        "USERNAME": ""
-    }
-]
->>>
-```
+When Nettacker runs behind a reverse proxy, IP whitelisting evaluates the immediate connection's
+source address. Configure network controls with that behavior in mind.
