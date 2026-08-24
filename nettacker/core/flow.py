@@ -206,7 +206,12 @@ class FlowLoader:
                 raise FlowError(_("flow_invalid_schema").format(path))
             step_id = raw_step.get("id")
             module = raw_step.get("module")
-            if not isinstance(step_id, str) or not step_id or not isinstance(module, str) or not module:
+            if (
+                not isinstance(step_id, str)
+                or not step_id
+                or not isinstance(module, str)
+                or not module
+            ):
                 raise FlowError(_("flow_step_missing_fields").format(path))
             if step_id in seen_ids:
                 raise FlowError(_("flow_duplicate_step_id").format(step_id))
