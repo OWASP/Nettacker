@@ -255,3 +255,63 @@ def test_non_mapping_step_params_raises():
     )
     with pytest.raises(FlowError):
         FlowLoader.build(content)
+
+
+@pytest.mark.parametrize("step_id", [123, ["a"], {"x": 1}, None, ""])
+def test_non_string_step_id_raises(step_id):
+    content = make_flow_content([{"id": step_id, "module": "port_scan", "depends_on": []}])
+    with pytest.raises(FlowError):
+        FlowLoader.build(content)
+
+
+@pytest.mark.parametrize("module", [123, ["a"], {"x": 1}, None, ""])
+def test_non_string_module_raises(module):
+    content = make_flow_content([{"id": "a", "module": module, "depends_on": []}])
+    with pytest.raises(FlowError):
+        FlowLoader.build(content)
+
+
+def test_unhashable_step_on_failure_raises_flow_error_not_type_error():
+    content = make_flow_content(
+        [{"id": "a", "module": "port_scan", "depends_on": [], "on_failure": ["abort"]}]
+    )
+    with pytest.raises(FlowError):
+        FlowLoader.build(content)
+
+
+def test_unhashable_flow_on_failure_raises_flow_error_not_type_error():
+    content = make_flow_content(
+        [{"id": "a", "module": "port_scan", "depends_on": []}],
+        defaults={"on_failure": ["abort"]},
+    )
+    with pytest.raises(FlowError):
+        FlowLoader.build(content)
+
+
+@pytest.mark.parametrize("max_parallel", ["4", [4], True, 0, -1])
+def test_invalid_max_parallel_raises(max_parallel):
+    content = make_flow_content(
+        [{"id": "a", "module": "port_scan", "depends_on": []}],
+        execution={"max_parallel": max_parallel},
+    )
+    with pytest.raises(FlowError):
+        FlowLoader.build(content)
+
+
+@pytest.mark.parametrize("timeout", ["30", [30], True])
+def test_invalid_flow_timeout_raises(timeout):
+    content = make_flow_content(
+        [{"id": "a", "module": "port_scan", "depends_on": []}],
+        defaults={"timeout": timeout},
+    )
+    with pytest.raises(FlowError):
+        FlowLoader.build(content)
+
+
+@pytest.mark.parametrize("retries", ["1", [1], True])
+def test_invalid_step_retries_raises(retries):
+    content = make_flow_content(
+        [{"id": "a", "module": "port_scan", "depends_on": [], "retries": retries}]
+    )
+    with pytest.raises(FlowError):
+        FlowLoader.build(content)

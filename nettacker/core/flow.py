@@ -59,6 +59,14 @@ def referenced_step_ids(depends_on):
     return ids
 
 
+def _is_valid_numeric(value):
+    """timeout/retries must be a real number (or unset) - not a bool, string, list, etc.
+    Left unchecked, a malformed value here surfaces later as a raw TypeError deep in
+    the scheduler (e.g. comparing max_parallel against an int) instead of a clean,
+    load-time FlowError."""
+    return value is None or (isinstance(value, (int, float)) and not isinstance(value, bool))
+
+
 def is_valid_depends_on_shape(depends_on):
     """Check that a depends_on expression is a string, a list of valid expressions,
     or a mapping with exactly one 'any'/'all' key whose value is a list of valid
@@ -184,6 +192,12 @@ class FlowLoader:
             if spec is not None and not isinstance(spec, dict):
                 raise FlowError(_("flow_invalid_schema").format(path))
         max_parallel = execution.get("max_parallel", 4)
+        if not isinstance(max_parallel, int) or isinstance(max_parallel, bool) or max_parallel < 1:
+            raise FlowError(_("flow_invalid_schema").format(path))
+        flow_timeout = defaults.get("timeout")
+        flow_retries = defaults.get("retries")
+        if not _is_valid_numeric(flow_timeout) or not _is_valid_numeric(flow_retries):
+            raise FlowError(_("flow_invalid_schema").format(path))
 
         steps = []
         seen_ids = set()
@@ -192,7 +206,7 @@ class FlowLoader:
                 raise FlowError(_("flow_invalid_schema").format(path))
             step_id = raw_step.get("id")
             module = raw_step.get("module")
-            if not step_id or not module:
+            if not isinstance(step_id, str) or not step_id or not isinstance(module, str) or not module:
                 raise FlowError(_("flow_step_missing_fields").format(path))
             if step_id in seen_ids:
                 raise FlowError(_("flow_duplicate_step_id").format(step_id))
@@ -202,6 +216,11 @@ class FlowLoader:
             if not isinstance(params, dict):
                 raise FlowError(_("flow_invalid_schema").format(path))
 
+            step_timeout = raw_step.get("timeout")
+            step_retries = raw_step.get("retries")
+            if not _is_valid_numeric(step_timeout) or not _is_valid_numeric(step_retries):
+                raise FlowError(_("flow_invalid_schema").format(path))
+
             steps.append(
                 FlowStep(
                     id=step_id,
@@ -209,8 +228,8 @@ class FlowLoader:
                     depends_on=raw_step.get("depends_on") or [],
                     params=params,
                     on_failure=raw_step.get("on_failure"),
-                    timeout=raw_step.get("timeout"),
-                    retries=raw_step.get("retries"),
+                    timeout=step_timeout,
+                    retries=step_retries,
                 )
             )
 
@@ -219,8 +238,8 @@ class FlowLoader:
             info=info,
             inputs=inputs,
             on_failure=defaults.get("on_failure", "continue"),
-            timeout=defaults.get("timeout"),
-            retries=defaults.get("retries"),
+            timeout=flow_timeout,
+            retries=flow_retries,
             max_parallel=max_parallel,
             steps=steps,
         )
@@ -230,12 +249,14 @@ class FlowLoader:
 
     @staticmethod
     def validate(flow):
-        if flow.on_failure not in ON_FAILURE_VALUES:
+        if not isinstance(flow.on_failure, str) or flow.on_failure not in ON_FAILURE_VALUES:
             raise FlowError(_("flow_invalid_on_failure").format(flow.on_failure))
 
         step_ids = set(flow.step_ids())
         for step in flow.steps:
-            if step.on_failure and step.on_failure not in ON_FAILURE_VALUES:
+            if step.on_failure is not None and (
+                not isinstance(step.on_failure, str) or step.on_failure not in ON_FAILURE_VALUES
+            ):
                 raise FlowError(_("flow_invalid_on_failure").format(step.on_failure))
             if not is_valid_depends_on_shape(step.depends_on):
                 raise FlowError(_("flow_invalid_depends_on").format(step.depends_on))

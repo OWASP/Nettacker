@@ -49,9 +49,22 @@ steps:
     params:
       target: "{target}"
 
+  # Non-intrusive TLS detection: a plain port re-probe, not ssl_expiring_certificate_scan
+  # - that module's own event only fires when the certificate IS expiring soon, so a
+  # healthy target with a fine, non-expiring cert would never log an event and every
+  # step gated on TLS presence (dir_scan, weak_cipher_scan, ...) would be wrongly blocked.
   - id: tls_detect
-    module: ssl_expiring_certificate_scan
+    module: port_scan
     depends_on: [port_scan]
+    params:
+      target: "{target}"
+      ports: [443, 8443]
+
+  # Certificate-expiry vulnerability check: the actual ssl_expiring_certificate_scan
+  # call, run once TLS is known to be present rather than used as the presence check.
+  - id: tls_cert_check
+    module: ssl_expiring_certificate_scan
+    depends_on: [tls_detect]
     params:
       target: "{target}"
 

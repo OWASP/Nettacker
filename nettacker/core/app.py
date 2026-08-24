@@ -367,6 +367,32 @@ class Nettacker(ArgParser):
         step_baselines = {}
 
         while True:
+            # Detect finished threads FIRST, before deciding what to launch this pass.
+            # A step whose on_failure is "abort" must stop every further launch for its
+            # target - if this ran after the launch phase instead, a step finishing with
+            # an abort-triggering failure this same tick couldn't prevent unrelated
+            # steps for that target from being launched in that very tick.
+            for (target, step_id), thread in list(step_threads.items()):
+                if not thread.is_alive():
+                    step = steps_by_id[step_id]
+                    state = target_state[target]
+                    state["running"].remove(step_id)
+
+                    # Events are tracked per (target, module_name, scan_id) in the database
+                    # with no step id, so two steps invoking the same module - or an earlier
+                    # expand_targets pass - can already have produced matching rows. Judging
+                    # success by this step's own count increase over its pre-launch baseline
+                    # keeps the signal scoped to the run this step actually triggered.
+                    baseline = step_baselines.pop((target, step_id))
+                    if len(find_events(target, step.module, scan_id)) > baseline:
+                        state["completed"].add(step_id)
+                    else:
+                        state["blocked"].add(step_id)
+                        if (step.on_failure or flow.on_failure) == "abort":
+                            state["aborted"] = True
+
+                    del step_threads[(target, step_id)]
+
             work_remaining = False
             launched_step = False
             for target in targets:
@@ -445,28 +471,6 @@ class Nettacker(ArgParser):
 
                     if not wait_for_threads_to_finish(active_threads, max_parallel, True):
                         return False
-
-            # detect finished threads
-            for (target, step_id), thread in list(step_threads.items()):
-                if not thread.is_alive():
-                    step = steps_by_id[step_id]
-                    state = target_state[target]
-                    state["running"].remove(step_id)
-
-                    # Events are tracked per (target, module_name, scan_id) in the database
-                    # with no step id, so two steps invoking the same module - or an earlier
-                    # expand_targets pass - can already have produced matching rows. Judging
-                    # success by this step's own count increase over its pre-launch baseline
-                    # keeps the signal scoped to the run this step actually triggered.
-                    baseline = step_baselines.pop((target, step_id))
-                    if len(find_events(target, step.module, scan_id)) > baseline:
-                        state["completed"].add(step_id)
-                    else:
-                        state["blocked"].add(step_id)
-                        if (step.on_failure or flow.on_failure) == "abort":
-                            state["aborted"] = True
-
-                    del step_threads[(target, step_id)]
 
             if not work_remaining and not step_threads:
                 break

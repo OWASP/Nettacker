@@ -825,23 +825,23 @@ class ArgParser(ArgumentParser):
         Dests the user actually passed, as opposed to ones that only carry an
         untouched argparse default. Needed so flow input resolution can tell a real
         CLI override apart from Config's default value landing in the same dest.
+
+        Re-parses the same argv through this parser's own actions with every default
+        swapped for a sentinel, so recognition goes through argparse's real matching
+        rules (abbreviated long options, "=", glued short-option values, bundled
+        short flags, ...) instead of a hand-rolled approximation of them.
         """
         if self.api_arguments:
             return set(vars(self.api_arguments).keys())
 
-        provided = set()
-        argv = sys.argv[1:]
+        sentinel = object()
+        original_defaults = {action: action.default for action in self._actions}
         for action in self._actions:
-            for option_string in action.option_strings:
-                # Short options (-g, -T, ...) also accept their value glued on with
-                # no separator (-g80, -T1); long options only accept -- form or "=".
-                is_short = len(option_string) == 2 and option_string[1] != "-"
-                if any(
-                    arg == option_string
-                    or arg.startswith(f"{option_string}=")
-                    or (is_short and arg.startswith(option_string) and arg != option_string)
-                    for arg in argv
-                ):
-                    provided.add(action.dest)
-                    break
-        return provided
+            action.default = sentinel
+        try:
+            probe_namespace, _unknown = self.parse_known_args(sys.argv[1:])
+        finally:
+            for action, default in original_defaults.items():
+                action.default = default
+
+        return {dest for dest, value in vars(probe_namespace).items() if value is not sentinel}
