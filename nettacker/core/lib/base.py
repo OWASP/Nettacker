@@ -10,7 +10,12 @@ import yaml
 from nettacker.config import Config
 from nettacker.core.messages import messages as _
 from nettacker.core.utils.common import merge_logs_to_list, remove_sensitive_header_keys
-from nettacker.database.db import find_temp_events, submit_logs_to_db, submit_temp_logs_to_db
+from nettacker.database.db import (
+    CLAIM_DUPLICATE,
+    find_temp_events,
+    submit_logs_to_db,
+    submit_temp_logs_to_db,
+)
 from nettacker.logger import TerminalCodes, get_logger
 
 log = get_logger()
@@ -56,6 +61,36 @@ class BaseEngine(ABC):
                     break
                 time.sleep(0.1)
         return events
+
+    def check_prior_success(self, response_meta, sub_step, module_name, target, scan_id):
+        """
+        Shared preflight check for `stop_at_first_success`. Any engine
+        (BaseEngine.run or HttpEngine.run) should call this before doing
+        any request work, so that once an event has been claimed, later
+        substeps are skipped instead of just suppressed after the fact.
+
+        Returns True if this request can be skipped entirely.
+        """
+        if "stop_at_first_success" in response_meta:
+            event_name = response_meta["stop_at_first_success"]
+            existing = find_temp_events(
+                target,
+                module_name,
+                scan_id,
+                event_name,
+                port=sub_step.get("ports")
+                or sub_step.get("port")
+                or (
+                    sub_step.get("url").split(":")[2].split("/")[0]
+                    if isinstance(sub_step.get("url"), str)
+                    and len(sub_step.get("url").split(":")) >= 3
+                    and sub_step.get("url").split(":")[2].split("/")[0].isdigit()
+                    else ""
+                ),
+            )
+            if existing:
+                return True
+        return False
 
     def find_and_replace_dependent_values(self, sub_step, dependent_on_temp_event):
         if isinstance(sub_step, dict):
@@ -122,6 +157,25 @@ class BaseEngine(ABC):
     ):
         # Remove sensitive keys from headers before submitting to DB
         event = remove_sensitive_header_keys(event)
+        if "stop_at_first_success" in event["response"]:
+            event_name = event["response"]["stop_at_first_success"]
+            existing = find_temp_events(
+                target,
+                module_name,
+                scan_id,
+                event_name,
+                port=event.get("ports")
+                or event.get("port")
+                or (
+                    event.get("url").split(":")[2].split("/")[0]
+                    if isinstance(event.get("url"), str)
+                    and len(event.get("url").split(":")) >= 3
+                    and event.get("url").split(":")[2].split("/")[0].isdigit()
+                    else ""
+                ),
+            )
+            if existing:
+                return False
         if "save_to_temp_events_only" in event.get("response", ""):
             submit_temp_logs_to_db(
                 {
@@ -135,6 +189,50 @@ class BaseEngine(ABC):
                     "data": response,
                 }
             )
+
+        claim_status = None
+        if event["response"]["conditions_results"] and "stop_at_first_success" in event.get(
+            "response", ""
+        ):
+            claim_status = submit_temp_logs_to_db(
+                {
+                    "date": datetime.now(),
+                    "target": target,
+                    "module_name": module_name,
+                    "scan_id": scan_id,
+                    "event_name": event["response"]["stop_at_first_success"],
+                    "port": event.get("ports")
+                    or event.get("port")
+                    or (
+                        event.get("url").split(":")[2].split("/")[0]
+                        if isinstance(event.get("url"), str)
+                        and len(event.get("url").split(":")) >= 3
+                        and event.get("url").split(":")[2].split("/")[0].isdigit()
+                        else ""
+                    ),
+                    "event": event,
+                    "data": response,
+                }
+            )
+            if claim_status == CLAIM_DUPLICATE:
+                # Another concurrent substep already won the race for this
+                # event — this is a duplicate, so log it as unsuccessful
+                # instead of emitting a second success.
+                del event["response"]["conditions"]
+                log.verbose_info(
+                    _("send_unsuccess_event_from_module").format(
+                        process_number,
+                        module_name,
+                        target,
+                        module_thread_number,
+                        total_module_thread_number,
+                        request_number_counter,
+                        total_number_of_requests,
+                    )
+                )
+                log.verbose_info(json.dumps(event))
+                return False
+
         if event["response"]["conditions_results"] and "save_to_temp_events_only" not in event.get(
             "response", ""
         ):
@@ -270,6 +368,8 @@ class BaseEngine(ABC):
         """Engine entry point."""
         backup_method = copy.deepcopy(sub_step["method"])
         backup_response = copy.deepcopy(sub_step["response"])
+        if self.check_prior_success(backup_response, sub_step, module_name, target, scan_id):
+            return False
         del sub_step["method"]
         del sub_step["response"]
 
