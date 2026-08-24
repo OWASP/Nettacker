@@ -833,8 +833,14 @@ class ArgParser(ArgumentParser):
         argv = sys.argv[1:]
         for action in self._actions:
             for option_string in action.option_strings:
+                # Short options (-g, -T, ...) also accept their value glued on with
+                # no separator (-g80, -T1); long options only accept -- form or "=".
+                is_short = len(option_string) == 2 and option_string[1] != "-"
                 if any(
-                    arg == option_string or arg.startswith(f"{option_string}=") for arg in argv
+                    arg == option_string
+                    or arg.startswith(f"{option_string}=")
+                    or (is_short and arg.startswith(option_string) and arg != option_string)
+                    for arg in argv
                 ):
                     provided.add(action.dest)
                     break

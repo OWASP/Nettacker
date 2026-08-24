@@ -238,3 +238,20 @@ def test_invalid_depends_on_shape_raises(depends_on):
     )
     with pytest.raises(FlowError):
         FlowLoader.build(content)
+
+
+def test_non_mapping_input_spec_raises():
+    content = make_flow_content(
+        [{"id": "a", "module": "port_scan", "depends_on": []}],
+        inputs={"ports": ["not", "a", "mapping"]},
+    )
+    with pytest.raises(FlowError):
+        FlowLoader.build(content)
+
+
+def test_non_mapping_step_params_raises():
+    content = make_flow_content(
+        [{"id": "a", "module": "port_scan", "depends_on": [], "params": ["not", "a", "mapping"]}]
+    )
+    with pytest.raises(FlowError):
+        FlowLoader.build(content)

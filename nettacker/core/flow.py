@@ -180,6 +180,9 @@ class FlowLoader:
         for section in (info, inputs, defaults, execution):
             if not isinstance(section, dict):
                 raise FlowError(_("flow_invalid_schema").format(path))
+        for spec in inputs.values():
+            if spec is not None and not isinstance(spec, dict):
+                raise FlowError(_("flow_invalid_schema").format(path))
         max_parallel = execution.get("max_parallel", 4)
 
         steps = []
@@ -195,12 +198,16 @@ class FlowLoader:
                 raise FlowError(_("flow_duplicate_step_id").format(step_id))
             seen_ids.add(step_id)
 
+            params = raw_step.get("params") or {}
+            if not isinstance(params, dict):
+                raise FlowError(_("flow_invalid_schema").format(path))
+
             steps.append(
                 FlowStep(
                     id=step_id,
                     module=module,
                     depends_on=raw_step.get("depends_on") or [],
-                    params=raw_step.get("params") or {},
+                    params=params,
                     on_failure=raw_step.get("on_failure"),
                     timeout=raw_step.get("timeout"),
                     retries=raw_step.get("retries"),

@@ -72,12 +72,21 @@ steps:
     params:
       target: "{target}"
 
-  # SSH auth attempt: gated directly on port_scan (the actual, non-intrusive signal
-  # that a service might be listening on the SSH port) rather than on a fake
-  # "detection" step that would have to brute force SSH just to prove it's there.
+  # Non-intrusive SSH detection: port_scan above covers the whole configured port
+  # list, which doesn't confirm SSH specifically. Re-probe just port 22 so the auth
+  # step below only fires once SSH itself is known to be reachable.
+  - id: ssh_port_check
+    module: port_scan
+    depends_on: [port_scan]
+    params:
+      target: "{target}"
+      ports: [22]
+
+  # SSH auth attempt: gated on ssh_port_check rather than on a fake "detection" step
+  # that would have to brute force SSH just to prove it's there.
   - id: ssh_auth_brute
     module: ssh_brute
-    depends_on: [port_scan]
+    depends_on: [ssh_port_check]
     params:
       target: "{target}"
 
