@@ -28,7 +28,7 @@ steps:
   # ---------- expected to SUCCEED ----------
   - id: reachability_check
     module: http_status_scan
-    depends_on: []
+    depends_on: [waf_check]  # this is a circular dependency, but the engine should handle it gracefully
     params:
       target: "{target}"
 

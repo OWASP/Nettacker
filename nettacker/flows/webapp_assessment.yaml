@@ -11,12 +11,21 @@ info:
 inputs:
   target:
     type: string
-    required: true            # Nettacker -i : IP / domain / URL / target list
+    required: true          
   ports:
     type: list
     default: [21, 22, 80, 443, 8080, 8443]
 
 defaults:
+  # Flow-wide policy for what happens to a TARGET when a step fails (logs no events):
+  #   continue - (default) only steps that depend, directly or transitively, on the
+  #              failed step get skipped ("blocked"); unrelated branches keep running.
+  #   abort    - stop launching ANY further steps for that target, even ones that
+  #              don't depend on the failed step at all. Use this for a step whose
+  #              failure should end the whole assessment of that target (e.g. a
+  #              reachability/scope check), not just the steps logically built on it.
+  # A step can override this with its own `on_failure:` (see apache_cve_check below).
+  # Either way this is scoped per target - other targets in the same run are unaffected.
   on_failure: continue        # continue | abort
   timeout: 30
   retries: 1
@@ -93,6 +102,10 @@ steps:
         - auth_brute
     params:
       target: "{target}"
+    # Overrides the flow-wide `continue` default: if this CVE check fails, stop the
+    # whole target here rather than treat the failure as local. Note final_report_gate
+    # below does NOT depend on apache_cve_check, so under `continue` it would still run
+    # after this failed - `abort` is what prevents that.
     on_failure: abort
 
   # Even deeper: all-of, where one branch is itself an any-of

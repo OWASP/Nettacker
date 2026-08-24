@@ -11,7 +11,7 @@ info:
 inputs:
   target:
     type: string
-    required: true            # Nettacker -i : IP / domain / URL / target list
+    required: true            
 
 defaults:
   on_failure: continue        # continue | abort
