@@ -629,17 +629,19 @@ class ArgParser(ArgumentParser):
         # module flow: a YAML file (looked up by name under Config.path.flows_dir, or
         # given directly as a path) that defines the modules to run and the dependency
         # graph between them. It fully determines selected_modules, overriding -m/--profile.
+        # Flow inputs are resolved later, once every other CLI normalizer below has run,
+        # so options carries its final normalized values (e.g. ports as a list) by then.
+        flow = None
         if options.module_flow:
             if options.selected_modules or options.profiles:
                 log.warn(_("flow_overrides_module_selection"))
 
             try:
                 flow = FlowLoader.load(options.module_flow)
-                options.selected_modules = sorted({step.module for step in flow.steps})
-                options.flow_inputs = FlowLoader.resolve_inputs(flow, options)
             except FlowError as error:
                 die_failure(str(error))
 
+            options.selected_modules = sorted({step.module for step in flow.steps})
             options.profiles = None
             options.flow = flow
         else:
@@ -808,4 +810,32 @@ class ArgParser(ArgumentParser):
         options.time_sleep_between_requests = float(options.time_sleep_between_requests)
         options.retries = int(options.retries)
 
+        if flow is not None:
+            try:
+                options.flow_inputs = FlowLoader.resolve_inputs(
+                    flow, options, self._explicitly_provided_dests()
+                )
+            except FlowError as error:
+                die_failure(str(error))
+
         self.arguments = options
+
+    def _explicitly_provided_dests(self):
+        """
+        Dests the user actually passed, as opposed to ones that only carry an
+        untouched argparse default. Needed so flow input resolution can tell a real
+        CLI override apart from Config's default value landing in the same dest.
+        """
+        if self.api_arguments:
+            return set(vars(self.api_arguments).keys())
+
+        provided = set()
+        argv = sys.argv[1:]
+        for action in self._actions:
+            for option_string in action.option_strings:
+                if any(
+                    arg == option_string or arg.startswith(f"{option_string}=") for arg in argv
+                ):
+                    provided.add(action.dest)
+                    break
+        return provided

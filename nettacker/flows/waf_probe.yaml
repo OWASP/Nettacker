@@ -42,9 +42,11 @@ steps:
     params:
       target: "{target}"
 
-  # ---------- Layer 2: only worth grabbing the title once we know a WAF is (or isn't) fronting it ----------
+  # ---------- Layer 1 (continued): title grab only needs the confirmed HTTP service,
+  # not the WAF result - waf_check only logs an event when a WAF is actually found, so
+  # gating on it would skip the title check on any site without a WAF fronting it ----------
   - id: title_check
     module: http_html_title_scan
-    depends_on: [waf_check]
+    depends_on: [http_check]
     params:
       target: "{target}"

@@ -59,6 +59,26 @@ def referenced_step_ids(depends_on):
     return ids
 
 
+def is_valid_depends_on_shape(depends_on):
+    """Check that a depends_on expression is a string, a list of valid expressions,
+    or a mapping with exactly one 'any'/'all' key whose value is a list of valid
+    expressions. Anything else (e.g. {"either": [...]}) or 1) can never be satisfied
+    by evaluate_depends_on and must be rejected at load time instead of silently
+    treated as an always-open dependency."""
+    if depends_on is None:
+        return True
+    if isinstance(depends_on, str):
+        return True
+    if isinstance(depends_on, list):
+        return all(is_valid_depends_on_shape(item) for item in depends_on)
+    if isinstance(depends_on, dict):
+        if set(depends_on.keys()) not in ({"any"}, {"all"}):
+            return False
+        (value,) = depends_on.values()
+        return isinstance(value, list) and all(is_valid_depends_on_shape(item) for item in value)
+    return False
+
+
 def evaluate_depends_on(depends_on, completed, blocked):
     """
     Resolve a depends_on expression against a target's current per-step state.
@@ -142,7 +162,7 @@ class FlowLoader:
         try:
             content = yaml.safe_load(path.read_text())
         except yaml.YAMLError as error:
-            raise FlowError(_("flow_invalid_yaml").format(path, error))
+            raise FlowError(_("flow_invalid_yaml").format(path, error)) from error
 
         return FlowLoader.build(content, path)
 
@@ -150,16 +170,23 @@ class FlowLoader:
     def build(content, path="<in-memory>"):
         if not isinstance(content, dict) or not content.get("steps"):
             raise FlowError(_("flow_invalid_schema").format(path))
+        if not isinstance(content["steps"], list):
+            raise FlowError(_("flow_invalid_schema").format(path))
 
         info = content.get("info") or {}
         inputs = content.get("inputs") or {}
         defaults = content.get("defaults") or {}
         execution = content.get("execution") or {}
+        for section in (info, inputs, defaults, execution):
+            if not isinstance(section, dict):
+                raise FlowError(_("flow_invalid_schema").format(path))
         max_parallel = execution.get("max_parallel", 4)
 
         steps = []
         seen_ids = set()
         for raw_step in content["steps"]:
+            if not isinstance(raw_step, dict):
+                raise FlowError(_("flow_invalid_schema").format(path))
             step_id = raw_step.get("id")
             module = raw_step.get("module")
             if not step_id or not module:
@@ -203,6 +230,8 @@ class FlowLoader:
         for step in flow.steps:
             if step.on_failure and step.on_failure not in ON_FAILURE_VALUES:
                 raise FlowError(_("flow_invalid_on_failure").format(step.on_failure))
+            if not is_valid_depends_on_shape(step.depends_on):
+                raise FlowError(_("flow_invalid_depends_on").format(step.depends_on))
             for referenced_id in referenced_step_ids(step.depends_on):
                 if referenced_id not in step_ids:
                     raise FlowError(_("flow_unknown_dependency").format(step.id, referenced_id))
@@ -230,24 +259,28 @@ class FlowLoader:
             dfs(node)
 
     @staticmethod
-    def resolve_inputs(flow, options):
+    def resolve_inputs(flow, options, explicitly_provided=frozenset()):
         """
         Resolve every declared flow input (except `target`, which is bound per-target
-        at scan time) to a concrete value: an equivalently-named CLI option if the user
-        supplied one, otherwise the input's own `default` from the flow YAML.
+        at scan time) to a concrete value: an equivalently-named CLI option, but only
+        if the user actually passed it on the command line (its dest is in
+        `explicitly_provided`) - an untouched argparse default must not shadow the
+        flow's own `default`. Falls back to the input's own `default` from the flow YAML.
+
+        Must be called after all other CLI argument normalizers (ports, timeout, etc.)
+        have run, so `options` already holds their fully-normalized values.
         """
         resolved = {}
         for name, spec in flow.inputs.items():
             if name == "target":
                 continue
             spec = spec or {}
-            cli_value = getattr(options, name, None)
-            if cli_value not in (None, "", []):
-                resolved[name] = cli_value
+            if name in explicitly_provided:
+                resolved[name] = getattr(options, name, None)
             elif "default" in spec:
                 resolved[name] = spec["default"]
             elif spec.get("required"):
                 raise FlowError(_("flow_missing_required_input").format(name))
             else:
-                resolved[name] = None
+                resolved[name] = getattr(options, name, None)
         return resolved

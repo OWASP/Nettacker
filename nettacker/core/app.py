@@ -4,6 +4,7 @@ import os
 import shutil
 import socket
 import sys
+import time
 from threading import Thread
 
 import multiprocess
@@ -363,9 +364,11 @@ class Nettacker(ArgParser):
         }
 
         step_threads = {}
+        step_baselines = {}
 
         while True:
             work_remaining = False
+            launched_step = False
             for target in targets:
                 state = target_state[target]
                 if state["aborted"] or len(state["completed"]) + len(state["blocked"]) == len(
@@ -401,6 +404,12 @@ class Nettacker(ArgParser):
                     if effective_retries is not None:
                         extra_options["retries"] = effective_retries
 
+                    # Baseline is captured right before the thread starts so success can
+                    # later be judged by whether this run added a NEW event, rather than
+                    # by the module's mere presence (which two steps sharing a module, or
+                    # an earlier expand_targets pass, could already have produced).
+                    baseline = len(find_events(target, step.module, scan_id))
+
                     thread = Thread(
                         target=self.scan_target,
                         args=(
@@ -431,6 +440,8 @@ class Nettacker(ArgParser):
                     active_threads.append(thread)
                     state["running"].add(step_id)
                     step_threads[(target, step_id)] = thread
+                    step_baselines[(target, step_id)] = baseline
+                    launched_step = True
 
                     if not wait_for_threads_to_finish(active_threads, max_parallel, True):
                         return False
@@ -442,9 +453,13 @@ class Nettacker(ArgParser):
                     state = target_state[target]
                     state["running"].remove(step_id)
 
-                    # success is tracked per (target, module_name, scan_id) in the database,
-                    # so two steps invoking the same module share this success signal
-                    if find_events(target, step.module, scan_id):
+                    # Events are tracked per (target, module_name, scan_id) in the database
+                    # with no step id, so two steps invoking the same module - or an earlier
+                    # expand_targets pass - can already have produced matching rows. Judging
+                    # success by this step's own count increase over its pre-launch baseline
+                    # keeps the signal scoped to the run this step actually triggered.
+                    baseline = step_baselines.pop((target, step_id))
+                    if len(find_events(target, step.module, scan_id)) > baseline:
                         state["completed"].add(step_id)
                     else:
                         state["blocked"].add(step_id)
@@ -455,6 +470,12 @@ class Nettacker(ArgParser):
 
             if not work_remaining and not step_threads:
                 break
+
+            if not launched_step and step_threads:
+                # No new step could be launched this pass (everything schedulable is
+                # already running), but running steps haven't finished either. Without
+                # this, the loop would spin re-scanning every target/step with no delay.
+                time.sleep(0.05)
 
             if not wait_for_threads_to_finish(active_threads, max_parallel, True):
                 return False

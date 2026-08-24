@@ -153,8 +153,21 @@ def test_resolve_inputs_prefers_cli_value_over_default():
     )
     flow = FlowLoader.build(content)
     options = DummyOptions(ports=[8080])
-    resolved = FlowLoader.resolve_inputs(flow, options)
+    resolved = FlowLoader.resolve_inputs(flow, options, explicitly_provided={"ports"})
     assert resolved == {"ports": [8080]}
+
+
+def test_resolve_inputs_ignores_unset_cli_default():
+    # An argparse default landing in the same dest must not be mistaken for a value
+    # the user actually passed - the flow's own default should win instead.
+    content = make_flow_content(
+        [{"id": "a", "module": "port_scan", "depends_on": []}],
+        inputs={"ports": {"type": "list", "default": [80]}},
+    )
+    flow = FlowLoader.build(content)
+    options = DummyOptions(ports=[8080])
+    resolved = FlowLoader.resolve_inputs(flow, options)
+    assert resolved == {"ports": [80]}
 
 
 def test_resolve_inputs_falls_back_to_default():
@@ -192,3 +205,36 @@ def test_load_bundled_webapp_assessment_flow():
 def test_load_unknown_flow_name_raises():
     with pytest.raises(FlowError):
         FlowLoader.load("this_flow_does_not_exist")
+
+
+def test_steps_not_a_list_raises():
+    content = make_flow_content({"id": "a", "module": "port_scan", "depends_on": []})
+    with pytest.raises(FlowError):
+        FlowLoader.build(content)
+
+
+def test_non_mapping_step_raises():
+    content = make_flow_content(["port_scan"])
+    with pytest.raises(FlowError):
+        FlowLoader.build(content)
+
+
+def test_non_mapping_section_raises():
+    content = make_flow_content(
+        [{"id": "a", "module": "port_scan", "depends_on": []}],
+        inputs=["not", "a", "mapping"],
+    )
+    with pytest.raises(FlowError):
+        FlowLoader.build(content)
+
+
+@pytest.mark.parametrize("depends_on", [1, {"either": ["a"]}, {"any": "a"}])
+def test_invalid_depends_on_shape_raises(depends_on):
+    content = make_flow_content(
+        [
+            {"id": "a", "module": "port_scan", "depends_on": []},
+            {"id": "b", "module": "dir_scan", "depends_on": depends_on},
+        ]
+    )
+    with pytest.raises(FlowError):
+        FlowLoader.build(content)

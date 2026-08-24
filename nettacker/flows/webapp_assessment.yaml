@@ -55,12 +55,6 @@ steps:
     params:
       target: "{target}"
 
-  - id: ssh_detect
-    module: ssh_brute
-    depends_on: [port_scan]
-    params:
-      target: "{target}"
-
   # ---------- Layer 2: branches driven by nested logic ----------
 
   # Web content scan: run if EITHER an HTTP OR a TLS service was found.
@@ -78,28 +72,38 @@ steps:
     params:
       target: "{target}"
 
-  # Auth surface: run if a web login surface was found,
-  # OR if SSH is exposed  ->  (port_scan AND http_detect AND dir_scan) OR ssh_detect
-  - id: auth_brute
+  # SSH auth attempt: gated directly on port_scan (the actual, non-intrusive signal
+  # that a service might be listening on the SSH port) rather than on a fake
+  # "detection" step that would have to brute force SSH just to prove it's there.
+  - id: ssh_auth_brute
     module: ssh_brute
+    depends_on: [port_scan]
+    params:
+      target: "{target}"
+
+  # Web login surface: a non-intrusive admin-panel probe, run once we have web
+  # content to inspect. Kept as its own module/step rather than forcing ssh_brute
+  # (an SSH-only module) to also stand in for a web authentication check.
+  - id: admin_panel_check
+    module: admin_scan
     depends_on:
-      any:
-        - all: [port_scan, http_detect, dir_scan]
-        - ssh_detect
+      any: [http_detect, dir_scan]
     params:
       target: "{target}"
 
   # ---------- Layer 3: deep nesting example ----------
 
-  # Apache CVE test - fire on any of three independent success paths:
-  #   (http_detect AND dir_scan)  OR  (tls_detect AND weak_cipher_scan)  OR  auth_brute
+  # Apache CVE test - fire on any of four independent success paths:
+  #   (http_detect AND dir_scan) OR (tls_detect AND weak_cipher_scan)
+  #   OR ssh_auth_brute OR admin_panel_check
   - id: apache_cve_check
     module: apache_cve_2021_41773_vuln
     depends_on:
       any:
         - all: [http_detect, dir_scan]
         - all: [tls_detect, weak_cipher_scan]
-        - auth_brute
+        - ssh_auth_brute
+        - admin_panel_check
     params:
       target: "{target}"
     # Overrides the flow-wide `continue` default: if this CVE check fails, stop the
@@ -109,13 +113,13 @@ steps:
     on_failure: abort
 
   # Even deeper: all-of, where one branch is itself an any-of
-  #   port_scan AND (http_detect OR tls_detect) AND (dir_scan OR auth_brute)
+  #   port_scan AND (http_detect OR tls_detect) AND (dir_scan OR admin_panel_check)
   - id: final_report_gate
     module: http_html_title_scan
     depends_on:
       all:
         - port_scan
         - any: [http_detect, tls_detect]
-        - any: [dir_scan, auth_brute]
+        - any: [dir_scan, admin_panel_check]
     params:
       target: "{target}"
