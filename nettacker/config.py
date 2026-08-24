@@ -73,6 +73,9 @@ class ApiConfig(ConfigBase):
     api_debug_mode = False
     api_hostname = "0.0.0.0"
     api_port = 5000
+    api_upload_allowed_extensions = ("txt", "csv", "lst", "list")
+    api_upload_max_size = 10 * 1024 * 1024
+    api_upload_token_ttl = 15 * 60
     start_api_server = False
 
 
@@ -155,6 +158,7 @@ class DefaultSettings(ConfigBase):
     ping_before_scan = False
     ports = None
     profiles = None
+    schema = None
     report_path_filename = "{results_path}/results_{date_time}_{random_chars}.html".format(
         results_path=PathConfig.results_dir,
         date_time=now(format="%Y_%m_%d_%H_%M_%S"),

@@ -315,6 +315,13 @@ class ArgParser(ArgumentParser):
             help=_("port_separator"),
         )
         method_options.add_argument(
+            "--schema",
+            action="store",
+            dest="schema",
+            default=Config.settings.schema,
+            help=_("schema_selector"),
+        )
+        method_options.add_argument(
             "--user-agent",
             action="store",
             dest="user_agent",
@@ -703,6 +710,15 @@ class ArgParser(ArgumentParser):
                 except Exception:
                     die_failure(_("ports_int"))
             options.ports = list(tmp_ports)
+        # Check schema(s)
+        if options.schema:
+            tmp_schema = {schema.strip().lower() for schema in options.schema.split(",")}
+            allowed_schema = {"http", "https"}
+
+            if tmp_schema - allowed_schema:
+                die_failure(_("invalid_schema"))
+            else:
+                options.schema = list(tmp_schema)
         # Check for excluded ports
         if options.excluded_ports:
             tmp_excluded_ports = set()
