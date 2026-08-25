@@ -302,7 +302,7 @@ jobs:
     if: |
       github.repository == 'OWASP/Nettacker' &&
       github.event_name == 'push' &&
-      startsWith(github.event.ref, 'refs/tags/v')
+      startsWith(github.event.ref, 'refs/tags/')
     needs:
       - test-docker-image
       - test-docker-image-build
