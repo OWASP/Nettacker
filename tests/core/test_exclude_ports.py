@@ -1,5 +1,5 @@
 import json
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -60,7 +60,7 @@ def test_load_with_service_discovery(
     mock_loader.return_value = mock_loader_inst
 
     mock_find_events.return_value = [
-        MagicMock(json_event='{"port": 80, "response": {"conditions_results": {"http": {}}}}')
+        json.dumps({"port": 80, "response": {"conditions_results": {"http": {}}}})
     ]
 
     module = Module("test_module", options, **module_args)
@@ -94,11 +94,9 @@ def test_sort_loops(mock_loader, mock_find_events, options, module_args):
     }
     mock_loader.return_value = mock_loader_inst
 
-    mock_event = MagicMock()
-    mock_event.json_event = json.dumps(
-        {"port": 80, "response": {"conditions_results": {"http": True}}}
-    )
-    mock_find_events.return_value = [mock_event]
+    mock_find_events.return_value = [
+        json.dumps({"port": 80, "response": {"conditions_results": {"http": True}}})
+    ]
 
     module = Module("test_module", options, **module_args)
     module.libraries = ["http"]
@@ -119,11 +117,9 @@ def test_start_unsupported_library(mock_loader, mock_find_events, options, modul
     }
     mock_loader.return_value = mock_loader_inst
 
-    mock_event = MagicMock()
-    mock_event.json_event = json.dumps(
-        {"port": 1234, "response": {"conditions_results": {"unsupported_lib": True}}}
-    )
-    mock_find_events.return_value = [mock_event]
+    mock_find_events.return_value = [
+        json.dumps({"port": 1234, "response": {"conditions_results": {"unsupported_lib": True}}})
+    ]
 
     module = Module("test_module", options, **module_args)
     module.libraries = ["http"]
@@ -179,11 +175,9 @@ def test_sort_loops_behavior(mock_loader_cls, mock_find_events, mock_parse, opti
     # This one is painful
     mock_loader_cls.side_effect = template_loader_side_effect
 
-    mock_event = MagicMock()
-    mock_event.json_event = json.dumps(
-        {"port": 80, "response": {"conditions_results": {"http": True}}}
-    )
-    mock_find_events.return_value = [mock_event]
+    mock_find_events.return_value = [
+        json.dumps({"port": 80, "response": {"conditions_results": {"http": True}}})
+    ]
 
     module = Module("test_module", options, **module_args)
     module.libraries = ["http"]
@@ -307,12 +301,8 @@ def test_load_appends_port_to_existing_protocol(
 
     mock_loader_cls.side_effect = loader_side_effect_specific
     mock_find_events.return_value = [
-        MagicMock(
-            json_event=json.dumps({"port": 80, "response": {"conditions_results": {"http": {}}}})
-        ),
-        MagicMock(
-            json_event=json.dumps({"port": 443, "response": {"conditions_results": {"http": {}}}})
-        ),
+        json.dumps({"port": 80, "response": {"conditions_results": {"http": {}}}}),
+        json.dumps({"port": 443, "response": {"conditions_results": {"http": {}}}}),
     ]
 
     module = Module("test_module", options, **module_args)
@@ -387,3 +377,46 @@ def test_generate_loops_with_excluded_ports_no_ports_in_content(
     expected_ports = [80, 443, 8080]
     actual_ports = module.module_content["payloads"][0]["steps"][0]["ports"]
     assert actual_ports == expected_ports
+
+
+@patch("nettacker.core.module.find_events")
+@patch("nettacker.core.module.TemplateLoader")
+def test_generate_loops_after_load_drops_all_payloads(
+    mock_loader_cls, mock_find_events, options, module_args
+):
+    # Reproduces issue #1636: a single-payload module whose service-discovery
+    # library was never found open (e.g. its port was closed/filtered) ends up
+    # with an empty payloads list after load(). generate_loops() must not raise
+    # IndexError on ["payloads"][0] in that state.
+    def loader_side_effect(name, inputs):
+        mock_inst = MagicMock()
+        if name == "port_scan":
+            mock_inst.load.return_value = {
+                "payloads": [{"steps": [{"response": {"conditions": {"service": {"ssh": {}}}}}]}]
+            }
+        elif name == "test_module":
+            mock_inst.load.return_value = {
+                "payloads": [
+                    {
+                        "library": "ssh",
+                        "steps": [{"ports": [22], "response": {"conditions": {"service": {}}}}],
+                    }
+                ]
+            }
+        else:
+            raise ValueError(f"Unexpected module name: {name}")
+        return mock_inst
+
+    mock_loader_cls.side_effect = loader_side_effect
+    mock_find_events.return_value = []  # ssh was not discovered open on the target
+
+    module = Module("test_module", options, **module_args)
+    module.libraries = ["ssh"]
+    module.load()
+
+    assert module.module_content["payloads"] == []
+
+    module.module_inputs["excluded_ports"] = [21]
+    module.generate_loops()  # should not raise IndexError
+
+    assert module.module_content["payloads"] == []

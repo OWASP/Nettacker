@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from nettacker.database.models import Base, Report, TempEvents, HostsLog
+from nettacker.database.models import Base, HostsLog, Report, TempEvents
 
 
 @pytest.fixture

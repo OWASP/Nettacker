@@ -18,6 +18,9 @@ info:
     - vuln
     - vulnerability
     - http
+    - cve
+    - cve2025
+    - cisa_kev
     - high_severity
 
 

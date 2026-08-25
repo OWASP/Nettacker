@@ -78,7 +78,7 @@ class Module:
         if not self.skip_service_discovery and self.module_name not in self.ignored_core_modules:
             services = {}
             for service in find_events(self.target, "port_scan", self.scan_id):
-                service_event = json.loads(service.json_event)
+                service_event = json.loads(service)
                 port = service_event["port"]
                 protocols = service_event["response"]["conditions_results"].keys()
                 for protocol in protocols:
@@ -111,7 +111,11 @@ class Module:
     def generate_loops(self):
         if self.module_inputs["excluded_ports"]:
             excluded_port_set = set(self.module_inputs["excluded_ports"])
-            if self.module_content and "ports" in self.module_content["payloads"][0]["steps"][0]:
+            if (
+                self.module_content
+                and self.module_content["payloads"]
+                and "ports" in self.module_content["payloads"][0]["steps"][0]
+            ):
                 all_ports = self.module_content["payloads"][0]["steps"][0]["ports"]
                 all_ports[:] = [port for port in all_ports if port not in excluded_port_set]
 
