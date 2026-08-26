@@ -42,7 +42,5 @@ def test_append_action_option_does_not_crash(monkeypatch, tmp_path):
     # swap every action's default for a plain sentinel object before re-parsing, and
     # argparse's _AppendAction calls .append() on the *current* dest value - crashing
     # with AttributeError when that value was the sentinel instead of a list.
-    ap = _build_arg_parser(
-        monkeypatch, tmp_path, ["-H", "X-Test: 1", "-H", "X-Test-2: 2"]
-    )
+    ap = _build_arg_parser(monkeypatch, tmp_path, ["-H", "X-Test: 1", "-H", "X-Test-2: 2"])
     assert ap.arguments.http_header == ["X-Test: 1", "X-Test-2: 2"]
