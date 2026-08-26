@@ -1,6 +1,6 @@
 import json
 import sys
-from argparse import ArgumentParser
+from argparse import SUPPRESS, ArgumentParser
 
 import yaml
 
@@ -827,21 +827,25 @@ class ArgParser(ArgumentParser):
         CLI override apart from Config's default value landing in the same dest.
 
         Re-parses the same argv through this parser's own actions with every default
-        swapped for a sentinel, so recognition goes through argparse's real matching
-        rules (abbreviated long options, "=", glued short-option values, bundled
-        short flags, ...) instead of a hand-rolled approximation of them.
+        swapped for argparse.SUPPRESS, so recognition goes through argparse's real
+        matching rules (abbreviated long options, "=", glued short-option values,
+        bundled short flags, ...) instead of a hand-rolled approximation of them.
+        SUPPRESS - rather than a plain sentinel object - is what argparse itself uses
+        to mean "leave this dest off the namespace entirely if not supplied": a
+        sentinel *value* would instead get handed to the action's own __call__ (e.g.
+        an "append" action calls .append() on whatever the current dest value is),
+        crashing for any action whose __call__ assumes a real value or container.
         """
         if self.api_arguments:
             return set(vars(self.api_arguments).keys())
 
-        sentinel = object()
         original_defaults = {action: action.default for action in self._actions}
         for action in self._actions:
-            action.default = sentinel
+            action.default = SUPPRESS
         try:
             probe_namespace, _unknown = self.parse_known_args(sys.argv[1:])
         finally:
             for action, default in original_defaults.items():
                 action.default = default
 
-        return {dest for dest, value in vars(probe_namespace).items() if value is not sentinel}
+        return set(vars(probe_namespace).keys())

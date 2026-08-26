@@ -35,3 +35,14 @@ def test_glued_short_option_is_recognized_as_explicit(monkeypatch, tmp_path):
 def test_unset_option_falls_back_to_flow_default(monkeypatch, tmp_path):
     ap = _build_arg_parser(monkeypatch, tmp_path, [])
     assert ap.arguments.flow_inputs["ports"] == [21, 22, 80, 443, 8080, 8443]
+
+
+def test_append_action_option_does_not_crash(monkeypatch, tmp_path):
+    # -H/--add-http-header uses action="append". _explicitly_provided_dests() used to
+    # swap every action's default for a plain sentinel object before re-parsing, and
+    # argparse's _AppendAction calls .append() on the *current* dest value - crashing
+    # with AttributeError when that value was the sentinel instead of a list.
+    ap = _build_arg_parser(
+        monkeypatch, tmp_path, ["-H", "X-Test: 1", "-H", "X-Test-2: 2"]
+    )
+    assert ap.arguments.http_header == ["X-Test: 1", "X-Test-2: 2"]
