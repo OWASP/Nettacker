@@ -4,10 +4,10 @@ import asyncio
 import copy
 import random
 import re
+import sys
 import time
 
 import aiohttp
-import uvloop
 
 from nettacker.core.lib.base import BaseEngine
 from nettacker.core.utils.common import (
@@ -17,7 +17,10 @@ from nettacker.core.utils.common import (
     reverse_and_regex_condition,
 )
 
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+if sys.platform != "win32":
+    import uvloop
+
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 async def perform_request_action(action, request_options):

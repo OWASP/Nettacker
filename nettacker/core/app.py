@@ -1,6 +1,5 @@
 import copy
 import json
-import os
 import shutil
 import socket
 import sys
@@ -66,7 +65,7 @@ class Nettacker(ArgParser):
         log.reset_color()
 
     def check_dependencies(self):
-        if sys.platform not in {"darwin", "freebsd13", "freebsd14", "freebsd15", "linux"}:
+        if sys.platform not in {"darwin", "freebsd13", "freebsd14", "freebsd15", "linux", "win32"}:
             die_failure(_("error_platform"))
 
         try:
@@ -163,7 +162,7 @@ class Nettacker(ArgParser):
                             self.arguments.targets.append(sub_domain)
         # icmp_scan
         if self.arguments.ping_before_scan:
-            if os.geteuid() == 0:
+            if common_utils.is_running_with_privileges():
                 selected_modules = self.arguments.selected_modules
                 self.arguments.selected_modules = ["icmp_scan"]
                 self.start_scan(scan_id)
@@ -285,7 +284,7 @@ class Nettacker(ArgParser):
             )
         )
 
-        return os.EX_OK
+        return 0
 
     def scan_target_group(self, targets, scan_id, process_number):
         active_threads = []

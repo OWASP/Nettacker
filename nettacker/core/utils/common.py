@@ -6,6 +6,7 @@ import importlib
 import json
 import math
 import multiprocessing
+import os
 import random
 import re
 import string
@@ -450,3 +451,9 @@ def generate_compare_filepath(scan_id):
         date_time=now(format="%Y_%m_%d_%H_%M_%S"),
         scan_id=scan_id,
     )
+
+
+def is_running_with_privileges():
+    if sys.platform == "win32":
+        return ctypes.windll.shell32.IsUserAnAdmin() != 0
+    return os.geteuid() == 0
