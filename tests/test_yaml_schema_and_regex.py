@@ -20,6 +20,7 @@ def get_yaml_files():
 
 
 def load_yaml(file_path):
+    """Load and parse a YAML module file as UTF-8."""
     with open(file_path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 

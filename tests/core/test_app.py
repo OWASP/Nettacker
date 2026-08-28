@@ -8,8 +8,7 @@ from nettacker.core.app import Nettacker
 
 
 def _make_nettacker():
-    # Bypass Nettacker.__init__ (full arg parsing/setup) to unit-test
-    # check_dependencies() in isolation.
+    """Build a Nettacker instance without running __init__, to unit-test methods in isolation."""
     return Nettacker.__new__(Nettacker)
 
 
