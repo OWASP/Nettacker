@@ -454,6 +454,17 @@ def generate_compare_filepath(scan_id):
 
 
 def is_running_with_privileges():
+    """
+    check if the current process has elevated/administrative privileges
+
+    Windows has no os.geteuid(), so privilege is checked via the Win32 shell
+    API instead: IsUserAnAdmin() reports whether the current user is a
+    member of the Administrators group. On POSIX systems, the traditional
+    check is used: the process's effective UID must be 0 (root).
+
+    Returns:
+        True if running as Administrator (Windows) or root (POSIX), False otherwise
+    """
     if sys.platform == "win32":
         return ctypes.windll.shell32.IsUserAnAdmin() != 0
     return os.geteuid() == 0
