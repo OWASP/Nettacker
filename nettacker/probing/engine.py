@@ -2,7 +2,7 @@ import re
 import string
 
 from nettacker.core.lib.base import BaseEngine
-from nettacker.core.probe_sender import tcp_probe, udp_probe, tcp_probe_ssl
+from nettacker.probing.sender import tcp_probe, udp_probe, tcp_probe_ssl
 
 P_RE = re.compile(r"\$P\((\d+)\)")
 
@@ -197,6 +197,8 @@ class ProbeEngine(BaseEngine):
             return {"status": False, "result": result()}
 
         version_ = signature.version_details
+        version_template = product = info = hostname = None
+        operating_device = device_type = cpe_service = cpe_os = cpe_h = None
         if version_.version_template is not None:
             version_template = expand_template(version_.version_template, match)
         if version_.product is not None:

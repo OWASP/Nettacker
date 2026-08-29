@@ -112,7 +112,11 @@ class Module:
     def generate_loops(self):
         if self.module_inputs["excluded_ports"]:
             excluded_port_set = set(self.module_inputs["excluded_ports"])
-            if self.module_content and "ports" in self.module_content["payloads"][0]["steps"][0]:
+            if (
+                self.module_content
+                and self.module_content["payloads"]
+                and "ports" in self.module_content["payloads"][0]["steps"][0]
+            ):
                 all_ports = self.module_content["payloads"][0]["steps"][0]["ports"]
                 all_ports[:] = [port for port in all_ports if port not in excluded_port_set]
 
@@ -140,7 +144,6 @@ class Module:
             )
 
     def start(self):
-        print(f"Starting module {self.module_name} for target {self.target}")
         active_threads = []
 
         # counting total number of requests
@@ -161,7 +164,6 @@ class Module:
             )()
             for step in payload["steps"]:
                 for sub_step in step:
-                    #  print(f"Starting sub_step {sub_step} for target {self.target} in module {self.module_name}")
                     thread = Thread(
                         target=engine.run,
                         args=(

@@ -1,7 +1,11 @@
 import re
-from importlib import resources
 
 import yaml
+
+from nettacker.config import Config
+from nettacker import logger
+
+log = logger.get_logger()
 
 
 class version_details:
@@ -82,20 +86,18 @@ _probes_by_name = {}
 
 def load_probes_from_yaml():
     global _PROBES_CACHE
+    global _probes_by_name
 
     if _PROBES_CACHE is not None:
-        return _PROBES_CACHE
+        return _probes_by_name
 
-    with resources.files("nettacker.core.utils").joinpath("probes.yaml").open(
-        "r", encoding="utf-8"
-    ) as f:
+    with open(Config.path.probes_yaml_file, "r", encoding="utf-8") as f:
         _PROBES_CACHE = yaml.safe_load(f)
 
-    if _PROBES_CACHE is None:
-        load_probes_from_yaml()
+    if not _PROBES_CACHE or "probes" not in _PROBES_CACHE:
+        raise ValueError(f"No probes found in {Config.path.probes_yaml_file}")
     data = _PROBES_CACHE
 
-    global _probes_by_name
     for p in data["probes"]:
         name = p["name"]
         protocol = p.get("protocol", "tcp").lower()
@@ -117,15 +119,15 @@ def load_probes_from_yaml():
             ignore_case = bool(s.get("Ignore_case", False))
             new_line_specifier = bool(s.get("New_line_specifier", False))
             try:
-                regex = pattern.encode("latin-1")
                 flags = 0
                 if ignore_case:
                     flags |= re.IGNORECASE
                 if new_line_specifier:
                     flags |= re.DOTALL
-                regex = re.compile(regex, flags)
+                regex = re.compile(pattern.encode("latin-1"), flags)
             except Exception as e:
-                print(f"Probe failed {pattern} with {e}")
+                log.verbose_info(f"Probe signature failed to compile: {pattern!r} ({e})")
+                continue
             v = s.get("version", {}) or {}
             version = version_details(
                 raw=v.get("raw", ""),
@@ -165,8 +167,11 @@ def load_probes_from_yaml():
         )
         _probes_by_name[name] = probe
 
-    print("probes loaded!")
+    log.verbose_info(f"Loaded {len(_probes_by_name)} probes from {Config.path.probes_yaml_file}")
+    return _probes_by_name
 
 
 def build_probes_from_yaml():
+    if not _probes_by_name:
+        load_probes_from_yaml()
     return _probes_by_name

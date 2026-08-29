@@ -1,8 +1,8 @@
 info:
-  id: port_scan
+  id: version_scan
   author: OWASP Nettacker Team
   severity: 0
-  description: Find open ports and services
+  description: Find open ports and identify running service versions via TCP/UDP payload probing
   reference:
   profiles:
     - scan

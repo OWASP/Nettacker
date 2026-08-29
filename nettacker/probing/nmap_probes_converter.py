@@ -136,10 +136,7 @@ def parse_probe_file(in_path):
     curr_probe = None
 
     with open(in_path, "r", encoding="utf-8") as f:
-        count = 0
         for raw_line in f:
-            count = count + 1
-            print("line", count)
             line = raw_line.rstrip("\n")
 
             if not line or line.lstrip().startswith("#"):
@@ -257,9 +254,6 @@ def parse_probe_file(in_path):
                 cpe_hardware_platform = ""
                 while line:
                     line = line.strip()
-                    print(
-                        f"character is {sig_type} {service} and {line[0]} and line {count} with options {options} and regex {regex}"
-                    )
                     if line[0] == "p":
                         delim1 = line[1:2]
                         line = line[2:]
@@ -350,7 +344,21 @@ def write_yaml(probes, out_path):
 
 
 if __name__ == "__main__":
-    in_file = "nmap-service-probes.txt"
-    out_file = "probes.yaml"
-    probes = parse_probe_file(in_file)
-    write_yaml(probes, out_file)
+    import argparse
+
+    from nettacker.config import Config
+
+    arg_parser = argparse.ArgumentParser(
+        description="Convert an nmap-service-probes file into Nettacker's probes.yaml format"
+    )
+    arg_parser.add_argument("input", help="Path to the nmap-service-probes source file")
+    arg_parser.add_argument(
+        "-o",
+        "--output",
+        default=str(Config.path.probes_yaml_file),
+        help="Path to write the generated probes.yaml (default: %(default)s)",
+    )
+    args = arg_parser.parse_args()
+
+    probes = parse_probe_file(args.input)
+    write_yaml(probes, args.output)

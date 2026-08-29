@@ -28,12 +28,12 @@ from nettacker.core.module import Module
 from nettacker.core.socks_proxy import set_socks_proxy
 from nettacker.core.utils import common as common_utils
 from nettacker.core.utils.common import wait_for_threads_to_finish
-from nettacker.core.utils.probes_loader import load_probes_from_yaml
 from nettacker.database.db import find_events, remove_old_logs
 from nettacker.database.mysql import mysql_create_database, mysql_create_tables
 from nettacker.database.postgresql import postgres_create_database
 from nettacker.database.sqlite import sqlite_create_tables
 from nettacker.logger import TerminalCodes
+from nettacker.probing.loader import load_probes_from_yaml
 
 log = logger.get_logger()
 
@@ -44,7 +44,6 @@ class Nettacker(ArgParser):
             self.print_logo()
         self.check_dependencies()
         load_probes_from_yaml()
-        # time.sleep(10)
         log.info(_("scan_started"))
         super().__init__(api_arguments=api_arguments)
 
@@ -265,7 +264,6 @@ class Nettacker(ArgParser):
         total_number_threads,
     ):
         options = copy.deepcopy(self.arguments)
-        print("hey actually running scan_target")
         socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
         module = Module(
             module_name,

@@ -1,8 +1,8 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from nettacker.core.lib.socket import SocketEngine, create_tcp_socket
+from nettacker.core.lib.socket import SocketEngine, SocketLibrary, create_tcp_socket
 
 
 class Responses:
@@ -121,7 +121,6 @@ class Substeps:
             "condition_type": "or",
             "conditions": {"time_response": {"regex": "", "reverse": False}},
         },
-        "logs": [{"status": "alive"}],
     }
 
 
@@ -153,6 +152,12 @@ class TestSocketMethod:
         socket_instance.settimeout.assert_called_with(TIMEOUT)
         socket_instance.connect.assert_called_with((HOST, PORT))
         mock_wrap.assert_called_with(socket_instance)
+
+    @patch("socket.socket")
+    def test_create_tcp_socket_returns_none_on_connection_refused(self, mock_socket):
+        mock_socket.return_value.connect.side_effect = ConnectionRefusedError
+        result = create_tcp_socket("example.com", 80, 60)
+        assert result is None
 
     def test_response_conditions_matched_socket_icmp(self, socket_engine, substeps, responses):
         result = socket_engine.response_conditions_matched(
@@ -194,3 +199,91 @@ class TestSocketMethod:
             substeps.tcp_connect_send_and_receive, responses.none
         )
         assert result == []
+
+
+class TestTcpAndUdpScan:
+    """Covers SocketLibrary.tcp_and_udp_scan, the payload-based probing entry point."""
+
+    HOST = "10.0.0.1"
+    PORT = 22
+    TIMEOUT = 2000
+
+    def _patch_probing(self, tcp_result=None, ssl_result=None, udp_result=None, engine_result=None):
+        tcp_result = tcp_result or {"peer_name": "", "raw_bytes": b""}
+        ssl_result = ssl_result or {"peer_name": "", "raw_bytes": b""}
+        udp_result = udp_result or {"peer_name": self.HOST, "raw_bytes": b""}
+
+        mock_engine_instance = MagicMock()
+        mock_engine_instance.probe_sequentially.return_value = engine_result
+
+        return (
+            patch("nettacker.core.lib.socket.build_probes_from_yaml", return_value={}),
+            patch("nettacker.core.lib.socket.tcp_probe", return_value=tcp_result),
+            patch("nettacker.core.lib.socket.tcp_probe_ssl", return_value=ssl_result),
+            patch("nettacker.core.lib.socket.udp_probe", return_value=udp_result),
+            patch("nettacker.core.lib.socket.ProbeEngine", return_value=mock_engine_instance),
+        )
+
+    def test_returns_probe_engine_result_when_tcp_matches(self):
+        engine_result = {"service": "ssh", "ssl_flag": False, "log": ["banner"]}
+        patches = self._patch_probing(
+            tcp_result={"peer_name": (self.HOST, self.PORT), "raw_bytes": b"SSH-2.0"},
+            engine_result=engine_result,
+        )
+        with patches[0], patches[1], patches[2], patches[3], patches[4]:
+            result = SocketLibrary().tcp_and_udp_scan(self.HOST, self.PORT, self.TIMEOUT)
+        assert result == engine_result
+
+    def test_falls_back_to_udp_when_tcp_closed(self):
+        engine_result = {"service": "dns", "ssl_flag": False, "log": ["banner"]}
+        patches = self._patch_probing(
+            udp_result={"peer_name": self.HOST, "raw_bytes": b"some-data"},
+            engine_result=engine_result,
+        )
+        with patches[0], patches[1], patches[2], patches[3] as mock_udp, patches[4]:
+            result = SocketLibrary().tcp_and_udp_scan(self.HOST, 53, self.TIMEOUT)
+        mock_udp.assert_called_once()
+        assert result == engine_result
+
+    def test_open_filtered_when_tcp_open_but_no_signature_match(self):
+        patches = self._patch_probing(
+            tcp_result={"peer_name": (self.HOST, self.PORT), "raw_bytes": b""},
+            engine_result=None,
+        )
+        with patches[0], patches[1], patches[2], patches[3], patches[4]:
+            with patch("socket.getservbyport", return_value="ssh"):
+                result = SocketLibrary().tcp_and_udp_scan(self.HOST, self.PORT, self.TIMEOUT)
+        assert result == {"service": "ssh", "ssl_flag": False, "log": ["Open|Filtered"]}
+
+    def test_returns_none_when_nothing_open(self):
+        patches = self._patch_probing(engine_result=None)
+        with patches[0], patches[1], patches[2], patches[3], patches[4]:
+            result = SocketLibrary().tcp_and_udp_scan(self.HOST, self.PORT, self.TIMEOUT)
+        assert result is None
+
+
+class TestResponseConditionsMatchedTcpAndUdpScan:
+    @pytest.fixture
+    def sub_step(self):
+        return {"method": "tcp_and_udp_scan", "response": {}}
+
+    def test_none_response_returns_empty_list(self, socket_engine, sub_step):
+        assert socket_engine.response_conditions_matched(sub_step, None) == []
+
+    def test_formats_service_and_logs(self, socket_engine, sub_step):
+        response = {
+            "service": "ssh",
+            "ssl_flag": False,
+            "log": ["['version_template: 8.9', 'product: OpenSSH']"],
+        }
+        result = socket_engine.response_conditions_matched(sub_step, response)
+        assert result["service"] == ["running_service: ssh, ssl_flag: False"]
+        assert len(result["log"]) == 1
+        assert "running_service: ssh" in result["log"][0]
+        assert "product: OpenSSH" in result["log"][0]
+        assert "cves:" not in result["log"][0]
+
+    def test_missing_log_key_uses_fallback(self, socket_engine, sub_step):
+        response = {"service": "unknown", "ssl_flag": False}
+        result = socket_engine.response_conditions_matched(sub_step, response)
+        assert "state: Open|Filtered" in result["log"][0]

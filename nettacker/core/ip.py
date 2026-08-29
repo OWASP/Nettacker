@@ -3,6 +3,7 @@ import json
 import netaddr
 import requests
 
+
 def generate_ip_range(ip_range):
     """
     IP range to CIDR and IPNetwork type
@@ -107,6 +108,7 @@ def is_ipv6_range(ip_range):
         )
     except Exception:
         return False
+
 
 def is_ipv6_cidr(ip_range):
     try:

@@ -11,15 +11,10 @@ import struct
 import time
 
 from nettacker.core.lib.base import BaseEngine, BaseLibrary
-from nettacker.core.Probe_Engine import ProbeEngine
-from nettacker.core.probe_sender import tcp_probe, tcp_probe_ssl, udp_probe
-from nettacker.core.utils.common import (
-    reverse_and_regex_condition,
-    replace_dependent_response,
-    extract_cpe_and_version,
-    get_cves_for_product_version,
-)
-from nettacker.core.utils.probes_loader import build_probes_from_yaml
+from nettacker.core.utils.common import reverse_and_regex_condition, replace_dependent_response
+from nettacker.probing.engine import ProbeEngine
+from nettacker.probing.loader import build_probes_from_yaml
+from nettacker.probing.sender import tcp_probe, tcp_probe_ssl, udp_probe
 
 log = logging.getLogger(__name__)
 
@@ -31,7 +26,7 @@ def create_tcp_socket(host, port, timeout):
         socket_connection.connect((host, port))
         ssl_flag = False
     except ConnectionRefusedError:
-        pass
+        return None
 
     try:
         socket_connection = ssl.wrap_socket(socket_connection)
@@ -302,9 +297,6 @@ class SocketEngine(BaseEngine):
     library = SocketLibrary
 
     def response_conditions_matched(self, sub_step, response):
-        if not response:
-            return []
-
         # 1. Method: tcp_connect_only
         if sub_step["method"] == "tcp_connect_only":
             return response
@@ -317,53 +309,56 @@ class SocketEngine(BaseEngine):
             condition_type = sub_step["response"]["condition_type"]
             condition_results = {}
 
-            for condition in conditions:
-                regex = re.findall(
-                    re.compile(conditions[condition]["regex"]),
-                    response["response"]
-                    if condition != "open_port"
-                    else str(response["peer_name"][1]),
-                )
-                reverse = conditions[condition]["reverse"]
-                condition_results[condition] = reverse_and_regex_condition(regex, reverse)
+            if response:
+                for condition in conditions:
+                    regex = re.findall(
+                        re.compile(conditions[condition]["regex"]),
+                        response["response"]
+                        if condition != "open_port"
+                        else str(response["peer_name"][1]),
+                    )
+                    reverse = conditions[condition]["reverse"]
+                    condition_results[condition] = reverse_and_regex_condition(regex, reverse)
 
-                if condition_results[condition]:
-                    default_service = response["service"]
-                    ssl_flag = response["ssl_flag"]
-                    matched_regex = condition_results[condition]
+                    if condition_results[condition]:
+                        default_service = response["service"]
+                        ssl_flag = response["ssl_flag"]
+                        matched_regex = condition_results[condition]
 
-                    log_response = {
-                        "running_service": condition,
-                        "matched_regex": matched_regex,
-                        "default_service": default_service,
-                        "ssl_flag": ssl_flag,
-                    }
-                    condition_results["service"] = [str(log_response)]
+                        log_response = {
+                            "running_service": condition,
+                            "matched_regex": matched_regex,
+                            "default_service": default_service,
+                            "ssl_flag": ssl_flag,
+                        }
+                        condition_results["service"] = [str(log_response)]
 
-            for condition in copy.deepcopy(condition_results):
-                if not condition_results[condition]:
-                    del condition_results[condition]
+                for condition in copy.deepcopy(condition_results):
+                    if not condition_results[condition]:
+                        del condition_results[condition]
 
-            if "open_port" in condition_results and len(condition_results) > 1:
-                del condition_results["open_port"]
-                del conditions["open_port"]
+                if "open_port" in condition_results and len(condition_results) > 1:
+                    del condition_results["open_port"]
+                    del conditions["open_port"]
 
-            if condition_type.lower() == "and":
-                return condition_results if len(condition_results) == len(conditions) else []
+                if condition_type.lower() == "and":
+                    return condition_results if len(condition_results) == len(conditions) else []
 
-            if condition_type.lower() == "or":
-                if sub_step["response"].get("log", False):
-                    condition_results["log"] = sub_step["response"]["log"]
-                    if "response_dependent" in condition_results["log"]:
-                        condition_results["log"] = replace_dependent_response(
-                            condition_results["log"], condition_results
-                        )
-                return condition_results if condition_results else []
+                if condition_type.lower() == "or":
+                    if sub_step["response"].get("log", False):
+                        condition_results["log"] = sub_step["response"]["log"]
+                        if "response_dependent" in condition_results["log"]:
+                            condition_results["log"] = replace_dependent_response(
+                                condition_results["log"], condition_results
+                            )
+                    return condition_results if condition_results else []
             return []
 
         # 3. Method: tcp_and_udp_scan
-        # 3. Method: tcp_and_udp_scan
         if sub_step.get("method") == "tcp_and_udp_scan":
+            if not response:
+                return []
+
             condition_results = {}
 
             running_svc = response.get("service", "unknown")
@@ -379,21 +374,7 @@ class SocketEngine(BaseEngine):
                     clean_item = str(item).replace("\\'", "'").replace('"', "'").strip("[]{} ")
 
                     if clean_item:
-                        # 1. Parse cpe_service, product, and version directly from the scan banner line
-                        cpe_svc, product, version = extract_cpe_and_version(clean_item)
-
-                        cve_str = ""
-                        # 2. Query CVEs using our multi-tiered CPE/Fuzzy resolution logic
-                        if (cpe_svc or product) and version:
-                            cves = get_cves_for_product_version(
-                                cpe_service=cpe_svc, product=product, version=version
-                            )
-                            if cves:
-                                cve_list_formatted = "|".join(cves)
-                                cve_str = f", 'cves: {cve_list_formatted}'"
-
-                        # Append enriched banner string to output log
-                        flat_logs.append(f"{prefix}, {clean_item}{cve_str}")
+                        flat_logs.append(f"{prefix}, {clean_item}")
             else:
                 # Fallback if no specific banner logs returned
                 flat_logs.append(f"{prefix}, 'state: Open|Filtered'")
@@ -404,11 +385,7 @@ class SocketEngine(BaseEngine):
 
         # 4. Method: socket_icmp
         if sub_step["method"] == "socket_icmp":
-            logs = []
-            if isinstance(response, dict):
-                for k, v in response.items():
-                    logs.append(f"{k}: {v}")
-            return logs
+            return response
 
         return []
 

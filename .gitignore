@@ -31,3 +31,6 @@ results.*
 coverage.xml
 
 venv
+
+#stray test artifacts written to repo root
+/report.html
