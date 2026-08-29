@@ -1,3 +1,5 @@
+.PHONY: check package pre-commit test test-package test-unit
+
 check: pre-commit test
 
 package:
