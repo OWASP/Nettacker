@@ -16,6 +16,9 @@ concurrency:
   cancel-in-progress: true
   group: ${{ github.repository }}-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
 
+env:
+  PY_COLORS: "1"
+
 jobs:
   # Code quality checks.
   pre-commit:
@@ -163,10 +166,11 @@ jobs:
           name: dist
           path: dist
 
+      - name: Install test dependencies
+        run: poetry install --only test --no-interaction
+
       - name: Verify package includes tests
-        run: |
-          python -m pip install pytest
-          python -m pytest tests/package --no-cov -o addopts=
+        run: poetry run pytest tests/package --no-cov -o addopts=
 
       - name: Verify package installs
         run: |
