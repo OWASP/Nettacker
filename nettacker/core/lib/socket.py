@@ -94,11 +94,18 @@ class SocketLibrary(BaseLibrary):
             "ssl_flag": ssl_flag,
         }
 
-    def tcp_and_udp_scan(self, host, port: int, timeout=5000):
+    def tcp_and_udp_scan(self, host, port: int, timeout=5):
+        # `timeout` follows the same convention as every other method here
+        # (tcp_connect_only, tcp_connect_send_and_receive, socket_icmp): it's
+        # in seconds, as set by the module yaml (e.g. "timeout: 3"). The
+        # probe_sender functions (tcp_probe/tcp_probe_ssl/udp_probe) expect
+        # milliseconds, so it must be converted at this boundary.
+        timeout_ms = int(timeout * 1000)
+
         probes_by_name = build_probes_from_yaml()
         # 1. TRY TCP FIRST (Standard and SSL)
         # We pass an empty payload or a light generic probe first just to check status
-        tcp_res = tcp_probe(host, port, payload="", timeout_ms=timeout)
+        tcp_res = tcp_probe(host, port, payload="", timeout_ms=timeout_ms)
         is_tcp_open = False
         is_ssl = False
 
@@ -106,7 +113,7 @@ class SocketLibrary(BaseLibrary):
             is_tcp_open = True
         else:
             # If standard TCP failed, check if it's an SSL-only port rejecting plain text
-            ssl_res = tcp_probe_ssl(host, port, payload="", timeout_ms=timeout)
+            ssl_res = tcp_probe_ssl(host, port, payload="", timeout_ms=timeout_ms)
             if ssl_res["peer_name"]:
                 is_tcp_open = True
                 is_ssl = True
@@ -125,7 +132,7 @@ class SocketLibrary(BaseLibrary):
 
         # 2. TRY UDP
         # Send a probe using your robust udp_probe function
-        udp_res = udp_probe(host, port, payload="PING", timeout_ms=timeout)
+        udp_res = udp_probe(host, port, payload="PING", timeout_ms=timeout_ms)
 
         # In UDP, if we get raw_bytes back, the port is definitely open
         if udp_res and udp_res["raw_bytes"]:

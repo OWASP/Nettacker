@@ -206,7 +206,7 @@ class TestTcpAndUdpScan:
 
     HOST = "10.0.0.1"
     PORT = 22
-    TIMEOUT = 2000
+    TIMEOUT = 2  # seconds, matching the module yaml convention (e.g. "timeout: 3")
 
     def _patch_probing(self, tcp_result=None, ssl_result=None, udp_result=None, engine_result=None):
         tcp_result = tcp_result or {"peer_name": "", "raw_bytes": b""}
@@ -260,6 +260,27 @@ class TestTcpAndUdpScan:
         with patches[0], patches[1], patches[2], patches[3], patches[4]:
             result = SocketLibrary().tcp_and_udp_scan(self.HOST, self.PORT, self.TIMEOUT)
         assert result is None
+
+    def test_seconds_timeout_is_converted_to_milliseconds_for_probes(self):
+        """Regression test: the module yaml's "timeout" is in seconds (like every
+        other socket method here), but tcp_probe/tcp_probe_ssl/udp_probe expect
+        milliseconds. Passing it through unconverted made every real probe time
+        out almost instantly against any host with real network latency."""
+        patches = self._patch_probing(engine_result=None)
+        with patches[0], patches[1] as mock_tcp, patches[2] as mock_ssl, patches[
+            3
+        ] as mock_udp, patches[4]:
+            SocketLibrary().tcp_and_udp_scan(self.HOST, self.PORT, self.TIMEOUT)
+
+        mock_tcp.assert_called_once_with(
+            self.HOST, self.PORT, payload="", timeout_ms=self.TIMEOUT * 1000
+        )
+        mock_ssl.assert_called_once_with(
+            self.HOST, self.PORT, payload="", timeout_ms=self.TIMEOUT * 1000
+        )
+        mock_udp.assert_called_once_with(
+            self.HOST, self.PORT, payload="PING", timeout_ms=self.TIMEOUT * 1000
+        )
 
 
 class TestResponseConditionsMatchedTcpAndUdpScan:
