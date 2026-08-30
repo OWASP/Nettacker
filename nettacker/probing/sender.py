@@ -102,6 +102,7 @@ def tcp_probe_ssl(
     context = ssl.create_default_context()
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
+    context.minimum_version = ssl.TLSVersion.TLSv1_2
 
     chunks = []
     tcp_wrap = False
