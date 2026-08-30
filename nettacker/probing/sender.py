@@ -12,11 +12,15 @@ def raw_to_bytes(payload: str) -> bytes:
     return payload.encode("latin1").decode("unicode_escape").encode("latin1")
 
 
+def _address_family(host: str) -> socket.AddressFamily:
+    return socket.AF_INET6 if is_single_ipv6(host) else socket.AF_INET
+
+
 def tcp_probe(host: str, port: int, payload: str = "", timeout_ms=5000, tcpwrappedms=3000):
     timeout = timeout_ms / 1000.0
     tcp_wrapped = tcpwrappedms / 1000.0
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s = socket.socket(_address_family(host), socket.SOCK_STREAM)
     s.settimeout(timeout)
 
     tcp_wrap = False
@@ -96,7 +100,7 @@ def tcp_probe_ssl(
     timeout = timeout_ms / 1000.0
     tcp_wrapped = tcpwrappedms / 1000.0
 
-    raw_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    raw_sock = socket.socket(_address_family(host), socket.SOCK_STREAM)
     raw_sock.settimeout(timeout)
 
     context = ssl.create_default_context()
@@ -111,7 +115,6 @@ def tcp_probe_ssl(
     ssl_sock = None
 
     try:
-        start = time.time()
         raw_sock.connect((host, port))
 
         ssl_sock = context.wrap_socket(
@@ -124,6 +127,7 @@ def tcp_probe_ssl(
         if payload:
             ssl_sock.sendall(payload)
 
+        start = time.time()
         while True:
             remaining = timeout - (time.time() - start)
             if remaining <= 0:
@@ -170,7 +174,7 @@ def tcp_probe_ssl(
 
 def udp_probe(host: str, port: int, payload: str = "", timeout_ms=5000, max_tries=1):
     timeout = timeout_ms / 1000.0
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s = socket.socket(_address_family(host), socket.SOCK_DGRAM)
     s.settimeout(timeout)
     addr = (host, port)
 

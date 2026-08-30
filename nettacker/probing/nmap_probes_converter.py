@@ -129,8 +129,6 @@ def parse_ssl_ports(line):
 
 
 def parse_probe_file(in_path):
-    global excluded_ports
-    global probes
     probes = []
     excluded_ports = []
     curr_probe = None
@@ -158,7 +156,7 @@ def parse_probe_file(in_path):
                 line = line[len(name) + 1 :]
 
                 if line[0] != "q":
-                    KeyError
+                    raise ValueError(f"Malformed Probe line, expected 'q' delimiter: {raw_line!r}")
 
                 line = line[1:]
                 delim = line[0:1]
@@ -303,6 +301,10 @@ def parse_probe_file(in_path):
                         elif line[0] == "o":
                             cpe_operating_system = line[2 : line.find(delim7, 1)]
                             line = line[len(cpe_operating_system) + 4 :]
+                    else:
+                        # Unrecognized version field token; stop parsing this
+                        # signature's version fields instead of spinning forever.
+                        break
 
                 sig = {
                     "type": sig_type,
@@ -331,10 +333,10 @@ def parse_probe_file(in_path):
         if curr_probe is not None:
             probes.append(curr_probe)
 
-    return probes
+    return probes, excluded_ports
 
 
-def write_yaml(probes, out_path):
+def write_yaml(probes, excluded_ports, out_path):
     data = {
         "Excluded ports": [excluded_ports],
         "probes": probes,
@@ -360,5 +362,5 @@ if __name__ == "__main__":
     )
     args = arg_parser.parse_args()
 
-    probes = parse_probe_file(args.input)
-    write_yaml(probes, args.output)
+    probes, excluded_ports = parse_probe_file(args.input)
+    write_yaml(probes, excluded_ports, args.output)

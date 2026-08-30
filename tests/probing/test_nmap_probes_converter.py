@@ -63,16 +63,14 @@ class TestParseProbeFile:
         probe_file = tmp_path / "nmap-service-probes.txt"
         probe_file.write_text(SAMPLE_PROBES_TXT)
 
-        from nettacker.probing import nmap_probes_converter as converter
-
-        parse_probe_file(str(probe_file))
-        assert converter.excluded_ports == {"TCP": "9100-9101", "UDP": "69", "Universal": ""}
+        _, excluded_ports = parse_probe_file(str(probe_file))
+        assert excluded_ports == {"TCP": "9100-9101", "UDP": "69", "Universal": ""}
 
     def test_parses_two_probes(self, tmp_path):
         probe_file = tmp_path / "nmap-service-probes.txt"
         probe_file.write_text(SAMPLE_PROBES_TXT)
 
-        probes = parse_probe_file(str(probe_file))
+        probes, _ = parse_probe_file(str(probe_file))
         names = [p["name"] for p in probes]
         assert names == ["NULL", "DNSVersionBindReqTCP"]
 
@@ -80,7 +78,7 @@ class TestParseProbeFile:
         probe_file = tmp_path / "nmap-service-probes.txt"
         probe_file.write_text(SAMPLE_PROBES_TXT)
 
-        probes = parse_probe_file(str(probe_file))
+        probes, _ = parse_probe_file(str(probe_file))
         null_probe = probes[0]
         assert null_probe["protocol"] == "TCP"
         assert null_probe["rarity"] == 1
@@ -93,7 +91,7 @@ class TestParseProbeFile:
         probe_file = tmp_path / "nmap-service-probes.txt"
         probe_file.write_text(SAMPLE_PROBES_TXT)
 
-        probes = parse_probe_file(str(probe_file))
+        probes, _ = parse_probe_file(str(probe_file))
         signatures = probes[0]["signatures"]
         match_sig = signatures[0]
         assert match_sig["type"] == "match"
@@ -107,7 +105,7 @@ class TestParseProbeFile:
         probe_file = tmp_path / "nmap-service-probes.txt"
         probe_file.write_text(SAMPLE_PROBES_TXT)
 
-        probes = parse_probe_file(str(probe_file))
+        probes, _ = parse_probe_file(str(probe_file))
         signatures = probes[0]["signatures"]
         soft_sig = signatures[1]
         assert soft_sig["type"] == "softmatch"
@@ -119,7 +117,7 @@ class TestParseProbeFile:
         probe_file = tmp_path / "nmap-service-probes.txt"
         probe_file.write_text(SAMPLE_PROBES_TXT)
 
-        probes = parse_probe_file(str(probe_file))
+        probes, _ = parse_probe_file(str(probe_file))
         udp_probe = probes[1]
         assert udp_probe["protocol"] == "UDP"
         assert udp_probe["probe_string"] == "test"
@@ -129,7 +127,7 @@ class TestParseProbeFile:
         probe_file = tmp_path / "nmap-service-probes.txt"
         probe_file.write_text("# a comment\n\n" + SAMPLE_PROBES_TXT)
 
-        probes = parse_probe_file(str(probe_file))
+        probes, _ = parse_probe_file(str(probe_file))
         assert len(probes) == 2
 
 
@@ -139,8 +137,8 @@ class TestWriteYaml:
         probe_file.write_text(SAMPLE_PROBES_TXT)
         out_file = tmp_path / "probes.yaml"
 
-        probes = parse_probe_file(str(probe_file))
-        write_yaml(probes, str(out_file))
+        probes, excluded_ports = parse_probe_file(str(probe_file))
+        write_yaml(probes, excluded_ports, str(out_file))
 
         with open(out_file) as f:
             data = yaml.safe_load(f)

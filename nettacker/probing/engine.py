@@ -247,11 +247,17 @@ class ProbeEngine(BaseEngine):
         ssl_flag = False
         raw_response = b""
 
-        for probe in relevant_probes:
+        index = 0
+        while index < len(relevant_probes):
+            probe = relevant_probes[index]
+            index += 1
+
             # Check if we should switch to SSL probes
             if detected_service == "ssl" and not ssl_flag:
                 relevant_probes = self.get_probes_for_sslport()
                 ssl_flag = True
+                index = 0
+                continue
 
             if self.protocol == "tcp":
                 if not ssl_flag:

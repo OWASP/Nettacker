@@ -271,6 +271,7 @@ class SocketLibrary(BaseLibrary):
             header + data, (socket.gethostbyname(host), 1)
         )  # Don't know about the 1
 
+        delay = None
         while True:
             started_select = time.time()
             what_ready = select.select([socket_connection], [], [], timeout)
