@@ -38,6 +38,7 @@ OWASP Nettacker Modules can be of type **Scan** (scan for something), **Vuln** (
 - '**smartermail_version_scan**' - Scan the target and identify the SmarterMail version
 - '**ssl_expiring_certificate_scan**' - Scan the target for SSL/TLS certificates nearing expiration
 - '**subdomain_scan**' - Scan the target for subdomains (target must be a domain e.g. owasp.org)
+- '**version_scan**' - Scan the target for open ports and identify running service versions via TCP/UDP payload probing
 - '**viewdns_reverse_iplookup_scan**' - Identify which sites/domains are hosted on the target host using ViewDNS.info
 - '**waf_scan**' - Scan the target to detect the presence of a Web Application Firewall
 - '**web_technologies_scan**' - Scan the target to identify web technologies and frameworks
