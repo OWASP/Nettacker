@@ -16,6 +16,9 @@ concurrency:
   cancel-in-progress: true
   group: ${{ github.repository }}-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
 
+env:
+  PY_COLORS: "1"
+
 jobs:
   # Code quality checks.
   pre-commit:
@@ -163,8 +166,13 @@ jobs:
           name: dist
           path: dist
 
-      - name: Run tests
-        shell: bash
+      - name: Install test dependencies
+        run: poetry install --only test --no-interaction
+
+      - name: Verify package includes tests
+        run: poetry run pytest tests/package --no-cov -o addopts=
+
+      - name: Verify package installs
         run: |
           rm -rf nettacker
           python -m pip install dist/*.whl
@@ -172,6 +180,7 @@ jobs:
           python -m pip uninstall -y nettacker
           python -m pip install dist/*.tar.gz
           nettacker --version
+        shell: bash
 
   # Docker related jobs.
   test-docker-image:
