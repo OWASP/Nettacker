@@ -40,13 +40,15 @@ log = logger.get_logger()
 
 
 class Nettacker(ArgParser):
-    def __init__(self, api_arguments=None):
+    def __init__(self, api_arguments=None, explicitly_provided_dests=None):
         if not api_arguments:
             self.print_logo()
         self.check_dependencies()
 
         log.info(_("scan_started"))
-        super().__init__(api_arguments=api_arguments)
+        super().__init__(
+            api_arguments=api_arguments, explicitly_provided_dests=explicitly_provided_dests
+        )
 
     @staticmethod
     def print_logo():
@@ -403,6 +405,13 @@ class Nettacker(ArgParser):
                     continue
                 work_remaining = True
 
+                # Events are only identifiable by (target, module, scan_id), so two
+                # running steps that share a module would share an ambiguous event-count
+                # baseline (see below) and could attribute each other's success/failure.
+                # Serialize same-module steps per target instead of launching them
+                # concurrently.
+                running_modules = {steps_by_id[sid].module for sid in state["running"]}
+
                 for step_id, step in steps_by_id.items():
                     if (
                         step_id in state["completed"]
@@ -418,6 +427,9 @@ class Nettacker(ArgParser):
                         state["blocked"].add(step_id)
                         continue
                     if status == "pending":
+                        continue
+
+                    if step.module in running_modules:
                         continue
 
                     # launch step
@@ -465,6 +477,7 @@ class Nettacker(ArgParser):
 
                     active_threads.append(thread)
                     state["running"].add(step_id)
+                    running_modules.add(step.module)
                     step_threads[(target, step_id)] = thread
                     step_baselines[(target, step_id)] = baseline
                     launched_step = True

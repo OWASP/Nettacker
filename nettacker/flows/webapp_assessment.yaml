@@ -129,13 +129,19 @@ steps:
     params:
       target: "{target}"
     # Overrides the flow-wide `continue` default: if this CVE check fails, stop the
-    # whole target here rather than treat the failure as local. Note final_report_gate
-    # below does NOT depend on apache_cve_check, so under `continue` it would still run
-    # after this failed - `abort` is what prevents that.
+    # whole target here rather than treat the failure as local.
     on_failure: abort
 
   # Even deeper: all-of, where one branch is itself an any-of
   #   port_scan AND (http_detect OR tls_detect) AND (dir_scan OR admin_panel_check)
+  #   AND apache_cve_check
+  # apache_cve_check is listed here deliberately, even though the branches above
+  # already make it reachable: steps run as soon as depends_on is satisfied, so
+  # without this edge final_report_gate could become runnable in the very same
+  # scheduler pass as apache_cve_check - starting before that check's on_failure:
+  # abort has had a chance to fire. Depending on apache_cve_check directly forces
+  # final_report_gate to wait for its terminal state (blocked if it fails, which
+  # blocks final_report_gate too under `all`; satisfied if it succeeds).
   - id: final_report_gate
     module: http_html_title_scan
     depends_on:
@@ -143,5 +149,6 @@ steps:
         - port_scan
         - any: [http_detect, tls_detect]
         - any: [dir_scan, admin_panel_check]
+        - apache_cve_check
     params:
       target: "{target}"

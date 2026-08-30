@@ -26,10 +26,11 @@ log = get_logger()
 
 
 class ArgParser(ArgumentParser):
-    def __init__(self, api_arguments=None) -> None:
+    def __init__(self, api_arguments=None, explicitly_provided_dests=None) -> None:
         super().__init__(prog="Nettacker", add_help=False)
 
         self.api_arguments = api_arguments
+        self._api_explicitly_provided_dests = explicitly_provided_dests
         self.graphs = self.load_graphs()
         self.languages = self.load_languages()
 
@@ -637,7 +638,9 @@ class ArgParser(ArgumentParser):
                 log.warn(_("flow_overrides_module_selection"))
 
             try:
-                flow = FlowLoader.load(options.module_flow)
+                flow = FlowLoader.load(
+                    options.module_flow, allow_arbitrary_path=not bool(self.api_arguments)
+                )
             except FlowError as error:
                 die_failure(str(error))
 
@@ -837,6 +840,12 @@ class ArgParser(ArgumentParser):
         crashing for any action whose __call__ assumes a real value or container.
         """
         if self.api_arguments:
+            # form_values in the API handler is backfilled with application defaults
+            # for every field the caller didn't send, so api_arguments itself can't
+            # tell a real request field apart from a default that just landed in the
+            # same namespace. The caller must pass the pre-backfill field set instead.
+            if self._api_explicitly_provided_dests is not None:
+                return set(self._api_explicitly_provided_dests)
             return set(vars(self.api_arguments).keys())
 
         original_defaults = {action: action.default for action in self._actions}

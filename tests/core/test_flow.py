@@ -308,10 +308,40 @@ def test_invalid_flow_timeout_raises(timeout):
         FlowLoader.build(content)
 
 
-@pytest.mark.parametrize("retries", ["1", [1], True])
+@pytest.mark.parametrize("retries", ["1", [1], True, 1.5, -1])
 def test_invalid_step_retries_raises(retries):
+    # A float such as 1.5 must be rejected at load time - it passes a generic
+    # numeric check but later crashes with TypeError when the retry loop does
+    # range(retries) deep in the scheduler. Negative retries make no sense either.
     content = make_flow_content(
         [{"id": "a", "module": "port_scan", "depends_on": [], "retries": retries}]
     )
     with pytest.raises(FlowError):
         FlowLoader.build(content)
+
+
+def test_valid_integer_retries_accepted():
+    content = make_flow_content(
+        [{"id": "a", "module": "port_scan", "depends_on": [], "retries": 3}]
+    )
+    flow = FlowLoader.build(content)
+    assert flow.steps[0].retries == 3
+
+
+def test_resolve_path_rejects_arbitrary_path_for_api_callers(tmp_path):
+    # API callers must not be able to point module_flow at an arbitrary
+    # server-local YAML file - only bundled flow names are allowed.
+    outside_flow = tmp_path / "evil.yaml"
+    outside_flow.write_text("steps: []\n")
+    with pytest.raises(FlowError):
+        FlowLoader.resolve_path(str(outside_flow), allow_arbitrary_path=False)
+
+
+def test_resolve_path_rejects_path_separators_in_name_for_api_callers():
+    with pytest.raises(FlowError):
+        FlowLoader.resolve_path("../webapp_assessment", allow_arbitrary_path=False)
+
+
+def test_resolve_path_allows_bundled_name_for_api_callers():
+    path = FlowLoader.resolve_path("webapp_assessment", allow_arbitrary_path=False)
+    assert path.name == "webapp_assessment.yaml"

@@ -59,12 +59,20 @@ def referenced_step_ids(depends_on):
     return ids
 
 
-def _is_valid_numeric(value):
-    """timeout/retries must be a real number (or unset) - not a bool, string, list, etc.
+def _is_valid_timeout(value):
+    """timeout must be a real number (or unset) - not a bool, string, list, etc.
     Left unchecked, a malformed value here surfaces later as a raw TypeError deep in
     the scheduler (e.g. comparing max_parallel against an int) instead of a clean,
     load-time FlowError."""
     return value is None or (isinstance(value, (int, float)) and not isinstance(value, bool))
+
+
+def _is_valid_retries(value):
+    """retries must be a non-negative integer (or unset) - not a bool, float, string, etc.
+    A float such as 1.5 passes a generic numeric check but later crashes with a raw
+    TypeError when the retry loop does range(retries) deep in the scheduler, instead
+    of a clean, load-time FlowError."""
+    return value is None or (isinstance(value, int) and not isinstance(value, bool) and value >= 0)
 
 
 def is_valid_depends_on_shape(depends_on):
@@ -153,10 +161,23 @@ def render_params(params, context):
 
 class FlowLoader:
     @staticmethod
-    def resolve_path(name_or_path):
-        candidate = Path(name_or_path)
-        if candidate.suffix in {".yaml", ".yml"} and candidate.is_file():
-            return candidate
+    def resolve_path(name_or_path, allow_arbitrary_path=True):
+        """
+        Resolve a flow reference to a file.
+
+        `allow_arbitrary_path` gates whether an accessible .yaml/.yml filesystem path
+        is honored directly - that's only safe for local CLI use. API callers must
+        pass this as False so a flow reference can only ever resolve to a bundled
+        flow (looked up by name under Config.path.flows_dir, with no path separators
+        allowed in the name), preventing an authenticated API caller from reading
+        arbitrary server-local YAML files.
+        """
+        if allow_arbitrary_path:
+            candidate = Path(name_or_path)
+            if candidate.suffix in {".yaml", ".yml"} and candidate.is_file():
+                return candidate
+        elif not isinstance(name_or_path, str) or "/" in name_or_path or "\\" in name_or_path:
+            raise FlowError(_("flow_not_found").format(name_or_path))
 
         flow_file = Config.path.flows_dir / f"{name_or_path}.yaml"
         if flow_file.is_file():
@@ -165,8 +186,8 @@ class FlowLoader:
         raise FlowError(_("flow_not_found").format(name_or_path))
 
     @staticmethod
-    def load(name_or_path):
-        path = FlowLoader.resolve_path(name_or_path)
+    def load(name_or_path, allow_arbitrary_path=True):
+        path = FlowLoader.resolve_path(name_or_path, allow_arbitrary_path=allow_arbitrary_path)
         try:
             content = yaml.safe_load(path.read_text())
         except yaml.YAMLError as error:
@@ -196,7 +217,7 @@ class FlowLoader:
             raise FlowError(_("flow_invalid_schema").format(path))
         flow_timeout = defaults.get("timeout")
         flow_retries = defaults.get("retries")
-        if not _is_valid_numeric(flow_timeout) or not _is_valid_numeric(flow_retries):
+        if not _is_valid_timeout(flow_timeout) or not _is_valid_retries(flow_retries):
             raise FlowError(_("flow_invalid_schema").format(path))
 
         steps = []
@@ -223,7 +244,7 @@ class FlowLoader:
 
             step_timeout = raw_step.get("timeout")
             step_retries = raw_step.get("retries")
-            if not _is_valid_numeric(step_timeout) or not _is_valid_numeric(step_retries):
+            if not _is_valid_timeout(step_timeout) or not _is_valid_retries(step_retries):
                 raise FlowError(_("flow_invalid_schema").format(path))
 
             steps.append(
