@@ -12,7 +12,7 @@ wordlists = {
     "wp_timethumb_file": ("nettacker/lib/payloads/wordlists/wp_timethumbs.txt", 2424),
 }
 
-nettacker_path = Path(__file__).parent.parent.parent.parent
+nettacker_path = Path(__file__).resolve().parents[4]
 
 
 @pytest.mark.parametrize("key", list(wordlists.keys()))

@@ -16,6 +16,9 @@ concurrency:
   cancel-in-progress: true
   group: ${{ github.repository }}-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
 
+env:
+  PY_COLORS: "1"
+
 jobs:
   # Code quality checks.
   pre-commit:
@@ -54,12 +57,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81
+        uses: github/codeql-action/init@f205ea1c3313d32999d8d6a48b4f6530d4437b38
         with:
           languages: ${{ matrix.language }}
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81
+        uses: github/codeql-action/analyze@f205ea1c3313d32999d8d6a48b4f6530d4437b38
         with:
           category: /language:${{ matrix.language }}
 
@@ -163,8 +166,13 @@ jobs:
           name: dist
           path: dist
 
-      - name: Run tests
-        shell: bash
+      - name: Install test dependencies
+        run: poetry install --only test --no-interaction
+
+      - name: Verify package includes tests
+        run: poetry run pytest tests/package --no-cov -o addopts=
+
+      - name: Verify package installs
         run: |
           rm -rf nettacker
           python -m pip install dist/*.whl
@@ -172,6 +180,7 @@ jobs:
           python -m pip uninstall -y nettacker
           python -m pip install dist/*.tar.gz
           nettacker --version
+        shell: bash
 
   # Docker related jobs.
   test-docker-image:
@@ -278,7 +287,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Login to Docker Hub
-        uses: docker/login-action@abd2ef45e78c5afb21d64d4ca52ee8550d9572c7
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
@@ -302,7 +311,7 @@ jobs:
     if: |
       github.repository == 'OWASP/Nettacker' &&
       github.event_name == 'push' &&
-      startsWith(github.event.ref, 'refs/tags/v')
+      startsWith(github.event.ref, 'refs/tags/')
     needs:
       - test-docker-image
       - test-docker-image-build
@@ -313,7 +322,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8
       - name: Login to Docker Hub
-        uses: docker/login-action@abd2ef45e78c5afb21d64d4ca52ee8550d9572c7
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
@@ -353,7 +362,7 @@ jobs:
           path: dist
 
       - name: Publish package distributions to Test PyPI
-        uses: pypa/gh-action-pypi-publish@ba38be9e461d3875417946c167d0b5f3d385a247
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
         with:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
@@ -379,4 +388,4 @@ jobs:
           path: dist
 
       - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@ba38be9e461d3875417946c167d0b5f3d385a247
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
