@@ -1,14 +1,7 @@
 import re
 from unittest.mock import patch
 
-import pytest
-
-from nettacker.probing.engine import (
-    Interpret,
-    Printable,
-    ProbeEngine,
-    expand_template,
-)
+from nettacker.probing.engine import Interpret, Printable, ProbeEngine, expand_template
 from nettacker.probing.loader import Probe, Signature, version_details
 
 

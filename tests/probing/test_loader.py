@@ -1,7 +1,4 @@
-import re
-
 import pytest
-import yaml
 
 import nettacker.probing.loader as loader_module
 from nettacker.probing.loader import build_probes_from_yaml, load_probes_from_yaml

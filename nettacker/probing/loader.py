@@ -2,8 +2,8 @@ import re
 
 import yaml
 
-from nettacker.config import Config
 from nettacker import logger
+from nettacker.config import Config
 
 log = logger.get_logger()
 

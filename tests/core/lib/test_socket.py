@@ -208,7 +208,9 @@ class TestTcpAndUdpScan:
     PORT = 22
     TIMEOUT = 2  # seconds, matching the module yaml convention (e.g. "timeout: 3")
 
-    def _patch_probing(self, tcp_result=None, ssl_result=None, udp_result=None, engine_result=None):
+    def _patch_probing(
+        self, tcp_result=None, ssl_result=None, udp_result=None, engine_result=None
+    ):
         tcp_result = tcp_result or {"peer_name": "", "raw_bytes": b""}
         ssl_result = ssl_result or {"peer_name": "", "raw_bytes": b""}
         udp_result = udp_result or {"peer_name": self.HOST, "raw_bytes": b""}
