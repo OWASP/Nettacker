@@ -26,7 +26,7 @@ I_RE = re.compile(
 )
 
 
-def Interpret(value: bytes | str, endian: str) -> int:
+def interpret(value: bytes | str, endian: str) -> int:
     """
     Interpret up to 8 bytes as unsigned integer
     endian: '>' = big-endian, '<' = little-endian
@@ -40,7 +40,7 @@ def Interpret(value: bytes | str, endian: str) -> int:
     return int.from_bytes(value, byteorder=byteorder, signed=False)
 
 
-def Printable(value: bytes | str) -> str:
+def printable(value: bytes | str) -> str:
     """
     Make a string printable:
     - Remove NULLs
@@ -71,7 +71,7 @@ def apply_subst(match_obj, regex_match):
     return value.replace(old, new)
 
 
-def expand_SUBST(template: str, regex_match):
+def expand_subst(template: str, regex_match):
     while True:
         m = SUBST_RE.search(template)
         if not m:
@@ -82,7 +82,7 @@ def expand_SUBST(template: str, regex_match):
     return template
 
 
-def expand_I(template: str, match):
+def expand_i(template: str, match):
     def repl(m):
         idx = int(m.group(1))
         endian = m.group(2)
@@ -90,16 +90,16 @@ def expand_I(template: str, match):
             captured = match.group(idx)
         except IndexError:
             return ""
-        return str(Interpret(captured, endian))
+        return str(interpret(captured, endian))
 
     return I_RE.sub(repl, template)
 
 
-def expand_P(template: str, regex_match):
+def expand_p(template: str, regex_match):
     def repl(m):
         i = int(m.group(1))
         try:
-            return Printable(regex_match.group(i))
+            return printable(regex_match.group(i))
         except IndexError:
             return ""
 
@@ -123,14 +123,16 @@ def expand_place(template: str, regex_match):
 
 
 def expand_template(template: str, regex_match):
-    template = expand_SUBST(template, regex_match)
-    template = expand_P(template, regex_match)
-    template = expand_I(template, regex_match)
+    template = expand_subst(template, regex_match)
+    template = expand_p(template, regex_match)
+    template = expand_i(template, regex_match)
     template = expand_place(template, regex_match)
     return template
 
 
-class result:
+class Result:
+    """Version fields (template, product, CPE, ...) extracted from a matched signature."""
+
     def __init__(
         self,
         version_template=None,
@@ -185,16 +187,16 @@ class ProbeEngine(BaseEngine):
                 specific.append(p)
         return specific
 
-    def Match_response(self, response, signature):
+    def match_response(self, response, signature):
         if response is None:
-            return {"status": False, "result": result()}
+            return {"status": False, "result": Result()}
 
         if isinstance(response, str):
             response = response.encode("latin-1", errors="ignore")
         regex = signature.regex
         match = regex.search(response)
         if not match:
-            return {"status": False, "result": result()}
+            return {"status": False, "result": Result()}
 
         version_ = signature.version_details
         version_template = product = info = hostname = None
@@ -220,7 +222,7 @@ class ProbeEngine(BaseEngine):
 
         return {
             "status": True,
-            "result": result(
+            "result": Result(
                 version_template=version_template,
                 product=product,
                 info=info,
@@ -233,8 +235,8 @@ class ProbeEngine(BaseEngine):
             ),
         }
 
-    def check_match_service(self, Signatures, service) -> bool:
-        for sig_ in Signatures:
+    def check_match_service(self, signatures, service) -> bool:
+        for sig_ in signatures:
             if sig_.service == service:
                 return True
         return False
@@ -266,7 +268,7 @@ class ProbeEngine(BaseEngine):
                         self.port,
                         probe.probe_string,
                         probe.totalwaits,
-                        probe.tcpwrapperdms,
+                        probe.tcpwrapped_ms,
                     )
                 else:
                     response = tcp_probe_ssl(
@@ -274,14 +276,14 @@ class ProbeEngine(BaseEngine):
                         self.port,
                         probe.probe_string,
                         probe.totalwaits,
-                        probe.tcpwrapperdms,
+                        probe.tcpwrapped_ms,
                     )
             else:
                 response = udp_probe(self.host, self.port, probe.probe_string, probe.totalwaits)
 
             if response is None:
                 response = tcp_probe(
-                    self.host, self.port, probe.probe_string, probe.totalwaits, probe.tcpwrapperdms
+                    self.host, self.port, probe.probe_string, probe.totalwaits, probe.tcpwrapped_ms
                 )
 
             if not response or response.get("raw_bytes") is None:
@@ -290,8 +292,8 @@ class ProbeEngine(BaseEngine):
             raw_response = response.get("raw_bytes")
 
             # 1. Check Primary Signatures
-            for signature in probe.Signatures:
-                matched_data = self.Match_response(raw_response, signature)
+            for signature in probe.signatures:
+                matched_data = self.match_response(raw_response, signature)
                 res_ = matched_data["result"]
                 if matched_data["status"]:
                     if signature.sig_type == "match":
@@ -344,8 +346,8 @@ class ProbeEngine(BaseEngine):
                 if not fallback_probe:
                     continue
 
-                for signature in fallback_probe.Signatures:
-                    matched_data = self.Match_response(raw_response, signature)
+                for signature in fallback_probe.signatures:
+                    matched_data = self.match_response(raw_response, signature)
                     res_ = matched_data["result"]
                     if matched_data["status"]:
                         if signature.sig_type == "match":

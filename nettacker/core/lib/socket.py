@@ -95,6 +95,21 @@ class SocketLibrary(BaseLibrary):
         }
 
     def tcp_and_udp_scan(self, host, port: int, timeout=5):
+        """
+        Probe a port with the nmap-service-probes engine to fingerprint the running service.
+
+        Tries plain TCP first, falls back to TLS if the port rejects plaintext, then falls
+        back to UDP. Returns a dict with "service", "ssl_flag", and "log" keys, or None if
+        the port could not be identified as open.
+
+        Args:
+            host: target host/IP
+            port: target port
+            timeout: per-probe timeout in seconds
+
+        Returns:
+            A result dict, or None if the port appears closed/unresponsive.
+        """
         # `timeout` follows the same convention as every other method here
         # (tcp_connect_only, tcp_connect_send_and_receive, socket_icmp): it's
         # in seconds, as set by the module yaml (e.g. "timeout: 3"). The

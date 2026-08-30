@@ -58,7 +58,7 @@ class TestLoadProbesFromYaml:
         assert "NULL" in probes
         assert probes["NULL"].protocol == "tcp"
         assert probes["NULL"].ports == [22]
-        assert len(probes["NULL"].Signatures) == 1
+        assert len(probes["NULL"].signatures) == 1
 
     def test_null_fallback_is_always_appended(self, tmp_path, monkeypatch):
         probes_file = tmp_path / "probes.yaml"
@@ -77,7 +77,7 @@ class TestLoadProbesFromYaml:
         probes = load_probes_from_yaml()
 
         assert "BROKEN" in probes
-        assert probes["BROKEN"].Signatures == []
+        assert probes["BROKEN"].signatures == []
 
     def test_compiled_signature_regex_is_usable(self, tmp_path, monkeypatch):
         probes_file = tmp_path / "probes.yaml"
@@ -85,7 +85,7 @@ class TestLoadProbesFromYaml:
         monkeypatch.setattr(loader_module.Config.path, "probes_yaml_file", probes_file)
 
         probes = load_probes_from_yaml()
-        sig = probes["NULL"].Signatures[0]
+        sig = probes["NULL"].signatures[0]
         assert sig.regex.search(b"SSH-2.0\r\n")
 
     def test_second_call_uses_cache(self, tmp_path, monkeypatch):

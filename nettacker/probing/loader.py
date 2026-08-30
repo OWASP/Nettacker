@@ -8,7 +8,9 @@ from nettacker.config import Config
 log = logger.get_logger()
 
 
-class version_details:
+class VersionDetails:
+    """Nmap-style version templates extracted from a matched signature."""
+
     def __init__(
         self,
         raw,
@@ -35,6 +37,8 @@ class version_details:
 
 
 class Signature:
+    """A single match/softmatch regex rule belonging to a probe."""
+
     def __init__(
         self,
         service,
@@ -53,6 +57,8 @@ class Signature:
 
 
 class Probe:
+    """An nmap-service-probes probe: the payload to send plus its signatures."""
+
     def __init__(
         self,
         name,
@@ -65,19 +71,19 @@ class Probe:
         fallbacks=None,
         probe_string="",
         no_payload=False,
-        Signatures=None,
+        signatures=None,
     ):
         self.name = name
         self.protocol = protocol
         self.totalwaits = totalwaits
-        self.tcpwrapperdms = tcpwrappedms
+        self.tcpwrapped_ms = tcpwrappedms
         self.rarity = rarity
         self.ports = ports or []
         self.sslports = sslports or []
         self.fallbacks = fallbacks or []
         self.probe_string = probe_string
         self.no_payload = no_payload
-        self.Signatures = Signatures or []
+        self.signatures = signatures or []
 
 
 _PROBES_CACHE = None
@@ -85,6 +91,7 @@ _probes_by_name = {}
 
 
 def load_probes_from_yaml():
+    """Parse Config.path.probes_yaml_file into Probe objects, caching the result."""
     global _PROBES_CACHE
     global _probes_by_name
 
@@ -129,7 +136,7 @@ def load_probes_from_yaml():
                 log.verbose_info(f"Probe signature failed to compile: {pattern!r} ({e})")
                 continue
             v = s.get("version", {}) or {}
-            version = version_details(
+            version = VersionDetails(
                 raw=v.get("raw", ""),
                 version_template=v.get("version_template", ""),
                 product=v.get("product", ""),
@@ -163,7 +170,7 @@ def load_probes_from_yaml():
             fallbacks=fallbacks,
             probe_string=probe_string,
             no_payload=no_payload,
-            Signatures=signatures,
+            signatures=signatures,
         )
         _probes_by_name[name] = probe
 
@@ -172,6 +179,7 @@ def load_probes_from_yaml():
 
 
 def build_probes_from_yaml():
+    """Return the cached probes dict, loading it from YAML on first use."""
     if not _probes_by_name:
         load_probes_from_yaml()
     return _probes_by_name

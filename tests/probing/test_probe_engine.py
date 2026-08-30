@@ -1,8 +1,8 @@
 import re
 from unittest.mock import patch
 
-from nettacker.probing.engine import Interpret, Printable, ProbeEngine, expand_template
-from nettacker.probing.loader import Probe, Signature, version_details
+from nettacker.probing.engine import ProbeEngine, expand_template, interpret, printable
+from nettacker.probing.loader import Probe, Signature, VersionDetails
 
 
 def _regex_match(pattern, data):
@@ -11,24 +11,24 @@ def _regex_match(pattern, data):
 
 class TestInterpret:
     def test_big_endian(self):
-        assert Interpret(b"\x00\x01", ">") == 1
+        assert interpret(b"\x00\x01", ">") == 1
 
     def test_little_endian(self):
-        assert Interpret(b"\x01\x00", "<") == 1
+        assert interpret(b"\x01\x00", "<") == 1
 
     def test_accepts_string_input(self):
-        assert Interpret("\x00\x01", ">") == 1
+        assert interpret("\x00\x01", ">") == 1
 
     def test_truncates_to_eight_bytes(self):
-        assert Interpret(b"\xff" * 16, ">") == Interpret(b"\xff" * 8, ">")
+        assert interpret(b"\xff" * 16, ">") == interpret(b"\xff" * 8, ">")
 
 
 class TestPrintable:
     def test_strips_nulls_and_non_printables(self):
-        assert Printable(b"AB\x00\xffC") == "ABC"
+        assert printable(b"AB\x00\xffC") == "ABC"
 
     def test_accepts_str_input(self):
-        assert Printable("AB\x00C") == "ABC"
+        assert printable("AB\x00C") == "ABC"
 
 
 class TestExpandTemplate:
@@ -62,7 +62,7 @@ class TestProbeEngineFiltering:
             sslports=sslports or [],
             fallbacks=[],
             probe_string="",
-            Signatures=[],
+            signatures=[],
         )
 
     def test_get_probes_for_port_matches_protocol_and_port(self):
@@ -92,7 +92,7 @@ class TestProbeEngineFiltering:
 
 class TestMatchResponse:
     def _make_signature(self, sig_type="match", service="ssh", regex=b"SSH-([\\d.]+)"):
-        version = version_details(
+        version = VersionDetails(
             raw="",
             version_template="$1",
             product="OpenSSH",
@@ -113,13 +113,13 @@ class TestMatchResponse:
 
     def test_none_response_does_not_match(self):
         engine = ProbeEngine(port=22, protocol="tcp", host="127.0.0.1", probes_by_name={})
-        result = engine.Match_response(None, self._make_signature())
+        result = engine.match_response(None, self._make_signature())
         assert result["status"] is False
 
     def test_matching_response_extracts_version(self):
         engine = ProbeEngine(port=22, protocol="tcp", host="127.0.0.1", probes_by_name={})
         signature = self._make_signature()
-        result = engine.Match_response(b"SSH-2.0\r\n", signature)
+        result = engine.match_response(b"SSH-2.0\r\n", signature)
         assert result["status"] is True
         assert result["result"].version_template == "2.0"
         assert result["result"].product == "OpenSSH"
@@ -127,13 +127,13 @@ class TestMatchResponse:
     def test_non_matching_response(self):
         engine = ProbeEngine(port=22, protocol="tcp", host="127.0.0.1", probes_by_name={})
         signature = self._make_signature()
-        result = engine.Match_response(b"HTTP/1.1 200 OK\r\n", signature)
+        result = engine.match_response(b"HTTP/1.1 200 OK\r\n", signature)
         assert result["status"] is False
 
 
 class TestProbeSequentially:
     def _make_probe_with_signature(self):
-        version = version_details(raw="", version_template="$1", product="OpenSSH")
+        version = VersionDetails(raw="", version_template="$1", product="OpenSSH")
         signature = Signature(
             service="ssh",
             regex=re.compile(rb"SSH-([\d.]+)"),
@@ -147,7 +147,7 @@ class TestProbeSequentially:
             sslports=[],
             fallbacks=[],
             probe_string="",
-            Signatures=[signature],
+            signatures=[signature],
         )
 
     def test_hard_match_returns_service_immediately(self):
@@ -177,7 +177,7 @@ class TestProbeSequentially:
             sslports=[],
             fallbacks=[],
             probe_string="",
-            Signatures=self._make_probe_with_signature().Signatures,
+            signatures=self._make_probe_with_signature().signatures,
         )
         engine = ProbeEngine(
             port=53, protocol="udp", host="127.0.0.1", probes_by_name={"NULL": probe}
