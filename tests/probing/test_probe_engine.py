@@ -187,9 +187,28 @@ class TestFallbackResolution:
                 result = engine.probe_sequentially()
         assert result["service"] == "tcp-svc"
 
-    def test_null_fallback_resolves_regardless_of_probing_protocol(self):
-        # NULL just reads whatever banner is sent without a payload, so it's
-        # usable as a fallback for both TCP and UDP probes.
+    def test_null_fallback_resolves_for_tcp(self):
+        version = VersionDetails(raw="", version_template="$1", product="NullProduct")
+        null_sig = Signature(
+            service="banner", regex=re.compile(rb"Y-(\d+)"), version_details=version
+        )
+        null_probe = Probe(name="NULL", protocol="tcp", signatures=[null_sig])
+        probes = {("tcp", "NULL"): null_probe}
+
+        probe = Probe(name="Other", protocol="tcp", ports=[80], fallbacks=["NULL"])
+        engine = ProbeEngine(port=80, protocol="tcp", host="127.0.0.1", probes_by_name=probes)
+        fake_response = {"raw_bytes": b"Y-9", "ssl_flag": False}
+        with patch("nettacker.probing.engine.tcp_probe", return_value=fake_response):
+            with patch.object(engine, "get_probes_for_port", return_value=[probe]):
+                result = engine.probe_sequentially()
+        assert result["service"] == "banner"
+
+    def test_null_fallback_never_resolves_for_udp(self):
+        # NULL is a TCP-only, banner-read probe. UDP services don't
+        # proactively send banners, so matching a UDP response against NULL's
+        # TCP-oriented signatures would misidentify the service - it must
+        # never be selected or resolved as a fallback for a UDP scan, even if
+        # a probe's own fallback list happens to name it.
         version = VersionDetails(raw="", version_template="$1", product="NullProduct")
         null_sig = Signature(
             service="banner", regex=re.compile(rb"Y-(\d+)"), version_details=version
@@ -203,7 +222,18 @@ class TestFallbackResolution:
         with patch("nettacker.probing.engine.udp_probe", return_value=fake_response):
             with patch.object(engine, "get_probes_for_port", return_value=[probe]):
                 result = engine.probe_sequentially()
-        assert result["service"] == "banner"
+        assert result is None
+
+    def test_get_probes_for_port_excludes_tcp_null_probe_from_udp_scan(self):
+        # The real bundled database only defines NULL for TCP - a UDP scan
+        # must never select it via probe-selection's port/name bypass either.
+        null_probe = Probe(name="NULL", protocol="tcp")
+        dns_probe = Probe(name="DNS", protocol="udp", ports=[53])
+        probes = {("tcp", "NULL"): null_probe, ("udp", "DNS"): dns_probe}
+
+        engine = ProbeEngine(port=53, protocol="udp", host="127.0.0.1", probes_by_name=probes)
+        selected = {p.name for p in engine.get_probes_for_port()}
+        assert selected == {"DNS"}
 
 
 class TestMatchResponse:

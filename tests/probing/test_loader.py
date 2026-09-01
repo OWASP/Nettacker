@@ -48,6 +48,10 @@ probes:
       - type: match
         service: broken
         regex: "("
+  - name: DNS_UDP
+    protocol: udp
+    ports: [53]
+    signatures: []
 """
 
 
@@ -73,10 +77,12 @@ class TestLoadProbesFromYaml:
 
         probes = load_probes_from_yaml()
 
-        # BROKEN implicitly falls back to NULL; NULL itself must not (it would
-        # otherwise evaluate its own signatures a second time as its own fallback).
+        # BROKEN (tcp) implicitly falls back to NULL; NULL itself must not (it
+        # would otherwise evaluate its own signatures a second time as its own
+        # fallback). NULL is TCP-only, so a UDP probe must not get it either.
         assert "NULL" in probes[("tcp", "BROKEN")].fallbacks
         assert "NULL" not in probes[("tcp", "NULL")].fallbacks
+        assert "NULL" not in probes[("udp", "DNS_UDP")].fallbacks
 
     def test_broken_regex_signature_is_skipped_not_fatal(self, tmp_path, monkeypatch):
         probes_file = tmp_path / "probes.yaml"

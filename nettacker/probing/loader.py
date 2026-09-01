@@ -145,9 +145,12 @@ def load_probes_from_yaml():
         ports = p.get("ports", [])
         sslports = p.get("sslports", [])
         fallbacks = _split_fallback_names(p.get("fallbacks", []))
-        # Every probe implicitly falls back to NULL - except NULL itself, which
-        # would otherwise evaluate its own (thousands of) signatures twice.
-        if name != "NULL" and "NULL" not in fallbacks:
+        # Every TCP probe implicitly falls back to NULL - except NULL itself,
+        # which would otherwise evaluate its own (thousands of) signatures
+        # twice. NULL is a banner-read probe with TCP-oriented signatures; UDP
+        # services don't proactively send banners, so matching a UDP response
+        # against NULL's signatures would misidentify the service.
+        if protocol == "tcp" and name != "NULL" and "NULL" not in fallbacks:
             fallbacks.append("NULL")
         probe_string = p.get("probe_string", "")
         no_payload = p.get("no_payload", False)

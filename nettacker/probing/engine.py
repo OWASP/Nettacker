@@ -195,7 +195,12 @@ class ProbeEngine(BaseEngine):
         protocol = self.protocol.lower()
         specific = []
         for p in self.probes:
-            if p.protocol != protocol and p.name != "NULL":
+            # NULL is a TCP-only, banner-read probe (protocol == "tcp" for its
+            # single bundled definition) - it must never be selected for a UDP
+            # scan, where services don't proactively send a banner and matching
+            # a UDP response against NULL's TCP-oriented signatures would
+            # misidentify the service.
+            if p.protocol != protocol:
                 continue
             if self.port in p.ports or p.name == "NULL" or self.port in p.sslports:
                 specific.append(p)
@@ -210,7 +215,7 @@ class ProbeEngine(BaseEngine):
         protocol = self.protocol.lower()
         specific = []
         for p in self.probes:
-            if p.protocol != protocol and p.name != "NULL":
+            if p.protocol != protocol:
                 continue
             if self.port in p.sslports or p.name == "NULL":
                 specific.append(p)
@@ -218,11 +223,11 @@ class ProbeEngine(BaseEngine):
 
     def _lookup_fallback_probe(self, name):
         if name == "NULL":
-            # NULL is protocol-agnostic (it just reads whatever banner is sent
-            # without a payload), so any protocol's probes may fall back to it.
-            return self.probes_by_name.get(("tcp", "NULL")) or self.probes_by_name.get(
-                ("udp", "NULL")
-            )
+            # NULL only exists for TCP - never resolve it for a UDP scan (see
+            # the note in get_probes_for_port).
+            if self.protocol.lower() != "tcp":
+                return None
+            return self.probes_by_name.get(("tcp", "NULL"))
         return self.probes_by_name.get((self.protocol.lower(), name))
 
     def match_response(self, response, signature):
