@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from nettacker.core.lib.smtp import SmtpLibrary
-from tests.common import TestCase
+from tests.unit.common import TestCase
 
 SMTP_SESSION_PORT = 25
 
