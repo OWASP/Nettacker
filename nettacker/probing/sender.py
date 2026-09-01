@@ -106,11 +106,7 @@ def tcp_probe_ssl(
     context = ssl.create_default_context()
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
-    # This is a fingerprinting probe, not a security-sensitive connection carrying
-    # data - Nettacker is a security scanner and must be able to complete a
-    # handshake with (and report on) a target that only speaks legacy TLS, rather
-    # than just failing to identify it. Forcing TLS 1.2+ here would do that.
-    context.minimum_version = ssl.TLSVersion.TLSv1  # codeql[py/insecure-protocol]
+    context.minimum_version = ssl.TLSVersion.TLSv1_2
 
     chunks = []
     tcp_wrap = False
