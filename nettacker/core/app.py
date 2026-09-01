@@ -33,7 +33,6 @@ from nettacker.database.mysql import mysql_create_database, mysql_create_tables
 from nettacker.database.postgresql import postgres_create_database
 from nettacker.database.sqlite import sqlite_create_tables
 from nettacker.logger import TerminalCodes
-from nettacker.probing.loader import load_probes_from_yaml
 
 log = logger.get_logger()
 
@@ -43,7 +42,6 @@ class Nettacker(ArgParser):
         if not api_arguments:
             self.print_logo()
         self.check_dependencies()
-        load_probes_from_yaml()
         log.info(_("scan_started"))
         super().__init__(api_arguments=api_arguments)
 

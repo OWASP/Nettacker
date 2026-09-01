@@ -2,6 +2,7 @@ import re
 import string
 
 from nettacker.core.lib.base import BaseEngine
+from nettacker.probing.loader import get_excluded_ports
 from nettacker.probing.sender import tcp_probe, udp_probe, tcp_probe_ssl
 
 P_RE = re.compile(r"\$P\((\d+)\)")
@@ -90,6 +91,9 @@ def expand_i(template: str, match):
             captured = match.group(idx)
         except IndexError:
             return ""
+        if captured is None:
+            # Optional capture group (e.g. "(...)?") that didn't participate.
+            return ""
         return str(interpret(captured, endian))
 
     return I_RE.sub(repl, template)
@@ -99,9 +103,12 @@ def expand_p(template: str, regex_match):
     def repl(m):
         i = int(m.group(1))
         try:
-            return printable(regex_match.group(i))
+            value = regex_match.group(i)
         except IndexError:
             return ""
+        if value is None:
+            return ""
+        return printable(value)
 
     return P_RE.sub(repl, template)
 
@@ -112,6 +119,11 @@ def expand_place(template: str, regex_match):
         try:
             value = regex_match.group(i)
         except IndexError:
+            return ""
+
+        if value is None:
+            # Unmatched optional capture group - re.sub requires a string back,
+            # and this used to return None, crashing with TypeError.
             return ""
 
         if isinstance(value, bytes):
@@ -157,14 +169,29 @@ class Result:
 
 
 class ProbeEngine(BaseEngine):
-    def __init__(self, port, protocol, host, probes_by_name):
+    def __init__(self, port, protocol, host, probes_by_name, timeout_ms=None):
         self.probes_by_name = probes_by_name
         self.probes = list(probes_by_name.values())
         self.host = host
         self.port = int(port)
         self.protocol = protocol
+        # Caller-configured budget (e.g. --timeout), in milliseconds. Each probe's
+        # own totalwaits (5-11s in the bundled database) is capped to this so a
+        # silent open port can't make one probe_sequentially() call run far longer
+        # than what was actually requested.
+        self.timeout_ms = timeout_ms
+
+    def _wait_ms(self, probe):
+        if self.timeout_ms is None:
+            return probe.totalwaits
+        return min(probe.totalwaits, self.timeout_ms)
+
+    def _is_excluded_port(self):
+        return self.port in get_excluded_ports().get(self.protocol.lower(), set())
 
     def get_probes_for_port(self):
+        if self._is_excluded_port():
+            return []
         protocol = self.protocol.lower()
         specific = []
         for p in self.probes:
@@ -178,6 +205,8 @@ class ProbeEngine(BaseEngine):
     # todo , sort it as per the rarity order given and compare with input rarity before selection
     # To implement no-payload logic similar to Nmap
     def get_probes_for_sslport(self):
+        if self._is_excluded_port():
+            return []
         protocol = self.protocol.lower()
         specific = []
         for p in self.probes:
@@ -186,6 +215,15 @@ class ProbeEngine(BaseEngine):
             if self.port in p.sslports or p.name == "NULL":
                 specific.append(p)
         return specific
+
+    def _lookup_fallback_probe(self, name):
+        if name == "NULL":
+            # NULL is protocol-agnostic (it just reads whatever banner is sent
+            # without a payload), so any protocol's probes may fall back to it.
+            return self.probes_by_name.get(("tcp", "NULL")) or self.probes_by_name.get(
+                ("udp", "NULL")
+            )
+        return self.probes_by_name.get((self.protocol.lower(), name))
 
     def match_response(self, response, signature):
         if response is None:
@@ -241,12 +279,20 @@ class ProbeEngine(BaseEngine):
                 return True
         return False
 
-    def probe_sequentially(self):
-        relevant_probes = self.get_probes_for_port()
+    def probe_sequentially(self, force_ssl=False):
+        """
+        force_ssl: start directly with SSL probes instead of plaintext ones. A
+        TLS-only service still accepts the underlying TCP handshake, so a caller
+        that got an empty/inconclusive plaintext result may retry with this set,
+        rather than never trying TLS at all.
+        """
+        relevant_probes = (
+            self.get_probes_for_sslport() if force_ssl else self.get_probes_for_port()
+        )
 
         final_version_info = None
         detected_service = None
-        ssl_flag = False
+        ssl_flag = force_ssl
         raw_response = b""
 
         index = 0
@@ -261,13 +307,15 @@ class ProbeEngine(BaseEngine):
                 index = 0
                 continue
 
+            wait_ms = self._wait_ms(probe)
+
             if self.protocol == "tcp":
                 if not ssl_flag:
                     response = tcp_probe(
                         self.host,
                         self.port,
                         probe.probe_string,
-                        probe.totalwaits,
+                        wait_ms,
                         probe.tcpwrapped_ms,
                     )
                 else:
@@ -275,15 +323,15 @@ class ProbeEngine(BaseEngine):
                         self.host,
                         self.port,
                         probe.probe_string,
-                        probe.totalwaits,
+                        wait_ms,
                         probe.tcpwrapped_ms,
                     )
             else:
-                response = udp_probe(self.host, self.port, probe.probe_string, probe.totalwaits)
+                response = udp_probe(self.host, self.port, probe.probe_string, wait_ms)
 
             if response is None:
                 response = tcp_probe(
-                    self.host, self.port, probe.probe_string, probe.totalwaits, probe.tcpwrapped_ms
+                    self.host, self.port, probe.probe_string, wait_ms, probe.tcpwrapped_ms
                 )
 
             if not response or response.get("raw_bytes") is None:
@@ -342,7 +390,7 @@ class ProbeEngine(BaseEngine):
 
             # 2. Check Fallbacks (Fixing the indentation/logic error)
             for name in probe.fallbacks:
-                fallback_probe = self.probes_by_name.get(name)
+                fallback_probe = self._lookup_fallback_probe(name)
                 if not fallback_probe:
                     continue
 

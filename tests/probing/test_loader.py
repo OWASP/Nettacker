@@ -7,11 +7,15 @@ from nettacker.probing.loader import build_probes_from_yaml, load_probes_from_ya
 @pytest.fixture(autouse=True)
 def reset_probes_cache():
     """Each test gets a clean module-level cache so tests don't leak state."""
-    loader_module._PROBES_CACHE = None
-    loader_module._probes_by_name = {}
+
+    def _reset():
+        loader_module._PROBES_CACHE = None
+        loader_module._probes_by_name = {}
+        loader_module._excluded_ports = {"tcp": set(), "udp": set()}
+
+    _reset()
     yield
-    loader_module._PROBES_CACHE = None
-    loader_module._probes_by_name = {}
+    _reset()
 
 
 PROBE_YAML = """
@@ -55,10 +59,12 @@ class TestLoadProbesFromYaml:
 
         probes = load_probes_from_yaml()
 
-        assert "NULL" in probes
-        assert probes["NULL"].protocol == "tcp"
-        assert probes["NULL"].ports == [22]
-        assert len(probes["NULL"].signatures) == 1
+        # Keyed by (protocol, name): a name-only key can't hold both a TCP and a
+        # UDP probe sharing the same name without one silently overwriting the other.
+        assert ("tcp", "NULL") in probes
+        assert probes[("tcp", "NULL")].protocol == "tcp"
+        assert probes[("tcp", "NULL")].ports == [22]
+        assert len(probes[("tcp", "NULL")].signatures) == 1
 
     def test_null_fallback_is_always_appended(self, tmp_path, monkeypatch):
         probes_file = tmp_path / "probes.yaml"
@@ -67,7 +73,10 @@ class TestLoadProbesFromYaml:
 
         probes = load_probes_from_yaml()
 
-        assert "NULL" in probes["NULL"].fallbacks
+        # BROKEN implicitly falls back to NULL; NULL itself must not (it would
+        # otherwise evaluate its own signatures a second time as its own fallback).
+        assert "NULL" in probes[("tcp", "BROKEN")].fallbacks
+        assert "NULL" not in probes[("tcp", "NULL")].fallbacks
 
     def test_broken_regex_signature_is_skipped_not_fatal(self, tmp_path, monkeypatch):
         probes_file = tmp_path / "probes.yaml"
@@ -76,8 +85,8 @@ class TestLoadProbesFromYaml:
 
         probes = load_probes_from_yaml()
 
-        assert "BROKEN" in probes
-        assert probes["BROKEN"].signatures == []
+        assert ("tcp", "BROKEN") in probes
+        assert probes[("tcp", "BROKEN")].signatures == []
 
     def test_compiled_signature_regex_is_usable(self, tmp_path, monkeypatch):
         probes_file = tmp_path / "probes.yaml"
@@ -85,7 +94,7 @@ class TestLoadProbesFromYaml:
         monkeypatch.setattr(loader_module.Config.path, "probes_yaml_file", probes_file)
 
         probes = load_probes_from_yaml()
-        sig = probes["NULL"].signatures[0]
+        sig = probes[("tcp", "NULL")].signatures[0]
         assert sig.regex.search(b"SSH-2.0\r\n")
 
     def test_second_call_uses_cache(self, tmp_path, monkeypatch):
@@ -124,7 +133,7 @@ class TestBuildProbesFromYaml:
 
         probes = build_probes_from_yaml()
 
-        assert "NULL" in probes
+        assert ("tcp", "NULL") in probes
 
     def test_returns_same_dict_as_module_cache(self, tmp_path, monkeypatch):
         probes_file = tmp_path / "probes.yaml"
@@ -139,4 +148,4 @@ class TestRealPackagedProbesFile:
     def test_real_probes_yaml_loads_and_has_entries(self):
         probes = load_probes_from_yaml()
         assert len(probes) > 0
-        assert "NULL" in probes
+        assert ("tcp", "NULL") in probes

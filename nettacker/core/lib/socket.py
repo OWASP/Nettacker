@@ -14,7 +14,7 @@ from nettacker.core.lib.base import BaseEngine, BaseLibrary
 from nettacker.core.utils.common import reverse_and_regex_condition, replace_dependent_response
 from nettacker.probing.engine import ProbeEngine
 from nettacker.probing.loader import build_probes_from_yaml
-from nettacker.probing.sender import tcp_probe, tcp_probe_ssl, udp_probe
+from nettacker.probing.sender import tcp_probe, tcp_probe_ssl
 
 log = logging.getLogger(__name__)
 
@@ -140,26 +140,48 @@ class SocketLibrary(BaseLibrary):
                 protocol="tcp",
                 host=host,
                 probes_by_name=probes_by_name,
+                timeout_ms=timeout_ms,
             )
-            tcp_result = engine.probe_sequentially()
+            tcp_result = engine.probe_sequentially(force_ssl=is_ssl)
             if tcp_result is not None:
                 return tcp_result
 
-        # 2. TRY UDP
-        # Send a probe using your robust udp_probe function
-        udp_res = udp_probe(host, port, payload="PING", timeout_ms=timeout_ms)
+            if not is_ssl:
+                # A TLS-only listener still accepts the plain TCP handshake above
+                # (peer_name gets populated regardless), so a successful connect
+                # never actually proves the service is plaintext. Plain
+                # fingerprinting came back inconclusive, so retry directly in SSL
+                # mode before giving up on this port.
+                ssl_res = tcp_probe_ssl(host, port, payload="", timeout_ms=timeout_ms)
+                if ssl_res["peer_name"]:
+                    is_ssl = True
+                    ssl_engine = ProbeEngine(
+                        port=port,
+                        protocol="tcp",
+                        host=host,
+                        probes_by_name=probes_by_name,
+                        timeout_ms=timeout_ms,
+                    )
+                    ssl_result = ssl_engine.probe_sequentially(force_ssl=True)
+                    if ssl_result is not None:
+                        return ssl_result
 
-        # In UDP, if we get raw_bytes back, the port is definitely open
-        if udp_res and udp_res["raw_bytes"]:
-            engine = ProbeEngine(
-                port=port,
-                protocol="udp",
-                host=host,
-                probes_by_name=probes_by_name,
-            )
-            udp_result = engine.probe_sequentially()
-            if udp_result is not None:
-                return udp_result
+        # 2. TRY UDP
+        # UDP is connectionless, so unlike TCP there's no handshake to confirm
+        # openness before fingerprinting. A generic payload here would only prove
+        # the port responds to that exact payload - most UDP services (DNS, SNMP,
+        # ...) silently ignore anything that isn't their own protocol, so probing
+        # must go straight to the engine's protocol-specific probes instead.
+        engine = ProbeEngine(
+            port=port,
+            protocol="udp",
+            host=host,
+            probes_by_name=probes_by_name,
+            timeout_ms=timeout_ms,
+        )
+        udp_result = engine.probe_sequentially()
+        if udp_result is not None:
+            return udp_result
 
         # 3. FALLBACK HANDLING (Avoids KeyErrors)
         try:

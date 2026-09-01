@@ -88,6 +88,32 @@ class Probe:
 
 _PROBES_CACHE = None
 _probes_by_name = {}
+_excluded_ports = {"tcp": set(), "udp": set()}
+
+
+def _parse_port_ranges(spec):
+    """Expand a comma-separated port spec (e.g. "9100-9107,20005") into a set of ints."""
+    ports = set()
+    for part in (spec or "").split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" in part:
+            start, end = part.split("-", 1)
+            ports.update(range(int(start), int(end) + 1))
+        else:
+            ports.add(int(part))
+    return ports
+
+
+def _split_fallback_names(fallbacks):
+    """Nmap's fallback directive separates multiple probe names with commas
+    (e.g. "GetRequest,HTTPOptions"); split any entry that wasn't already split
+    on the way in so each fallback resolves to a real probe name."""
+    names = []
+    for entry in fallbacks:
+        names.extend(name.strip() for name in entry.split(",") if name.strip())
+    return names
 
 
 def load_probes_from_yaml():
@@ -105,6 +131,11 @@ def load_probes_from_yaml():
         raise ValueError(f"No probes found in {Config.path.probes_yaml_file}")
     data = _PROBES_CACHE
 
+    for excluded in data.get("Excluded ports") or []:
+        universal = _parse_port_ranges(excluded.get("Universal", ""))
+        _excluded_ports["tcp"] |= _parse_port_ranges(excluded.get("TCP", "")) | universal
+        _excluded_ports["udp"] |= _parse_port_ranges(excluded.get("UDP", "")) | universal
+
     for p in data["probes"]:
         name = p["name"]
         protocol = p.get("protocol", "tcp").lower()
@@ -113,8 +144,11 @@ def load_probes_from_yaml():
         rarity = int(p.get("rarity", 5))
         ports = p.get("ports", [])
         sslports = p.get("sslports", [])
-        fallbacks = p.get("fallbacks", [])
-        fallbacks.append("NULL")
+        fallbacks = _split_fallback_names(p.get("fallbacks", []))
+        # Every probe implicitly falls back to NULL - except NULL itself, which
+        # would otherwise evaluate its own (thousands of) signatures twice.
+        if name != "NULL" and "NULL" not in fallbacks:
+            fallbacks.append("NULL")
         probe_string = p.get("probe_string", "")
         no_payload = p.get("no_payload", False)
 
@@ -172,7 +206,10 @@ def load_probes_from_yaml():
             no_payload=no_payload,
             signatures=signatures,
         )
-        _probes_by_name[name] = probe
+        # Keyed by (protocol, name): the probe database defines both a TCP and
+        # a UDP probe under some shared names (Help, Kerberos, OpenVPN,
+        # RPCCheck, SIPOptions) - a name-only key would silently drop one.
+        _probes_by_name[(protocol, name)] = probe
 
     log.verbose_info(f"Loaded {len(_probes_by_name)} probes from {Config.path.probes_yaml_file}")
     return _probes_by_name
@@ -183,3 +220,14 @@ def build_probes_from_yaml():
     if not _probes_by_name:
         load_probes_from_yaml()
     return _probes_by_name
+
+
+def get_excluded_ports():
+    """
+    Return {"tcp": {port, ...}, "udp": {port, ...}} from the probe database's own
+    "Excluded ports" directive (e.g. TCP 9100-9107, raw-print listeners that can
+    physically print whatever payload is sent to them) - ports version detection
+    must never send probe payloads to, regardless of which module selected them.
+    """
+    build_probes_from_yaml()
+    return _excluded_ports

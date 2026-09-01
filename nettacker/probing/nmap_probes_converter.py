@@ -211,8 +211,11 @@ def parse_probe_file(in_path):
                 continue
 
             if line.startswith("fallback"):
-                parts = line.split()
-                fb = [p.strip() for p in parts[1:] if p.strip()]
+                # "fallback GetRequest,HTTPOptions" separates multiple probe names
+                # with commas, not whitespace - split on both so each name is its
+                # own fallback entry instead of one nonexistent combined name.
+                _, _, value = line.partition(" ")
+                fb = [name.strip() for name in value.split(",") if name.strip()]
                 curr_probe["fallbacks"].extend(fb)
                 continue
             line = line.strip()

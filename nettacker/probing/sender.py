@@ -106,7 +106,11 @@ def tcp_probe_ssl(
     context = ssl.create_default_context()
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
-    context.minimum_version = ssl.TLSVersion.TLSv1_2
+    # This is a fingerprinting probe, not a security-sensitive connection - forcing
+    # TLS 1.2+ makes the handshake fail outright against services that only speak
+    # TLS 1.0/1.1, so they'd never get identified. Allow whatever the platform's
+    # OpenSSL build still supports.
+    context.minimum_version = ssl.TLSVersion.MINIMUM_SUPPORTED
 
     chunks = []
     tcp_wrap = False

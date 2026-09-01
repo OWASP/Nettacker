@@ -87,6 +87,16 @@ class TestParseProbeFile:
         assert null_probe["fallbacks"] == ["GenericLines"]
         assert null_probe["probe_string"] == ""
 
+    def test_comma_separated_fallback_names_are_split(self, tmp_path):
+        # Nmap's fallback directive separates multiple probe names with commas
+        # (e.g. "fallback GetRequest,HTTPOptions"), not whitespace. Splitting
+        # only on whitespace stored the whole sequence as one nonexistent name.
+        probe_file = tmp_path / "nmap-service-probes.txt"
+        probe_file.write_text("Probe TCP SIPOptions q||\nfallback GetRequest,HTTPOptions\n")
+
+        probes, _ = parse_probe_file(str(probe_file))
+        assert probes[0]["fallbacks"] == ["GetRequest", "HTTPOptions"]
+
     def test_match_signature_parsed(self, tmp_path):
         probe_file = tmp_path / "nmap-service-probes.txt"
         probe_file.write_text(SAMPLE_PROBES_TXT)

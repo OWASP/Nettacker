@@ -52,6 +52,17 @@ class TestExpandTemplate:
         match = _regex_match(rb"(\w+)", b"foo")
         assert expand_template("$2", match) == ""
 
+    def test_unmatched_optional_group_returns_empty_string_not_none(self):
+        # group(2) exists (in range) but didn't participate in the match, so
+        # re.Match.group() returns None. expand_place/$P/$I used to hand that
+        # None straight back to re.sub, which requires a string and raised
+        # TypeError - e.g. the bundled OpenFTPD signature's optional version
+        # group ("^220 OpenFTPD server(\d[\w.]+)?\r\n") referenced as $1.
+        match = _regex_match(rb"(\w+)(-\w+)?", b"foo")
+        assert expand_template("$1/$2", match) == "foo/"
+        assert expand_template("$P(2)", match) == ""
+        assert expand_template("$I(2,>)", match) == ""
+
 
 class TestProbeEngineFiltering:
     def _make_probe(self, name, protocol, ports=None, sslports=None):
@@ -88,6 +99,111 @@ class TestProbeEngineFiltering:
         engine = ProbeEngine(port=443, protocol="tcp", host="127.0.0.1", probes_by_name=probes)
         selected = {p.name for p in engine.get_probes_for_sslport()}
         assert selected == {"TLS_HTTP", "NULL"}
+
+
+class TestProbeEngineExcludedPorts:
+    """Raw-print listeners (TCP 9100-9107 in the bundled database) must never
+    receive probe payloads, regardless of which module/port list selected them."""
+
+    def _make_probe(self, name, protocol, ports=None, sslports=None):
+        return Probe(
+            name=name,
+            protocol=protocol,
+            ports=ports or [],
+            sslports=sslports or [],
+            fallbacks=[],
+            probe_string="",
+            signatures=[],
+        )
+
+    @patch(
+        "nettacker.probing.engine.get_excluded_ports",
+        return_value={"tcp": {9100}, "udp": set()},
+    )
+    def test_get_probes_for_port_returns_nothing_for_excluded_port(self, _mock_excluded):
+        probes = {"HTTP": self._make_probe("HTTP", "tcp", ports=[9100])}
+        engine = ProbeEngine(port=9100, protocol="tcp", host="127.0.0.1", probes_by_name=probes)
+        assert engine.get_probes_for_port() == []
+
+    @patch(
+        "nettacker.probing.engine.get_excluded_ports",
+        return_value={"tcp": {9100}, "udp": set()},
+    )
+    def test_get_probes_for_sslport_returns_nothing_for_excluded_port(self, _mock_excluded):
+        probes = {"TLS": self._make_probe("TLS", "tcp", sslports=[9100])}
+        engine = ProbeEngine(port=9100, protocol="tcp", host="127.0.0.1", probes_by_name=probes)
+        assert engine.get_probes_for_sslport() == []
+
+    @patch(
+        "nettacker.probing.engine.get_excluded_ports",
+        return_value={"tcp": {9100}, "udp": set()},
+    )
+    def test_exclusion_is_protocol_scoped(self, _mock_excluded):
+        probes = {"DNS": self._make_probe("DNS", "udp", ports=[9100])}
+        engine = ProbeEngine(port=9100, protocol="udp", host="127.0.0.1", probes_by_name=probes)
+        assert [p.name for p in engine.get_probes_for_port()] == ["DNS"]
+
+
+class TestProbeEngineWaitMs:
+    def test_caps_probe_totalwaits_to_configured_timeout(self):
+        probe = Probe(name="Slow", protocol="tcp", totalwaits=11000, signatures=[])
+        engine = ProbeEngine(
+            port=80, protocol="tcp", host="127.0.0.1", probes_by_name={}, timeout_ms=3000
+        )
+        assert engine._wait_ms(probe) == 3000
+
+    def test_uses_probes_own_totalwaits_when_shorter_than_timeout(self):
+        probe = Probe(name="Fast", protocol="tcp", totalwaits=1000, signatures=[])
+        engine = ProbeEngine(
+            port=80, protocol="tcp", host="127.0.0.1", probes_by_name={}, timeout_ms=3000
+        )
+        assert engine._wait_ms(probe) == 1000
+
+    def test_uses_probes_own_totalwaits_when_no_timeout_configured(self):
+        probe = Probe(name="Default", protocol="tcp", totalwaits=6000, signatures=[])
+        engine = ProbeEngine(port=80, protocol="tcp", host="127.0.0.1", probes_by_name={})
+        assert engine._wait_ms(probe) == 6000
+
+
+class TestFallbackResolution:
+    def test_fallback_is_scoped_to_the_probing_protocol(self):
+        # The bundled database defines both a TCP and a UDP probe under some
+        # shared names (RPCCheck, Help, Kerberos, OpenVPN, SIPOptions). A TCP
+        # probe's fallback must resolve to the TCP probe of that name, never
+        # the UDP one sharing it.
+        version = VersionDetails(raw="", version_template="$1", product="TCPProduct")
+        tcp_sig = Signature(
+            service="tcp-svc", regex=re.compile(rb"X-(\d+)"), version_details=version
+        )
+        tcp_shared = Probe(name="Shared", protocol="tcp", signatures=[tcp_sig])
+        udp_shared = Probe(name="Shared", protocol="udp", signatures=[])
+        probes = {("tcp", "Shared"): tcp_shared, ("udp", "Shared"): udp_shared}
+
+        probe = Probe(name="NULL", protocol="tcp", ports=[80], fallbacks=["Shared"])
+        engine = ProbeEngine(port=80, protocol="tcp", host="127.0.0.1", probes_by_name=probes)
+        fake_response = {"raw_bytes": b"X-7", "ssl_flag": False}
+        with patch("nettacker.probing.engine.tcp_probe", return_value=fake_response):
+            with patch.object(engine, "get_probes_for_port", return_value=[probe]):
+                result = engine.probe_sequentially()
+        assert result["service"] == "tcp-svc"
+
+    def test_null_fallback_resolves_regardless_of_probing_protocol(self):
+        # NULL just reads whatever banner is sent without a payload, so it's
+        # usable as a fallback for both TCP and UDP probes.
+        version = VersionDetails(raw="", version_template="$1", product="NullProduct")
+        null_sig = Signature(
+            service="banner", regex=re.compile(rb"Y-(\d+)"), version_details=version
+        )
+        null_probe = Probe(name="NULL", protocol="tcp", signatures=[null_sig])
+        probes = {("tcp", "NULL"): null_probe}
+
+        probe = Probe(name="DNS", protocol="udp", ports=[53], fallbacks=["NULL"])
+        engine = ProbeEngine(port=53, protocol="udp", host="127.0.0.1", probes_by_name=probes)
+        fake_response = {"raw_bytes": b"Y-9", "ssl_flag": False}
+        with patch("nettacker.probing.engine.udp_probe", return_value=fake_response):
+            with patch.object(engine, "get_probes_for_port", return_value=[probe]):
+                result = engine.probe_sequentially()
+        assert result["service"] == "banner"
 
 
 class TestMatchResponse:
