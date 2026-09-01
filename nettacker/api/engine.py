@@ -462,7 +462,13 @@ def get_results():
     page = get_value(flask_request, "page")
     if not page:
         page = 1
-    return jsonify(select_reports(int(page))), 200
+    try:
+        page_num = int(page)
+        if page_num < 1:
+            page_num = 1
+    except (ValueError, TypeError):
+        return jsonify(structure(status="error", msg="Invalid page number")), 400
+    return jsonify(select_reports(page_num)), 200
 
 
 @app.route("/results/get", methods=["GET"])
@@ -479,8 +485,12 @@ def get_result_content():
         return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
 
     try:
-        filename, file_content = get_scan_result(scan_id)
-    except Exception:
+        res = get_scan_result(scan_id)
+        if not res or not isinstance(res, tuple):
+            return jsonify(structure(status="error", msg=_("no_scan_data_found"))), 404
+        filename, file_content = res
+    except Exception as e:
+        logger.error(f"Error fetching scan result for scan_id {scan_id}: {e}")
         return jsonify(structure(status="error", msg="database error!")), 500
 
     return Response(
@@ -504,6 +514,8 @@ def get_results_json():
     if not result_id:
         return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
     scan_details = session.query(Report).filter(Report.id == result_id).first()
+    if not scan_details:
+        return jsonify(structure(status="error", msg=_("no_scan_data_found"))), 404
     json_object = json.dumps(get_logs_by_scan_id(scan_details.scan_unique_id))
     filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".json"
     return Response(
@@ -527,6 +539,8 @@ def get_results_csv():  # todo: need to fix time format
     if not result_id:
         return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
     scan_details = session.query(Report).filter(Report.id == result_id).first()
+    if not scan_details:
+        return jsonify(structure(status="error", msg=_("no_scan_data_found"))), 404
     data = get_logs_by_scan_id(scan_details.scan_unique_id)
     if not data:
         return jsonify(structure(status="error", msg=_("no_scan_data_found"))), 404
@@ -558,7 +572,13 @@ def get_last_host_logs():  # need to check
     page = get_value(flask_request, "page")
     if not page:
         page = 1
-    return jsonify(last_host_logs(int(page))), 200
+    try:
+        page_num = int(page)
+        if page_num < 1:
+            page_num = 1
+    except (ValueError, TypeError):
+        return jsonify(structure(status="error", msg="Invalid page number")), 400
+    return jsonify(last_host_logs(page_num)), 200
 
 
 @app.route("/logs/get_html", methods=["GET"])
