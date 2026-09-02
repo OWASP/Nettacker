@@ -2,8 +2,7 @@ from pathlib import PureWindowsPath
 from unittest.mock import MagicMock
 
 from nettacker.config import Config
-from nettacker.core import arg_parser
-from nettacker.core import messages
+from nettacker.core import arg_parser, messages
 from nettacker.core.arg_parser import ArgParser
 
 

@@ -12,7 +12,9 @@ def test_http_module_skips_uvloop_on_win32(monkeypatch):
     monkeypatch.delitem(sys.modules, "uvloop", raising=False)
 
     policy_calls = []
-    monkeypatch.setattr(asyncio, "set_event_loop_policy", lambda policy: policy_calls.append(policy))
+    monkeypatch.setattr(
+        asyncio, "set_event_loop_policy", lambda policy: policy_calls.append(policy)
+    )
 
     importlib.import_module("nettacker.core.lib.http")
 
@@ -33,7 +35,9 @@ def test_http_module_sets_uvloop_policy_on_posix(monkeypatch):
     monkeypatch.delitem(sys.modules, "nettacker.core.lib.http", raising=False)
 
     policy_calls = []
-    monkeypatch.setattr(asyncio, "set_event_loop_policy", lambda policy: policy_calls.append(policy))
+    monkeypatch.setattr(
+        asyncio, "set_event_loop_policy", lambda policy: policy_calls.append(policy)
+    )
 
     importlib.import_module("nettacker.core.lib.http")
 
