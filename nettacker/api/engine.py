@@ -480,7 +480,8 @@ def get_result_content():
 
     try:
         filename, file_content = get_scan_result(scan_id)
-    except Exception:
+    except Exception as e:
+        log.error(f"api/engine: get_scan_result failed for scan_id={scan_id}: {e}")
         return jsonify(structure(status="error", msg="database error!")), 500
 
     return Response(
@@ -644,11 +645,13 @@ def go_for_search_logs():
         page = int(get_value(flask_request, "page"))
         if page > 0:
             page -= 1
-    except Exception:
+    except (ValueError, TypeError) as e:
+        log.error(f"api/engine: invalid page value, defaulting to 0: {e}")
         page = 0
     try:
         query = get_value(flask_request, "q")
-    except Exception:
+    except Exception as e:
+        log.error(f"api/engine: failed to read query param, defaulting to empty: {e}")
         query = ""
     return jsonify(search_logs(page, query)), 200
 
