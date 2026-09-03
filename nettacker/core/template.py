@@ -34,11 +34,24 @@ class TemplateLoader:
         return module_content
 
     def open(self):
+        """
+        read the raw YAML content of this module's template file
+
+        Derives the module's category (action) and library name from
+        self.name (formatted as "{library}_{category}"), then reads the
+        corresponding file from Config.path.modules_dir/{action}/{library}.yaml
+        as UTF-8.
+
+        Returns:
+            the raw file content as a string
+        """
         module_name_parts = self.name.split("_")
         action = module_name_parts[-1]
         library = "_".join(module_name_parts[:-1])
 
-        with open(Config.path.modules_dir / action / f"{library}.yaml") as yaml_file:
+        with open(
+            Config.path.modules_dir / action / f"{library}.yaml", encoding="utf-8"
+        ) as yaml_file:
             return yaml_file.read()
 
     def format(self):

@@ -1,6 +1,5 @@
 import copy
 import json
-import os
 import shutil
 import socket
 import sys
@@ -66,7 +65,17 @@ class Nettacker(ArgParser):
         log.reset_color()
 
     def check_dependencies(self):
-        if sys.platform not in {"darwin", "freebsd13", "freebsd14", "freebsd15", "linux"}:
+        """
+        verify the host platform is supported and the database backend is ready
+
+        Checks that the process is running on a supported OS, that the tmp
+        and results directories exist and are writable, and that the
+        configured database engine (sqlite, mysql, or postgres) is reachable
+        and has its tables created -- migrating the legacy sqlite database
+        file if needed. Calls die_failure() on any unsupported platform,
+        permission error, or database connection failure.
+        """
+        if sys.platform not in {"darwin", "freebsd13", "freebsd14", "freebsd15", "linux", "win32"}:
             die_failure(_("error_platform"))
 
         try:
@@ -163,7 +172,7 @@ class Nettacker(ArgParser):
                             self.arguments.targets.append(sub_domain)
         # icmp_scan
         if self.arguments.ping_before_scan:
-            if os.geteuid() == 0:
+            if common_utils.is_running_with_privileges():
                 selected_modules = self.arguments.selected_modules
                 self.arguments.selected_modules = ["icmp_scan"]
                 self.start_scan(scan_id)
@@ -262,6 +271,21 @@ class Nettacker(ArgParser):
         thread_number,
         total_number_threads,
     ):
+        """
+        run a single module against a single target and log completion
+
+        Args:
+            target: the target to scan
+            module_name: the module to run against the target
+            scan_id: unique scan identifier
+            process_number: index of the parent process, used for logging
+            thread_number: index of this thread within its process, used for logging
+            total_number_threads: total number of threads in this process, used for logging
+
+        Returns:
+            0 on completion (unused by the caller -- this runs as a Thread target,
+            and Thread discards its target's return value)
+        """
         options = copy.deepcopy(self.arguments)
 
         socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
@@ -285,7 +309,7 @@ class Nettacker(ArgParser):
             )
         )
 
-        return os.EX_OK
+        return 0
 
     def scan_target_group(self, targets, scan_id, process_number):
         active_threads = []
