@@ -1035,7 +1035,7 @@ def search_logs(page, query):
                 WHERE target LIKE ? OR date LIKE ? OR module_name LIKE ?
                 OR port LIKE ? OR event LIKE ? OR scan_unique_id LIKE ?
                 ORDER BY id DESC
-                LIMIT 10 OFFSET ?
+                LIMIT 11 OFFSET ?
                 """,
                 (
                     f"%{query}%",
@@ -1044,7 +1044,7 @@ def search_logs(page, query):
                     f"%{query}%",
                     f"%{query}%",
                     f"%{query}%",
-                    (page * 10) - 10,
+                    (page - 1) * 10,
                 ),
             )
             targets = cursor.fetchall()
@@ -1116,8 +1116,8 @@ def search_logs(page, query):
                 )
                 .group_by(HostsLog.target)
                 .order_by(HostsLog.id.desc())
-                .offset((page * 10) - 10)
-                .limit(10)
+                .offset((page - 1) * 10)
+                .limit(11)
             ):
                 for data in (
                     session.query(HostsLog)
