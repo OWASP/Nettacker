@@ -59,9 +59,16 @@ def is_weak_ssl_version(host, port, timeout):
 def is_weak_cipher_suite(host, port, timeout):
     def test_single_cipher(host, port, cipher, timeout):
         try:
-            context = ssl.create_default_context()
+            # set_ciphers() only affects TLS 1.2 and below -- TLS 1.3 uses a
+            # separate ciphersuite mechanism (set_ciphersuites()) that this
+            # string never touches. Without capping maximum_version, a TLS
+            # 1.3-capable server negotiates TLS 1.3 regardless of the (possibly
+            # weak) cipher requested here, making every cipher string appear
+            # "supported" via a handshake that never actually used it.
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
             context.check_hostname = False
             context.verify_mode = ssl.CERT_NONE
+            context.maximum_version = ssl.TLSVersion.TLSv1_2
             context.set_ciphers(cipher)
             create_socket_connection(context, host, port, timeout)
             return True
