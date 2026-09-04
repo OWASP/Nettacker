@@ -402,10 +402,30 @@ class TestSslMethod:
         assert result == expected
 
     @patch("socket.socket")
-    @patch("ssl.create_default_context")
+    @patch("ssl.SSLContext")
     def test_is_weak_cipher_suite_success(self, mock_context, mock_socket, connection_params):
+        """Genuinely simulates the maximum_version/set_ciphers interaction instead of
+        unconditionally succeeding: a cipher only connects if it's not in the weak
+        set, OR maximum_version was never capped to TLS 1.2 -- mirroring the real bug
+        (uncapped, TLS 1.3 masks every cipher string) and the real fix (capped, weak
+        ciphers are correctly rejected). This test fails against the pre-fix code."""
         socket_instance = mock_socket.return_value
         context_instance = mock_context.return_value
+
+        weak_ciphers = {"LOW", "EXP", "eNULL", "aNULL", "RC4", "DES", "MD5", "DH", "ADH"}
+        context_instance._last_cipher = None
+
+        def fake_set_ciphers(cipher):
+            context_instance._last_cipher = cipher
+
+        def fake_wrap_socket(sock, server_hostname=None):
+            capped = context_instance.maximum_version == ssl.TLSVersion.TLSv1_2
+            if context_instance._last_cipher in weak_ciphers and capped:
+                raise ssl.SSLError("no cipher can be selected")
+            return socket_instance
+
+        context_instance.set_ciphers.side_effect = fake_set_ciphers
+        context_instance.wrap_socket.side_effect = fake_wrap_socket
 
         cipher_list = [
             "HIGH",
@@ -428,12 +448,13 @@ class TestSslMethod:
             "TLSv1.2",
             "TLSv1.3",
         ]
+        expected_supported = [c for c in cipher_list if c not in weak_ciphers]
 
         result = is_weak_cipher_suite(
             connection_params["HOST"], connection_params["PORT"], connection_params["TIMEOUT"]
         )
 
-        assert result == (cipher_list, True)
+        assert result == (expected_supported, False)
         context_instance.wrap_socket.assert_called_with(
             socket_instance, server_hostname=connection_params["HOST"]
         )
@@ -443,7 +464,7 @@ class TestSslMethod:
         )
 
     @patch("socket.socket")
-    @patch("ssl.create_default_context")
+    @patch("ssl.SSLContext")
     def test_is_weak_cipher_suite_ssl_error(self, mock_context, mock_socket, connection_params):
         context_instance = mock_context.return_value
         context_instance.wrap_socket.side_effect = ssl.SSLError
