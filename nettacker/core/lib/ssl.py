@@ -94,6 +94,14 @@ def is_weak_cipher_suite(host, port, timeout):
         except (socket.timeout, ConnectionRefusedError, ConnectionResetError):
             return None
 
+    # Protocol-version names ("TLSv1", "TLSv1.1", "TLSv1.2", "TLSv1.3") were
+    # previously included here too, but they are not OpenSSL cipher-class
+    # keywords -- set_ciphers() either rejects them outright or (for
+    # "TLSv1"/"TLSv1.2") accepts them as accidental non-restrictive tokens
+    # that resolve to nearly the full cipher list, testing nothing meaningful
+    # either way. Real protocol-version detection is already handled
+    # correctly by is_weak_ssl_version(), via dedicated version-pinned
+    # SSLContext objects.
     cipher_suites = [
         "HIGH",  # OpenSSL cipher strings
         "MEDIUM",
@@ -110,10 +118,6 @@ def is_weak_cipher_suite(host, port, timeout):
         "DHE",
         "ECDH",
         "ECDHE",
-        "TLSv1",
-        "TLSv1.1",
-        "TLSv1.2",
-        "TLSv1.3",
     ]
 
     supported_ciphers = []

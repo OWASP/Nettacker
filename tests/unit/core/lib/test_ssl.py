@@ -22,9 +22,9 @@ def _openssl_accepts_cipher_string(cipher):
     """Ground truth for whether this OpenSSL build's cipher-string parser accepts
     a given keyword at all, independent of what any particular server would
     negotiate. Queried against the real SSLContext so tests track actual OpenSSL
-    behavior instead of assuming which legacy/pseudo-version tokens are valid --
-    e.g. "TLSv1.1"/"TLSv1.3" are rejected outright by set_ciphers() on this build,
-    while "TLSv1"/"TLSv1.2" happen to be accepted as non-restrictive tokens."""
+    behavior instead of assuming which legacy cipher-class keywords are valid --
+    e.g. "RC4"/"DES" are rejected outright by set_ciphers() on this build, since
+    modern OpenSSL doesn't compile them into its default provider."""
     try:
         _RealSSLContext(ssl.PROTOCOL_TLS_CLIENT).set_ciphers(f"{cipher}:@SECLEVEL=0")
         return True
@@ -438,9 +438,9 @@ class TestSslMethod:
             # Production code passes "{cipher}:@SECLEVEL=0" -- strip that
             # suffix back off so the weak_ciphers membership check below
             # still matches the base cipher name. Reject strings real OpenSSL
-            # would reject (e.g. "TLSv1.1"/"TLSv1.3" are not valid cipher-class
-            # keywords on this build), mirroring set_ciphers()'s real behavior
-            # instead of letting every string through unconditionally.
+            # would reject (e.g. "RC4"/"DES" aren't in this build's default
+            # provider), mirroring set_ciphers()'s real behavior instead of
+            # letting every string through unconditionally.
             base_cipher = cipher.split(":")[0]
             if not _openssl_accepts_cipher_string(base_cipher):
                 raise ssl.SSLError("no cipher can be selected")
@@ -471,10 +471,6 @@ class TestSslMethod:
             "DHE",
             "ECDH",
             "ECDHE",
-            "TLSv1",
-            "TLSv1.1",
-            "TLSv1.2",
-            "TLSv1.3",
         ]
         expected_supported = [
             c for c in cipher_list if _openssl_accepts_cipher_string(c) and c not in weak_ciphers
