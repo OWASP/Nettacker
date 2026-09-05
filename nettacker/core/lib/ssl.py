@@ -68,11 +68,23 @@ def is_weak_cipher_suite(host, port, timeout):
             # negotiates TLS 1.3 regardless of the (possibly weak) cipher
             # requested here, making every cipher string appear "supported"
             # via a handshake that never actually used it.
+            #
+            # PROTOCOL_TLS_CLIENT also defaults minimum_version to TLSv1_2 and
+            # OpenSSL's security_level to 2, both of which independently block
+            # the legacy protocols and ciphers (NULL, MD5, RC4, anonymous,
+            # export-grade) this function exists to detect -- lowering both is
+            # required, not just capping the top of the range. @SECLEVEL=0 is
+            # scoped to this context only; it cannot select a cipher outside
+            # what the cipher string itself matches (e.g. "HIGH" still only
+            # matches strong ciphers), and PROTOCOL_TLS_CLIENT independently
+            # keeps SSLv3 disabled regardless of minimum_version, so the real
+            # floor here is TLS 1.0, not SSLv3/SSLv2.
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
             context.check_hostname = False
             context.verify_mode = ssl.CERT_NONE
+            context.minimum_version = ssl.TLSVersion.MINIMUM_SUPPORTED
             context.maximum_version = ssl.TLSVersion.TLSv1_2
-            context.set_ciphers(cipher)
+            context.set_ciphers(f"{cipher}:@SECLEVEL=0")
             create_socket_connection(context, host, port, timeout)
             return True
 
