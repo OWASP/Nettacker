@@ -416,7 +416,10 @@ class TestSslMethod:
         context_instance._last_cipher = None
 
         def fake_set_ciphers(cipher):
-            context_instance._last_cipher = cipher
+            # Production code passes "{cipher}:@SECLEVEL=0" -- strip that
+            # suffix back off so the weak_ciphers membership check below
+            # still matches the base cipher name.
+            context_instance._last_cipher = cipher.split(":")[0]
 
         def fake_wrap_socket(sock, server_hostname=None):
             capped = context_instance.maximum_version == ssl.TLSVersion.TLSv1_2
