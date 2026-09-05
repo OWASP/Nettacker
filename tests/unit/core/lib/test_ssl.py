@@ -12,6 +12,25 @@ from nettacker.core.lib.ssl import (
     is_weak_ssl_version,
 )
 
+# Captured at import time, before any @patch("ssl.SSLContext") can intercept it,
+# so ground-truth cipher-string validation below always queries the real OpenSSL
+# build rather than whatever mock a given test has installed.
+_RealSSLContext = ssl.SSLContext
+
+
+def _openssl_accepts_cipher_string(cipher):
+    """Ground truth for whether this OpenSSL build's cipher-string parser accepts
+    a given keyword at all, independent of what any particular server would
+    negotiate. Queried against the real SSLContext so tests track actual OpenSSL
+    behavior instead of assuming which legacy/pseudo-version tokens are valid --
+    e.g. "TLSv1.1"/"TLSv1.3" are rejected outright by set_ciphers() on this build,
+    while "TLSv1"/"TLSv1.2" happen to be accepted as non-restrictive tokens."""
+    try:
+        _RealSSLContext(ssl.PROTOCOL_TLS_CLIENT).set_ciphers(f"{cipher}:@SECLEVEL=0")
+        return True
+    except ssl.SSLError:
+        return False
+
 
 class MockConnectionObject:
     def __init__(self, peername, version=None):
@@ -418,8 +437,14 @@ class TestSslMethod:
         def fake_set_ciphers(cipher):
             # Production code passes "{cipher}:@SECLEVEL=0" -- strip that
             # suffix back off so the weak_ciphers membership check below
-            # still matches the base cipher name.
-            context_instance._last_cipher = cipher.split(":")[0]
+            # still matches the base cipher name. Reject strings real OpenSSL
+            # would reject (e.g. "TLSv1.1"/"TLSv1.3" are not valid cipher-class
+            # keywords on this build), mirroring set_ciphers()'s real behavior
+            # instead of letting every string through unconditionally.
+            base_cipher = cipher.split(":")[0]
+            if not _openssl_accepts_cipher_string(base_cipher):
+                raise ssl.SSLError("no cipher can be selected")
+            context_instance._last_cipher = base_cipher
 
         def fake_wrap_socket(sock, server_hostname=None):
             capped = context_instance.maximum_version == ssl.TLSVersion.TLSv1_2
@@ -451,7 +476,9 @@ class TestSslMethod:
             "TLSv1.2",
             "TLSv1.3",
         ]
-        expected_supported = [c for c in cipher_list if c not in weak_ciphers]
+        expected_supported = [
+            c for c in cipher_list if _openssl_accepts_cipher_string(c) and c not in weak_ciphers
+        ]
 
         result = is_weak_cipher_suite(
             connection_params["HOST"], connection_params["PORT"], connection_params["TIMEOUT"]
