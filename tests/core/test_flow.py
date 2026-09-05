@@ -228,8 +228,11 @@ def test_non_mapping_section_raises():
         FlowLoader.build(content)
 
 
-@pytest.mark.parametrize("depends_on", [1, {"either": ["a"]}, {"any": "a"}])
+@pytest.mark.parametrize("depends_on", [1, {"either": ["a"]}, {"any": "a"}, 0, {}])
 def test_invalid_depends_on_shape_raises(depends_on):
+    # Falsy-but-present values such as 0 or {} must be rejected too - `raw_step.get(...)
+    # or []` would silently turn them into an empty (always-satisfied) dependency list
+    # instead of surfacing the malformed value to shape validation.
     content = make_flow_content(
         [
             {"id": "a", "module": "port_scan", "depends_on": []},
@@ -308,11 +311,14 @@ def test_invalid_flow_timeout_raises(timeout):
         FlowLoader.build(content)
 
 
-@pytest.mark.parametrize("retries", ["1", [1], True, 1.5, -1])
+@pytest.mark.parametrize("retries", ["1", [1], True, 1.5, -1, 0])
 def test_invalid_step_retries_raises(retries):
     # A float such as 1.5 must be rejected at load time - it passes a generic
     # numeric check but later crashes with TypeError when the retry loop does
-    # range(retries) deep in the scheduler. Negative retries make no sense either.
+    # range(retries) deep in the scheduler. Negative retries make no sense either,
+    # and zero retries would leave `response` unassigned when the HTTP/base
+    # engines run their request inside that same range(retries) loop, crashing
+    # with an UnboundLocalError instead of a clean, load-time FlowError.
     content = make_flow_content(
         [{"id": "a", "module": "port_scan", "depends_on": [], "retries": retries}]
     )

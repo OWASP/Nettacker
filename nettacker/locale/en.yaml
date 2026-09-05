@@ -144,6 +144,7 @@ read_report_fail: Failed to read report file {0}
 search_results_end: No more search results
 database_error: Database error!
 error_exclude_all: "Cannot exclude all modules. Please specify individual module names to exclude using -x."
+error_exclude_with_flow: "--exclude-modules cannot be combined with --module-flow. Remove the step from the flow file instead."
 module_flow: "Run a module flow defined in a YAML file. Provide a flow name (looked up under {0}) or a path to a flow .yaml file"
 flow_overrides_module_selection: "--module-flow was given along with -m/--modules or --profile; the flow's own steps determine which modules run"
 flow_not_found: "Module flow '{0}' not found"

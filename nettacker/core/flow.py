@@ -68,11 +68,14 @@ def _is_valid_timeout(value):
 
 
 def _is_valid_retries(value):
-    """retries must be a non-negative integer (or unset) - not a bool, float, string, etc.
+    """retries must be a positive integer (or unset) - not a bool, float, string, etc.
     A float such as 1.5 passes a generic numeric check but later crashes with a raw
     TypeError when the retry loop does range(retries) deep in the scheduler, instead
-    of a clean, load-time FlowError."""
-    return value is None or (isinstance(value, int) and not isinstance(value, bool) and value >= 0)
+    of a clean, load-time FlowError. Zero is rejected too: the HTTP/base engines run
+    their request inside that same range(retries) loop and never assign a response
+    when it iterates zero times, so retries: 0 would fail later with an
+    UnboundLocalError instead of a clean, load-time FlowError."""
+    return value is None or (isinstance(value, int) and not isinstance(value, bool) and value >= 1)
 
 
 def is_valid_depends_on_shape(depends_on):
@@ -251,7 +254,7 @@ class FlowLoader:
                 FlowStep(
                     id=step_id,
                     module=module,
-                    depends_on=raw_step.get("depends_on") or [],
+                    depends_on=raw_step.get("depends_on", []),
                     params=params,
                     on_failure=raw_step.get("on_failure"),
                     timeout=step_timeout,

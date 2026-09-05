@@ -1,3 +1,5 @@
+import pytest
+
 from nettacker.core.arg_parser import ArgParser
 
 
@@ -35,6 +37,15 @@ def test_glued_short_option_is_recognized_as_explicit(monkeypatch, tmp_path):
 def test_unset_option_falls_back_to_flow_default(monkeypatch, tmp_path):
     ap = _build_arg_parser(monkeypatch, tmp_path, [])
     assert ap.arguments.flow_inputs["ports"] == [21, 22, 80, 443, 8080, 8443]
+
+
+def test_exclude_modules_with_module_flow_is_rejected(monkeypatch, tmp_path):
+    # --exclude-modules only ever filtered options.selected_modules, but the flow
+    # scheduler launches every step from the flow's own step list regardless of that
+    # filtered selection - so a step using an "excluded" module would still run.
+    # Reject the combination outright instead of silently ignoring the exclusion.
+    with pytest.raises(SystemExit):
+        _build_arg_parser(monkeypatch, tmp_path, ["--exclude-modules", "port_scan"])
 
 
 def test_append_action_option_does_not_crash(monkeypatch, tmp_path):

@@ -694,6 +694,8 @@ class ArgParser(ArgumentParser):
 
         # Check for excluding modules
         if options.excluded_modules:
+            if options.flow:
+                die_failure(_("error_exclude_with_flow"))
             options.excluded_modules = options.excluded_modules.split(",")
             if "all" in options.excluded_modules:
                 die_failure(_("error_exclude_all"))
