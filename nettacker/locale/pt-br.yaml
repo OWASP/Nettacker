@@ -10,9 +10,6 @@ engine_input: Opções de entrada do mecanismo
 select_language: 'selecione um idioma {0}'
 range: escanear todos os IP em um intervalo
 subdomains: buscar e escanear subdomínios
-Invalid_whatcms_api_key: '{0}'
-searching_whatcms_database: Procurando por CMS em whatcms.org...
-whatcms_monthly_quota_exceeded: Você excedeu sua cota de requisição WHATCMS mensal
 thread_number_connections: número de thread(s) para as conexões com um host
 thread_number_hosts: número de thread(s) para os hosts de escaneio
 save_logs: 'salvar todos os registros no arquivo (results.txt, results.html, results.json)'
