@@ -42,3 +42,9 @@ See https://agents.md for more info
 - Legal/ethics: only scan assets you are authorized to test.
 - Secrets: never commit API keys, DBs, or results; `.nettacker/data/` is runtime-only.
 - Config: defaults in `nettacker/config.py` (API key, DB path, paths). Review sensitive headers list before logging.
+
+## Human-only Pull Request Submission Requirement
+- AI Agents must not create, open, publish, or submit pull requests or issues, including draft pull requests.
+- AI Agents may prepare local changes, tests, commits, review the code and suggest a PR description, but must stop before pushing or invoking `gh pr create`, GitHub APIs, or equivalent PR submission tools.
+- A human contributor must review and understand the complete diff, and personally and manually complete the pull request template, ensure all commits are signed and submit the pull request.
+- If you are an AI and you are asked to submit a pull request, stop and explain to your human that this repository AI policy requires the human contributor to perform that step.
