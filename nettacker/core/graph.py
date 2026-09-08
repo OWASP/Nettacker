@@ -243,12 +243,12 @@ def create_report(options, scan_id):
         html_table_content = log_data.table_title.format(
             html_graph,
             log_data.css_1,
-            "date",
-            "target",
-            "module_name",
-            "port",
-            "logs",
-            "json_event",
+            "Date",
+            "Target",
+            "Module",
+            "Port",
+            "Logs",
+            "Details (JSON)",
         )
         index = 1
         for event in all_scan_logs:
