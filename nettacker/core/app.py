@@ -75,7 +75,9 @@ class Nettacker(ArgParser):
         file if needed. Calls die_failure() on any unsupported platform,
         permission error, or database connection failure.
         """
-        if sys.platform not in {"darwin", "freebsd13", "freebsd14", "freebsd15", "linux", "win32"}:
+        if sys.platform not in {"darwin", "linux", "win32"} and not sys.platform.startswith(
+            "freebsd"
+        ):
             die_failure(_("error_platform"))
 
         try:
