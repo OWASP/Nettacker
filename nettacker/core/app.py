@@ -4,6 +4,7 @@ import os
 import shutil
 import socket
 import sys
+import time
 from threading import Thread
 
 import multiprocess
@@ -12,6 +13,7 @@ from nettacker import logger
 from nettacker.config import Config, version_info
 from nettacker.core.arg_parser import ArgParser
 from nettacker.core.die import die_failure
+from nettacker.core.flow import evaluate_depends_on, render_params
 from nettacker.core.graph import create_compare_report, create_report
 from nettacker.core.ip import (
     generate_ip_range,
@@ -38,13 +40,15 @@ log = logger.get_logger()
 
 
 class Nettacker(ArgParser):
-    def __init__(self, api_arguments=None):
+    def __init__(self, api_arguments=None, explicitly_provided_dests=None):
         if not api_arguments:
             self.print_logo()
         self.check_dependencies()
 
         log.info(_("scan_started"))
-        super().__init__(api_arguments=api_arguments)
+        super().__init__(
+            api_arguments=api_arguments, explicitly_provided_dests=explicitly_provided_dests
+        )
 
     @staticmethod
     def print_logo():
@@ -150,9 +154,12 @@ class Nettacker(ArgParser):
         # subdomain_scan
         if self.arguments.scan_subdomains:
             selected_modules = self.arguments.selected_modules
+            flow = self.arguments.flow
             self.arguments.selected_modules = ["subdomain_scan"]
+            self.arguments.flow = None
             self.start_scan(scan_id)
             self.arguments.selected_modules = selected_modules
+            self.arguments.flow = flow
             if "subdomain_scan" in self.arguments.selected_modules:
                 self.arguments.selected_modules.remove("subdomain_scan")
 
@@ -165,9 +172,12 @@ class Nettacker(ArgParser):
         if self.arguments.ping_before_scan:
             if os.geteuid() == 0:
                 selected_modules = self.arguments.selected_modules
+                flow = self.arguments.flow
                 self.arguments.selected_modules = ["icmp_scan"]
+                self.arguments.flow = None
                 self.start_scan(scan_id)
                 self.arguments.selected_modules = selected_modules
+                self.arguments.flow = flow
                 if "icmp_scan" in self.arguments.selected_modules:
                     self.arguments.selected_modules.remove("icmp_scan")
                 self.arguments.targets = self.filter_target_by_event(targets, scan_id, "icmp_scan")
@@ -179,9 +189,12 @@ class Nettacker(ArgParser):
         if not self.arguments.skip_service_discovery:
             self.arguments.skip_service_discovery = True
             selected_modules = self.arguments.selected_modules
+            flow = self.arguments.flow
             self.arguments.selected_modules = ["port_scan"]
+            self.arguments.flow = None
             self.start_scan(scan_id)
             self.arguments.selected_modules = selected_modules
+            self.arguments.flow = flow
             if "port_scan" in self.arguments.selected_modules:
                 self.arguments.selected_modules.remove("port_scan")
             self.arguments.targets = self.filter_target_by_event(targets, scan_id, "port_scan")
@@ -261,8 +274,13 @@ class Nettacker(ArgParser):
         process_number,
         thread_number,
         total_number_threads,
+        extra_options=None,
     ):
         options = copy.deepcopy(self.arguments)
+        if extra_options:
+            for key, value in extra_options.items():
+                if value is not None:
+                    setattr(options, key, value)
 
         socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
         module = Module(
@@ -290,38 +308,194 @@ class Nettacker(ArgParser):
     def scan_target_group(self, targets, scan_id, process_number):
         active_threads = []
         log.verbose_event_info(_("single_process_started").format(process_number))
-        total_number_of_modules = len(targets) * len(self.arguments.selected_modules)
+        flow = getattr(self.arguments, "flow", None)
+        if not flow:
+            total_number_of_modules = len(targets) * len(self.arguments.selected_modules)
+            total_number_of_modules_counter = 1
+            for target in targets:
+                for module_name in self.arguments.selected_modules:
+                    thread = Thread(
+                        target=self.scan_target,
+                        args=(
+                            target,
+                            module_name,
+                            scan_id,
+                            process_number,
+                            total_number_of_modules_counter,
+                            total_number_of_modules,
+                        ),
+                    )
+                    thread.name = f"{target} -> {module_name}"
+                    thread.start()
+                    log.verbose_event_info(
+                        _("start_parallel_module_scan").format(
+                            process_number,
+                            module_name,
+                            target,
+                            total_number_of_modules_counter,
+                            total_number_of_modules,
+                        )
+                    )
+                    total_number_of_modules_counter += 1
+                    active_threads.append(thread)
+                    if not wait_for_threads_to_finish(
+                        active_threads, self.arguments.parallel_module_scan, True
+                    ):
+                        return False
+            wait_for_threads_to_finish(active_threads, maximum=None, terminable=True)
+            return True
+
+        return self.scan_flow_group(flow, targets, scan_id, process_number, active_threads)
+
+    def scan_flow_group(self, flow, targets, scan_id, process_number, active_threads):
+        """
+        Run a YAML-defined module flow against a group of targets: steps are scheduled
+        as soon as their `depends_on` expression is satisfied (dependencies may be a
+        plain list, or nested any/all trees), independently per target.
+        """
+        steps_by_id = {step.id: step for step in flow.steps}
+        max_parallel = min(self.arguments.parallel_module_scan, flow.max_parallel)
+        flow_inputs = self.arguments.flow_inputs or {}
+
+        total_number_of_modules = len(targets) * len(steps_by_id)
         total_number_of_modules_counter = 1
 
-        for target in targets:
-            for module_name in self.arguments.selected_modules:
-                thread = Thread(
-                    target=self.scan_target,
-                    args=(
-                        target,
-                        module_name,
-                        scan_id,
-                        process_number,
-                        total_number_of_modules_counter,
-                        total_number_of_modules,
-                    ),
-                )
-                thread.name = f"{target} -> {module_name}"
-                thread.start()
-                log.verbose_event_info(
-                    _("start_parallel_module_scan").format(
-                        process_number,
-                        module_name,
-                        target,
-                        total_number_of_modules_counter,
-                        total_number_of_modules,
-                    )
-                )
-                total_number_of_modules_counter += 1
-                active_threads.append(thread)
-                if not wait_for_threads_to_finish(
-                    active_threads, self.arguments.parallel_module_scan, True
+        target_state = {
+            target: {"completed": set(), "blocked": set(), "running": set(), "aborted": False}
+            for target in targets
+        }
+
+        step_threads = {}
+        step_baselines = {}
+
+        while True:
+            # Detect finished threads FIRST, before deciding what to launch this pass.
+            # A step whose on_failure is "abort" must stop every further launch for its
+            # target - if this ran after the launch phase instead, a step finishing with
+            # an abort-triggering failure this same tick couldn't prevent unrelated
+            # steps for that target from being launched in that very tick.
+            for (target, step_id), thread in list(step_threads.items()):
+                if not thread.is_alive():
+                    step = steps_by_id[step_id]
+                    state = target_state[target]
+                    state["running"].remove(step_id)
+
+                    # Events are tracked per (target, module_name, scan_id) in the database
+                    # with no step id, so two steps invoking the same module - or an earlier
+                    # expand_targets pass - can already have produced matching rows. Judging
+                    # success by this step's own count increase over its pre-launch baseline
+                    # keeps the signal scoped to the run this step actually triggered.
+                    baseline = step_baselines.pop((target, step_id))
+                    if len(find_events(target, step.module, scan_id)) > baseline:
+                        state["completed"].add(step_id)
+                    else:
+                        state["blocked"].add(step_id)
+                        if (step.on_failure or flow.on_failure) == "abort":
+                            state["aborted"] = True
+
+                    del step_threads[(target, step_id)]
+
+            work_remaining = False
+            launched_step = False
+            for target in targets:
+                state = target_state[target]
+                if state["aborted"] or len(state["completed"]) + len(state["blocked"]) == len(
+                    steps_by_id
                 ):
-                    return False
+                    continue
+                work_remaining = True
+
+                # Events are only identifiable by (target, module, scan_id), so two
+                # running steps that share a module would share an ambiguous event-count
+                # baseline (see below) and could attribute each other's success/failure.
+                # Serialize same-module steps per target instead of launching them
+                # concurrently.
+                running_modules = {steps_by_id[sid].module for sid in state["running"]}
+
+                for step_id, step in steps_by_id.items():
+                    if (
+                        step_id in state["completed"]
+                        or step_id in state["blocked"]
+                        or step_id in state["running"]
+                    ):
+                        continue
+
+                    status = evaluate_depends_on(
+                        step.depends_on, state["completed"], state["blocked"]
+                    )
+                    if status == "blocked":
+                        state["blocked"].add(step_id)
+                        continue
+                    if status == "pending":
+                        continue
+
+                    if step.module in running_modules:
+                        continue
+
+                    # launch step
+                    context = {**flow_inputs, "target": target}
+                    extra_options = render_params(step.params, context)
+                    effective_timeout = step.timeout if step.timeout is not None else flow.timeout
+                    effective_retries = step.retries if step.retries is not None else flow.retries
+                    if effective_timeout is not None:
+                        extra_options["timeout"] = effective_timeout
+                    if effective_retries is not None:
+                        extra_options["retries"] = effective_retries
+
+                    # Baseline is captured right before the thread starts so success can
+                    # later be judged by whether this run added a NEW event, rather than
+                    # by the module's mere presence (which two steps sharing a module, or
+                    # an earlier expand_targets pass, could already have produced).
+                    baseline = len(find_events(target, step.module, scan_id))
+
+                    thread = Thread(
+                        target=self.scan_target,
+                        args=(
+                            target,
+                            step.module,
+                            scan_id,
+                            process_number,
+                            total_number_of_modules_counter,
+                            total_number_of_modules,
+                            extra_options,
+                        ),
+                    )
+                    thread.name = f"{target} -> {step_id} ({step.module})"
+                    thread.start()
+
+                    log.verbose_event_info(
+                        _("start_parallel_module_scan").format(
+                            process_number,
+                            step.module,
+                            target,
+                            total_number_of_modules_counter,
+                            total_number_of_modules,
+                        )
+                    )
+
+                    total_number_of_modules_counter += 1
+
+                    active_threads.append(thread)
+                    state["running"].add(step_id)
+                    running_modules.add(step.module)
+                    step_threads[(target, step_id)] = thread
+                    step_baselines[(target, step_id)] = baseline
+                    launched_step = True
+
+                    if not wait_for_threads_to_finish(active_threads, max_parallel, True):
+                        return False
+
+            if not work_remaining and not step_threads:
+                break
+
+            if not launched_step and step_threads:
+                # No new step could be launched this pass (everything schedulable is
+                # already running), but running steps haven't finished either. Without
+                # this, the loop would spin re-scanning every target/step with no delay.
+                time.sleep(0.05)
+
+            if not wait_for_threads_to_finish(active_threads, max_parallel, True):
+                return False
+
         wait_for_threads_to_finish(active_threads, maximum=None, terminable=True)
         return True

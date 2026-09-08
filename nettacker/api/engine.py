@@ -316,6 +316,10 @@ def new_scan():
     """
     api_key_is_valid(app, flask_request)
     form_values = dict(flask_request.form)
+    # Fields the caller actually sent, captured before application defaults are
+    # backfilled below - flow input resolution needs this to tell a real request
+    # field apart from a default value that only ended up in the same namespace.
+    explicitly_provided_dests = set(form_values.keys())
     # variables for future reference
     raw_report_path_filename = form_values.get("report_path_filename")
     http_header = form_values.get("http_header")
@@ -355,7 +359,10 @@ def new_scan():
     # Handle service discovery
     form_values["skip_service_discovery"] = form_values.get("skip_service_discovery", "") == "true"
     try:
-        nettacker_app = Nettacker(api_arguments=SimpleNamespace(**form_values))
+        nettacker_app = Nettacker(
+            api_arguments=SimpleNamespace(**form_values),
+            explicitly_provided_dests=explicitly_provided_dests,
+        )
     finally:
         for file_path in uploaded_paths:
             file_path.unlink(missing_ok=True)
