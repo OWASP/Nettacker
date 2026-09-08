@@ -11,6 +11,7 @@ API_options: API options
 API_port: API port number
 Method: Method
 skip_service_discovery: skip service discovery before scan and enforce all modules to scan anyway
+validate_before_scan: Pre-validate targets/connectivity before scanning; unreachable targets are skipped.
 no_live_service_found: no any live service found to scan.
 icmp_need_root_access: to use icmp_scan module or --ping-before-scan you need to run the script as root!
 available_graph: "build a graph of all activities and information, you must use HTML output. available graphs: {0}"
