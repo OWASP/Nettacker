@@ -9,6 +9,7 @@ import shutil
 import string
 import time
 import uuid
+from pathlib import Path
 from threading import Thread
 from types import SimpleNamespace
 
@@ -486,7 +487,7 @@ def get_result_content():
     return Response(
         file_content,
         mimetype=mime_types().get(os.path.splitext(filename)[1], "text/plain"),
-        headers={"Content-Disposition": "attachment;filename=" + filename.split("/")[-1]},
+        headers={"Content-Disposition": "attachment;filename=" + Path(filename).name},
     )
 
 

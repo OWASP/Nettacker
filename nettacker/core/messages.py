@@ -33,7 +33,7 @@ def get_languages():
     languages_list = []
 
     for language in Config.path.locale_dir.glob("*.yaml"):
-        languages_list.append(str(language).split("/")[-1].split(".")[0])
+        languages_list.append(language.stem)
     return list(set(languages_list))
 
 
