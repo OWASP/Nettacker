@@ -8,6 +8,22 @@ _TEMPLATE_FILES = {
     "table_title": "report/table_title.html",
 }
 
+__all__ = [
+    "css_1",
+    "json_parse_js",
+    "table_end",
+    "table_items",
+    "table_title",
+]
+
+# Declared for static analysis and wildcard imports. These are annotations
+# only, so the names stay unbound and __getattr__ below still resolves them.
+css_1: str
+json_parse_js: str
+table_end: str
+table_items: str
+table_title: str
+
 
 def __getattr__(name):
     """Read report templates on first access instead of at import time.
@@ -27,4 +43,4 @@ def __getattr__(name):
 
 
 def __dir__():
-    return sorted([*globals(), *_TEMPLATE_FILES])
+    return sorted({*globals(), *_TEMPLATE_FILES})

@@ -6,7 +6,35 @@ import pytest
 
 from nettacker.config import Config
 
-MODULE = "nettacker.lib.html_log.log_data"
+PARENT = "nettacker.lib.html_log"
+MODULE = f"{PARENT}.log_data"
+
+
+@pytest.fixture(autouse=True)
+def restore_log_data_module():
+    """Undo the re-imports done below.
+
+    importlib rebinds the attribute on the parent package as well as the
+    sys.modules entry, so both are restored. Otherwise a later
+    "from nettacker.lib.html_log import log_data" picks up a module holding
+    templates cached from a temporary directory.
+    """
+    parent = importlib.import_module(PARENT)
+    had_attribute = hasattr(parent, "log_data")
+    original_attribute = getattr(parent, "log_data", None)
+    original_module = sys.modules.get(MODULE)
+
+    yield
+
+    if original_module is None:
+        sys.modules.pop(MODULE, None)
+    else:
+        sys.modules[MODULE] = original_module
+
+    if had_attribute:
+        parent.log_data = original_attribute
+    elif hasattr(parent, "log_data"):
+        del parent.log_data
 
 
 def _reimport(monkeypatch, static_dir):
