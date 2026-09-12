@@ -49,6 +49,7 @@ class Module:
             "subdomain_scan",
             "icmp_scan",
             "port_scan",
+            "version_scan",
             "ssl_weak_version_vuln",
             "ssl_weak_cipher_vuln",
             "ssl_certificate_weak_signature_vuln",
