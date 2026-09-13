@@ -1,7 +1,7 @@
 info:
   name: litellm_cve_2026_59822_vuln
   author: OWASP Nettacker Team
-  severity: 8.2
+  severity: 8.8
   description: >
     LiteLLM versions prior to 1.84.0 (excluded) expose a vulnerable MCP Streamable HTTP endpoint
     that allows an unauthenticated attacker to use a fabricated Authorization header to trigger
@@ -33,7 +33,7 @@ payloads:
         allow_redirects: false
         json:
           jsonrpc: "2.0"
-          id: 1
+          id: 1234
           method: "tools/list"
           params: 
             name: "nettacker_cve_2026_59822"
@@ -56,4 +56,7 @@ payloads:
           conditions:
             status_code:
               regex: ^2\d\d$
+              reverse: false
+            content:
+              regex: (?s)"jsonrpc"\s*:\s*"2.0".*"id"\s*:\s*1234.*"tools"
               reverse: false
