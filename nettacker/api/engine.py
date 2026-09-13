@@ -445,7 +445,8 @@ def new_scan():
     if error:
         return jsonify(structure(status="error", msg=error)), 400
     scan_options, uploaded_paths = scan
-    return jsonify(submit_scan(scan_options, uploaded_paths)), 200
+    scan_arguments = submit_scan(scan_options, uploaded_paths)
+    return jsonify(scan_arguments), 200
 
 
 @app.route("/compare/scans", methods=["POST"])
