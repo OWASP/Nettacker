@@ -59,6 +59,7 @@ def is_weak_ssl_version(host, port, timeout):
 def is_weak_cipher_suite(host, port, timeout):
     def test_single_cipher(host, port, cipher, timeout):
         try:
+            # 1. Why maximum_version is capped to TLS 1.2:
             # set_ciphers() only affects TLS 1.2 and below -- TLS 1.3 negotiates
             # ciphersuites through a separate mechanism at the OpenSSL level
             # (SSL_CTX_set_ciphersuites), which Python's ssl module does not
@@ -69,6 +70,7 @@ def is_weak_cipher_suite(host, port, timeout):
             # requested here, making every cipher string appear "supported"
             # via a handshake that never actually used it.
             #
+            # 2. Why minimum_version and security level are lowered:
             # PROTOCOL_TLS_CLIENT also defaults minimum_version to TLSv1_2 and
             # OpenSSL's security_level to 2, both of which independently block
             # the legacy protocols and ciphers (NULL, MD5, RC4, anonymous,
@@ -79,6 +81,16 @@ def is_weak_cipher_suite(host, port, timeout):
             # matches strong ciphers), and PROTOCOL_TLS_CLIENT independently
             # keeps SSLv3 disabled regardless of minimum_version, so the real
             # floor here is TLS 1.0, not SSLv3/SSLv2.
+            #
+            # 3. Why MINIMUM_SUPPORTED specifically (not a hardcoded TLSv1):
+            # MINIMUM_SUPPORTED is a fixed CPython sentinel (currently -2),
+            # not itself a protocol version -- it tells OpenSSL "use whatever
+            # your actual minimum is" rather than pinning the floor to TLSv1
+            # by name. That keeps the reach-down-to-TLS-1.0/1.1 behavior this
+            # function relies on portable across OpenSSL builds: it always
+            # resolves to that build's real floor instead of assuming TLS 1.0
+            # is available, or silently losing coverage on a build where it
+            # is not.
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
             context.check_hostname = False
             context.verify_mode = ssl.CERT_NONE
