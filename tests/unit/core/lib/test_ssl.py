@@ -435,20 +435,37 @@ class TestSslMethod:
         context_instance._last_cipher = None
 
         def fake_set_ciphers(cipher):
-            # Production code passes "{cipher}:@SECLEVEL=0" -- strip that
-            # suffix back off so the weak_ciphers membership check below
-            # still matches the base cipher name. Reject strings real OpenSSL
-            # would reject (e.g. "TLSv1.1"/"TLSv1.3" are not valid cipher-class
-            # keywords on this build), mirroring set_ciphers()'s real behavior
-            # instead of letting every string through unconditionally.
-            base_cipher = cipher.split(":")[0]
+            # Assert the exact string production passes, not just its base
+            # cipher name -- a regression that dropped the ":@SECLEVEL=0"
+            # suffix would otherwise go unnoticed, since the suffix has no
+            # effect on which branch of this fake is taken.
+            base_cipher, _, suffix = cipher.partition(":")
+            assert suffix == "@SECLEVEL=0", (
+                f"set_ciphers() called with {cipher!r}, expected the "
+                f"':@SECLEVEL=0' suffix to be present"
+            )
+            # Reject strings real OpenSSL would reject (e.g. "TLSv1.1"/"TLSv1.3"
+            # are not valid cipher-class keywords on this build), mirroring
+            # set_ciphers()'s real behavior instead of letting every string
+            # through unconditionally.
             if not _openssl_accepts_cipher_string(base_cipher):
                 raise ssl.SSLError("no cipher can be selected")
             context_instance._last_cipher = base_cipher
 
         def fake_wrap_socket(sock, server_hostname=None):
-            capped = context_instance.maximum_version == ssl.TLSVersion.TLSv1_2
-            if context_instance._last_cipher in weak_ciphers and capped:
+            # Both bounds matter: maximum_version must be capped to TLS 1.2
+            # (TLS 1.3 would otherwise mask a weak cipher, see docstring), and
+            # minimum_version must be lowered to MINIMUM_SUPPORTED (otherwise
+            # PROTOCOL_TLS_CLIENT's TLSv1_2 default reintroduces the TLS
+            # 1.0/1.1 blind spot this fix exists for) -- assert both instead
+            # of only the one this fake happens to branch on.
+            assert context_instance.maximum_version == ssl.TLSVersion.TLSv1_2, (
+                "maximum_version must be capped to TLSv1_2"
+            )
+            assert context_instance.minimum_version == ssl.TLSVersion.MINIMUM_SUPPORTED, (
+                "minimum_version must be lowered to MINIMUM_SUPPORTED"
+            )
+            if context_instance._last_cipher in weak_ciphers:
                 raise ssl.SSLError("no cipher can be selected")
             return socket_instance
 
