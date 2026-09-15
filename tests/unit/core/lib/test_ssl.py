@@ -459,12 +459,12 @@ class TestSslMethod:
             # PROTOCOL_TLS_CLIENT's TLSv1_2 default reintroduces the TLS
             # 1.0/1.1 blind spot this fix exists for) -- assert both instead
             # of only the one this fake happens to branch on.
-            assert context_instance.maximum_version == ssl.TLSVersion.TLSv1_2, (
-                "maximum_version must be capped to TLSv1_2"
-            )
-            assert context_instance.minimum_version == ssl.TLSVersion.MINIMUM_SUPPORTED, (
-                "minimum_version must be lowered to MINIMUM_SUPPORTED"
-            )
+            assert (
+                context_instance.maximum_version == ssl.TLSVersion.TLSv1_2
+            ), "maximum_version must be capped to TLSv1_2"
+            assert (
+                context_instance.minimum_version == ssl.TLSVersion.MINIMUM_SUPPORTED
+            ), "minimum_version must be lowered to MINIMUM_SUPPORTED"
             if context_instance._last_cipher in weak_ciphers:
                 raise ssl.SSLError("no cipher can be selected")
             return socket_instance
