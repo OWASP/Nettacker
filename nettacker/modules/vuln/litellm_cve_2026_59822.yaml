@@ -57,7 +57,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: ^\d\d\d$
+              regex: ^(401|403|500)$
               reverse: false
 
       # Attempt authentication bypass with fabricated Authorization header: 
@@ -93,19 +93,11 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: dependent_on_temp_event[0]['status_code'][0]
-              reverse: true
-            iterative_response_match:
-              authentication_bypass:
-                response:
-                  condition_type: and
-                  conditions:
-                    status_code:
-                      regex: ^2\d\d$
-                      reverse: false
-                    content:
-                      regex: (?s)"jsonrpc"\s*:\s*"2.0".*"id"\s*:\s*1234.*"tools"
-                      reverse: false
+              regex: ^(?!\s*$)(?!(?:dependent_on_temp_event[0]['status_code'][0])$)2\d\d$
+              reverse: false
+            content:
+              regex: (?s)"jsonrpc"\s*:\s*"2.0".*"id"\s*:\s*1234.*"tools"
+              reverse: false
 
   - library: http
     steps:
@@ -139,7 +131,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: ^\d\d\d$
+              regex: ^(401|403|500)$
               reverse: false
 
       # Attempt authentication bypass with fabricated Authorization header: 
@@ -175,19 +167,11 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: dependent_on_temp_event[0]['status_code'][0]
-              reverse: true
-            iterative_response_match:
-              authentication_bypass:
-                response:
-                  condition_type: and
-                  conditions:
-                    status_code:
-                      regex: ^2\d\d$
-                      reverse: false
-                    content:
-                      regex: (?s)"jsonrpc"\s*:\s*"2.0".*"id"\s*:\s*1234.*"tools"
-                      reverse: false
+              regex: ^(?!\s*$)(?!(?:dependent_on_temp_event[0]['status_code'][0])$)2\d\d$
+              reverse: false
+            content:
+              regex: (?s)"jsonrpc"\s*:\s*"2.0".*"id"\s*:\s*1234.*"tools"
+              reverse: false
 
   - library: http
     steps:
@@ -221,7 +205,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: ^\d\d\d$
+              regex: ^(401|403|500)$
               reverse: false
 
       - method: post
@@ -255,19 +239,11 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: dependent_on_temp_event[0]['status_code'][0]
-              reverse: true
-            iterative_response_match:
-              authentication_bypass:
-                response:
-                  condition_type: and
-                  conditions:
-                    status_code:
-                      regex: ^2\d\d$
-                      reverse: false
-                    content:
-                      regex: (?s)"jsonrpc"\s*:\s*"2.0".*"id"\s*:\s*1234.*"tools"
-                      reverse: false
+              regex: ^(?!\s*$)(?!(?:dependent_on_temp_event[0]['status_code'][0])$)2\d\d$
+              reverse: false
+            content:
+              regex: (?s)"jsonrpc"\s*:\s*"2.0".*"id"\s*:\s*1234.*"tools"
+              reverse: false
 
   - library: http
     steps:
@@ -301,7 +277,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: ^\d\d\d$
+              regex: ^(401|403|500)$
               reverse: false
 
       - method: post
@@ -335,16 +311,8 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: dependent_on_temp_event[0]['status_code'][0]
-              reverse: true
-            iterative_response_match:
-              authentication_bypass:
-                response:
-                  condition_type: and
-                  conditions:
-                    status_code:
-                      regex: ^2\d\d$
-                      reverse: false
-                    content:
-                      regex: (?s)"jsonrpc"\s*:\s*"2.0".*"id"\s*:\s*1234.*"tools"
-                      reverse: false
+              regex: ^(?!\s*$)(?!(?:dependent_on_temp_event[0]['status_code'][0])$)2\d\d$
+              reverse: false
+            content:
+              regex: (?s)"jsonrpc"\s*:\s*"2.0".*"id"\s*:\s*1234.*"tools"
+              reverse: false
