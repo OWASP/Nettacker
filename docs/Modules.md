@@ -224,6 +224,7 @@ environment.
 | `apache_ofbiz_cve_2024_38856_vuln` | Probes Apache OFBiz for CVE-2024-38856 by executing `id` through the exposed Groovy program endpoint. |
 | `apache_struts_vuln` | Probes Apache Struts for CVE-2017-5638 OGNL injection using a non-destructive response-header marker. |
 | `aviatrix_cve_2021_40870_vuln` | Tests Aviatrix Controller for CVE-2021-40870 by writing a PHP `phpinfo()` probe to `random_string1.php` and requesting it; the probe file may remain on a vulnerable target. |
+| `cisco_fmc_scan` | Fingerprints Cisco Secure Firewall Management Center via its `/login` page's Mojolicious server header and `"deviceLabel":"Management Center"` body content (context: CVE-2026-20079, CISA KEV). |
 | `cisco_hyperflex_cve_2021_1497_vuln` | Probes the Cisco HyperFlex management interface for CVE-2021-1497 command injection using a `nettacker` response marker. |
 | `citrix_cve_2019_19781_vuln` | Probes Citrix ADC and Gateway products for CVE-2019-19781 path traversal by attempting to read `smb.conf`. |
 | `citrix_cve_2023_24488_vuln` | Checks Citrix ADC and Gateway products for CVE-2023-24488 cross-site scripting. |
