@@ -8,9 +8,8 @@ unsupported Python version by default, the examples below use
 [pyenv](https://github.com/pyenv/pyenv) to install and select Python 3.11.15 explicitly.
 
 
-Nettacker can run natively on Linux, macOS and FreeBSD. Users of other operating systems
-can run Nettacker with Docker. Although native Windows support was initially dropped, we
-are currently working towards reintroducing it in future versions.
+Nettacker can run natively on Linux, macOS, Windows and FreeBSD. Users of other operating systems
+can run Nettacker with Docker. 
 
 > [!NOTE]
 > Starting with Nettacker 0.3.1, Python 2 and Python versions earlier than 3.10 are no
