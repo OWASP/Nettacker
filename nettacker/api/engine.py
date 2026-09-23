@@ -281,30 +281,155 @@ def cleanup_expired_uploads():
             continue
 
 
-@app.route("/upload/file", methods=["POST"])
-def upload_file():
-    api_key_is_valid(app, flask_request)
-    cleanup_expired_uploads()
-    param_name = flask_request.form.get("param_name", "")
+def validate_upload_request(request):
+    """
+    validate a file upload request
+
+    Args:
+        request: the flask request
+
+    Returns:
+        (param_name, file_object, filename) and None if valid,
+        otherwise None and the error message
+    """
+    param_name = request.form.get("param_name", "")
     if param_name not in FILE_UPLOAD_PARAMS:
-        return jsonify(structure(status="error", msg=_("upload_invalid_param"))), 400
-    if "file" not in flask_request.files:
-        return jsonify(structure(status="error", msg=_("upload_no_file"))), 400
-    uploaded = flask_request.files["file"]
-    if uploaded.filename == "":
-        return jsonify(structure(status="error", msg=_("upload_no_file_selected"))), 400
-    if not allowed_file(uploaded.filename):
-        return jsonify(structure(status="error", msg=_("upload_file_type_not_allowed"))), 400
-    filename = secure_filename(uploaded.filename)
+        return None, _("upload_invalid_param")
+    if "file" not in request.files:
+        return None, _("upload_no_file")
+    file_object = request.files["file"]
+    if file_object.filename == "":
+        return None, _("upload_no_file_selected")
+    if not allowed_file(file_object.filename):
+        return None, _("upload_file_type_not_allowed")
+    filename = secure_filename(file_object.filename)
     if not filename:
-        return jsonify(structure(status="error", msg=_("upload_invalid_filename"))), 400
+        return None, _("upload_invalid_filename")
+    return (param_name, file_object, filename), None
+
+
+def store_upload(param_name, file_object, filename):
+    """
+    save an uploaded file to the tmp directory
+
+    Args:
+        param_name: the scan option the file is for
+        file_object: the uploaded file
+        filename: the sanitized filename
+
+    Returns:
+        a signed token that /new/scan accepts in place of a file path
+    """
     stored_name = f"{uuid.uuid4().hex}_{param_name}_{filename}"
     tmp_dir = nettacker_path_config.tmp_dir
     tmp_dir.mkdir(parents=True, exist_ok=True)
     os.chmod(tmp_dir, 0o700)
-    uploaded.save(str(tmp_dir / stored_name))
-    token = _upload_token_serializer.dumps({"param": param_name, "name": stored_name})
+    file_object.save(str(tmp_dir / stored_name))
+    return _upload_token_serializer.dumps({"param": param_name, "name": stored_name})
+
+
+@app.route("/upload/file", methods=["POST"])
+def upload_file():
+    api_key_is_valid(app, flask_request)
+    cleanup_expired_uploads()
+    upload, error = validate_upload_request(flask_request)
+    if error:
+        return jsonify(structure(status="error", msg=error)), 400
+    param_name, file_object, filename = upload
+    token = store_upload(param_name, file_object, filename)
     return jsonify(structure(status="ok", msg=token)), 200
+
+
+def resolve_upload_token(param_name, token):
+    """
+    resolve a token issued by /upload/file to the stored file
+
+    Args:
+        param_name: the scan option the token was submitted for
+        token: the signed upload token
+
+    Returns:
+        path of the uploaded file and None if valid, otherwise None and the error message
+    """
+    try:
+        payload = _upload_token_serializer.loads(token, max_age=UPLOAD_TOKEN_TTL_SECONDS)
+    except BadData:
+        return None, _("upload_token_invalid")
+    if not isinstance(payload, dict) or payload.get("param") != param_name:
+        return None, _("upload_token_invalid")
+    stored_name = secure_filename(payload.get("name", ""))
+    file_path = nettacker_path_config.tmp_dir / stored_name
+    if not stored_name or not file_path.is_file():
+        return None, _("upload_file_not_found")
+    return file_path, None
+
+
+def validate_scan_request(form_values):
+    """
+    validate a new scan request and build its scan options
+
+    Args:
+        form_values: the submitted form as a dict
+
+    Returns:
+        (scan_options, uploaded_paths) and None if valid, otherwise None and the
+        error message. scan_options has defaults applied; uploaded_paths are the
+        files that can be deleted once the scan's arguments are parsed
+    """
+    scan_options = dict(form_values)
+    report_path_filename = sanitize_report_path_filename(scan_options.get("report_path_filename"))
+    if not report_path_filename:
+        return None, "Invalid report filename"
+    scan_options["report_path_filename"] = str(report_path_filename)
+
+    uploaded_paths = []
+    for key in FILE_UPLOAD_PARAMS:
+        token = scan_options.get(key)
+        if not token:
+            scan_options.pop(key, None)
+            continue
+        file_path, error = resolve_upload_token(key, token)
+        if error:
+            return None, error
+        scan_options[key] = str(file_path)
+        if key in UPLOAD_PARAMS_READ_AT_INIT:
+            uploaded_paths.append(file_path)
+
+    http_header = scan_options.get("http_header")
+    for key, value in nettacker_application_config.items():
+        scan_options.setdefault(key, value)
+    # Handle HTTP headers
+    if http_header:
+        scan_options["http_header"] = [
+            line.strip() for line in http_header.split("\n") if line.strip()
+        ]
+    # Handle service discovery
+    scan_options["skip_service_discovery"] = (
+        scan_options.get("skip_service_discovery", "") == "true"
+    )
+    return (scan_options, uploaded_paths), None
+
+
+def submit_scan(scan_options, uploaded_paths):
+    """
+    start a scan in a background thread
+
+    Args:
+        scan_options: the scan options from validate_scan_request
+        uploaded_paths: uploaded files to delete once the scan's arguments are parsed
+
+    Returns:
+        the scan's parsed arguments
+    """
+    try:
+        nettacker_app = Nettacker(api_arguments=SimpleNamespace(**scan_options))
+    finally:
+        for file_path in uploaded_paths:
+            file_path.unlink(missing_ok=True)
+    app.config["OWASP_NETTACKER_CONFIG"]["options"] = nettacker_app.arguments
+    thread = Thread(target=nettacker_app.run)
+    thread.start()
+    return vars(nettacker_app.arguments)
 
 
 @app.route("/new/scan", methods=["GET", "POST"])
@@ -316,55 +441,12 @@ def new_scan():
         a JSON message with scan details if success otherwise a JSON error
     """
     api_key_is_valid(app, flask_request)
-    form_values = dict(flask_request.form)
-    # variables for future reference
-    raw_report_path_filename = form_values.get("report_path_filename")
-    http_header = form_values.get("http_header")
-    report_path_filename = sanitize_report_path_filename(raw_report_path_filename)
-    if not report_path_filename:
-        return jsonify(structure(status="error", msg="Invalid report filename")), 400
-    form_values["report_path_filename"] = str(report_path_filename)
-
-    uploaded_paths = []
-    for key in FILE_UPLOAD_PARAMS:
-        token = form_values.get(key)
-        if not token:
-            form_values.pop(key, None)
-            continue
-        try:
-            payload = _upload_token_serializer.loads(token, max_age=UPLOAD_TOKEN_TTL_SECONDS)
-        except BadData:
-            return jsonify(structure(status="error", msg=_("upload_token_invalid"))), 400
-        if not isinstance(payload, dict) or payload.get("param") != key:
-            return jsonify(structure(status="error", msg=_("upload_token_invalid"))), 400
-        stored_name = secure_filename(payload.get("name", ""))
-        file_path = nettacker_path_config.tmp_dir / stored_name
-        if not stored_name or not file_path.is_file():
-            return jsonify(structure(status="error", msg=_("upload_file_not_found"))), 400
-        form_values[key] = str(file_path)
-        if key in UPLOAD_PARAMS_READ_AT_INIT:
-            uploaded_paths.append(file_path)
-
-    for key in nettacker_application_config:
-        if key not in form_values:
-            form_values[key] = nettacker_application_config[key]
-    # Handle HTTP headers
-    if http_header:
-        form_values["http_header"] = [
-            line.strip() for line in http_header.split("\n") if line.strip()
-        ]
-    # Handle service discovery
-    form_values["skip_service_discovery"] = form_values.get("skip_service_discovery", "") == "true"
-    try:
-        nettacker_app = Nettacker(api_arguments=SimpleNamespace(**form_values))
-    finally:
-        for file_path in uploaded_paths:
-            file_path.unlink(missing_ok=True)
-    app.config["OWASP_NETTACKER_CONFIG"]["options"] = nettacker_app.arguments
-    thread = Thread(target=nettacker_app.run)
-    thread.start()
-
-    return jsonify(vars(nettacker_app.arguments)), 200
+    scan, error = validate_scan_request(dict(flask_request.form))
+    if error:
+        return jsonify(structure(status="error", msg=error)), 400
+    scan_options, uploaded_paths = scan
+    scan_arguments = submit_scan(scan_options, uploaded_paths)
+    return jsonify(scan_arguments), 200
 
 
 @app.route("/compare/scans", methods=["POST"])
