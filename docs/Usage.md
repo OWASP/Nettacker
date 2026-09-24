@@ -2,6 +2,8 @@
 
 - [Target inputs Option](#target-inputs-option)
   - [Command Examples](#command-examples)
+- [Module Flows](#module-flows)
+  - [Flow file schema](#flow-file-schema)
 - [API and WebUI](#api-and-webui)
   - [API Options](#api-options)
   - [API Examples](#api-examples)
@@ -554,6 +556,85 @@ python nettacker.py -i 192.168.1.1/24 --profile information_gathering -o report.
 python nettacker.py -i 192.168.1.1/24 --profile information_gathering -o report.json
 python nettacker.py -i 192.168.1.1/24 --profile information_gathering --output report.dd.json
 ```
+
+# Module Flows
+
+A module flow is a YAML file that replaces `-m`/`--profile` with an explicit DAG of
+scan steps: each step names a module to run and the other steps it `depends_on`, so
+later steps can be gated on what earlier ones found instead of all modules simply
+running in parallel.
+
+Run one with `--module-flow`, passing either the name of a bundled flow (looked up
+under `nettacker/flows/<name>.yaml`) or a path to your own `.yaml` file:
+
+```
+python nettacker.py -i example.com --module-flow webapp_assessment -o report.html
+```
+
+`--module-flow` fully determines which modules run - it overrides `-m`/`--profile` (a
+warning is logged if both are given) and cannot be combined with `-x`/`--exclude-modules`;
+remove the step from the flow file instead of excluding its module.
+
+## Flow file schema
+
+```yaml
+info:                    # optional, purely descriptive
+  name: webapp_assessment
+  description: "..."
+
+inputs:                  # optional named inputs, resolved from CLI flags or a default
+  target:
+    type: string
+    required: true      # `target` is always bound per-target at scan time
+  ports:
+    type: list
+    default: [21, 22, 80, 443, 8080, 8443]
+
+defaults:                 # optional flow-wide policy, overridable per step
+  on_failure: continue    # continue (default) | abort - see below
+  timeout: 30             # seconds, applied to every step unless overridden
+  retries: 1              # must be a positive integer
+
+execution:
+  max_parallel: 4         # steps run as soon as their depends_on is satisfied
+
+steps:
+  - id: port_scan         # unique id, referenced by other steps' depends_on
+    module: port_scan     # module to run for this step
+    depends_on: []         # [] or omitted = root step, no prerequisites
+    params:
+      target: "{target}"   # `{name}` tokens are substituted from inputs/flow context
+      ports: "{ports}"
+
+  - id: dir_scan
+    module: dir_scan
+    depends_on:
+      any: [http_detect, tls_detect]   # OR - satisfied once either completes
+    params:
+      target: "{target}"
+
+  - id: apache_cve_check
+    module: apache_cve_2021_41773_vuln
+    depends_on:
+      all:                             # AND - and any/all nest arbitrarily
+        - any: [http_detect, tls_detect]
+        - dir_scan
+    on_failure: abort   # overrides the flow-wide default for this step only
+    timeout: 60
+    retries: 2
+```
+
+- `depends_on` is a step id, a list of ids/expressions (implicit `all`), or a mapping
+  with exactly one `any`/`all` key whose value is a list of ids/expressions - any other
+  shape is rejected at load time.
+- `on_failure: continue` blocks only the steps that (directly or transitively) depend
+  on the failed one; `on_failure: abort` stops launching any further steps for that
+  target. It can be set flow-wide under `defaults` and overridden per step.
+- A step with no successful event after `retries` attempts is treated as failed for
+  dependency purposes; `timeout` and `retries` fall back to the flow-wide `defaults`
+  when not set on the step itself.
+- See `nettacker/flows/webapp_assessment.yaml` and `nettacker/flows/waf_probe.yaml`
+  for complete, runnable examples, including deeply nested `any`/`all` dependencies.
 
 # API and WebUI
 
