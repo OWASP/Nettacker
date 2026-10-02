@@ -1,0 +1,42 @@
+info:
+  name: woocommerce_payments_cve_2023_28121_vuln
+  author: Adithya (ALCHEMISTDEV-007)
+  severity: 9.8
+  description: Detects WooCommerce Payments Authentication Bypass (CVE-2023-28121)
+  references:
+    - https://nvd.nist.gov/vuln/detail/CVE-2023-28121
+  profiles:
+    - vuln
+    - http
+    - woocommerce
+    - critical_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        headers:
+          X-WCPAY-HTTP-REDIRECT-USER: "1"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{{target}}:{{ports}}/?rest_route=/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              target:
+                - "{{target}}"
+              ports:
+                - "{{ports}}"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "slug"
+              reverse: false
