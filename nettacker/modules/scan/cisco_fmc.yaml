@@ -1,0 +1,57 @@
+info:
+  name: cisco_fmc_scan
+  author: Nikhil sai
+  severity: 3
+  description: "Cisco Secure Firewall Management Center (FMC) fingerprint scan - identifies
+    FMC's web login interface via its Mojolicious server header and \"Management Center\"
+    page content. Context - FMC is the subject of CVE-2026-20079 (CVSS 10.0, CISA KEV-listed,
+    actively exploited pre-auth root RCE via authentication bypass). This module only
+    confirms the product is present; it does not determine whether the target is running
+    a vulnerable or already-patched version, since that requires an authenticated check."
+  reference:
+    - https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-onprem-fmc-authbypass-5JPp45V2
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-20079
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+  profiles:
+    - scan
+    - http
+    - cisco
+    - fmc
+    - low_severity
+    - cisa_kev
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/login"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+                - 8443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            headers:
+              Server:
+                regex: Mojolicious
+                reverse: false
+            content:
+              regex: '"deviceLabel":"Management Center"'
+              reverse: false
+          log: "Cisco Secure Firewall Management Center detected -- Server header: response_dependent['headers']['Server']"
