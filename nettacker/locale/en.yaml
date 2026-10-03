@@ -37,6 +37,10 @@ error_target_file: "Cannot specify the target(s), unable to open file: {0}"
 error_username: "Cannot specify the username(s), unable to open file: {0}"
 error_passwords: "Cannot specify the password(s), unable to open file: {0}"
 error_wordlist: "Cannot specify the word(s), unable to open file {0}"
+error_socks_proxy_invalid_format: |
+  Invalid SOCKS proxy format.
+  Expected format: username:password@host:port or socks5://username:password@host:port (without auth: host:port)
+error_socks_proxy_invalid_port: "Invalid SOCKS proxy port. Port must be a number between 1-65535, got: {0}"
 exclude_scan_method: choose scan method to exclude {0}
 file_write_error: file "{0}" is not writable!
 library_not_supported: library [{0}] is not support!
