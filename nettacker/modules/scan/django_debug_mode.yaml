@@ -2,7 +2,7 @@ info:
   name: django_debug_mode_scan
   author: Suriya Gnanamoorthy
   severity: 3
-  description: Django Debug Mode Detection - Identifies Django applications with DEBUG = True exposing technical 404 debug pages.
+  description: Django Debug Mode Detection - Identifies Django DEBUG = True technical error pages.
   reference:
     - https://docs.djangoproject.com/en/6.1/ref/settings/#debug
     - https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/#debug
@@ -79,7 +79,7 @@ payloads:
                 - "nettacker-nonexistent-django-debug-mode-test-404"
         response:
           condition_type: and
-          log: "default CSRF token page found"
+          log: "Debug enabled - default CSRF 403 page found"
           conditions:
             url:
               regex: .*
@@ -116,7 +116,7 @@ payloads:
                 - "nettacker-nonexistent-django-debug-mode-test-404"
         response:
           condition_type: and
-          log: "Bad host error responeded"
+          log: "Debug enabled - DisallowedHost 400 page found"
           conditions:
             url:
               regex: .*
