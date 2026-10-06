@@ -292,3 +292,35 @@ def test_fuzzer_repeater_perform_unknown_interceptor_alongside_allowed_raises():
 
 def test_allowed_interceptors_registry_is_restricted():
     assert set(common_utils.ALLOWED_INTERCEPTORS) == {"generate_and_replace_md5"}
+
+
+def test_is_running_with_privileges_windows_admin(monkeypatch):
+    """Windows branch: reports privileged when IsUserAnAdmin() returns nonzero."""
+    monkeypatch.setattr(common_utils.sys, "platform", "win32")
+    fake_windll = MagicMock()
+    fake_windll.shell32.IsUserAnAdmin.return_value = 1
+    monkeypatch.setattr(common_utils.ctypes, "windll", fake_windll, raising=False)
+    assert common_utils.is_running_with_privileges() is True
+
+
+def test_is_running_with_privileges_windows_non_admin(monkeypatch):
+    """Windows branch: reports unprivileged when IsUserAnAdmin() returns 0."""
+    monkeypatch.setattr(common_utils.sys, "platform", "win32")
+    fake_windll = MagicMock()
+    fake_windll.shell32.IsUserAnAdmin.return_value = 0
+    monkeypatch.setattr(common_utils.ctypes, "windll", fake_windll, raising=False)
+    assert common_utils.is_running_with_privileges() is False
+
+
+def test_is_running_with_privileges_posix_root(monkeypatch):
+    """POSIX branch: reports privileged when os.geteuid() returns 0 (root)."""
+    monkeypatch.setattr(common_utils.sys, "platform", "linux")
+    monkeypatch.setattr(common_utils.os, "geteuid", lambda: 0, raising=False)
+    assert common_utils.is_running_with_privileges() is True
+
+
+def test_is_running_with_privileges_posix_non_root(monkeypatch):
+    """POSIX branch: reports unprivileged when os.geteuid() returns a non-root UID."""
+    monkeypatch.setattr(common_utils.sys, "platform", "linux")
+    monkeypatch.setattr(common_utils.os, "geteuid", lambda: 501, raising=False)
+    assert common_utils.is_running_with_privileges() is False
