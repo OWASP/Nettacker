@@ -122,7 +122,9 @@ class BaseEngine(ABC):
     ):
         # Remove sensitive keys from headers before submitting to DB
         event = remove_sensitive_header_keys(event)
-        if "save_to_temp_events_only" in event.get("response", ""):
+        if "save_to_temp_events_only" in event.get("response", "") and event["response"][
+            "conditions_results"
+        ]:
             submit_temp_logs_to_db(
                 {
                     "date": datetime.now(),
