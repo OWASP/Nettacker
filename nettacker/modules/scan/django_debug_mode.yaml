@@ -54,42 +54,6 @@ payloads:
             content:
               regex: "(?s)(?=.*Using the URLconf defined in)(?=.*Django tried these URL patterns)(?=.*You.*?re seeing this error because you have).*(DEBUG\\s*=\\s*True)"
               reverse: false
-      - method: post
-        timeout: 3
-        headers:
-          User-Agent: "{user_agent}"
-        allow_redirects: false
-        ssl: false
-        url:
-          nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/{url_base_path}{{paths}}"
-            prefix: ""
-            suffix: ""
-            interceptors:
-            data:
-              schema:
-                - "http"
-                - "https"
-              ports:
-                - 80
-                - 443
-                - 8000
-                - 8080
-              paths:
-                - "nettacker-nonexistent-django-debug-mode-test-404"
-        response:
-          condition_type: and
-          log: "Debug enabled - default CSRF 403 page found"
-          conditions:
-            url:
-              regex: .*
-              reverse: false
-            status_code:
-              regex: "403"
-              reverse: false
-            content:
-              regex: "(?s)(CSRF verification failed. Request aborted.).*(DEBUG\\s*=\\s*True)"
-              reverse: false
       - method: get
         timeout: 3
         headers:
