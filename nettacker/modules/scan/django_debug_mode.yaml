@@ -89,5 +89,5 @@ payloads:
               regex: "400"
               reverse: false
             content:
-              regex: "(?s)(DisallowedHost).*(DEBUG\\s*=\\s*True)"
+              regex: "(?s)DisallowedHost.*(DEBUG\\s*=\\s*True)"
               reverse: false
