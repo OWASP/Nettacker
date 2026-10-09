@@ -34,7 +34,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}?page_id=2&pagename=templates%252F%252E%252E%252F%252E%252E%252F%252E%252E%252F%252E%252E%252Fwp-links-opml"
+            input_format: "{{schema}}://{target}:{{ports}}?page_id=2&pagename={{dir_suffix}}%252F%252E%252E%252F%252E%252E%252F%252E%252E%252F%252E%252E%252Fwp-links-opml"
             prefix: ""
             suffix: ""
             interceptors: ""
@@ -45,6 +45,11 @@ payloads:
               ports:
                 - 80
                 - 443
+              dir_suffix:
+                - "template"
+                - "templates"
+                - "sections"
+                - "layouts"
         response:
           condition_type: and
           conditions:
