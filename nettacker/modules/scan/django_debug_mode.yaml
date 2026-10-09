@@ -77,7 +77,7 @@ payloads:
                 - 8000
                 - 8080
               paths:
-                - "nettacker-nonexistent-django-debug-mode-test-404"
+                - ""
         response:
           condition_type: and
           log: "Debug enabled - DisallowedHost 400 page found"
