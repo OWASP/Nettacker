@@ -63,7 +63,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/{url_base_path}{{paths}}"
+            input_format: "{{schema}}://{target}:{{ports}}/{url_base_path}"
             prefix: ""
             suffix: ""
             interceptors:
@@ -76,8 +76,6 @@ payloads:
                 - 443
                 - 8000
                 - 8080
-              paths:
-                - ""
         response:
           condition_type: and
           log: "Debug enabled - DisallowedHost 400 page found"
