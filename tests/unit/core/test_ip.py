@@ -1,6 +1,8 @@
 import json
 from unittest.mock import patch
 
+import pytest
+
 from nettacker.core.ip import (
     generate_ip_range,
     get_ip_range,
@@ -28,7 +30,7 @@ class Responses:
         }
     }
 
-    validate_ip_range = [f"223.27.114.{i}" for i in range(1, 127)]
+    validate_ip_range = [f"223.27.114.{i}" for i in range(128)]
 
     get_ip_range_invalid_response = {
         "link": {},
@@ -56,6 +58,20 @@ def test_generate_ip_range():
         "192.168.1.2",
         "192.168.1.3",
     ]
+
+
+@pytest.mark.parametrize(
+    ("ip_range", "expected"),
+    [
+        ("192.0.2.1-192.0.2.10", [f"192.0.2.{i}" for i in range(1, 11)]),
+        ("192.0.2.0-192.0.2.7", [f"192.0.2.{i}" for i in range(8)]),
+        ("192.0.2.1-192.0.2.1", ["192.0.2.1"]),
+        ("2001:db8::1-2001:db8::a", [f"2001:db8::{i:x}" for i in range(1, 11)]),
+        ("2001:db8::-2001:db8::3", ["2001:db8::", "2001:db8::1", "2001:db8::2", "2001:db8::3"]),
+    ],
+)
+def test_generate_ip_range_includes_every_address(ip_range, expected):
+    assert generate_ip_range(ip_range) == expected
 
 
 @patch("requests.get")
@@ -90,6 +106,7 @@ def test_is_ipv4_cidr():
     assert is_ipv4_cidr("192.168.1.1-192.168.1.100")
     assert not is_ipv4_cidr("192.168.1.1/24")
     assert not is_ipv4_cidr("192.168.1.1-192.168.1.256")
+    assert not is_ipv4_cidr("192.168.1.100-192.168.1.1")
 
 
 def test_is_single_ipv6():
@@ -102,6 +119,7 @@ def test_is_ipv6_range():
     assert is_ipv6_range("2001:db8::1-2001:db8::100")
     assert not is_ipv6_range("2001:db8::/64")
     assert not is_ipv6_range("2001:db8::1-2001:db8::1g0")
+    assert not is_ipv6_range("2001:db8::100-2001:db8::1")
 
 
 def test_is_ipv6_cidr():

@@ -6,24 +6,18 @@ import requests
 
 def generate_ip_range(ip_range):
     """
-    IP range to CIDR and IPNetwork type
+    Expand an IP range or CIDR into all of its addresses.
 
     Args:
         ip_range: IP range
 
     Returns:
-        an array with CIDRs
+        a list of IP address strings, including both endpoints
     """
     if "/" in ip_range:
         return [ip.format() for ip in [cidr for cidr in netaddr.IPNetwork(ip_range)]]
     else:
-        ips = []
-        for generator_ip_range in [
-            cidr.iter_hosts() for cidr in netaddr.iprange_to_cidrs(*ip_range.rsplit("-"))
-        ]:
-            for ip in generator_ip_range:
-                ips.append(ip.format())
-        return ips
+        return [ip.format() for ip in netaddr.IPRange(*ip_range.split("-"))]
 
 
 def get_ip_range(ip):
@@ -79,7 +73,7 @@ def is_ipv4_cidr(ip_range):
             "/" not in ip_range
             and "." in ip_range
             and "-" in ip_range
-            and bool(netaddr.iprange_to_cidrs(*ip_range.split("-")))
+            and bool(netaddr.IPRange(*ip_range.split("-")))
         )
     except Exception:
         return False
@@ -104,7 +98,7 @@ def is_ipv6_range(ip_range):
             "/" not in ip_range
             and ":" in ip_range
             and "-" in ip_range
-            and bool(netaddr.iprange_to_cidrs(*ip_range.split("-")))
+            and bool(netaddr.IPRange(*ip_range.split("-")))
         )
     except Exception:
         return False
