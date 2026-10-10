@@ -170,6 +170,7 @@ Use `--show-all-modules` for live metadata and check-specific details.
 | --- | --- |
 | `admin_scan` | Searches common web paths for exposed administration interfaces. |
 | `adobe_aem_lastpatcheddate_scan` | Detects Adobe Experience Manager (AEM) and estimates its last patched date from exposed client-side assets. |
+| `cisco_fmc_scan` | Fingerprints Cisco Secure Firewall Management Center via its `/login` page's Mojolicious server header and `"deviceLabel":"Management Center"` body content (context: CVE-2026-20079, CISA KEV). |
 | `citrix_lastpatcheddate_scan` | Detects Citrix NetScaler Gateway and estimates its last patched date. |
 | `config_file_scan` | Searches common web paths for accidentally exposed configuration files. |
 | `confluence_version_scan` | Identifies an Atlassian Confluence installation and reports its version. |
