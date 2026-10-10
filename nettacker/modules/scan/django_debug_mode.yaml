@@ -1,0 +1,93 @@
+info:
+  name: django_debug_mode_scan
+  author: Suriya Gnanamoorthy
+  severity: 3
+  description: Django Debug Mode Detection - Identifies Django DEBUG = True technical error pages.
+  reference:
+    - https://docs.djangoproject.com/en/6.1/ref/settings/#debug
+    - https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/#debug
+    - https://cheatsheetseries.owasp.org/cheatsheets/Django_Security_Cheat_Sheet.html#general-recommendations
+    - https://docs.djangoproject.com/en/6.1/ref/request-response/#django.http.HttpRequest.get_host
+  profiles:
+    - scan
+    - misconfiguration
+    - django
+    - http
+    - low_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Cache-Control: "no-cache, no-store"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{url_base_path}{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8000
+                - 8080
+              paths:
+                - "nettacker-nonexistent-django-debug-mode-test-404"
+        response:
+          condition_type: and
+          log: "Debug enabled - default 404 page found"
+          conditions:
+            url:
+              regex: .*
+              reverse: false
+            status_code:
+              regex: "404"
+              reverse: false
+            content:
+              regex: "(?s)(?=.*Using the URLconf defined in)(?=.*Django tried these URL patterns)(?=.*You.*?re seeing this error because you have).*(DEBUG\\s*=\\s*True)"
+              reverse: false
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Host: "bad_host"
+          Cache-Control: "no-cache, no-store"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{url_base_path}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8000
+                - 8080
+        response:
+          condition_type: and
+          log: "Debug enabled - DisallowedHost 400 page found"
+          conditions:
+            url:
+              regex: .*
+              reverse: false
+            status_code:
+              regex: "400"
+              reverse: false
+            content:
+              regex: "(?s)DisallowedHost.*(DEBUG\\s*=\\s*True)"
+              reverse: false
