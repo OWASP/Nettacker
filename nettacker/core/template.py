@@ -17,7 +17,13 @@ class TemplateLoader:
         if isinstance(module_content, dict):
             for key in copy.deepcopy(module_content):
                 if key in module_inputs:
-                    if module_inputs[key]:
+                    if module_inputs[key] and key != "timeout":
+                        module_content[key] = module_inputs[key]
+                    # If the timeout value is not 3.0, then use the provided value. Otherwise, keep the value from the YAML file.
+                    elif (
+                        key == "timeout"
+                        and abs(module_inputs[key] - Config.settings.timeout) > 1e-9
+                    ):
                         module_content[key] = module_inputs[key]
                 elif isinstance(module_content[key], (dict, list)):
                     module_content[key] = TemplateLoader.parse(module_content[key], module_inputs)
@@ -50,11 +56,24 @@ class TemplateLoader:
         return content
 
     def open(self):
+        """
+        read the raw YAML content of this module's template file
+
+        Derives the module's category (action) and library name from
+        self.name (formatted as "{library}_{category}"), then reads the
+        corresponding file from Config.path.modules_dir/{action}/{library}.yaml
+        as UTF-8.
+
+        Returns:
+            the raw file content as a string
+        """
         module_name_parts = self.name.split("_")
         action = module_name_parts[-1]
         library = "_".join(module_name_parts[:-1])
 
-        with open(Config.path.modules_dir / action / f"{library}.yaml") as yaml_file:
+        with open(
+            Config.path.modules_dir / action / f"{library}.yaml", encoding="utf-8"
+        ) as yaml_file:
             return yaml_file.read()
 
     def format(self):

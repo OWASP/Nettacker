@@ -1,0 +1,33 @@
+name: Check contribution
+
+on:
+  pull_request_target:
+    types:
+      - edited
+      - opened
+      - reopened
+      - synchronize
+
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+
+permissions: {}
+
+jobs:
+  check-contribution:
+    if: github.event.pull_request.base.repo.full_name == github.repository
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: write
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Check contribution requirements
+        uses: arkid15r/check-contribution-action@f90721e95e8b5d7f32b8e565552498d51d052ca5  # v0.1.7
+        with:
+          check_for: commit_signature, issue_assignee, issue_reference
+          close_on: issue_assignee, issue_reference
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          skip_users_file_path: .github/check-contribution-skip-usernames.txt
+    timeout-minutes: 5

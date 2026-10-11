@@ -1,7 +1,7 @@
 from collections import Counter
 from pathlib import Path
 
-nettacker_path = Path(__file__).parent.parent.parent.parent
+nettacker_path = Path(__file__).resolve().parents[4]
 
 
 def test_top_1000_common_passwords():

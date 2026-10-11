@@ -254,11 +254,13 @@ def create_report(options, scan_id):
         for event in all_scan_logs:
             log_list = merge_logs_to_list(event, [])
             html_table_content += log_data.table_items.format(
-                event["date"],
-                event["target"],
-                event["module_name"],
-                event["port"],
-                "<br>".join(log_list) if log_list else "Detected",  # event["event"], #log
+                html.escape(str(event["date"])),
+                html.escape(str(event["target"])),
+                html.escape(str(event["module_name"])),
+                html.escape(str(event["port"])),
+                "<br>".join(html.escape(str(log_item)) for log_item in log_list)
+                if log_list
+                else "Detected",  # event["event"], #log
                 index,
                 html.escape(json.dumps(event)),
             )

@@ -1,0 +1,55 @@
+info:
+  name: splunk_cve_2026_20253_vuln
+  author: NSK-394
+  severity: 9.8
+  description: >
+    CVE-2026-20253 (CVSS 9.8, CISA KEV) is a missing-authentication flaw
+    (CWE-306) in Splunk Enterprise's bundled PostgreSQL sidecar service.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-20253
+    - https://advisory.splunk.com/advisories/SVD-2026-0603
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2026-20253
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2026
+    - splunk
+    - cisa_kev
+    - auth_bypass
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: application/json
+          Authorization: "Basic Og=="
+        ssl: false
+        data: '{{"database": "postgres"}}'
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/en-US/splunkd/__raw/v1/postgres/recovery/backup"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 8000 # Default Splunk Web port
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "400"
+              reverse: false
+            content:
+              regex: "backupFile is a required field"
+              reverse: false

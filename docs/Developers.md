@@ -1,4 +1,4 @@
-We gladly support and appreciate anyone who is interested in contributing to OWASP Nettacker. Overall contributors may focus on developing core framework, modules or payloads, language libraries, and media. After reading this document you should be able to get the basic knowledge to start developing. Please note that we are using PEP8 Python code style and [GitHub Actions](https://github.com/OWASP/Nettacker/actions) for checking all new PRs automatically against supported Python versions. If you use any code/library/module with a license, add the license into external license file.
+We gladly support and appreciate anyone who is interested in contributing to OWASP Nettacker. Overall contributors may focus on developing modules or payloads, improving the core framework, language libraries, and links to media content. After reading this document you should be able to get the basic knowledge to start developing. Please note that we are using PEP8 Python code style and [GitHub Actions](https://github.com/OWASP/Nettacker/actions) for checking all new PRs automatically against supported Python versions. If you use any code/library/module with a license, add the license into external license file.
 
 * [Code of Conduct](https://github.com/OWASP/Nettacker/blob/master/CODE_OF_CONDUCT.md)
 * [Issue Template](https://github.com/OWASP/Nettacker/blob/master/.github/ISSUE_TEMPLATE.md)
@@ -8,23 +8,38 @@ We gladly support and appreciate anyone who is interested in contributing to OWA
 
 ________
 
-* [Contribution Guidelines](#contribution-guidelines)
-* [Roadmap](#roadmap)
-* [Creating Media](#creating-media)
-* [Contribute to Language Libraries](#contribute-to-language-libraries)
-  * [Add a New Language Library](#add-a-new-language-library)
-  * [Modify/Update Language Libraries](#modify-update-language-libraries)
+- [Contribution Guidelines](#contribution-guidelines)
+  - [Issue Approval Required](#issue-approval-required)
+  - [AI Policy](#ai-policy)
+- [Roadmap](#roadmap)
+- [Creating Media and Educational Content](#creating-media-and-educational-content)
+- [Contribute to Language Libraries](#contribute-to-language-libraries)
+  - [Add a New Language Library](#add-a-new-language-library)
+  - [Modify/Update Language Libraries](#modifyupdate-language-libraries)
+- [Contribute to Modules](#contribute-to-modules)
+- [Contribute to Code Functionality \& API \& WebUI](#contribute-to-code-functionality--api--webui)
+- [Maintainer-only updates](#maintainer-only-updates)
+
 
 # Contribution Guidelines
+
+## Issue Approval Required
+
+**Important**: Issue approval is required before submitting a pull request
+
+Before starting work, contributors **must open an issue** describing the proposed change. The proposal must be reviewed and **the issue must be assigned** to a contributor by a project maintainer before a pull request is submitted.
+
+Pull requests submitted without a corresponding maintainer-approved and assigned issue will be automatically closed. Assignment indicates that the maintainers have agreed to review the proposed work; it does not guarantee that the resulting pull request will be accepted or merged.
 
 These are the guidelines you need to keep in mind while contributing:
 
 * Start by familiarising yourself with the Nettacker Codebase: [Codebase Overview](CodebaseOverview.md)
-* Before opening a Pull Request (PR) please check all other open PRs to avoid duplicates and understand the current Work-In-Progress
+* Before opening a Pull Request (PR) please check all other open issues and PRs to avoid duplicates and understand the current Work-In-Progress
 * Please ensure that **all commits are signed** before submitting the PR
 * Use the automated checks: run `make pre-commit` and `make test`
 * Thoroughly test your code locally.
-* When submitting new modules test them in your own lab VM.
+* When submitting new modules test them in your own lab VM. Where available, use a Docker image running the vulnerable software version targeted by the module to test the module.
+* Please attach screenshots demonstrating that the code works as intended (if applicable)
 * Be sure to add/update related documentation.
 
 ## AI Policy
@@ -34,6 +49,7 @@ These are the guidelines you need to keep in mind while contributing:
 * Ensure code logic reflects genuine understanding, not copied AI output
 * The submitter must understand and be able to explain all the code being submitted
 * The **submitter is the Sole Responsible Author for every line of code, comment, and design decision**
+* Low-quality, automated, bulk-generated, or unsolicited AI-agent submissions may be closed without detailed review.
 
 In case of any doubts regarding the guidelines please contact the project leaders.
 
@@ -42,28 +58,48 @@ In case of any doubts regarding the guidelines please contact the project leader
 Developers always could be aware of the OWASP Nettacker roadmap by checking
 
 * 1- Project Management Page <https://github.com/OWASP/Nettacker/projects>
-* 2- Issues Page <https://github.com/OWASP/OWASP-Nettacker/issues>
+* 2- Issues Page <https://github.com/OWASP/Nettacker/issues>
 
-# Creating Media
+# Creating Media and Educational Content
 
-We appreciated all kind of media to demonstrate the OWASP Nettacker in any language and environment. It is a great activity to help us grow our framework and get more publicity. Currently, we collected a few media on [Media](https://github.com/OWASP/Nettacker/wiki/Media) page. Feel free to post your Media on [this](https://github.com/OWASP/Nettacker/issues/1) page.
+We welcome high-quality media and educational content that helps people understand, use, develop, or contribute to OWASP Nettacker.
+
+Examples include:
+
+* tutorials and walkthroughs;
+* conference talks and workshop materials;
+* demonstration videos;
+* blog posts and technical articles;
+* podcasts and interviews;
+* installation and configuration guides;
+* module-development tutorials;
+* lab exercises and other educational resources.
+
+Content may be produced in any language. Contributors are encouraged to make materials accessible to their local communities and to provide English subtitles or summaries where practical. A few media items are currently collected on the [Media](Media.md) page. 
+
+
+Feel free to post your Media as a comment on [this](https://github.com/OWASP/Nettacker/issues/1) page.
+
+Please note: Submission does not guarantee inclusion. Project maintainers may decline or remove content that is outdated, inaccurate, primarily promotional, unsafe, legally problematic, low quality, or inconsistent with OWASP values and policies.
 
 # Contribute to Language Libraries
 
-OWASP Nettacker is using multi-language libraries (default English) to create a better user experience. Currently we are supporting `Greek/el`, `French/fr`, `English/en`, `Dutch/nl`, `Pashto/ps`, `Turkish/tr`, `German/de`, `Korean/ko`, `Italian/it`, `Japanese/ja`, `Persian/fa`, `Armenian/hy`, `Arabic/ar`, `Chinese(Simplified)/zh-cn`, `Vietnamese/vi`, `Russian/ru`, `Hindi/hi`, `Urdu/ur`, `Indonesian/id`, `Spanish/es`, `Hebrew/iw`) languages. If you are an expert in one these languages, It would be a great favor to contribute to one of these. If any language you want to contribute is not listed, feel free to follow the below steps to add it.
+OWASP Nettacker is using multi-language libraries (default English) to create a better user experience. Please check `nettacker/locale/`  for the list of currently supported languages. If you are a native speaker of one of these languages, it would be a great favor to review and contribute to one of these. If any language you want to contribute is not listed, feel free to follow the below steps to add it.
 
 ## Add a New Language Library
 
-In some cases language library does not exist, you can create a new file and add it to the framework.
+In some cases, a language library may not yet exist. A new translation file may be added to the framework, but it must be contributed or reviewed by a **fluent native speaker** of that language:
 
 * 1- Goto `nettacker/locale`
-* 2- Name your message library in accordance with the ISO two-letter code e.g. `fa.yaml`
+* 2- Name your message library in accordance with the ISO two-letter code e.g. `fa.yaml`.
+In some cases we can accept a language-region identifier, for example `pt-br`.
 * 3- Copy the default language lib (`en.yaml`) and start your translation.
-* 4- **Please notice that you should not change the key-value like `scan_started`, `options` and etc. you just need to modify the Values.**
+* 4- **Please note that you should not change the key-value like `scan_started`, `options` and etc. you just need to modify the Values.**
+  
 
 ## Modify/Update Language Libraries
 
-To contribute to the existing libraries, You may go to `lib/messages` select the file you want to contribute and
+To contribute to the existing libraries, You may go to `nettacker/locale/` select the file you want to contribute and
 
 * 1- Translate English messages to the selected language.
 * 2- Compare the language library with **English** library and add new messages to this library and translate them.
@@ -71,7 +107,7 @@ To contribute to the existing libraries, You may go to `lib/messages` select the
 
 # Contribute to Modules
 
-Modules exist in path `nettacker/modules/module_category`. Currently, we have three categories (scan, brute, vuln). if you need to add more just create a directory with a name! To start a new module you should understand what kind of protocol you want to use. The list of protocols and module functionalities are in `core/module_protocols`. To understand how they work read the below example.
+Modules exist in path `nettacker/modules/<module_category>`. Currently, we have three categories (**scan**, **brute**, **vuln**).  To start a new module you should understand what kind of protocol you want to use. The list of protocols and module functionalities are in `nettacker/core/lib/`. To understand how they work read the below example.
 
 ```yaml
 info: # this section is to store information about module
@@ -182,4 +218,30 @@ lib.get(verify=False, timeout=3, cert="", stream=False, proxies="", url="http://
 
 # Contribute to Code Functionality & API & WebUI
 
-Go nuts!
+Changes to Nettacker’s core framework, execution logic, protocols, configuration, database handling, API, Web UI, authentication, or other shared components require substantially stricter review than module contributions.
+
+These changes can affect every module and user of the project. They may introduce compatibility problems, security vulnerabilities, performance regressions, data-handling issues, or changes to established behavior. Consequently, core changes normally require:
+
+* prior discussion and explicit maintainer agreement in an open GitHub issue
+* a clearly documented problem statement and proposed design
+* consideration of backward compatibility
+* security and threat analysis where applicable
+* comprehensive automated tests;
+* testing across supported Python versions and deployment methods;
+* updates to all affected documentation;
+* evidence that existing modules and workflows continue to operate correctly; and
+* review and approval from the project maintainers.
+
+Please do not begin a substantial core, API, or Web UI change without first opening an issue and agreeing the approach with the maintainers.
+
+Core changes will generally take longer to review and merge than module contributions. Review time depends on the change’s complexity, security impact, compatibility implications, available volunteer-maintainer capacity, and the quality of the accompanying tests and documentation.
+
+New contributors are therefore strongly encouraged to begin with a well-scoped new module, documentation improvement, reproducible bug report, or approved bug fix before proposing major changes to the core framework, API or WebUI.
+
+# Maintainer-only updates
+
+Pull requests that only update package dependencies, dependency lockfiles, or GitHub Actions are reserved for project maintainers and authorized automation bots.
+
+This restriction helps the maintainers control software supply-chain changes, generated lockfile modifications, CI permissions, compatibility testing, and release stability.
+
+Security issues involving a dependency or GitHub Actions workflow should still be reported through the project’s normal [issue-reporting](https://github.com/OWASP/Nettacker/issues) or [security-reporting](https://github.com/OWASP/Nettacker/security/policy) process. Contributors should describe the problem and its impact.
