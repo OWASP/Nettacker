@@ -349,7 +349,12 @@ def create_compare_report(options, scan_id):
     comp_target_set = set(get_targets_set(item) for item in scan_opts_comp)
 
     def get_modules_ports(item):
-        return (item["target"], item["module_name"], item["port"])
+        port = item["port"]
+
+        if isinstance(port, str) and port.isdigit():
+            port = int(port)
+
+        return (item["target"], item["module_name"], port)
 
     curr_modules_ports = set(get_modules_ports(item) for item in scan_log_curr)
     comp_modules_ports = set(get_modules_ports(item) for item in scan_logs_comp)
