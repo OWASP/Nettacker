@@ -392,12 +392,12 @@ python nettacker.py -i 192.168.1.1/24 --profile all
 - Use socks proxy for outgoing connections (default socks version is 5)
 
 ```
-python nettacker.py -i 192.168.1.1 -m tcp_connect_port_scan -T 5 --socks-proxy socks://127.0.0.1:9050
-python nettacker.py -i 192.168.1.1 -m tcp_connect_port_scan -T 5 --socks-proxy socks4://127.0.0.1:9050
-python nettacker.py -i 192.168.1.1 -m tcp_connect_port_scan -T 5 --socks-proxy socks5://127.0.0.1:9050
-python nettacker.py -i 192.168.1.1 -m tcp_connect_port_scan -T 5 --socks-proxy socks://username:password@127.0.0.1:9050
-python nettacker.py -i 192.168.1.1 -m tcp_connect_port_scan -T 5 --socks-proxy socks4://username:password@127.0.0.1:9050
-python nettacker.py -i 192.168.1.1 -m tcp_connect_port_scan -T 5 --socks-proxy socks5://username:password@127.0.0.1:9050
+python nettacker.py -i 192.168.1.1 -m port_scan -T 5 --socks-proxy socks://127.0.0.1:9050
+python nettacker.py -i 192.168.1.1 -m port_scan -T 5 --socks-proxy socks4://127.0.0.1:9050
+python nettacker.py -i 192.168.1.1 -m port_scan -T 5 --socks-proxy socks5://127.0.0.1:9050
+python nettacker.py -i 192.168.1.1 -m port_scan -T 5 --socks-proxy socks://username:password@127.0.0.1:9050
+python nettacker.py -i 192.168.1.1 -m port_scan -T 5 --socks-proxy socks4://username:password@127.0.0.1:9050
+python nettacker.py -i 192.168.1.1 -m port_scan -T 5 --socks-proxy socks5://username:password@127.0.0.1:9050
 ```
 
 - Get the list of all modules with details about it using `--show-all-modules`
