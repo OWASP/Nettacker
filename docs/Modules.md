@@ -253,6 +253,7 @@ environment.
 | `joomla_cve_2023_23752_vuln` | Checks Joomla 4.0.0 through 4.2.7 for CVE-2023-23752 unauthenticated configuration disclosure. |
 | `justwirting_cve_2021_41878_vuln` | Checks i-Panel Administration System for CVE-2021-41878 reflected cross-site scripting. |
 | `langflow_cve_2025_3248_vuln` | Probes Langflow before 1.3.0 for CVE-2025-3248 by executing code that raises a fixed `Nettacker` exception through the validation endpoint. |
+| `litellm_cve_2026_59822_vuln` | Probes LiteLLM versions prior to 1.84.0 for CVE-2026-59822 by exploiting an OAuth2 passthrough fallback path that allows unauthenticated access to MCP tooling. |
 | `log4j_cve_2021_44228_vuln` | Sends Log4Shell JNDI callbacks through multiple HTTP methods and headers, then confirms them through the third-party `log4shell.huntress.com` service. |
 | `majordomo_rce_cve_2026_27174_vuln` | Probes MajorDoMo for CVE-2026-27174 by using the unauthenticated PHP console to read `/etc/passwd`. |
 | `maxsite_cms_cve_2021_35265_vuln` | Checks MaxSite CMS for CVE-2021-35265 reflected cross-site scripting. |
