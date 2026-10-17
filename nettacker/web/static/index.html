@@ -162,6 +162,10 @@
                     <span class="input-group-addon"><i class="fa fa-space-shuttle"></i></span>
                     <input id="targets" type="text" class="form-control" data-role="tagsinput" placeholder="Add new target" >
                 </div>
+                <label class="btn btn-default btn-sm" style="margin-top: 5px;">
+                    Upload targets file <input type="file" id="targets_list_file" style="display:none;">
+                </label>
+                <span id="targets_list_status"></span>
                 <div class="form-group" style="margin-top: 10px;">
                     <label>
                         <input id="skip_service_discovery" type="checkbox">
@@ -171,7 +175,13 @@
                 <div id="scan_options_combined">
                 <h3>Profiles</h3>
                 <div class="form-group">
-                    <div id="profiles" class="checkbox text-justify">
+                    <div class="input-group checklist-search">
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                        <input id="profile_search" type="text" class="form-control" autocomplete="off"
+                               placeholder="Search profiles by name..." aria-label="Search profiles by name">
+                    </div>
+                    <p class="help-block">Type to filter the list. Your selections stay checked when hidden.</p>
+                    <div id="profiles" class="checkbox text-justify scrollable-checkbox-list">
             <label><input id="all_profiles" type="checkbox" class="check check-all-profiles"><a
                 class="label label-info">Select all profiles</a></label>&nbsp;&nbsp;&nbsp;&nbsp;
             {% autoescape off %}{{profile}}{% endautoescape %}
@@ -179,7 +189,13 @@
                 </div>
                 <h3>Scan Methods</h3>
                 <div class="form-group">
-                    <div id="selected_modules" class="checkbox text-justify">
+                    <div class="input-group checklist-search">
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                        <input id="scan_method_search" type="text" class="form-control" autocomplete="off"
+                               placeholder="Search scan methods by name..." aria-label="Search scan methods by name">
+                    </div>
+                    <p class="help-block">Type to filter the list. Your selections stay checked when hidden.</p>
+                    <div id="selected_modules" class="checkbox text-justify scrollable-checkbox-list">
                         <label><input id="all" type="checkbox" class="checkbox check-all-scans" ><a
                                 class="label label-info">Select all</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         {% autoescape off %}{{selected_modules}}{% endautoescape %}
@@ -313,21 +329,39 @@
                 </div>
                 <br>
 
+
                 <div class="form-group col-md-6">
                     <h3>Usernames</h3>
                     <textarea class="input-mini form-control" rows="8" cols="50" id="usernames"
                               data-role="tagsinput" placeholder="separate with commas or new line">
                     </textarea>
+                    <label class="btn btn-default btn-sm" style="margin-top: 5px;">
+                        Upload usernames file <input type="file" id="usernames_list_file" style="display:none;" >
+                    </label>
+                    <span id="usernames_list_status"></span>
                 </div>
                 <div class="form-group col-md-6">
                     <h3>Passwords</h3>
                     <textarea class="form-control" rows="8" cols="50" id="passwords"
                                placeholder="separate with commas or new line"></textarea>
+                    <label class="btn btn-default btn-sm" style="margin-top: 5px;">
+                            Upload passwords file <input type="file" id="passwords_list_file" style="display:none;" >
+                        </label>
+                        <span id="passwords_list_status"></span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group col-md-6">
+                    <h3>Wordlist</h3>
+                    <label class="btn btn-default btn-sm">
+                        Upload wordlist file <input type="file" id="read_from_file_file" style="display:none;">   <!-- Not checking for file extensions here because that is a config in the core -->
+                    </label>
+                    <span id="read_from_file_status"></span>
                 </div>
                 <br>
             </div>
+            <div class="clearfix"></div>
             <br>
-            <ul id="submit_new_scan" class="btn btn-primary" action="javascript:submit_new_scan()">
+            <ul id="submit_new_scan" class="btn btn-primary" style="margin-left: 15px;" action="javascript:submit_new_scan()">
                 Submit
             </ul>
         </form>
@@ -357,6 +391,11 @@
                 class="glyphicon glyphicon-refresh"></span> last updates</a>
             <a id="refresh_btn_page" class="btn btn-success"><span class="glyphicon glyphicon-refresh"></span>
                 reload current page</a>
+        </div>
+        <div class="input-group results-search">
+            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+            <input id="results_search" type="text" class="form-control" autocomplete="off"
+                   placeholder="Filter by scan row ID, scan ID, or date..." aria-label="Filter scan results">
         </div>
         <div id="scan_results" class="list-group hidden">
         </div>

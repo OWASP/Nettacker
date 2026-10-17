@@ -3,6 +3,7 @@
 import json
 
 from nettacker.config import Config
+from nettacker.lib.graph.d3_tree_v1.engine import escape_for_html_js
 
 
 def build_report(compare_result):
@@ -17,5 +18,8 @@ def build_report(compare_result):
     """
     with open(Config.path.web_static_dir / "report/compare_report.html") as f:
         template = f.read()
-    data = template.replace("__data_will_locate_here__", json.dumps(compare_result))
+    data = template.replace(
+        "__data_will_locate_here__",
+        escape_for_html_js(json.dumps(compare_result)),
+    )
     return data

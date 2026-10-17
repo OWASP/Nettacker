@@ -4,10 +4,10 @@ import asyncio
 import copy
 import random
 import re
+import sys
 import time
 
 import aiohttp
-import uvloop
 
 from nettacker.core.lib.base import BaseEngine
 from nettacker.core.utils.common import (
@@ -17,10 +17,23 @@ from nettacker.core.utils.common import (
     reverse_and_regex_condition,
 )
 
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+if sys.platform != "win32":
+    import uvloop
+
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 async def perform_request_action(action, request_options):
+    """
+    perform a single HTTP request and normalize the response into a dict
+
+    Args:
+        action: a bound aiohttp.ClientSession method (e.g. session.get, session.post)
+        request_options: keyword arguments to pass to action (url, headers, etc.)
+
+    Returns:
+        a dict with reason, url, status_code, content, headers, and responsetime
+    """
     start_time = time.time()
     async with action(**request_options) as response:
         return {
@@ -34,6 +47,16 @@ async def perform_request_action(action, request_options):
 
 
 async def send_request(request_options, method):
+    """
+    open an aiohttp session and dispatch a single request through it
+
+    Args:
+        request_options: keyword arguments forwarded to perform_request_action
+        method: the HTTP method name to call on the session (e.g. "get", "post")
+
+    Returns:
+        the normalized response dict from perform_request_action
+    """
     async with aiohttp.ClientSession() as session:
         action = getattr(session, method, None)
         response = await asyncio.gather(
@@ -43,6 +66,24 @@ async def send_request(request_options, method):
 
 
 def response_conditions_matched(sub_step, response):
+    """
+    check an HTTP response against a module step's configured conditions
+
+    Evaluates each condition in sub_step["response"]["conditions"] (reason,
+    status_code, content, url, headers, responsetime regex/comparison checks)
+    against the actual response, then combines the per-condition results
+    using the step's condition_type ("or"/"and") to decide whether the step
+    as a whole matched.
+
+    Args:
+        sub_step: the module step definition, including response conditions
+        response: the normalized response dict from perform_request_action,
+            or a falsy value if the request failed
+
+    Returns:
+        a dict of matched condition results (with an optional "log" entry)
+        if the step's conditions matched, otherwise an empty dict
+    """
     if not response:
         return {}
     condition_type = sub_step["response"]["condition_type"]
@@ -149,6 +190,29 @@ class HttpEngine(BaseEngine):
         request_number_counter,
         total_number_of_requests,
     ):
+        """
+        execute this module step's HTTP request against a target and process the result
+
+        Applies custom/random-user-agent headers, resolves any
+        dependent-on-temp-event substitutions, then sends the request via
+        asyncio.run(send_request(...)) with retries, and hands the response
+        off to condition matching and event processing.
+
+        Args:
+            sub_step: the module step definition to execute
+            module_name: the module this step belongs to
+            target: the target being scanned
+            scan_id: unique scan identifier
+            options: all scan options
+            process_number: index of the parent process, used for logging
+            module_thread_number: index of this module's thread, used for logging
+            total_module_thread_number: total threads running this module, used for logging
+            request_number_counter: index of this request, used for logging
+            total_number_of_requests: total requests for this step, used for logging
+
+        Returns:
+            the result of self.process_conditions(...) for this step
+        """
         if options["http_header"] is not None:
             for header in options["http_header"]:
                 key = get_http_header_key(header).strip()
