@@ -1,3 +1,4 @@
+import string
 import threading
 import time
 from unittest.mock import MagicMock, patch
@@ -5,6 +6,22 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from nettacker.core.utils import common as common_utils
+
+
+def test_generate_random_token_preserves_default_length():
+    with patch.object(common_utils.secrets, "choice", return_value="a"):
+        assert common_utils.generate_random_token() == "a" * 10
+
+
+@pytest.mark.parametrize("length", [0, 1, 32])
+def test_generate_random_token_uses_secrets_choice(length):
+    with patch.object(common_utils.secrets, "choice", return_value="a") as secure_choice:
+        token = common_utils.generate_random_token(length)
+
+    assert token == "a" * length
+    assert secure_choice.call_count == length
+    for choice_call in secure_choice.call_args_list:
+        assert choice_call.args == (string.ascii_lowercase,)
 
 
 def test_arrays_to_matrix():
