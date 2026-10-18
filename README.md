@@ -10,7 +10,7 @@ OWASP Nettacker
 [![Docker Pulls](https://img.shields.io/docker/pulls/owasp/nettacker)](https://hub.docker.com/r/owasp/nettacker)
 
 
-<img src="https://raw.githubusercontent.com/OWASP/Nettacker/master/nettacker/web/static/img/owasp-nettacker.png" width="200"><img src="https://raw.githubusercontent.com/OWASP/Nettacker/master/nettacker/web/static/img/owasp.png" width="500">
+\<img src="https://raw.githubusercontent.com/OWASP/Nettacker/master/nettacker/web/static/img/owasp-nettacker.png" width="200"><img src=https\://raw.githubusercontent.com/OWASP/Nettacker/master/nettacker/web/static/img/owasp.png" width="500">
 
 
 **DISCLAIMER**
@@ -21,9 +21,9 @@ OWASP Nettacker
 
 OWASP Nettacker is an open-source, Python-based automated penetration testing and information-gathering framework designed to help cyber security professionals and ethical hackers perform reconnaissance, vulnerability assessments, and network security audits efficiently. Nettacker automates tasks like port scanning, service detection, subdomain enumeration, network mapping, vulnerability scanning, credential brute-force testing making it a powerful tool for identifying weaknesses in networks, web applications, IoT devices and APIs.
 
-### Key Features
+\### Key Features
 
-- **Modular architecture** - Each task — like port scanning, directory discovery, subdomain enumeration, vulnerability checks, or credential brute-forcing - is implemented as its own module, giving you control over what runs.
+\- **Modular architecture** - Each task — like port scanning, directory discovery, subdomain enumeration, vulnerability checks, or credential brute-forcing - is implemented as its own module, giving you control over what runs.
 - **Multi-protocol & multithreaded scanning** - Supports HTTP/HTTPS, FTP, SSH, SMB, SMTP, ICMP, TELNET, XML-RPC, and can run scans in parallel for speed.
 - **Comprehensive output** - Export reports in HTML, JSON, CSV, and plain text.
 - **Built-in database & drift detection** - Stores past scans in the database for easy search and comparison with current results: useful to detect new hosts, open ports, or vulnerabilities in CI/CD pipelines.
