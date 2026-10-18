@@ -1,0 +1,24 @@
+info:
+  name: security_txt_missing_vuln
+  author: OWASP Nettacker Contributor
+  description: Checks whether RFC 9116 security.txt is missing on the target host.
+  category: vuln
+  severity: info
+  profiles:
+    - vuln
+    - http
+
+payloads:
+  - library: http
+    steps:
+      - process:
+          request:
+            method: GET
+            uri: "/.well-known/security.txt"
+            allow_redirects: true
+            headers:
+              User-Agent: "{user_agent}"
+          response:
+            condition:
+              and:
+                - status_code: "!200"
