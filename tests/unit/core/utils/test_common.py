@@ -1,3 +1,4 @@
+import datetime
 import threading
 import time
 from unittest.mock import MagicMock, patch
@@ -5,6 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from nettacker.core.utils import common as common_utils
+from nettacker.core.utils import time as time_utils
 
 
 def test_arrays_to_matrix():
@@ -324,3 +326,17 @@ def test_is_running_with_privileges_posix_non_root(monkeypatch):
     monkeypatch.setattr(common_utils.sys, "platform", "linux")
     monkeypatch.setattr(common_utils.os, "geteuid", lambda: 501, raising=False)
     assert common_utils.is_running_with_privileges() is False
+
+
+def test_now_reexport_and_formatting():
+    """Verify now is re-exported from time_utils and formats properly."""
+    assert common_utils.now is time_utils.now
+
+    default_formatted = common_utils.now()
+    parsed_default = datetime.datetime.strptime(default_formatted, "%Y-%m-%d %H:%M:%S")
+    assert isinstance(parsed_default, datetime.datetime)
+
+    custom_formatted = common_utils.now(format="%Y/%m/%d")
+    parsed_custom = datetime.datetime.strptime(custom_formatted, "%Y/%m/%d")
+    assert isinstance(parsed_custom, datetime.datetime)
+

@@ -1,6 +1,5 @@
 import copy
 import ctypes
-import datetime
 import hashlib
 import importlib
 import json
@@ -15,6 +14,7 @@ import time
 from itertools import product
 
 from nettacker import logger
+from nettacker.core.utils.time import now
 
 log = logger.get_logger()
 
@@ -385,18 +385,6 @@ def expand_step(step):
 
 def generate_random_token(length=10):
     return "".join(random.choice(string.ascii_lowercase) for _ in range(length))
-
-
-def now(format="%Y-%m-%d %H:%M:%S"):
-    """
-    get now date and time
-    Args:
-        format: the date and time model, default is "%Y-%m-%d %H:%M:%S"
-
-    Returns:
-        the date and time of now
-    """
-    return datetime.datetime.now().strftime(format)
 
 
 def select_maximum_cpu_core(mode):
