@@ -1,0 +1,77 @@
+info:
+  name: laravel_livewire_cve_2025_54068_vuln
+  author: devjoshi2005
+  severity: 9.4
+  description: >
+    CVE-2025-54068 - Remote code execution vulnerability in Laravel Livewire v3 up to
+    and including v3.6.3, caused by insecure deserialization (unmarshaling) of
+    component update data during the Livewire component hydration/update workflow,
+    allowing unauthenticated attackers to achieve remote command execution under
+    certain conditions. Fixed in Livewire v3.6.4. Added to the CISA Known Exploited
+    Vulnerabilities catalog on 2026-03-20. This module fingerprints Livewire v3
+    application frontends; since the Nettacker YAML engine cannot perform numeric
+    version comparison, any detected instance should be verified against Livewire
+    v3.6.4, and full confirmation of exploitation requires interactive (out-of-band)
+    testing.
+
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-54068
+    - https://github.com/livewire/livewire/security/advisories/GHSA-29cq-5w36-x7w3
+    - https://www.cve.org/CVERecord?id=CVE-2025-54068
+    - https://www.synacktiv.com/en/publications/livewire-remote-command-execution-through-unmarshaling
+
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve
+    - cve2025
+    - cisa_kev
+    - laravel
+    - livewire
+    - rce
+
+# NOTE: The Nettacker YAML engine cannot perform numeric version comparison.
+# This module fingerprints Livewire v3 frontends. Any detected instance must
+# be manually verified against v3.6.4 before being classified as patched.
+# Newer Vite-based builds may serve livewire.js at /build/assets/ instead of
+# /livewire/ — the primary detection relies on wire:snapshot= / wire:initial-data=
+# attributes in the HTML, which are path-independent.
+
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors: []
+            data:
+              paths:
+                - "/"
+                - "/livewire/livewire.js"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "(wire:snapshot=|wire:initial-data=|data-update-uri=|livewire/livewire\\.js)"
+              reverse: false

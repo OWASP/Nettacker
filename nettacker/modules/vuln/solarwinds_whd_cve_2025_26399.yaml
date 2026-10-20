@@ -1,0 +1,69 @@
+info:
+  name: solarwinds_whd_cve_2025_26399_vuln
+  author: devjoshi2005
+  severity: 9.8
+  description: >
+    Unauthenticated AjaxProxy deserialization of untrusted data in SolarWinds
+    Web Help Desk 12.8.7 and earlier (patch bypass of CVE-2024-28988),
+    allowing unauthenticated RCE. Fixed in 12.8.7 Hotfix 1 (build >= 12.8.7.2174).
+    CISA KEV (added 2026-03-09).
+
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-26399
+    - https://www.tenable.com/plugins/nessus/265951
+    - https://www.cve.org/CVERecord?id=CVE-2025-26399
+    - https://www.huntress.com/blog/active-exploitation-solarwinds-web-help-desk-cve-2025-26399
+
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical_severity
+    - cve
+    - cve2025
+    - cisa_kev
+    - solarwinds
+    - web_help_desk
+    - rce
+
+# NOTE: The Nettacker YAML engine cannot perform numeric version comparison.
+# This module fingerprints SolarWinds Web Help Desk instances. Any detected
+# instance must be manually verified against build 12.8.7.2174 (12.8.7 Hotfix 1)
+# before being classified as patched.
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors: []
+            data:
+              paths:
+                - "/"
+                - "/helpdesk.woa"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "(?i)(web help desk|helpdesk\\.woa|solarwinds.*whd)"
+              reverse: false

@@ -253,6 +253,7 @@ environment.
 | `joomla_cve_2023_23752_vuln` | Checks Joomla 4.0.0 through 4.2.7 for CVE-2023-23752 unauthenticated configuration disclosure. |
 | `justwirting_cve_2021_41878_vuln` | Checks i-Panel Administration System for CVE-2021-41878 reflected cross-site scripting. |
 | `langflow_cve_2025_3248_vuln` | Probes Langflow before 1.3.0 for CVE-2025-3248 by executing code that raises a fixed `Nettacker` exception through the validation endpoint. |
+| `laravel_livewire_cve_2025_54068_vuln` | Checks Laravel apps for Livewire v3 (≤ 3.6.3) CVE-2025-54068 by detecting Livewire component hydration markers in the frontend HTML. |
 | `log4j_cve_2021_44228_vuln` | Sends Log4Shell JNDI callbacks through multiple HTTP methods and headers, then confirms them through the third-party `log4shell.huntress.com` service. |
 | `majordomo_rce_cve_2026_27174_vuln` | Probes MajorDoMo for CVE-2026-27174 by using the unauthenticated PHP console to read `/etc/passwd`. |
 | `maxsite_cms_cve_2021_35265_vuln` | Checks MaxSite CMS for CVE-2021-35265 reflected cross-site scripting. |
@@ -278,6 +279,7 @@ environment.
 | `server_version_vuln` | Reports version details disclosed by the HTTP `Server` response header. |
 | `siyuan_cve_2026_34605_vuln` | Checks SiYuan Note through version 3.6.1 for CVE-2026-34605 reflected SVG cross-site scripting. |
 | `smartermail_cve_2026_24423_vuln` | Checks SmarterMail before build 9511 for CVE-2026-24423 unauthenticated command-execution exposure using a non-routable probe. |
+| `solarwinds_whd_cve_2025_26399_vuln` | Fingerprints SolarWinds Web Help Desk instances for CVE-2025-26399 unauthenticated AjaxProxy deserialization RCE (fixed in 12.8.7 Hotfix 1). |
 | `sonicwall_sslvpn_cve_2024_53704_vuln` | Sends a crafted `swap` cookie to the SonicWall SSL VPN client endpoint and checks for the launcher response associated with CVE-2024-53704. |
 | `splunk_cve_2026_20253_vuln` | Checks Splunk Enterprise's PostgreSQL sidecar service for CVE-2026-20253 unauthenticated auth-bypass via an invalid Basic Authorization header. |
 | `ssl_certificate_weak_signature_vuln` | Reports TLS certificates signed with weak or deprecated signature algorithms. |
@@ -304,6 +306,7 @@ environment.
 | `x_powered_by_vuln` | Reports technology details disclosed by the HTTP `X-Powered-By` response header. |
 | `x_xss_protection_vuln` | Reports a present legacy `X-XSS-Protection` header whose value is not `1; mode=block`; an absent header is not currently flagged. |
 | `xdebug_rce_vuln` | Detects the Xdebug 2.5.5 response header associated with a remotely exploitable Xdebug release. |
+| `zimbra_cve_2025_68645_vuln` | Checks Zimbra Collaboration Suite for CVE-2025-68645 by probing unauthenticated access to the `/h/rest` RestFilter endpoint. |
 | `zoho_cve_2021_40539_vuln` | Probes the unauthenticated ADSelfService Plus `LogonCustomization` preview action associated with CVE-2021-40539; it does not upload or execute code. |
 
 Some identifiers retain historical filename spellings, such as
