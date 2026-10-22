@@ -2,12 +2,7 @@ info:
   name: cisco_fmc_scan
   author: Nikhil sai
   severity: 3
-  description: "Cisco Secure Firewall Management Center (FMC) fingerprint scan - identifies
-    FMC's web login interface via its Mojolicious server header and \"Management Center\"
-    page content. Context - FMC is the subject of CVE-2026-20079 (CVSS 10.0, CISA KEV-listed,
-    actively exploited pre-auth root RCE via authentication bypass). This module only
-    confirms the product is present; it does not determine whether the target is running
-    a vulnerable or already-patched version, since that requires an authenticated check."
+  description: "Identifies Cisco Secure Firewall Management Center login pages by their Mojolicious Server header and Management Center page content."
   reference:
     - https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-onprem-fmc-authbypass-5JPp45V2
     - https://nvd.nist.gov/vuln/detail/CVE-2026-20079
