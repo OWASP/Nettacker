@@ -133,6 +133,8 @@ class PathConfig:
     module_protocols_dir = PACKAGE_PATH / "core/lib"
     modules_dir = PACKAGE_PATH / "modules"
     payloads_dir = PACKAGE_PATH / "lib/payloads"
+    probes_data_dir = PACKAGE_PATH / "probing/data"
+    probes_yaml_file = PACKAGE_PATH / "probing/data/probes.yaml"
     release_name_file = PACKAGE_PATH / "release_name.txt"
     results_dir = CWD / ".nettacker/data/results"
     tmp_dir = CWD / ".nettacker/data/tmp"
