@@ -176,6 +176,7 @@ Use `--show-all-modules` for live metadata and check-specific details.
 | `crushftp_lastpatcheddate_scan` | Detects CrushFTP and estimates its last patched date from a published web asset. |
 | `cups_version_scan` | Queries the CUPS web interface, normally on port 631, and reports the detected version. |
 | `dir_scan` | Searches for common or interesting web directories. |
+| `django_debug_mode_scan` | Identifies if Django DEBUG mode is enabled. |
 | `drupal_modules_scan` | Enumerates popular modules installed on a Drupal site. |
 | `drupal_theme_scan` | Identifies themes installed on a Drupal site. |
 | `drupal_version_scan` | Identifies a Drupal installation and reports its version. |
