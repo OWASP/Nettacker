@@ -1,0 +1,153 @@
+API: API
+API_access_key: API प्रवेश की
+API_access_log_file: API प्रवेश लॉग फाइलनाव
+API_cert: API प्रमाणपत्र
+API_cert_key: API प्रमाणपत्र की
+API_debug: API डीबग मोड
+API_host: API होस्ट पत्ता
+API_invalid: अवैध API की
+API_key: " * API https://nettacker-api.z3r0d4y.com:{0}/ येथून API की द्वारे उपलब्ध आहे: {1}"
+API_options: API पर्याय
+API_port: API पोर्ट क्रमांक
+Method: पद्धत
+skip_service_discovery: स्कॅनपूर्वी सेवा शोध वगळा आणि सर्व मॉड्यूल्सना सक्तीने स्कॅन करायला लावा
+no_live_service_found: स्कॅन करण्यासाठी कोणतीही सक्रिय सेवा सापडली नाही.
+icmp_need_root_access: icmp_scan मॉड्यूल किंवा --ping-before-scan वापरण्यासाठी स्क्रिप्ट root म्हणून चालवा!
+available_graph: "सर्व क्रियाकलाप आणि माहितीचा आलेख तयार करा, तुम्ही HTML आउटपुट वापरलेच पाहिजे. उपलब्ध आलेख: {0}"
+browser_session_killed: तुमचे ब्राउझर सत्र समाप्त केले
+browser_session_valid: तुमचे ब्राउझर सत्र वैध आहे
+build_graph: आलेख तयार करत आहे ...
+connection_retries: कनेक्शन टाइमआउट झाल्यावर पुनर्प्रयत्न (मूलभूत 3)
+current_version: तुम्ही OWASP Nettacker आवृत्ती {0}{1}{2}{6} कोड नाव {3}{4}{5} सह चालवत आहात
+database_connect_fail: डेटाबेसशी जोडता आले नाही!
+database_connection_failed: निवडलेल्या डेटाबेसशी जोडणी अयशस्वी
+define_white_list: "पांढरी यादी (व्हाइट लिस्ट) होस्ट निश्चित करा, , ने वेगळे करा (उदाहरणे: 127.0.0.1, 192.168.0.1/24, 10.0.0.1-10.0.0.255)"
+engine: इंजिन
+filtered_content: ... [संपूर्ण मजकूर अहवालात पहा]
+engine_input: इंजिन इनपुट पर्याय
+Invalid_whatcms_api_key: "{0}"
+searching_whatcms_database: whatcms.org वर CMS शोधत आहे...
+whatcms_monthly_quota_exceeded: तुमची मासिक WHATCMS विनंती मर्यादा संपली आहे
+finished_module: मॉड्यूल {0} लक्ष्य {1} कडे पूर्ण झाले | मॉड्यूल थ्रेड क्रमांक {2} पैकी {3}!
+modules_extra_args_help: मॉड्यूल्सना अतिरिक्त आर्ग्युमेंट्स द्या (उदा. --modules-extra-args "x_api_key=123&xyz_passwd=abc"
+choose_scan_method: मॉड्यूल्स निवडा {0} पूर्ण यादी पाहण्यासाठी --show-all-modules वापरा
+cannot_run_api_server: तुम्ही API सर्व्हर स्वतःहून चालवू शकत नाही!
+error_target: लक्ष्य निर्दिष्ट करता येत नाही
+error_target_file: "लक्ष्य निर्दिष्ट करता येत नाही, फाइल उघडता आली नाही: {0}"
+error_username: "वापरकर्तानाव निर्दिष्ट करता येत नाही, फाइल उघडता आली नाही: {0}"
+error_passwords: "संकेतशब्द निर्दिष्ट करता येत नाही, फाइल उघडता आली नाही: {0}"
+error_wordlist: "शब्द निर्दिष्ट करता येत नाही, फाइल उघडता आली नाही {0}"
+exclude_scan_method: वगळण्यासाठी स्कॅन पद्धत निवडा {0}
+file_write_error: फाइल "{0}" लिहिण्यायोग्य नाही!
+library_not_supported: लायब्ररी [{0}] समर्थित नाही!
+removing_old_db_records: निवडलेल्या लक्ष्य आणि मॉड्यूल्ससाठी जुने डेटाबेस रेकॉर्ड काढत आहे.
+regrouping_targets: हार्डवेअर संसाधनांनुसार लक्ष्यांचे पुनर्गठन करत आहे!
+finish_build_graph: आलेख तयार करणे पूर्ण!
+finished_parallel_module_scan: प्रक्रिया-{0}|{1}|{2}| मॉड्यूल थ्रेड क्रमांक {3} पैकी {4} पूर्ण झाला
+graph_message: "हा आलेख OWASP Nettacker ने तयार केला आहे. आलेखात सर्व मॉड्यूल क्रियाकलाप, नेटवर्क नकाशा आणि
+  संवेदनशील माहिती आहे, जर विश्वासार्ह नसेल तर ही फाइल कोणाशीही शेअर करू नका."
+graph_module_404: "हा आलेख मॉड्यूल सापडला नाही: {0}"
+graph_module_unavailable: हा आलेख मॉड्यूल "{0}" उपलब्ध नाही
+graph_output: आलेख वैशिष्ट्य वापरण्यासाठी तुमच्या आउटपुट फाइलनावाचा शेवट ".html" किंवा ".htm" ने झाला पाहिजे!
+help_menu: Nettacker मदत मेनू दाखवा
+invalid_schema: "अवैध स्कीमा: फक्त 'http' आणि 'https' ला परवानगी आहे"
+done: "पूर्ण झाले!"
+error_platform: "दुर्दैवाने, सॉफ्टवेअरची ही आवृत्ती Linux/darwin/freebsd वर चालू शकते"
+file_saved: "अहवाल {0} मध्ये आणि डेटाबेसमध्ये जतन केला"
+inserting_report_db: अहवाल डेटाबेसमध्ये समाविष्ट करत आहे
+invalid_database: कृपया कॉन्फिगरेशन फाइलमध्ये mysql किंवा sqlite मधून निवडा
+invalid_json_type_to_db: "डेटाबेससाठी अवैध JSON डेटा प्रकार. डेटाबेसमध्ये सादर करणे वगळत आहे. डेटा:{0}"
+license: "कृपया परवाना आणि करार वाचा https://github.com/OWASP/Nettacker"
+loaded_modules: "{0} मॉड्यूल्स लोड केले ..."
+loading_modules: सर्व मॉड्यूल्स लोड करत आहे... थोडा वेळ लागू शकतो!
+loading_profiles: सर्व प्रोफाइल लोड करत आहे... थोडा वेळ लागू शकतो!
+module_profile_full_information: "{0}{1}{2}: {3}"
+nettacker_report: OWASP Nettacker अहवाल
+nettacker_version_details: "सॉफ्टवेअर तपशील: OWASP Nettacker आवृत्ती {0} [{1}] मध्ये {2}"
+no_scan_data_found: कोणताही स्कॅन डेटा सापडला नाही
+not_found: सापडले नाही!
+outgoing_proxy: "बाह्य कनेक्शन प्रॉक्सी (socks). उदाहरण socks5: 127.0.0.1:9050,
+  socks://127.0.0.1:9050 socks5://127.0.0.1:9050 किंवा socks4: socks4://127.0.0.1:9050,
+  प्रमाणीकरण: socks://username: password@127.0.0.1, socks4://username:password@127.0.0.1,
+  socks5://username:password@127.0.0.1"
+password_separator: संकेतशब्द यादी, "," ने वेगळी करा
+pentest_graphs: पेनिट्रेशन टेस्टिंग आलेख
+ping_before_scan: होस्ट स्कॅन करण्यापूर्वी पिंग करा
+port_separator: पोर्ट यादी, "," ने वेगळी करा
+ports_int: पोर्ट पूर्णांक असलेच पाहिजेत! (उदा. 80 || 80,1080 || 80,1080-1300,9000,12000-15000)
+profile_404: प्रोफाइल "{0}" सापडले नाही!
+range: श्रेणीतील सर्व IP स्कॅन करा
+read_passwords: फाइलमधून संकेतशब्द वाचा
+read_target: फाइलमधून लक्ष्य वाचा
+removing_logs_db: डेटाबेसमधून जुने लॉग काढत आहे
+save_logs: सर्व लॉग फाइलमध्ये जतन करा (results.txt, results.csv, results.html, results.json)
+scan_method_options: स्कॅन पद्धत पर्याय
+scan_method_select: कृपया तुमची स्कॅन पद्धत निवडा!
+scan_module_not_found: हे स्कॅन मॉड्यूल [{0}] सापडले नाही!
+scan_started: "Nettacker इंजिन सुरू झाले ..."
+schema_selector: स्कीमा यादी, "," ने वेगळी करा
+select_language: भाषा निवडा {0}
+select_profile: प्रोफाइल निवडा {0}
+select_user_agent: "HTTP विनंत्यांसोबत पाठवण्यासाठी युजर एजंट निवडा किंवा विनंत्यांमध्ये
+  User-Agent यादृच्छिक करण्यासाठी \"random_user_agent\" प्रविष्ट करा."
+send_success_event_from_module: "प्रक्रिया-{0}|{1}|{2}|मॉड्यूल-थ्रेड {3}/{4}|विनंती-थ्रेड {5}/{6}|{7}|\nयशस्वी अट(टी)
+  : \n{8}"
+send_unsuccess_event_from_module: "प्रक्रिया-{0}|{1}|{2}|मॉड्यूल-थ्रेड {3}/{4}|विनंती-थ्रेड
+  {5}/{6}| सर्व अटी अयशस्वी"
+sending_module_request: "प्रक्रिया-{0}|{1}|{2}|मॉड्यूल-थ्रेड {3}/{4}| विनंती पाठवत आहे
+  {5} पैकी {6}"
+verbose_event: प्रत्येक थ्रेडची स्थिती पाहण्यासाठी वर्बोज इव्हेंट सक्षम करा
+no_events_for_report: अहवाल तयार करण्यासाठी कोणतेही इव्हेंट नाहीत! हा विभाग वगळत आहे.
+set_hardware_usage: स्कॅन करताना हार्डवेअर वापर निश्चित करा. (low, normal, high, maximum)
+show_all_modules: सर्व मॉड्यूल्स आणि त्यांची माहिती दाखवा
+show_all_profiles: सर्व प्रोफाइल आणि त्यांची माहिती दाखवा
+single_process_started: प्रक्रिया-{0}| प्रक्रिया सुरू झाली!
+software_version: सॉफ्टवेअर आवृत्ती दाखवा
+start_api_server: API सेवा सुरू करा
+start_multi_process: "{1} प्रक्रियेत {0} लक्ष्य आयात केले."
+start_parallel_module_scan:
+  प्रक्रिया-{0}|{1}|{2}| मॉड्यूल थ्रेड क्रमांक {3} सुरू झाला
+  पैकी {4}
+subdomains: उपडोमेन शोधा आणि स्कॅन करा
+target: लक्ष्य
+target_input: लक्ष्य इनपुट पर्याय
+target_list: लक्ष्य यादी, "," ने वेगळी करा
+thread_number_connections: होस्टशी कनेक्शनसाठी थ्रेड संख्या
+thread_number_modules: होस्टसाठी समांतर मॉड्यूल स्कॅन
+time_to_sleep: प्रत्येक विनंतीमध्ये झोपण्याची वेळ
+timeout: सेकंदांमध्ये विनंती टाइमआउट
+unauthorized_IP: तुमचा IP अधिकृत नाही
+updating_database: डेटाबेस अद्यतनित करत आहे...
+username_from_file: फाइलमधून वापरकर्तानावे वाचा
+username_list: वापरकर्तानाव यादी, "," ने वेगळी करा
+verbose_mode: तपशीलवार लॉगिंग आउटपुट सक्षम करा
+wrong_hardware_usage: "हार्डवेअर वापरासाठी यापैकी एक प्रोफाइल निवडलेच पाहिजे. (low, normal, high, maximum)"
+invalid_scan_id: तुमचा स्कॅन id अवैध आहे!
+compare_scans: युनिक scan_id वापरून सध्याच्या स्कॅनची जुन्या स्कॅनशी तुलना करा
+compare_report_path_filename: compare_scan अहवाल जतन करण्यासाठी फाइल-पथ
+no_scan_to_compare: तुलना करायचा scan_id सापडला नाही
+compare_report_saved: "तुलना निकाल {0} मध्ये जतन केले"
+build_compare_report: "तुलना अहवाल तयार करत आहे"
+finish_build_report: "तुलना अहवाल तयार करणे पूर्ण झाले"
+user_wordlist: "वापरकर्त्यांना स्वतःची वर्डलिस्ट प्रविष्ट करण्याची परवानगी देते"
+exclude_ports: "वगळायचे पोर्ट (उदा. 80 || 80,443|| 1000-1300)"
+http_header: "विनंत्यांमध्ये सानुकूल HTTP हेडर जोडा (स्वरूप: 'key: value'). एकाधिक हेडरसाठी एकाधिक -H फ्लॅग वापरा"
+apsw_ill_configuration: "APSW कॉन्फिगरेशनमध्ये सेट केले आहे पण वातावरणात स्थापित नाही"
+apsw_connection_error: APSW कनेक्शन तयार करण्यात अयशस्वी {0}
+report_insertion_fail: अहवाल अहवाल तक्त्यात समाविष्ट करता आला नाही
+remove_logs_fail: जुने लॉग काढता आले नाहीत
+database_lock_issue: पुनर्प्रयत्न {0}, डेटाबेस लॉक आहे. डेटाबेसमध्ये सादर करण्याचा पुनर्प्रयत्न करत आहे
+database_retries_exhausted: सर्व पुनर्प्रयत्न संपले. हा लॉग वगळत आहे.
+database_query_fail: डेटाबेसची क्वेरी करता आली नाही
+report_retrieval_fail: अहवाल पुनर्प्राप्त करता आला नाही
+read_report_fail: अहवाल फाइल वाचण्यात अयशस्वी {0}
+search_results_end: आणखी शोध निकाल नाहीत
+database_error: डेटाबेस त्रुटी!
+error_exclude_all: "सर्व मॉड्यूल्स वगळता येत नाहीत. कृपया -x वापरून वैयक्तिक मॉड्यूल नावे निर्दिष्ट करा."
+upload_no_file: कोणतीही फाइल दिली नाही
+upload_no_file_selected: कोणतीही फाइल निवडली नाही
+upload_invalid_filename: अवैध फाइलनाव
+upload_file_type_not_allowed: फाइल प्रकारास परवानगी नाही
+upload_invalid_param: अवैध किंवा गहाळ अपलोड पॅरामीटर
+upload_token_invalid: अवैध किंवा कालबाह्य अपलोड टोकन
+upload_file_not_found: अपलोड केलेली फाइल सापडली नाही किंवा कालबाह्य झाली
