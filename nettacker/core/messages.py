@@ -20,7 +20,7 @@ def application_language():
 
 
 def load_yaml(filename):
-    return yaml.load(StringIO(open(filename, "r").read()), Loader=yaml.FullLoader)
+    return yaml.load(StringIO(open(filename, "r", encoding="utf-8").read()), Loader=yaml.FullLoader)
 
 
 def get_languages():
@@ -41,13 +41,11 @@ class load_message:
     def __init__(self):
         self.language = application_language()
         self.messages = load_yaml(
-            "{messages_path}/{language}.yaml".format(
-                messages_path=Config.path.locale_dir, language=self.language
-            )
+            f"{Config.path.locale_dir}/{self.language}.yaml"
         )
         if self.language != "en":
             self.messages_en = load_yaml(
-                "{messages_path}/en.yaml".format(messages_path=Config.path.locale_dir)
+                f"{Config.path.locale_dir}/en.yaml"
             )
             for message_id in self.messages_en:
                 if message_id not in self.messages:

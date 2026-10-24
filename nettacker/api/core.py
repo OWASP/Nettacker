@@ -123,7 +123,7 @@ def get_file(filename):
         return open(filename, "rb").read()
     except ValueError:
         abort(404)
-    except IOError:
+    except OSError:
         abort(404)
 
 
@@ -141,7 +141,6 @@ def api_key_is_valid(app, flask_request):
     """
     if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != get_value(flask_request, "key"):
         abort(401, _("API_invalid"))
-    return
 
 
 def languages_to_country():
@@ -169,6 +168,7 @@ def languages_to_country():
         "iw": "il",
         "ja": "jp",
         "ko": "kr",
+        "mr": "in",
         "nl": "nl",
         "ps": "ps",
         "pt-br": "br",
@@ -198,11 +198,9 @@ def graphs():
         <label><input id="" type="radio" name="graph_name" value="" class="radio">
         <a class="label label-default">None</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""
     for graph in Nettacker.load_graphs():
-        res += """
-            <label><input id="{0}" type="radio" name="graph_name" value="{0}" class="radio">
-            <a class="label label-default">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(
-            graph
-        )
+        res += f"""
+            <label><input id="{graph}" type="radio" name="graph_name" value="{graph}" class="radio">
+            <a class="label label-default">{graph}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""
     return res
 
 
@@ -224,11 +222,9 @@ def profiles():
             if (profile == "vulnerability")
             else "default"
         )
-        res += """
-            <label><input id="{0}" type="checkbox" class="checkbox checkbox-{0}">
-            <a class="label label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(
-            profile, label
-        )
+        res += f"""
+            <label><input id="{profile}" type="checkbox" class="checkbox checkbox-{profile}">
+            <a class="label label-{label}">{profile}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""
     return res
 
 
@@ -261,8 +257,6 @@ def scan_methods():
             if sm.endswith("_vuln")
             else "default"
         )
-        res += """<label><input id="{0}" type="checkbox" class="checkbox checkbox-{2}-module">
-        <a class="label label-{1}">{0}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;""".format(
-            sm, label, profile
-        )
+        res += f"""<label><input id="{sm}" type="checkbox" class="checkbox checkbox-{profile}-module">
+        <a class="label label-{label}">{sm}</a></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""
     return res
