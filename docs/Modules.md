@@ -293,6 +293,7 @@ environment.
 | `vbulletin_cve_2019_16759_vuln` | Probes vBulletin 5.x for CVE-2019-16759 by executing `id` through a widget template. |
 | `vite_cve_2025_31125_vuln` | Checks network-exposed Vite development servers for CVE-2025-31125 arbitrary file disclosure. |
 | `wordpress_core_cve_2026_63030_vuln` | Sends a crafted WordPress batch request and checks its multi-status response for CVE-2026-63030 REST API route confusion. |
+| `wp_templates_cve_2026_87902_vuln` | Checks the WordPress page-template resolution for CVE-2026-87902 path traversal vulnerability. |
 | `wp_plugin_cve_2021_38314_vuln` | Probes WordPress `admin-ajax.php` for the predictable MD5 response exposed by Redux Framework CVE-2021-38314. |
 | `wp_plugin_cve_2021_39316_vuln` | Checks the WordPress ZoomSounds plugin for CVE-2021-39316 directory traversal and arbitrary file download. |
 | `wp_plugin_cve_2021_39320_vuln` | Checks the WordPress underConstruction plugin for CVE-2021-39320 reflected cross-site scripting. |
