@@ -1,12 +1,13 @@
 import json
 import sys
-from argparse import ArgumentParser
+from argparse import SUPPRESS, ArgumentParser
 
 import yaml
 
 from nettacker import all_module_severity_and_desc
 from nettacker.config import Config, version_info
 from nettacker.core.die import die_failure, die_success
+from nettacker.core.flow import FlowError, FlowLoader
 from nettacker.core.ip import (
     generate_ip_range,
     is_ipv4_cidr,
@@ -25,10 +26,11 @@ log = get_logger()
 
 
 class ArgParser(ArgumentParser):
-    def __init__(self, api_arguments=None) -> None:
+    def __init__(self, api_arguments=None, explicitly_provided_dests=None) -> None:
         super().__init__(prog="Nettacker", add_help=False)
 
         self.api_arguments = api_arguments
+        self._api_explicitly_provided_dests = explicitly_provided_dests
         self.graphs = self.load_graphs()
         self.languages = self.load_languages()
 
@@ -214,6 +216,13 @@ class ArgParser(ArgumentParser):
 
         # Method Options
         method_options = self.add_argument_group(_("Method"), _("scan_method_options"))
+        method_options.add_argument(
+            "--module-flow",
+            action="store",
+            dest="module_flow",
+            default=Config.settings.module_flow,
+            help=_("module_flow").format(Config.path.flows_dir),
+        )
         method_options.add_argument(
             "-m",
             "--modules",
@@ -618,6 +627,30 @@ class ArgParser(ArgumentParser):
             except Exception:
                 die_failure(_("error_target_file").format(options.targets_list))
 
+        # module flow: a YAML file (looked up by name under Config.path.flows_dir, or
+        # given directly as a path) that defines the modules to run and the dependency
+        # graph between them. It fully determines selected_modules, overriding -m/--profile.
+        # Flow inputs are resolved later, once every other CLI normalizer below has run,
+        # so options carries its final normalized values (e.g. ports as a list) by then.
+        flow = None
+        if options.module_flow:
+            if options.selected_modules or options.profiles:
+                log.warn(_("flow_overrides_module_selection"))
+
+            try:
+                flow = FlowLoader.load(
+                    options.module_flow, allow_arbitrary_path=not bool(self.api_arguments)
+                )
+            except FlowError as error:
+                die_failure(str(error))
+
+            options.selected_modules = sorted({step.module for step in flow.steps})
+            options.profiles = None
+            options.flow = flow
+        else:
+            options.flow = None
+            options.flow_inputs = None
+
         # check for modules
         if not (options.selected_modules or options.profiles):
             die_failure(_("scan_method_select"))
@@ -625,11 +658,12 @@ class ArgParser(ArgumentParser):
             if options.selected_modules == "all":
                 options.selected_modules = list(set(self.modules.keys()))
                 options.selected_modules.remove("all")
-            else:
+            elif isinstance(options.selected_modules, str):
                 options.selected_modules = list(set(options.selected_modules.split(",")))
             for module_name in options.selected_modules:
                 if module_name not in self.modules:
                     die_failure(_("scan_module_not_found").format(module_name))
+
         if options.profiles:
             if not options.selected_modules:
                 options.selected_modules = []
@@ -660,6 +694,8 @@ class ArgParser(ArgumentParser):
 
         # Check for excluding modules
         if options.excluded_modules:
+            if options.flow:
+                die_failure(_("error_exclude_with_flow"))
             options.excluded_modules = options.excluded_modules.split(",")
             if "all" in options.excluded_modules:
                 die_failure(_("error_exclude_all"))
@@ -779,4 +815,48 @@ class ArgParser(ArgumentParser):
         options.time_sleep_between_requests = float(options.time_sleep_between_requests)
         options.retries = int(options.retries)
 
+        if flow is not None:
+            try:
+                options.flow_inputs = FlowLoader.resolve_inputs(
+                    flow, options, self._explicitly_provided_dests()
+                )
+            except FlowError as error:
+                die_failure(str(error))
+
         self.arguments = options
+
+    def _explicitly_provided_dests(self):
+        """
+        Dests the user actually passed, as opposed to ones that only carry an
+        untouched argparse default. Needed so flow input resolution can tell a real
+        CLI override apart from Config's default value landing in the same dest.
+
+        Re-parses the same argv through this parser's own actions with every default
+        swapped for argparse.SUPPRESS, so recognition goes through argparse's real
+        matching rules (abbreviated long options, "=", glued short-option values,
+        bundled short flags, ...) instead of a hand-rolled approximation of them.
+        SUPPRESS - rather than a plain sentinel object - is what argparse itself uses
+        to mean "leave this dest off the namespace entirely if not supplied": a
+        sentinel *value* would instead get handed to the action's own __call__ (e.g.
+        an "append" action calls .append() on whatever the current dest value is),
+        crashing for any action whose __call__ assumes a real value or container.
+        """
+        if self.api_arguments:
+            # form_values in the API handler is backfilled with application defaults
+            # for every field the caller didn't send, so api_arguments itself can't
+            # tell a real request field apart from a default that just landed in the
+            # same namespace. The caller must pass the pre-backfill field set instead.
+            if self._api_explicitly_provided_dests is not None:
+                return set(self._api_explicitly_provided_dests)
+            return set(vars(self.api_arguments).keys())
+
+        original_defaults = {action: action.default for action in self._actions}
+        for action in self._actions:
+            action.default = SUPPRESS
+        try:
+            probe_namespace, _unknown = self.parse_known_args(sys.argv[1:])
+        finally:
+            for action, default in original_defaults.items():
+                action.default = default
+
+        return set(vars(probe_namespace).keys())
