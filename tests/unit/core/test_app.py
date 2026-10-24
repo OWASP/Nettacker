@@ -75,3 +75,26 @@ def test_scan_target_completes_without_os_ex_ok(monkeypatch):
     fake_module.generate_loops.assert_called_once()
     fake_module.sort_loops.assert_called_once()
     fake_module.start.assert_called_once()
+
+
+def test_expand_targets_url_base_path_and_ipv6():
+    """Verify URL targets parse IPv6 cleanly and do not bleed base_path to other hosts (#1803)."""
+    nettacker = _make_nettacker()
+    nettacker.arguments = SimpleNamespace(
+        targets=["http://a.example/blog/", "b.example"],
+        scan_ip_range=False,
+        scan_subdomains=False,
+        ping_before_scan=False,
+        skip_service_discovery=True,
+        selected_modules=[],
+    )
+    nettacker.expand_targets("test-scan")
+    assert nettacker.arguments.targets == ["a.example", "b.example"]
+    assert nettacker.arguments.target_url_base_paths["a.example"] == "blog/"
+    assert nettacker.arguments.target_url_base_paths["b.example"] == ""
+
+    # Test IPv6 parsing
+    nettacker.arguments.targets = ["http://a.example:8080/", "https://[::1]:8443/x/"]
+    nettacker.expand_targets("test-scan")
+    assert nettacker.arguments.targets == ["a.example", "::1"]
+    assert nettacker.arguments.target_url_base_paths["::1"] == "x/"
