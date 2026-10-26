@@ -45,27 +45,41 @@ def test_mime_types():
     assert mtypes[".html"] == "text/html"
 
 
-@patch("builtins.open", new_callable=mock_open, read_data="test_data")
-def test_get_file_valid(mock_open):
-    Config.path.web_static_dir = Path.cwd()
-    filename = Config.path.web_static_dir / "test.txt"
-    assert get_file(filename) == "test_data"
+def test_get_file_valid(tmp_path, monkeypatch):
+    static = tmp_path / "static"
+    static.mkdir()
+    f = static / "test.txt"
+    f.write_bytes(b"test_data")
+    monkeypatch.setattr(Config.path, "web_static_dir", static)
+    assert get_file(str(f)) == b"test_data"
 
 
-@patch("builtins.open", side_effect=IOError)
-def test_get_file_ioerror(mock_open):
-    Config.path.web_static_dir = Path.cwd()
-    filename = Config.path.web_static_dir / "test.txt"
+def test_get_file_traversal_rejected(tmp_path, monkeypatch):
+    static = tmp_path / "static"
+    static.mkdir()
+    outside = tmp_path / "secret.txt"
+    outside.write_text("secret")
+    monkeypatch.setattr(Config.path, "web_static_dir", static)
     with pytest.raises(NotFound):
-        get_file(filename)
+        get_file(str(static / ".." / "secret.txt"))
 
 
-@patch("builtins.open", side_effect=ValueError)
-def test_get_file_valueerror(mock_open):
-    Config.path.web_static_dir = Path.cwd()
-    filename = Config.path.web_static_dir / "test.txt"
+def test_get_file_sibling_prefix_rejected(tmp_path, monkeypatch):
+    static = tmp_path / "static"
+    static.mkdir()
+    sibling = tmp_path / "static_evil.txt"
+    sibling.write_text("evil")
+    monkeypatch.setattr(Config.path, "web_static_dir", static)
     with pytest.raises(NotFound):
-        get_file(filename)
+        get_file(str(static / ".." / "static_evil.txt"))
+
+
+def test_get_file_nonexistent_rejected(tmp_path, monkeypatch):
+    static = tmp_path / "static"
+    static.mkdir()
+    monkeypatch.setattr(Config.path, "web_static_dir", static)
+    with pytest.raises(NotFound):
+        get_file(str(static / "missing.txt"))
 
 
 def test_get_file_outside_web_static_dir():

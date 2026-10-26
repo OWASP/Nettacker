@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from flask import abort
 
@@ -117,13 +118,13 @@ def get_file(filename):
     Returns:
         content of the file or abort(404)
     """
-    if not os.path.normpath(filename).startswith(str(Config.path.web_static_dir)):
-        abort(404)
+    static_dir = Path(Config.path.web_static_dir).resolve()
     try:
-        return open(filename, "rb").read()
-    except ValueError:
-        abort(404)
-    except IOError:
+        requested = Path(filename).resolve()
+        if not requested.is_relative_to(static_dir) or not requested.is_file():
+            abort(404)
+        return requested.read_bytes()
+    except (ValueError, OSError):
         abort(404)
 
 
