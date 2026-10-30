@@ -1,0 +1,40 @@
+info:
+  name: cve_2026_96654_scan
+  author: Youssef Nabil
+  severity: 1
+  description: Non-destructive HTTP fingerprinting scan for services related to CVE-2026-96654.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-96654
+  profiles:
+    - scan
+    - http
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: true
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          log: "response_dependent['status_code']"
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
