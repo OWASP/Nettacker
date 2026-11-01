@@ -24,9 +24,12 @@ payloads:
     steps:
       # Step 1: product confirmation on the unauthenticated root page.
       # Real Zammad serves the single-page application at / with
-      # <title>Zammad</title> (verified against a current public Zammad
-      # instance). Non-Zammad targets cannot match and are never
-      # misreported.
+      # <title>Zammad</title> followed by the Rails CSRF meta tag
+      # authenticity_token (both verified against a current public Zammad
+      # instance); requiring both keeps pages that merely mention Zammad,
+      # or non-Zammad pages that carry a "Zammad" title, from matching.
+      # The log states only what this step observed; whether the version
+      # endpoint is auth-protected is reported by step 2.
       - method: get
         timeout: 3
         headers:
@@ -49,13 +52,13 @@ payloads:
                 - 8080
         response:
           condition_type: and
-          log: "Zammad helpdesk detected, version not assessed (version endpoint requires authentication)"
+          log: "Zammad helpdesk detected, version not assessed"
           conditions:
             status_code:
               regex: "200"
               reverse: false
             content:
-              regex: '<title>\s*Zammad'
+              regex: '<title>\s*Zammad[\s\S]*authenticity_token'
               reverse: false
 
       # Step 2: version unknown outcome - the unauthenticated version API is

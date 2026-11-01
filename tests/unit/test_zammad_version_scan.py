@@ -2,8 +2,8 @@
 
 These tests execute the module's HTTP response conditions exactly as the
 engine does (response_conditions_matched) and assert the module's outcome
-matrix, including the false-positive control required by issue #1810:
-a non-Zammad target must produce no Zammad event.
+matrix, including the false-positive controls required by issue #1810:
+non-Zammad targets must produce no Zammad event.
 """
 
 from pathlib import Path
@@ -15,8 +15,6 @@ from nettacker.core.lib.http import response_conditions_matched
 MODULE_PATH = (
     Path(__file__).resolve().parents[2] / "nettacker" / "modules" / "scan" / "zammad_version.yaml"
 )
-
-ZAMMAD_BRAND = '<meta name="csrf-token" content="z">'
 
 
 def _steps():
@@ -36,19 +34,26 @@ def _response(status_code, content):
     }
 
 
-def _branded_root_html(title):
-    """A page whose title element is set to `title`, plus CSRF meta."""
-    return f"<html><head><title>{title}</title>{ZAMMAD_BRAND}</head><body></body></html>"
+def _root_html(title, body, csrf_meta=""):
+    """A page with the given <title>, body content and optional CSRF meta."""
+    return f"<html><head><title>{title}</title>{csrf_meta}</head><body>{body}</body></html>"
 
 
-ZAMMAD_ROOT = _branded_root_html("Zammad")
-WORDPRESS_ROOT = (
-    "<html><head><title>My WordPress Site</title></head>"
-    "<body><p>Welcome to WordPress. This is your first post.</p></body></html>"
+# Real Zammad root-page identity order: <title>Zammad</title> followed by the
+# Rails CSRF meta tag (verified against a current public Zammad instance).
+ZAMMAD_CSRF_META = '<meta name="csrf-param" content="authenticity_token">'
+ZAMMAD_ROOT = _root_html("Zammad", "", ZAMMAD_CSRF_META)
+WORDPRESS_ROOT = _root_html(
+    "My WordPress Site", "<p>Welcome to WordPress. This is your first post.</p>"
 )
-MENTIONS_ZAMMAD_ROOT = (
-    "<html><head><title>Hosting Blog</title></head>"
-    "<body><p>Zammad is a popular open-source helpdesk platform.</p></body></html>"
+# Page that merely mentions Zammad in its body (CodeRabbit review scenario).
+MENTIONS_ZAMMAD_ROOT = _root_html(
+    "Hosting Blog", "<p>Zammad is a popular open-source helpdesk platform.</p>"
+)
+# Non-Zammad page that carries a "Zammad" title but lacks Zammad's Rails
+# identity marker (title-prefix false-positive regression).
+ZAMMAD_TITLED_NON_ZAMMAD_ROOT = _root_html(
+    "Zammad", "<p>Welcome to WordPress. This is your first post.</p>"
 )
 ZAMMAD_AUTH_JSON = '{"error":"Authentication required","error_human":"Authentication required"}'
 GENERIC_403_HTML = (
@@ -58,10 +63,12 @@ VERSION_JSON = '{"version":"6.5.4"}'
 
 
 def test_step1_detects_zammad_root_page():
+    """Full outcome: detection is reported without claiming authentication state."""
     branding_step, _ = _steps()
     result = response_conditions_matched(branding_step, _response(200, ZAMMAD_ROOT))
     assert result, "Zammad root page must match the branding step"
-    assert "Zammad helpdesk detected" in result["log"]
+    assert result["log"] == "Zammad helpdesk detected, version not assessed"
+    assert "requires authentication" not in result["log"]
 
 
 def test_step1_rejects_non_zammad_page():
@@ -72,6 +79,13 @@ def test_step1_rejects_non_zammad_page():
 def test_step1_rejects_page_merely_mentioning_zammad():
     branding_step, _ = _steps()
     assert not response_conditions_matched(branding_step, _response(200, MENTIONS_ZAMMAD_ROOT))
+
+
+def test_step1_rejects_zammad_titled_page_without_zammad_identity_marker():
+    branding_step, _ = _steps()
+    assert not response_conditions_matched(
+        branding_step, _response(200, ZAMMAD_TITLED_NON_ZAMMAD_ROOT)
+    )
 
 
 def test_step1_rejects_wrong_status_code():
