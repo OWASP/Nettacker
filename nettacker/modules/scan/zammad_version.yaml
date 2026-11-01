@@ -23,13 +23,14 @@ payloads:
   - library: http
     steps:
       # Step 1: product confirmation on the unauthenticated root page.
-      # Real Zammad serves the single-page application at / with
-      # <title>Zammad</title> followed by the Rails CSRF meta tag
-      # authenticity_token (both verified against a current public Zammad
-      # instance); requiring both keeps pages that merely mention Zammad,
-      # or non-Zammad pages that carry a "Zammad" title, from matching.
-      # The log states only what this step observed; whether the version
-      # endpoint is auth-protected is reported by step 2.
+      # Real Zammad serves the single-page application at / whose layout
+      # includes a title element followed by the product-specific script
+      # id="zammad_form_script" (verified against a current public Zammad
+      # instance). The title text is configurable, so identity is anchored
+      # on the script marker, not on the title wording: pages that merely
+      # mention Zammad, or non-Zammad pages carrying a "Zammad" title,
+      # cannot match. The log states only what this step observed; whether
+      # the version endpoint is auth-protected is reported by step 2.
       - method: get
         timeout: 3
         headers:
@@ -58,10 +59,14 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              # Lookahead keeps the stored regex match limited to the short
-              # title marker while still requiring the Rails CSRF meta tag
-              # anywhere after it.
-              regex: '<title>\s*Zammad(?=[\s\S]*?authenticity_token)'
+              # The application layout emits the product-specific script
+              # id="zammad_form_script" after the title element (verified
+              # against a current public Zammad instance). The title text is
+              # configurable, so any title element is accepted; identity is
+              # anchored on the script marker. The lookahead requires the
+              # marker while keeping the stored regex match limited to the
+              # short title element.
+              regex: '<title>[^<]*</title>(?=[\s\S]*<script[^>]*\bid="zammad_form_script")'
               reverse: false
 
       # Step 2: version unknown outcome - the unauthenticated version API is

@@ -34,15 +34,24 @@ def _response(status_code, content):
     }
 
 
-def _root_html(title, body, csrf_meta=""):
-    """A page with the given <title>, body content and optional CSRF meta."""
-    return f"<html><head><title>{title}</title>{csrf_meta}</head><body>{body}</body></html>"
+def _root_html(title, body, extra_head=""):
+    """A page with the given <title>, body content and optional head extras."""
+    return f"<html><head><title>{title}</title>{extra_head}</head><body>{body}</body></html>"
 
 
-# Real Zammad root-page identity order: <title>Zammad</title> followed by the
-# Rails CSRF meta tag (verified against a current public Zammad instance).
+# Zammad root-page identity, verified against a current public Zammad
+# instance: a title element followed by the Rails CSRF meta tag and the
+# product-specific form script element. The title text is configurable, so
+# identity is anchored on the script marker, not on the title wording.
 ZAMMAD_CSRF_META = '<meta name="csrf-param" content="authenticity_token">'
-ZAMMAD_ROOT = _root_html("Zammad", "", ZAMMAD_CSRF_META)
+ZAMMAD_FORM_SCRIPT = (
+    '<script src="/assets/form/form.js" nonce="n" defer="defer" id="zammad_form_script"></script>'
+)
+ZAMMAD_IDENTITY_HEAD = ZAMMAD_CSRF_META + ZAMMAD_FORM_SCRIPT
+GENERIC_CSRF_META = '<meta name="csrf-param" content="csrf">'
+
+ZAMMAD_ROOT = _root_html("Zammad", "", ZAMMAD_IDENTITY_HEAD)
+CUSTOM_TITLE_ZAMMAD_ROOT = _root_html("Acme Support", "", ZAMMAD_IDENTITY_HEAD)
 WORDPRESS_ROOT = _root_html(
     "My WordPress Site", "<p>Welcome to WordPress. This is your first post.</p>"
 )
@@ -50,10 +59,10 @@ WORDPRESS_ROOT = _root_html(
 MENTIONS_ZAMMAD_ROOT = _root_html(
     "Hosting Blog", "<p>Zammad is a popular open-source helpdesk platform.</p>"
 )
-# Non-Zammad page that carries a "Zammad" title but lacks Zammad's Rails
-# identity marker (title-prefix false-positive regression).
-ZAMMAD_TITLED_NON_ZAMMAD_ROOT = _root_html(
-    "Zammad", "<p>Welcome to WordPress. This is your first post.</p>"
+# Non-Zammad page that carries a "Zammad" title and only a generic CSRF meta
+# but lacks the product-specific script marker (title-mirror regression).
+ZAMMAD_TITLE_MIRROR_ROOT = _root_html(
+    "Zammad", "<p>Fan mirror of helpdesk documentation.</p>", GENERIC_CSRF_META
 )
 ZAMMAD_AUTH_JSON = '{"error":"Authentication required","error_human":"Authentication required"}'
 GENERIC_403_HTML = (
@@ -71,6 +80,12 @@ def test_step1_detects_zammad_root_page():
     assert "requires authentication" not in result["log"]
 
 
+def test_step1_accepts_customized_title_with_zammad_script_marker():
+    """The title text is configurable in Zammad; identity is the script marker."""
+    branding_step, _ = _steps()
+    assert response_conditions_matched(branding_step, _response(200, CUSTOM_TITLE_ZAMMAD_ROOT))
+
+
 def test_step1_rejects_non_zammad_page():
     branding_step, _ = _steps()
     assert not response_conditions_matched(branding_step, _response(200, WORDPRESS_ROOT))
@@ -81,11 +96,9 @@ def test_step1_rejects_page_merely_mentioning_zammad():
     assert not response_conditions_matched(branding_step, _response(200, MENTIONS_ZAMMAD_ROOT))
 
 
-def test_step1_rejects_zammad_titled_page_without_zammad_identity_marker():
+def test_step1_rejects_zammad_titled_page_without_zammad_script_marker():
     branding_step, _ = _steps()
-    assert not response_conditions_matched(
-        branding_step, _response(200, ZAMMAD_TITLED_NON_ZAMMAD_ROOT)
-    )
+    assert not response_conditions_matched(branding_step, _response(200, ZAMMAD_TITLE_MIRROR_ROOT))
 
 
 def test_step1_rejects_wrong_status_code():
