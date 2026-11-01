@@ -58,7 +58,10 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: '<title>\s*Zammad[\s\S]*authenticity_token'
+              # Lookahead keeps the stored regex match limited to the short
+              # title marker while still requiring the Rails CSRF meta tag
+              # anywhere after it.
+              regex: '<title>\s*Zammad(?=[\s\S]*?authenticity_token)'
               reverse: false
 
       # Step 2: version unknown outcome - the unauthenticated version API is
