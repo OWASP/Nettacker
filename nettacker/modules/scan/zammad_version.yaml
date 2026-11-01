@@ -55,7 +55,7 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: "(?i)zammad"
+              regex: '<title>\s*Zammad'
               reverse: false
 
       # Step 2: version unknown outcome - the unauthenticated version API is
