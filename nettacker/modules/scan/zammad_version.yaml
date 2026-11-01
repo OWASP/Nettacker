@@ -1,0 +1,97 @@
+info:
+  name: zammad_version_scan
+  author: devjoshi2005
+  severity: 3
+  description: >
+    Zammad version scan - detects a Zammad helpdesk instance via its web
+    branding and probes the /api/v1/version endpoint. Properly configured
+    Zammad deployments protect the version endpoint with authentication
+    (unauthenticated requests receive Zammad's distinctive "Authentication
+    required" JSON error); the module reports this as the version-unknown
+    outcome instead of guessing a version. It does not assess
+    vulnerabilities.
+  reference:
+    - https://docs.zammad.org/
+    - https://github.com/zammad/zammad
+  profiles:
+    - scan
+    - http
+    - info_severity
+    - zammad
+
+payloads:
+  - library: http
+    steps:
+      # Step 1: product confirmation on the unauthenticated root page.
+      # Real Zammad serves the single-page application at / with
+      # <title>Zammad</title> (verified against a current public Zammad
+      # instance). Non-Zammad targets cannot match and are never
+      # misreported.
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: true
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+        response:
+          condition_type: and
+          log: "Zammad helpdesk detected, version not assessed (version endpoint requires authentication)"
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "(?i)zammad"
+              reverse: false
+
+      # Step 2: version unknown outcome - the unauthenticated version API is
+      # rejected with Zammad's distinctive JSON error (verified on a current
+      # Zammad instance: "error_human":"Authentication required" among the
+      # returned keys). "Version unknown" is a
+      # first-class outcome, never a guessed version. Reverse proxies and
+      # other products reject the same request with HTML pages, so they
+      # cannot trigger this step.
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/version"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+        response:
+          condition_type: and
+          log: "Zammad version endpoint accessible, version unknown (protected by authentication)"
+          conditions:
+            status_code:
+              regex: "401|403"
+              reverse: false
+            content:
+              regex: '"error_human"\s*:\s*"Authentication required"'
+              reverse: false

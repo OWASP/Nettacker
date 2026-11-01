@@ -204,6 +204,7 @@ Use `--show-all-modules` for live metadata and check-specific details.
 | `wp_plugin_scan` | Enumerates popular plugins installed on a WordPress site. |
 | `wp_theme_scan` | Identifies themes installed on a WordPress site. |
 | `wp_timethumbs_scan` | Searches common WordPress paths for the TimThumb PHP script. |
+| `zammad_version_scan` | Detects a Zammad helpdesk instance via its web branding and probes the unauthenticated `/api/v1/version` endpoint; reports "version unknown (protected by authentication)" instead of guessing when the version endpoint is auth-protected. |
 
 ### Vulnerability modules
 
