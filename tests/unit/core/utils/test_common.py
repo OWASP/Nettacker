@@ -1,3 +1,4 @@
+import string
 import threading
 import time
 from unittest.mock import MagicMock, patch
@@ -324,3 +325,19 @@ def test_is_running_with_privileges_posix_non_root(monkeypatch):
     monkeypatch.setattr(common_utils.sys, "platform", "linux")
     monkeypatch.setattr(common_utils.os, "geteuid", lambda: 501, raising=False)
     assert common_utils.is_running_with_privileges() is False
+
+
+def test_generate_random_token_uses_secrets():
+    with patch.object(common_utils.secrets, "choice", return_value="a") as mock_choice:
+        assert common_utils.generate_random_token(5) == "aaaaa"
+    assert mock_choice.call_count == 5
+
+
+def test_generate_random_token_length_and_charset():
+    token = common_utils.generate_random_token(16)
+    assert len(token) == 16
+    assert token.isalnum() and token.isascii()
+
+
+def test_generate_random_token_alphabet_includes_upper_and_digits():
+    assert set(string.ascii_letters + string.digits) == set(common_utils._TOKEN_ALPHABET)

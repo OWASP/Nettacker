@@ -89,10 +89,10 @@ $(document).ready(function () {
 
   // login
   $("#send_session").click(function () {
-    var key = "/session/set?key=" + $("#session_value").val();
     $.ajax({
-      type: "GET",
-      url: key,
+      type: "POST",
+      url: "/session/set",
+      data: { key: $("#session_value").val() },
       dataType: "text",
     })
       .done(function (res) {

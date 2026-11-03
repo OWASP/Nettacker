@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 from flask import Flask, Request
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import NotFound, Unauthorized
 
 from nettacker.api.core import (
     api_key_is_valid,
@@ -28,8 +28,8 @@ def app():
 @pytest.fixture
 def request_():
     req = MagicMock(spec=Request)
-    req.args = {"key": "test_key"}
-    req.form = {}
+    req.args = {}
+    req.form = {"key": "test_key"}
     req.cookies = {}
     return req
 
@@ -81,8 +81,55 @@ def test_api_key_is_valid(app, request_):
 
 
 def test_api_key_invalid(app, request_):
-    request_.args = {"key": "wrong_key"}
-    with pytest.raises(Exception):
+    request_.form = {"key": "wrong_key"}
+    with pytest.raises(Unauthorized):
+        api_key_is_valid(app, request_)
+
+
+def test_api_key_valid_from_cookie(app, request_):
+    request_.form = {}
+    request_.cookies = {"key": "test_key"}
+    api_key_is_valid(app, request_)  # Should not raise
+
+
+def test_api_key_missing(app, request_):
+    request_.form = {}
+    with pytest.raises(Unauthorized):
+        api_key_is_valid(app, request_)
+
+
+def test_api_key_rejected_in_query_string(app, request_):
+    request_.form = {}
+    request_.args = {"key": "test_key"}
+    with pytest.raises(Unauthorized):
+        api_key_is_valid(app, request_)
+
+
+def test_api_key_rejected_in_query_string_even_with_valid_form_key(app, request_):
+    request_.args = {"key": "test_key"}
+    with pytest.raises(Unauthorized):
+        api_key_is_valid(app, request_)
+
+
+def test_api_key_uses_compare_digest(app, request_):
+    with patch(
+        "nettacker.api.core.secrets.compare_digest", return_value=True
+    ) as mock_compare_digest:
+        api_key_is_valid(app, request_)
+    mock_compare_digest.assert_called_once_with(b"test_key", b"test_key")
+
+
+def test_api_key_compare_digest_false_aborts(app, request_):
+    with (
+        patch("nettacker.api.core.secrets.compare_digest", return_value=False),
+        pytest.raises(Unauthorized),
+    ):
+        api_key_is_valid(app, request_)
+
+
+def test_api_key_non_ascii_does_not_crash(app, request_):
+    request_.form = {"key": "kl\u00e9"}
+    with pytest.raises(Unauthorized):
         api_key_is_valid(app, request_)
 
 

@@ -2,7 +2,6 @@ import csv
 import json
 import multiprocessing
 import os
-import random
 import re
 import secrets
 import shutil
@@ -163,6 +162,20 @@ def set_security_headers(response):
     return response
 
 
+def strip_crlf(value):
+    """
+    Remove CR and LF characters from a value before writing it to the access log
+    to prevent log injection (CWE-117).
+
+    Args:
+        value: any value to be logged
+
+    Returns:
+        the string form of value without carriage returns or line feeds
+    """
+    return str(value if value is not None else "").replace("\r", "").replace("\n", "")
+
+
 @app.after_request
 def access_log(response):
     """
@@ -178,12 +191,12 @@ def access_log(response):
         log_request = open(app.config["OWASP_NETTACKER_CONFIG"]["api_access_log"], "ab")
         log_request.write(
             '{0} [{1}] {2} "{3} {4}" {5} {6} {7}\r\n'.format(
-                flask_request.remote_addr,
+                strip_crlf(flask_request.remote_addr),
                 now(),
-                flask_request.host,
-                flask_request.method,
-                flask_request.full_path,
-                flask_request.user_agent,
+                strip_crlf(flask_request.host),
+                strip_crlf(flask_request.method),
+                strip_crlf(flask_request.full_path),
+                strip_crlf(flask_request.user_agent),
                 response.status_code,
                 json.dumps(flask_request.form),
             ).encode()
@@ -590,7 +603,7 @@ def get_logs():
     filename = (
         "report-"
         + now(format="%Y_%m_%d_%H_%M_%S")
-        + "".join(random.choice(string.ascii_lowercase) for _ in range(10))
+        + "".join(secrets.choice(string.ascii_lowercase) for _ in range(10))
     )
     return Response(
         json_object,
@@ -616,7 +629,7 @@ def get_logs_csv():
     filename = (
         "report-"
         + now(format="%Y_%m_%d_%H_%M_%S")
-        + "".join(random.choice(string.ascii_lowercase) for _ in range(10))
+        + "".join(secrets.choice(string.ascii_lowercase) for _ in range(10))
     )
     with open(filename, "w") as report_path_filename:
         dict_writer = csv.DictWriter(report_path_filename, fieldnames=keys, quoting=csv.QUOTE_ALL)

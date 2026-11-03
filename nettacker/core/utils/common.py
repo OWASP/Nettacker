@@ -7,8 +7,8 @@ import json
 import math
 import multiprocessing
 import os
-import random
 import re
+import secrets
 import string
 import sys
 import time
@@ -383,8 +383,12 @@ def expand_step(step):
         return [step]
 
 
+_TOKEN_ALPHABET = string.ascii_letters + string.digits
+
+
 def generate_random_token(length=10):
-    return "".join(random.choice(string.ascii_lowercase) for _ in range(length))
+    """Generate a cryptographically secure random alphanumeric token."""
+    return "".join(secrets.choice(_TOKEN_ALPHABET) for _ in range(length))
 
 
 def now(format="%Y-%m-%d %H:%M:%S"):

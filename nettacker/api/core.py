@@ -1,4 +1,5 @@
 import os
+import secrets
 
 from flask import abort
 
@@ -138,8 +139,19 @@ def api_key_is_valid(app, flask_request):
     Returns:
         200 HTTP code if it's valid otherwise 401 error
 
+    The key is only accepted from the POST body or cookies. Keys supplied in the
+    query string are rejected because URLs end up in access logs and browser
+    history. The comparison uses secrets.compare_digest to avoid timing leaks.
     """
-    if app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"] != get_value(flask_request, "key"):
+    if "key" in dict(flask_request.args):
+        abort(401, _("API_invalid"))
+    supplied_key = (
+        dict(flask_request.form).get("key") or dict(flask_request.cookies).get("key") or ""
+    )
+    expected_key = app.config["OWASP_NETTACKER_CONFIG"]["api_access_key"]
+    if not secrets.compare_digest(
+        str(expected_key).encode("utf-8"), str(supplied_key).encode("utf-8")
+    ):
         abort(401, _("API_invalid"))
     return
 
