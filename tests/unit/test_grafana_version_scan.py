@@ -83,15 +83,19 @@ def test_requires_http_200(step):
 @pytest.mark.parametrize(
     "body, expected",
     [
+        # Real Grafana OSS response, hide_version=false
+        # (grafana pkg/api/health_test.go TestHealthAPI_Version).
+        ('{"database":"ok","version":"7.4.0","commit":"59906ab1bf"}', "7.4.0"),
+        # Real Grafana Enterprise response: enterpriseCommit sits between database
+        # and version (grafana pkg/api/health_test.go TestHealthAPI_VersionEnterprise).
+        (
+            '{"database":"ok","enterpriseCommit":"22206ab1be","version":"7.4.0","commit":"59906ab1bf"}',
+            "7.4.0",
+        ),
         # Old, alphabetically sorted JSON (commit, database, version) — e.g. 8.x.
         ('{"commit":"abc123","database":"ok","version":"8.3.0"}', "8.3.0"),
         # Current struct-ordered JSON (database, version, commit) — e.g. 13.x.
         ('{"database":"ok","version":"13.0.1","commit":"deadbeef"}', "13.0.1"),
-        # Enterprise build, with enterpriseCommit between database and version.
-        (
-            '{"commit":"abc","database":"ok","enterpriseCommit":"xyz","version":"10.4.2"}',
-            "10.4.2",
-        ),
         # Pretty-printed JSON (whitespace between tokens).
         ('{\n  "database": "ok",\n  "version": "9.5.0"\n}', "9.5.0"),
         # Pre-release / build-suffixed version strings.
@@ -110,8 +114,14 @@ def test_logs_only_the_version_string(content_regex, body, expected):
 @pytest.mark.parametrize(
     "body",
     [
-        # hide_version = true: Grafana omits the version key entirely.
+        # hide_version = true: Grafana returns ONLY the database key, omitting
+        # version (and commit) entirely — not an empty version. Verified in grafana
+        # pkg/api/health_test.go (TestHealthAPI_AnonymousHideVersion -> {"database":"ok"}).
+        '{"database":"ok"}',
+        # Defensive: even an empty version value must not match.
         '{"commit":"","database":"ok","version":""}',
+        # Database unhealthy (served as HTTP 503 in practice; body must not match).
+        '{"database":"failing"}',
         # Generic health endpoints from other applications.
         '{"status":"ok"}',
         '{"status":"UP","checks":[]}',
