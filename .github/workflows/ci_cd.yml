@@ -57,12 +57,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2
+        uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d
         with:
           languages: ${{ matrix.language }}
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2
+        uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d
         with:
           category: /language:${{ matrix.language }}
 
@@ -132,7 +132,7 @@ jobs:
           poetry build --no-interaction
 
       - name: Upload package artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: dist
           path: dist
@@ -161,7 +161,7 @@ jobs:
           python-version: '3.11'
 
       - name: Get package artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: dist
           path: dist
@@ -356,7 +356,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Get package artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: dist
           path: dist
@@ -382,7 +382,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Get package artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: dist
           path: dist
