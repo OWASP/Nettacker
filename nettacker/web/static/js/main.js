@@ -408,6 +408,73 @@ $(document).ready(function () {
     });
   });
 
+  // queued and running scans come from /scans/status, polled every 3 seconds while
+  // any are left
+  var watchedScanIds = []; // scans queued or running at the last poll
+  var runningScansHtml = "";
+  var scanStatusTimer = null;
+  var statusAlerts = { queued: "info", running: "info", done: "success", failed: "danger" };
+
+  function refreshScanStatus() {
+    $.ajax({
+      type: "GET",
+      url: "/scans/status",
+      dataType: "json",
+    }).done(function (scans) {
+      scans.forEach(function (scan) {
+        scan.label = scan.status + (scan.progress != null ? " " + scan.progress + "%" : "");
+      });
+      var unfinished = scans.filter(function (scan) {
+        return scan.status == "queued" || scan.status == "running";
+      });
+      var unfinishedIds = unfinished.map(function (scan) {
+        return scan.scan_id;
+      });
+
+      var html = unfinished
+        .map(function (scan) {
+          return (
+            '<div class="running-scan-item"><div class="running-scan-info">' +
+            '<div class="running-scan-id">Scan ID: ' + escapeHtml(scan.scan_id) + "</div>" +
+            '<div class="running-scan-status">Targets: ' + escapeHtml(scan.targets) + "</div>" +
+            '<div class="running-scan-status">' + scan.label + "</div></div>" +
+            (scan.status == "running" ? '<div class="running-spinner"></div>' : "") +
+            "</div>"
+          );
+        })
+        .join("");
+      // only re-render on a change, so the spinner animation doesn't restart
+      if (html != runningScansHtml) {
+        runningScansHtml = html;
+        $("#running_scans").html(html || '<div class="empty-section">No running scans</div>');
+      }
+
+      scans.forEach(function (scan) {
+        $("#scan_status_" + scan.scan_id)
+          .attr("class", "alert alert-" + statusAlerts[scan.status])
+          .html(
+            "Scan ID: <code>" + escapeHtml(scan.scan_id) + "</code> (" +
+              escapeHtml(scan.targets) + "): " + scan.label
+          );
+      });
+
+      var finished = watchedScanIds.some(function (scan_id) {
+        return unfinishedIds.indexOf(scan_id) == -1;
+      });
+      if (finished) {
+        get_results_list(result_page);
+      }
+      watchedScanIds = unfinishedIds;
+
+      clearTimeout(scanStatusTimer);
+      if (unfinished.length > 0) {
+        scanStatusTimer = setTimeout(refreshScanStatus, 3000);
+      }
+    });
+  }
+
+  refreshScanStatus();
+
   // submit new scan
   $("#submit_new_scan").click(function () {
     if (pendingUploads > 0) {
@@ -525,6 +592,12 @@ $(document).ready(function () {
           $("#" + param + "_status").text("");
           $("#" + param + "_file").val("");
         });
+        $("#processing_requests_container").append(
+          '<p id="scan_status_' + escapeHtml(res.scan_id) + '"></p>'
+        );
+        watchedScanIds.push(res.scan_id);
+        refreshScanStatus();
+
         var results = escapeHtml(JSON.stringify(res));
         results = results.replaceAll(",", ",<br>");
         document.getElementById("success_msg").innerHTML = results;

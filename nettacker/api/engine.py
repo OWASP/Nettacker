@@ -10,7 +10,6 @@ import string
 import time
 import uuid
 from pathlib import Path
-from threading import Thread
 from types import SimpleNamespace
 
 from flask import Flask, Response, abort, jsonify, make_response, render_template
@@ -31,6 +30,7 @@ from nettacker.api.core import (
     scan_methods,
 )
 from nettacker.api.helpers import structure
+from nettacker.api.tasks import get_scans, queue_scan, start_workers
 from nettacker.config import Config
 from nettacker.core.app import Nettacker
 from nettacker.core.die import die_failure
@@ -361,10 +361,29 @@ def new_scan():
         for file_path in uploaded_paths:
             file_path.unlink(missing_ok=True)
     app.config["OWASP_NETTACKER_CONFIG"]["options"] = nettacker_app.arguments
-    thread = Thread(target=nettacker_app.run)
-    thread.start()
+    scan_id = queue_scan(nettacker_app, describe_targets(form_values))
+    return jsonify({"scan_id": scan_id, **vars(nettacker_app.arguments)}), 200
 
-    return jsonify(vars(nettacker_app.arguments)), 200
+
+def describe_targets(scan_options):
+    """
+    the uploaded targets file's name, or the first two targets, for the scan status list
+    """
+    if scan_options.get("targets_list"):
+        # upload_file() saves the file as {uuid}_targets_list_{filename}
+        return Path(scan_options["targets_list"]).name.partition("_targets_list_")[2]
+    targets = [target.strip() for target in (scan_options.get("targets") or "").split(",")]
+    targets = [target for target in targets if target]
+    if len(targets) > 2:
+        return f"{targets[0]}, {targets[1]} and {len(targets) - 2} more"
+    return ", ".join(targets)
+
+
+@app.route("/scans/status", methods=["GET"])
+def scans_status():
+    """status of each queued, running and recently finished scan"""
+    api_key_is_valid(app, flask_request)
+    return jsonify(get_scans()), 200
 
 
 @app.route("/compare/scans", methods=["POST"])
@@ -671,6 +690,7 @@ def start_api_subprocess(options):
         "language": options.language,
         "options": options,
     }
+    start_workers(Config.scan_queue.workers)
     try:
         if options.api_cert and options.api_cert_key:
             app.run(
