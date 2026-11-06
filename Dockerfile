@@ -1,6 +1,6 @@
 ### Multi-stage Dockerfile
 # Define the base image only once as a build argument
-ARG PYTHON_IMAGE=python:3.11.16-slim
+ARG PYTHON_IMAGE=python:3.11.18-slim
       
 ### Build stage
 FROM ${PYTHON_IMAGE} AS builder
