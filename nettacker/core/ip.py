@@ -52,7 +52,7 @@ def is_single_ipv4(ip):
     Returns:
          True if it's IPv4 otherwise False
     """
-    return netaddr.valid_ipv4(str(ip))
+    return bool(ip) and netaddr.valid_ipv4(str(ip), netaddr.INET_PTON)
 
 
 def is_ipv4_range(ip_range):
@@ -89,7 +89,7 @@ def is_single_ipv6(ip):
     Returns:
          True if it's IPv6 otherwise False
     """
-    return netaddr.valid_ipv6(ip)
+    return bool(ip) and netaddr.valid_ipv6(str(ip))
 
 
 def is_ipv6_range(ip_range):

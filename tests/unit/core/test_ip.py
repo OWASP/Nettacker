@@ -94,6 +94,8 @@ def test_is_single_ipv4():
     assert is_single_ipv4("127.0.0.1")
     assert not is_single_ipv4("2001:0DC8:E004:0001:0000:0000:0000:F00A")
     assert not is_single_ipv4("256.0.0.1")
+    for value in ["", "1", "10.1", "1.2.3.4 ", "1.1.1.1 - 1.1.1.3"]:
+        assert not is_single_ipv4(value)
 
 
 def test_is_ipv4_range():
@@ -113,6 +115,7 @@ def test_is_single_ipv6():
     assert is_single_ipv6("2001:0db8:85a3:0000:0000:8a2e:0370:7334")
     assert not is_single_ipv6("127.0.0.1")
     assert not is_single_ipv6("2001:db8:3333:4444:5555:6666:7777:88g8")
+    assert not is_single_ipv6("")
 
 
 def test_is_ipv6_range():
