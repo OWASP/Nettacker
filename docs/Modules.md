@@ -208,6 +208,7 @@ Use `--show-all-modules` for live metadata and check-specific details.
 | `moveit_version_scan` | Detects Progress MOVEit Transfer and reports its version. |
 | `pma_scan` | Searches common paths for a phpMyAdmin installation. |
 | `port_scan` | Performs TCP connection checks against the selected ports and fingerprints supported services. |
+| `prometheus_version_scan` | Detects Prometheus via its unauthenticated `/api/v1/status/buildinfo` endpoint and reports its version. |
 | `smartermail_version_scan` | Detects SmarterMail and extracts version information from its licensing API. |
 | `ssl_expiring_certificate_scan` | Reports TLS certificates that have expired or are approaching expiration. |
 | `subdomain_scan` | Discovers subdomains using DNS and internet-based data sources; some queries are sent to third-party services. |

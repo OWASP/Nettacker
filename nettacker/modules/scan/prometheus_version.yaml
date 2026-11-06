@@ -1,0 +1,56 @@
+info:
+  name: prometheus_version_scan
+  author: Moksh Vatsa
+  severity: 3
+  description: Prometheus version scan - detects Prometheus via the unauthenticated /api/v1/status/buildinfo endpoint and reports its version.
+  reference:
+    - https://prometheus.io/
+    - https://prometheus.io/docs/prometheus/latest/querying/api/#build-information
+  profiles:
+    - scan
+    - http
+    - prometheus
+    - info_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/status/buildinfo"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 9090
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              # Match the Prometheus buildinfo signature: a "success" status wrapping a
+              # "data" object that has both a "revision" key and a "version" key. The
+              # lookahead asserts "revision" is present without consuming anything, so
+              # the capture can then pick up "version" regardless of key order
+              # (Prometheus does not document a stable order and 3.x emits it either
+              # way). Anchoring on both keys keeps other /api/v1 responses that also
+              # report "status":"success" (query results, runtime info) from matching.
+              # Regex braces are doubled because TemplateLoader runs str.format()
+              # over the raw YAML before parsing; after format() they are single.
+              regex: '"status"\s*:\s*"success"[\s\S]{{0,400}}?"data"\s*:\s*\{{(?=[\s\S]{{0,4000}}?"revision"\s*:\s*"[^"]+")[\s\S]{{0,4000}}?"version"\s*:\s*"([^"]+)"'
+              reverse: false
+          log: "response_dependent['content']"
