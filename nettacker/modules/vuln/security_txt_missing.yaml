@@ -1,0 +1,80 @@
+info:
+  name: security_txt_missing_vuln
+  author: OWASP Nettacker Team
+  severity: 1
+  description: >-
+    RFC 9116 defines the /.well-known/security.txt file, which provides contact
+    information for security researchers to report vulnerabilities to an
+    organisation. Publishing it is a security best practice recommended by
+    RFC 9116, but not mandatory. This module reports an informational finding
+    when the /.well-known/security.txt file is missing, as its absence may
+    prevent security researchers from responsibly reporting vulnerabilities to
+    the website administrator. A security.txt file that is present and valid
+    results in no finding. The check is limited to the canonical HTTPS endpoint
+    on port 443 to avoid false positives (e.g. when port 80 redirects to
+    HTTPS). Findings are raised on 404 (Not Found) and 410 (Gone) responses —
+    RFC 9116 recommends 410 for removed files — and on 200 responses whose body
+    contains no Contact field (RFC 9116 requires it), so transient server
+    errors (5xx) and generic 200 fallback pages do not suppress or fake
+    results.
+  reference: "https://www.rfc-editor.org/rfc/rfc9116.html"
+  profiles:
+    - vuln
+    - http
+    - low_severity
+    - info
+
+payloads:
+  - library: http
+    steps:
+      # step 1: definitive absence — RFC 9116 recommends 410 for removed files
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/.well-known/security.txt"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+        response:
+          condition_type: or
+          conditions:
+            status_code:
+              regex: ^(404|410)$
+              reverse: false
+      # step 2: present status but no Contact field (e.g. a 200 fallback page)
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/.well-known/security.txt"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: ^200$
+              reverse: false
+            content:
+              regex: "(?is)contact:\\s*(mailto:|[a-z]+://)"
+              reverse: true
