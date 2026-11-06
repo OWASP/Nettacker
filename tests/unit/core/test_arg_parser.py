@@ -17,6 +17,7 @@ def start_api():
 
 
 def parse(*args):
+    """Run ArgParser with --start-api and the given arguments."""
     with patch.object(sys, "argv", ["nettacker", "--start-api", *args]):
         try:
             ArgParser()

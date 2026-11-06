@@ -94,8 +94,11 @@ def test_is_single_ipv4():
     assert is_single_ipv4("127.0.0.1")
     assert not is_single_ipv4("2001:0DC8:E004:0001:0000:0000:0000:F00A")
     assert not is_single_ipv4("256.0.0.1")
-    for value in ["", "1", "10.1", "1.2.3.4 ", "1.1.1.1 - 1.1.1.3"]:
-        assert not is_single_ipv4(value)
+
+
+@pytest.mark.parametrize("value", ["", "1", "10.1", "1.2.3.4 ", "1.1.1.1 - 1.1.1.3"])
+def test_is_single_ipv4_rejects_shorthand_and_trailing_text(value):
+    assert not is_single_ipv4(value)
 
 
 def test_is_ipv4_range():

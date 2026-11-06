@@ -56,6 +56,15 @@ def is_single_ipv4(ip):
 
 
 def is_ipv4_range(ip_range):
+    """
+    check if a value is an IPv4 CIDR (e.g. 192.168.1.0/24)
+
+    Args:
+        ip_range: the value to check
+
+    Returns:
+        True if it matches otherwise False
+    """
     try:
         return (
             "/" in ip_range
@@ -68,6 +77,15 @@ def is_ipv4_range(ip_range):
 
 
 def is_ipv4_cidr(ip_range):
+    """
+    check if a value is an IPv4 start-end range (e.g. 192.168.1.1-192.168.1.10)
+
+    Args:
+        ip_range: the value to check
+
+    Returns:
+        True if it matches otherwise False
+    """
     try:
         return (
             "/" not in ip_range
@@ -93,6 +111,15 @@ def is_single_ipv6(ip):
 
 
 def is_ipv6_range(ip_range):
+    """
+    check if a value is an IPv6 start-end range (e.g. 2001:db8::1-2001:db8::a)
+
+    Args:
+        ip_range: the value to check
+
+    Returns:
+        True if it matches otherwise False
+    """
     try:
         return (
             "/" not in ip_range
@@ -105,6 +132,15 @@ def is_ipv6_range(ip_range):
 
 
 def is_ipv6_cidr(ip_range):
+    """
+    check if a value is an IPv6 CIDR (e.g. 2001:db8::/64)
+
+    Args:
+        ip_range: the value to check
+
+    Returns:
+        True if it matches otherwise False
+    """
     try:
         return (
             "/" in ip_range
