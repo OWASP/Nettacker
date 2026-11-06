@@ -1,0 +1,59 @@
+info:
+  name: gitlab_cve_2026_85706_vuln
+  author: OWASP Nettacker Team
+  severity: 10
+  description: >
+    Detects CVE-2026-85706 in self-managed GitLab by sending an unauthenticated
+    repository commits body-upload request with a deliberately nonexistent file
+    path. A vulnerable instance returns the specific "local file not present"
+    error before authentication; fixed versions reject the request with 401.
+    This check does not request or return file contents. A valid project ID
+    must be supplied with --modules-extra-args "project_id=<id>".
+  reference:
+    - https://docs.gitlab.com/releases/patches/patch-release-gitlab-19-3-2-released/
+    - https://support.gitlab.com/hc/en-us/articles/30371082139164-Validating-whether-a-file-was-actually-exfiltrated-via-CVE-2026-85706-using-Workhorse-written-bytes
+    - https://www.pruva.dev/reproductions/REPRO-2026-00354
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2026
+    - cisa_kev
+    - gitlab
+    - path_traversal
+    - unauthenticated
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: application/x-www-form-urlencoded
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v4/projects/{project_id}/repository/commits.json?file=&file.size=64&Content-Type=application%2Fx-www-form-urlencoded&file.path=%2Ftmp%2Fnettacker-cve-2026-85706-probe-not-present-91fd7a4c"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        data: ""
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "400"
+              reverse: false
+            content:
+              regex: "local file not present"
+              reverse: false
