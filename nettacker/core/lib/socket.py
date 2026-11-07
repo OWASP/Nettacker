@@ -11,7 +11,10 @@ import struct
 import time
 
 from nettacker.core.lib.base import BaseEngine, BaseLibrary
-from nettacker.core.utils.common import replace_dependent_response, reverse_and_regex_condition
+from nettacker.core.utils.common import reverse_and_regex_condition, replace_dependent_response
+from nettacker.probing.engine import ProbeEngine
+from nettacker.probing.loader import build_probes_from_yaml
+from nettacker.probing.sender import tcp_probe, tcp_probe_ssl
 
 log = logging.getLogger(__name__)
 
@@ -90,6 +93,106 @@ class SocketLibrary(BaseLibrary):
             "service": service,
             "ssl_flag": ssl_flag,
         }
+
+    def tcp_and_udp_scan(self, host, port: int, timeout=5):
+        """
+        Probe a port with the nmap-service-probes engine to fingerprint the running service.
+
+        Tries plain TCP first, falls back to TLS if the port rejects plaintext, then falls
+        back to UDP. Returns a dict with "service", "ssl_flag", and "log" keys, or None if
+        the port could not be identified as open.
+
+        Args:
+            host: target host/IP
+            port: target port
+            timeout: per-probe timeout in seconds
+
+        Returns:
+            A result dict, or None if the port appears closed/unresponsive.
+        """
+        # `timeout` follows the same convention as every other method here
+        # (tcp_connect_only, tcp_connect_send_and_receive, socket_icmp): it's
+        # in seconds, as set by the module yaml (e.g. "timeout: 3"). The
+        # probe_sender functions (tcp_probe/tcp_probe_ssl/udp_probe) expect
+        # milliseconds, so it must be converted at this boundary.
+        timeout_ms = int(timeout * 1000)
+
+        probes_by_name = build_probes_from_yaml()
+        # 1. TRY TCP FIRST (Standard and SSL)
+        # We pass an empty payload or a light generic probe first just to check status
+        tcp_res = tcp_probe(host, port, payload="", timeout_ms=timeout_ms)
+        is_tcp_open = False
+        is_ssl = False
+
+        if tcp_res["peer_name"]:  # If peer_name exists, the connection succeeded
+            is_tcp_open = True
+        else:
+            # If standard TCP failed, check if it's an SSL-only port rejecting plain text
+            ssl_res = tcp_probe_ssl(host, port, payload="", timeout_ms=timeout_ms)
+            if ssl_res["peer_name"]:
+                is_tcp_open = True
+                is_ssl = True
+
+        # If TCP is active, spin up the sequential engine
+        if is_tcp_open:
+            engine = ProbeEngine(
+                port=port,
+                protocol="tcp",
+                host=host,
+                probes_by_name=probes_by_name,
+                timeout_ms=timeout_ms,
+            )
+            tcp_result = engine.probe_sequentially(force_ssl=is_ssl)
+            if tcp_result is not None:
+                return tcp_result
+
+            if not is_ssl:
+                # A TLS-only listener still accepts the plain TCP handshake above
+                # (peer_name gets populated regardless), so a successful connect
+                # never actually proves the service is plaintext. Plain
+                # fingerprinting came back inconclusive, so retry directly in SSL
+                # mode before giving up on this port.
+                ssl_res = tcp_probe_ssl(host, port, payload="", timeout_ms=timeout_ms)
+                if ssl_res["peer_name"]:
+                    is_ssl = True
+                    ssl_engine = ProbeEngine(
+                        port=port,
+                        protocol="tcp",
+                        host=host,
+                        probes_by_name=probes_by_name,
+                        timeout_ms=timeout_ms,
+                    )
+                    ssl_result = ssl_engine.probe_sequentially(force_ssl=True)
+                    if ssl_result is not None:
+                        return ssl_result
+
+        # 2. TRY UDP
+        # UDP is connectionless, so unlike TCP there's no handshake to confirm
+        # openness before fingerprinting. A generic payload here would only prove
+        # the port responds to that exact payload - most UDP services (DNS, SNMP,
+        # ...) silently ignore anything that isn't their own protocol, so probing
+        # must go straight to the engine's protocol-specific probes instead.
+        engine = ProbeEngine(
+            port=port,
+            protocol="udp",
+            host=host,
+            probes_by_name=probes_by_name,
+            timeout_ms=timeout_ms,
+        )
+        udp_result = engine.probe_sequentially()
+        if udp_result is not None:
+            return udp_result
+
+        # 3. FALLBACK HANDLING (Avoids KeyErrors)
+        try:
+            service = socket.getservbyport(port)
+        except OSError:
+            service = "unknown"
+
+        if is_tcp_open:
+            return {"service": service, "ssl_flag": is_ssl, "log": ["Open|Filtered"]}
+
+        return None
 
     def socket_icmp(self, host, timeout):
         """
@@ -205,6 +308,7 @@ class SocketLibrary(BaseLibrary):
             header + data, (socket.gethostbyname(host), 1)
         )  # Don't know about the 1
 
+        delay = None
         while True:
             started_select = time.time()
             what_ready = select.select([socket_connection], [], [], timeout)
@@ -221,7 +325,7 @@ class SocketLibrary(BaseLibrary):
                 packet_id,
                 packet_sequence,
             ) = struct.unpack("bbHHh", icmp_header)
-            if packet_id == random_integer:
+            if packet_id == random_integer and packet_type == 0:
                 packet_bytes = struct.calcsize("d")
                 time_sent = struct.unpack("d", received_packet[28 : 28 + packet_bytes])[0]
                 delay = time_received - time_sent
@@ -238,14 +342,18 @@ class SocketEngine(BaseEngine):
     library = SocketLibrary
 
     def response_conditions_matched(self, sub_step, response):
-        conditions = sub_step["response"]["conditions"].get(
-            "service", sub_step["response"]["conditions"]
-        )
-        condition_type = sub_step["response"]["condition_type"]
-        condition_results = {}
+        # 1. Method: tcp_connect_only
         if sub_step["method"] == "tcp_connect_only":
             return response
+
+        # 2. Method: tcp_connect_send_and_receive (Original Framework Logic)
         if sub_step["method"] == "tcp_connect_send_and_receive":
+            conditions = sub_step["response"]["conditions"].get(
+                "service", sub_step["response"]["conditions"]
+            )
+            condition_type = sub_step["response"]["condition_type"]
+            condition_results = {}
+
             if response:
                 for condition in conditions:
                     regex = re.findall(
@@ -269,6 +377,7 @@ class SocketEngine(BaseEngine):
                             "ssl_flag": ssl_flag,
                         }
                         condition_results["service"] = [str(log_response)]
+
                 for condition in copy.deepcopy(condition_results):
                     if not condition_results[condition]:
                         del condition_results[condition]
@@ -276,8 +385,10 @@ class SocketEngine(BaseEngine):
                 if "open_port" in condition_results and len(condition_results) > 1:
                     del condition_results["open_port"]
                     del conditions["open_port"]
+
                 if condition_type.lower() == "and":
                     return condition_results if len(condition_results) == len(conditions) else []
+
                 if condition_type.lower() == "or":
                     if sub_step["response"].get("log", False):
                         condition_results["log"] = sub_step["response"]["log"]
@@ -286,15 +397,83 @@ class SocketEngine(BaseEngine):
                                 condition_results["log"], condition_results
                             )
                     return condition_results if condition_results else []
+            return []
+
+        # 3. Method: tcp_and_udp_scan
+        if sub_step.get("method") == "tcp_and_udp_scan":
+            if not response:
                 return []
+
+            condition_results = {}
+
+            running_svc = response.get("service", "unknown")
+            ssl_flg = response.get("ssl_flag", False)
+            prefix = f"'running_service: {running_svc}', 'ssl_flag: {ssl_flg}'"
+
+            flat_logs = []
+            logs_input = response.get("log")
+
+            if isinstance(logs_input, list) and logs_input:
+                for item in logs_input:
+                    # Clean up raw log string
+                    clean_item = str(item).replace("\\'", "'").replace('"', "'").strip("[]{} ")
+
+                    if clean_item:
+                        flat_logs.append(f"{prefix}, {clean_item}")
+            else:
+                # Fallback if no specific banner logs returned
+                flat_logs.append(f"{prefix}, 'state: Open|Filtered'")
+
+            condition_results["service"] = [f"running_service: {running_svc}, ssl_flag: {ssl_flg}"]
+            condition_results["log"] = flat_logs
+            return condition_results
+
+        # 4. Method: socket_icmp
         if sub_step["method"] == "socket_icmp":
             return response
+
         return []
 
     def apply_extra_data(self, sub_step, response):
-        sub_step["response"]["ssl_flag"] = (
-            response["ssl_flag"] if isinstance(response, dict) else False
-        )
-        sub_step["response"]["conditions_results"] = self.response_conditions_matched(
-            sub_step, response
-        )
+        # Flatten response list safely if returned as a list wrapper
+        if isinstance(response, list):
+            if response:
+                response = response[0]
+
+        if response:
+            sub_step["response"]["ssl_flag"] = (
+                response["ssl_flag"]
+                if isinstance(response, dict) and "ssl_flag" in response
+                else False
+            )
+
+            results = self.response_conditions_matched(sub_step, response)
+            # Post-processing sanitization step: Converts inner list objects into simple clean string structures
+            if isinstance(results, dict):
+                # Safely grab metadata tracking fallbacks
+                running_svc = (
+                    response.get("service", "unknown") if isinstance(response, dict) else "unknown"
+                )
+                ssl_flg = response.get("ssl_flag", False) if isinstance(response, dict) else False
+                fallback_prefix = f"'running_service: {running_svc}', 'ssl_flag: {ssl_flg}'"
+
+                for key in list(results.keys()):
+                    if isinstance(results[key], list):
+                        cleaned_list = []
+                        for item in results[key]:
+                            if isinstance(item, str):
+                                clean_str = item.replace("\\'", "'").replace('"', "'")
+                                clean_str = clean_str.strip("[]{} ")
+
+                                # If the log line somehow missed the running_service tag, force-inject it
+                                if key == "log" and "running_service" not in clean_str:
+                                    clean_str = f"{fallback_prefix}, {clean_str}"
+
+                                cleaned_list.append(clean_str)
+                            else:
+                                cleaned_list.append(str(item))
+
+                        # CRITICAL STAGE: Convert the list to a single clean string block separated by newlines
+                        results[key] = "\n".join(cleaned_list)
+
+            sub_step["response"]["conditions_results"] = results

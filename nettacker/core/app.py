@@ -41,7 +41,6 @@ class Nettacker(ArgParser):
         if not api_arguments:
             self.print_logo()
         self.check_dependencies()
-
         log.info(_("scan_started"))
         super().__init__(api_arguments=api_arguments)
 
@@ -289,7 +288,6 @@ class Nettacker(ArgParser):
             and Thread discards its target's return value)
         """
         options = copy.deepcopy(self.arguments)
-
         socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
         module = Module(
             module_name,
