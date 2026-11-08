@@ -152,7 +152,7 @@ gen_API_access_log: APIアクセスログを生成する
 API_access_log_file: APIアクセスログファイル名
 API_port_int: APIポートは整数でなければなりません！
 unknown_ip_input: 未知の入力タイプ、受け入れタイプはSINGLE_IPv4、RANGE_IPv4、CIDR_IPv4です。
-API_key: "* APIキー：{0}"
+API_key: "* APIキー：{1}"
 ports_int: ポートは整数でなければなりません！ （例えば、80 || 80,1080 || 80,1080-1300,9000,12000-15000）
 through_API: OWASP Nettacker APIを通して
 API_invalid: 無効なAPIキー

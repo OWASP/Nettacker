@@ -214,7 +214,7 @@ API_port_int: API-Port muss eine Ganzzahl sein!
 unknown_ip_input:
   unbekannter Eingangstyp, akzeptierte Typen sind SINGLE_IPv4, RANGE_IPv4,
   CIDR_IPv4
-API_key: "* API-Schlüssel: {0}"
+API_key: "* API-Schlüssel: {1}"
 ports_int: Ports müssen Ganzzahlen sein! (z. B. 80 || 80,1080 || 80,1080-1300,9000,12000-15000)
 through_API: Durch die OWASP Nettacker API
 API_invalid: ungültiger API-Schlüssel

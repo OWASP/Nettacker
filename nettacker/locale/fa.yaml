@@ -202,7 +202,7 @@ API_port_int: شماره درگاه API باید عدد باشد!
 unknown_ip_input:
   نوع ورودی ناشناخته، نوع شناخته شده قابل قبول SINGLE_IPv4, RANGE_IPv4,
   CIDR_IPv4 می باشد.
-API_key: "* کلید API : {0}\n"
+API_key: "* کلید API : {1}\n"
 ports_int: "شماره درگاه ها باید عدد باشند! (مثال: 80 || 80,1080 || 80,1080-1300,9000,12000-15000)"
 through_API: از طریق OWASP Nettacker API
 API_invalid: کلید API نادرست!

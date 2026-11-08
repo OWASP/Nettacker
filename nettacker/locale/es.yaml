@@ -212,7 +212,7 @@ API_port_int: "¡El puerto API debe ser un número entero!"
 unknown_ip_input:
   tipo de entrada desconocido, los tipos aceptados son SINGLE_IPv4,
   RANGE_IPv4, CIDR_IPv4
-API_key: "* Clave de API: {0}"
+API_key: "* Clave de API: {1}"
 ports_int: los puertos deben ser enteros! (por ejemplo, 80 || 80,1080 || 80,1080-1300,9000,12000-15000)
 through_API: A través de la API OWASP Nettacker
 API_invalid: clave de API no válida
