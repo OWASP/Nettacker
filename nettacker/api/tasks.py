@@ -27,7 +27,13 @@ def queue_scan(nettacker_app, targets):
     with _lock:
         _apps[scan_id] = nettacker_app
         _scans[scan_id] = {"status": "queued", "targets": targets}
-    run_scan(scan_id)
+    try:
+        run_scan(scan_id)
+    except Exception:
+        with _lock:
+            del _apps[scan_id]
+            del _scans[scan_id]
+        raise
     return scan_id
 
 

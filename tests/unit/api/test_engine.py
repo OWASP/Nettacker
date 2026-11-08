@@ -70,6 +70,22 @@ def test_new_scan_queues_scan_and_returns_its_id(mock_nettacker, mock_queue_scan
     mock_queue_scan.assert_called_once_with(mock_nettacker.return_value, "example.com")
 
 
+@patch("nettacker.api.engine.queue_scan")
+@patch("nettacker.api.engine.Nettacker")
+def test_new_scan_returns_the_queued_scan_id_over_a_posted_one(
+    mock_nettacker, mock_queue_scan, client
+):
+    mock_nettacker.return_value.arguments = SimpleNamespace(scan_id="client_id")
+    mock_queue_scan.return_value = "scan_1"
+
+    response = client.post(
+        f"/new/scan?key={API_KEY}",
+        data={"targets": "example.com", "report_path_filename": "report.html"},
+    )
+
+    assert response.json["scan_id"] == "scan_1"
+
+
 @pytest.mark.parametrize(
     "scan_options, description",
     [

@@ -465,9 +465,10 @@ $(document).ready(function () {
         get_results_list(result_page);
       }
       watchedScanIds = unfinishedIds;
-
+    }).always(function () {
+      // keep polling through failed requests while any scan is still being watched
       clearTimeout(scanStatusTimer);
-      if (unfinished.length > 0) {
+      if (watchedScanIds.length > 0) {
         scanStatusTimer = setTimeout(refreshScanStatus, 3000);
       }
     });

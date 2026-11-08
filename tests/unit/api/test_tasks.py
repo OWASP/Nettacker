@@ -1,4 +1,5 @@
 import signal
+import sqlite3
 import threading
 import time
 from types import SimpleNamespace
@@ -53,6 +54,16 @@ def test_queue_scan_returns_a_queued_scan_id():
     assert tasks.get_scans() == [
         {"scan_id": scan_id, "status": "queued", "targets": "target.test"}
     ]
+
+
+def test_scan_that_fails_to_enqueue_is_not_kept():
+    error = sqlite3.OperationalError("database is locked")
+    with patch.object(tasks.huey.storage, "enqueue", side_effect=error):
+        with pytest.raises(sqlite3.OperationalError):
+            tasks.queue_scan(MagicMock(), "target.test")
+
+    assert tasks.get_scans() == []
+    assert tasks._apps == {}
 
 
 def test_finished_scan_is_done(immediate_huey):

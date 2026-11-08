@@ -362,7 +362,7 @@ def new_scan():
             file_path.unlink(missing_ok=True)
     app.config["OWASP_NETTACKER_CONFIG"]["options"] = nettacker_app.arguments
     scan_id = queue_scan(nettacker_app, describe_targets(form_values))
-    return jsonify({"scan_id": scan_id, **vars(nettacker_app.arguments)}), 200
+    return jsonify({**vars(nettacker_app.arguments), "scan_id": scan_id}), 200
 
 
 def describe_targets(scan_options):
