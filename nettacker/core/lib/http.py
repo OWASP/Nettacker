@@ -34,7 +34,7 @@ async def perform_request_action(action, request_options):
     Returns:
         a dict with reason, url, status_code, content, headers, and responsetime
     """
-    start_time = time.time()
+    start_time = time.perf_counter()
     async with action(**request_options) as response:
         return {
             "reason": response.reason,
@@ -42,7 +42,7 @@ async def perform_request_action(action, request_options):
             "status_code": str(response.status),
             "content": await response.content.read(),
             "headers": dict(response.headers),
-            "responsetime": time.time() - start_time,
+            "responsetime": time.perf_counter() - start_time,
         }
 
 

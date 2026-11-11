@@ -119,9 +119,9 @@ class DummyEngine(http.HttpEngine):
 
 
 def test_perform_request_action_happy_path(monkeypatch):
-    # Freeze time to make responsetime predictable
+    # Freeze monotonic clock to make responsetime predictable
     times = [1000.0, 1001.0]  # start, end
-    monkeypatch.setattr(time, "time", lambda: times.pop(0))
+    monkeypatch.setattr(time, "perf_counter", lambda: times.pop(0))
 
     response = FakeResponse(
         reason="Created",
@@ -143,6 +143,30 @@ def test_perform_request_action_happy_path(monkeypatch):
     assert result["headers"]["Content-Type"] == "text/plain"
     assert result["content"] == b"hello"
     assert 0.99 <= result["responsetime"] <= 1.01  # ~1 second
+
+
+def test_perform_request_action_monotonic_clock(monkeypatch):
+    """
+    Ensure perform_request_action uses time.perf_counter (monotonic)
+    and is immune to system wall-clock adjustments (e.g. NTP backwards step).
+    """
+    # Wall clock jumps backwards 50 seconds during request
+    wall_times = [1700000050.0, 1700000000.0]
+    monkeypatch.setattr(time, "time", lambda: wall_times.pop(0))
+
+    # Monotonic clock advances steadily by 0.25 seconds
+    perf_times = [10.0, 10.25]
+    monkeypatch.setattr(time, "perf_counter", lambda: perf_times.pop(0))
+
+    response = FakeResponse(status=200, body=b"monotonic test")
+
+    async def run():
+        return await http.perform_request_action(
+            lambda **_: FakeCtx(response), {"url": "http://example.com/clock"}
+        )
+
+    result = asyncio.run(run())
+    assert 0.24 <= result["responsetime"] <= 0.26
 
 
 @pytest.mark.asyncio
