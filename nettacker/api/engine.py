@@ -40,6 +40,7 @@ from nettacker.core.utils.common import generate_compare_filepath, now
 from nettacker.database.db import (
     create_connection,
     get_logs_by_scan_id,
+    get_report_by_id,
     get_scan_result,
     last_host_logs,
     logs_to_report_html,
@@ -504,7 +505,9 @@ def get_results_json():
     result_id = get_value(flask_request, "id")
     if not result_id:
         return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
-    scan_details = session.query(Report).filter(Report.id == result_id).first()
+    scan_details = get_report_by_id(session, result_id)
+    if scan_details is None:
+        return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 404
     json_object = json.dumps(get_logs_by_scan_id(scan_details.scan_unique_id))
     filename = ".".join(scan_details.report_path_filename.split(".")[:-1])[1:] + ".json"
     return Response(
@@ -520,14 +523,16 @@ def get_results_csv():  # todo: need to fix time format
     get host's logs through the API in JSON type
 
     Returns:
-        an array with JSON events
+        an array with JSON logs if success otherwise abort(403)
     """
     api_key_is_valid(app, flask_request)
     session = create_connection()
     result_id = get_value(flask_request, "id")
     if not result_id:
         return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 400
-    scan_details = session.query(Report).filter(Report.id == result_id).first()
+    scan_details = get_report_by_id(session, result_id)
+    if scan_details is None:
+        return jsonify(structure(status="error", msg=_("invalid_scan_id"))), 404
     data = get_logs_by_scan_id(scan_details.scan_unique_id)
     if not data:
         return jsonify(structure(status="error", msg=_("no_scan_data_found"))), 404

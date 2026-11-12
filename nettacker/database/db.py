@@ -85,6 +85,40 @@ def create_connection():
         return sessionmaker(bind=db_engine)()
 
 
+def get_report_by_id(session, result_id):
+    """
+    Look up Report metadata (scan_unique_id, report_path_filename) by id,
+    handling both APSW (tuple) and SQLAlchemy (Session) connections.
+
+    Args:
+        session: APSW (connection, cursor) tuple or SQLAlchemy Session
+        result_id: Report id to look up
+
+    Returns:
+        Report object if found, None otherwise
+    """
+    if isinstance(session, tuple):
+        connection, cursor = session
+        try:
+            cursor.execute(
+                "SELECT id, scan_unique_id, report_path_filename FROM report WHERE id = ?",
+                (result_id,),
+            )
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            report = Report()
+            report.id = row[0]
+            report.scan_unique_id = row[1]
+            report.report_path_filename = row[2]
+            return report
+        finally:
+            cursor.close()
+            connection.close()
+    else:
+        return session.query(Report).filter(Report.id == result_id).first()
+
+
 def send_submit_query(session):
     """
     a function to send submit based queries to db
