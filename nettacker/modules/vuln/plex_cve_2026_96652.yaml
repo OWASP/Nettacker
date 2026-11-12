@@ -1,0 +1,50 @@
+info:
+  name: plex_cve_2026_96652_vuln
+  author: Moksh vatsa
+  severity: 9.8
+  description: CVE-2026-96652 chain - Plex Media Server before build 1.43.3.10861 is affected by chained vulnerabilities (SSRF, admin-token disclosure, arbitrary file write) leading to RCE. Detects vulnerable versions via unauthenticated GET /identity endpoint.
+  reference:
+    - https://www.plex.tv/blog/plex-media-server-security-update-october-2026/
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-96652
+  profiles:
+    - vuln
+    - http
+    - high_severity
+    - cve
+    - cve2026
+    - cisa_kev
+    - plex
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        ssl: false
+        allow_redirects: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/identity"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - http
+                - https
+              ports:
+                - 32400
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "<MediaContainer[^>]*version=\"(1\.(42\.\d+|43\.0|43\.1|43\.2))[^\"]*\""
+              reverse: false
