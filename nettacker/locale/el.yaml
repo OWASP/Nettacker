@@ -212,7 +212,7 @@ API_port_int: Η θύρα API πρέπει να είναι ένας ακέραι
 unknown_ip_input:
   άγνωστος τύπος εισόδου, οι αποδεκτοί τύποι είναι SINGLE_IPv4, RANGE_IPv4,
   CIDR_IPv4
-API_key: "* Κλειδί API: {0}"
+API_key: "* Κλειδί API: {1}"
 ports_int: οι θύρες πρέπει να είναι ακέραιοι! (π.χ. 80 | 80,1080 | 80,1080-1300,9000,12000-15000)
 through_API: Μέσω του API του OWASP Nettacker
 API_invalid: μη έγκυρο κλειδί API
