@@ -155,14 +155,6 @@ payloads:
                     content:
                       regex: (?s)^(?=.*<div class="notfound">)(?=.*404 Not Found<br>).*$
                       reverse: false 
-              Feedpress Takeover:
-                response:
-                  condition_type: or
-                  log: Feedpress Takeover detected
-                  conditions:
-                    content:
-                      regex: The feed has not been found
-                      reverse: false
               Flexbe Takeover:
                 response:
                   condition_type: or
