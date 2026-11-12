@@ -2,8 +2,10 @@ info:
   name: wp_xmlrpc_pingback_vuln
   author: OWASP Nettacker Team
   severity: 3
-  description:
+  description: Detects WordPress XML-RPC pingback.ping method exposure via system.listMethods.
   reference:
+    - https://wordpress.org/documentation/article/xml-rpc-pingback-api/
+    - https://www.owasp.org/index.php/WordPress_XML-RPC_Pingback_DoS
   profiles:
     - vuln
     - http
@@ -32,10 +34,13 @@ payloads:
               ports:
                 - 80
                 - 443
-        data: <methodCall><methodName>pingback.ping</methodName><params><param><value><string>http://Cannotbehere:22/</string></value></param><param><value><string>{target}</string></value></param></params></methodCall>
+        data: <methodCall><methodName>system.listMethods</methodName><params></params></methodCall>
         response:
-          condition_type: or
+          condition_type: and
           conditions:
+            status_code:
+              regex: "200"
+              reverse: false
             content:
-              regex: <name>16</name>
+              regex: "pingback\.ping"
               reverse: false
