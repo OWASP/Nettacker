@@ -47,7 +47,6 @@ finished_parallel_module_scan: "jarayon-{0}|{1}|{2}| modul oqimi raqami {3} dan 
 graph_message: "Bu grafik OWASP Nettacker tomonidan yaratilgan. Grafik barcha modullar faoliyatini, tarmoq xaritasini va maxfiy ma'lumotlarni o'z ichiga oladi, Iltimos, bu faylni ishonchli bo'lmagan odam bilan baham ko'rmang."
 graph_module_404: "bu grafik moduli topilmadi: {0}"
 graph_module_unavailable: "bu grafik moduli '{0}' mavjud emas"
-s: s
 build_compare_report: taqqoslash hisoboti qurilmoqda
 compare_report_path_filename: "taqqoslash hisoboti fayl yo'li: {0}"
 compare_report_saved: taqqoslash hisoboti saqlandi
