@@ -1,0 +1,48 @@
+info:
+  name: plex_version_scan
+  author: Moksh Vatsa
+  severity: 3
+  description: Plex version scan - detects Plex Media Server via the unauthenticated /identity endpoint and reports its version.
+  reference:
+    - https://www.plex.tv/media-server-downloads/
+    - https://www.plexopedia.com/plex-media-server/api/server/identity/
+    - https://forums.plex.tv/t/important-security-update-for-plex-media-server-v1-43-2-and-earlier/942319
+  profiles:
+    - scan
+    - http
+    - plex
+    - info_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/identity"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 32400
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: '<MediaContainer\b[^>]*\bversion="([^"]+)"'
+              reverse: false
+          log: "response_dependent['content']"
