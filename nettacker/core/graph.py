@@ -131,7 +131,10 @@ def create_dd_specific_json(all_scan_logs):
         date = datetime.strptime(log["date"], "%Y-%m-%d %H:%M:%S.%f").strftime("%m/%d/%Y")
         port = str(log.get("port", "")).strip()
         impact = log.get("event", "").strip()
-        severity_justification = log.get("json_event", "").strip()
+        json_event = log.get("json_event", "")
+        if isinstance(json_event, dict):
+            json_event = json.dumps(json_event)
+        severity_justification = json_event.strip()
         service = log.get("target", "").strip()
         unique_id = log.get("scan_id", uuid.uuid4().hex)
 
