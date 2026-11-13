@@ -24,6 +24,14 @@ FAST_SETTLE = 0.2
 FRAGMENT_GAP = 0.02
 # No login attempt may run longer than this in a test: a hang is reported as a failure.
 HARD_LIMIT = 10
+# Wordings of a login banner whose first piece ends in "login: ", where a login prompt ends too.
+BANNERS = (
+    b"Last failed login: ",
+    b"Last unsuccessful login: ",
+    b"Last successful login: ",
+    b"Last login: ",
+)
+AFTER_BANNER = b"Tue Nov 10 10:00:00 2026 from 10.0.0.1 on ttyS0\r\nadmin@mock:~$ "
 
 
 def read_line(connection):
@@ -101,6 +109,14 @@ def flooding(block, delay=0, stage="reply"):
                 time.sleep(delay)
 
     return handler
+
+
+def ending_at_byte_50(text, rest):
+    """Return one reply in which `text` ends at byte 50, where the first telnetlib read ends."""
+    filler = b"Authorized use only".ljust(50 - len(text) - 4)
+    reply = b"\r\n" + filler + b"\r\n" + text + rest
+    assert reply.index(text) + len(text) == 50
+    return reply
 
 
 def accepts_only(username, password):
@@ -207,6 +223,12 @@ class TestTelnetBruteForce(TestCase):
             self.attempt(handler, timeout=timeout, **options)
         # a rejection must never wait longer than the bounded reads allow
         self.assertLess(time.monotonic() - started, 3 * timeout + 5)
+
+    def rejection_time(self, handler, **options):
+        """Return the seconds a rejected attempt needed."""
+        started = time.monotonic()
+        self.assert_rejected(handler, **options)
+        return time.monotonic() - started
 
     def test_correct_password_accepted(self):
         reply = b"\r\nLast login: Tue Nov 10 10:00:00 2026 from 10.0.0.1\r\nadmin@mock:~$ "
@@ -376,6 +398,82 @@ class TestTelnetBruteForce(TestCase):
             scripted(pieces, gap=1.5), timeout=LONG_TIMEOUT, settle_time=None
         )
         self.assertEqual(result["password"], PASSWORD)
+
+    def test_banner_in_pieces_is_accepted_when_the_first_piece_ends_in_login(self):
+        # "Last login: " is also protected by a lookbehind; the other wordings are only accepted
+        # because a trailing prompt is judged once the reply has been quiet for settle_time.
+        for banner in BANNERS:
+            with self.subTest(banner=banner):
+                result, _, _ = self.attempt(
+                    scripted([b"\r\n" + banner, AFTER_BANNER], gap=FRAGMENT_GAP),
+                    timeout=LONG_TIMEOUT,
+                )
+                self.assertEqual(result["password"], PASSWORD)
+
+    def test_banner_ending_at_byte_50_of_one_write_is_accepted(self):
+        # telnetlib reads 50 bytes at a time, so its first read of this one write ends in "login: "
+        for banner in BANNERS:
+            with self.subTest(banner=banner):
+                result, _, _ = self.attempt(
+                    scripted(ending_at_byte_50(banner, AFTER_BANNER)), timeout=LONG_TIMEOUT
+                )
+                self.assertEqual(result["password"], PASSWORD)
+
+    def test_password_text_in_a_successful_reply_is_accepted_when_split_after_it(self):
+        text = b"Notice - your Password: "
+        rest = b"expires in 5 days\r\nadmin@mock:~$ "
+        for name, handler in (
+            ("two writes", scripted([b"\r\n" + text, rest], gap=FRAGMENT_GAP)),
+            ("byte 50 of one write", scripted(ending_at_byte_50(text, rest))),
+        ):
+            with self.subTest(case=name):
+                result, _, _ = self.attempt(handler, timeout=LONG_TIMEOUT)
+                self.assertEqual(result["password"], PASSWORD)
+
+    def test_prompt_without_a_known_phrase_is_rejected_after_the_quiet_period(self):
+        # judged once the reply stayed quiet for settle_time: not at once, and long before the
+        # timeout of 5 seconds
+        for reply in (b"\r\nmock login: ", b"\r\nPassword: "):
+            with self.subTest(reply=reply):
+                elapsed = self.rejection_time(scripted(reply), timeout=LONG_TIMEOUT)
+                self.assertGreaterEqual(elapsed, FAST_SETTLE * 0.75)
+                self.assertLess(elapsed, FAST_SETTLE + 1)
+
+    def test_explicit_phrase_is_rejected_without_waiting_for_the_quiet_period(self):
+        # settle_time is longer than the limit below, so waiting for it would fail the test
+        elapsed = self.rejection_time(
+            scripted(b"\r\nLogin incorrect\r\nmock login: "), timeout=LONG_TIMEOUT, settle_time=3
+        )
+        self.assertLess(elapsed, 1.5)
+
+    def test_trailing_prompt_wins_over_a_success_marker(self):
+        self.assert_rejected(
+            scripted(b"\r\nLast login: never\r\nmock login: "), timeout=LONG_TIMEOUT
+        )
+
+    def test_server_closing_after_a_trailing_prompt_is_rejected(self):
+        # the close ends the quiet period; the prompt is judged on what arrived, not raised as EOF
+        self.assert_rejected(
+            scripted(b"\r\nLast login: never\r\nmock login: ", close_after_reply=True),
+            timeout=LONG_TIMEOUT,
+        )
+
+    def test_banner_continuing_after_the_quiet_period_is_rejected(self):
+        # Known limit, pinned on purpose: the rest of the banner arrives after the quiet period,
+        # so the first piece, which ends in "login: ", has already been judged as a login prompt.
+        self.assert_rejected(
+            scripted([b"\r\nLast failed login: ", AFTER_BANNER], gap=3 * FAST_SETTLE),
+            timeout=LONG_TIMEOUT,
+        )
+
+    def test_deadline_during_the_quiet_period_after_a_trailing_prompt_is_a_rejection(self):
+        # The prompt arrives after 0.3 s and the timeout of 0.8 s ends in the middle of the 3 s
+        # quiet period: the attempt is rejected at the timeout, not after settle_time.
+        elapsed = self.rejection_time(
+            scripted([b"", b"\r\nmock login: "], gap=0.3), timeout=0.8, settle_time=3
+        )
+        self.assertGreaterEqual(elapsed, 0.7)
+        self.assertLess(elapsed, 0.8 + 1)
 
     def test_flood_during_the_reply_is_rejected_within_the_timeout(self):
         self.assert_rejected(flooding(b"x" * 1024), timeout=1)

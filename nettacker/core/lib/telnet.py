@@ -17,8 +17,8 @@ class TelnetLibrary(BaseLibrary):
     password_prompt = b"Password: "
 
     # Specific phrases that mean the server rejected the login. A bare "failed" is deliberately
-    # not listed: a successful login can print a banner like "Last failed login: ...". The
-    # prompts reappearing at the end of the reply also mean the login was rejected.
+    # not listed: a successful login can print a banner like "Last failed login: ...". They
+    # reject the login as soon as they have arrived.
     failure_markers = (
         rb"login incorrect",
         rb"login failed",
@@ -28,6 +28,12 @@ class TelnetLibrary(BaseLibrary):
         rb"access denied",
         rb"permission denied",
         rb"(?:incorrect|invalid|wrong|bad) password",
+    )
+
+    # The prompts reappearing at the end of the reply also mean the login was rejected. A banner
+    # that comes in pieces can end in "login: " too ("Last failed login: "), so they are only
+    # believed once the reply stayed quiet for settle_time seconds or the deadline is reached.
+    prompt_markers = (
         rb"(?<!Last )login: \Z",
         rb"Password: \Z",
     )
@@ -39,9 +45,11 @@ class TelnetLibrary(BaseLibrary):
         rb"(?:\A|[\r\n])[^\s<>$#%]{0,64}(?:>| ?[$#%]) ?\Z",
     )
 
-    # A success marker is only believed once nothing more arrived for settle_time seconds (or the
-    # deadline is reached), so a reply that comes in pieces is judged as a whole. A failure that
-    # follows a prompt-like piece after a longer pause than this is still taken for a success.
+    # A success marker or a trailing prompt is only believed once nothing more arrived for
+    # settle_time seconds (or the deadline is reached or the server closed the connection), so a
+    # reply that comes in pieces is judged as a whole. What arrives after a longer pause than this
+    # is not taken into account: a failure after a prompt-like piece is still taken for a success,
+    # and the rest of a banner after a piece that ends in "login: " for a failure.
     settle_time = 0.5
     # A prompt read or a reply that grows beyond this many bytes is abandoned as not confirmed.
     max_reply_size = 16 * 1024
@@ -102,12 +110,13 @@ class TelnetLibrary(BaseLibrary):
     def confirm_login(self, connection, timeout):
         """Read the server's reply to the password and raise unless it confirms the login."""
         failure = re.compile(b"|".join(self.failure_markers), re.IGNORECASE)
+        prompt = re.compile(b"|".join(self.prompt_markers), re.IGNORECASE)
         success = re.compile(b"|".join(self.success_markers))
         deadline = time.monotonic() + timeout
         reply = b""
         while True:
             wait = deadline - time.monotonic()
-            if success.search(reply):
+            if success.search(reply) or prompt.search(reply):
                 wait = min(wait, self.settle_time)  # then the reply must stay quiet this long
             if wait <= 0:
                 break
@@ -123,6 +132,10 @@ class TelnetLibrary(BaseLibrary):
             # everything received so far is checked again after every chunk
             if failure.search(reply):
                 raise TelnetLoginError(f"login rejected, reply: {reply[-80:]!r}")
+        # every failure marker is checked before any success marker (the phrases were also checked
+        # after every chunk; only the prompts can still be new here)
+        if failure.search(reply) or prompt.search(reply):
+            raise TelnetLoginError(f"login rejected, reply: {reply[-80:]!r}")
         if not success.search(reply):
             raise TelnetLoginError(f"login not confirmed, reply: {reply[-80:]!r}")
 
