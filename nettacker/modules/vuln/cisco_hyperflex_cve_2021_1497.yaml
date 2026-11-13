@@ -11,6 +11,8 @@ info:
     - http
     - high_severity
     - cve
+    - cve2021
+    - cisa_kev
     - hyperflex
     - cisco
 

@@ -13,6 +13,8 @@ info:
     - http
     - high_severity
     - cve
+    - cve2023
+    - cisa_kev
     - citrix
 
 payloads:

@@ -1,0 +1,50 @@
+info:
+  name: jenkins_version_scan
+  author: OWASP Nettacker Team
+  severity: 3
+  description: Jenkins version scan - detects and displays the Jenkins automation server software version.
+  reference:
+    - https://www.jenkins.io/
+    - https://www.jenkins.io/changelog/
+    - https://www.jenkins.io/changelog-stable/
+  profiles:
+    - scan
+    - http
+    - jenkins
+    - info_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: true
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200|403"
+              reverse: false
+            headers:
+              X-Jenkins:
+                regex: \d+\.\d+(?:\.\d+)?
+                reverse: false
+          log: "response_dependent['headers']['X-Jenkins']"

@@ -12,6 +12,7 @@ info:
     - http
     - high_severity
     - cve
+    - cve2024
     - sonicwall
     - cisa_kev
   

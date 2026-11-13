@@ -12,6 +12,7 @@ info:
     - http
     - critical_severity
     - cve
+    - cve2023
     - confluence
     - atlassian
 
