@@ -1,5 +1,7 @@
 import re
+import selectors
 import telnetlib
+import time
 
 from nettacker.core.lib.base import BaseEngine, BaseLibrary
 
@@ -37,6 +39,13 @@ class TelnetLibrary(BaseLibrary):
         rb"(?:\A|[\r\n])[^\s<>$#%]{0,64}(?:>| ?[$#%]) ?\Z",
     )
 
+    # A success marker is only believed once nothing more arrived for settle_time seconds (or the
+    # deadline is reached), so a reply that comes in pieces is judged as a whole. A failure that
+    # follows a prompt-like piece after a longer pause than this is still taken for a success.
+    settle_time = 0.5
+    # A prompt read or a reply that grows beyond this many bytes is abandoned as not confirmed.
+    max_reply_size = 16 * 1024
+
     def brute_force(self, host, port, username, password, timeout):
         connection = self.client(host, port, timeout)
         try:
@@ -55,18 +64,66 @@ class TelnetLibrary(BaseLibrary):
             "password": password,
         }
 
+    def read_chunk(self, connection, wait):
+        """Return the data that arrived within wait seconds, or None if nothing did.
+
+        Raises EOFError when the server has closed the connection. Telnet.expect() only checks
+        its deadline when nothing is readable, so a server that keeps sending can hold it past
+        the timeout, and it searches the whole buffer again after every 50 bytes it reads.
+        Reading one chunk at a time lets the callers own the deadline. fill_rawq() (one recv())
+        and process_rawq() (telnet option negotiation) are not documented, but read_until() and
+        expect() are built on the same two calls and they keep the option handling of telnetlib.
+        read_some() was rejected because it loops until it has data, so a stream of nothing but
+        option bytes keeps it busy past any deadline. Calling read_until() in short slices was
+        rejected because every attempt would then pay for the polling interval.
+        """
+        pending = connection.read_very_lazy()
+        if pending:
+            return pending
+        # not select.select(), which fails for file descriptors above 1023 on POSIX
+        with selectors.DefaultSelector() as selector:
+            selector.register(connection.get_socket(), selectors.EVENT_READ)
+            if not selector.select(wait):
+                return None
+        connection.fill_rawq()
+        connection.process_rawq()
+        return connection.read_very_lazy()  # b"" when there was only option negotiation
+
     def read_prompt(self, connection, prompt, timeout):
         """Wait up to timeout seconds for the prompt and raise if it did not arrive."""
-        if not connection.read_until(prompt, timeout).endswith(prompt):
-            raise TelnetLoginError(f"prompt {prompt!r} not received")
+        deadline = time.monotonic() + timeout
+        received = b""
+        while prompt not in received:
+            wait = deadline - time.monotonic()
+            if wait <= 0 or len(received) > self.max_reply_size:
+                raise TelnetLoginError(f"prompt {prompt!r} not received")
+            received += self.read_chunk(connection, wait) or b""
 
     def confirm_login(self, connection, timeout):
         """Read the server's reply to the password and raise unless it confirms the login."""
         failure = re.compile(b"|".join(self.failure_markers), re.IGNORECASE)
         success = re.compile(b"|".join(self.success_markers))
-        # The failure patterns come first, so they win when both match the same reply.
-        index, _, reply = connection.expect([failure, success], timeout)
-        if index != 1:
+        deadline = time.monotonic() + timeout
+        reply = b""
+        while True:
+            wait = deadline - time.monotonic()
+            if success.search(reply):
+                wait = min(wait, self.settle_time)  # then the reply must stay quiet this long
+            if wait <= 0:
+                break
+            try:
+                chunk = self.read_chunk(connection, wait)
+            except EOFError:
+                break
+            if chunk is None:
+                break  # nothing arrived during the whole wait: deadline or quiet period over
+            reply += chunk
+            if len(reply) > self.max_reply_size:
+                raise TelnetLoginError(f"reply larger than {self.max_reply_size} bytes")
+            # everything received so far is checked again after every chunk
+            if failure.search(reply):
+                raise TelnetLoginError(f"login rejected, reply: {reply[-80:]!r}")
+        if not success.search(reply):
             raise TelnetLoginError(f"login not confirmed, reply: {reply[-80:]!r}")
 
 
