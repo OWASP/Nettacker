@@ -103,9 +103,11 @@ class TelnetLibrary(BaseLibrary):
         received = b""
         while prompt not in received:
             wait = deadline - time.monotonic()
-            if wait <= 0 or len(received) > self.max_reply_size:
+            if wait <= 0:
                 raise TelnetLoginError(f"prompt {prompt!r} not received")
             received += self.read_chunk(connection, wait) or b""
+            if len(received) > self.max_reply_size:  # also when this read completed the prompt
+                raise TelnetLoginError(f"prompt {prompt!r} not received")
 
     def confirm_login(self, connection, timeout):
         """Read the server's reply to the password and raise unless it confirms the login."""

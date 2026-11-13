@@ -32,6 +32,8 @@ BANNERS = (
     b"Last login: ",
 )
 AFTER_BANNER = b"Tue Nov 10 10:00:00 2026 from 10.0.0.1 on ttyS0\r\nadmin@mock:~$ "
+# The two prompts of a login, with the stage they belong to.
+PROMPTS = (("login", b"mock login: "), ("password", b"Password: "))
 
 
 def read_line(connection):
@@ -117,6 +119,31 @@ def ending_at_byte_50(text, rest):
     reply = b"\r\n" + filler + b"\r\n" + text + rest
     assert reply.index(text) + len(text) == 50
     return reply
+
+
+def prompt_after_filler(stage, prompt, size):
+    """Return a handler that sends `size` bytes of filler and then `prompt` in a second write.
+
+    The stage is "login" or "password". The pause lets the client read all the filler first, so
+    the read that completes the prompt is the only one that can take it past a size limit. A
+    correct login follows, so a prompt that is accepted ends in a confirmed login.
+    """
+
+    def handler(connection, received):
+        if stage == "password":
+            connection.sendall(b"mock login: ")
+            received.append(read_line(connection))
+        connection.sendall(b"x" * size)
+        time.sleep(FRAGMENT_GAP)
+        connection.sendall(prompt)
+        received.append(read_line(connection))
+        if stage == "login":
+            connection.sendall(b"Password: ")
+            received.append(read_line(connection))
+        connection.sendall(b"\r\nLast login: Tue Nov 10 10:00:00 2026\r\nadmin@mock:~$ ")
+        wait_for_client_to_close(connection)
+
+    return handler
 
 
 def accepts_only(username, password):
@@ -495,6 +522,26 @@ class TestTelnetBruteForce(TestCase):
         started = time.monotonic()
         self.assert_rejected(scripted(b"y" * 64 * 1024), timeout=8)
         self.assertLess(time.monotonic() - started, 8)
+
+    def test_prompt_in_the_read_that_crosses_the_size_limit_is_rejected(self):
+        # The filler is exactly as long as the limit, so only the read that completes the prompt
+        # takes the data past it. The size is checked after every read, that one included.
+        for stage, prompt in PROMPTS:
+            with self.subTest(stage=stage):
+                self.assert_rejected(
+                    prompt_after_filler(stage, prompt, TelnetLibrary.max_reply_size),
+                    timeout=LONG_TIMEOUT,
+                )
+
+    def test_prompt_that_ends_exactly_at_the_size_limit_is_accepted(self):
+        # the limit is inclusive: data of exactly max_reply_size bytes is still within it
+        for stage, prompt in PROMPTS:
+            with self.subTest(stage=stage):
+                size = TelnetLibrary.max_reply_size - len(prompt)
+                result, _, _ = self.attempt(
+                    prompt_after_filler(stage, prompt, size), timeout=LONG_TIMEOUT
+                )
+                self.assertEqual(result["password"], PASSWORD)
 
     def test_connection_with_a_file_descriptor_above_1023(self):
         # select.select() cannot watch such a descriptor on POSIX, and a scan with many threads
