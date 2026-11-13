@@ -193,6 +193,7 @@ Use `--show-all-modules` for live metadata and check-specific details.
 | `joomla_user_enum_scan` | Attempts to enumerate Joomla users through publicly available responses. |
 | `joomla_version_scan` | Identifies a Joomla installation and reports its version. |
 | `moveit_version_scan` | Detects Progress MOVEit Transfer and reports its version. |
+| `plex_version_scan` | Detects Plex Media Server via its unauthenticated `/identity` endpoint and reports its version. |
 | `pma_scan` | Searches common paths for a phpMyAdmin installation. |
 | `port_scan` | Performs TCP connection checks against the selected ports and fingerprints supported services. |
 | `smartermail_version_scan` | Detects SmarterMail and extracts version information from its licensing API. |
