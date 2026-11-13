@@ -359,3 +359,34 @@ policies before running a brute-force module.
 
 Modules are declarative YAML. See [Developers](Developers.md) for the module template, available libraries and
 step/condition reference.
+
+## GPUStack CVE-2026-102895
+
+The `gpustack_cve_2026_102895_vuln` module checks for unauthenticated
+administrator access in GPUStack before 2.2.0. Only scan systems you own or
+have permission to test.
+
+It sends a GET request to `/v2/users` with
+`X-GPUStack-Real-IP: 127.0.0.1`, without credentials or a request body.
+It requires HTTP 200, a JSON content type, and a user entry containing both
+`username` and `is_admin: true`. Redirects are not followed. The module does
+not create users, API keys, models, or inference backends.
+
+A match indicates exposed administrator data. A non-match does not prove a
+server is patched: gateway mode, proxy filtering, `force_auth_localhost`,
+network access, and the configured port can affect the result. The check
+also detects affected same-host reverse-proxy deployments where the TCP
+peer is already loopback. Upgrade affected deployments to 2.2.0 or later.
+
+On an authorized lab target, select the module and its actual port:
+
+```sh
+poetry run nettacker -i LAB_HOST -m gpustack_cve_2026_102895_vuln -g 30080
+```
+
+The module has one read-only request per generated URL, not one request
+across every protocol and port combination.
+
+References:
+- <https://github.com/advisories/GHSA-gj9m-f8ph-pmhr>
+- <https://nvd.nist.gov/vuln/detail/CVE-2026-102895>
