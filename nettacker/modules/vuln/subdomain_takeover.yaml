@@ -33,14 +33,8 @@ payloads:
                 - 80
                 - 443
         response:
-          condition_type: and
+          condition_type: or
           conditions:
-            status_code:
-              regex: "403"
-              reverse: true
-            content:
-              regex: (?i)(Cloudflare|Incapsula|Sucuri|Access Denied|Webroot|Error 403 Forbidden)
-              reverse: true
             iterative_response_match:
               Aftership Takeover:
                 response:

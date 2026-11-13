@@ -45,5 +45,5 @@ payloads:
               regex: 200|403|401
               reverse: false
             content:
-              regex: (?i)(Cloudflare|Incapsula|Sucuri|Access Denied|Webroot|Error 403 Forbidden)
+              regex: (?i)(Attention Required!\s*\|\s*Cloudflare|Incapsula incident ID|Sucuri WebSite Firewall|Access Denied.*reference\s*#)
               reverse: true
