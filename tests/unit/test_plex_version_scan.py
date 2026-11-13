@@ -142,6 +142,9 @@ def test_logs_only_the_version_string(content_regex, body, expected):
         '<MediaContainer size="0" version=""></MediaContainer>',
         # apiVersion alone is not the server version.
         '<MediaContainer size="0" apiVersion="1.2.3"></MediaContainer>',
+        # Attribute names that only end in "version" are not the server version.
+        '<MediaContainer size="0" data-version="1.2.3"></MediaContainer>',
+        '<MediaContainer size="0" plex:version="1.2.3"></MediaContainer>',
         # A version attribute on a child element must not be attributed to the server.
         '<MediaContainer size="1"><Video version="2"/></MediaContainer>',
         # A different element whose name merely starts with MediaContainer.
