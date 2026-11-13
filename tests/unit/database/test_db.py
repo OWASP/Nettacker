@@ -1,8 +1,12 @@
 import json
+import os
+import tempfile
 from datetime import datetime
 from unittest.mock import MagicMock, Mock, call, mock_open, patch
 
 import apsw
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from nettacker.api.helpers import structure
 from nettacker.database.db import (
@@ -24,6 +28,7 @@ from nettacker.database.db import (
     submit_report_to_db,
     submit_temp_logs_to_db,
 )
+from nettacker.database.models import Base, HostsLog
 
 
 class TestDatabase:
@@ -297,9 +302,40 @@ class TestDatabase:
                     WHERE target = ?
                       AND module_name = ?
                       AND scan_unique_id != ?
-                      AND scan_unique_id != ?
+                      AND (?4 IS NULL OR scan_unique_id != ?4)
                 """,
             ("192.168.1.1", "port_scan", "current_scan", "compare_scan"),
+        )
+        assert result
+
+    @patch("nettacker.database.db.create_connection")
+    @patch("nettacker.database.db.send_submit_query")
+    def test_remove_old_logs_sqlite_no_compare_id(self, mock_send_submit, mock_create_conn):
+        """Test remove_old_logs with SQLite when scan_compare_id is None"""
+        mock_connection = Mock()
+        mock_cursor = Mock()
+        mock_create_conn.return_value = (mock_connection, mock_cursor)
+        mock_send_submit.return_value = True
+
+        options = {
+            "target": "192.168.1.1",
+            "module_name": "port_scan",
+            "scan_id": "current_scan",
+            "scan_compare_id": None,
+        }
+
+        result = remove_old_logs(options)
+
+        mock_cursor.execute.assert_any_call("BEGIN")
+        mock_cursor.execute.assert_any_call(
+            """
+                DELETE FROM scan_events
+                    WHERE target = ?
+                      AND module_name = ?
+                      AND scan_unique_id != ?
+                      AND (?4 IS NULL OR scan_unique_id != ?4)
+                """,
+            ("192.168.1.1", "port_scan", "current_scan", None),
         )
         assert result
 
@@ -332,6 +368,235 @@ class TestDatabase:
 
         # Assert final result
         assert result
+
+    def test_remove_old_logs_apsw_real_db_scenarios(self):
+        """Integration test on real APSW database exercising all regression scenarios:
+        1. Normal valid scan ID: stale records purged, current scan preserved.
+        2. None scan ID: purges stale records when scan_compare_id is None (issue #1856 fix).
+        3. Empty-string scan ID: '' is preserved when matching scan_compare_id or scan_id.
+        4. Multiple scan IDs: records for different targets or modules remain untouched.
+        5. Compare scan ID: both current_scan and compare_scan are preserved.
+        """
+        with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
+            db_path = f.name
+
+        try:
+            records = [
+                ("192.168.1.1", "port_scan", "old_scan_1"),
+                ("192.168.1.1", "port_scan", "old_scan_2"),
+                ("192.168.1.1", "port_scan", "current_scan"),
+                ("192.168.1.1", "port_scan", "compare_scan"),
+                ("192.168.1.1", "port_scan", ""),
+                ("192.168.1.2", "port_scan", "diff_target_scan"),
+                ("192.168.1.1", "vuln_scan", "diff_module_scan"),
+            ]
+
+            def seed_apsw():
+                c = apsw.Connection(db_path)
+                cur = c.cursor()
+                cur.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS scan_events (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        target TEXT,
+                        module_name TEXT,
+                        scan_unique_id TEXT
+                    )
+                    """
+                )
+                cur.execute("DELETE FROM scan_events")
+                cur.executemany(
+                    "INSERT INTO scan_events (target, module_name, scan_unique_id)"
+                    " VALUES (?, ?, ?)",
+                    records,
+                )
+                c.close()
+
+            def get_remaining():
+                c = apsw.Connection(db_path)
+                res = [
+                    r[0]
+                    for r in c.cursor()
+                    .execute("SELECT scan_unique_id FROM scan_events")
+                    .fetchall()
+                ]
+                c.close()
+                return res
+
+            # Scenario 1 & 2: scan_compare_id is None -> purges old scans for same target/module,
+            # preserves current_scan, diff_target_scan, diff_module_scan
+            seed_apsw()
+            conn = apsw.Connection(db_path)
+            with patch(
+                "nettacker.database.db.create_connection", return_value=(conn, conn.cursor())
+            ):
+                result = remove_old_logs(
+                    {
+                        "target": "192.168.1.1",
+                        "module_name": "port_scan",
+                        "scan_id": "current_scan",
+                        "scan_compare_id": None,
+                    }
+                )
+            assert result
+            assert get_remaining() == ["current_scan", "diff_target_scan", "diff_module_scan"]
+
+            # Scenario 4: scan_compare_id is 'compare_scan' -> preserves current and compare scans
+            seed_apsw()
+            conn = apsw.Connection(db_path)
+            with patch(
+                "nettacker.database.db.create_connection", return_value=(conn, conn.cursor())
+            ):
+                result = remove_old_logs(
+                    {
+                        "target": "192.168.1.1",
+                        "module_name": "port_scan",
+                        "scan_id": "current_scan",
+                        "scan_compare_id": "compare_scan",
+                    }
+                )
+            assert result
+            assert get_remaining() == [
+                "current_scan",
+                "compare_scan",
+                "diff_target_scan",
+                "diff_module_scan",
+            ]
+
+            # Scenario 3A: scan_compare_id is empty string '' -> preserves empty string ID
+            seed_apsw()
+            conn = apsw.Connection(db_path)
+            with patch(
+                "nettacker.database.db.create_connection", return_value=(conn, conn.cursor())
+            ):
+                result = remove_old_logs(
+                    {
+                        "target": "192.168.1.1",
+                        "module_name": "port_scan",
+                        "scan_id": "current_scan",
+                        "scan_compare_id": "",
+                    }
+                )
+            assert result
+            assert get_remaining() == ["current_scan", "", "diff_target_scan", "diff_module_scan"]
+
+            # Scenario 3B: scan_id is empty string '' with scan_compare_id is None
+            seed_apsw()
+            conn = apsw.Connection(db_path)
+            with patch(
+                "nettacker.database.db.create_connection", return_value=(conn, conn.cursor())
+            ):
+                result = remove_old_logs(
+                    {
+                        "target": "192.168.1.1",
+                        "module_name": "port_scan",
+                        "scan_id": "",
+                        "scan_compare_id": None,
+                    }
+                )
+            assert result
+            assert get_remaining() == ["", "diff_target_scan", "diff_module_scan"]
+
+        finally:
+            if os.path.exists(db_path):
+                os.remove(db_path)
+
+    def test_remove_old_logs_sqlalchemy_real_db_scenarios(self):
+        """Integration test on real SQLAlchemy SQLite backend verifying existing behavior
+        remains unchanged across all scenarios.
+        """
+        engine = create_engine("sqlite:///:memory:")
+        Base.metadata.create_all(engine)
+        session_factory = sessionmaker(bind=engine)
+
+        records = [
+            ("192.168.1.1", "port_scan", "old_scan_1"),
+            ("192.168.1.1", "port_scan", "old_scan_2"),
+            ("192.168.1.1", "port_scan", "current_scan"),
+            ("192.168.1.1", "port_scan", "compare_scan"),
+            ("192.168.1.1", "port_scan", ""),
+            ("192.168.1.2", "port_scan", "diff_target_scan"),
+            ("192.168.1.1", "vuln_scan", "diff_module_scan"),
+        ]
+
+        def seed_orm():
+            s = session_factory()
+            s.query(HostsLog).delete()
+            for target, module, scan_id in records:
+                s.add(HostsLog(target=target, module_name=module, scan_unique_id=scan_id))
+            s.commit()
+            s.close()
+
+        def get_remaining():
+            s = session_factory()
+            res = [h.scan_unique_id for h in s.query(HostsLog).all()]
+            s.close()
+            return res
+
+        # Scenario 1 & 2: scan_compare_id is None
+        seed_orm()
+        session = session_factory()
+        with patch("nettacker.database.db.create_connection", return_value=session):
+            result = remove_old_logs(
+                {
+                    "target": "192.168.1.1",
+                    "module_name": "port_scan",
+                    "scan_id": "current_scan",
+                    "scan_compare_id": None,
+                }
+            )
+        assert result
+        assert get_remaining() == ["current_scan", "diff_target_scan", "diff_module_scan"]
+
+        # Scenario 4: scan_compare_id is 'compare_scan'
+        seed_orm()
+        session = session_factory()
+        with patch("nettacker.database.db.create_connection", return_value=session):
+            result = remove_old_logs(
+                {
+                    "target": "192.168.1.1",
+                    "module_name": "port_scan",
+                    "scan_id": "current_scan",
+                    "scan_compare_id": "compare_scan",
+                }
+            )
+        assert result
+        assert get_remaining() == [
+            "current_scan",
+            "compare_scan",
+            "diff_target_scan",
+            "diff_module_scan",
+        ]
+
+        # Scenario 3A: scan_compare_id is empty string ''
+        seed_orm()
+        session = session_factory()
+        with patch("nettacker.database.db.create_connection", return_value=session):
+            result = remove_old_logs(
+                {
+                    "target": "192.168.1.1",
+                    "module_name": "port_scan",
+                    "scan_id": "current_scan",
+                    "scan_compare_id": "",
+                }
+            )
+        assert result
+        assert get_remaining() == ["current_scan", "", "diff_target_scan", "diff_module_scan"]
+
+        # Scenario 3B: scan_id is empty string ''
+        seed_orm()
+        session = session_factory()
+        with patch("nettacker.database.db.create_connection", return_value=session):
+            result = remove_old_logs(
+                {
+                    "target": "192.168.1.1",
+                    "module_name": "port_scan",
+                    "scan_id": "",
+                    "scan_compare_id": None,
+                }
+            )
+        assert result
+        assert get_remaining() == ["", "diff_target_scan", "diff_module_scan"]
 
     # -------------------------------------------------------
     #             tests for submit_logs_to_db
