@@ -10,6 +10,7 @@ is a fingerprint only - it makes no claim about whether the build is vulnerable.
 """
 
 import re
+import time
 from pathlib import Path
 
 import pytest
@@ -122,6 +123,12 @@ def test_requires_http_200(step):
             '<MediaContainer\n  size="0"\n  version="1.41.0.8992-8463ad060"\n></MediaContainer>',
             "1.41.0.8992-8463ad060",
         ),
+        # XML also allows single-quoted attributes and whitespace around "=".
+        ("<MediaContainer size='0' version='1.42.1.10060-4e8b05daf'/>", "1.42.1.10060-4e8b05daf"),
+        (
+            '<MediaContainer size="0" version = "1.42.1.10060-4e8b05daf"/>',
+            "1.42.1.10060-4e8b05daf",
+        ),
     ],
 )
 def test_logs_only_the_version_string(content_regex, body, expected):
@@ -145,10 +152,13 @@ def test_logs_only_the_version_string(content_regex, body, expected):
         # Attribute names that only end in "version" are not the server version.
         '<MediaContainer size="0" data-version="1.2.3"></MediaContainer>',
         '<MediaContainer size="0" plex:version="1.2.3"></MediaContainer>',
-        # A version attribute on a child element must not be attributed to the server.
+        # A version attribute on a child element must not be attributed to the server,
+        # even when the MediaContainer tag is never closed.
         '<MediaContainer size="1"><Video version="2"/></MediaContainer>',
-        # A different element whose name merely starts with MediaContainer.
+        '<MediaContainer size="1" <Video version="2"/>',
+        # Different elements whose names merely start with MediaContainer.
         '<MediaContainerList version="1.2.3"/>',
+        '<MediaContainer-Other version="1.2.3"/>',
         # Other products that expose a version field.
         '{"database":"ok","version":"1.29.1"}',
         # Plex's HTML web app / error pages.
@@ -159,3 +169,13 @@ def test_logs_only_the_version_string(content_regex, body, expected):
 )
 def test_no_false_positive_match(content_regex, body):
     assert re.findall(content_regex, body) == []
+
+
+def test_hostile_body_is_matched_quickly(content_regex):
+    """Unterminated MediaContainer tags must not make each match attempt scan the rest of
+    the body. A target controls the response size, and a pattern that is not bounded by
+    the next tag took more than 10 seconds on this 171 KiB body."""
+    body = '<MediaContainer a="b" ' * 8000
+    start = time.perf_counter()
+    assert content_regex.findall(body) == []
+    assert time.perf_counter() - start < 1.0
