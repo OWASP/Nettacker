@@ -129,6 +129,11 @@ def test_requires_http_200(step):
             '<MediaContainer size="0" version = "1.42.1.10060-4e8b05daf"/>',
             "1.42.1.10060-4e8b05daf",
         ),
+        # ">" is allowed inside an attribute value that comes before version.
+        (
+            '<MediaContainer title="a > b" version="1.42.1.10060-4e8b05daf"/>',
+            "1.42.1.10060-4e8b05daf",
+        ),
     ],
 )
 def test_logs_only_the_version_string(content_regex, body, expected):
@@ -152,6 +157,9 @@ def test_logs_only_the_version_string(content_regex, body, expected):
         # Attribute names that only end in "version" are not the server version.
         '<MediaContainer size="0" data-version="1.2.3"></MediaContainer>',
         '<MediaContainer size="0" plex:version="1.2.3"></MediaContainer>',
+        # Text that looks like a version attribute inside another attribute's value.
+        "<MediaContainer note=\" version='1.2.3'\"/>",
+        "<MediaContainer note=' version=\"1.2.3\"'/>",
         # A version attribute on a child element must not be attributed to the server,
         # even when the MediaContainer tag is never closed.
         '<MediaContainer size="1"><Video version="2"/></MediaContainer>',

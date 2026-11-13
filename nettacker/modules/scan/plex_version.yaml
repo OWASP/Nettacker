@@ -43,6 +43,6 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: '<MediaContainer\s(?:[^<>]*\s)?version\s*=\s*["'']([^"''<>]+)["'']'
+              regex: '<MediaContainer(?:\s+[^\s=<>/"'']+\s*=\s*(?:"[^"<]*"|''[^''<]*''))*\s+version\s*=\s*["'']([^"''<>]+)["'']'
               reverse: false
           log: "response_dependent['content']"
