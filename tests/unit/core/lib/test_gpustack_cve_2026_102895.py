@@ -1,18 +1,31 @@
 """Check the GPUStack module's request and response conditions."""
 
 from copy import deepcopy
-from pathlib import Path
 
 import pytest
-import yaml
 
 from nettacker.core.lib.http import response_conditions_matched
+from nettacker.core.template import TemplateLoader
 
-MODULE = Path("nettacker/modules/vuln/gpustack_cve_2026_102895.yaml")
+MODULE_NAME = "gpustack_cve_2026_102895_vuln"
 
 
 def load_step():
-    return yaml.safe_load(MODULE.read_text())["payloads"][0]["steps"][0]
+    return TemplateLoader(
+        MODULE_NAME, {"user_agent": "Nettacker test", "target": "127.0.0.1"}
+    ).load()["payloads"][0]["steps"][0]
+
+
+def test_template_loading_preserves_regex_and_fuzzer():
+    step = load_step()
+    assert step["headers"]["User-Agent"] == "Nettacker test"
+    assert step["url"]["nettacker_fuzzer"]["input_format"] == (
+        "{schema}://127.0.0.1:{ports}{paths}"
+    )
+    pattern = step["response"]["conditions"]["content"]["regex"]
+    assert r"\{" in pattern
+    assert r"\}" in pattern
+    assert "{4}" in pattern
 
 
 def response(
