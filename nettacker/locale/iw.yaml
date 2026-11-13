@@ -182,7 +182,7 @@ gen_API_access_log: ליצור יומן גישה API
 API_access_log_file: קובץ יומן רישום של ממשק API
 API_port_int: יציאת ה- API חייבת להיות מספר שלם!
 unknown_ip_input: סוג קלט לא מוכר, סוגים מקובלים הם SINGLE_IPv4, RANGE_IPv4, CIDR_IPv4
-API_key: "* מפתח API: {0}"
+API_key: "* מפתח API: {1}"
 ports_int: יציאות חייב להיות מספרים שלמים! (למשל 80 | 80,1080 || 80,1080-1300,9000,12000-15000)
 through_API: באמצעות OWASP Nettacker API
 API_invalid: מפתח API לא חוקי
