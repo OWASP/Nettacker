@@ -243,6 +243,7 @@ environment.
 | `galera_webtemp_cve_2021_40960_vuln` | Checks Galera WebTemplate for CVE-2021-40960 directory traversal and sensitive file disclosure. |
 | `geoserver_cve_2024_36401_vuln` | Uses a non-command XPath expression and the resulting exception to identify GeoServer CVE-2024-36401 behavior. |
 | `grafana_cve_2021_43798_vuln` | Checks Grafana for CVE-2021-43798 plugin-path traversal and arbitrary file read. |
+| `gitlab_cve_2026_85706_vuln` | Checks GitLab for CVE-2026-85706 using an unauthenticated missing-path response from the repository commits API; requires a valid project ID and does not request file contents. |
 | `graphql_vuln` | Checks whether a known GraphQL endpoint exposes schema introspection without authentication. |
 | `gurock_testrail_cve_2021_40875_vuln` | Checks Gurock TestRail for CVE-2021-40875 sensitive file-list disclosure. |
 | `hoteldruid_cve_2021-37833_vuln` | Checks HotelDruid for CVE-2021-37833 reflected cross-site scripting. |
