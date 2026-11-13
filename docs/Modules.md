@@ -368,8 +368,11 @@ have permission to test.
 
 It sends a GET request to `/v2/users` with
 `X-GPUStack-Real-IP: 127.0.0.1`, without credentials or a request body.
-It requires HTTP 200, a JSON content type, and a user entry containing both
-`username` and `is_admin: true`. Redirects are not followed. The module does
+It requires HTTP 200, a JSON content type, and a flat JSON-shaped `items`
+array containing an object with both `username` and `is_admin: true`. The
+regex checks that array, not the validity of the full JSON document. Nested
+user fields are not supported and can cause a non-match. Redirects are not
+followed. The module does
 not create users, API keys, models, or inference backends.
 
 A match indicates exposed administrator data. A non-match does not prove a

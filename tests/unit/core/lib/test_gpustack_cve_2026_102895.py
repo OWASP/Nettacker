@@ -41,6 +41,10 @@ def test_read_only_probe():
     [
         '{"items":[{"username":"admin","is_admin":true}]}',
         '{"items": [{"is_admin" : true, "username": "renamed"}]}',
+        '{"items":[{"username":"user","is_admin":false},{"username":"admin","is_admin":true}]}',
+        '{"items":[{"username":"admin","is_admin":true,"full_name":"A ] { user"}]}',
+        '{"items":[{"username":"ad\\"min","is_admin":true}]}',
+        '{"items":[{"id":1,"username":"admin","is_active":true,"is_admin":true,"role":null}]}',
     ],
 )
 def test_admin_response_matches(content_type, content):
@@ -58,6 +62,17 @@ def test_admin_response_matches(content_type, content):
         response(status="500"),
         response(status="2000"),
         response(content='{"items":[]}'),
+        response(content='{"items":[],"unrelated":{"username":"admin","is_admin":true}}'),
+        response(content='{"items":[{"username":"admin","is_admin":true BROKEN}'),
+        response(content='{"items":[{"username":"admin",,"is_admin":true}]}'),
+        response(content='{"items":[{"username":"admin","is_admin":true,}]}'),
+        response(content='{"items":[{"username":"admin" "is_admin":true}]}'),
+        response(content='{"items":[{"username":"admin","is_admin":true,"is_admin":false}]}'),
+        response(content='{"items":[{"username":"admin","username":"","is_admin":true}]}'),
+        response(content='{"items":[{"username":"","is_admin":true}]}'),
+        response(content='{"items":[{"note":"\\"username\\":\\"admin\\",\\"is_admin\\":true"}]}'),
+        response(content='{"items":[{"username":"admin","profile":{},"is_admin":true}]}'),
+        response(content='{"items":[{"username":"admin","is_admin":true}'),
         response(content='{"is_admin":true}'),
         response(content='{"items":[{"is_admin":true}]}'),
         response(content='{"items":[{"username":"admin"}],"is_admin":true}'),
