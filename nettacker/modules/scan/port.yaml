@@ -1022,6 +1022,18 @@ payloads:
           - 65000
           - 65129
           - 65389
+          # The ports above follow Nmap's default port list. The ports below are not in
+          # that list: they are the non-standard default ports used by Nettacker modules.
+          # Service discovery only runs a module against services that port_scan found, so
+          # every default port a module uses must be listed. When a module needs a new
+          # port, add it here; tests/unit/test_port_scan_module_ports.py checks this.
+          - 4433   # SonicWall SSL VPN
+          - 4502   # Adobe Experience Manager (author)
+          - 4503   # Adobe Experience Manager (publish)
+          - 5230   # Memos
+          - 7860   # Langflow
+          - 17017  # SmarterMail
+          - 32400  # Plex Media Server
         response:
           condition_type: or
           log: "response_dependent['service']"
