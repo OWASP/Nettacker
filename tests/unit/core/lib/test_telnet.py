@@ -12,8 +12,8 @@ except ImportError:  # not available on Windows
 from nettacker.core.lib.telnet import TelnetEngine, TelnetLibrary, TelnetLoginError
 from tests.unit.common import TestCase
 
-USERNAME = "admin"
-PASSWORD = "s3cret"
+USERNAME = "mock_admin"
+PASSWORD = "mock_secret"
 # Cases where the reply arrives immediately use a generous timeout so that a slow test runner
 # cannot make them flaky; cases that are meant to time out use a short one to stay fast.
 LONG_TIMEOUT = 5
