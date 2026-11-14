@@ -53,7 +53,7 @@ payloads:
               regex: "404"
               reverse: false
             content:
-              regex: "(?s)(?=.*Using the URLconf defined in)(?=.*Django tried these URL patterns)(?=.*You.*?re seeing this error because you have).*(DEBUG\\s*=\\s*True)"
+              regex: "(?s)\\A(?=.*Using the URLconf defined in)(?=.*Django tried these URL patterns)(?=.*You.*?re seeing this error because you have).*(DEBUG\\s*=\\s*True)"
               reverse: false
       - method: get
         timeout: 3
