@@ -81,3 +81,31 @@ def test_omitted_whitelist_stays_unrestricted(start_api):
 
     start_api.assert_called_once()
     assert start_api.call_args.args[0].api_client_whitelisted_ips == []
+
+
+def test_user_and_password_lists_ignore_the_trailing_newline(tmp_path, monkeypatch):
+    usernames = tmp_path / "users.txt"
+    passwords = tmp_path / "passwords.txt"
+    usernames.write_text("root\nadmin\n")
+    passwords.write_text("\ntoor\n")
+    argv = ["nettacker", "-i", "127.0.0.1", "-m", "ssh_brute"]
+    argv += ["-U", str(usernames), "-P", str(passwords), "-o", str(tmp_path / "r.html")]
+    monkeypatch.setattr(sys, "argv", argv)
+
+    options = ArgParser().arguments
+
+    assert sorted(options.usernames) == ["admin", "root"]
+    # A blank line written on purpose is still an empty password.
+    assert sorted(options.passwords) == ["", "toor"]
+
+
+def test_password_list_ignores_the_trailing_newline(tmp_path, monkeypatch):
+    # The file in the test above already has a blank line on purpose, so
+    # set() would hide a stray empty entry there. Check without one too.
+    passwords = tmp_path / "passwords.txt"
+    passwords.write_text("toor\n")
+    argv = ["nettacker", "-i", "127.0.0.1", "-m", "ssh_brute"]
+    argv += ["-P", str(passwords), "-o", str(tmp_path / "r.html")]
+    monkeypatch.setattr(sys, "argv", argv)
+
+    assert ArgParser().arguments.passwords == ["toor"]
