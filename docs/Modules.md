@@ -242,6 +242,7 @@ environment.
 | `forgerock_am_cve_2021_35464_vuln` | Probes the unauthenticated ForgeRock AM `ccversion` endpoint associated with CVE-2021-35464; it does not send a deserialization payload. |
 | `galera_webtemp_cve_2021_40960_vuln` | Checks Galera WebTemplate for CVE-2021-40960 directory traversal and sensitive file disclosure. |
 | `geoserver_cve_2024_36401_vuln` | Uses a non-command XPath expression and the resulting exception to identify GeoServer CVE-2024-36401 behavior. |
+| `gpustack_cve_2026_102895_vuln` | Checks GPUStack for CVE-2026-102895 unauthenticated access to the user list via a spoofed loopback header. |
 | `grafana_cve_2021_43798_vuln` | Checks Grafana for CVE-2021-43798 plugin-path traversal and arbitrary file read. |
 | `graphql_vuln` | Checks whether a known GraphQL endpoint exposes schema introspection without authentication. |
 | `gurock_testrail_cve_2021_40875_vuln` | Checks Gurock TestRail for CVE-2021-40875 sensitive file-list disclosure. |
