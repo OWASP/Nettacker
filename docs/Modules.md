@@ -262,6 +262,7 @@ environment.
 | `meteobridge_cve_2025_4008_vuln` | Probes MeteoBridge for CVE-2025-4008 command injection by executing `id` through the `templatefile` parameter. |
 | `msexchange_cve_2021_26855_vuln` | Checks Microsoft Exchange Server for CVE-2021-26855 ProxyLogon server-side request forgery. |
 | `msexchange_cve_2021_34473_vuln` | Probes crafted Exchange Autodiscover paths for response signatures associated with CVE-2021-34473 ProxyShell. |
+| `nextjs_cve_2025_29927_vuln` | Checks NextJS for Middleware Bypass CVE-2025-29927. |
 | `nextjs_cve_2025_55182_vuln` | Probes CVE-2025-55182 React2Shell by executing a fixed arithmetic expression through a Unix shell or PowerShell and checking the redirect marker. |
 | `nexus_cve_2024_4956_vuln` | Checks Sonatype Nexus Repository Manager for CVE-2024-4956 unauthenticated path traversal and arbitrary file read. |
 | `nginx_ui_cve_2026_33032_vuln` | Checks Nginx UI before 2.3.4 for CVE-2026-33032 unauthenticated access to the MCP message endpoint. |
