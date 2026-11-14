@@ -10,7 +10,7 @@ info:
     This module sends a read-only GET to /v2/users with a loopback header
     and checks for a JSON response containing an administrator user.
     CVE-2026-102895 is in the CISA Known Exploited Vulnerabilities catalog.
-  references:
+  reference:
     - https://github.com/advisories/GHSA-gj9m-f8ph-pmhr
     - https://nvd.nist.gov/vuln/detail/CVE-2026-102895
     - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
@@ -65,14 +65,5 @@ payloads:
                 regex: '(?i)^application/json(?:\s*;|$)'
                 reverse: false
             content:
-              # This checks a flat JSON-shaped array, not arbitrary JSON.
-              # Double literal braces for TemplateLoader formatting.
-              regex: |
-                (?x)
-                # Locate the items array and allow preceding flat user objects.
-                "items"\s*:\s*\[\s*(?:\{{\s*(?:"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"\s*:\s*(?:"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?|true|false|null)(?:\s*,\s*"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"\s*:\s*(?:"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?|true|false|null))*)?\s*\}}\s*,\s*)*
-                # Require username and is_admin in the same flat object, in either order.
-                \{{\s*(?:(?!"(?:username|is_admin)"\s*:)"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"\s*:\s*(?:"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?|true|false|null)\s*,\s*)*(?:"username"\s*:\s*"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))+"\s*,\s*(?:(?!"(?:username|is_admin)"\s*:)"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"\s*:\s*(?:"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?|true|false|null)\s*,\s*)*"is_admin"\s*:\s*true|"is_admin"\s*:\s*true\s*,\s*(?:(?!"(?:username|is_admin)"\s*:)"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"\s*:\s*(?:"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?|true|false|null)\s*,\s*)*"username"\s*:\s*"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))+")(?:\s*,\s*(?!"(?:username|is_admin)"\s*:)"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"\s*:\s*(?:"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?|true|false|null))*\s*\}}
-                # Validate the remaining flat user objects and the array end.
-                (?:\s*,\s*\{{\s*(?:"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"\s*:\s*(?:"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?|true|false|null)(?:\s*,\s*"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"\s*:\s*(?:"(?:[^"\\\x00-\x1f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{{4}}))*"|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?|true|false|null))*)?\s*\}})*\s*\]
+              regex: '(?s)(?=.*"username"\s*:\s*")(?=.*"is_admin"\s*:\s*true)'
               reverse: false

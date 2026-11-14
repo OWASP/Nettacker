@@ -242,6 +242,7 @@ environment.
 | `forgerock_am_cve_2021_35464_vuln` | Probes the unauthenticated ForgeRock AM `ccversion` endpoint associated with CVE-2021-35464; it does not send a deserialization payload. |
 | `galera_webtemp_cve_2021_40960_vuln` | Checks Galera WebTemplate for CVE-2021-40960 directory traversal and sensitive file disclosure. |
 | `geoserver_cve_2024_36401_vuln` | Uses a non-command XPath expression and the resulting exception to identify GeoServer CVE-2024-36401 behavior. |
+| `gpustack_cve_2026_102895_vuln` | Checks GPUStack before 2.2.0 for CVE-2026-102895 unauthenticated administrator access by requesting `/v2/users` with a loopback `X-GPUStack-Real-IP` header. |
 | `grafana_cve_2021_43798_vuln` | Checks Grafana for CVE-2021-43798 plugin-path traversal and arbitrary file read. |
 | `graphql_vuln` | Checks whether a known GraphQL endpoint exposes schema introspection without authentication. |
 | `gurock_testrail_cve_2021_40875_vuln` | Checks Gurock TestRail for CVE-2021-40875 sensitive file-list disclosure. |
@@ -359,37 +360,3 @@ policies before running a brute-force module.
 
 Modules are declarative YAML. See [Developers](Developers.md) for the module template, available libraries and
 step/condition reference.
-
-## GPUStack CVE-2026-102895
-
-The `gpustack_cve_2026_102895_vuln` module checks for unauthenticated
-administrator access in GPUStack before 2.2.0. Only scan systems you own or
-have permission to test.
-
-It sends a GET request to `/v2/users` with
-`X-GPUStack-Real-IP: 127.0.0.1`, without credentials or a request body.
-It requires HTTP 200, a JSON content type, and a flat JSON-shaped `items`
-array containing an object with both `username` and `is_admin: true`. The
-regex checks that array, not the validity of the full JSON document. Nested
-user fields are not supported and can cause a non-match. Redirects are not
-followed. The module does
-not create users, API keys, models, or inference backends.
-
-A match indicates exposed administrator data. A non-match does not prove a
-server is patched: gateway mode, proxy filtering, `force_auth_localhost`,
-network access, and the configured port can affect the result. The check
-also detects affected same-host reverse-proxy deployments where the TCP
-peer is already loopback. Upgrade affected deployments to 2.2.0 or later.
-
-On an authorized lab target, select the module and its actual port:
-
-```sh
-poetry run nettacker -i LAB_HOST -m gpustack_cve_2026_102895_vuln -g 30080
-```
-
-The module has one read-only request per generated URL, not one request
-across every protocol and port combination.
-
-References:
-- <https://github.com/advisories/GHSA-gj9m-f8ph-pmhr>
-- <https://nvd.nist.gov/vuln/detail/CVE-2026-102895>
