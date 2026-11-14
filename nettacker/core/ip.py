@@ -6,24 +6,18 @@ import requests
 
 def generate_ip_range(ip_range):
     """
-    IP range to CIDR and IPNetwork type
+    Expand an IP range or CIDR into all of its addresses.
 
     Args:
         ip_range: IP range
 
     Returns:
-        an array with CIDRs
+        a list of IP address strings, including both endpoints
     """
     if "/" in ip_range:
         return [ip.format() for ip in [cidr for cidr in netaddr.IPNetwork(ip_range)]]
     else:
-        ips = []
-        for generator_ip_range in [
-            cidr.iter_hosts() for cidr in netaddr.iprange_to_cidrs(*ip_range.rsplit("-"))
-        ]:
-            for ip in generator_ip_range:
-                ips.append(ip.format())
-        return ips
+        return [ip.format() for ip in netaddr.IPRange(*ip_range.split("-"))]
 
 
 def get_ip_range(ip):
@@ -58,10 +52,19 @@ def is_single_ipv4(ip):
     Returns:
          True if it's IPv4 otherwise False
     """
-    return netaddr.valid_ipv4(str(ip))
+    return bool(ip) and netaddr.valid_ipv4(str(ip), netaddr.INET_PTON)
 
 
 def is_ipv4_range(ip_range):
+    """
+    check if a value is an IPv4 CIDR (e.g. 192.168.1.0/24)
+
+    Args:
+        ip_range: the value to check
+
+    Returns:
+        True if it matches otherwise False
+    """
     try:
         return (
             "/" in ip_range
@@ -74,12 +77,21 @@ def is_ipv4_range(ip_range):
 
 
 def is_ipv4_cidr(ip_range):
+    """
+    check if a value is an IPv4 start-end range (e.g. 192.168.1.1-192.168.1.10)
+
+    Args:
+        ip_range: the value to check
+
+    Returns:
+        True if it matches otherwise False
+    """
     try:
         return (
             "/" not in ip_range
             and "." in ip_range
             and "-" in ip_range
-            and bool(netaddr.iprange_to_cidrs(*ip_range.split("-")))
+            and bool(netaddr.IPRange(*ip_range.split("-")))
         )
     except Exception:
         return False
@@ -95,22 +107,40 @@ def is_single_ipv6(ip):
     Returns:
          True if it's IPv6 otherwise False
     """
-    return netaddr.valid_ipv6(ip)
+    return bool(ip) and netaddr.valid_ipv6(str(ip))
 
 
 def is_ipv6_range(ip_range):
+    """
+    check if a value is an IPv6 start-end range (e.g. 2001:db8::1-2001:db8::a)
+
+    Args:
+        ip_range: the value to check
+
+    Returns:
+        True if it matches otherwise False
+    """
     try:
         return (
             "/" not in ip_range
             and ":" in ip_range
             and "-" in ip_range
-            and bool(netaddr.iprange_to_cidrs(*ip_range.split("-")))
+            and bool(netaddr.IPRange(*ip_range.split("-")))
         )
     except Exception:
         return False
 
 
 def is_ipv6_cidr(ip_range):
+    """
+    check if a value is an IPv6 CIDR (e.g. 2001:db8::/64)
+
+    Args:
+        ip_range: the value to check
+
+    Returns:
+        True if it matches otherwise False
+    """
     try:
         return (
             "/" in ip_range

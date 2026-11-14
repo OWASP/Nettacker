@@ -195,7 +195,7 @@ API_port_int: د API بندر باید یو عامل وي!
 unknown_ip_input:
   نامعلوم ډول ډول ډولونه، منل شوي ډولونه SINGLE_IPv4، RANGE_IPv4،
   CIDR_IPv4 دي
-API_key: "* API Key: {0}"
+API_key: "* API Key: {1}"
 ports_int: بندرونه باید حتمي وي! (لکه 80 || 80،1080 || 80،1080-1300،9000،12000-15000)
 through_API: د OWASP Nettacker API له لارې
 API_invalid: ناباوره API کیلي

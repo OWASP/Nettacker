@@ -206,7 +206,7 @@ API_port_int: API پورٹ لازمی ہے.
 unknown_ip_input:
   نامعلوم ان پٹ کی قسم، قبول شدہ اقسام SINGLE_IPv4، RANGE_IPv4، CIDR_IPv4
   ہیں
-API_key: "* API کلیدی: {0}"
+API_key: "* API کلیدی: {1}"
 ports_int: بندرگاہوں کو لازمی طور پر ہونا چاہئے! (مثلا 80 || 80،1080 || 80،1080-1300،9000،12000-15000)
 through_API: OWASP Nettacker API کے ذریعہ
 API_invalid: غلط API کلید

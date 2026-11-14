@@ -582,23 +582,22 @@ class ArgParser(ArgumentParser):
                 die_failure(_("cannot_run_api_server"))
             from nettacker.api.engine import start_api_server
 
-            if options.api_client_whitelisted_ips:
-                if isinstance(options.api_client_whitelisted_ips, str):
-                    options.api_client_whitelisted_ips = options.api_client_whitelisted_ips.split(
-                        ","
-                    )
-                    whitelisted_ips = []
-                    for ip in options.api_client_whitelisted_ips:
-                        if is_single_ipv4(ip) or is_single_ipv6(ip):
-                            whitelisted_ips.append(ip)
-                        elif (
-                            is_ipv4_range(ip)
-                            or is_ipv6_range(ip)
-                            or is_ipv4_cidr(ip)
-                            or is_ipv6_cidr(ip)
-                        ):
-                            whitelisted_ips += generate_ip_range(ip)
-                    options.api_client_whitelisted_ips = whitelisted_ips
+            if isinstance(options.api_client_whitelisted_ips, str):
+                whitelisted_ips = []
+                for ip in options.api_client_whitelisted_ips.split(","):
+                    ip = ip.strip()
+                    if is_single_ipv4(ip) or is_single_ipv6(ip):
+                        whitelisted_ips.append(ip)
+                    elif (
+                        is_ipv4_range(ip)
+                        or is_ipv6_range(ip)
+                        or is_ipv4_cidr(ip)
+                        or is_ipv6_cidr(ip)
+                    ):
+                        whitelisted_ips += generate_ip_range(ip)
+                    else:
+                        die_failure(_("invalid_whitelist_ip").format(ip))
+                options.api_client_whitelisted_ips = whitelisted_ips
             start_api_server(options)
 
         # Check the target(s)

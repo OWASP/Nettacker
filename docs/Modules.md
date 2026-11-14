@@ -180,6 +180,7 @@ Use `--show-all-modules` for live metadata and check-specific details.
 | `drupal_modules_scan` | Enumerates popular modules installed on a Drupal site. |
 | `drupal_theme_scan` | Identifies themes installed on a Drupal site. |
 | `drupal_version_scan` | Identifies a Drupal installation and reports its version. |
+| `grafana_version_scan` | Detects Grafana via its unauthenticated `/api/health` endpoint and reports its version. |
 | `http_html_title_scan` | Extracts the HTML `<title>` element to help identify the application served by a web endpoint. |
 | `http_redirect_scan` | Reports HTTP 3xx redirects and their destination locations. |
 | `http_status_scan` | Requests a web endpoint and reports its HTTP response status. |
@@ -301,7 +302,7 @@ environment.
 | `wp_plugin_cve_2023_6875_vuln` | Checks whether the WordPress POST SMTP Mailer `connect-app` endpoint returns `fcm_token` without authentication, indicating CVE-2023-6875 exposure; it does not inject JavaScript. |
 | `wp_xmlrpc_bruteforce_vuln` | Detects WordPress XML-RPC `wp.getUsersBlogs` behavior that can be used for credential attacks. |
 | `wp_xmlrpc_dos_vuln` | Detects exposed WordPress XML-RPC multicall functionality that can amplify requests and contribute to denial of service. |
-| `wp_xmlrpc_pingback_vuln` | Detects enabled WordPress XML-RPC pingbacks that can be abused for server-side requests or reflected denial of service. |
+| `wp_xmlrpc_pingback_vuln` | Detects WordPress before 3.5.1, where the XML-RPC `pingback.ping` method can be used to port-scan hosts reachable from the server (CVE-2013-0235). Needs post ID 1 to exist with pings open. |
 | `x_powered_by_vuln` | Reports technology details disclosed by the HTTP `X-Powered-By` response header. |
 | `x_xss_protection_vuln` | Reports a present legacy `X-XSS-Protection` header whose value is not `1; mode=block`; an absent header is not currently flagged. |
 | `xdebug_rce_vuln` | Detects the Xdebug 2.5.5 response header associated with a remotely exploitable Xdebug release. |
