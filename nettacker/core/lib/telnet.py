@@ -39,10 +39,13 @@ class TelnetLibrary(BaseLibrary):
     )
 
     # Positive evidence of a successful login: a "Last login" line or a conservative shell
-    # prompt on the last line (one word without "<" or ">" that ends in one of > $ # %).
+    # prompt on the last line (one word without "<" or ">" that ends in one of > $ # %). A last
+    # line that is only login, username, user, password or passwd (in any case) before the prompt
+    # character, or only a ">", is the server asking again and not a shell.
     success_markers = (
         rb"Last login",
-        rb"(?:\A|[\r\n])[^\s<>$#%]{0,64}(?:>| ?[$#%]) ?\Z",
+        rb"(?:\A|[\r\n])(?!(?i:login|username|user|password|passwd)(?:>| ?[$#%]) ?\Z|> ?\Z)"
+        + rb"[^\s<>$#%]{0,64}(?:>| ?[$#%]) ?\Z",
     )
 
     # A success marker or a trailing prompt is only believed once nothing more arrived for

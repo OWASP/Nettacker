@@ -34,6 +34,41 @@ BANNERS = (
 AFTER_BANNER = b"Tue Nov 10 10:00:00 2026 from 10.0.0.1 on ttyS0\r\nadmin@mock:~$ "
 # The two prompts of a login, with the stage they belong to.
 PROMPTS = (("login", b"mock login: "), ("password", b"Password: "))
+# Replies that end in nothing but a credential word (or a bare ">") before the prompt character.
+# The server asks for the credentials again, so none of them is a shell. No failure phrase is sent.
+CREDENTIAL_PROMPTS = (
+    b"\r\nInvalid credentials\r\nlogin> ",
+    b"\r\nInvalid credentials\r\nUsername> ",
+    b"\r\nInvalid credentials\r\nPassword# ",
+    b"\r\nlogin$ ",
+    b"\r\nPASSWORD> ",
+    b"\r\n> ",
+    b"\r\nuser$ ",
+    b"\r\nlogin # ",
+    b"\r\nUser> ",
+    b"\r\nPasswd# ",
+)
+# Shell prompts that must stay accepted, among them prompts that only contain such a word.
+SHELL_REPLIES = (
+    b"\r\nadmin@mock:~$ ",
+    b"~ # ",
+    b"# ",
+    b"$ ",
+    b"\r\nRouter>",
+    b"\r\nRouter(config)#",
+    b"C:\\Users\\a>",
+    b"\r\nroot@OpenWrt:~# ",
+    b"\r\nbash-5.1$ ",
+    b"\r\nuser@password-vault:~$ ",
+    b"\r\nuser@login-server:~$ ",
+    b"\r\nLast login: never\r\nadmin@mock:~$ ",
+    b"\r\nroot@login:~# ",
+    b"\r\nlogin-server$ ",
+    b"\r\nusers# ",
+    b"\r\nuser1> ",
+    b"\r\nadmin> ",
+    b"\r\nLast login: never\r\nuser$ ",
+)
 
 
 def read_line(connection):
@@ -257,6 +292,16 @@ class TestTelnetBruteForce(TestCase):
         self.assert_rejected(handler, **options)
         return time.monotonic() - started
 
+    def assert_not_confirmed(self, reply):
+        """Assert that `reply` is received, does not confirm the login and is rejected in time."""
+        started = time.monotonic()
+        with self.assertRaises(TelnetLoginError) as rejected:
+            self.attempt(scripted(reply), timeout=SHORT_TIMEOUT)
+        self.assertLess(time.monotonic() - started, 5)
+        # rejected because the reply arrived and does not confirm a login, not because nothing
+        # arrived before the timeout ended
+        self.assertIn(repr(reply), str(rejected.exception))
+
     def test_correct_password_accepted(self):
         reply = b"\r\nLast login: Tue Nov 10 10:00:00 2026 from 10.0.0.1\r\nadmin@mock:~$ "
 
@@ -335,6 +380,33 @@ class TestTelnetBruteForce(TestCase):
         ):
             with self.subTest(banner=banner):
                 self.assert_rejected(scripted(banner))
+
+    def test_credential_prompt_with_a_prompt_character_is_not_a_shell_prompt(self):
+        # "login> " looks like a shell prompt but is the server asking again. Nothing in the reply
+        # says the login failed, so it is not confirmed and rejected when the timeout ends.
+        for reply in CREDENTIAL_PROMPTS:
+            with self.subTest(reply=reply):
+                self.assert_not_confirmed(reply)
+
+    def test_shell_prompts_stay_accepted_also_with_a_credential_word_in_them(self):
+        # Only a last line that is nothing but the word is taken for a new prompt for the
+        # credentials. The hostnames login-server and password-vault, a host called login, users
+        # and user1 are shells, and a Last login line still confirms a prompt that is only "user$".
+        for reply in SHELL_REPLIES:
+            with self.subTest(reply=reply):
+                result, _, _ = self.attempt(scripted(reply), timeout=LONG_TIMEOUT)
+                self.assertEqual(result["password"], PASSWORD)
+
+    def test_login_and_password_prompts_after_a_rejection_are_still_rejected(self):
+        for prompt in (b"login: ", b"Password: "):
+            with self.subTest(prompt=prompt):
+                reply = b"\r\nInvalid credentials\r\n" + prompt
+                self.assertLess(self.rejection_time(scripted(reply), timeout=LONG_TIMEOUT), 5)
+
+    def test_prompt_with_a_space_in_its_first_word_is_not_recognised(self):
+        # known limit, unchanged: "[root@host ~]# " is not a one-word prompt, so the login is not
+        # confirmed and rejected when the timeout ends
+        self.assert_not_confirmed(b"[root@host ~]# ")
 
     def test_silent_server_rejected_within_the_timeout(self):
         self.assert_rejected(scripted(b""))
