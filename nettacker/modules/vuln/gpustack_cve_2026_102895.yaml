@@ -65,5 +65,5 @@ payloads:
                 regex: '(?i)^application/json(?:\s*;|$)'
                 reverse: false
             content:
-              regex: '(?s)(?=.*"username"\s*:\s*")(?=.*"is_admin"\s*:\s*true)'
+              regex: '"is_admin"\s*:\s*true'
               reverse: false
