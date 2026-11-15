@@ -36,5 +36,5 @@ payloads:
           conditions:
             headers:
               X-Content-Type-Options:
-                regex: ^((?!nosniff).)+$
+                regex: ^$|^((?!nosniff).)+$
                 reverse: false

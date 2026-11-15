@@ -4,6 +4,9 @@ import time
 
 import pytest
 
+from nettacker.core.template import TemplateLoader
+from nettacker.core.utils.common import expand_module_steps
+
 http = importlib.import_module("nettacker.core.lib.http")
 
 # ----------------------------
@@ -321,6 +324,181 @@ def test_response_conditions_responsetime(monkeypatch):
 
     response["responsetime"] = 0.2
     assert http.response_conditions_matched(sub_step, response) == {}
+
+
+@pytest.mark.parametrize(
+    ("headers", "expected_match"),
+    [
+        ({}, True),
+        ({"X-Content-Type-Options": "sniff"}, True),
+        ({"X-Content-Type-Options": "nosniff"}, False),
+    ],
+)
+def test_response_conditions_missing_weak_and_secure_header(headers, expected_match):
+    sub_step = {
+        "response": {
+            "condition_type": "or",
+            "conditions": {
+                "headers": {
+                    "X-Content-Type-Options": {
+                        "regex": r"^$|^((?!nosniff).)+$",
+                        "reverse": False,
+                    }
+                }
+            },
+        }
+    }
+
+    response = {"headers": headers.copy()}
+
+    result = http.response_conditions_matched(sub_step, response)
+
+    assert bool(result) is expected_match
+
+    if not headers:
+        assert result["headers"]["X-Content-Type-Options"] == [""]
+
+
+@pytest.mark.parametrize(
+    ("headers", "expected_match"),
+    [
+        ({}, True),
+        ({"X-Test": "different"}, True),
+        ({"X-Test": "blocked"}, False),
+    ],
+)
+def test_response_conditions_missing_header_respects_reverse_flag(headers, expected_match):
+    sub_step = {
+        "response": {
+            "condition_type": "or",
+            "conditions": {
+                "headers": {
+                    "X-Test": {
+                        "regex": r"blocked",
+                        "reverse": True,
+                    }
+                }
+            },
+        }
+    }
+
+    response = {"headers": headers.copy()}
+
+    result = http.response_conditions_matched(sub_step, response)
+
+    assert bool(result) is expected_match
+
+
+def load_vulnerability_module_step(module_name):
+    inputs = {
+        "target": "example.test",
+        "user_agent": "test-agent",
+        "schema": None,
+        "ports": None,
+        "timeout": 3.0,
+    }
+
+    payloads = TemplateLoader(module_name, inputs).load()["payloads"]
+
+    return expand_module_steps(payloads)[0]["steps"][0][0]
+
+
+@pytest.mark.parametrize(
+    ("module_name", "header", "weak_value", "secure_value"),
+    [
+        (
+            "strict_transport_security_vuln",
+            "Strict-Transport-Security",
+            "max-age=0",
+            "max-age=31536000; includeSubDomains",
+        ),
+        (
+            "content_type_options_vuln",
+            "X-Content-Type-Options",
+            "sniff",
+            "nosniff",
+        ),
+        (
+            "x_xss_protection_vuln",
+            "X-XSS-Protection",
+            "0",
+            "1; mode=block",
+        ),
+    ],
+)
+@pytest.mark.parametrize("header_state", ["missing", "weak", "secure"])
+def test_security_header_modules(module_name, header, weak_value, secure_value, header_state):
+    step = load_vulnerability_module_step(module_name)
+
+    headers = {"Server": "nginx"}
+
+    if header_state == "weak":
+        headers[header] = weak_value
+    elif header_state == "secure":
+        headers[header] = secure_value
+
+    response = {"headers": headers}
+
+    result = http.response_conditions_matched(step, response)
+
+    assert bool(result) is (header_state != "secure")
+
+
+@pytest.mark.parametrize(
+    ("header_value", "expected_match"),
+    [
+        (None, True),
+        ("default-src 'unsafe-inline'", True),
+        ("default-src 'self'", False),
+    ],
+)
+def test_csp_module_missing_weak_and_secure_header(header_value, expected_match):
+    step = load_vulnerability_module_step("content_security_policy_vuln")
+
+    headers = {"Server": "nginx"}
+
+    if header_value is not None:
+        headers["Content-Security-Policy"] = header_value
+
+    response = {
+        "headers": headers,
+        # Prevent the independent content condition from triggering.
+        "content": "Content-Security-Policy unsafe-inline",
+    }
+
+    result = http.response_conditions_matched(step, response)
+
+    assert bool(result) is expected_match
+
+
+@pytest.mark.parametrize(
+    ("headers", "expected_match"),
+    [
+        ({}, True),
+        ({"X-Frame-Options": "ALLOWALL"}, True),
+        ({"X-Frame-Options": "DENY"}, False),
+        ({"X-Frame-Options": "SAMEORIGIN"}, False),
+        ({"Content-Security-Policy": "frame-ancestors 'none'"}, False),
+        (
+            {
+                "X-Frame-Options": "DENY",
+                "Content-Security-Policy": "frame-ancestors 'none'",
+            },
+            False,
+        ),
+    ],
+)
+def test_clickjacking_module_missing_weak_and_secure_headers(headers, expected_match):
+    step = load_vulnerability_module_step("clickjacking_vuln")
+
+    response = {
+        "headers": {"Server": "nginx", **headers},
+        "content": "x",
+    }
+
+    result = http.response_conditions_matched(step, response)
+
+    assert bool(result) is expected_match
 
 
 # ----------------------------

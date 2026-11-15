@@ -104,9 +104,7 @@ def response_conditions_matched(sub_step, response):
                 try:
                     regex = re.findall(
                         re.compile(conditions["headers"][header]["regex"]),
-                        response["headers"][header.lower()]
-                        if header.lower() in response["headers"]
-                        else False,
+                        response["headers"].get(header.lower(), ""),
                     )
                     condition_results["headers"][header] = reverse_and_regex_condition(
                         regex, reverse

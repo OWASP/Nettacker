@@ -38,5 +38,5 @@ payloads:
           conditions:
             headers:
               Strict-Transport-Security:
-                regex: ^((?!max-age).)+$|^((?!includeSubDomains).)+$
+                regex: ^$|^((?!max-age).)+$|^((?!includeSubDomains).)+$
                 reverse: false

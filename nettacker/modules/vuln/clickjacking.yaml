@@ -36,10 +36,10 @@ payloads:
           conditions:
             headers:
               x-frame-options:
-                regex: ^((?!SAMEORIGIN|DENY).)+$
+                regex: ^$|^((?!SAMEORIGIN|DENY).)+$
                 reverse: false
               Content-Security-Policy:
-                regex: ^((?!frame-ancestors|frame-src).)+$
+                regex: ^$|^((?!frame-ancestors|frame-src).)+$
                 reverse: false
             content:
               regex: ^((?!http-equiv=.*Content-Security-Policy.*content=.*(DENY|SAMEORIGIN)).)+$
