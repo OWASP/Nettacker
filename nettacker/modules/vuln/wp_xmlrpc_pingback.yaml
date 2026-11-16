@@ -2,8 +2,10 @@ info:
   name: wp_xmlrpc_pingback_vuln
   author: OWASP Nettacker Team
   severity: 3
-  description:
+  description: WordPress before 3.5.1 lets the XML-RPC pingback.ping method fetch any source URL and returns a different fault code depending on the result, which can be used to port-scan hosts reachable from the server (CVE-2013-0235). The check sends a pingback for post ID 1 and needs that post to exist with pings open.
   reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2013-0235
+    - https://www.avsecurity.in/wordpress-xml-rpc-pingback-vulnerability/
   profiles:
     - vuln
     - http
@@ -32,10 +34,10 @@ payloads:
               ports:
                 - 80
                 - 443
-        data: <methodCall><methodName>pingback.ping</methodName><params><param><value><string>http://Cannotbehere:22/</string></value></param><param><value><string>{target}</string></value></param></params></methodCall>
+        data: <methodCall><methodName>pingback.ping</methodName><params><param><value><string>http://Cannotbehere:22/</string></value></param><param><value><string>http://{target}/?p=1</string></value></param></params></methodCall>
         response:
           condition_type: or
           conditions:
             content:
-              regex: <name>16</name>
+              regex: <int>16</int>
               reverse: false
