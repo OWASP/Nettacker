@@ -340,7 +340,7 @@ YAML template with every entry in the bundled password wordlist:
 The default password candidates are the 1,000 non-empty values in
 [`top_1000_common_passwords.txt`](../nettacker/lib/payloads/passwords/top_1000_common_passwords.txt),
 plus an empty password. The loader treats blank lines as entries, so the leading blank line adds the
-empty-password attempt and the final newline currently adds a duplicate empty value. The older
+empty-password attempt. A final newline only ends the last line and does not add an entry. The older
 short credential list previously shown on this page does not describe the current module templates.
 
 Override the defaults with comma-separated values (`-u`, `-p`) or files containing one value per
