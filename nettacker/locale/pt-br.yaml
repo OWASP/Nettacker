@@ -213,7 +213,7 @@ API_port_int: a porta API deve ser um número inteiro!
 unknown_ip_input: >-
   tipo de entrada desconhecido, os tipos aceitos são SINGLE_IPv4, RANGE_IPv4,
   CIDR_IPv4
-API_key: '* Chave de API: {0}'
+API_key: '* Chave de API: {1}'
 ports_int: >-
   as portas devem ser inteiros! (por exemplo, 80 || 80,1080 ||
   80,1080-1300,9000,12000-15000)

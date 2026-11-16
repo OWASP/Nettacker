@@ -201,7 +201,7 @@ API_port_int: API-poort moet een geheel getal zijn!
 unknown_ip_input:
   onbekend ingangstype, geaccepteerde typen zijn SINGLE_IPv4, RANGE_IPv4,
   CIDR_IPv4
-API_key: "* API-sleutel: {0}"
+API_key: "* API-sleutel: {1}"
 ports_int: poorten moeten gehele getallen zijn! (bijvoorbeeld 80 || 80,1080 || 80,1080-1300,9000,12000-15000)
 through_API: Via de OWASP Nettacker API
 API_invalid: ongeldige API-sleutel

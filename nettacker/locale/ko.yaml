@@ -170,7 +170,7 @@ gen_API_access_log: API 액세스 로그 생성
 API_access_log_file: API 액세스 로그 파일 이름
 API_port_int: API 포트는 정수 여야합니다!
 unknown_ip_input: 알 수없는 입력 유형, 허용되는 유형은 SINGLE_IPv4, RANGE_IPv4, CIDR_IPv4입니다.
-API_key: "* API 키 : {0}"
+API_key: "* API 키 : {1}"
 ports_int: "포트는 정수 여야합니다! (예 : 80 || 80,1080 || 80,1080-1300,9000,12000-15000)"
 through_API: OWASP Nettacker API를 통해
 API_invalid: 잘못된 API 키

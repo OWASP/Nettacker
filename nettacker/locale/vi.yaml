@@ -203,7 +203,7 @@ API_port_int: Cổng API phải là một số nguyên!
 unknown_ip_input:
   loại đầu vào không xác định, các loại được chấp nhận là SINGLE_IPv4,
   RANGE_IPv4, CIDR_IPv4
-API_key: "* Khóa API: {0}"
+API_key: "* Khóa API: {1}"
 ports_int: "cổng phải là số nguyên! (ví dụ: 80 || 80,1080 || 80,1080-1300,9000,12000-15000)"
 through_API: Thông qua API OWASP Nettacker
 API_invalid: khóa API không hợp lệ

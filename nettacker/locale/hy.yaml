@@ -204,7 +204,7 @@ API_port_int: "API պորտը պետք է լինի ամբողջական թիվ:"
 unknown_ip_input:
   անհայտ մուտքագրման տեսակը, ընդունված տեսակներ SINGLE_IPv4, RANGE_IPv4,
   CIDR_IPv4
-API_key: "* API կոդ: {0}"
+API_key: "* API կոդ: {1}"
 ports_int: "նավահանգիստները պետք է լինեն թվեր: (օր. 80 | 80,1080 | 80,1080-1300,9000,12000-15000)"
 through_API: OWASP Nettacker API- ի միջոցով
 API_invalid: անվավեր API- ի ստեղն

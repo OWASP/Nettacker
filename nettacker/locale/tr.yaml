@@ -201,7 +201,7 @@ API_port_int: API portu bir tamsayı olmalı!
 unknown_ip_input:
   bilinmeyen giriş türü, kabul edilen türler SINGLE_IPv4, RANGE_IPv4,
   CIDR_IPv4 şeklindedir.
-API_key: "* API Anahtarı: {0}"
+API_key: "* API Anahtarı: {1}"
 ports_int: portlar tamsayı olmalıdır! (ör. 80, 80, 1080, 80, 1080-1300, 9000, 12000-15000)
 through_API: OWASP Nettacker API'sı aracılığıyla
 API_invalid: geçersiz API anahtarı
