@@ -301,7 +301,7 @@ environment.
 | `wp_plugin_cve_2023_6875_vuln` | Checks whether the WordPress POST SMTP Mailer `connect-app` endpoint returns `fcm_token` without authentication, indicating CVE-2023-6875 exposure; it does not inject JavaScript. |
 | `wp_xmlrpc_bruteforce_vuln` | Detects WordPress XML-RPC `wp.getUsersBlogs` behavior that can be used for credential attacks. |
 | `wp_xmlrpc_dos_vuln` | Detects exposed WordPress XML-RPC multicall functionality that can amplify requests and contribute to denial of service. |
-| `wp_xmlrpc_pingback_vuln` | Detects WordPress before 3.5.1, where the XML-RPC `pingback.ping` method can be used to port-scan hosts reachable from the server (CVE-2013-0235). Needs post ID 1 to exist with pings open. |
+| `wp_xmlrpc_pingback_vuln` | Detects WordPress sites that accept XML-RPC pingbacks, which can be abused to send requests to third parties and to reveal the origin IP behind a reverse proxy. Also detects the pingback port-scan issue in WordPress before 3.5.1 (CVE-2013-0235). |
 | `x_powered_by_vuln` | Reports technology details disclosed by the HTTP `X-Powered-By` response header. |
 | `x_xss_protection_vuln` | Reports a present legacy `X-XSS-Protection` header whose value is not `1; mode=block`; an absent header is not currently flagged. |
 | `xdebug_rce_vuln` | Detects the Xdebug 2.5.5 response header associated with a remotely exploitable Xdebug release. |
