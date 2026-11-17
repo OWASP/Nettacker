@@ -31,6 +31,10 @@ results.*
 coverage.xml
 
 venv
+
+#stray test artifacts written to repo root
+/report.html
+
 # database files
 *.sqlite3
 *.db
