@@ -68,6 +68,7 @@ sqlalchemy = "^2.0.22"
 texttable = "^1.7.0"
 uvloop = {version = "^0.21.0", markers = "sys_platform != 'win32'"}
 zipp = "^3.19.1"
+huey = "^3.4.0"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.16.1"

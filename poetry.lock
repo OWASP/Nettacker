@@ -1230,6 +1230,25 @@ docs = ["Sphinx", "furo"]
 test = ["objgraph", "psutil", "setuptools"]
 
 [[package]]
+name = "huey"
+version = "3.5.3"
+description = "a little task queue"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "huey-3.5.3-py3-none-any.whl", hash = "sha256:30cbf102f2074570709cf5a5f8e4a1826cf1fbb55d7fcffda1272a0cfa74f55d"},
+    {file = "huey-3.5.3.tar.gz", hash = "sha256:3d9e8fe95638bde843fbcfe38c063d906afa0d4b0cf94955a24c0f90eb09bb44"},
+]
+
+[package.extras]
+backends = ["redis (>=3.0.0)"]
+cysqlite = ["cysqlite (>=0.3.5)"]
+postgres = ["psycopg (>=3.2)"]
+redis = ["redis (>=3.0.0)"]
+stats = ["peewee (>=3.17)"]
+
+[[package]]
 name = "idna"
 version = "3.15"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -2952,4 +2971,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10, <3.13"
-content-hash = "d8716a1dec42cd47f2cc8af6be383cde4a6167804faa4324f1dec9490dee007d"
+content-hash = "5e79f07233391c4eda915c0c9b891751aecdaca87ee01beb2a2b0cd93d4517d9"
