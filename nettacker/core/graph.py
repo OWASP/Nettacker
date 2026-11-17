@@ -84,6 +84,7 @@ def build_text_table(events):
     """
     _table = texttable.Texttable()
     table_headers = ["date", "target", "module_name", "port", "logs"]
+    _table.set_cols_dtype(["t"] * len(table_headers))
     _table.add_rows([table_headers])
     for event in events:
         log = merge_logs_to_list(event, [])
@@ -110,6 +111,7 @@ def build_text_table(events):
 def create_compare_text_table(results):
     table = texttable.Texttable()
     table_headers = list(results.keys())
+    table.set_cols_dtype(["t"] * len(table_headers))
     table.add_rows([table_headers])
     table.add_rows(
         [
