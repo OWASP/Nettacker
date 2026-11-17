@@ -31,3 +31,8 @@ results.*
 coverage.xml
 
 venv
+# database files
+*.sqlite3
+*.db
+__pycache__/
+report.html

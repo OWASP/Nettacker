@@ -8,9 +8,11 @@ class FtpLibrary(BaseLibrary):
 
     def brute_force(self, host, port, username, password, timeout):
         connection = self.client(timeout=timeout)
-        connection.connect(host, port)
-        connection.login(username, password)
-        connection.close()
+        try:
+            connection.connect(host, port)
+            connection.login(username, password)
+        finally:
+            connection.close()
 
         return {
             "host": host,

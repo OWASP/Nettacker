@@ -51,7 +51,7 @@ class ArgParser(ArgumentParser):
 
         graph_names = []
         for graph_library in Config.path.graph_dir.glob("*/engine.py"):
-            graph_names.append(str(graph_library).split("/")[-2] + "_graph")
+            graph_names.append(graph_library.parent.name + "_graph")
         return list(set(graph_names))
 
     @staticmethod
@@ -65,7 +65,7 @@ class ArgParser(ArgumentParser):
         languages_list = []
 
         for language in Config.path.locale_dir.glob("*.yaml"):
-            languages_list.append(str(language).split("/")[-1].split(".")[0])
+            languages_list.append(language.stem)
 
         return list(set(languages_list))
 
@@ -83,8 +83,8 @@ class ArgParser(ArgumentParser):
         # Search for Modules
         module_names = {}
         for module_name in sorted(Config.path.modules_dir.glob("**/*.yaml")):
-            library = str(module_name).split("/")[-1].split(".")[0]
-            category = str(module_name).split("/")[-2]
+            library = module_name.stem
+            category = module_name.parent.name
             module = f"{library}_{category}"
             contents = yaml.safe_load(TemplateLoader(module).open().split("payload:")[0])
             module_names[module] = contents["info"] if full_details else None
@@ -307,6 +307,13 @@ class ArgParser(ArgumentParser):
             help=_("port_separator"),
         )
         method_options.add_argument(
+            "--schema",
+            action="store",
+            dest="schema",
+            default=Config.settings.schema,
+            help=_("schema_selector"),
+        )
+        method_options.add_argument(
             "--user-agent",
             action="store",
             dest="user_agent",
@@ -320,7 +327,7 @@ class ArgParser(ArgumentParser):
             dest="timeout",
             default=Config.settings.timeout,
             type=float,
-            help=_("read_passwords"),
+            help=_("timeout"),
         )
         method_options.add_argument(
             "-w",
@@ -575,23 +582,22 @@ class ArgParser(ArgumentParser):
                 die_failure(_("cannot_run_api_server"))
             from nettacker.api.engine import start_api_server
 
-            if options.api_client_whitelisted_ips:
-                if isinstance(options.api_client_whitelisted_ips, str):
-                    options.api_client_whitelisted_ips = options.api_client_whitelisted_ips.split(
-                        ","
-                    )
-                    whitelisted_ips = []
-                    for ip in options.api_client_whitelisted_ips:
-                        if is_single_ipv4(ip) or is_single_ipv6(ip):
-                            whitelisted_ips.append(ip)
-                        elif (
-                            is_ipv4_range(ip)
-                            or is_ipv6_range(ip)
-                            or is_ipv4_cidr(ip)
-                            or is_ipv6_cidr(ip)
-                        ):
-                            whitelisted_ips += generate_ip_range(ip)
-                    options.api_client_whitelisted_ips = whitelisted_ips
+            if isinstance(options.api_client_whitelisted_ips, str):
+                whitelisted_ips = []
+                for ip in options.api_client_whitelisted_ips.split(","):
+                    ip = ip.strip()
+                    if is_single_ipv4(ip) or is_single_ipv6(ip):
+                        whitelisted_ips.append(ip)
+                    elif (
+                        is_ipv4_range(ip)
+                        or is_ipv6_range(ip)
+                        or is_ipv4_cidr(ip)
+                        or is_ipv6_cidr(ip)
+                    ):
+                        whitelisted_ips += generate_ip_range(ip)
+                    else:
+                        die_failure(_("invalid_whitelist_ip").format(ip))
+                options.api_client_whitelisted_ips = whitelisted_ips
             start_api_server(options)
 
         # Check the target(s)
@@ -674,6 +680,15 @@ class ArgParser(ArgumentParser):
                 except Exception:
                     die_failure(_("ports_int"))
             options.ports = list(tmp_ports)
+        # Check schema(s)
+        if options.schema:
+            tmp_schema = {schema.strip().lower() for schema in options.schema.split(",")}
+            allowed_schema = {"http", "https"}
+
+            if tmp_schema - allowed_schema:
+                die_failure(_("invalid_schema"))
+            else:
+                options.schema = list(tmp_schema)
         # Check for excluded ports
         if options.excluded_ports:
             tmp_excluded_ports = set()

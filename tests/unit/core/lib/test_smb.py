@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from nettacker.core.lib.smb import SmbLibrary
-from tests.common import TestCase
+from tests.unit.common import TestCase
 
 SMB_SESSION_PORT = 445
 

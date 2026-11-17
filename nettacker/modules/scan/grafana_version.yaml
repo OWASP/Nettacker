@@ -1,0 +1,47 @@
+info:
+  name: grafana_version_scan
+  author: Moksh Vatsa
+  severity: 3
+  description: Grafana version scan - detects Grafana via the unauthenticated /api/health endpoint and reports its version.
+  reference:
+    - https://grafana.com/
+    - https://grafana.com/docs/grafana/latest/developers/http_api/other/#health-api
+  profiles:
+    - scan
+    - http
+    - grafana
+    - info_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/health"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 3000
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: '"database":\s*"[^"]*"\s*,\s*(?:"enterpriseCommit":\s*"[^"]*"\s*,\s*)?"version":\s*"([^"]+)"'
+              reverse: false
+          log: "response_dependent['content']"

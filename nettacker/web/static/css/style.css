@@ -231,3 +231,24 @@ Relevant styles below
 .page_number_btn:hover:not(.active) {
   background-color: #e9ecef;
 }
+
+.checklist-search {
+  margin-bottom: 6px;
+  max-width: 400px;
+}
+
+.scrollable-checkbox-list {
+  height: 340px;
+  min-height: 260px;
+  max-height: 70vh;
+  resize: vertical;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.results-search {
+  margin-bottom: 15px;
+  max-width: 400px;
+}

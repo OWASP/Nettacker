@@ -13,6 +13,8 @@ info:
     - http
     - critical_severity
     - cve
+    - cve2024
+    - cisa_kev
     - jetbrains
     - teamcity
 

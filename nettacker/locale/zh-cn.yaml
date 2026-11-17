@@ -152,7 +152,7 @@ gen_API_access_log: 生成 API 访问日志
 API_access_log_file: API 访问日志文件名
 API_port_int: API 端口必须是整数！
 unknown_ip_input: 未知的输入类型，接受的类型是 SINGLE_IPv4，RANGE_IPv4，CIDR_IPv4
-API_key: "* API 密钥：{0}"
+API_key: "* API 密钥：{1}"
 ports_int: 端口必须是整数！ （例如 80 || 80,1080 || 80,1080-1300,9000,12000-15000）
 through_API: 通过 OWASP Nettacker API
 API_invalid: 无效的 API 密钥

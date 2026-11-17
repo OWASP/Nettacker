@@ -138,6 +138,15 @@
 
         const reportContainer = document.getElementById('report-container');
 
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         function generateReport(data) {
             let reportContent = '';
 
@@ -147,13 +156,13 @@
                     <h2>Scan Details</h2>
                     <div class="item">
                         <div class="label">Current Scan:</div>
-                        <div class="value">ID: ${data.curr_scan_details[0]}</div>
-                        <div class="value">Date: ${data.curr_scan_details[1]}</div>
+                        <div class="value">ID: ${escapeHtml(data.curr_scan_details[0])}</div>
+                        <div class="value">Date: ${escapeHtml(data.curr_scan_details[1])}</div>
                     </div>
                     <div class="item">
                         <div class="label">Comparison Scan:</div>
-                        <div class="value">ID: ${data.comp_scan_details[0]}</div>
-                        <div class="value">Date: ${data.comp_scan_details[1]}</div>
+                        <div class="value">ID: ${escapeHtml(data.comp_scan_details[0])}</div>
+                        <div class="value">Date: ${escapeHtml(data.comp_scan_details[1])}</div>
                     </div>
                 </div>`;
 
@@ -164,13 +173,13 @@
                     <div class="item">
                         <div class="label">Current Targets:</div>
                         <ul class="list">
-                            ${data.curr_target_set[0].map(target => `<li class="list-item">${target}</li>`).join('')}
+                            ${data.curr_target_set[0].map(target => `<li class="list-item">${escapeHtml(target)}</li>`).join('')}
                         </ul>
                     </div>
                     <div class="item">
                         <div class="label">Comparison Targets:</div>
                         <ul class="list">
-                            ${data.comp_target_set[0].map(target => `<li class="list-item">${target}</li>`).join('')}
+                            ${data.comp_target_set[0].map(target => `<li class="list-item">${escapeHtml(target)}</li>`).join('')}
                         </ul>
                     </div>
                 </div>`;
@@ -182,13 +191,13 @@
                     <div class="item">
                         <div class="label">Current Scan Results:</div>
                         <ul class="list">
-                            ${data.curr_scan_result.map(result => `<li class="list-item">Target: ${result[0]}, Scan Type: ${result[1]}, Port: ${result[2]}</li>`).join('')}
+                            ${data.curr_scan_result.map(result => `<li class="list-item">Target: ${escapeHtml(result[0])}, Scan Type: ${escapeHtml(result[1])}, Port: ${escapeHtml(result[2])}</li>`).join('')}
                         </ul>
                     </div>
                     <div class="item">
                         <div class="label">Comparison Scan Results:</div>
                         <ul class="list">
-                            ${data.comp_scan_result.map(result => `<li class="list-item">Target: ${result[0]}, Scan Type: ${result[1]}, Port: ${result[2]}</li>`).join('')}
+                            ${data.comp_scan_result.map(result => `<li class="list-item">Target: ${escapeHtml(result[0])}, Scan Type: ${escapeHtml(result[1])}, Port: ${escapeHtml(result[2])}</li>`).join('')}
                         </ul>
                     </div>
                 </div>`;
@@ -200,13 +209,13 @@
                     <div class="item">
                         <div class="label">New Targets Discovered:</div>
                         <ul class="list">
-                            ${data.new_targets_discovered.map(target => `<li class="list-item" id="list_yellow">Target: ${target[0]}, Scan Type: ${target[1]}, Port: ${target[2]}</li>`).join('')}
+                            ${data.new_targets_discovered.map(target => `<li class="list-item" id="list_yellow">Target: ${escapeHtml(target[0])}, Scan Type: ${escapeHtml(target[1])}, Port: ${escapeHtml(target[2])}</li>`).join('')}
                         </ul>
                     </div>
                     <div class="item">
                         <div class="label">Old Targets Not Detected:</div>
                         <ul class="list" id="list_red">
-                            ${data.old_targets_not_detected.map(target => `<li class="list-item" id="list_red">Target: ${target[0]}, Scan Type: ${target[1]}, Port: ${target[2]}</li>`).join('')}
+                            ${data.old_targets_not_detected.map(target => `<li class="list-item" id="list_red">Target: ${escapeHtml(target[0])}, Scan Type: ${escapeHtml(target[1])}, Port: ${escapeHtml(target[2])}</li>`).join('')}
                         </ul>
                     </div>
                 </div>`;

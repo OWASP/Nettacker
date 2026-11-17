@@ -40,13 +40,15 @@ OWASP Nettacker is an open‑source, Python‑based framework for automated pene
 │           ├── js
 │           └── report
 └── tests
-    ├── api
-    ├── core
-    │   ├── lib
-    │   └── utils
-    ├── database
-    └── lib
-        └── payloads
+    ├── package
+    └── unit
+        ├── api
+        ├── core
+        │   ├── lib
+        │   └── utils
+        ├── database
+        └── lib
+            └── payloads
 
 ```
 
@@ -61,7 +63,7 @@ OWASP Nettacker is an open‑source, Python‑based framework for automated pene
 - **API & Web UI (`nettacker/api`, `nettacker/web`)** – Flask-based REST API plus static assets enabling web‑based scan management
 - **Supporting libraries (`nettacker/lib`)** – Reporting helpers, ICMP tools, graph generation, and payload wordlists
 - **Configuration** – `config.py` defines default paths, database settings, and runtime options
-- **Tests** – The `tests` directory includes unit tests and validation checks; for example, `test_yaml_regexes.py` ensures regex definitions in YAML modules compile correctly
+- **Tests** – Unit tests are in `tests/unit/`, and packaging checks are in `tests/package/`. The `tests/unit/test_yaml_schema_and_regex.py` test validates module schemas and checks that regular expressions compile correctly
 - **Build & dependencies** – `pyproject.toml` defines the project as a Poetry package and lists dependencies such as `aiohttp`, `multiprocess`, `paramiko`, and `sqlalchemy`
 
 ## Important concepts

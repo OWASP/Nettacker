@@ -200,7 +200,7 @@ API_port_int: Port API harus berupa bilangan bulat!
 unknown_ip_input:
   jenis masukan tidak dikenal, jenis yang diterima adalah SINGLE_IPv4,
   RANGE_IPv4, CIDR_IPv4
-API_key: "* Kunci API: {0}"
+API_key: "* Kunci API: {1}"
 ports_int: port harus berupa bilangan bulat! (mis. 80 || 80,1080 || 80,1080-1300,9000,12000-15000)
 through_API: Melalui API OWASP Nettacker
 API_invalid: kunci API tidak valid

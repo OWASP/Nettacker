@@ -1,3 +1,4 @@
+import html
 import json
 import time
 
@@ -956,13 +957,13 @@ def logs_to_report_html(target):
         )
         for event in logs:
             html_content += log_data.table_items.format(
-                event["date"],
-                event["target"],
-                event["module_name"],
-                event["scan_id"],
-                event["port"],
-                event["event"],
-                event["json_event"],
+                html.escape(str(event["date"])),
+                html.escape(str(event["target"])),
+                html.escape(str(event["module_name"])),
+                html.escape(str(event["scan_id"])),
+                html.escape(str(event["port"])),
+                html.escape(str(event["event"])),
+                html.escape(str(event["json_event"])),
             )
         html_content += (
             log_data.table_end + '<p class="footer">' + messages("nettacker_report") + "</p>"
@@ -996,13 +997,13 @@ def logs_to_report_html(target):
         )
         for event in logs:
             html_content += log_data.table_items.format(
-                event["date"],
-                event["target"],
-                event["module_name"],
-                event["scan_id"],
-                event["port"],
-                event["event"],
-                event["json_event"],
+                html.escape(str(event["date"])),
+                html.escape(str(event["target"])),
+                html.escape(str(event["module_name"])),
+                html.escape(str(event["scan_id"])),
+                html.escape(str(event["port"])),
+                html.escape(str(event["event"])),
+                html.escape(str(event["json_event"])),
             )
         html_content += (
             log_data.table_end + '<p class="footer">' + messages("nettacker_report") + "</p>"

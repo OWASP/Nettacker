@@ -16,6 +16,9 @@ concurrency:
   cancel-in-progress: true
   group: ${{ github.repository }}-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
 
+env:
+  PY_COLORS: "1"
+
 jobs:
   # Code quality checks.
   pre-commit:
@@ -23,15 +26,20 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Install Poetry
+        run: pipx install poetry
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
+          cache: poetry
+          cache-dependency-path: poetry.lock
           python-version: '3.11'
-      - name: Run pre-commit
-        uses: pre-commit/action@v3.0.1
 
+      - name: Run pre-commit
+        uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd
   code-ql:
     name: CodeQL
     needs:
@@ -47,15 +55,14 @@ jobs:
           - python
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
-
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
+        uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
         with:
           languages: ${{ matrix.language }}
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
+        uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
         with:
           category: /language:${{ matrix.language }}
 
@@ -67,16 +74,20 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      
+      - name: Install Poetry
+        run: pipx install poetry
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
+          cache: poetry
+          cache-dependency-path: poetry.lock
           python-version: '3.11'
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade poetry
           poetry install --with test
 
       - name: Run tests
@@ -90,11 +101,16 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Install Poetry
+        run: pipx install poetry
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
+          cache: poetry
+          cache-dependency-path: poetry.lock
           python-version: '3.11'
 
       - name: Install dependencies
@@ -102,12 +118,21 @@ jobs:
           python -m pip install --upgrade pip poetry
           poetry install
 
+      - name: Set pre-release version for Test PyPI
+        if: |
+          github.repository == 'OWASP/Nettacker' && 
+          github.event_name == 'push' && 
+          github.ref_name == 'master'
+        run: |
+          BASE="$(poetry version -s)"
+          poetry version "${BASE}.dev${{ github.run_number }}"
+
       - name: Build package
         run: |
           poetry build --no-interaction
 
       - name: Upload package artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: dist
           path: dist
@@ -123,21 +148,31 @@ jobs:
           - ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      
+      - name: Install Poetry
+        run: pipx install poetry
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
+          cache: poetry
+          cache-dependency-path: poetry.lock
           python-version: '3.11'
 
       - name: Get package artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: dist
           path: dist
 
-      - name: Run tests
-        shell: bash
+      - name: Install test dependencies
+        run: poetry install --only test --no-interaction
+
+      - name: Verify package includes tests
+        run: poetry run pytest tests/package --no-cov -o addopts=
+
+      - name: Verify package installs
         run: |
           rm -rf nettacker
           python -m pip install dist/*.whl
@@ -145,6 +180,7 @@ jobs:
           python -m pip uninstall -y nettacker
           python -m pip install dist/*.tar.gz
           nettacker --version
+        shell: bash
 
   # Docker related jobs.
   test-docker-image:
@@ -154,8 +190,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
-
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Build Docker image
         run: docker build . -t nettacker
 
@@ -213,7 +248,7 @@ jobs:
     steps:
       - name: Uninstall pre-installed Docker
         run: |
-          sudo apt-get remove docker-ce docker-ce-cli
+          sudo apt-get remove -y docker-ce docker-ce-cli || true
 
         # https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
       - name: Install Docker ${{ matrix.docker-version }}
@@ -231,8 +266,7 @@ jobs:
           sudo apt-get install docker-ce=5:${{ matrix.docker-version }} docker-ce-cli=5:${{ matrix.docker-version }}
 
       - name: Check out repository
-        uses: actions/checkout@v6
-
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Print Docker version
         run: docker -v
 
@@ -242,7 +276,7 @@ jobs:
   publish-nettacker-dev-to-docker-registry:
     name: Publish nettacker:dev Docker image
     if: |
-      github.repository == 'owasp/nettacker' &&
+      github.repository == 'OWASP/Nettacker' &&
       github.event_name == 'push' &&
       github.ref_name == 'master'
     needs:
@@ -251,56 +285,59 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
-
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Login to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
+        with:
+          platforms: linux/amd64,linux/arm64
 
       - name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
         with:
           context: .
           file: Dockerfile
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: owasp/nettacker:dev
 
   publish-nettacker-latest-to-docker-registry:
     name: Publish nettacker:latest Docker image
     if: |
-      github.repository == 'owasp/nettacker' &&
+      github.repository == 'OWASP/Nettacker' &&
       github.event_name == 'push' &&
-      startsWith(github.event.ref, 'refs/tags/v')
+      startsWith(github.event.ref, 'refs/tags/')
     needs:
       - test-docker-image
       - test-docker-image-build
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
-
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1
       - name: Login to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
+        with:
+          platforms: linux/amd64,linux/arm64
 
       - name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
         with:
           context: .
           file: Dockerfile
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: owasp/nettacker:latest
 
@@ -319,13 +356,13 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Get package artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: dist
           path: dist
 
       - name: Publish package distributions to Test PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086
         with:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
@@ -345,10 +382,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Get package artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: dist
           path: dist
 
       - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086

