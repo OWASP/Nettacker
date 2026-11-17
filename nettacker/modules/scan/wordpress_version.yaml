@@ -37,6 +37,6 @@ payloads:
           condition_type: or
           conditions:              
             content:
-              regex: \.css\?ver=(\d.\d.\d+)
+              regex: \.css\?ver=(\d+\.\d+(?:\.\d+)?)
               reverse: false
           log: "response_dependent['content']"
