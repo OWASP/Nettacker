@@ -2,14 +2,11 @@ info:
   name: gpustack_cve_2026_102895_vuln
   author: atul-upadhyay-7
   severity: 9.8
-  description: |
-    GPUStack before v2.2.0 can grant unauthenticated administrator access
-    when a request is treated as coming from loopback and
-    force_auth_localhost is false. In embedded gateway mode, the
-    X-GPUStack-Real-IP header is trusted without verification.
-    This module sends a read-only GET to /v2/users with a loopback header
-    and checks for a JSON response containing an administrator user.
-    CVE-2026-102895 is in the CISA Known Exploited Vulnerabilities catalog.
+  description: >
+    CVE-2026-102895 is a critical authentication bypass in GPUStack before v2.2.0.
+    It can grant unauthenticated administrator access when a request is treated as
+    coming from loopback and force_auth_localhost is false. In embedded gateway
+    mode, the X-GPUStack-Real-IP header is trusted without verification.
   reference:
     - https://github.com/advisories/GHSA-gj9m-f8ph-pmhr
     - https://nvd.nist.gov/vuln/detail/CVE-2026-102895
