@@ -1,0 +1,177 @@
+info:
+  name: kestra_cve_2026_49869_vuln
+  author: OWASP Nettacker Team
+  severity: 10.0
+  description: >
+    CVE-2026-49869 is a critical authentication bypass (CVSS 10.0) in Kestra OSS that leads to
+    unauthenticated remote code execution. The API authentication filter skips any path ending in
+    "/configs", so an unauthenticated attacker can create and run workflows. Kestra versions before
+    1.0.45 and from 1.1.0 up to 1.3.20 are affected.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-49869
+    - https://github.com/kestra-io/kestra/security/advisories/GHSA-5vc5-wxxq-3fjx
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2026
+    - cisa_kev
+    - kestra
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/main/flows/nettacker/auth_check"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 8080
+        response:
+          save_to_temp_events_only: kestra_auth_required_1
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "401"
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/main/flows/nettacker/configs"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 8080
+        response:
+          dependent_on_temp_event: kestra_auth_required_1
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^(200|404)$"
+              reverse: false
+
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/main/flows/nettacker/auth_check"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 80
+        response:
+          save_to_temp_events_only: kestra_auth_required_2
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "401"
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/main/flows/nettacker/configs"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 80
+        response:
+          dependent_on_temp_event: kestra_auth_required_2
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^(200|404)$"
+              reverse: false
+
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/main/flows/nettacker/auth_check"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+        response:
+          save_to_temp_events_only: kestra_auth_required_3
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "401"
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/main/flows/nettacker/configs"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+        response:
+          dependent_on_temp_event: kestra_auth_required_3
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^(200|404)$"
+              reverse: false
