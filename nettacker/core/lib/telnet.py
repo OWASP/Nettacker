@@ -42,6 +42,8 @@ class TelnetLibrary(BaseLibrary):
     # prompt on the last line (one word without "<" or ">" that ends in one of > $ # %). A last
     # line that is only login, username, user, password or passwd (in any case) before the prompt
     # character, or only a ">", is the server asking again and not a shell.
+    # A server that echoes the password back and sends no failure message can make an echoed
+    # "Last login: ", or a password that ends in a prompt character, look like a confirmation.
     success_markers = (
         rb"Last login: ",
         rb"(?:\A|[\r\n])(?!(?i:login|username|user|password|passwd)(?:>| ?[$#%]) ?\Z|> ?\Z)"
