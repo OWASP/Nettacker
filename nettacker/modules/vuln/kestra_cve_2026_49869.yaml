@@ -69,7 +69,10 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: "^(200|404)$"
+              regex: "^404$"
+              reverse: false
+            content:
+              regex: '"logref"'
               reverse: false
 
   - library: http
@@ -121,7 +124,10 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: "^(200|404)$"
+              regex: "^404$"
+              reverse: false
+            content:
+              regex: '"logref"'
               reverse: false
 
   - library: http
@@ -173,5 +179,8 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: "^(200|404)$"
+              regex: "^404$"
+              reverse: false
+            content:
+              regex: '"logref"'
               reverse: false
