@@ -55,7 +55,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/api/v1/main/flows/nettacker/configs"
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/main/flows/nettacker/configs?s=dependent_on_temp_event[0]['status_code'][0]"
             prefix: ""
             suffix: ""
             interceptors:
@@ -73,6 +73,9 @@ payloads:
               reverse: false
             content:
               regex: '"logref"'
+              reverse: false
+            url:
+              regex: 's=401$'
               reverse: false
 
   - library: http
@@ -110,7 +113,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/api/v1/main/flows/nettacker/configs"
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/main/flows/nettacker/configs?s=dependent_on_temp_event[0]['status_code'][0]"
             prefix: ""
             suffix: ""
             interceptors:
@@ -128,6 +131,9 @@ payloads:
               reverse: false
             content:
               regex: '"logref"'
+              reverse: false
+            url:
+              regex: 's=401$'
               reverse: false
 
   - library: http
@@ -165,7 +171,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/api/v1/main/flows/nettacker/configs"
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/main/flows/nettacker/configs?s=dependent_on_temp_event[0]['status_code'][0]"
             prefix: ""
             suffix: ""
             interceptors:
@@ -183,4 +189,7 @@ payloads:
               reverse: false
             content:
               regex: '"logref"'
+              reverse: false
+            url:
+              regex: 's=401$'
               reverse: false
