@@ -69,6 +69,21 @@ SHELL_REPLIES = (
     b"\r\nadmin> ",
     b"\r\nLast login: never\r\nuser$ ",
 )
+# Telnet option bytes. IAC SB <option> <data> IAC SE is a subnegotiation; 24 is TERMINAL-TYPE.
+IAC, SB, SE = b"\xff", b"\xfa", b"\xf0"
+TERMINAL_TYPE = b"\x18"
+# Replies that only mention "Last login", without the colon of a banner. Nothing confirms a login.
+NOT_A_BANNER = (
+    [b"Last login attempt was rejected\r\n"],
+    [b"Last login attempt ", b"was rejected\r\n"],
+    [b"Last log", b"in attempt was rejected\r\n"],
+    [b"Last login attempt was ", b"rejected\r\n"],
+)
+# A real banner without a prompt after it, in one write and split between the colon and the date.
+BANNER_ONLY = (
+    [b"Last login: Tue Nov 10 10:00:00 2026\r\n"],
+    [b"Last login:", b" Tue Nov 10 10:00:00 2026\r\n"],
+)
 
 
 def read_line(connection):
@@ -176,6 +191,31 @@ def prompt_after_filler(stage, prompt, size):
             connection.sendall(b"Password: ")
             received.append(read_line(connection))
         connection.sendall(b"\r\nLast login: Tue Nov 10 10:00:00 2026\r\nadmin@mock:~$ ")
+        wait_for_client_to_close(connection)
+
+    return handler
+
+
+def subnegotiation(size, end=True):
+    """Return IAC SB and `size` bytes of option data, followed by IAC SE unless `end` is false."""
+    return IAC + SB + TERMINAL_TYPE + b"A" * (size - 1) + (IAC + SE if end else b"")
+
+
+def unterminated_subnegotiation(stage, size):
+    """Return a handler that sends IAC SB and `size` bytes of data, but no IAC SE, at `stage`.
+
+    The stage is "login", "password" or "reply". The data stands in for the prompt or the reply
+    that the client waits for, and the connection is held open afterwards.
+    """
+
+    def handler(connection, received):
+        if stage != "login":
+            connection.sendall(b"mock login: ")
+            received.append(read_line(connection))
+        if stage == "reply":
+            connection.sendall(b"Password: ")
+            received.append(read_line(connection))
+        connection.sendall(subnegotiation(size, end=False))
         wait_for_client_to_close(connection)
 
     return handler
@@ -302,6 +342,15 @@ class TestTelnetBruteForce(TestCase):
         # arrived before the timeout ended
         self.assertIn(repr(reply), str(rejected.exception))
 
+    def assert_unconfirmed(self, pieces, timeout=LONG_TIMEOUT, close_after_reply=True):
+        """Assert that the reply made of `pieces` is received whole and confirms no login."""
+        handler = scripted(pieces, gap=FRAGMENT_GAP, close_after_reply=close_after_reply)
+        started = time.monotonic()
+        with self.assertRaises(TelnetLoginError) as rejected:
+            self.attempt(handler, timeout=timeout)
+        self.assertLess(time.monotonic() - started, 5)
+        self.assertIn(repr(b"".join(pieces)), str(rejected.exception))
+
     def test_correct_password_accepted(self):
         reply = b"\r\nLast login: Tue Nov 10 10:00:00 2026 from 10.0.0.1\r\nadmin@mock:~$ "
 
@@ -407,6 +456,25 @@ class TestTelnetBruteForce(TestCase):
         # known limit, unchanged: "[root@host ~]# " is not a one-word prompt, so the login is not
         # confirmed and rejected when the timeout ends
         self.assert_not_confirmed(b"[root@host ~]# ")
+
+    def test_last_login_without_the_colon_of_a_banner_is_not_a_confirmation(self):
+        for pieces in NOT_A_BANNER:
+            with self.subTest(pieces=pieces):
+                self.assert_unconfirmed(pieces)
+        # the connection stays open and nothing confirms the login, so the timeout ends it
+        with self.subTest(held_open=True):
+            self.assert_unconfirmed(NOT_A_BANNER[0], SHORT_TIMEOUT, close_after_reply=False)
+
+    def test_last_login_banner_without_a_prompt_is_a_confirmation(self):
+        # also when the banner is split between the colon and the date
+        for pieces in BANNER_ONLY:
+            for close_after_reply in (True, False):
+                with self.subTest(pieces=pieces, close_after_reply=close_after_reply):
+                    handler = scripted(
+                        pieces, gap=FRAGMENT_GAP, close_after_reply=close_after_reply
+                    )
+                    result, _, _ = self.attempt(handler, timeout=LONG_TIMEOUT)
+                    self.assertEqual(result["password"], PASSWORD)
 
     def test_silent_server_rejected_within_the_timeout(self):
         self.assert_rejected(scripted(b""))
@@ -614,6 +682,34 @@ class TestTelnetBruteForce(TestCase):
                     prompt_after_filler(stage, prompt, size), timeout=LONG_TIMEOUT
                 )
                 self.assertEqual(result["password"], PASSWORD)
+
+    def test_option_data_without_an_end_is_cut_off_at_the_size_limit(self):
+        # telnetlib keeps the data of IAC SB ... in sbdataq until IAC SE and read_very_lazy()
+        # never returns it, so the reply stays empty while the data grows. The size limit must
+        # end the attempt at once, not the timeout of 5 seconds.
+        for stage in ("login", "password", "reply"):
+            with self.subTest(stage=stage):
+                handler = unterminated_subnegotiation(stage, TelnetLibrary.max_reply_size + 1)
+                started = time.monotonic()
+                with self.assertRaises(TelnetLoginError) as rejected:
+                    self.attempt(handler, timeout=LONG_TIMEOUT)
+                self.assertLess(time.monotonic() - started, 2)
+                self.assertIn("option data", str(rejected.exception))
+
+    def test_subnegotiation_within_the_size_limit_does_not_stop_a_login(self):
+        # IAC SB TERMINAL-TYPE ... IAC SE of a few bytes, and one of exactly max_reply_size bytes
+        reply = b"\r\nLast login: Tue Nov 10 10:00:00 2026\r\nadmin@mock:~$ "
+        for size in (2, TelnetLibrary.max_reply_size):
+            for stage in ("login", "password", "reply"):
+                with self.subTest(size=size, stage=stage):
+                    option = subnegotiation(size)
+                    handler = scripted(
+                        (option if stage == "reply" else b"") + reply,
+                        login_prompt=(option if stage == "login" else b"") + b"mock login: ",
+                        password_prompt=(option if stage == "password" else b"") + b"Password: ",
+                    )
+                    result, _, _ = self.attempt(handler, timeout=LONG_TIMEOUT)
+                    self.assertEqual(result["password"], PASSWORD)
 
     def test_connection_with_a_file_descriptor_above_1023(self):
         # select.select() cannot watch such a descriptor on POSIX, and a scan with many threads

@@ -43,7 +43,7 @@ class TelnetLibrary(BaseLibrary):
     # line that is only login, username, user, password or passwd (in any case) before the prompt
     # character, or only a ">", is the server asking again and not a shell.
     success_markers = (
-        rb"Last login",
+        rb"Last login: ",
         rb"(?:\A|[\r\n])(?!(?i:login|username|user|password|passwd)(?:>| ?[$#%]) ?\Z|> ?\Z)"
         + rb"[^\s<>$#%]{0,64}(?:>| ?[$#%]) ?\Z",
     )
@@ -98,6 +98,9 @@ class TelnetLibrary(BaseLibrary):
                 return None
         connection.fill_rawq()
         connection.process_rawq()
+        if len(connection.sbdataq) > self.max_reply_size:
+            # option data (IAC SB without IAC SE) is never returned by read_very_lazy()
+            raise TelnetLoginError(f"option data larger than {self.max_reply_size} bytes")
         return connection.read_very_lazy()  # b"" when there was only option negotiation
 
     def read_prompt(self, connection, prompt, timeout):
