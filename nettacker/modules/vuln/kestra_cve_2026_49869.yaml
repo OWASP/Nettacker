@@ -65,6 +65,7 @@ payloads:
               ports:
                 - 8080
         response:
+          save_to_temp_events_only: kestra_configs_1
           dependent_on_temp_event: kestra_auth_required_1
           condition_type: and
           conditions:
@@ -76,6 +77,37 @@ payloads:
               reverse: false
             url:
               regex: 's=401$'
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/configs?s=dependent_on_temp_event[0]['status_code'][0]"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 8080
+        response:
+          dependent_on_temp_event: kestra_configs_1
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^200$"
+              reverse: false
+            content:
+              regex: '"edition":"[^"]*","commitId":"'
+              reverse: false
+            url:
+              regex: 's=404$'
               reverse: false
 
   - library: http
@@ -123,6 +155,7 @@ payloads:
               ports:
                 - 80
         response:
+          save_to_temp_events_only: kestra_configs_2
           dependent_on_temp_event: kestra_auth_required_2
           condition_type: and
           conditions:
@@ -134,6 +167,37 @@ payloads:
               reverse: false
             url:
               regex: 's=401$'
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/configs?s=dependent_on_temp_event[0]['status_code'][0]"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 80
+        response:
+          dependent_on_temp_event: kestra_configs_2
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^200$"
+              reverse: false
+            content:
+              regex: '"edition":"[^"]*","commitId":"'
+              reverse: false
+            url:
+              regex: 's=404$'
               reverse: false
 
   - library: http
@@ -181,6 +245,7 @@ payloads:
               ports:
                 - 443
         response:
+          save_to_temp_events_only: kestra_configs_3
           dependent_on_temp_event: kestra_auth_required_3
           condition_type: and
           conditions:
@@ -192,4 +257,35 @@ payloads:
               reverse: false
             url:
               regex: 's=401$'
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/configs?s=dependent_on_temp_event[0]['status_code'][0]"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+        response:
+          dependent_on_temp_event: kestra_configs_3
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "^200$"
+              reverse: false
+            content:
+              regex: '"edition":"[^"]*","commitId":"'
+              reverse: false
+            url:
+              regex: 's=404$'
               reverse: false
