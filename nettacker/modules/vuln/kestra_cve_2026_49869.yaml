@@ -72,7 +72,7 @@ payloads:
               regex: "^404$"
               reverse: false
             content:
-              regex: '"logref"'
+              regex: '^."message":"Not Found","logref":null,"path":null'
               reverse: false
             url:
               regex: 's=401$'
@@ -130,7 +130,7 @@ payloads:
               regex: "^404$"
               reverse: false
             content:
-              regex: '"logref"'
+              regex: '^."message":"Not Found","logref":null,"path":null'
               reverse: false
             url:
               regex: 's=401$'
@@ -188,7 +188,7 @@ payloads:
               regex: "^404$"
               reverse: false
             content:
-              regex: '"logref"'
+              regex: '^."message":"Not Found","logref":null,"path":null'
               reverse: false
             url:
               regex: 's=401$'
