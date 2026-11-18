@@ -5,8 +5,8 @@ info:
   description: >
     CVE-2026-49869 is a critical authentication bypass (CVSS 10.0) in Kestra OSS that leads to
     unauthenticated remote code execution. The API authentication filter skips any path ending in
-    "/configs", so an unauthenticated attacker can create and run workflows. Kestra versions before
-    1.0.45 and from 1.1.0 up to 1.3.20 are affected.
+    "/configs", so an unauthenticated attacker can create and run workflows.
+    Fixed releases include 1.0.45 and 1.3.21. Detection is behavioral, not version-based.
   reference:
     - https://nvd.nist.gov/vuln/detail/CVE-2026-49869
     - https://github.com/kestra-io/kestra/security/advisories/GHSA-5vc5-wxxq-3fjx
@@ -19,6 +19,10 @@ info:
     - cisa_kev
     - kestra
 
+# Each protocol/port has isolated dependency events. Carry the preceding status
+# in a query parameter so a missing dependency cannot produce a finding.
+# The final public-config fingerprint rejects generic gateway 401/404 responses.
+# Older releases (verified on 0.24.0) do not include the edition field.
 payloads:
   - library: http
     steps:
@@ -70,10 +74,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: "^404$"
-              reverse: false
-            content:
-              regex: '^."message":"Not Found","logref":null,"path":null'
+              regex: "^(?:200|404)$"
               reverse: false
             url:
               regex: 's=401$'
@@ -104,10 +105,10 @@ payloads:
               regex: "^200$"
               reverse: false
             content:
-              regex: '"edition":"[^"]*","commitId":"'
+              regex: '(?:"edition":"[^"]*","commitId":"|"version":"0\.[^"]*","commitId":"[^"]+","commitDate":"[^"]+".*"isTaskRunEnabled":(?:true|false).*"systemNamespace":"[^"]+")'
               reverse: false
             url:
-              regex: 's=404$'
+              regex: 's=(?:200|404)$'
               reverse: false
 
   - library: http
@@ -160,10 +161,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: "^404$"
-              reverse: false
-            content:
-              regex: '^."message":"Not Found","logref":null,"path":null'
+              regex: "^(?:200|404)$"
               reverse: false
             url:
               regex: 's=401$'
@@ -194,10 +192,10 @@ payloads:
               regex: "^200$"
               reverse: false
             content:
-              regex: '"edition":"[^"]*","commitId":"'
+              regex: '(?:"edition":"[^"]*","commitId":"|"version":"0\.[^"]*","commitId":"[^"]+","commitDate":"[^"]+".*"isTaskRunEnabled":(?:true|false).*"systemNamespace":"[^"]+")'
               reverse: false
             url:
-              regex: 's=404$'
+              regex: 's=(?:200|404)$'
               reverse: false
 
   - library: http
@@ -250,10 +248,7 @@ payloads:
           condition_type: and
           conditions:
             status_code:
-              regex: "^404$"
-              reverse: false
-            content:
-              regex: '^."message":"Not Found","logref":null,"path":null'
+              regex: "^(?:200|404)$"
               reverse: false
             url:
               regex: 's=401$'
@@ -284,8 +279,8 @@ payloads:
               regex: "^200$"
               reverse: false
             content:
-              regex: '"edition":"[^"]*","commitId":"'
+              regex: '(?:"edition":"[^"]*","commitId":"|"version":"0\.[^"]*","commitId":"[^"]+","commitDate":"[^"]+".*"isTaskRunEnabled":(?:true|false).*"systemNamespace":"[^"]+")'
               reverse: false
             url:
-              regex: 's=404$'
+              regex: 's=(?:200|404)$'
               reverse: false
