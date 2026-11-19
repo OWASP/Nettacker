@@ -281,6 +281,7 @@ environment.
 | `smartermail_cve_2026_24423_vuln` | Checks SmarterMail before build 9511 for CVE-2026-24423 unauthenticated command-execution exposure using a non-routable probe. |
 | `sonicwall_sslvpn_cve_2024_53704_vuln` | Sends a crafted `swap` cookie to the SonicWall SSL VPN client endpoint and checks for the launcher response associated with CVE-2024-53704. |
 | `splunk_cve_2026_20253_vuln` | Checks Splunk Enterprise's PostgreSQL sidecar service for CVE-2026-20253 unauthenticated auth-bypass via an invalid Basic Authorization header. |
+| `spring4shell_cve_2022_22965_vuln` | Checks for CVE-2022-22965 RCE in Spring framework (`Spring4Shell`). |
 | `ssl_certificate_weak_signature_vuln` | Reports TLS certificates signed with weak or deprecated signature algorithms. |
 | `ssl_expired_certificate_vuln` | Reports TLS certificates that have expired or are not yet valid. |
 | `ssl_self_signed_certificate_vuln` | Reports TLS certificates whose issuer and subject indicate that they are self-signed. |
