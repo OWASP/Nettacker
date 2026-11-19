@@ -1,0 +1,76 @@
+info:
+  name: gitea_version_scan
+  author: P Samuel Vijay
+  severity: 3
+  description: Gitea version scan - detects Gitea via its public /api/v1/version endpoint and its default page footer, and reports its version.
+  reference:
+    - https://about.gitea.com/
+    - https://docs.gitea.com/administration/config-cheat-sheet
+  profiles:
+    - scan
+    - http
+    - gitea
+    - info_severity
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/version"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 3000
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: '^\s*\{{\s*"version"\s*:\s*"((?![^"]*\+gitea-)[^"]+)"\s*\}}\s*$'
+              reverse: false
+          log: "response_dependent['content']"
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 3000
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: '(?s)<a\b[^>]*\bhref="https://about\.gitea\.com"[^>]*>.*?Version:\s*(\d+\.\d+\.\d+[^\s<]*)'
+              reverse: false
+          log: "response_dependent['content']"
