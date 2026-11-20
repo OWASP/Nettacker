@@ -1,5 +1,5 @@
 info:
-  name:  citrix_lastpatcheeddate_scan
+  name: citrix_lastpatcheddate_scan
   author: OWASP Nettacker Team
   severity: 3
   description: Citrix Netscaler Gateway Last Patched Date Scan

@@ -1,5 +1,5 @@
 info:
-  name: pop3_brute
+  name: pop3s_brute
   author: OWASP Nettacker Team
   severity: 3
   description: POP3 SSL Bruteforcer

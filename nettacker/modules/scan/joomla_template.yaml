@@ -1,8 +1,8 @@
 info:
-  name: joomla_version_scan
+  name: joomla_template_scan
   author: OWASP Nettacker Team
   severity: 3
-  description: fetch joomla version from target
+  description: Identifies templates installed on a Joomla site.
   reference:
   profiles:
     - scan

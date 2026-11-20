@@ -1,5 +1,5 @@
 info:
-  id: port_scan
+  name: port_scan
   author: OWASP Nettacker Team
   severity: 0
   description: Find open ports and services

@@ -1,8 +1,8 @@
 info:
-  name: wordpress_version_scan
+  name: wp_timethumbs_scan
   author: OWASP Nettacker Team
   severity: 3
-  description: Directory, Backup finder
+  description: Searches common WordPress paths for the TimThumb PHP script.
   reference:
   profiles:
     - scan
