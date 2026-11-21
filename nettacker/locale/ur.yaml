@@ -108,7 +108,7 @@ port/type: "{0} / {1}"
 port_found: "میزبان: {0} پورٹ: {1} ({2}) پایا!"
 target_submitted: ھدف کردہ {0}
 current_version:
-  آپ OWASP Nettacker ورژن {0} {1} {2} {6} کوڈ چل رہے ہیں {کوڈ} {3}
+  آپ OWASP Nettacker ورژن {0} {1} {2} {6} کوڈ چل رہے ہیں کوڈ {3}
   {4} {5}
 feature_unavailable:
   یہ خصوصیت ابھی تک دستیاب نہیں ہے! براہ کرم "گٹ کلون https://github.com/OWASP/Nettacker.git
