@@ -101,6 +101,24 @@ def test_is_single_ipv4_rejects_shorthand_and_trailing_text(value):
     assert not is_single_ipv4(value)
 
 
+@pytest.mark.parametrize(
+    "value",
+    [
+        " 1.2.3.4",
+        "1.2.3.4\n",
+        "\t1.2.3.4",
+        "1.2.3.4\r\n",
+        "1.2. 3.4",
+        "1.2.3.4 ",
+        "１.2.3.4",  # fullwidth digit one
+        "١.2.3.4",  # arabic-indic digit one
+    ],
+)
+def test_is_single_ipv4_rejects_whitespace_and_non_ascii_digits(value):
+    # netaddr's Windows fallback parser accepts all of these; Linux rejects them.
+    assert not is_single_ipv4(value)
+
+
 def test_is_ipv4_range():
     assert is_ipv4_range("192.168.1.0/24")
     assert not is_ipv4_range("127.0.0.1")

@@ -3,6 +3,8 @@ import json
 import netaddr
 import requests
 
+IPV4_CHARACTERS = frozenset("0123456789.")
+
 
 def generate_ip_range(ip_range):
     """
@@ -52,7 +54,14 @@ def is_single_ipv4(ip):
     Returns:
          True if it's IPv4 otherwise False
     """
-    return bool(ip) and netaddr.valid_ipv4(str(ip), netaddr.INET_PTON)
+    if not ip:
+        return False
+    ip = str(ip)
+    # On Windows, netaddr replaces socket.inet_pton() with a pure-Python fallback
+    # (netaddr.fbsocket) that parses octets with int(), which tolerates whitespace
+    # and non-ASCII digits ("1.2.3.4 ", "1.2. 3.4", "１.2.3.4"). Linux rejects these,
+    # so only ASCII digits and dots are passed through.
+    return set(ip) <= IPV4_CHARACTERS and netaddr.valid_ipv4(ip, netaddr.INET_PTON)
 
 
 def is_ipv4_range(ip_range):
