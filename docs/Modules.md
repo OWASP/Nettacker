@@ -238,6 +238,7 @@ environment.
 | `apache_cve_2021_42013_vuln` | Probes Apache HTTP Server 2.4.50 for CVE-2021-42013 path traversal by attempting to read `/etc/passwd`. |
 | `apache_ofbiz_cve_2024_38856_vuln` | Probes Apache OFBiz for CVE-2024-38856 by executing `id` through the exposed Groovy program endpoint. |
 | `apache_struts_vuln` | Probes Apache Struts for CVE-2017-5638 OGNL injection using a non-destructive response-header marker. |
+| `apache_struts_cve_2016_3081_vuln` | Checks Apache Struts for CVE-2016-3081 RCE by injecting a verification string in the response body. | 
 | `aviatrix_cve_2021_40870_vuln` | Tests Aviatrix Controller for CVE-2021-40870 by writing a PHP `phpinfo()` probe to `random_string1.php` and requesting it; the probe file may remain on a vulnerable target. |
 | `cisco_hyperflex_cve_2021_1497_vuln` | Probes the Cisco HyperFlex management interface for CVE-2021-1497 command injection using a `nettacker` response marker. |
 | `citrix_cve_2019_19781_vuln` | Probes Citrix ADC and Gateway products for CVE-2019-19781 path traversal by attempting to read `smb.conf`. |
