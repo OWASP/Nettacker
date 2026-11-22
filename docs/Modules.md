@@ -53,12 +53,17 @@ See the [usage guide](Usage.md) for all target, output, concurrency, and reporti
 
 ## Ports and service discovery
 
-Nettacker normally performs service discovery (port scan of 1,005 most-popular ports) before running modules and limits protocol-specific
+Nettacker normally performs service discovery (port scan of 1,012 ports: the most popular ports, aligned with Nmap's default port list, plus the non-standard default ports used by Nettacker modules) before running modules and limits protocol-specific
 checks to compatible discovered services. Use `-d` or `--skip-service-discovery` only when you
 intentionally want to run selected modules without that filtering.
 
 The `port_scan` module's default ports are maintained in
 [`nettacker/modules/scan/port.yaml`](../nettacker/modules/scan/port.yaml). 
+
+Ports that only Nettacker modules use are listed in a separate block at the end of that list.
+When a new module uses a default port that is not in the list, add the port to that block:
+otherwise service discovery never runs the module against a host that only exposes that port.
+`tests/unit/test_port_scan_module_ports.py` fails until the port is added.
 
 Use `-g` or `--ports` to replace the default selection. Use `-X` or `--exclude-ports` to remove ports
 from the effective selection. Both options accept a single port, comma-separated ports, inclusive
@@ -75,7 +80,9 @@ python nettacker.py -i scanme.example -m port_scan -X 25,110,445
 default selection.
 
 <details open>
-<summary>Show the 1,005 default ports used by <code>port_scan</code></summary>
+<summary>Show the 1,012 default ports used by <code>port_scan</code></summary>
+
+Most popular ports, aligned with Nmap's default port list (1,005):
 
 ```text
 1, 3, 4, 6, 7, 9, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26
@@ -141,6 +148,12 @@ default selection.
 49163, 49165, 49167, 49175, 49176, 49400, 49999, 50000, 50001, 50002, 50003, 50006, 50300, 50389, 50500, 50636
 50800, 51103, 51493, 52673, 52822, 52848, 52869, 54045, 54328, 55055, 55056, 55555, 55600, 56737, 56738, 57294
 57797, 58080, 60020, 60443, 61532, 61900, 62078, 63331, 64623, 64680, 65000, 65129, 65389
+```
+
+Non-standard default ports used by Nettacker modules (7):
+
+```text
+4433, 4502, 4503, 5230, 7860, 17017, 32400
 ```
 
 </details>
@@ -302,7 +315,7 @@ environment.
 | `wp_plugin_cve_2023_6875_vuln` | Checks whether the WordPress POST SMTP Mailer `connect-app` endpoint returns `fcm_token` without authentication, indicating CVE-2023-6875 exposure; it does not inject JavaScript. |
 | `wp_xmlrpc_bruteforce_vuln` | Detects WordPress XML-RPC `wp.getUsersBlogs` behavior that can be used for credential attacks. |
 | `wp_xmlrpc_dos_vuln` | Detects exposed WordPress XML-RPC multicall functionality that can amplify requests and contribute to denial of service. |
-| `wp_xmlrpc_pingback_vuln` | Detects enabled WordPress XML-RPC pingbacks that can be abused for server-side requests or reflected denial of service. |
+| `wp_xmlrpc_pingback_vuln` | Detects WordPress before 3.5.1, where the XML-RPC `pingback.ping` method can be used to port-scan hosts reachable from the server (CVE-2013-0235). Needs post ID 1 to exist with pings open. |
 | `x_powered_by_vuln` | Reports technology details disclosed by the HTTP `X-Powered-By` response header. |
 | `x_xss_protection_vuln` | Reports a present legacy `X-XSS-Protection` header whose value is not `1; mode=block`; an absent header is not currently flagged. |
 | `xdebug_rce_vuln` | Detects the Xdebug 2.5.5 response header associated with a remotely exploitable Xdebug release. |
