@@ -148,6 +148,13 @@ def test_footer_logs_only_the_version(steps, body, expected):
         # a Version label without the Gitea link
         "<footer>Version: 2.4.1</footer>",
         '<footer><a href="https://example.org">Other app</a> Version: 2.4.1</footer>',
+        # an about.gitea.com link outside Gitea's footer container
+        '<main><a href="https://about.gitea.com">Gitea</a>Dependency Version: 2.4.1</main>',
+        '<p>Built with <a href="https://about.gitea.com">Gitea</a></p>'
+        "<footer><div>Version: 9.9.9</div></footer>",
+        # the link inside left-links, but the version in a later element
+        '<div class="left-links"><a href="https://about.gitea.com">Powered by Gitea</a></div>'
+        "<div>Version: 9.9.9</div>",
         "",
     ],
 )

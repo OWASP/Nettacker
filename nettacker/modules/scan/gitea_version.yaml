@@ -71,6 +71,6 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: '(?s)<a\b[^>]*\bhref="https://about\.gitea\.com"[^>]*>.*?Version:\s*(\d+\.\d+\.\d+[^\s<]*)'
+              regex: '(?s)<div class="left-links"[^>]*>(?:(?!</div>).)*?<a\b[^>]*\bhref="https://about\.gitea\.com"[^>]*>(?:(?!</div>).)*?Version:\s*(\d+\.\d+\.\d+[^\s<]*)'
               reverse: false
           log: "response_dependent['content']"
