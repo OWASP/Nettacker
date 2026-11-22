@@ -60,5 +60,5 @@ payloads:
                 regex: text/xml
                 reverse: false
             content:
-              regex: \<SERIAL\>&\<VERSION\>
+              regex: '(?s)^(?=.*<SERIAL>)(?=.*<VERSION>)'
               reverse: false
