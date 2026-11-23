@@ -192,6 +192,7 @@ Use `--show-all-modules` for live metadata and check-specific details.
 | `drupal_modules_scan` | Enumerates popular modules installed on a Drupal site. |
 | `drupal_theme_scan` | Identifies themes installed on a Drupal site. |
 | `drupal_version_scan` | Identifies a Drupal installation and reports its version. |
+| `gitea_version_scan` | Detects Gitea via its public `/api/v1/version` endpoint and the page footer of its home and sign-in pages, and reports its version. |
 | `grafana_version_scan` | Detects Grafana via its unauthenticated `/api/health` endpoint and reports its version. |
 | `http_html_title_scan` | Extracts the HTML `<title>` element to help identify the application served by a web endpoint. |
 | `http_redirect_scan` | Reports HTTP 3xx redirects and their destination locations. |
