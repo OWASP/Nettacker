@@ -2,7 +2,7 @@ info:
   name: gitea_version_scan
   author: P Samuel Vijay
   severity: 3
-  description: Gitea version scan - detects Gitea via its public /api/v1/version endpoint and its default page footer, and reports its version.
+  description: Gitea version scan - detects Gitea via its public /api/v1/version endpoint and the page footer of its home and sign-in pages, and reports its version.
   reference:
     - https://about.gitea.com/
     - https://docs.gitea.com/administration/config-cheat-sheet
@@ -41,7 +41,9 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: '^\s*\{{\s*"version"\s*:\s*"((?![^"]*\+gitea-)[^"]+)"\s*\}}\s*$'
+              # Forgejo reports "X+gitea-Y" (v7+) or "X.Y.Z+N" (v1.20, v1.21); both are rejected.
+              # Gitea nightlies ("1.22.6+15-gabc1234", "1.23.0+dev-...") are kept.
+              regex: '^\s*\{{\s*"version"\s*:\s*"((?![^"]*\+gitea-)(?![^"]*\+\d+")[^"]+)"\s*\}}\s*$'
               reverse: false
           log: "response_dependent['content']"
       - method: get
@@ -52,7 +54,7 @@ payloads:
         ssl: false
         url:
           nettacker_fuzzer:
-            input_format: "{{schema}}://{target}:{{ports}}/"
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
             prefix: ""
             suffix: ""
             interceptors:
@@ -64,6 +66,11 @@ payloads:
                 - 80
                 - 443
                 - 3000
+              # "/" redirects when LANDING_PAGE is explore/login/organizations;
+              # the sign-in page renders the footer even with REQUIRE_SIGNIN_VIEW.
+              paths:
+                - ""
+                - "user/login"
         response:
           condition_type: and
           conditions:
@@ -71,6 +78,11 @@ payloads:
               regex: "200"
               reverse: false
             content:
-              regex: '(?s)<div class="left-links"[^>]*>(?:(?!</div>).)*?<a\b[^>]*\bhref="https://about\.gitea\.com"[^>]*>(?:(?!</div>).)*?Version:\s*(\d+\.\d+\.\d+[^\s<]*)'
+              # Footer software block: <div class="ui left"> (1.10-1.19, must name Gitea,
+              # since Gogs uses the same markup) or <div class="left-links"> (1.20+, may
+              # hide the "Powered by Gitea" link). The version is the first x.y.z after the
+              # (localized) "Version:" label, optionally inside an admin link. Forgejo uses
+              # the same markup, so pages mentioning forgejo are rejected.
+              regex: '(?s)\A(?!.*forgejo).*?<footer\b[^>]*>\s*(?:(?:<div class="ui container">\s*)?<div class="ui left"[^>]*>(?=(?:(?!</div>).)*?\bGitea\b)|<div class="left-links"[^>]*>)(?:(?!</div>).)*?[:：]\s*(?:<span>\s*)?(?:<a\b[^>]*>\s*)?(\d+\.\d+\.\d+[^\s<&]*)'
               reverse: false
           log: "response_dependent['content']"
