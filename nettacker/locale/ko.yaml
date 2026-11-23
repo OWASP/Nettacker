@@ -105,7 +105,7 @@ graph_message:
   이 그래프는 OWASP Nettacker에 의해 작성되었습니다. 그래프에는 모든 모듈 활동, 네트워크 맵 및 중요한 정보가
   포함되어 있습니다. 신뢰할 수없는 경우이 파일을 다른 사람과 공유하지 마십시오.
 nettacker_report: OWASP Nettacker 보고서
-nettacker_version_details: "소프트웨어 세부 정보 : {2}의 OWASP Nettacker 버전 {0} [{1}}"
+nettacker_version_details: "소프트웨어 세부 정보 : {2}의 OWASP Nettacker 버전 {0} [{1}]"
 no_open_ports: 열려있는 포트가 없습니다!
 no_user_passwords: 사용자 / 비밀번호를 찾을 수 없습니다!
 loaded_modules: "{0} 모듈이로드되었습니다 ..."
