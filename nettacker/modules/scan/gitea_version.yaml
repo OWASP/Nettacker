@@ -82,7 +82,9 @@ payloads:
               # since Gogs uses the same markup) or <div class="left-links"> (1.20+, may
               # hide the "Powered by Gitea" link). The version is the first x.y.z after the
               # (localized) "Version:" label, optionally inside an admin link. Forgejo uses
-              # the same markup, so pages mentioning forgejo are rejected.
-              regex: '(?s)\A(?!.*forgejo).*?<footer\b[^>]*>\s*(?:(?:<div class="ui container">\s*)?<div class="ui left"[^>]*>(?=(?:(?!</div>).)*?\bGitea\b)|<div class="left-links"[^>]*>)(?:(?!</div>).)*?[:：]\s*(?:<span>\s*)?(?:<a\b[^>]*>\s*)?(\d+\.\d+\.\d+[^\s<&]*)'
+              # the same markup, so pages with Forgejo's own markup (forgejo.org links,
+              # built-in emoji list, default theme) are rejected. Each marker contains a
+              # quote, which Gitea escapes in APP_NAME and page text.
+              regex: '(?s)\A(?!.*(?:href="https://forgejo\.org|"forgejo":":forgejo:"|data-theme="forgejo-|class="theme-forgejo-)).*?<footer\b[^>]*>\s*(?:(?:<div class="ui container">\s*)?<div class="ui left"[^>]*>(?=(?:(?!</div>).)*?\bGitea\b)|<div class="left-links"[^>]*>)(?:(?!</div>).)*?[:：]\s*(?:<span>\s*)?(?:<a\b[^>]*>\s*)?(\d+\.\d+\.\d+[^\s<&]*)'
               reverse: false
           log: "response_dependent['content']"

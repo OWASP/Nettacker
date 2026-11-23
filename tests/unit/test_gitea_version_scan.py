@@ -8,8 +8,9 @@ version string.
 
 The response bodies come from official Gitea container images (1.10 to 1.25 and
 28.4.0, default settings and with REQUIRE_SIGNIN_VIEW, LANDING_PAGE, LANGS and
-SHOW_FOOTER_POWERED_BY changed), from Forgejo images (1.20, 1.21, 7, 11) and from
-Gogs (0.11 template, 0.12 and 0.14 images).
+SHOW_FOOTER_POWERED_BY or APP_NAME changed), from Forgejo images (1.20, 1.21, 7 and 11,
+also with SHOW_FOOTER_POWERED_BY = false) and from Gogs (0.11 template, 0.12 and 0.14
+images).
 """
 
 import re
@@ -148,8 +149,19 @@ PAGE_HEAD = (
 FOOTER_RIGHT = '\t<div class="right-links" role="group" aria-label="Links"></div>\n</footer>'
 
 
-def page(footer):
-    return PAGE_HEAD + footer + "\n</body>\n</html>"
+def page(footer, head=PAGE_HEAD):
+    return head + footer + "\n</body>\n</html>"
+
+
+def gitea_head(app_name):
+    """Head of a Gitea sign-in page with a custom APP_NAME (quotes are escaped)."""
+    return (
+        '<!DOCTYPE html>\n<html lang="en-US" data-theme="gitea-auto">\n<head>\n'
+        f"\t<title>Sign In - {app_name}</title>\n"
+        f'\t<meta property="og:title" content="{app_name}">\n'
+        f'\t<meta property="og:site_name" content="{app_name}">\n'
+        "</head>\n<body>\n"
+    )
 
 
 # 28.4.0: version wrapped in a <span>
@@ -250,6 +262,25 @@ FORGEJO_PAGE = (
     "Powered by Forgejo</a>\n\t\t\tVersion:\n\t\t\t\t11.0.16\n"
     "\t\t\tPage: <strong>3ms</strong>\n\t</div>\n" + FOOTER_RIGHT + "\n</body>\n</html>"
 )
+# Forgejo 11 with SHOW_FOOTER_POWERED_BY = false: the footer has no Forgejo link, so only
+# Forgejo's own page markup identifies it (default theme, Help link, built-in emoji list)
+FORGEJO_HEAD = (
+    '<!DOCTYPE html>\n<html lang="en-US" data-theme="forgejo-auto">\n<head>\n'
+    "\t<title>Sign in - Forgejo: Beyond coding. We forge.</title>\n"
+    "\t<script>\n\twindow.config = {\n"
+    '\t\tcustomEmojis: {"codeberg":":codeberg:","forgejo":":forgejo:","git":":git:"},\n'
+    "\t};\n\t</script>\n</head>\n<body>\n"
+    '<a class="item" target="_blank" rel="noopener noreferrer" '
+    'href="https://forgejo.org/docs/latest/">Help</a>\n'
+)
+FOOTER_FORGEJO_NO_POWERED_BY = FOOTER_NO_POWERED_BY.replace("1.24.7", "11.0.16").replace(
+    'aria-label="About Software"', 'aria-label="About this software"'
+)
+# Forgejo 1.20 / 1.21 set the theme as a class on <html>
+FORGEJO_121_HEAD = (
+    '<!DOCTYPE html>\n<html lang="en-US" class="theme-forgejo-auto">\n<head>\n'
+    "\t<title>Sign In - Forgejo: Beyond coding. We forge.</title>\n</head>\n<body>\n"
+)
 # Gogs 0.11 template with SHOW_FOOTER_VERSION: same markup as Gitea 1.10 - 1.18
 FOOTER_GOGS = (
     '<footer>\n\t<div class="ui container">\n\t\t<div class="ui left">\n'
@@ -293,6 +324,26 @@ def test_footer_logs_only_the_version(steps, footer, expected):
 
 
 @pytest.mark.parametrize(
+    "app_name, footer, expected",
+    [
+        ("Migrated from forgejo", FOOTER_124, "1.24.7"),
+        ("Forgejo to Gitea", FOOTER_28, "28.4.0"),
+        ("Migrated from forgejo", FOOTER_117, "1.17.4"),
+        # Gitea escapes quotes in APP_NAME, so it cannot spell Forgejo's markup
+        (
+            "&#34;forgejo&#34;:&#34;:forgejo:&#34; data-theme=&#34;forgejo-auto&#34;",
+            FOOTER_NO_POWERED_BY,
+            "1.24.7",
+        ),
+    ],
+    ids=["1.24", "28.4.0", "1.17", "escaped-markup"],
+)
+def test_footer_detects_gitea_whose_site_name_mentions_forgejo(steps, app_name, footer, expected):
+    body = page(footer, head=gitea_head(app_name))
+    assert extract_version(content_regex(steps, FOOTER_STEP), body) == expected
+
+
+@pytest.mark.parametrize(
     "body",
     [
         page(FOOTER_HIDDEN),
@@ -302,6 +353,19 @@ def test_footer_logs_only_the_version(steps, footer, expected):
             FOOTER_124.replace("https://about.gitea.com", "https://forgejo.org")
             .replace("Powered by Gitea", "Powered by Forgejo")
             .replace("1.24.7", "1.21.11&#43;2")
+        ),
+        page(FOOTER_FORGEJO_NO_POWERED_BY, head=FORGEJO_HEAD),
+        page(FOOTER_FORGEJO_NO_POWERED_BY, head=FORGEJO_121_HEAD),
+        # each Forgejo marker on its own is enough
+        page(FOOTER_NO_POWERED_BY, head=PAGE_HEAD + '<a href="https://forgejo.org/docs/">'),
+        page(FOOTER_NO_POWERED_BY, head=PAGE_HEAD + '{"forgejo":":forgejo:"}'),
+        page(
+            FOOTER_NO_POWERED_BY,
+            head=PAGE_HEAD.replace("<html", '<html data-theme="forgejo-dark"'),
+        ),
+        page(
+            FOOTER_NO_POWERED_BY,
+            head=PAGE_HEAD.replace("<html", '<html class="theme-forgejo-auto"'),
         ),
         page(FOOTER_GOGS),
         # a Version label without Gitea's footer markup
@@ -328,6 +392,12 @@ def test_footer_logs_only_the_version(steps, footer, expected):
         "version-hidden",
         "forgejo-11",
         "forgejo-1.21",
+        "forgejo-11-no-powered-by",
+        "forgejo-1.21-no-powered-by",
+        "marker-forgejo-link",
+        "marker-forgejo-emoji",
+        "marker-forgejo-data-theme",
+        "marker-forgejo-theme-class",
         "gogs-0.11",
         "plain-footer",
         "other-app-footer",
