@@ -82,9 +82,11 @@ payloads:
               # since Gogs uses the same markup) or <div class="left-links"> (1.20+, may
               # hide the "Powered by Gitea" link). The version is the first x.y.z after the
               # (localized) "Version:" label, optionally inside an admin link. Forgejo uses
-              # the same markup, so pages with Forgejo's own markup (forgejo.org links,
-              # built-in emoji list, default theme) are rejected. Each marker contains a
-              # quote, which Gitea escapes in APP_NAME and page text.
-              regex: '(?s)\A(?!.*(?:href="https://forgejo\.org|"forgejo":":forgejo:"|data-theme="forgejo-|class="theme-forgejo-)).*?<footer\b[^>]*>\s*(?:(?:<div class="ui container">\s*)?<div class="ui left"[^>]*>(?=(?:(?!</div>).)*?\bGitea\b)|<div class="left-links"[^>]*>)(?:(?!</div>).)*?[:：]\s*(?:<span>\s*)?(?:<a\b[^>]*>\s*)?(\d+\.\d+\.\d+[^\s<&]*)'
+              # the same markup, so it is rejected by markup Forgejo itself emits: its
+              # default theme on <html> and its built-in emoji list anywhere on the page
+              # (both contain a quote, which Gitea escapes in APP_NAME and page text), and
+              # a forgejo.org link inside the footer block. A forgejo.org link elsewhere,
+              # e.g. from a custom template, does not reject a Gitea page.
+              regex: '(?s)\A(?!.*(?:"forgejo":":forgejo:"|data-theme="forgejo-|class="theme-forgejo-)).*?<footer\b[^>]*>\s*(?:(?:<div class="ui container">\s*)?<div class="ui left"[^>]*>(?=(?:(?!</div>).)*?\bGitea\b)|<div class="left-links"[^>]*>)(?!(?:(?!</div>).)*?forgejo\.org)(?:(?!</div>).)*?[:：]\s*(?:<span>\s*)?(?:<a\b[^>]*>\s*)?(\d+\.\d+\.\d+[^\s<&]*)'
               reverse: false
           log: "response_dependent['content']"

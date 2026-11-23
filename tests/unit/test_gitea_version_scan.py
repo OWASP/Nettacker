@@ -343,6 +343,28 @@ def test_footer_detects_gitea_whose_site_name_mentions_forgejo(steps, app_name, 
     assert extract_version(content_regex(steps, FOOTER_STEP), body) == expected
 
 
+# templates/custom/body_outer_pre.tmpl from a Gitea instance migrated from Forgejo
+FORGEJO_BANNER = (
+    '<div class="ui info message">We moved from '
+    '<a href="https://forgejo.org">Forgejo</a> to Gitea.</div>\n'
+)
+
+
+@pytest.mark.parametrize(
+    "footer, expected",
+    [
+        (FOOTER_124, "1.24.7"),
+        (FOOTER_NO_POWERED_BY, "1.24.7"),
+        (FOOTER_28, "28.4.0"),
+        (FOOTER_117, "1.17.4"),
+    ],
+    ids=["1.24", "1.24-no-powered-by", "28.4.0", "1.17"],
+)
+def test_footer_ignores_forgejo_link_outside_the_footer(steps, footer, expected):
+    body = page(footer, head=gitea_head("Migrated from forgejo") + FORGEJO_BANNER)
+    assert extract_version(content_regex(steps, FOOTER_STEP), body) == expected
+
+
 @pytest.mark.parametrize(
     "body",
     [
@@ -357,7 +379,11 @@ def test_footer_detects_gitea_whose_site_name_mentions_forgejo(steps, app_name, 
         page(FOOTER_FORGEJO_NO_POWERED_BY, head=FORGEJO_HEAD),
         page(FOOTER_FORGEJO_NO_POWERED_BY, head=FORGEJO_121_HEAD),
         # each Forgejo marker on its own is enough
-        page(FOOTER_NO_POWERED_BY, head=PAGE_HEAD + '<a href="https://forgejo.org/docs/">'),
+        page(
+            FOOTER_NO_POWERED_BY.replace(
+                "\t\t\tVersion:", '\t\t\t<a href="https://forgejo.org">Forgejo</a>\n\t\t\tVersion:'
+            )
+        ),
         page(FOOTER_NO_POWERED_BY, head=PAGE_HEAD + '{"forgejo":":forgejo:"}'),
         page(
             FOOTER_NO_POWERED_BY,
@@ -394,7 +420,7 @@ def test_footer_detects_gitea_whose_site_name_mentions_forgejo(steps, app_name, 
         "forgejo-1.21",
         "forgejo-11-no-powered-by",
         "forgejo-1.21-no-powered-by",
-        "marker-forgejo-link",
+        "marker-forgejo-link-in-footer",
         "marker-forgejo-emoji",
         "marker-forgejo-data-theme",
         "marker-forgejo-theme-class",
