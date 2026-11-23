@@ -40,6 +40,9 @@ payloads:
               ports:
                 - 80
                 - 443
+                - 1270
+                - 5985
+                - 5986
         data:
           <s:Envelope
             xmlns:s="http://www.w3.org/2003/05/soap-envelope"
@@ -80,5 +83,5 @@ payloads:
           condition_type: and
           conditions:
             content:
-              regex: \\C+StdOut\\C+root\\C+groups=0
+              regex: '(?s)<p:StdOut>.*?uid=0\(root\) gid=0\(root\) groups=0'
               reverse: false

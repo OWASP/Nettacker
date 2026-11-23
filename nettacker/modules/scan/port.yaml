@@ -1027,10 +1027,13 @@ payloads:
           # Service discovery only runs a module against services that port_scan found, so
           # every default port a module uses must be listed. When a module needs a new
           # port, add it here; tests/unit/test_port_scan_module_ports.py checks this.
+          - 1270   # Open Management Infrastructure (OMI)
           - 4433   # SonicWall SSL VPN
           - 4502   # Adobe Experience Manager (author)
           - 4503   # Adobe Experience Manager (publish)
           - 5230   # Memos
+          - 5985   # Open Management Infrastructure (OMI)
+          - 5986   # Open Management Infrastructure (OMI)
           - 7860   # Langflow
           - 17017  # SmarterMail
           - 32400  # Plex Media Server
