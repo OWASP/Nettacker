@@ -1,0 +1,65 @@
+info:
+  name: zimbra_cve_2020_7796_ssrf
+  author: luck9823
+  severity: 9.8
+  description: |
+    Zimbra Collaboration Suite (ZCS) before 8.8.15 Patch 7 contains a 
+    server-side request forgery (SSRF) vulnerability when WebEx zimlet 
+    is installed and zimlet JSP is enabled.
+    
+    This is an unauthenticated SSRF vulnerability (CVSS 9.8 CRITICAL) 
+    with network attack vector and low complexity. The vulnerability 
+    allows remote attackers to perform SSRF attacks without authentication.
+    
+    Affects all Zimbra versions below 8.8.15 and versions 8.8.15 P1 
+    through P6. Fixed in 8.8.15 P7 and later.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2020-7796
+    - https://www.cve.org/CVERecord?id=CVE-2020-7796
+    - https://wiki.zimbra.com/wiki/Zimbra_Releases/8.8.15/P7
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+  profiles:
+    - vuln
+    - vulnerability
+    - http
+    - critical
+    - cve
+    - cve2020
+    - zimbra
+    - synacor
+    - ssrf
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 5
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/public/login.jsp"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - http
+                - https
+              ports:
+                - 80
+                - 443
+                - 7071
+                - 8080
+                - 8443
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: "8\\.(([0-7]\\.[0-9]+)|8\\.([0-9]|1[0-4])|8\\.15(\\s?P[1-6])?)"
+              reverse: false
