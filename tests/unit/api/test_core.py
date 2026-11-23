@@ -18,6 +18,19 @@ from nettacker.api.core import (
 from nettacker.config import Config
 
 
+@pytest.fixture(autouse=True)
+def restore_web_static_dir():
+    """Restore Config.path.web_static_dir after each test in this module.
+
+    Several tests below assign to it directly. Without this the last value
+    assigned leaks into every later test in the same process, which broke
+    nettacker.lib.html_log.log_data (see #1721).
+    """
+    original = Config.path.web_static_dir
+    yield
+    Config.path.web_static_dir = original
+
+
 @pytest.fixture
 def app():
     app = Flask(__name__)
