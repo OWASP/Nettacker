@@ -213,7 +213,7 @@ def test_no_false_positive_match(content_regex, body):
 
 def test_hostile_body_is_matched_quickly(content_regex):
     """A long non-matching prefix followed by a real buildinfo payload must not
-    cause catastrophic backtracking: the regex uses bounded ``[\\s\\S]{0,N}?``
+    cause catastrophic backtracking: the regex uses bounded ``[^{}]{0,N}?``
     with lazy quantifiers.
     """
     body = ('{"a":"1",' * 5000) + ('"status":"success","data":{"version":"9.9.9","revision":"x"}}')
@@ -229,6 +229,28 @@ def test_long_non_matching_body_is_rejected_quickly(content_regex):
     keys must fail fast.
     """
     body = '{"status":"success","data":{' + ",".join(f'"k{i}":"v{i}"' for i in range(2000)) + "}}"
+    start = time.perf_counter()
+    result = content_regex.findall(body)
+    elapsed = time.perf_counter() - start
+    assert result == []
+    assert elapsed < 1.0, f"regex took {elapsed:.3f}s"
+
+
+def test_many_repeated_near_match_objects_rejected_quickly(content_regex):
+    """A hostile body packed with thousands of partial buildinfo signatures
+    (``"status":"success"`` wrapping an empty ``data`` object, no ``revision``
+    or ``version``) must be rejected in ~linear time.
+
+    The content condition is matched synchronously after the HTTP response is
+    read and is not bounded by the step ``timeout``, so an unbounded wildcard
+    that rescanned each following object would let a modest response stall scan
+    workers. The ``[^{}]`` wildcards keep every search inside the current JSON
+    object, so each candidate fails its lookahead immediately instead of
+    scanning ahead across the rest of the body. With the previous ``[\\s\\S]``
+    wildcards this body took several seconds; it now completes in milliseconds.
+    """
+    body = "[" + ",".join('{"status":"success","data":{}}' for _ in range(10000)) + "]"
+    assert len(body) > 300_000
     start = time.perf_counter()
     result = content_regex.findall(body)
     elapsed = time.perf_counter() - start

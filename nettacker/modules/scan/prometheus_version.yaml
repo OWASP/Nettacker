@@ -49,8 +49,17 @@ payloads:
               # (Prometheus does not document a stable order and 3.x emits it either
               # way). Anchoring on both keys keeps other /api/v1 responses that also
               # report "status":"success" (query results, runtime info) from matching.
-              # Regex braces are doubled because TemplateLoader runs str.format()
-              # over the raw YAML before parsing; after format() they are single.
-              regex: '"status"\s*:\s*"success"[\s\S]{{0,400}}?"data"\s*:\s*\{{(?=[\s\S]{{0,4000}}?"revision"\s*:\s*"[^"]+")[\s\S]{{0,4000}}?"version"\s*:\s*"([^"]+)"'
+              # The wildcards exclude JSON braces (a negated brace class, not an
+              # any-character class) so each search stays inside the current flat
+              # buildinfo object and cannot rescan the objects that follow it. A
+              # hostile body of many repeated empty-data success partials is then
+              # rejected in near-linear time instead of re-running the lookahead for
+              # every candidate object; content matching is synchronous and is not
+              # bounded by the step timeout, so an unbounded wildcard could otherwise
+              # stall scan workers.
+              # Regex braces are doubled (here and in the comment above there are
+              # none) because TemplateLoader runs str.format() over the raw YAML
+              # before parsing; after format() they collapse to single braces.
+              regex: '"status"\s*:\s*"success"[^{{}}]{{0,400}}?"data"\s*:\s*\{{(?=[^{{}}]{{0,4000}}?"revision"\s*:\s*"[^"]+")[^{{}}]{{0,4000}}?"version"\s*:\s*"([^"]+)"'
               reverse: false
           log: "response_dependent['content']"
