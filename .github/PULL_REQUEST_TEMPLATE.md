@@ -47,7 +47,7 @@ Your PR description goes here:
 - [ ] I've run `make pre-commit` and confirm it didn't generate any warnings/changes
 - [ ] I've run `make test` and I confirm all tests passed locally
 - [ ] I've added/updated any relevant documentation in the `docs/` folder 
-- [ ] I've linked this PR with an open issue
+- [ ] I've linked this PR with an open issue agreed with and assigned to me by the maintainers
 - [ ] I've tested and verified that my code works as intended and resolves the issue as described
 - [ ] I've attached screenshots demonstrating that my code works as intended (if applicable)
 - [ ] I've checked all other open PRs to avoid submitting duplicate work
