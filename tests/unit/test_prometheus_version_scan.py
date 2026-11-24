@@ -200,6 +200,15 @@ def test_logs_only_the_version_string(content_regex, body, expected):
         "<html><head><title>Prometheus</title></head><body>Unauthorized</body></html>",
         # buildinfo signature with an empty version string.
         '{"status":"success","data":{"version":"","revision":"x"}}',
+        # A sibling object (not data) carries both keys: the search must not
+        # cross data's closing brace into a following "metadata" object.
+        '{"status":"success","data":{},"metadata":{"revision":"abc","version":"1.0"}}',
+        # Query result whose nested metric labels include BOTH "revision" and
+        # "version": the search must stop at the nested object's opening brace
+        # and not treat metric labels as the build-info signature.
+        '{"status":"success","data":{"result":[{"metric":{"revision":"x","version":"1.0"}}]}}',
+        # data object followed by sibling revision/version at the top level.
+        '{"status":"success","data":{"foo":"bar"},"revision":"x","version":"9.9"}',
     ],
 )
 def test_no_false_positive_match(content_regex, body):
