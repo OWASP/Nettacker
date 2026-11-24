@@ -267,6 +267,7 @@ environment.
 | `ivanti_ics_cve_2023_46805_vuln` | Checks Ivanti Connect Secure for CVE-2023-46805 authentication-bypass exposure and mitigation status. |
 | `joomla_cve_2023_23752_vuln` | Checks Joomla 4.0.0 through 4.2.7 for CVE-2023-23752 unauthenticated configuration disclosure. |
 | `justwirting_cve_2021_41878_vuln` | Checks i-Panel Administration System for CVE-2021-41878 reflected cross-site scripting. |
+| `kestra_cve_2026_49869_vuln` | Checks Kestra for CVE-2026-49869 authentication bypass by comparing a protected API path with a path ending in `configs`. |
 | `langflow_cve_2025_3248_vuln` | Probes Langflow before 1.3.0 for CVE-2025-3248 by executing code that raises a fixed `Nettacker` exception through the validation endpoint. |
 | `log4j_cve_2021_44228_vuln` | Sends Log4Shell JNDI callbacks through multiple HTTP methods and headers, then confirms them through the third-party `log4shell.huntress.com` service. |
 | `majordomo_rce_cve_2026_27174_vuln` | Probes MajorDoMo for CVE-2026-27174 by using the unauthenticated PHP console to read `/etc/passwd`. |
