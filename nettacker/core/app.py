@@ -37,6 +37,8 @@ log = logger.get_logger()
 
 
 class Nettacker(ArgParser):
+    modules_total = 0  # (target, module) runs in the scan, counted once targets are expanded
+
     def __init__(self, api_arguments=None):
         if not api_arguments:
             self.print_logo()
@@ -158,6 +160,16 @@ class Nettacker(ArgParser):
         self.arguments.targets = targets
         self.arguments.url_base_path = base_path
 
+        # count every (target, module) run up front for progress, discovery steps included
+        discovery_steps = {
+            "subdomain_scan": self.arguments.scan_subdomains,
+            "icmp_scan": self.arguments.ping_before_scan
+            and common_utils.is_running_with_privileges(),
+            "port_scan": not self.arguments.skip_service_discovery,
+        }
+        modules = {name for name, runs in discovery_steps.items() if runs}
+        self.modules_total = len(targets) * len(modules | set(self.arguments.selected_modules))
+
         # subdomain_scan
         if self.arguments.scan_subdomains:
             selected_modules = self.arguments.selected_modules
@@ -205,17 +217,19 @@ class Nettacker(ArgParser):
                 targets.remove(target)
         return targets
 
-    def run(self):
+    def run(self, scan_id=None):
         """
         preparing for attacks and managing multi-processing for host
 
         Args:
-            options: all options
+            scan_id: scan identifier, generated if not given
 
         Returns:
             True when it ends
         """
-        scan_id = common_utils.generate_random_token(32)
+        scan_id = scan_id or common_utils.generate_random_token(32)
+        # finished (target, module) pairs, shared by every process of this scan
+        self.modules_done = multiprocess.Value("i", 0)
         log.info("ScanID: {0}".format(scan_id))
         log.info(_("regrouping_targets"))
         # find total number of targets + types + expand (subdomain, IPRanges, etc)
@@ -224,6 +238,10 @@ class Nettacker(ArgParser):
         if not self.arguments.targets:
             log.info(_("no_live_service_found"))
             return True
+        # discovery can drop targets and subdomain_scan can add them, so recount what's left
+        self.modules_total = self.modules_done.value + len(self.arguments.targets) * len(
+            self.arguments.selected_modules
+        )
         exit_code = self.start_scan(scan_id)
         create_report(self.arguments, scan_id)
         if self.arguments.scan_compare_id is not None:
@@ -291,19 +309,24 @@ class Nettacker(ArgParser):
         options = copy.deepcopy(self.arguments)
 
         socket.socket, socket.getaddrinfo = set_socks_proxy(options.socks_proxy)
-        module = Module(
-            module_name,
-            options,
-            target,
-            scan_id,
-            process_number,
-            thread_number,
-            total_number_threads,
-        )
-        module.load()
-        module.generate_loops()
-        module.sort_loops()
-        module.start()
+        try:
+            module = Module(
+                module_name,
+                options,
+                target,
+                scan_id,
+                process_number,
+                thread_number,
+                total_number_threads,
+            )
+            module.load()
+            module.generate_loops()
+            module.sort_loops()
+            module.start()
+        finally:
+            # a module that crashed still counts, so progress can reach 100%
+            with self.modules_done.get_lock():
+                self.modules_done.value += 1
 
         log.verbose_event_info(
             _("finished_parallel_module_scan").format(

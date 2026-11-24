@@ -80,6 +80,7 @@ Supplying an explicit key is recommended for repeatable deployments.
 | `--api-cert FILE` | TLS certificate. Use with `--api-cert-key`. |
 | `--api-cert-key FILE` | TLS private key. Use with `--api-cert`. |
 | `--api-debug-mode` | Enable Flask debug mode. Never enable this on an exposed server. |
+| `-v` | Runs the API in verbose mode with logging. |
 
 For Docker, publish the API port and bind Nettacker to all container interfaces:
 
@@ -282,14 +283,17 @@ Treat the returned `msg` as an opaque token. Do not decode it or replace it with
 returns the normalized scan options. HTTP `200` means the scan was accepted; it does not mean the
 scan has completed.
 
-There is currently no job-status or cancellation endpoint, and the submission response does not
-return the scan ID. Poll `GET /results/get_list?page=1` for a completed report.
+There is a task queue running in the background which accepts 2 concurrent scans by default (can be
+updates through `config.py`) and rest will be queued. You will see the status (`running` | `queued` | `completed`)
+along with a progress report (as a percentage towards completion).
+
+> Note that restarting the server will erase the queued jobs.
 
 The API exposes two different identifiers:
 
 - `id`: the numeric database report ID used by `/results/get`, `/results/get_json`, and
   `/results/get_csv`;
-- `scan_id`: the scan's unique string identifier, used by `/compare/scans`.
+- `scan_id`: the scan's unique string identifier, used by `/compare/scans` and viewing the results.
 
 Do not pass a `scan_id` where an endpoint expects `id`.
 

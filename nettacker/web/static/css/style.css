@@ -252,3 +252,84 @@ Relevant styles below
   margin-bottom: 15px;
   max-width: 400px;
 }
+
+.scan-section {
+  margin-bottom: 30px;
+}
+
+.section-header {
+  background: #337ab7;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px 5px 0 0;
+  margin-bottom: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.section-content {
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+  min-height: 100px;
+  padding: 10px;
+}
+
+.empty-section {
+  text-align: center;
+  color: #777;
+  padding: 20px;
+  font-style: italic;
+}
+
+.running-scan-item {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.running-scan-info {
+  flex: 1;
+}
+
+.running-scan-id {
+  font-weight: bold;
+  color: #856404;
+  font-size: 16px;
+}
+
+.running-scan-status {
+  color: #6c757d;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.running-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #856404;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.completed-scans {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.running-scans {
+  max-height: 300px;
+  overflow-y: auto;
+}
