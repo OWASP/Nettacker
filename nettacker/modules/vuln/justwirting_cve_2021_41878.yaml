@@ -1,5 +1,5 @@
 info:
-  name: justwriting_cve_2021_41878_vuln
+  name: justwirting_cve_2021_41878_vuln
   author: OWASP Nettacker Team
   severity: 6
   description: A reflected cross-site scripting (XSS) vulnerability exists in the i-Panel Administration System Version 2.0 that enables a remote attacker to execute arbitrary JavaScript code in the browser-based web console.

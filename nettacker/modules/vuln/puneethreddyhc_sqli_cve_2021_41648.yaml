@@ -1,5 +1,5 @@
 info:
-  name: puneethreddyhc_sql_cve_2021_41648_vuln
+  name: puneethreddyhc_sqli_cve_2021_41648_vuln
   author: OWASP Nettacker Team
   severity: 8
   description: An un-authenticated SQL Injection exists in PuneethReddyHC online-shopping-system-advanced through the /action.php prId parameter. Using a post request does not sanitize the user input.

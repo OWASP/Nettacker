@@ -1,5 +1,5 @@
 info:
-  name: payara_webtemp_cve_2021_41381_vuln
+  name: payara_cve_2021_41381_vuln
   author: OWASP Nettacker Team
   severity: 5
   description: Payara Micro Community 5.2021.6 and below allows Directory Traversal

@@ -1,8 +1,8 @@
 info:
-  name: drupal_module_scan
+  name: drupal_modules_scan
   author: OWASP Nettacker Team
   severity: 3
-  description: fetch drupal version from target
+  description: Enumerates popular modules installed on a Drupal site.
   reference:
   profiles:
     - scan

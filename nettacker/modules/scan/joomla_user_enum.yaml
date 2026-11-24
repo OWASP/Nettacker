@@ -1,8 +1,8 @@
 info:
-  name: joomla_version_scan
+  name: joomla_user_enum_scan
   author: OWASP Nettacker Team
   severity: 3
-  description: fetch joomla version from target
+  description: Attempts to enumerate Joomla users through publicly available responses.
   reference:
   profiles:
     - scan
