@@ -162,6 +162,18 @@ def test_content_regex_has_single_capture_group(content_regex):
             '"buildUser":"root@build","buildDate":"20230801-10:00:00","goVersion":"go1.19.12"}}',
             "2.37.9",
         ),
+        # A brace *inside* a JSON string value (e.g. a branch name) must be treated
+        # as string content, not an object boundary -- both required keys are still
+        # in the same data object, so the version is captured.
+        (
+            '{"status":"success","data":{"branch":"release/{next}","revision":"abc","version":"3.1.0"}}',
+            "3.1.0",
+        ),
+        # Escaped quotes inside a string value before the version must not break it.
+        (
+            '{"status":"success","data":{"buildUser":"he said \\"hi\\"","revision":"r","version":"2.9.9"}}',
+            "2.9.9",
+        ),
     ],
 )
 def test_logs_only_the_version_string(content_regex, body, expected):
@@ -209,6 +221,9 @@ def test_logs_only_the_version_string(content_regex, body, expected):
         '{"status":"success","data":{"result":[{"metric":{"revision":"x","version":"1.0"}}]}}',
         # data object followed by sibling revision/version at the top level.
         '{"status":"success","data":{"foo":"bar"},"revision":"x","version":"9.9"}',
+        # A data object whose only brace-in-string field has no revision, with the
+        # real revision/version in a *sibling* object, must still be rejected.
+        '{"status":"success","data":{"branch":"release/{next}"},"other":{"revision":"a","version":"1.1"}}',
     ],
 )
 def test_no_false_positive_match(content_regex, body):

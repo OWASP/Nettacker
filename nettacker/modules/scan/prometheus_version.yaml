@@ -49,17 +49,21 @@ payloads:
               # (Prometheus does not document a stable order and 3.x emits it either
               # way). Anchoring on both keys keeps other /api/v1 responses that also
               # report "status":"success" (query results, runtime info) from matching.
-              # The wildcards exclude JSON braces (a negated brace class, not an
-              # any-character class) so each search stays inside the current flat
-              # buildinfo object and cannot rescan the objects that follow it. A
-              # hostile body of many repeated empty-data success partials is then
-              # rejected in near-linear time instead of re-running the lookahead for
+              # Each wildcard step matches either a complete quoted JSON string or a
+              # single character that is neither a quote nor a brace, so every search
+              # stays inside the current flat buildinfo object: a structural brace
+              # ends the object and stops the search, while a brace that appears
+              # inside a string value (such as a branch name) is consumed as string
+              # content rather than mistaken for an object boundary. Because a search
+              # cannot cross a structural brace it cannot rescan the objects that
+              # follow, so a hostile body of many repeated empty-data success partials
+              # is rejected in near-linear time instead of re-running the lookahead for
               # every candidate object; content matching is synchronous and is not
               # bounded by the step timeout, so an unbounded wildcard could otherwise
               # stall scan workers.
-              # Regex braces are doubled (here and in the comment above there are
-              # none) because TemplateLoader runs str.format() over the raw YAML
-              # before parsing; after format() they collapse to single braces.
-              regex: '"status"\s*:\s*"success"[^{{}}]{{0,400}}?"data"\s*:\s*\{{(?=[^{{}}]{{0,4000}}?"revision"\s*:\s*"[^"]+")[^{{}}]{{0,4000}}?"version"\s*:\s*"([^"]+)"'
+              # Regex braces are doubled (the comment text itself uses none) because
+              # TemplateLoader runs str.format() over the raw YAML before parsing;
+              # after format() they collapse to single braces.
+              regex: '"status"\s*:\s*"success"(?:"(?:[^"\\]|\\.)*"|[^"{{}}]){{0,400}}?"data"\s*:\s*\{{(?=(?:"(?:[^"\\]|\\.)*"|[^"{{}}]){{0,4000}}?"revision"\s*:\s*"[^"]+")(?:"(?:[^"\\]|\\.)*"|[^"{{}}]){{0,4000}}?"version"\s*:\s*"([^"]+)"'
               reverse: false
           log: "response_dependent['content']"
