@@ -97,11 +97,13 @@ def test_targets_health_endpoint_on_expected_ports(step):
 def test_accepts_every_documented_health_status_code(step):
     """Vault returns the version in all node states, so gating on 200 alone would
     miss sealed (503), standby (429), replication secondary (472), performance
-    standby (473) and uninitialized (501) instances.
+    standby (473), uninitialized (501), a standby that cannot reach the active
+    node and is therefore out of the HA cluster (474, ``haunhealthycode``) and a
+    node removed from the HA cluster (530, ``removedcode``).
     """
     status_regex = step["response"]["conditions"]["status_code"]["regex"]
     compiled = re.compile(status_regex)
-    for code in ("200", "429", "472", "473", "501", "503"):
+    for code in ("200", "429", "472", "473", "474", "501", "503", "530"):
         assert compiled.search(code), f"status code {code} should be accepted"
     assert step["response"]["condition_type"] == "and"
     assert step["response"]["log"] == "response_dependent['content']"
@@ -158,6 +160,22 @@ def test_content_regex_has_single_capture_group(content_regex):
             '{"initialized":true,"sealed":false,"standby":true,"server_time_utc":1,'
             '"version":"1.14.8","cluster_name":"vault-cluster-x"}',
             "1.14.8",
+        ),
+        # Standby that cannot reach the active node, so it is out of the HA
+        # cluster (HTTP 474). Newer builds add an ha_connection_healthy field.
+        (
+            '{"initialized":true,"sealed":false,"standby":true,'
+            '"ha_connection_healthy":false,"last_request_forwarding_heartbeat_ms":815,'
+            '"server_time_utc":1795595086,"version":"1.19.0",'
+            '"cluster_name":"vault-cluster-ha"}',
+            "1.19.0",
+        ),
+        # Node removed from the HA cluster (HTTP 530).
+        (
+            '{"initialized":true,"sealed":false,"standby":true,'
+            '"removed_from_cluster":true,"server_time_utc":1795595086,'
+            '"version":"1.19.0"}',
+            "1.19.0",
         ),
         # Key order is not guaranteed: version ahead of the signature keys.
         ('{"version":"1.17.0","initialized":true,"sealed":false,"standby":false}', "1.17.0"),

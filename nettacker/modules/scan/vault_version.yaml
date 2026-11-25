@@ -40,11 +40,15 @@ payloads:
           conditions:
             status_code:
               # Vault reports the version in every node state, so this accepts the
-              # documented health status codes - active, standby, replication
-              # secondary, performance standby, uninitialized and sealed - instead
-              # of 200 alone. Gating on 200 would miss sealed, standby and
-              # uninitialized instances, which still disclose their version.
-              regex: "200|429|472|473|501|503"
+              # documented health status codes instead of 200 alone: active,
+              # standby, DR replication secondary, performance standby, a standby
+              # that cannot reach the active node and so is out of the HA cluster,
+              # uninitialized, sealed, and a node removed from the HA cluster.
+              # Gating on 200 would miss sealed, standby, uninitialized, HA
+              # unhealthy and removed instances, all of which still disclose their
+              # version. The content signature stays mandatory, so a non-Vault
+              # service answering one of these codes is still not reported.
+              regex: "200|429|472|473|474|501|503|530"
               reverse: false
             content:
               # Match the Vault health signature: a flat JSON object carrying both
