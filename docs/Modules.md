@@ -212,6 +212,7 @@ Use `--show-all-modules` for live metadata and check-specific details.
 | `smartermail_version_scan` | Detects SmarterMail and extracts version information from its licensing API. |
 | `ssl_expiring_certificate_scan` | Reports TLS certificates that have expired or are approaching expiration. |
 | `subdomain_scan` | Discovers subdomains using DNS and internet-based data sources; some queries are sent to third-party services. |
+| `vault_version_scan` | Detects HashiCorp Vault via its unauthenticated `/v1/sys/health` endpoint and reports its version. |
 | `viewdns_reverse_iplookup_scan` | Uses ViewDNS.info to find domains associated with the target IP address. |
 | `waf_scan` | Looks for response characteristics associated with web application firewalls (WAFs). |
 | `web_technologies_scan` | Identifies web servers, frameworks, content-management systems, and other web technologies. |
