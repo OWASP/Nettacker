@@ -1,0 +1,71 @@
+info:
+  name: owncloud_cve_2023_49103_vuln
+  author: Moksh Vatsa
+  severity: 9
+  description: ownCloud graphapi ships a third-party test file that calls phpinfo() and is reachable without authentication, disclosing the PHP configuration and every environment variable. On containerised deployments those variables commonly include the admin password, license key and mail/S3/Redis credentials, so this is effectively a pre-authentication secret disclosure. Affects graphapi 0.2.x before 0.2.1 and 0.3.x before 0.3.1 (bundled with ownCloud before 10.13.1). Added to the CISA Known Exploited Vulnerabilities catalog on 2023-11-30 and exploited at scale within days of disclosure.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2023-49103
+    - https://owncloud.com/security-advisories/disclosure-of-sensitive-credentials-and-configuration-in-containerized-deployments/
+    - https://www.rapid7.com/blog/post/2023/12/01/etr-cve-2023-49103-critical-information-disclosure-in-owncloud-graph-api/
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve2023
+    - cve
+    - cisa_kev
+    - owncloud
+    - exposure
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+              paths:
+                # ownCloud served at the web root, and at the common /owncloud subdirectory.
+                - apps/graphapi/vendor/microsoft/microsoft-graph/tests/GetPhpInfo.php
+                - owncloud/apps/graphapi/vendor/microsoft/microsoft-graph/tests/GetPhpInfo.php
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              # A patched or unaffected host removes the file and answers 404.
+              regex: '200'
+              reverse: false
+            content:
+              # Confirm the response really is phpinfo output before reporting a
+              # disclosure: require the phpinfo title, then capture the leaked PHP
+              # version as the finding. Requiring the title keeps ordinary pages
+              # that merely mention a PHP version from matching.
+              # Current PHP builds put the version in that title, for example
+              # "PHP 8.1.34 - phpinfo()", while others emit a bare "phpinfo()",
+              # so a short prefix inside the title element is allowed.
+              # The pattern is anchored to the start of the body, so the engine
+              # makes exactly one match attempt no matter how large or hostile the
+              # response is - content matching is synchronous and is not bounded
+              # by the step timeout, so an unanchored search could otherwise be
+              # retried at every candidate position.
+              # Regex braces are doubled (the comment text itself uses none)
+              # because TemplateLoader runs str.format() over the raw YAML before
+              # parsing; after format() they collapse to single braces.
+              regex: '^(?=[\s\S]{{0,20000}}?<title>[^<]{{0,100}}phpinfo\(\)</title>)[\s\S]{{0,20000}}?PHP Version ([\d.]+)'
+              reverse: false

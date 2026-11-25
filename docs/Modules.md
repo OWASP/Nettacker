@@ -281,6 +281,7 @@ environment.
 | `nginx_ui_cve_2026_33032_vuln` | Checks Nginx UI before 2.3.4 for CVE-2026-33032 unauthenticated access to the MCP message endpoint. |
 | `novnc_cve_2021_3654_vuln` | Checks noVNC for CVE-2021-3654 user-controlled open redirects. |
 | `omigod_cve_2021_38647_vuln` | Probes Open Management Infrastructure for CVE-2021-38647 by executing the `id` command through WS-Management. |
+| `owncloud_cve_2023_49103_vuln` | Checks ownCloud graphapi for CVE-2023-49103 unauthenticated `phpinfo()` and environment-variable disclosure. |
 | `paloalto_globalprotect_cve_2025_0133_vuln` | Checks PAN-OS GlobalProtect gateways and portals for CVE-2025-0133 reflected cross-site scripting. |
 | `paloalto_panos_cve_2025_0108_vuln` | Checks PAN-OS management interfaces for CVE-2025-0108 authentication bypass. |
 | `payara_cve_2021_41381_vuln` | Checks Payara Micro Community for CVE-2021-41381 directory traversal. |
