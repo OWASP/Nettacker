@@ -126,6 +126,7 @@ class PathConfig:
     data_dir = CWD / ".nettacker/data"
     new_database_file = CWD / ".nettacker/data/nettacker.db"
     old_database_file = CWD / ".data/nettacker.db"
+    flows_dir = PACKAGE_PATH / "flows"
     graph_dir = PACKAGE_PATH / "lib/graph"
     home_dir = CWD
     locale_dir = PACKAGE_PATH / "locale"
@@ -193,6 +194,7 @@ class DefaultSettings(ConfigBase):
     verbose_event = False
     verbose_mode = False
     scan_compare_id = None
+    module_flow = None
     compare_report_path_filename = ""
 
 
