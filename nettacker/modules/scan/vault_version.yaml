@@ -1,0 +1,73 @@
+info:
+  name: vault_version_scan
+  author: Moksh Vatsa
+  severity: 3
+  description: HashiCorp Vault version scan - detects Vault via the unauthenticated /v1/sys/health endpoint and reports its version.
+  reference:
+    - https://www.vaultproject.io/
+    - https://developer.hashicorp.com/vault/api-docs/system/health
+  profiles:
+    - scan
+    - http
+    - vault
+    - info_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/v1/sys/health"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8200
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              # Vault reports the version in every node state, so this accepts the
+              # documented health status codes instead of 200 alone: active,
+              # standby, DR replication secondary, performance standby, a standby
+              # that cannot reach the active node and so is out of the HA cluster,
+              # uninitialized, sealed, and a node removed from the HA cluster.
+              # Gating on 200 would miss sealed, standby, uninitialized, HA
+              # unhealthy and removed instances, all of which still disclose their
+              # version. The content signature stays mandatory, so a non-Vault
+              # service answering one of these codes is still not reported.
+              regex: "200|429|472|473|474|501|503|530"
+              reverse: false
+            content:
+              # Match the Vault health signature: a flat JSON object carrying both
+              # an "initialized" and a "sealed" boolean, then capture the "version"
+              # value. The two lookaheads assert the signature keys are present
+              # without consuming anything, so the capture works regardless of key
+              # order and other products that merely expose a "version" field do
+              # not match.
+              # Each wildcard step matches either a complete quoted JSON string or
+              # a single character that is neither a quote nor a brace, so every
+              # search stays inside the health object: a structural brace ends the
+              # object and stops the search, while a brace inside a string value is
+              # consumed as string content rather than mistaken for a boundary.
+              # That also stops a hostile response from driving repeated rescans,
+              # which matters because content matching is synchronous and is not
+              # bounded by the step timeout.
+              # Regex braces are doubled (the comment text itself uses none)
+              # because TemplateLoader runs str.format() over the raw YAML before
+              # parsing; after format() they collapse to single braces.
+              regex: '^\s{{0,16}}\{{(?=(?:"(?:[^"\\]|\\.)*"|[^"{{}}]){{0,2000}}?"initialized"\s*:\s*(?:true|false))(?=(?:"(?:[^"\\]|\\.)*"|[^"{{}}]){{0,2000}}?"sealed"\s*:\s*(?:true|false))(?:"(?:[^"\\]|\\.)*"|[^"{{}}]){{0,2000}}?"version"\s*:\s*"([^"]+)"'
+              reverse: false
+          log: "response_dependent['content']"
