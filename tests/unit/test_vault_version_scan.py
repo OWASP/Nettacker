@@ -143,6 +143,16 @@ def test_content_regex_has_single_capture_group(content_regex):
             '"server_time_utc":1700000000,"version":"1.16.1"}',
             "1.16.1",
         ),
+        # Verbatim body observed from hashicorp/vault:1.16.1 while uninitialized
+        # (HTTP 501). Newer builds add enterprise/echo_duration_ms/clock_skew_ms
+        # fields, which must not affect the capture.
+        (
+            '{"initialized":false,"sealed":true,"standby":true,"performance_standby":false,'
+            '"replication_performance_mode":"unknown","replication_dr_mode":"unknown",'
+            '"server_time_utc":1795595086,"version":"1.16.1","enterprise":false,'
+            '"echo_duration_ms":0,"clock_skew_ms":0}',
+            "1.16.1",
+        ),
         # Standby node (HTTP 429).
         (
             '{"initialized":true,"sealed":false,"standby":true,"server_time_utc":1,'
