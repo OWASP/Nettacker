@@ -2,10 +2,21 @@ info:
   name: wp_xmlrpc_pingback_vuln
   author: OWASP Nettacker Team
   severity: 3
-  description: WordPress before 3.5.1 lets the XML-RPC pingback.ping method fetch any source URL and returns a different fault code depending on the result, which can be used to port-scan hosts reachable from the server (CVE-2013-0235). The check sends a pingback for post ID 1 and needs that post to exist with pings open.
+  description: >
+    Detects WordPress sites that accept XML-RPC pingbacks. Such a site fetches
+    the source URL of any pingback it receives, so it can be made to send
+    requests to third parties and can reveal its origin IP address behind a
+    reverse proxy or WAF. A site is reported when pingback.ping is listed by
+    system.listMethods and the latest post in the feed sends the X-Pingback
+    header. WordPress before 4.4 sends that header on every page, so those
+    versions are reported even when pings are closed. Also detects the pingback
+    port-scan issue in WordPress before 3.5.1 (CVE-2013-0235), which needs post
+    ID 1 to exist with pings open.
   reference:
     - https://nvd.nist.gov/vuln/detail/CVE-2013-0235
     - https://www.avsecurity.in/wordpress-xml-rpc-pingback-vulnerability/
+    - https://www.invicti.com/blog/web-security/xml-rpc-protocol-ip-disclosure-attacks
+    - https://core.trac.wordpress.org/ticket/20226
   profiles:
     - vuln
     - http
@@ -41,3 +52,183 @@ payloads:
             content:
               regex: <int>16</int>
               reverse: false
+
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "text/xml"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/xmlrpc.php"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 80
+        data: <methodCall><methodName>system.listMethods</methodName><params></params></methodCall>
+        response:
+          save_to_temp_events_only: pingback_method_listed_1
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: pingback\.ping
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: true
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/?feed=rss2&listed=dependent_on_temp_event[0]['content'][0]"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 80
+        response:
+          dependent_on_temp_event: pingback_method_listed_1
+          save_to_temp_events_only: pingback_latest_post_1
+          condition_type: and
+          conditions:
+            url:
+              regex: listed=pingback\.ping
+              reverse: false
+            content:
+              regex: \A[\s\S]*?<guid[^>]*>[^<]*[?&](?:amp;)?p=(\d+)</guid>
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/?p=dependent_on_temp_event[0]['content'][0]"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 80
+        response:
+          dependent_on_temp_event: pingback_latest_post_1
+          condition_type: and
+          conditions:
+            url:
+              regex: \?p=\d+$
+              reverse: false
+            headers:
+              X-Pingback:
+                regex: xmlrpc\.php
+                reverse: false
+
+  - library: http
+    steps:
+      - method: post
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+          Content-Type: "text/xml"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/xmlrpc.php"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+        data: <methodCall><methodName>system.listMethods</methodName><params></params></methodCall>
+        response:
+          save_to_temp_events_only: pingback_method_listed_2
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: pingback\.ping
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: true
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/?feed=rss2&listed=dependent_on_temp_event[0]['content'][0]"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+        response:
+          dependent_on_temp_event: pingback_method_listed_2
+          save_to_temp_events_only: pingback_latest_post_2
+          condition_type: and
+          conditions:
+            url:
+              regex: listed=pingback\.ping
+              reverse: false
+            content:
+              regex: \A[\s\S]*?<guid[^>]*>[^<]*[?&](?:amp;)?p=(\d+)</guid>
+              reverse: false
+
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/?p=dependent_on_temp_event[0]['content'][0]"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 443
+        response:
+          dependent_on_temp_event: pingback_latest_post_2
+          condition_type: and
+          conditions:
+            url:
+              regex: \?p=\d+$
+              reverse: false
+            headers:
+              X-Pingback:
+                regex: xmlrpc\.php
+                reverse: false
