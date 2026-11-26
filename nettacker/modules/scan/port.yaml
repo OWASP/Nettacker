@@ -1033,6 +1033,7 @@ payloads:
           - 5230   # Memos
           - 7860   # Langflow
           - 17017  # SmarterMail
+          - 30080  # GPUStack
           - 32400  # Plex Media Server
         response:
           condition_type: or
