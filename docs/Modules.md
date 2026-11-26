@@ -250,6 +250,7 @@ environment.
 | `content_security_policy_vuln` | Evaluates the Content Security Policy header and page content for empty or `unsafe-*` policy patterns. |
 | `content_type_options_vuln` | Reports a present `X-Content-Type-Options` header whose value does not contain `nosniff`; an absent header is not currently flagged. |
 | `crushftp_cve_2025_31161_vuln` | Probes CrushFTP for CVE-2025-31161 by attempting unauthenticated access to the user-list endpoint. |
+| `cve_2024_25600_vuln` | Checks WordPress Bricks Builder theme before 1.9.7 for CVE-2024-25600 remote code execution. |
 | `cyberoam_netgenie_cve_2021_38702_vuln` | Checks Cyberoam NetGenie devices for CVE-2021-38702 reflected cross-site scripting. |
 | `exponent_cms_cve_2021_38751_vuln` | Checks ExponentCMS for CVE-2021-38751 host-header injection that can produce attacker-controlled links. |
 | `f5_cve_2020_5902_vuln` | Checks F5 BIG-IP TMUI for CVE-2020-5902 path traversal and arbitrary file read. |

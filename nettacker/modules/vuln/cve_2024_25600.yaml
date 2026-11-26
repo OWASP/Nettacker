@@ -1,0 +1,60 @@
+info:
+  name: cve_2024_25600_vuln
+  author: coder-Yash886
+  severity: 9.8
+  description: >
+    Checks WordPress Bricks Builder theme before 1.9.7 for CVE-2024-25600
+    pre-authentication remote code execution.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2024-25600
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+    - https://snyk.io/blog/cve-2024-25600-wordpress-bricks-builder-rce/
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2024
+    - cisa_kev
+    - wordpress
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8080
+                - 8443
+              paths:
+                - "/wp-json/bricks/v1/render_element"
+                - "/?rest_route=/bricks/v1/render_element"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "400"
+              reverse: false
+            headers:
+              content-type:
+                regex: "application/json"
+                reverse: false
+            content:
+              regex: '(?s)rest_missing_callback_param.*Missing parameter\(s\): postId'
+              reverse: false
