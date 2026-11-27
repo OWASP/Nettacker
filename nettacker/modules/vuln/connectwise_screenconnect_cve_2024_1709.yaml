@@ -1,0 +1,58 @@
+info:
+  name: connectwise_screenconnect_cve_2024_1709_vuln
+  author: coder-Yash886
+  severity: 10.0
+  description: >
+    Checks ConnectWise ScreenConnect before 23.9.8 for CVE-2024-1709
+    authentication bypass via the setup wizard endpoint.
+  reference:
+    - https://nvd.nist.gov/vuln/detail/CVE-2024-1709
+    - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+    - https://www.huntress.com/blog/detection-guidance-for-connectwise-cve-2024-1709
+  profiles:
+    - vuln
+    - http
+    - critical_severity
+    - cve
+    - cve2024
+    - cisa_kev
+    - connectwise
+    - screenconnect
+    - auth_bypass
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}{{paths}}"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 8040
+                - 8041
+              paths:
+                - "/SetupWizard.aspx/"
+                - "/SetupWizard.aspx"
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              regex: '(?s)(?=.*SetupWizard)(?=.*ScreenConnect)'
+              reverse: false
