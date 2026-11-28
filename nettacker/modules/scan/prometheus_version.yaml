@@ -1,0 +1,69 @@
+info:
+  name: prometheus_version_scan
+  author: Moksh Vatsa
+  severity: 3
+  description: Prometheus version scan - detects Prometheus via the unauthenticated /api/v1/status/buildinfo endpoint and reports its version.
+  reference:
+    - https://prometheus.io/
+    - https://prometheus.io/docs/prometheus/latest/querying/api/#build-information
+  profiles:
+    - scan
+    - http
+    - prometheus
+    - info_severity
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/api/v1/status/buildinfo"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+                - "https"
+              ports:
+                - 80
+                - 443
+                - 9090
+        response:
+          condition_type: and
+          conditions:
+            status_code:
+              regex: "200"
+              reverse: false
+            content:
+              # Match the Prometheus buildinfo signature: a "success" status wrapping a
+              # "data" object that has both a "revision" key and a "version" key. The
+              # lookahead asserts "revision" is present without consuming anything, so
+              # the capture can then pick up "version" regardless of key order
+              # (Prometheus does not document a stable order and 3.x emits it either
+              # way). Anchoring on both keys keeps other /api/v1 responses that also
+              # report "status":"success" (query results, runtime info) from matching.
+              # Each wildcard step matches either a complete quoted JSON string or a
+              # single character that is neither a quote nor a brace, so every search
+              # stays inside the current flat buildinfo object: a structural brace
+              # ends the object and stops the search, while a brace that appears
+              # inside a string value (such as a branch name) is consumed as string
+              # content rather than mistaken for an object boundary. Because a search
+              # cannot cross a structural brace it cannot rescan the objects that
+              # follow, so a hostile body of many repeated empty-data success partials
+              # is rejected in near-linear time instead of re-running the lookahead for
+              # every candidate object; content matching is synchronous and is not
+              # bounded by the step timeout, so an unbounded wildcard could otherwise
+              # stall scan workers.
+              # Regex braces are doubled (the comment text itself uses none) because
+              # TemplateLoader runs str.format() over the raw YAML before parsing;
+              # after format() they collapse to single braces.
+              regex: '"status"\s*:\s*"success"(?:"(?:[^"\\]|\\.)*"|[^"{{}}]){{0,400}}?"data"\s*:\s*\{{(?=(?:"(?:[^"\\]|\\.)*"|[^"{{}}]){{0,4000}}?"revision"\s*:\s*"[^"]+")(?:"(?:[^"\\]|\\.)*"|[^"{{}}]){{0,4000}}?"version"\s*:\s*"([^"]+)"'
+              reverse: false
+          log: "response_dependent['content']"
