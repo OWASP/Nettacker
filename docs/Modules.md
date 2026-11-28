@@ -53,7 +53,7 @@ See the [usage guide](Usage.md) for all target, output, concurrency, and reporti
 
 ## Ports and service discovery
 
-Nettacker normally performs service discovery (port scan of 1,012 ports: the most popular ports, aligned with Nmap's default port list, plus the non-standard default ports used by Nettacker modules) before running modules and limits protocol-specific
+Nettacker normally performs service discovery (port scan of 1,014 ports: the most popular ports, aligned with Nmap's default port list, plus the non-standard default ports used by Nettacker modules) before running modules and limits protocol-specific
 checks to compatible discovered services. Use `-d` or `--skip-service-discovery` only when you
 intentionally want to run selected modules without that filtering.
 
@@ -80,7 +80,7 @@ python nettacker.py -i scanme.example -m port_scan -X 25,110,445
 default selection.
 
 <details open>
-<summary>Show the 1,012 default ports used by <code>port_scan</code></summary>
+<summary>Show the 1,014 default ports used by <code>port_scan</code></summary>
 
 Most popular ports, aligned with Nmap's default port list (1,005):
 
@@ -150,10 +150,10 @@ Most popular ports, aligned with Nmap's default port list (1,005):
 57797, 58080, 60020, 60443, 61532, 61900, 62078, 63331, 64623, 64680, 65000, 65129, 65389
 ```
 
-Non-standard default ports used by Nettacker modules (7):
+Non-standard default ports used by Nettacker modules (9):
 
 ```text
-4433, 4502, 4503, 5230, 7860, 17017, 32400
+2375, 2376, 4433, 4502, 4503, 5230, 7860, 17017, 32400
 ```
 
 </details>
@@ -251,6 +251,7 @@ environment.
 | `content_type_options_vuln` | Reports a present `X-Content-Type-Options` header whose value does not contain `nosniff`; an absent header is not currently flagged. |
 | `crushftp_cve_2025_31161_vuln` | Probes CrushFTP for CVE-2025-31161 by attempting unauthenticated access to the user-list endpoint. |
 | `cyberoam_netgenie_cve_2021_38702_vuln` | Checks Cyberoam NetGenie devices for CVE-2021-38702 reflected cross-site scripting. |
+| `docker_api_exposed_vuln` | Detects a Docker Engine API `/version` endpoint reachable without client authentication on conventional remote API ports (`2375` HTTP, `2376` HTTPS). |
 | `exponent_cms_cve_2021_38751_vuln` | Checks ExponentCMS for CVE-2021-38751 host-header injection that can produce attacker-controlled links. |
 | `f5_cve_2020_5902_vuln` | Checks F5 BIG-IP TMUI for CVE-2020-5902 path traversal and arbitrary file read. |
 | `forgerock_am_cve_2021_35464_vuln` | Probes the unauthenticated ForgeRock AM `ccversion` endpoint associated with CVE-2021-35464; it does not send a deserialization payload. |
