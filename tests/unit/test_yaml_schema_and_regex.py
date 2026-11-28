@@ -147,6 +147,7 @@ BRUTE_STEP_SCHEMA = Schema(
     {
         "method": "brute_force",
         Optional("timeout"): int,
+        Optional("authentication_attempts"): And(int, lambda attempts: attempts >= 1),
         "host": str,
         "ports": [int],
         Optional("usernames"): list,

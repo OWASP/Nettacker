@@ -16,3 +16,11 @@ def test_top_1000_common_passwords():
     assert len(set(top_1000_passwords)) == len(
         top_1000_passwords
     ), f"The passwords aren't unique: {Counter(top_1000_passwords).most_common(1)[0][0]}"
+
+
+def test_sshole_password_payload():
+    payload_file_path = (
+        nettacker_path / "nettacker/lib/payloads/passwords/sshole_cve_2026_123158.txt"
+    )
+
+    assert payload_file_path.read_bytes() == b"A" * 257
