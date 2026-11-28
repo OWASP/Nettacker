@@ -1,0 +1,74 @@
+info:
+  name: docker_api_exposed_vuln
+  author: subhamchauhan0
+  severity: 8
+  description: >-
+    Detects a Docker Engine API /version endpoint reachable without client
+    authentication on conventional remote API ports. Exposure may permit
+    sensitive Docker operations depending on daemon authorization configuration;
+    this check does not verify write access or host compromise.
+  reference:
+    - https://docs.docker.com/engine/api/
+    - https://docs.docker.com/engine/daemon/remote-access/
+    - https://docs.docker.com/engine/security/protect-access/
+  profiles:
+    - vuln
+    - http
+    - high_severity
+    - docker
+    - container
+    - misconfiguration
+
+payloads:
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/version"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "http"
+              ports:
+                - 2375
+        response: &docker_version_response
+          condition_type: and
+          conditions:
+            status_code:
+              regex: '\A200\Z'
+              reverse: false
+            content:
+              # Literal braces are doubled ({{ / }}) because TemplateLoader.format() applies
+              # Python str.format() to the raw YAML before yaml.safe_load().
+              regex: '(?s)\A\s*\{{(?:(?=.*?"Components"\s*:\s*\[(?:\s*\{{[^{{}}]*(?:\{{[^{{}}]*\}}[^{{}}]*)*\}}\s*,)*\s*\{{(?=[^{{}}]*(?:\{{[^{{}}]*\}}[^{{}}]*)*?"Name"\s*:\s*"Engine")(?=[^{{}}]*(?:\{{[^{{}}]*\}}[^{{}}]*)*?"Version"\s*:\s*"[0-9][^"]*")(?:\s*"|\{{|[^{{}}]))|(?=.*?"MinAPIVersion"\s*:\s*"\d+(?:\.\d+)+")(?=.*?"Version"\s*:\s*"[0-9][^"]*")(?=.*?"GitCommit"\s*:\s*"[^"]+")(?=.*?"GoVersion"\s*:\s*"go[0-9.]+"))(?=.*?"ApiVersion"\s*:\s*"(\d+(?:\.\d+)+)").*\}}\s*\Z'
+              reverse: false
+          log: "response_dependent['content']"
+
+  - library: http
+    steps:
+      - method: get
+        timeout: 3
+        headers:
+          User-Agent: "{user_agent}"
+        allow_redirects: false
+        ssl: false
+        url:
+          nettacker_fuzzer:
+            input_format: "{{schema}}://{target}:{{ports}}/version"
+            prefix: ""
+            suffix: ""
+            interceptors:
+            data:
+              schema:
+                - "https"
+              ports:
+                - 2376
+        response: *docker_version_response

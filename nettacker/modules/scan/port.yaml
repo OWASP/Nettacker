@@ -1027,6 +1027,8 @@ payloads:
           # Service discovery only runs a module against services that port_scan found, so
           # every default port a module uses must be listed. When a module needs a new
           # port, add it here; tests/unit/test_port_scan_module_ports.py checks this.
+          - 2375   # Docker Engine API (unencrypted)
+          - 2376   # Docker Engine API (TLS)
           - 4433   # SonicWall SSL VPN
           - 4502   # Adobe Experience Manager (author)
           - 4503   # Adobe Experience Manager (publish)
