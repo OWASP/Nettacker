@@ -50,6 +50,15 @@ class TelnetLibrary(BaseLibrary):
         + rb"[^\s<>$#%]{0,64}(?:>| ?[$#%]) ?\Z",
     )
 
+    # Terminal control sequences, removed from a copy of the reply before the prompt and success
+    # markers are checked: CSI (ESC [, parameters, intermediates and a final byte, such as the
+    # ESC[6n that BusyBox ash sends after its prompt, or colour codes) and OSC on one line (ESC ]
+    # up to BEL or ESC \, such as a window title). 7-bit forms only, because a 0x9B byte can be
+    # part of UTF-8 text. Telnet option bytes never reach this: telnetlib has taken them out.
+    # The failure markers are searched in the raw reply as well, because removing a sequence can
+    # cut into the text after it ("\x1b[Login incorrect" becomes "ogin incorrect").
+    control_sequence = rb"\x1b\[[0-?]*[ -/]*[@-~]|\x1b\][^\x07\x1b\r\n]*(?:\x07|\x1b\\)"
+
     # A success marker or a trailing prompt is only believed once nothing more arrived for
     # settle_time seconds (or the deadline is reached or the server closed the connection), so a
     # reply that comes in pieces is judged as a whole. What arrives after a longer pause than this
@@ -122,11 +131,13 @@ class TelnetLibrary(BaseLibrary):
         failure = re.compile(b"|".join(self.failure_markers), re.IGNORECASE)
         prompt = re.compile(b"|".join(self.prompt_markers), re.IGNORECASE)
         success = re.compile(b"|".join(self.success_markers))
+        control = re.compile(self.control_sequence)
         deadline = time.monotonic() + timeout
         reply = b""
+        text = b""  # the reply without terminal control sequences
         while True:
             wait = deadline - time.monotonic()
-            if success.search(reply) or prompt.search(reply):
+            if success.search(text) or prompt.search(text):
                 wait = min(wait, self.settle_time)  # then the reply must stay quiet this long
             if wait <= 0:
                 break
@@ -139,14 +150,16 @@ class TelnetLibrary(BaseLibrary):
             reply += chunk
             if len(reply) > self.max_reply_size:
                 raise TelnetLoginError(f"reply larger than {self.max_reply_size} bytes")
-            # everything received so far is checked again after every chunk
-            if failure.search(reply):
+            # everything received so far is checked again after every chunk, so a control sequence
+            # split across two reads is removed once its last byte has arrived
+            text = control.sub(b"", reply)
+            if failure.search(reply) or failure.search(text):
                 raise TelnetLoginError(f"login rejected, reply: {reply[-80:]!r}")
         # every failure marker is checked before any success marker (the phrases were also checked
         # after every chunk; only the prompts can still be new here)
-        if failure.search(reply) or prompt.search(reply):
+        if failure.search(reply) or failure.search(text) or prompt.search(text):
             raise TelnetLoginError(f"login rejected, reply: {reply[-80:]!r}")
-        if not success.search(reply):
+        if not success.search(text):
             raise TelnetLoginError(f"login not confirmed, reply: {reply[-80:]!r}")
 
 

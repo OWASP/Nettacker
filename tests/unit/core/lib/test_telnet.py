@@ -84,6 +84,88 @@ BANNER_ONLY = (
     [b"Last login: Tue Nov 10 10:00:00 2026\r\n"],
     [b"Last login:", b" Tue Nov 10 10:00:00 2026\r\n"],
 )
+# Real telnet sessions, captured on 2026-11-28 with a raw socket that refused every telnet option
+# like telnetlib does (test user "tbuser"): what each server sent before the login prompt, before
+# the password prompt and, as the separate writes it arrived in, in reply to the password.
+# BusyBox telnetd ran as "telnetd -F -l /bin/login"; Debian 12 ran inetutils-telnetd 2.4 under
+# inetutils-inetd. After its shell prompt BusyBox ash sends ESC[6n, a cursor position query.
+ALPINE_OPTIONS = b"\xff\xfd\x01\xff\xfd\x1f\xff\xfb\x01\xff\xfb\x03\r\r\n"
+ALPINE_PASSWORD_PROMPT = b"tbuser\r\nPassword: "
+ALPINE_MOTD = (
+    b"Welcome to Alpine!\r\n"
+    b"\r\n"
+    b"The Alpine Wiki contains a large amount of how-to guides and general\r\n"
+    b"information about administrating Alpine systems.\r\n"
+    b"See <https://wiki.alpinelinux.org/>.\r\n"
+    b"\r\n"
+    b"You can setup the system with the command: setup-alpine\r\n"
+    b"\r\n"
+    b"You may change this message by editing /etc/motd.\r\n"
+    b"\r\n"
+)
+DEBIAN_BANNER = (
+    b"\xff\xfb\x25\xff\xfb\x26\xff\xfd\x18\xff\xfd\x20\xff\xfd\x23\xff\xfd\x27\xff\xfd\x24"
+    b"\xff\xfb\x03\xff\xfd\x01\xff\xfd\x22\xff\xfd\x1f\xff\xfb\x05\xff\xfd\x21"
+    b"\xff\xfb\x01\xff\xfd\x06\xff\xfd\x00"
+    b"\r\nLinux 6.6.87.2-microsoft-standard-WSL2 (tb-debian12) (pts/0)\r\n\r\n"
+    b"\xff\xfb\x03\xff\xfb\x01tb-debian12 login: "
+)
+DEBIAN_UNAME = (
+    b"Linux tb-debian12 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC"
+    b" Thu Jun  5 18:30:46 UTC 2025 x86_64\r\n"
+)
+DEBIAN_MOTD = (
+    b"\r\n"
+    b"The programs included with the Debian GNU/Linux system are free software;\r\n"
+    b"the exact distribution terms for each program are described in the\r\n"
+    b"individual files in /usr/share/doc/*/copyright.\r\n"
+    b"\r\n"
+    b"Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent\r\n"
+    b"permitted by applicable law.\r\n"
+)
+# (login prompt stream, password prompt stream, reply pieces) per server
+REAL_VALID_LOGINS = {
+    "Alpine 3.22.8, BusyBox 1.37.0": (
+        ALPINE_OPTIONS + b"tb-alpine322 login: ",
+        ALPINE_PASSWORD_PROMPT,
+        [b"\r\n", ALPINE_MOTD + b"tb-alpine322:~$ \x1b[6n"],
+    ),
+    "Alpine 3.20.10, BusyBox 1.36.1": (
+        ALPINE_OPTIONS + b"tb-alpine320 login: ",
+        ALPINE_PASSWORD_PROMPT,
+        [b"\r\n", ALPINE_MOTD + b"tb-alpine320:~$ \x1b[6n"],
+    ),
+    # a second Alpine 3.22 capture, made with telnetlib, of which only the reply was kept
+    "Alpine 3.22, container 688cb5104e95": (
+        b"mock login: ",
+        b"Password: ",
+        b"\r\n" + ALPINE_MOTD + b"688cb5104e95:~$ \x1b[6n",
+    ),
+    "Debian 12, inetutils-telnetd 2.4": (
+        DEBIAN_BANNER,
+        b"Password: ",
+        [b"\r\n", DEBIAN_UNAME, DEBIAN_MOTD, b"tbuser@tb-debian12:~$ "],
+    ),
+}
+# The real servers sent "Login incorrect" about 3 seconds after the password; here the pieces
+# follow each other FRAGMENT_GAP apart.
+REAL_WRONG_PASSWORDS = {
+    "Alpine 3.22.8, BusyBox 1.37.0": (
+        ALPINE_OPTIONS + b"tb-alpine322 login: ",
+        ALPINE_PASSWORD_PROMPT,
+        [b"\r\n", b"Login incorrect\r\n", b"tb-alpine322 login: "],
+    ),
+    "Alpine 3.20.10, BusyBox 1.36.1": (
+        ALPINE_OPTIONS + b"tb-alpine320 login: ",
+        ALPINE_PASSWORD_PROMPT,
+        [b"\r\n", b"Login incorrect\r\ntb-alpine320 login: "],
+    ),
+    "Debian 12, inetutils-telnetd 2.4": (
+        DEBIAN_BANNER,
+        b"Password: ",
+        [b"\r\n", b"\r\nLogin incorrect\r\n", b"tb-debian12 login: "],
+    ),
+}
 
 
 def read_line(connection):
@@ -710,6 +792,80 @@ class TestTelnetBruteForce(TestCase):
                     )
                     result, _, _ = self.attempt(handler, timeout=LONG_TIMEOUT)
                     self.assertEqual(result["password"], PASSWORD)
+
+    def test_real_valid_logins_are_accepted(self):
+        for name, (login_prompt, password_prompt, reply) in REAL_VALID_LOGINS.items():
+            with self.subTest(server=name):
+                handler = scripted(reply, login_prompt, password_prompt, gap=FRAGMENT_GAP)
+                # settle_time=None: the production quiet period is used here on purpose
+                result, _, _ = self.attempt(handler, timeout=LONG_TIMEOUT, settle_time=None)
+                self.assertEqual(result["password"], PASSWORD)
+
+    def test_real_wrong_passwords_are_rejected_by_the_failure_phrase(self):
+        for name, (login_prompt, password_prompt, reply) in REAL_WRONG_PASSWORDS.items():
+            with self.subTest(server=name):
+                handler = scripted(reply, login_prompt, password_prompt, gap=FRAGMENT_GAP)
+                with self.assertRaises(TelnetLoginError) as rejected:
+                    self.attempt(handler, timeout=LONG_TIMEOUT)
+                self.assertIn("login rejected", str(rejected.exception))
+
+    def test_escape_sequence_split_across_two_reads_is_accepted_at_every_cut(self):
+        prompt = b"\r\n\r\n688cb5104e95:~$ "
+        for sequence in (b"\x1b[6n", b"\x1b[?2004h"):
+            for cut in range(len(sequence)):
+                pieces = [prompt + sequence[:cut], sequence[cut:]]
+                with self.subTest(pieces=pieces):
+                    result, _, _ = self.attempt(
+                        scripted(pieces, gap=FRAGMENT_GAP), timeout=LONG_TIMEOUT
+                    )
+                    self.assertEqual(result["password"], PASSWORD)
+
+    def test_window_title_before_the_prompt_is_ignored(self):
+        # an OSC sequence ends in BEL or in ESC \ and may contain spaces
+        for title in (b"\x1b]0;user@mock: ~\x07", b"\x1b]0;user@mock: ~\x1b\\"):
+            with self.subTest(title=title):
+                reply = b"\r\n" + title + b"user@mock:~$ "
+                result, _, _ = self.attempt(scripted(reply), timeout=LONG_TIMEOUT)
+                self.assertEqual(result["password"], PASSWORD)
+
+    def test_colour_codes_in_the_prompt_are_ignored(self):
+        for reply in (
+            b"\r\n\x1b[01;32muser@mock\x1b[00m:\x1b[01;34m~\x1b[00m$ ",
+            b"\r\nroot@mock:~\x1b[1;31m#\x1b[0m ",
+        ):
+            with self.subTest(reply=reply):
+                result, _, _ = self.attempt(scripted(reply), timeout=LONG_TIMEOUT)
+                self.assertEqual(result["password"], PASSWORD)
+
+    def test_bash_prompt_next_to_a_bracketed_paste_mode_switch_is_accepted(self):
+        # newer bash switches bracketed paste mode on (ESC[?2004h) and off (ESC[?2004l)
+        for reply in (
+            b"\r\n\x1b[?2004huser@mock:~$ ",
+            b"\r\nuser@mock:~$ \x1b[?2004h",
+            b"\r\nuser@mock:~$ \x1b[?2004l",
+        ):
+            with self.subTest(reply=reply):
+                result, _, _ = self.attempt(scripted(reply), timeout=LONG_TIMEOUT)
+                self.assertEqual(result["password"], PASSWORD)
+
+    def test_failure_phrase_next_to_escape_sequences_is_still_rejected(self):
+        for reply in (
+            b"\r\n\x1b[31mLogin incorrect\x1b[0m\r\nmock login: ",
+            # removing "\x1b[L" leaves "ogin incorrect": the phrase is found in the raw reply
+            b"\r\n\x1b[Login incorrect\r\nmock:~$ ",
+        ):
+            with self.subTest(reply=reply):
+                with self.assertRaises(TelnetLoginError) as rejected:
+                    self.attempt(scripted(reply), timeout=LONG_TIMEOUT)
+                self.assertIn("login rejected", str(rejected.exception))
+
+    def test_login_prompt_followed_by_an_escape_sequence_is_rejected_as_a_prompt(self):
+        reply = b"\r\nmock login: \x1b[K"
+        with self.assertRaises(TelnetLoginError) as rejected:
+            self.attempt(scripted(reply), timeout=LONG_TIMEOUT)
+        self.assertIn("login rejected", str(rejected.exception))
+        # the message shows the bytes as they were received
+        self.assertIn(repr(reply), str(rejected.exception))
 
     def test_connection_with_a_file_descriptor_above_1023(self):
         # select.select() cannot watch such a descriptor on POSIX, and a scan with many threads
