@@ -53,7 +53,7 @@ See the [usage guide](Usage.md) for all target, output, concurrency, and reporti
 
 ## Ports and service discovery
 
-Nettacker normally performs service discovery (port scan of 1,012 ports: the most popular ports, aligned with Nmap's default port list, plus the non-standard default ports used by Nettacker modules) before running modules and limits protocol-specific
+Nettacker normally performs service discovery (port scan of 1,014 ports: the most popular ports, aligned with Nmap's default port list, plus the non-standard default ports used by Nettacker modules) before running modules and limits protocol-specific
 checks to compatible discovered services. Use `-d` or `--skip-service-discovery` only when you
 intentionally want to run selected modules without that filtering.
 
@@ -80,7 +80,7 @@ python nettacker.py -i scanme.example -m port_scan -X 25,110,445
 default selection.
 
 <details open>
-<summary>Show the 1,012 default ports used by <code>port_scan</code></summary>
+<summary>Show the 1,014 default ports used by <code>port_scan</code></summary>
 
 Most popular ports, aligned with Nmap's default port list (1,005):
 
@@ -150,10 +150,10 @@ Most popular ports, aligned with Nmap's default port list (1,005):
 57797, 58080, 60020, 60443, 61532, 61900, 62078, 63331, 64623, 64680, 65000, 65129, 65389
 ```
 
-Non-standard default ports used by Nettacker modules (7):
+Non-standard default ports used by Nettacker modules (9):
 
 ```text
-4433, 4502, 4503, 5230, 7860, 17017, 32400
+4433, 4502, 4503, 5230, 7860, 8040, 8041, 17017, 32400
 ```
 
 </details>
@@ -247,6 +247,7 @@ environment.
 | `cloudron_cve_2021_40868_vuln` | Checks Cloudron login redirects for CVE-2021-40868 reflected cross-site scripting. |
 | `confluence_cve_2023_22515_vuln` | Identifies Confluence 8.x build versions in the ranges affected by CVE-2023-22515; it does not attempt to create an administrator. |
 | `confluence_cve_2023_22527_vuln` | Probes Confluence for CVE-2023-22527 template injection by executing `id` and returning its output in a response header. |
+| `connectwise_screenconnect_cve_2024_1709_vuln` | Checks ConnectWise ScreenConnect before 23.9.8 for CVE-2024-1709 authentication bypass. |
 | `content_security_policy_vuln` | Evaluates the Content Security Policy header and page content for empty or `unsafe-*` policy patterns. |
 | `content_type_options_vuln` | Reports a present `X-Content-Type-Options` header whose value does not contain `nosniff`; an absent header is not currently flagged. |
 | `crushftp_cve_2025_31161_vuln` | Probes CrushFTP for CVE-2025-31161 by attempting unauthenticated access to the user-list endpoint. |

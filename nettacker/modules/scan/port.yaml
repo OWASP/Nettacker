@@ -1032,6 +1032,8 @@ payloads:
           - 4503   # Adobe Experience Manager (publish)
           - 5230   # Memos
           - 7860   # Langflow
+          - 8040   # ConnectWise ScreenConnect (web)
+          - 8041   # ConnectWise ScreenConnect (relay/https)
           - 17017  # SmarterMail
           - 32400  # Plex Media Server
         response:
