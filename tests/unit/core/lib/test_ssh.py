@@ -4,7 +4,7 @@ from paramiko.auth_strategy import Password
 from paramiko.ssh_exception import AuthenticationException
 
 from nettacker.core.lib.ssh import SshLibrary
-from tests.common import TestCase
+from tests.unit.common import TestCase
 
 SSH_SESSION_PORT = 22
 
