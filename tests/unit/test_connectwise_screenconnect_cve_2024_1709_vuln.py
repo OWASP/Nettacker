@@ -50,6 +50,11 @@ def test_module_metadata(module):
     assert "connectwise" in info["profiles"]
     assert "screenconnect" in info["profiles"]
     assert "auth_bypass" in info["profiles"]
+    assert info["reference"] == [
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-1709",
+        "https://www.cisa.gov/news-events/alerts/2024/02/22/cisa-adds-one-known-exploited-connectwise-vulnerability-cve-2024-1709-catalog",
+        "https://www.huntress.com/blog/a-catastrophe-for-control-understanding-the-screenconnect-authentication-bypass",
+    ]
 
 
 def test_targets_expected_paths_and_ports(step):
@@ -70,8 +75,7 @@ def test_response_conditions_structure(step):
     conditions = response["conditions"]
     assert conditions["status_code"]["regex"] == "200"
     assert conditions["status_code"]["reverse"] is False
-    assert "SetupWizard" in conditions["content"]["regex"]
-    assert "ScreenConnect" in conditions["content"]["regex"]
+    assert conditions["content"]["regex"] == r"(?s)\A(?=.*SetupWizard)(?=.*ScreenConnect)"
     assert conditions["content"]["reverse"] is False
 
 
@@ -133,6 +137,17 @@ def test_matches_vulnerable_response_with_varied_whitespace(step):
             {"content-type": "text/html; charset=utf-8"},
             "<html><head><title>Access Denied</title></head><body>Access to the path is denied.</body></html>",
         ),
+        # Non-200 responses containing BOTH indicators (status rejection independent of body)
+        (
+            "403",
+            {"content-type": "text/html; charset=utf-8"},
+            "<html><head><title>ScreenConnect Setup Wizard</title></head><body>Forbidden SetupWizard ScreenConnect</body></html>",
+        ),
+        (
+            "500",
+            {"content-type": "text/html"},
+            "<html><body>Internal error in SetupWizard for ScreenConnect</body></html>",
+        ),
         # 404 Not Found (ScreenConnect not installed or path disabled)
         (
             "404",
@@ -151,11 +166,17 @@ def test_matches_vulnerable_response_with_varied_whitespace(step):
             {"content-type": "text/html; charset=utf-8"},
             "<html><head><title>Welcome</title></head><body>Default Web Page</body></html>",
         ),
-        # 200 OK mentioning ScreenConnect but not SetupWizard (e.g. login portal)
+        # 200 OK mentioning ScreenConnect only (missing SetupWizard)
         (
             "200",
             {"content-type": "text/html"},
             "<html><head><title>ScreenConnect Login</title></head><body>Please enter your credentials</body></html>",
+        ),
+        # 200 OK mentioning SetupWizard only (missing ScreenConnect)
+        (
+            "200",
+            {"content-type": "text/html"},
+            "<html><head><title>Generic SetupWizard</title></head><body>Welcome to the setup wizard</body></html>",
         ),
         # 500 Internal Server Error
         (
