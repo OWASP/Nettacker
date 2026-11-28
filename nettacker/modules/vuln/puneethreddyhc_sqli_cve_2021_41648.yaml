@@ -20,6 +20,7 @@ payloads:
         timeout: 3
         headers:
           User-Agent: "{user_agent}"
+          Content-Type: "application/x-www-form-urlencoded"
         allow_redirects: false
         ssl: false
         url:
@@ -48,5 +49,5 @@ payloads:
                 regex: text/html
                 reverse: false
             content:
-              regex: 'Warning: mysqli_num_rows\(\) expects parameter 1 to be&xdebug-error xe-warning'
+              regex: '(?s)^(?=.*Warning: mysqli_num_rows\(\) expects parameter 1 to be)(?=.*xdebug-error xe-warning)'
               reverse: false

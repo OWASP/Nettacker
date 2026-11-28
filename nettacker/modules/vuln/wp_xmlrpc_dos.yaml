@@ -34,10 +34,10 @@ payloads:
                 - 443
         data: <?xml version=\"1.0\" encoding=\"utf-8\"?><methodCall><methodName>system.listMethods</methodName><params></params></methodCall>
         response:
-          condition_type: or
+          condition_type: and
           conditions:
             content:
-              regex: system.multicall&system.listMethods&demo.sayHello
+              regex: '(?s)^(?=.*<string>system\.multicall</string>)(?=.*<string>system\.listMethods</string>)'
               reverse: false
             status_code:
               regex: "200"
