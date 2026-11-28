@@ -1,5 +1,5 @@
 info:
-  name: hoteldruid_cve_2021_37833_vuln
+  name: hoteldruid_cve_2021-37833_vuln
   author: OWASP Nettacker Team
   severity: 6
   description:  Reflected cross-site scripting (XSS) vulnerability exists in multiple pages in version 3.0.2 of the Hotel Druid application that allows for arbitrary execution of JavaScript commands.

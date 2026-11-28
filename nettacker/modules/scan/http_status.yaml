@@ -1,5 +1,5 @@
 info:
-  name: status_scan
+  name: http_status_scan
   author: OWASP Nettacker Team
   severity: 3
   description: HTTP Status scan

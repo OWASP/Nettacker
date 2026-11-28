@@ -295,3 +295,12 @@ def test_yaml_schema_and_regex_valid(yaml_file):
 
     for regex in regexes:
         assert is_valid_regex(regex), f"Invalid regex in {yaml_file}: `{regex}`"
+
+
+@pytest.mark.parametrize("yaml_file", list(get_yaml_files()))
+def test_yaml_info_name_matches_module_name(yaml_file):
+    """info.name must match the module name Nettacker builds from the file path."""
+    category = os.path.basename(os.path.dirname(yaml_file))
+    expected = f"{os.path.splitext(os.path.basename(yaml_file))[0]}_{category}"
+
+    assert load_yaml(yaml_file)["info"]["name"] == expected

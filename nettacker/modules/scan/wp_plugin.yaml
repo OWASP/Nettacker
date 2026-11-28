@@ -1,8 +1,8 @@
 info:
-  name: wordpress_version_scan
+  name: wp_plugin_scan
   author: OWASP Nettacker Team
   severity: 3
-  description: Directory, Backup finder
+  description: Enumerates popular plugins installed on a WordPress site.
   reference:
   profiles:
     - scan

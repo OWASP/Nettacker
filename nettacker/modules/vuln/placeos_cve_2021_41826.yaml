@@ -1,5 +1,5 @@
 info:
-  name: placeos_sql_cve_2021_41826_vuln
+  name: placeos_cve_2021_41826_vuln
   author: OWASP Nettacker Team
   severity: 3
   description: PlaceOS Authentication Service before 1.29.10.0 allows app/controllers/auth/sessions_controller.rb open redirect
