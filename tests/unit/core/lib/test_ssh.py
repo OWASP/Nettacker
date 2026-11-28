@@ -46,6 +46,12 @@ class MockRetryingSshConnectionObject(MockSshConnectionObject):
         return kwargs["auth_strategy"].authenticate(self.transport)
 
 
+class MockFailingSshConnectionObject(MockSshConnectionObject):
+    def connect(self, **kwargs):
+        self.connect_kwargs = kwargs
+        raise AuthenticationException("Authentication failed")
+
+
 class TestSshMethod(TestCase):
     @patch("nettacker.core.lib.ssh.SshLibrary.client")
     def test_brute_force_password(self, mock_ssh_client):
@@ -84,7 +90,8 @@ class TestSshMethod(TestCase):
         USERNAME = "root"
         PASSWORD = ""
 
-        mock_ssh_client.return_value = MockSshConnectionObject()
+        connection = MockSshConnectionObject()
+        mock_ssh_client.return_value = connection
 
         self.assertEqual(
             library.brute_force(
@@ -100,6 +107,43 @@ class TestSshMethod(TestCase):
                 "password": PASSWORD,
             },
         )
+        self.assertTrue(connection.closed)
+
+    def test_brute_force_rejects_invalid_authentication_attempts(self):
+        library = SshLibrary()
+
+        with self.assertRaises(ValueError):
+            library.brute_force(
+                host="dc-01",
+                port=SSH_SESSION_PORT,
+                username="root",
+                password="Password@123",
+                authentication_attempts=0,
+            )
+
+        with self.assertRaises(ValueError):
+            library.brute_force(
+                host="dc-01",
+                port=SSH_SESSION_PORT,
+                username="root",
+                password="Password@123",
+                authentication_attempts=-1,
+            )
+
+    @patch("nettacker.core.lib.ssh.SshLibrary.client")
+    def test_brute_force_closes_connection_on_auth_failure(self, mock_ssh_client):
+        connection = MockFailingSshConnectionObject()
+        mock_ssh_client.return_value = connection
+
+        with self.assertRaises(AuthenticationException):
+            SshLibrary().brute_force(
+                host="dc-01",
+                port=SSH_SESSION_PORT,
+                username="root",
+                password="Password@123",
+            )
+
+        self.assertTrue(connection.closed)
 
     @patch("nettacker.core.lib.ssh.SshLibrary.client")
     def test_brute_force_retries_password_in_same_connection(self, mock_ssh_client):
